@@ -10,6 +10,7 @@ import derelict.util.exception;
 import video.videodriver;
 import video.glshader;
 import video.gltexture;
+import video.gltexturepage;
 import video.texture;
 import video.font;
 import math.math;
@@ -53,7 +54,7 @@ class GLVideoDriver : VideoDriver
         float LineWidth = 1.0;
 
         //Texture pages
-        GLTexturePage!(NodePacker)*[] Pages;
+        TexturePage*[] Pages;
         //Index of currently used page; uint.max means none.
         uint CurrentPage = uint.max;
 
@@ -68,7 +69,7 @@ class GLVideoDriver : VideoDriver
             ViewZoom = 1.0;
         }
 
-        void die()
+        override void die()
         {
             LineShader.die();
             TextureShader.die();
@@ -101,10 +102,8 @@ class GLVideoDriver : VideoDriver
             DerelictGL.unload();
         }
 
-        void set_video_mode(uint width, 
-                            uint height, 
-                            ColorFormat format, 
-                            bool fullscreen)
+        override void set_video_mode(uint width, uint height, 
+                                     ColorFormat format, bool fullscreen)
         in
         {
             assert(width > 160 && width < 65536, "Can't set video mode with ridiculous width");
@@ -154,20 +153,20 @@ class GLVideoDriver : VideoDriver
             init_gl();
         }
 
-        void start_frame()
+        override void start_frame()
         {
             glClear(GL_COLOR_BUFFER_BIT);
             setup_viewport();
             CurrentPage = uint.max;
         }
 
-        void end_frame()
+        override void end_frame()
         {
             glFlush();
             SDL_GL_SwapBuffers();
         }
 
-        void draw_line(Vector2f v1, Vector2f v2, Color c1, Color c2)
+        override void draw_line(Vector2f v1, Vector2f v2, Color c1, Color c2)
         {
             set_shader(LineShader);
             //The line is drawn as a rectangle with width slightly lower than
@@ -228,7 +227,7 @@ class GLVideoDriver : VideoDriver
             }
         }
 
-        void draw_texture(Vector2i position, ref Texture texture)
+        override void draw_texture(Vector2i position, ref Texture texture)
         in
         {
             assert(texture.index < Textures.length);
@@ -332,17 +331,20 @@ class GLVideoDriver : VideoDriver
             }
         }
         
-        Vector2u text_size(string text){return FontManager.get.text_size(text);}
+        override Vector2u text_size(string text)
+        {
+            return FontManager.get.text_size(text);
+        }
 
-        void line_aa(bool aa){LineAA = aa;}
+        override void line_aa(bool aa){LineAA = aa;}
         
-        void line_width(float width){LineWidth = width;}
+        override void line_width(float width){LineWidth = width;}
 
-        void font(string font_name){FontManager.get.font = font_name;}
+        override void font(string font_name){FontManager.get.font = font_name;}
 
-        void font_size(uint size){FontManager.get.font_size = size;}
+        override void font_size(uint size){FontManager.get.font_size = size;}
         
-        void zoom(real zoom)
+        override void zoom(real zoom)
         in
         {
             assert(zoom > 0.0001, "Can't zoom out further than 0.0001x");
@@ -354,21 +356,21 @@ class GLVideoDriver : VideoDriver
             setup_ortho();
         }
         
-        real zoom(){return ViewZoom;}
+        override real zoom(){return ViewZoom;}
 
-        void view_offset(Vector2d offset)
+        override void view_offset(Vector2d offset)
         {
             ViewOffset = offset;
             setup_ortho();
         }
 
-        Vector2d view_offset(){return ViewOffset;}
+        override Vector2d view_offset(){return ViewOffset;}
 
-        uint screen_width(){return ScreenWidth;}
+        override uint screen_width(){return ScreenWidth;}
 
-        uint screen_height(){return ScreenHeight;}
+        override uint screen_height(){return ScreenHeight;}
 
-        uint max_texture_size(ColorFormat format)
+        override uint max_texture_size(ColorFormat format)
         {
             GLenum gl_format, type;
             GLint internal_format;
@@ -394,7 +396,7 @@ class GLVideoDriver : VideoDriver
             return size;
         }
 
-        string pages_info()
+        override string pages_info()
         {
             string info = "Pages: " ~ std.string.toString(Pages.length) ~ "\n"; 
             foreach(index, page; Pages)
@@ -407,7 +409,7 @@ class GLVideoDriver : VideoDriver
             return info;
         }
 
-		Texture create_texture(ref Image image, bool force_page)
+		override Texture create_texture(ref Image image, bool force_page)
         in
         {
             if(force_page)
@@ -463,7 +465,7 @@ class GLVideoDriver : VideoDriver
             return create_texture(image, false);
 		}
 
-        void delete_texture(Texture texture)
+        override void delete_texture(Texture texture)
         {
             GLTexture* gl_texture = Textures[texture.index];
             assert(gl_texture !is null, "Trying to delete a nonexistent texture");
@@ -519,7 +521,7 @@ class GLVideoDriver : VideoDriver
          * @param force_size Force page size to be exactly size_image.
          */
         void create_page(Vector2u size_image, ColorFormat format, 
-                         bool force_size = false)
+                                  bool force_size = false)
         {
             //1/16 MiB grayscale, 1/4 MiB RGBA8
             static uint size_min = 256;
@@ -567,14 +569,14 @@ class GLVideoDriver : VideoDriver
                 if(page is null)
                 {
                     page_size(index);
-                    page = alloc!(GLTexturePage!(NodePacker))();
-                    *page = GLTexturePage!(NodePacker)(size, format);
+                    page = alloc!(TexturePage)();
+                    *page = TexturePage(size, format);
                     return;
                 }
             }
             page_size(Pages.length);
-            Pages ~= alloc!(GLTexturePage!(NodePacker))();
-            *Pages[$ - 1] = GLTexturePage!(NodePacker)(size, format);
+            Pages ~= alloc!(TexturePage)();
+            *Pages[$ - 1] = TexturePage(size, format);
         }
 
         //Initialize OpenGL context.

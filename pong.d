@@ -15,6 +15,7 @@ import math.rectangle;
 import video.videodriver;
 import video.videodriverutil;
 import video.gldriver;
+import actor.actor;
 import actor.actormanager;
 import actor.particlesystem;
 import gui.guielement;

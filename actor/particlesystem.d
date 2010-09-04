@@ -5,6 +5,7 @@ import std.string;
 import std.random;
 import std.math;
 
+import actor.actor;
 import actor.actormanager;
 import video.videodriver;
 import math.math;
@@ -116,7 +117,7 @@ abstract class ParticleEmitter : ParticleSystem
             if(Owner !is null)
             {
                 //get position from owner
-                Position = next_position(Owner);
+                Position = Owner.next_position;
             }
             else
             {
@@ -347,7 +348,7 @@ class LineTrail : LineEmitter
                 if(UpdateTimer.expired(time))
                 {
                     Particle trail;
-                    trail.position = next_position(Owner);
+                    trail.position = Owner.next_position;
                     trail.timer(ParticleLife, time);
                     Particles ~= trail;
 

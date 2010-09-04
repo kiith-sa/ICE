@@ -6,6 +6,11 @@ START ESSENTIAL -------------------------------
 
     Put _all_ non-game-specific actors including particle systems to single package
     and use package instead of protected
+
+    split actormanager, particle system too
+
+
+    use package qualifier where possible in these packages
 14:
     Refactoring/cleaning up run. Especially look into Actors and ActorManager
     (Consider if Actors could somehow be turned into structs using
