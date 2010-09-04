@@ -9,8 +9,8 @@ import std.math;
 import std.c.stdlib;     
 
 import platform;
-import videodriver;
-import videodriverutil;
+import video.videodriver;
+import video.videodriverutil;
 import signal;
 import time;
 import timer;

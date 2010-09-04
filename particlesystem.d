@@ -9,8 +9,7 @@ import color;
 import math;
 import vector2;
 import timer;
-import videodriver;
-import videodriverutil;
+import video.videodriver;
 import actormanager;
 import util;
 

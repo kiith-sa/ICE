@@ -3,8 +3,8 @@ module gui;
 
 import std.string;
 
-import videodriver;
-import videodriverutil;
+import video.videodriver;
+import video.videodriverutil;
 import color;
 import vector2;
 import rectangle;

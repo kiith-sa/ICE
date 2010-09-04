@@ -8,7 +8,6 @@ import singleton;
 import time;
 import timer;
 import eventcounter;
-import videodriver;
 import vector2;
 import line2;
 import rectangle;
