@@ -14,6 +14,7 @@ import math.line2;
 import math.rectangle;
 import video.videodriver;
 import video.videodriverutil;
+import video.gldriver;
 import actor.actormanager;
 import actor.particlesystem;
 import gui.guielement;
@@ -843,8 +844,7 @@ void main()
 {
     Time.initialize!(Time);
     Platform.initialize!(SDLPlatform);
-    VideoDriver.initialize!(VideoDriver);
-
+    VideoDriver.initialize!(GLVideoDriver);
 
     try
     {

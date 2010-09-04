@@ -34,7 +34,6 @@ class SDLPlatform : Platform
             DerelictSDL.unload();
         }
         
-        ///Collect input and determine if the game should continue running.
         override bool run()
         {
             SDL_Event event;
@@ -64,19 +63,16 @@ class SDLPlatform : Platform
             return super.run();
         }
 
-        ///Sets window caption string to str.
         override void window_caption(string str)
         {
             SDL_WM_SetCaption(toStringz(str), null); 
         }
 
-        ///Hide the mouse cursor.
         override void hide_cursor()
         {
             SDL_ShowCursor(0);
         }
 
-        ///Show the mouse cursor.
         override void show_cursor()
         {
             SDL_ShowCursor(1);
@@ -84,7 +80,7 @@ class SDLPlatform : Platform
 
     package:
         
-        //Process a keyboard event
+        //Process a keyboard event.
         void process_key(SDL_KeyboardEvent event)
         {
             KeyState state = KeyState.Pressed;
@@ -98,7 +94,7 @@ class SDLPlatform : Platform
                            event.keysym.unicode);
         }
         
-        //Process a mouse button event
+        //Process a mouse button event.
         void process_mouse_key(SDL_MouseButtonEvent event)
         {
             KeyState state = KeyState.Pressed;
@@ -132,7 +128,7 @@ class SDLPlatform : Platform
             mouse_key.emit(state, key, position);
         }
         
-        //Process a mouse motion event
+        //Process a mouse motion event.
         void process_mouse_motion(SDL_MouseMotionEvent event)
         {
             Vector2u position = Vector2u(event.x, event.y);
