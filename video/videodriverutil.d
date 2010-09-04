@@ -4,8 +4,8 @@ module video.videodriverutil;
 import std.math;
 
 import video.videodriver;
-import vector2;
-import line2;
+import math.vector2;
+import math.line2;
 import color;
 
 void draw_circle(Vector2f center, float radius, 

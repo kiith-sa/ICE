@@ -8,14 +8,14 @@ import derelict.freetype.ft;
 import derelict.util.loader;
 import derelict.util.exception;
 
-import vector2;
+import video.videodriver;
+import video.texture;
+import math.vector2;
+import math.math;
 import singleton;
 import color;
-import video.texture;
 import file;
-import math;
 import image;
-import video.videodriver;
 import util;
 import allocator;
 

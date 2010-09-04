@@ -1,7 +1,7 @@
 module color;
 
 
-import math;
+import math.math;
 
 ///Represents color formats used by images and screen/
 enum ColorFormat

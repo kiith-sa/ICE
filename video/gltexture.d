@@ -3,9 +3,9 @@ module video.gltexture;
 
 import derelict.opengl.gl;
 
-import math;
-import vector2;
-import rectangle;
+import math.math;
+import math.vector2;
+import math.rectangle;
 import color;
 import image;
 import allocator;

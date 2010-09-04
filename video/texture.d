@@ -1,7 +1,7 @@
 module video.texture;
 
 
-import vector2;
+import math.vector2;
 
 align(1) struct Texture
 {

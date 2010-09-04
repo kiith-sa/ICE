@@ -1,8 +1,8 @@
 module image;
 
 
+import math.vector2;
 import color;
-import vector2;
 import allocator;
 
 ///Image object capable of storing images in various color formats.

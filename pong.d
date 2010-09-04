@@ -8,22 +8,22 @@ import std.math;
 
 import std.c.stdlib;     
 
-import platform;
+import math.math;
+import math.vector2;
+import math.line2;
+import math.rectangle;
 import video.videodriver;
 import video.videodriverutil;
+import actor.actormanager;
+import actor.particlesystem;
+import gui.gui;
+import platform;
 import signal;
 import time;
 import timer;
 import eventcounter;
 import singleton;
-import math;
-import vector2;
-import line2;
-import rectangle;
 import color;
-import actormanager;
-import particlesystem;
-import gui;
 
 ///A wall of game area.
 class Wall : Actor

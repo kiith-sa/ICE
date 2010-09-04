@@ -7,19 +7,19 @@ import derelict.sdl.sdl;
 import derelict.opengl.gl;
 import derelict.util.exception;
 
-import singleton;
-import platform;
-import math;
-import vector2;
-import line2;
-import rectangle;
-import color;
 import video.glshader;
 import video.gltexture;
 import video.texture;
+import video.font;
+import math.math;
+import math.vector2;
+import math.line2;
+import math.rectangle;
+import singleton;
+import platform;
+import color;
 import image;
 import allocator;
-import video.font;
 
 ///Handles all drawing functionality.
 class VideoDriver : Singleton

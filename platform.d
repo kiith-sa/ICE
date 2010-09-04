@@ -4,9 +4,9 @@ module platform;
 import std.string;
 import derelict.sdl.sdl;
 
+import math.vector2;
 import singleton;
 import signal;
-import vector2;
 
 enum KeyState
 {
