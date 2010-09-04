@@ -16,8 +16,10 @@ import video.videodriver;
 import video.videodriverutil;
 import actor.actormanager;
 import actor.particlesystem;
-import gui.gui;
-import platform;
+import gui.guielement;
+import gui.guiroot;
+import gui.guibutton;
+import platform.platform;
 import signal;
 import time;
 import timer;
@@ -817,8 +819,8 @@ class Menu : Singleton
             ExitButton = new GUIButton(MenuGUI, Vector2i(8, 144 + 32),
                                        Vector2u(144, 24), "Quit game");
 
-            Platform.get.mouse_motion.connect(&GUIRoot.get.mouse_move_handler);
-            Platform.get.mouse_key.connect(&GUIRoot.get.mouse_key_handler);
+            Platform.get.mouse_motion.connect(&GUIRoot.get.mouse_move);
+            Platform.get.mouse_key.connect(&GUIRoot.get.mouse_key);
             StartButton.pressed.connect(&pong_start);
             ExitButton.pressed.connect(&exit);
         }

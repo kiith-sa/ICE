@@ -12,6 +12,7 @@ else
 
 import singleton;
 
+
 class Time : Singleton
 {
     mixin SingletonMixin;

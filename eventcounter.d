@@ -7,7 +7,8 @@ import time;
 import timer;
 import signal;
 
-///Generalization of an FPS counter - e.g. counts how frequently an event happens
+
+///Generalization of an FPS counter - i.e. counts how frequently an event happens
 class EventCounter
 {
     private:

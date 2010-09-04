@@ -3,6 +3,7 @@ module timer;
 
 import time;
 
+
 ///A timer struct; handles timing of various delayed or periodic events.
 struct Timer
 {
