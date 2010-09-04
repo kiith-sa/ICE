@@ -9,15 +9,26 @@ import singleton;
 
 
 ///GUI root element singleton. Contains drawing and input handling methods.
-final class GUIRoot : GUIElement, Singleton
+final class GUIRoot : GUIElement
 {
     invariant
     {
         assert(Parent is null, "GUI root element must not have a parent");
     }
 
-    mixin SingletonMixin;
+    mixin Singleton;
+
     public:
+        //Construct the GUI root with size equal to screen size.
+        this()
+        {
+            singleton_ctor();
+            auto driver = VideoDriver.get;
+            //GUI size is equal to screen size
+            Vector2u max = Vector2u(driver.screen_width, driver.screen_height);
+            super(null, Vector2i(0,0), max);
+        }
+
         ///Draw the GUI.
         void draw()
         {
@@ -57,14 +68,5 @@ final class GUIRoot : GUIElement, Singleton
         void mouse_move(Vector2u position, Vector2i relative)
         {
             super.mouse_move(position, relative);
-        }
-
-    private:
-        this()
-        {
-            auto driver = VideoDriver.get;
-            //GUI size is equal to screen size
-            Vector2u max = Vector2u(driver.screen_width, driver.screen_height);
-            super(null, Vector2i(0,0), max);
         }
 }

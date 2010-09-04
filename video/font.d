@@ -87,9 +87,9 @@ package align(1) struct FontRenderer
 }
 
 ///Handles all font resources. 
-package class FontManager : Singleton
+package class FontManager
 {
-    mixin SingletonMixin;
+    mixin Singleton;
     private:
         static FT_Library FreeTypeLib;
         Font[] Fonts;
@@ -117,6 +117,43 @@ package class FontManager : Singleton
         bool Kerning = true;
         
     public:
+        //Construct the font manager, load default font.
+        this()
+        {
+            singleton_ctor();
+            try
+            {
+                //sometimes FreeType is missing a function we don't use, 
+                //we don't want to crash in that case.
+                Derelict_SetMissingProcCallback(function bool(string a, string b)
+                                                {return true;});
+                //load FreeType library
+                DerelictFT.load(); 
+                Derelict_SetMissingProcCallback(null);
+                //initialize FreeType
+                if(FT_Init_FreeType(&FreeTypeLib) != 0 || FreeTypeLib is null)
+                {
+                    throw new Exception("FreeType initialization error");
+                }
+                try
+                {
+                    //load default font.
+                    Fonts ~= Font(DefaultFontName, DefaultFontSize, FastGlyphs);
+                    CurrentFont = Fonts[$ - 1];
+                    FontName = DefaultFontName;
+                    FontSize = DefaultFontSize;
+                }
+                catch
+                {
+                    throw new Exception("Could not load default font.");
+                }
+            }
+            catch(SharedLibLoadException e)
+            {
+                throw new Exception("Could not load FreeType library");
+            }
+        }
+
         ///Destroy the FontManager. Should only be called at shutdown.
         void die()
         {
@@ -223,42 +260,6 @@ package class FontManager : Singleton
       
         ///Return bool specifying whether or not font antialiasing is enabled.
         bool kerning(){return Kerning;}
-
-    private:
-        this()
-        {
-            try
-            {
-                //sometimes FreeType is missing a function we don't use, 
-                //we don't want to crash in that case.
-                Derelict_SetMissingProcCallback(function bool(string a, string b)
-                                                {return true;});
-                //load FreeType library
-                DerelictFT.load(); 
-                Derelict_SetMissingProcCallback(null);
-                //initialize FreeType
-                if(FT_Init_FreeType(&FreeTypeLib) != 0 || FreeTypeLib is null)
-                {
-                    throw new Exception("FreeType initialization error");
-                }
-                try
-                {
-                    //load default font.
-                    Fonts ~= Font(DefaultFontName, DefaultFontSize, FastGlyphs);
-                    CurrentFont = Fonts[$ - 1];
-                    FontName = DefaultFontName;
-                    FontSize = DefaultFontSize;
-                }
-                catch
-                {
-                    throw new Exception("Could not load default font.");
-                }
-            }
-            catch(SharedLibLoadException e)
-            {
-                throw new Exception("Could not load FreeType library");
-            }
-        }
 }
 
 ///Stores one font with one size (e.g. Inconsolata size 16 and 18 will be two Font objects).

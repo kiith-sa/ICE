@@ -13,10 +13,11 @@ else
 import singleton;
 
 
-class Time : Singleton
+class Time 
 {
-    mixin SingletonMixin;
+    mixin Singleton;
     public:
+        this(){singleton_ctor();}
 
         ///Returns time since start of epoch in seconds.
         static real get_time()
@@ -34,7 +35,4 @@ class Time : Singleton
                 return getUTCtime() / cast(real)TicksPerSecond;
             }
         }
-
-    protected:
-        this(){}
 }

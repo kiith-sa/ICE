@@ -22,9 +22,9 @@ import image;
 import allocator;
 
 ///Handles all drawing functionality.
-class VideoDriver : Singleton
+class VideoDriver
 {
-    mixin SingletonMixin;
+    mixin Singleton;
     
     invariant
     {
@@ -62,6 +62,12 @@ class VideoDriver : Singleton
         GLTexture*[] Textures;
 
     public:
+        this()
+        {
+            singleton_ctor();
+            DerelictGL.load();
+            ViewZoom = 1.0;
+        }
 
         ///Destroy the VideoDriver. Should only be called at shutdown.
         void die()
@@ -644,14 +650,6 @@ class VideoDriver : Singleton
             *Pages[$ - 1] = GLTexturePage!(NodePacker)(size, format);
         }
 
-        this()
-        {
-            //Force platform to load if not yet loaded
-            auto platform = Platform.get;
-            DerelictGL.load();
-            ViewZoom = 1.0;
-        }
-
         //initialize OpenGL context
         void init_gl()
         in
@@ -664,7 +662,7 @@ class VideoDriver : Singleton
             //Placed here because font manager ctor needs working videodriver
             //and a call to font manager ctor from videodriver ctor would
             //result in infinite recursion.
-            auto font_manager = FontManager.get;
+            FontManager.initialize!(FontManager);
             try
             {
                 //Loads the newest available OpenGL version

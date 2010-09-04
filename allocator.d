@@ -11,10 +11,10 @@ import util;
 
 
 ///Singleton handling manual allocation of memory.
-private final class Allocator : Singleton
+private final class Allocator
 {   
+    mixin Singleton;
     alias std.string.toString to_string;
-    mixin SingletonMixin;
     private:
         //Total memory manually allocated over run of the program, in bytes.
         ulong TotalAllocated = 0;
@@ -208,23 +208,27 @@ private final class Allocator : Singleton
 ///Allocate an object.
 T* alloc(T)()
 {
+    Allocator.initialize!(Allocator);
     return Allocator.get.allocate!(T)();
 }
 
 ///Allocate an array of objects.
 T[] alloc(T)(uint elems)
 {
+    Allocator.initialize!(Allocator);
     return Allocator.get.allocate!(T)(elems);
 }
 
 ///Free an object allocated by alloc(). Will call die() method if defined.
 void free(T)(T* ptr)
 {
+    Allocator.initialize!(Allocator);
     Allocator.get.free(ptr);
 }
 
 ///Free an array of objects allocated by alloc(). Will call die() methods if defined().
 void free(T)(T[] array)
 {
+    Allocator.initialize!(Allocator);
     Allocator.get.free(array);
 }

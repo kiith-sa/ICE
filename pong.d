@@ -20,12 +20,14 @@ import gui.guielement;
 import gui.guiroot;
 import gui.guibutton;
 import platform.platform;
+import platform.sdlplatform;
 import signal;
 import time;
 import timer;
 import eventcounter;
 import singleton;
 import color;
+
 
 ///A wall of game area.
 class Wall : Actor
@@ -541,9 +543,9 @@ class HumanPlayer : Player
         }
 }
 
-class Pong : Singleton
+class Pong
 {
-    mixin SingletonMixin;
+    mixin Singleton;
     private:
         Ball GameBall;
         real BallRadius = 6.0;
@@ -565,6 +567,9 @@ class Pong : Singleton
         bool Continue;
 
     public:
+        ///Start a Pong game.
+        this(){singleton_ctor();}
+
         bool run()
         {
             Player1.update();
@@ -647,7 +652,6 @@ class Pong : Singleton
             }
         }
 
-
     private:
         void respawn_ball(Ball ball)
         {
@@ -695,13 +699,11 @@ class Pong : Singleton
                 }
             }
         }
-
-        this(){}
 }
 
-class Menu : Singleton
+class Menu
 {
-    mixin SingletonMixin;
+    mixin Singleton;
     private:
         EventCounter FPSCounter;
         bool RunPong = false;
@@ -712,6 +714,38 @@ class Menu : Singleton
         GUIButton ExitButton;
 
     public:
+
+        ///Initialize Pong.
+        this()
+        {
+            singleton_ctor();
+            ActorManager.initialize!(ActorManager);
+            GUIRoot.initialize!(GUIRoot);
+            VideoDriver.get.set_video_mode(800, 600, ColorFormat.RGBA_8, 
+                                                false);
+
+            //Update FPS every second
+            FPSCounter = new EventCounter(1.0);
+            FPSCounter.update.connect(&fps_update);
+
+
+
+            uint width = VideoDriver.get.screen_width;
+            uint height = VideoDriver.get.screen_height;
+            MenuGUI = new GUIElement(GUIRoot.get, 
+                                     Vector2i(width - 176, 16),
+                                     Vector2u(160, height - 32));
+            StartButton = new GUIButton(MenuGUI, Vector2i(8, 144),
+                                        Vector2u(144, 24), "Player vs AI");
+            ExitButton = new GUIButton(MenuGUI, Vector2i(8, 144 + 32),
+                                       Vector2u(144, 24), "Quit game");
+
+            Platform.get.mouse_motion.connect(&GUIRoot.get.mouse_move);
+            Platform.get.mouse_key.connect(&GUIRoot.get.mouse_key);
+            StartButton.pressed.connect(&pong_start);
+            ExitButton.pressed.connect(&exit);
+        }
+
         void die()
         {
             VideoDriver.get.die();
@@ -798,33 +832,6 @@ class Menu : Singleton
             }
         }
 
-        this()
-        {
-            VideoDriver.get.set_video_mode(800, 600, ColorFormat.RGBA_8, 
-                                                false);
-
-            //Update FPS every second
-            FPSCounter = new EventCounter(1.0);
-            FPSCounter.update.connect(&fps_update);
-
-
-
-            uint width = VideoDriver.get.screen_width;
-            uint height = VideoDriver.get.screen_height;
-            MenuGUI = new GUIElement(GUIRoot.get, 
-                                     Vector2i(width - 176, 16),
-                                     Vector2u(160, height - 32));
-            StartButton = new GUIButton(MenuGUI, Vector2i(8, 144),
-                                        Vector2u(144, 24), "Player vs AI");
-            ExitButton = new GUIButton(MenuGUI, Vector2i(8, 144 + 32),
-                                       Vector2u(144, 24), "Quit game");
-
-            Platform.get.mouse_motion.connect(&GUIRoot.get.mouse_move);
-            Platform.get.mouse_key.connect(&GUIRoot.get.mouse_key);
-            StartButton.pressed.connect(&pong_start);
-            ExitButton.pressed.connect(&exit);
-        }
-
         void fps_update(real fps)
         {
             Platform.get.window_caption = "FPS: " ~
@@ -834,9 +841,15 @@ class Menu : Singleton
 
 void main()
 {
+    Time.initialize!(Time);
+    Platform.initialize!(SDLPlatform);
+    VideoDriver.initialize!(VideoDriver);
+
+
     try
     {
-        //Pong.get.run();         
+        Menu.initialize!(Menu);
+        Pong.initialize!(Pong);
         Menu.get.run();
         Menu.get.die();
     }

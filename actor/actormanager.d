@@ -14,9 +14,9 @@ import eventcounter;
 import util;
 
 ///Stores and manages all Actors.
-class ActorManager : Singleton
+class ActorManager
 {
-    mixin SingletonMixin;
+    mixin Singleton;
 
     invariant
     {
@@ -50,6 +50,16 @@ class ActorManager : Singleton
         real TimeSpeed = 1.0;
 
     public:
+        //Construct the ActorManager; set up update frequency.
+        this()
+        {
+            singleton_ctor();
+            //at most 120 updates per second
+            UpdateTimer(1.0 / 120.0);
+            UpdateCounter = new EventCounter(1.0);
+            UpdateCounter.update.connect(&ups_update);
+            FrameTime = Time.get_time();
+        }
 
         ///Get frame length in seconds, i.e. update "frame" length, not graphics.
         real frame_length()
@@ -194,15 +204,6 @@ class ActorManager : Singleton
         void ups_update(real ups)
         {
             writefln("UPS: ", ups);
-        }
-
-        this()
-        {
-            //at most 120 updates per second
-            UpdateTimer(1.0 / 120.0);
-            UpdateCounter = new EventCounter(1.0);
-            UpdateCounter.update.connect(&ups_update);
-            FrameTime = Time.get_time();
         }
 
         //Determines if given actor is in this ActorManager

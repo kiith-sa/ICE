@@ -13,6 +13,11 @@ START ESSENTIAL -------------------------------
 
     Also use alias and/or with to simplify code.
 
+    Remove Time class and just keeping get_time() as a global
+    function.
+
+    Consider desingletonifying allocator, turning to a plain module
+
     alias std.string.toString to_string
 
     Use foreach_reverse where we're reverse iterating with for
@@ -25,6 +30,9 @@ START ESSENTIAL -------------------------------
 
     VideoDriver method that will return a string with
     data about all textures
+
+    Menu - Pong 
+    Pong - Game
 
     Currently, assert messages are caucgt in main and not displayed.
     Add a catch() for AssertErrors or whatever they're called and display
@@ -235,9 +243,6 @@ END ESSENTIAL -------------------------------
 19:
     Use the same doc format throughout. Either Doxygen or DDoc.
     DDoc would probably be better.
-19:
-    Consider removing Time class and just keeping get_time() as a global
-    function.
 20:
     Look at demos in D/Games for graphics effect ideas
 20: 
