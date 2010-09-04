@@ -1,0 +1,503 @@
+START ESSENTIAL -------------------------------
+11: 
+    Version control
+12:
+    Packages, 1 file per class, at least a video package.
+    (maybe a math package too), also use package qualifiers
+    for classes, structs, members
+
+    Put _all_ non-game-specific actors including particle systems to single package
+    and use package instead of protected
+14:
+    Refactoring/cleaning up run. Especially look into Actors and ActorManager
+    (Consider if Actors could somehow be turned into structs using
+    composition(probably not, though))
+
+    Also use alias and/or with to simplify code.
+
+    alias std.string.toString to_string
+
+    Use foreach_reverse where we're reverse iterating with for
+    (e.g. delegate version of util.remove)
+
+    Use final for classes that shouldn't be inherited
+
+    Use static opCall as a struct ctor, esp. for stuff like Rectangles
+    everywhere possible, and use ctor method instead of init
+
+    VideoDriver method that will return a string with
+    data about all textures
+
+    Currently, assert messages are caucgt in main and not displayed.
+    Add a catch() for AssertErrors or whatever they're called and display
+    their messages.
+
+    Try to make casts between Vector2 types possible
+    so we can do cast(Vector2i)Vector2u, etc
+
+    One line accessors
+
+    About the below: In D2, alias this should do the same job as
+    template mixins do in D1
+
+    point taken from here: turn parents of gltexturepage, nodepacker into
+    template mixins and use them as heap allocated structs
+    Replace die() with dtors and delete - at least with actors (not sure
+            if can be done with singletons)
+    actually about class dtors: clear() calls dtor, and gc then calls it again
+    also, dtor can't do anything with gc allocated class members
+    which means - we need to keep die() for actors
+    Also might consider die() for texturepage, texturepacker, or somehow
+    turn them into structs (or turn the parent classes into template mixins!
+    That might work! - or turn the implementations into template arguments
+    -less likely to work).
+
+    Shader should work like Texture works right now, i.e. two structs
+    connected by index. Actually, GLShader could be a class, for the
+    sake of convenience. Struct would be good for deterministic
+    de/allocation, though.
+
+
+    GLDriver destructor should destroy all textures, pages, shaders
+    (shader dtor should delete shader program, etc)
+    Actually, this should be done by a member function
+    called by the dtor so we can clear videodriver resources at any time.
+
+    In direct contact with OpenGL, use e.g. 1.0f instead of 1.0
+
+    Also use array arithmetic such as a[] = b[] + c[] if/where possible
+
+    Rename util.d to arrayutil.d
+
+    Move code from videodriverutil to final methods in VideoDriver interface.
+    If not possible in D1, make VideoDriver a class that implements these methods
+    (as final, if D1 allows it) without accessing implementation details.
+
+    If GLVideoDriver is still over 600 lines, consider moving
+    texture code to a TextureManager singleton and just keeping
+    the interface to pass parameters.
+13:
+    File input, resource manager, use that for font and shader files,
+    maybe also use resource manager for shaders/textures/pages/fonts
+14:
+    For this kind of debugging info, define a VideoDriver method
+    info(enum DebugInfo) that will return a string with requested type
+    of info. DebugInfo.All would return all info available.
+    If the implementation can't return any info for wanted DebugInfo,
+    it just returns "N/A\n"
+    
+    The stuff below _might_ be done by a GUI element tree at VideoDriver
+    implementation side, root of which would be returned by VideoDriver 
+    implementation method. If possible, though, make it general.
+
+    Debugging utility: make VideoDriver functionality to
+    draw texture pages on screen (just draw the whole page as a big square
+    with 0,0 1,1 texcoords)
+    Would work as a dialog (could be launched by a shortcut for now,
+    in future from console)
+    Should also draw rectangles of all textures on that page.
+    That dialog could be expanded with more subdialogs in future.
+
+    Should be its own GUIElement subclass, like DebugGUI
+
+    With this, we can check adding/removing textures and how it affect pages
+    (e.g. do freed areas in the page get filled again with new textures?)
+    Should have dialogs to add specified sizes of checkered textures at 
+    specified offsets.
+    
+    Page viewed could be switched, by, say, Enter, and navigated by
+    arrows if it's too big (the page would be displayed separate
+    from GUI by a method of VideoDriver)
+
+    It should also show stats about overhead of all textures in the driver,
+    currently viewed page, and its packer (and all its nodes) - in
+    subdialogs that can be shown/hidden
+
+    Maybe something similar for the memory allocator
+    (and ActorManager?) - always use the statistics() method- can even
+    use templates.
+
+    Also show current manually allocated memory in bytes.
+    Will help in combination with ksysguard to determine GC allocated memory 
+    size. This could be shown by a graph like in KSysGuard.
+    Could also show graph for memory usage by a type if selected.
+
+    Similarly, VideoDriver could show graphs like how many textures
+    it has, or how many draw calls of which type per frame averaged 
+    each second etc.
+    We should probably have a specific Graph widget for that.
+    (or chart? engrish iz konfuzing)
+
+    In future, we could have graphs about how much time per frame
+    do drawing, etc. calls take.
+    Actually, this debugging GUI should turn into a set of blueprints
+    /issues in an issue tracker so we don't have to do it all at once.
+
+
+    Also consider dumping NodePacker tree and/or others to SVG as seen
+    at blackpawn.com/blog/?p=211
+14:
+    Valgrind, Massif.
+    Look (google, etc.) for ways to measure memory in detail.
+14:
+    Complete overhaul of memory usage everywhere 
+    (with classes as well, e.g. maybe actors should truly be removed)
+
+    In D2, might even attempt a delete!(T)() function for classes
+    that'd call clear and gc.free()
+
+    Could also look at the source of the Diamond memory debugger and
+    use the ideas here to measure memory usage
+
+
+14:
+    If resource manager won't work for adding/removing shaders/textures/pages:
+    
+    Texture removing (and shader removing, if they work the same way),
+    same for texture pages:
+    Since we can't afford to invalidate indices, when a 
+    texture/page/shader is removed, mark that index as free 
+    (in an array of free indices maybe?) and when creating
+    textures/shaders, first check if we have any free indices.
+
+    If there are any free indices _at the end_ of the textures/pages/shaders
+    array, the array can be shrunk.
+15:
+    Move away from DSSS, (include derelict)
+    also, get the newest derelict
+    Debug, release, doc targets
+
+    Consider xfBuild, since it's not dead
+
+
+END ESSENTIAL -------------------------------
+
+13: 
+    Credits button and text 
+    (maybe a simple demo showing random balls or an AI-AI game in background)
+14:
+    Intro screen
+
+    Some kind of start game animation and a possibility to end game
+    and start anew
+
+    Also will need a victory condition that ends game as well
+    as allow the player to end the game (in both cases, returning
+    to intro screen/menu)
+
+    Games should be limited by first to reach score or by time limit.
+    Maybe both. (and overtime?) - that might require font work, though
+14:
+    AI difficulty settings;
+14:
+    Graphics effect: either some kind of motion blur effect for the paddle,
+    or some kind of pulsating lines inside the paddle.
+15:
+    Graphics effect:
+    Add a lot of almost invisible fast moving balls, or just trails, that bounce normally,
+    but don't matter in game score. Generate them randomly (from center? 
+    from a random point on center horizontal line? or, from 
+    a point that is moving around but always within screen)
+    Alternatively a few short-trail balls that can bounce off of each others'
+    trails
+
+    another alternative would be some other subtle background effect.
+16:
+    Video mode change in Menu/Pong/whatever its called by now.
+    Not in individual games, though.
+16:
+    Graphics effect:
+    Particle systems at destruction of paddles, balls (e.g. at the end of game 
+    or when player loses a life) 
+    Effects both for normal (ESC) exit and victory/defeat exit
+    also an effect on start of game, and a countdown until the
+    ball is thrown
+16:
+    Have a countdown before each ball spawn. Should also
+    display the rough area where it might go (~ 90 deg)
+16:
+    Draw cursor
+17:
+    Look at LBreakout2 source, especially how they handle physics.
+    Maybe then implement ball reflection based on paddle movement.
+17: 
+    Effects:
+    When buttons etc. working:
+    when changing the gui, (e.g. moving from menu to pong, or between dialogs), 
+    draw an animation with gui leaving the screen
+    to the left. we can do this with a guioffset member in gui root
+
+    main menu could have an ai-ai game playing in the background
+17:
+    Multiplayer over a network (test with two computers)
+18:
+    Maybe try to even remove .get from singletons (hybrid has done it somehow)
+19:
+    Use the same doc format throughout. Either Doxygen or DDoc.
+    DDoc would probably be better.
+19:
+    Consider removing Time class and just keeping get_time() as a global
+    function.
+20:
+    Look at demos in D/Games for graphics effect ideas
+20: 
+    Get rid of immediate mode:
+    support VAs and maybe VBOs (not that necessary right now) -
+    use VAs with colors (but support multiple vertex types)
+
+    Line VAs/VBOs will need color per vertex.
+    Texture/Font will not - we can pass it as a param to
+    the shader.
+
+    If we cache per frame like in Catom, we have to draw stuff out
+    every time zoom/offset changes.
+
+    Once we use custom matrices with shaders, we might simply
+    stope projection matrices with caches and draw all out
+    at the end, but we need to learn that
+
+23:
+    Collision optimization: ignore too distant actors/lines/whatever
+    early.
+22:
+    Both graphics data and physics data should have their
+    own classes (or completely abstract interfaces) - contained in Actor.
+    Actors should collide in update_physics() by passing Actors just like 
+    until now, not by passing PhysicsObjects
+22:
+    Improved collision code to prevent/minimize tunneling
+22?: 
+    Try to separate physics and drawing into two threads
+    If not possible, try AI
+23:
+    Do some basic profiling: KCacheGrind (No OpenGL perspective),
+    OProfile (better?), gettime - at least get total time and VideoDriver 
+    methods' time
+    Don't forget to do this with an optimized build.
+    Also check with valgrind for memory leaks (if any).
+    Also add precision time-based measurement code like in MiniINI
+    to determine e.g. exact time spent with GL calls,
+    exact time spent in VideoDriver outside GL and maybe more.
+
+    Profile both debug and optimized.
+
+    Notable stuff to profile:
+    use of arrays in particle systems. Maybe create a global particle pool
+    or something.
+
+    Drawing of huge texts
+
+    If memory is a problem, maybe try to turn Timer into a template class 
+    taking float, double or real to specify precision.
+
+    Textures could be made smaller by using Vector2s for size
+    instead of Vector2u. This has proven to speed up font drawing
+    by ~15%. However, would probably result in a bit uglier code
+    and need for asserts for too large textures/pages.)
+    (would require to pass textures/glyphs by value in font drawing code)
+24:
+    If needed, we could use classes for Particles.
+    We just need to measure memory and time impact.
+24:
+    Selecting GUI elements with keyboard:
+    only certain element types can be selected (e.g. button)
+    (an element has a bool selectable() method):
+    Arrows are used to select elements, maybe later tabs could
+    select groups (would be more complicated) - if selected,
+    Enter and/or some other keys could be used to control the element.
+
+24:
+    ResourceManager (?) - could load paddles, effects maybe, maps 
+    (for Pong AND Arkanoid)(?)
+25:
+    Advanced shaders: custom matrix, etc. passing. - SEE OPENGL SUPERBIBLE
+    Look at Humus, Mizanin, GL forums, GL3 tutorials, etc.
+25:
+    Settings from ini files, also paddle, ball, wall properties
+    (possibility to add more walls from INI files, but hardcoded two paddles)
+    and paddle, ball graphics objects serialization (including line trail
+    particle system, maybe others of coded)
+    Among other things, time speed and update period of actormanager should
+    be in INI files.
+
+    GUI should also be serializable to/from INI
+    There should be default set of values (in INI), e.g. for buttons in general,
+    and every button could be customized with INI code that only mentions
+    differences.
+
+    FontManager settings like FontAA and FastGlyphs should be set through INI
+
+15:
+    Save games (ini?)
+25:
+    User configurable key bindings - stored in HumanPlayer
+26: 
+    Sounds
+27:
+    Consider moving FPSCounter to VideoDriver, Platform or somewhere else
+    outside game specific code. Also need to move the code that writes
+    out stats of these counters somewhere.
+28:
+    DSSS is dead - stop using it. We can include the Derelict bindings we need
+    in the package and use a simple Makefile, the SCons or some specialized
+    D build system from dsource.
+    Also create a CodeBlocks project (e.g. for easy Windows compilation)
+30?:
+    Rotation (of 2D actors) - Velocity should then be in object space,
+    not world space. Immediate use would be rotating balls.
+    Also, the same paddle could be used up and down, just rotated.
+31:
+    Change coding style of private members so that class names can't conflict
+    with private members' names.
+32:
+    Textured quads? (Possibly leave that for top-down shooter project)
+    Also needs Drawable (base class for textured quad, line mesh),
+    serialization/file management
+    Serialization should go through a standardized interface so
+    we can change file format (INI, XML, binary, compressed...)
+    Also, need a separate default shader for textured quads
+33?:
+    Might be left for later (e.g. before map editor):
+    GUI: more advanced, moving/resizing (can be enabled/disabled),
+    element names and getting elements by name,
+    serialization (Root should have save_layout, load_layout methods),
+    maybe a simple editor
+
+    GUI could have a complex border composed of
+    8 sections (top, down... + corners), using > 1.0 texcoords
+    to repeat textures for resizing/support of varying sizes. 
+    (once textures are done)
+33:
+    Consider merging ParticleSystem with LineEmitter
+34:
+    Drawable abstraction. 
+    Can be a line mesh/mesh group, sprite (with many textures),
+    3d model (with many meshes)
+    Alternatively can be a single class composed of any number of 
+    lines/sprites/meshes
+
+    First just support lines, then add sprites, and _maybe_ add 3d
+    stuff later.
+35:
+    VideoDriver::draw_texture should have two versions:
+    With color and without color. The version with color
+    should probably use a specific shader and will only be used
+    by stuff like fonts anyway.
+35:
+    GUI serialization (at least be able to set button fonts etc)
+    Don't have to be able to add elements from plain ini GUI code,
+    just styles, etc.
+35:
+    Logging messages (e.g. initializing GL, etc.)- not necessarily a logging
+    system yet
+35:
+    Translatable text, and a simple string format with 
+    bold/italic/underlined and text colors.
+    That would be passed to the code that draws fonts.
+    Might be in a single class. Should have a method to
+    return the string without tags. 
+    Maybe use simple CSS-like styles for the text, etc.
+    Formatting should probably be left for later, but translatable text
+    ASAP. Needs resource management first, though.
+
+    We could also use shaders to invert text colors if wanted, etc.
+36: 
+    Console        
+37:
+    OpenGL driver profiling:
+    Might consider an Image method to_bgra() and using GL_BGRA format.
+    Also profile glTexSubImage calls, consider replacing that with pbuffers
+    or: combine textures to pages on cpu; when drawing, use glTexImage to
+    move to GPU; when again adding textures to a page, use
+    glGetTexImage to get it back to cpu side, repeat.
+    Also profile all the other GL stuff, like texture drawing, shaders.
+    Might consider the NVidia profiling driver for this.
+    Also consider various page sizes - something like 512x512
+    might have better cache performance than 4096x4096.
+38: 
+    Culling at videodriver level
+39:
+    Custom exception class, should add the message to the log.
+39:
+    Allocator should record its memory usage e.g. every second.
+    This could be a good experiment for threading (make sure the other
+    thread doesn't eat whole core - it must time out if not near timer 
+    expiration)
+
+    Alternatively, we don't need threaded timer: Record memory usage
+    every X allocations. Even every single allocation might work
+    (we just need to add an uint to an array)
+    Better, we could record memory usage and time of allocation.
+    Maybe also index of type of object allocated (not the whole string)
+
+39:
+    Consider D2 (at this point it might be mature enough :p)
+
+
+
+Announcing:
+
+D mailing lists
+GPWiki,
+GameDev.net,
+OpenGameArt,
+Ubuntu Forums (when packaged... or before?),
+libsdl.org,
+Freshmeat,
+Ohloh
+
+
+Packaging:
+
+OpenSUSE Build Service?
+
+licensing:
+derelict links to sdl dynamically. so we don't need to use lgpl
+we need to give credit to freetype based on its license (if used).
+see freetype.org
+
+
+
+Maybe:
+1:
+    Paddle acceleration
+2: 
+    NOTE: needed if we can set position of actors
+    We need to assert that an actor's position is not being changed
+    (through its position() API function) between its update_physics()
+    and update() calls. Maybe use a bool data member only used in
+    debug builds.
+3:
+    Graphics: Filled rectangles/circles
+13:
+    (Arkanoid) High scores - all stuff made of lines
+14:
+    This might not be needed if we draw stuff in the right order:
+    A draw order/layer argument passed to videodriver draw method/s, 
+    which should be a real value (so, in isometric games, we can 
+    base it on object height) - every frame, a simple bucket sort should
+    be used to sort objects to depth groups, then every group should
+    be sorted using heapsort or something.
+15:
+    FormattedText class/struct that could contain various
+    formatting options like line width, line spacing, 
+    left/right justified/centered, in future maybe even various 
+    font colors, sizes, etc.
+    Would need its own viewer GUI element.
+    Or maybe just use txt2tags format with simple CSS or CSS-like something.
+
+16:
+    If multitextures will be supported in future, their data should
+    be stored in pairs/triplets/quadruplets/etc of pages at same coords.
+    All we'd need would be a special GLTexture, not Texture:
+    GLTexture would contain indices of the pages.
+    Might be enough to just modify GLTexture, not use a separate struct.
+    A special createtexture method would be needed too.
+    (taking multiple images).
+17:
+    If drawing text is too slow, we can cache glyph offsets for strings
+    somewhere in videodriver (or a member class/struct of videodriver)
+    We can search for cached strings quickly using simple bucket sort/search.
+
+    
+
