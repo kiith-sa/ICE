@@ -36,7 +36,7 @@ class Wall : Actor
 {
     protected:
         //Area taken up by the wall
-        Rectanglef Size;
+        Rectanglef size_;
 
     public:
         ///Emitted when a ball hits the wall.
@@ -45,14 +45,14 @@ class Wall : Actor
         ///Construct a wall with specified position and size.
         this(Vector2f position, Rectanglef size)
         {
-            Size = size;
+            size_ = size;
             super(position, Vector2f(0.0f, 0.0f));
         }
 
         override void draw()
         {
             static c = Color(240, 255, 240, 255);
-            VideoDriver.get.draw_rectangle(Position + Size.min, Position + Size.max);
+            VideoDriver.get.draw_rectangle(position_ + size_.min, position_ + size_.max);
         }
 
         final override bool collision(Actor actor, out Vector2f position, 
@@ -84,7 +84,7 @@ class Wall : Actor
         {
             real frame_length = ActorManager.get.frame_length;
             //Translate the rectangle to world space
-            Rectanglef size = Size + Position + Velocity * frame_length;
+            Rectanglef size = size_ + position_ + velocity_ * frame_length;
             
             //Get the closest point to the ball on this wall
             Vector2f closest = size.clamp(ball.position);
@@ -101,7 +101,7 @@ class Wall : Actor
                 //Moving the ball back to the point where it didn't collide.
                 while((ball_position - closest).length < ball.radius)
                 {
-                    ball_position -= (ball.velocity - Velocity) * step_length;
+                    ball_position -= (ball.velocity - velocity_) * step_length;
                     closest = size.clamp(ball_position);
                 }
 
@@ -117,7 +117,7 @@ class Wall : Actor
         Vector2f reflect_ball(Ball ball, Vector2f collision_point)
         {
             //Translate the rectangle to world space
-            Rectanglef size = Size + Position;
+            Rectanglef size = size_ + position_;
 
             //If we're reflecting off the vertical sides of the wall
             if(equals(collision_point.x, size.min.x) || 
@@ -138,64 +138,64 @@ class Paddle : Wall
 {
     invariant
     {
-        Rectanglef box = Size + Position;
-        assert(box.max.x <= Limits.max.x && 
-               box.max.y <= Limits.max.y &&
-               box.min.x >= Limits.min.x && 
-               box.min.y >= Limits.min.y,
+        Rectanglef box = size_ + position_;
+        assert(box.max.x <= limits_.max.x && 
+               box.max.y <= limits_.max.y &&
+               box.min.x >= limits_.min.x && 
+               box.min.y >= limits_.min.y,
                "Paddle outside of limits");
-        assert(equals(box.max.x - Position.x, Position.x - box.min.x, 1.0f),
+        assert(equals(box.max.x - position_.x, position_.x - box.min.x, 1.0f),
                "Paddle not symmetric on the X axis");
-        assert(equals(box.max.y - Position.y, Position.y - box.min.y, 1.0f),
+        assert(equals(box.max.y - position_.y, position_.y - box.min.y, 1.0f),
                "Paddle not symmetric on the Y axis");
     }
 
     private:
         //Limits of movement of this paddle
-        Rectanglef Limits;
+        Rectanglef limits_;
 
         //Speed of this paddle
-        real Speed;
+        real speed_;
 
         //Max ratio of X and Y speed when reflecting the ball,
         //i.e., if this is 1.0, and the ball gets reflected from
         //the corner of the paddle, ratio of X and Y members of
         //reflected ball velocity will be 1:1.
-        real MaxXYRatio = 1.0;
+        real max_xy_ratio_ = 1.0;
 
     public:
         ///Construct a paddle with specified parameters.
         this(Vector2f position, Rectanglef size, Rectanglef limits, real speed)
         {
             super(position, size);
-            Speed = speed;
-            Limits = limits;
+            speed_ = speed;
+            limits_ = limits;
         }
 
         ///Return limits of movement of this paddle.
-        Rectanglef limits(){return Limits;}
+        Rectanglef limits(){return limits_;}
 
         ///Control the paddle to move right (used by player or AI).
-        void move_right(){Velocity = Speed * Vector2f(1.0, 0.0);}
+        void move_right(){velocity_ = speed_ * Vector2f(1.0, 0.0);}
 
         ///Control the paddle to move left (used by player or AI).
-        void move_left(){Velocity = Speed * Vector2f(-1.0, 0.0);}
+        void move_left(){velocity_ = speed_ * Vector2f(-1.0, 0.0);}
 
         ///Control the paddle to stop (used by player or AI).
-        void stop(){Velocity = Vector2f(0.0, 0.0);}
+        void stop(){velocity_ = Vector2f(0.0, 0.0);}
 
         override void update_physics()
         {
-            NextPosition = Position + Velocity * ActorManager.get.frame_length();
+            next_position_ = position_ + velocity_ * ActorManager.get.frame_length();
 
-            Rectanglef position_limits = Rectanglef(Limits.min - Size.min,
-                                                    Limits.max - Size.max);
+            Rectanglef position_limits = Rectanglef(limits_.min - size_.min,
+                                                    limits_.max - size_.max);
 
             //If we're going outside limits, stop
-            if(NextPosition != position_limits.clamp(NextPosition))
+            if(next_position_ != position_limits.clamp(next_position_))
             {
                 stop();
-                NextPosition = Position;
+                next_position_ = position_;
             }
         }
 
@@ -203,16 +203,16 @@ class Paddle : Wall
         override Vector2f reflect_ball(Ball ball, Vector2f collision_point)
         {
             //Translate the rectangle to world space
-            Rectanglef size = Size + Position;
+            Rectanglef size = size_ + position_;
 
             Vector2f velocity;
             
             //reflection angle depends on where on the paddle does the ball
             //fall
-            velocity.x = MaxXYRatio * (collision_point.x - Position.x) / 
-                         (size.max.x - Position.x);
-            velocity.y = (collision_point.y - Position.y) / 
-                         (size.max.y - Position.y);
+            velocity.x = max_xy_ratio_ * (collision_point.x - position_.x) / 
+                         (size.max.x - position_.x);
+            velocity.y = (collision_point.y - position_.y) / 
+                         (size.max.y - position_.y);
 
             //If the velocity is too horizontal, randomly nudge it up or down
             //so that we don't end up with a ball bouncing between the same
@@ -238,22 +238,22 @@ class Ball : Actor
 {
     invariant
     {
-        assert(Velocity.length > 0.0, "A ball can't be static");
-        assert(Radius >= 1.0, "A ball can't have radius lower than 1.0");
+        assert(velocity_.length > 0.0, "A ball can't be static");
+        assert(radius_ >= 1.0, "A ball can't have radius lower than 1.0");
     }
 
     private:
         //Particle trail of the ball
-        LineEmitter Emitter;
+        LineEmitter emitter_;
 
         //Speed of particles emitted by the ball
-        real ParticleSpeed;
+        real particle_speed_;
 
         //Line trail of the ball (particle effect)
-        LineTrail Trail;
+        LineTrail trail_;
 
         //Radius of the ball (used for collision detection)
-        real Radius;
+        real radius_;
 
     public:
         ///Construct a ball with specified parameters.
@@ -261,11 +261,11 @@ class Ball : Actor
         {
             super(position, velocity);
 
-            Radius = radius;
+            radius_ = radius;
 
-            Trail = new LineTrail(this);
+            trail_ = new LineTrail(this);
                                   
-            with(Trail)
+            with(trail_)
             {
                 particle_life = 0.5;
                 start_color = Color(240, 240, 255, 255);
@@ -273,14 +273,14 @@ class Ball : Actor
                 line_width = 1;
             }
 
-            ParticleSpeed = 25.0;
+            particle_speed_ = 25.0;
             
-            Emitter = new LineEmitter(this);
-            with(Emitter)
+            emitter_ = new LineEmitter(this);
+            with(emitter_)
             {
                 particle_life = 2.0;
                 emit_frequency = 160;
-                emit_velocity = -this.Velocity.normalized * ParticleSpeed;
+                emit_velocity = -this.velocity_.normalized * particle_speed_;
                 angle_variation = PI / 4;
                 line_length = 2.0;
                 line_width = 1;
@@ -292,42 +292,42 @@ class Ball : Actor
         ///Destroy this ball.
         void die()
         {
-            Trail.life_time = 0.5;
-            Trail.detach();
-            Emitter.life_time = 2.0;
-            Emitter.emit_frequency = 0.0;
-            Emitter.detach();
+            trail_.life_time = 0.5;
+            trail_.detach();
+            emitter_.life_time = 2.0;
+            emitter_.emit_frequency = 0.0;
+            emitter_.detach();
             super.die();
         }
  
         ///Return the radius of this ball.
-        float radius(){return Radius;}
+        float radius(){return radius_;}
 
         override void update_physics()
         {
             real frame_length = ActorManager.get.frame_length;
-            NextPosition = Position + Velocity * frame_length;
+            next_position_ = position_ + velocity_ * frame_length;
             
             Vector2f position;
             Vector2f velocity;
             if(ActorManager.get.collision(this, position, velocity))
             {
-                NextPosition = position;
-                Velocity = velocity;
-                Emitter.emit_velocity = -Velocity.normalized * ParticleSpeed;
+                next_position_ = position;
+                velocity_ = velocity;
+                emitter_.emit_velocity = -velocity_.normalized * particle_speed_;
             }
         }
 
-        override void update(){Position = NextPosition;}
+        override void update(){position_ = next_position_;}
 
         override void draw()
         {
             auto driver = VideoDriver.get;
             driver.line_aa = true;
             driver.line_width = 3;
-            driver.draw_circle(Position, Radius - 2, Color(240, 240, 255, 255), 4);
+            driver.draw_circle(position_, radius_ - 2, Color(240, 240, 255, 255), 4);
             driver.line_width = 1;
-            driver.draw_circle(Position, Radius, Color(192, 192, 255, 192));
+            driver.draw_circle(position_, radius_, Color(192, 192, 255, 192));
             driver.line_width = 1;                  
             driver.line_aa = false;
         }
@@ -337,26 +337,26 @@ abstract class Player
 {
     protected:
         //Name of this player
-        string Name;
+        string name_;
         //Current score of this player
-        uint Score = 0;
+        uint score_ = 0;
 
         //Paddle controlled by this player
-        Paddle PlayerPaddle;
+        Paddle paddle_;
 
     public:
         ///Increase score of this player.
         void score(Ball ball)
         {
-            Score++;
-            writefln(Name, " score: ", Score);
+            score_++;
+            writefln(name_, " score: ", score_);
         }
 
         ///Get score of this player.
-        int score(){return Score;}
+        int score(){return score_;}
 
         ///Get name of this player.
-        string name(){return Name;}
+        string name(){return name_;}
 
         ///Update the player state.
         void update(){}
@@ -368,8 +368,8 @@ abstract class Player
         ///Construct a player with given name.
         this(string name, Paddle paddle)
         {
-            Name = name;
-            PlayerPaddle = paddle;
+            name_ = name;
+            paddle_ = paddle;
         }
 }
 
@@ -377,33 +377,33 @@ class AIPlayer : Player
 {
     protected:
         //Timer determining when to update the AI
-        Timer UpdateTimer;
+        Timer update_timer_;
 
     public:
         ///Construct an AI controlling specified paddle
         this(string name, Paddle paddle, real update_time)
         {
             super(name, paddle);
-            UpdateTimer = Timer(update_time);
+            update_timer_ = Timer(update_time);
         }
 
         override void update()
         {
-            if(UpdateTimer.expired())
+            if(update_timer_.expired())
             {
                 real frame_length = ActorManager.get.frame_length;
 
                 Ball ball = Game.get.ball;
-                float distance = PlayerPaddle.limits.distance(ball.position);
+                float distance = paddle_.limits.distance(ball.position);
                 Vector2f ball_next = ball.position + ball.velocity * frame_length;
-                float distance_next = PlayerPaddle.limits.distance(ball_next);
+                float distance_next = paddle_.limits.distance(ball_next);
                 
                 //If the ball is closing to paddle movement area
                 if(distance_next <= distance){ball_closing();}       
                 //If the ball is moving away from paddle movement area
                 else{move_to_center();}
 
-                UpdateTimer.reset();
+                update_timer_.reset();
             }
         }
 
@@ -413,36 +413,36 @@ class AIPlayer : Player
         {
             Ball ball = Game.get.ball;
             //If paddle x position is roughly equal to ball, no need to move
-            if(equals(PlayerPaddle.position.x, ball.position.x, 16.0f))
+            if(equals(paddle_.position.x, ball.position.x, 16.0f))
             {
-                PlayerPaddle.stop();
+                paddle_.stop();
             }
-            else if(PlayerPaddle.position.x < ball.position.x)
+            else if(paddle_.position.x < ball.position.x)
             {
-                PlayerPaddle.move_right();
+                paddle_.move_right();
             }
             else 
             {
-                PlayerPaddle.move_left();
+                paddle_.move_left();
             }
         }
 
         //Move the paddle to center
         void move_to_center()
         {
-            Vector2f center = PlayerPaddle.limits.center;
+            Vector2f center = paddle_.limits.center;
             //If paddle x position is roughly in the center, no need to move
-            if(equals(PlayerPaddle.position.x, center.x, 16.0f))
+            if(equals(paddle_.position.x, center.x, 16.0f))
             {
-                PlayerPaddle.stop();
+                paddle_.stop();
             }
-            else if(PlayerPaddle.position.x < center.x)
+            else if(paddle_.position.x < center.x)
             {
-                PlayerPaddle.move_right();
+                paddle_.move_right();
             }
             else 
             {
-                PlayerPaddle.move_left();
+                paddle_.move_left();
             }
         }
 }
@@ -470,12 +470,12 @@ class HumanPlayer : Player
             {
                 if(key == Key.Right)
                 {
-                    PlayerPaddle.move_right();
+                    paddle_.move_right();
                     return;
                 }
                 if(key == Key.Left)
                 {
-                    PlayerPaddle.move_left();
+                    paddle_.move_left();
                     return;
                 }
             }
@@ -485,20 +485,20 @@ class HumanPlayer : Player
                 {
                     if(Platform.get.is_key_pressed(Key.Left))
                     {
-                        PlayerPaddle.move_left();
+                        paddle_.move_left();
                         return;
                     }
-                    PlayerPaddle.stop();
+                    paddle_.stop();
                     return;
                 }
                 else if(key == Key.Left)
                 {
                     if(Platform.get.is_key_pressed(Key.Right))
                     {
-                        PlayerPaddle.move_right();
+                        paddle_.move_right();
                         return;
                     }
-                    PlayerPaddle.stop();
+                    paddle_.stop();
                     return;
                 }
             }
@@ -509,67 +509,67 @@ class Game
 {
     mixin Singleton;
     private:
-        Ball GameBall;
-        real BallRadius = 6.0;
-        real BallSpeed = 215.0;
+        Ball ball_;
+        real ball_radius_ = 6.0;
+        real ball_speed_ = 215.0;
 
-        Wall WallRight;
-        Wall WallLeft;
+        Wall wall_right_;
+        Wall wall_leftt_;
 
-        Wall GoalUp;
-        Wall GoalDown;
+        Wall goal_up_;
+        Wall goal_down_;
 
-        Paddle Paddle1;
-        Paddle Paddle2;
+        Paddle paddle_1_;
+        Paddle paddle_2_;
 
-        Player Player1;
-        Player Player2;
+        Player player_1_;
+        Player player_2_;
         
         //Continue running?
-        bool Continue;
+        bool continue_;
 
     public:
         this(){singleton_ctor();}
 
         bool run()
         {
-            Player1.update();
-            Player2.update();
-            return Continue;
+            player_1_.update();
+            player_2_.update();
+            return continue_;
         }
 
         void die(){}
 
         void start_game()
         {
-            Continue = true;
+            continue_ = true;
 
-            WallLeft = new Wall(Vector2f(64.0, 64.0),
+            wall_leftt_ = new Wall(Vector2f(64.0, 64.0),
                                 Rectanglef(0.0, 0.0, 64.0, 472.0));
-            WallRight = new Wall(Vector2f(672.0, 64.0),
+            wall_right_ = new Wall(Vector2f(672.0, 64.0),
                                  Rectanglef(0.0, 0.0, 64.0, 472.0));
-            GoalUp = new Wall(Vector2f(64.0, 32.0),
+            goal_up_ = new Wall(Vector2f(64.0, 32.0),
                               Rectanglef(0.0, 0.0, 672.0, 32.0));
-            GoalDown = new Wall(Vector2f(64.0, 536.0),
+            goal_down_ = new Wall(Vector2f(64.0, 536.0),
                                 Rectanglef(0.0, 0.0, 672.0, 32.0));
-            auto limits1 = Rectanglef(128 + BallRadius * 2, 64, 
-                                      672 - BallRadius * 2, 128); 
+            auto limits1 = Rectanglef(128 + ball_radius_ * 2, 64, 
+                                      672 - ball_radius_ * 2, 128); 
             auto size = Rectanglef(-32, -8, 32, 8); 
-            Paddle1 = new Paddle(Vector2f(400, 96), size, limits1, 144);
+            paddle_1_ = new Paddle(Vector2f(400, 96), size, limits1, 144);
 
-            auto limits2 = Rectanglef(128 + BallRadius * 2, 472, 
-                                      672 - BallRadius * 2, 536); 
-            Paddle2 = new Paddle(Vector2f(400, 504), size, limits2, 144);
+            auto limits2 = Rectanglef(128 + ball_radius_ * 2, 472, 
+                                      672 - ball_radius_ * 2, 536); 
+            paddle_2_ = new Paddle(Vector2f(400, 504), size, limits2, 144);
 
-            spawn_ball(BallSpeed);
+            spawn_ball(ball_speed_);
 
-            Player1 = new AIPlayer("Player 1", Paddle1, 0.15);
-            Player2 = new HumanPlayer("Player 2", Paddle2);
+            player_1_ = new AIPlayer("Player 1", paddle_1_, 0.15);
+            player_2_ = new HumanPlayer("Player 2", paddle_2_);
 
-            GoalUp.ball_hit.connect(&respawn_ball);
-            GoalDown.ball_hit.connect(&respawn_ball);
-            GoalUp.ball_hit.connect(&Player2.score);
-            GoalDown.ball_hit.connect(&Player1.score);
+            goal_up_.ball_hit.connect(&respawn_ball);
+            goal_down_.ball_hit.connect(&respawn_ball);
+            goal_up_.ball_hit.connect(&player_2_.score);
+            goal_down_.ball_hit.connect(&player_1_.score);
 
             Platform.get.key.connect(&key_handler);
         }
@@ -577,18 +577,18 @@ class Game
         void end_game()
         {
             ActorManager.get.clear();
-            Player1.die();
-            Player2.die();
+            player_1_.die();
+            player_2_.die();
 
             Platform.get.key.disconnect(&key_handler);
         }
 
-        Ball ball(){return GameBall;}
+        Ball ball(){return ball_;}
 
         void draw()
         {
-            uint score1 = Player1.score;
-            uint score2 = Player2.score;
+            uint score1 = player_1_.score;
+            uint score2 = player_2_.score;
             Vector2f position = Vector2f(32, 8);
             Vector2f line_end;
             for(uint score = 0; score < score1; ++score)
@@ -609,8 +609,8 @@ class Game
     private:
         void respawn_ball(Ball ball)
         {
-            GameBall.die();
-            spawn_ball(BallSpeed);
+            ball_.die();
+            spawn_ball(ball_speed_);
         }
 
         void spawn_ball(real speed)
@@ -624,8 +624,8 @@ class Game
             {
                 direction.random_direction();
             }
-            GameBall = new Ball(Vector2f(400.0, 300.0), direction * speed, 
-                                BallRadius);
+            ball_ = new Ball(Vector2f(400.0, 300.0), direction * speed, 
+                                ball_radius_);
         }
 
         void key_handler(KeyState state, Key key, dchar unicode)
@@ -635,7 +635,7 @@ class Game
                 switch(key)
                 {
                     case Key.Escape:
-                        Continue = false;
+                        continue_ = false;
                         ActorManager.get.time_speed = 1.0;
                         break;
                     case Key.K_P:
@@ -659,13 +659,13 @@ class Pong
 {
     mixin Singleton;
     private:
-        EventCounter FPSCounter;
-        bool RunPong = false;
-        bool Continue = true;
+        EventCounter fps_counter_;
+        bool run_pong_ = false;
+        bool continue_ = true;
 
-        GUIElement MenuGUI;
-        GUIButton StartButton;
-        GUIButton ExitButton;
+        GUIElement menu_;
+        GUIButton start_button_;
+        GUIButton exit_button_;
 
     public:
 
@@ -679,25 +679,25 @@ class Pong
             VideoDriver.get.set_video_mode(800, 600, ColorFormat.RGBA_8, false);
 
             //Update FPS every second
-            FPSCounter = new EventCounter(1.0);
-            FPSCounter.update.connect(&fps_update);
+            fps_counter_ = new EventCounter(1.0);
+            fps_counter_.update.connect(&fps_update);
 
 
 
             uint width = VideoDriver.get.screen_width;
             uint height = VideoDriver.get.screen_height;
-            MenuGUI = new GUIElement(GUIRoot.get, 
+            menu_ = new GUIElement(GUIRoot.get, 
                                      Vector2i(width - 176, 16),
                                      Vector2u(160, height - 32));
-            StartButton = new GUIButton(MenuGUI, Vector2i(8, 144),
+            start_button_ = new GUIButton(menu_, Vector2i(8, 144),
                                         Vector2u(144, 24), "Player vs AI");
-            ExitButton = new GUIButton(MenuGUI, Vector2i(8, 144 + 32),
+            exit_button_ = new GUIButton(menu_, Vector2i(8, 144 + 32),
                                        Vector2u(144, 24), "Quit game");
 
             Platform.get.mouse_motion.connect(&GUIRoot.get.mouse_move);
             Platform.get.mouse_key.connect(&GUIRoot.get.mouse_key);
-            StartButton.pressed.connect(&pong_start);
-            ExitButton.pressed.connect(&exit);
+            start_button_.pressed.connect(&pong_start);
+            exit_button_.pressed.connect(&exit);
         }
 
         void die()
@@ -705,25 +705,25 @@ class Pong
             ActorManager.get.die();
             VideoDriver.get.die();
             Platform.get.die();
-            FPSCounter.update.disconnect(&fps_update);
+            fps_counter_.update.disconnect(&fps_update);
             GUIRoot.get.die();
         }
 
         void run()
         {                           
             Platform.get.key.connect(&key_handler);
-            while(Platform.get.run() && Continue)
+            while(Platform.get.run() && continue_)
             {
                 //Count this frame
-                FPSCounter.event();
+                fps_counter_.event();
 
-                if(RunPong && !Game.get.run()){pong_end();}
+                if(run_pong_ && !Game.get.run()){pong_end();}
 
                 //update game state
                 ActorManager.get.update();
                 VideoDriver.get.start_frame();
 
-                if(RunPong){Game.get.draw();}
+                if(run_pong_){Game.get.draw();}
                 else{draw();}
 
                 GUIRoot.get.draw();
@@ -732,7 +732,7 @@ class Pong
 
             }
             Game.get.die();
-            writefln("FPS statistics:\n", FPSCounter.statistics, "\n");
+            writefln("FPS statistics:\n", fps_counter_.statistics, "\n");
             writefln("ActorManager statistics:\n", 
                      ActorManager.get.statistics, "\n");
         }
@@ -746,19 +746,19 @@ class Pong
         {
             Game.get.end_game();
             Platform.get.key.connect(&key_handler);
-            GUIRoot.get.add_child(MenuGUI);
-            RunPong = false;
+            GUIRoot.get.add_child(menu_);
+            run_pong_ = false;
         }
 
         void pong_start()
         {
-            RunPong = true;
-            GUIRoot.get.remove_child(MenuGUI);
+            run_pong_ = true;
+            GUIRoot.get.remove_child(menu_);
             Platform.get.key.disconnect(&key_handler);
             Game.get.start_game();
         }
 
-        void exit(){Continue = false;}
+        void exit(){continue_ = false;}
 
         void key_handler(KeyState state, Key key, dchar unicode)
         {

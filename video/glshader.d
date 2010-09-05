@@ -11,11 +11,11 @@ import file;
 
 package struct GLShader
 {
-    invariant{assert(program != 0, "Shader program is null");}
+    invariant{assert(program_ != 0, "Shader program is null");}
 
     private:
 		//GLSL linked shader program.
-        GLuint program = 0;
+        GLuint program_ = 0;
 
         //Load specified shader.
         void ctor(string name)
@@ -34,10 +34,10 @@ package struct GLShader
         }
 
         ///use this shader in following drawing commands.
-        void start(){glUseProgram(program);}
+        void start(){glUseProgram(program_);}
         
         ///Destroy this shader.
-        void die(){glDeleteProgram(program);}
+        void die(){glDeleteProgram(program_);}
         
     private:
         //Load a GLSL shader
@@ -82,19 +82,19 @@ package struct GLShader
 				throw new Exception("Couldn't compile fragment shader " ~ ffname);
 			}
 
-            program = glCreateProgram();
+            program_ = glCreateProgram();
 
 			//passing shaders to the program
-			glAttachShader(program, vshader);
-			glAttachShader(program, fshader);
+			glAttachShader(program_, vshader);
+			glAttachShader(program_, fshader);
 
 			//linking shaders
 			int linked;
-			glLinkProgram(program);
-			glGetProgramiv(program, GL_LINK_STATUS, &linked);
+			glLinkProgram(program_);
+			glGetProgramiv(program_, GL_LINK_STATUS, &linked);
 			if(!linked)
 			{
-                glDeleteProgram(program);
+                glDeleteProgram(program_);
 				throw new Exception("Couldn't link shaders " ~ vfname ~ " and "
                                      ~ ffname);
 			}

@@ -13,7 +13,7 @@ final class GUIRoot : GUIElement
 {
     invariant
     {
-        assert(Parent is null, "GUI root element must not have a parent");
+        assert(parent_ is null, "GUI root element must not have a parent");
     }
 
     mixin Singleton;
@@ -32,7 +32,7 @@ final class GUIRoot : GUIElement
         ///Draw the GUI.
         void draw()
         {
-            if(!Visible){return;}
+            if(!visible_){return;}
 
             auto driver = VideoDriver.get;
 

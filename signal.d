@@ -8,13 +8,13 @@ template Signal(Args ...)
 {
     private:
         //Slots of this signal
-        void delegate(Args)[] slots;
+        void delegate(Args)[] slots_;
 
     public:
         ///Emit the signal (call all slots with given arguments).
         void emit(Args args)
         {
-            foreach (deleg; slots){deleg(args);}
+            foreach (deleg; slots_){deleg(args);}
         }
 
         /**
@@ -25,7 +25,7 @@ template Signal(Args ...)
          */
         void connect(void delegate(Args) deleg)
         in{assert(deleg !is null, "Can't connect a null function to a signal");}
-        body{slots ~= deleg;}
+        body{slots_ ~= deleg;}
 
         /**
          * Disconnect a slot from the signal. 
@@ -36,12 +36,12 @@ template Signal(Args ...)
         in
         {
             alias arrayutil.contains contains;
-            assert(slots.contains(deleg, true), 
+            assert(slots_.contains(deleg, true), 
                    "Can't disconnect a slot that is not connected");
         }
         body
         {
             alias arrayutil.remove remove;
-            slots.remove(deleg, true);
+            slots_.remove(deleg, true);
         }
 }

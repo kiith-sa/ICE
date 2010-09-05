@@ -27,60 +27,56 @@ import allocator;
 ///Handles all drawing functionality.
 abstract class GLVideoDriver : VideoDriver
 {
-    invariant{assert(ViewZoom > 0.0);}
+    invariant{assert(view_zoom_ > 0.0);}
 
     protected:
-        uint ScreenWidth = 0;
-        uint ScreenHeight = 0;
+        uint screen_width_ = 0;
+        uint screen_height_ = 0;
 
     private:
-        GLVersion Version;
+        GLVersion version_;
 
-        real ViewZoom = 0.0;
-        Vector2d ViewOffset = Vector2d(0.0, 0.0);
+        real view_zoom_ = 0.0;
+        Vector2d view_offset_ = Vector2d(0.0, 0.0);
 
         //Is line antialiasing enabled?
-        bool LineAA = false;
+        bool line_aa_ = false;
+        float line_width_ = 1.0;
 
-        Shader LineShader;
-        Shader TextureShader;
-        Shader FontShader;
+        Shader line_shader_;
+        Shader texture_shader_;
+        Shader font_shader_;
 
-        uint CurrentShader = uint.max;
-
-        GLShader*[] Shaders;
-
-
-
-
-        float LineWidth = 1.0;
+        GLShader* [] shaders_;
+        //Index of currently used shader; uint.max means none.
+        uint current_shader = uint.max;
 
         //Texture pages
-        TexturePage*[] Pages;
+        TexturePage* [] pages_;
         //Index of currently used page; uint.max means none.
-        uint CurrentPage = uint.max;
+        uint current_page_ = uint.max;
 
         //Textures
-        GLTexture*[] Textures;
+        GLTexture* [] textures_;
 
     public:
         this()
         {
             singleton_ctor();
             DerelictGL.load();
-            ViewZoom = 1.0;
+            view_zoom_ = 1.0;
         }
 
         override void die()
         {
-            delete_shader(LineShader);
-            delete_shader(TextureShader);
-            delete_shader(FontShader);
+            delete_shader(line_shader_);
+            delete_shader(texture_shader_);
+            delete_shader(font_shader_);
 
             FontManager.get.die();
 
             //delete any remaining texture pages
-            foreach(ref page; Pages)
+            foreach(ref page; pages_)
             {
                 if(page !is null)
                 {
@@ -91,7 +87,7 @@ abstract class GLVideoDriver : VideoDriver
             }
 
             //delete any remaining textures
-            foreach(ref texture; Textures)
+            foreach(ref texture; textures_)
             {
                 if(texture !is null)
                 {
@@ -101,7 +97,7 @@ abstract class GLVideoDriver : VideoDriver
             }
 
             //delete any remaining shaders
-            foreach(ref shader; Shaders)
+            foreach(ref shader; shaders_)
             {
                 if(shader !is null)
                 {
@@ -110,9 +106,9 @@ abstract class GLVideoDriver : VideoDriver
                 }
             }
 
-            Pages = [];
-            Textures = [];
-            Shaders = [];
+            pages_ = [];
+            textures_ = [];
+            shaders_ = [];
             DerelictGL.unload();
         }
 
@@ -123,18 +119,18 @@ abstract class GLVideoDriver : VideoDriver
         {
             glClear(GL_COLOR_BUFFER_BIT);
             setup_viewport();
-            CurrentPage = uint.max;
+            current_page_ = uint.max;
         }
 
         override void end_frame(){glFlush();}
 
         final override void draw_line(Vector2f v1, Vector2f v2, Color c1, Color c2)
         {
-            set_shader(LineShader);
+            set_shader(line_shader_);
             //The line is drawn as a rectangle with width slightly lower than
-            //LineWidth to prevent artifacts.
+            //line_width_ to prevent artifacts.
             Vector2f offset_base = (v2 - v1).normal.normalized;
-            float half_width = LineWidth / 2.0;
+            float half_width = line_width_ / 2.0;
             Vector2f offset = offset_base * (half_width);
             Vector2f r1, r2, r3, r4;
             r1 = v1 + offset;
@@ -142,7 +138,7 @@ abstract class GLVideoDriver : VideoDriver
             r3 = v2 + offset;
             r4 = v2 - offset;
 
-            if(LineAA)
+            if(line_aa_)
             {
                 //If AA is on, add two transparent vertices to the sides of the 
                 //rectangle.
@@ -190,20 +186,20 @@ abstract class GLVideoDriver : VideoDriver
         }
 
         final override void draw_texture(Vector2i position, ref Texture texture)
-        in{assert(texture.index < Textures.length);}
+        in{assert(texture.index < textures_.length);}
         body
         {
-            set_shader(TextureShader);
+            set_shader(texture_shader_);
 
-            GLTexture* gl_texture = Textures[texture.index];
+            GLTexture* gl_texture = textures_[texture.index];
             assert(gl_texture !is null, "Trying to draw a nonexistent texture");
             uint page_index = gl_texture.page_index;
-            assert(Pages[page_index] !is null, "Trying to draw a texture from"
+            assert(pages_[page_index] !is null, "Trying to draw a texture from"
                                                " a nonexistent page");
-            if(CurrentPage != page_index)
+            if(current_page_ != page_index)
             {
-                Pages[page_index].start();
-                CurrentPage = page_index;
+                pages_[page_index].start();
+                current_page_ = page_index;
             }
 
             Vector2f vmin = to!(float)(position);
@@ -229,7 +225,7 @@ abstract class GLVideoDriver : VideoDriver
         {
             //font textures are grayscale and use a shader
             //to convert grayscale to alpha
-            set_shader(FontShader);
+            set_shader(font_shader_);
 
             FontRenderer renderer = FontManager.get.renderer();
             renderer.start();
@@ -257,14 +253,14 @@ abstract class GLVideoDriver : VideoDriver
             foreach(dchar c; text)
             {
                 texture = renderer.glyph(c, offset);
-                gl_texture = Textures[texture.index];
+                gl_texture = textures_[texture.index];
                 page_index = gl_texture.page_index;
 
                 //change texture page if needed
-                if(CurrentPage != page_index)
+                if(current_page_ != page_index)
                 {
-                    Pages[page_index].start();
-                    CurrentPage = page_index;
+                    pages_[page_index].start();
+                    current_page_ = page_index;
                 }
 
                 //generate vertices, texcoords
@@ -294,9 +290,9 @@ abstract class GLVideoDriver : VideoDriver
             return FontManager.get.text_size(text);
         }
 
-        final override void line_aa(bool aa){LineAA = aa;}
+        final override void line_aa(bool aa){line_aa_ = aa;}
         
-        final override void line_width(float width){LineWidth = width;}
+        final override void line_width(float width){line_width_ = width;}
 
         final override void font(string font_name){FontManager.get.font = font_name;}
 
@@ -310,23 +306,23 @@ abstract class GLVideoDriver : VideoDriver
         }
         body
         {
-            ViewZoom = zoom;
+            view_zoom_ = zoom;
             setup_ortho();
         }
         
-        final override real zoom(){return ViewZoom;}
+        final override real zoom(){return view_zoom_;}
 
         final override void view_offset(Vector2d offset)
         {
-            ViewOffset = offset;
+            view_offset_ = offset;
             setup_ortho();
         }
 
-        final override Vector2d view_offset(){return ViewOffset;}
+        final override Vector2d view_offset(){return view_offset_;}
 
-        final override uint screen_width(){return ScreenWidth;}
+        final override uint screen_width(){return screen_width_;}
 
-        final override uint screen_height(){return ScreenHeight;}
+        final override uint screen_height(){return screen_height_;}
 
         final override uint max_texture_size(ColorFormat format)
         {
@@ -356,8 +352,8 @@ abstract class GLVideoDriver : VideoDriver
 
         final override string pages_info()
         {
-            string info = "Pages: " ~ std.string.toString(Pages.length) ~ "\n"; 
-            foreach(index, page; Pages)
+            string info = "Pages: " ~ std.string.toString(pages_.length) ~ "\n"; 
+            foreach(index, page; pages_)
             {
                 info ~= std.string.toString(index) ~ ": \n";
 
@@ -390,30 +386,30 @@ abstract class GLVideoDriver : VideoDriver
                 texture.texcoords = texcoords;
                 texture.offset = offset;
                 texture.page_index = page_index;
-                Textures ~= texture;
+                textures_ ~= texture;
             }
 
             //if the texture needs its own page
             if(force_page)
             {
                 create_page(image.size, image.format, force_page);
-                Pages[$ - 1].insert_texture(image, texcoords, offset);
-                new_texture(Pages.length - 1);
-                assert(Textures[$ - 1].texcoords == 
+                pages_[$ - 1].insert_texture(image, texcoords, offset);
+                new_texture(pages_.length - 1);
+                assert(textures_[$ - 1].texcoords == 
                        Rectanglef(0.0, 0.0, 1.0, 1.0), 
                        "Texture coordinates of a single page texture must "
                        "span the whole texture");
-                return Texture(image.size, Textures.length - 1);
+                return Texture(image.size, textures_.length - 1);
             }
 
             //try to find a page to fit the new texture to
-            foreach(index, ref page; Pages)
+            foreach(index, ref page; pages_)
             {
                 if(page !is null && 
                    page.insert_texture(image, texcoords, offset))
                 {
                     new_texture(index);
-                    return Texture(image.size, Textures.length - 1);
+                    return Texture(image.size, textures_.length - 1);
                 }
             }
             //if we're here, no page has space for our texture, so create
@@ -425,34 +421,34 @@ abstract class GLVideoDriver : VideoDriver
 
         final override void delete_texture(Texture texture)
         {
-            GLTexture* gl_texture = Textures[texture.index];
+            GLTexture* gl_texture = textures_[texture.index];
             assert(gl_texture !is null, "Trying to delete a nonexistent texture");
             uint page_index = gl_texture.page_index;
-            assert(Pages[page_index] !is null, "Trying to delete a texture from"
+            assert(pages_[page_index] !is null, "Trying to delete a texture from"
                                                " a nonexistent page");
-            Pages[page_index].remove_texture(Rectangleu(gl_texture.offset,
+            pages_[page_index].remove_texture(Rectangleu(gl_texture.offset,
                                                         gl_texture.offset + 
                                                         texture.size));
-            free(Textures[texture.index]);
-            Textures[texture.index] = null;
+            free(textures_[texture.index]);
+            textures_[texture.index] = null;
 
-            //If we have null textures at the end of the Textures array, we
+            //If we have null textures at the end of the textures_ array, we
             //can remove them without messing up indices
-            while(Textures.length > 0 && Textures[$ - 1] is null)
+            while(textures_.length > 0 && textures_[$ - 1] is null)
             {
-                Textures = Textures[0 .. $ - 1];
+                textures_ = textures_[0 .. $ - 1];
             }
-            if(Pages[page_index].empty())
+            if(pages_[page_index].empty())
             {
-                Pages[page_index].die();
-                free(Pages[page_index]);
-                Pages[page_index] = null;
+                pages_[page_index].die();
+                free(pages_[page_index]);
+                pages_[page_index] = null;
 
-                //If we have null pages at the end of the Pages array, we
+                //If we have null pages at the end of the pages_ array, we
                 //can remove them without messing up indices
-                while(Pages.length > 0 && Pages[$ - 1] is null)
+                while(pages_.length > 0 && pages_[$ - 1] is null)
                 {
-                    Pages = Pages[0 .. $ - 1];
+                    pages_ = pages_[0 .. $ - 1];
                 }
             }
         }
@@ -469,8 +465,8 @@ abstract class GLVideoDriver : VideoDriver
             try
             {
                 //Loads the newest available OpenGL version
-                Version = DerelictGL.availableVersion();
-                if(Version < GLVersion.Version20)
+                version_ = DerelictGL.availableVersion();
+                if(version_ < GLVersion.Version20)
                 {
                     throw new Exception("Could not load OpenGL 2.0 or greater."
                                         " Try updating graphics card driver.");
@@ -489,9 +485,9 @@ abstract class GLVideoDriver : VideoDriver
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-            LineShader = create_shader("line");
-            TextureShader = create_shader("texture");
-            FontShader = create_shader("font");
+            line_shader_ = create_shader("line");
+            texture_shader_ = create_shader("texture");
+            font_shader_ = create_shader("font");
         }
 
     private:
@@ -501,24 +497,24 @@ abstract class GLVideoDriver : VideoDriver
         {
             GLShader* gl_shader = alloc!(GLShader)();
             *gl_shader = GLShader(name);
-            Shaders ~= gl_shader;
-            return Shader(Shaders.length - 1);
+            shaders_ ~= gl_shader;
+            return Shader(shaders_.length - 1);
         }
 
         //not ready for public interface yet
         //Delete a shader.
         final void delete_shader(Shader shader)
         {
-            GLShader* gl_shader = Shaders[shader.index];
+            GLShader* gl_shader = shaders_[shader.index];
             assert(gl_shader !is null, "Trying to delete a nonexistent shader");
-            free(Shaders[shader.index]);
-            Shaders[shader.index] = null;
+            free(shaders_[shader.index]);
+            shaders_[shader.index] = null;
 
-            //If we have null shaders at the end of the Shaders array, we
+            //If we have null shaders at the end of the shaders_ array, we
             //can remove them without messing up indices
-            while(Shaders.length > 0 && Shaders[$ - 1] is null)
+            while(shaders_.length > 0 && shaders_[$ - 1] is null)
             {
-                Shaders = Shaders[0 .. $ - 1];
+                shaders_ = shaders_[0 .. $ - 1];
             }
         }
 
@@ -528,10 +524,10 @@ abstract class GLVideoDriver : VideoDriver
         {
             uint index = shader.index;
 
-            if(CurrentShader != index)
+            if(current_shader != index)
             {
-                Shaders[index].start;
-                CurrentShader = index;
+                shaders_[index].start;
+                current_shader = index;
             }
         }
 
@@ -588,7 +584,7 @@ abstract class GLVideoDriver : VideoDriver
             }
             
             //Look for page indices with null pages to insert page there if possible
-            foreach(index, ref page; Pages)
+            foreach(index, ref page; pages_)
             {
                 if(page is null)
                 {
@@ -598,15 +594,15 @@ abstract class GLVideoDriver : VideoDriver
                     return;
                 }
             }
-            page_size(Pages.length);
-            Pages ~= alloc!(TexturePage)();
-            *Pages[$ - 1] = TexturePage(size, format);
+            page_size(pages_.length);
+            pages_ ~= alloc!(TexturePage)();
+            *pages_[$ - 1] = TexturePage(size, format);
         }
 
         //Set up OpenGL viewport.
         final void setup_viewport()
         {
-            glViewport(0, 0, ScreenWidth, ScreenHeight);
+            glViewport(0, 0, screen_width_, screen_height_);
             setup_ortho();
         }
 
@@ -615,10 +611,10 @@ abstract class GLVideoDriver : VideoDriver
         {
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
-            glOrtho(0.0f, ScreenWidth / ViewZoom, ScreenHeight / ViewZoom, 
+            glOrtho(0.0f, screen_width_ / view_zoom_, screen_height_ / view_zoom_, 
                     0.0f, -1.0f, 1.0f);
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
-            glTranslatef(-ViewOffset.x, -ViewOffset.y, 0.0f);
+            glTranslatef(-view_offset_.x, -view_offset_.y, 0.0f);
         }
 }

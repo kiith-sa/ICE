@@ -41,27 +41,27 @@ class GUIStaticText : GUIElement
         }
 
         //Text of the element. This is broken into TextLines according to width.
-        string Text;
+        string text_;
 
-        AlignX AlignmentX = AlignX.Left;
-        AlignY AlignmentY = AlignY.Top;
+        AlignX align_x_ = AlignX.Left;
+        AlignY align_y_ = AlignY.Top;
         
         //Lines of text to draw.
-        TextLine[] Lines;
-
-        Color FontColor = Color(255, 255, 255, 255);
+        TextLine[] lines_;
 
         //Name of the font used.
-        string Font;
+        string font_;
 
-        uint FontSize;
+        uint font_size_;
         
-        //Distance between lines, in pixels
-        uint LineGap;
+        Color font_color_ = Color(255, 255, 255, 255);
 
-        //True if Lines are aligned according to current settings, false otherwise.
-        //(used to determine whether or not Lines need realigning before drawing)
-        bool Aligned;
+        //Distance between lines, in pixels
+        uint line_gap_;
+
+        //True if lines_ are aligned according to current settings, false otherwise.
+        //(used to determine whether or not lines_ need realigning before drawing)
+        bool aligned_;
 
     public:
         ///Construct a static text with specified parameters.
@@ -70,44 +70,44 @@ class GUIStaticText : GUIElement
         {
             super(parent, position, size);
             text = expandtabs(text);
-            DrawBorder = false;
-            Font = font;
-            FontSize = font_size;
-            LineGap = max(2u, FontSize / 6);
-            Text = text;
+            draw_border_ = false;
+            font_ = font;
+            font_size_ = font_size;
+            line_gap_ = max(2u, font_size_ / 6);
+            text_ = text;
             realign();
-            Aligned = true;
+            aligned_ = true;
         }
 
         ///Set text color.
-        void text_color(Color color){FontColor = color;}
+        void text_color(Color color){font_color_ = color;}
 
         ///Set size of this element in screen space.
         override void size(Vector2u size)
         {
             super.size(size);
-            Aligned = false;
+            aligned_ = false;
         }
         
         ///Set horizontal alignment.
         void alignment_x(AlignX alignment)
         {
-            AlignmentX = alignment;
-            Aligned = false;
+            align_x_ = alignment;
+            aligned_ = false;
         }
 
         ///Set vertical alignment.
         void alignment_y(AlignY alignment)
         {
-            AlignmentY = alignment;
-            Aligned = false;
+            align_y_ = alignment;
+            aligned_ = false;
         }
 
         ///Set distance between lines.
         void line_gap(uint gap)
         {
-            LineGap = gap;
-            Aligned = false;
+            line_gap_ = gap;
+            aligned_ = false;
         }
 
     protected:
@@ -115,14 +115,14 @@ class GUIStaticText : GUIElement
         {
             super.draw();
             //must realign if settings changed
-            if(!Aligned){realign();}
+            if(!aligned_){realign();}
 
-            VideoDriver.get.font = Font;
-            VideoDriver.get.font_size = FontSize;
-            foreach(ref line; Lines)
+            VideoDriver.get.font = font_;
+            VideoDriver.get.font_size = font_size_;
+            foreach(ref line; lines_)
             {
-                Vector2i offset = Bounds.min + line.offset;
-                VideoDriver.get.draw_text(offset, line.text, FontColor);
+                Vector2i offset = bounds_.min + line.offset;
+                VideoDriver.get.draw_text(offset, line.text, font_color_);
             }
         }
 
@@ -161,7 +161,7 @@ class GUIStaticText : GUIElement
                         text = text[word.length .. $];
                     }
                     //update y position to below this line
-                    y_offset_out = y_offset_in + line_size.y + LineGap;
+                    y_offset_out = y_offset_in + line_size.y + line_gap_;
                     break;
                 }
                 else
@@ -173,15 +173,15 @@ class GUIStaticText : GUIElement
 
             //align the line horizontally
             line.offset = Vector2i(0, y_offset_in);
-            if(AlignmentX == AlignX.Right)
+            if(align_x_ == AlignX.Right)
             {
                 line.offset.x = width - driver.text_size(line.text).x;
             }
-            if(AlignmentX == AlignX.Center)
+            if(align_x_ == AlignX.Center)
             {
                 line.offset.x = (width - driver.text_size(line.text).x) / 2;
             }
-            Lines ~= line;
+            lines_ ~= line;
             //strip leading space so the next line doesn't start with space
             return stripl(text);
         }
@@ -190,29 +190,29 @@ class GUIStaticText : GUIElement
         void align_vertical()
         {
             //if AlignY is Top, we're aligned as lines start at y == 0 by default
-            if(Lines.length == 0 || AlignmentY == AlignY.Top){return;}
-            uint text_height = FontSize * Lines.length + LineGap * (Lines.length - 1);
+            if(lines_.length == 0 || align_y_ == AlignY.Top){return;}
+            uint text_height = font_size_ * lines_.length + line_gap_ * (lines_.length - 1);
             int offset_y = super.size.y - text_height;
-            if(AlignmentY == AlignY.Center){offset_y /= 2;}
+            if(align_y_ == AlignY.Center){offset_y /= 2;}
             //move lines according to the offset
-            foreach(ref line; Lines){line.offset.y += offset_y;}
+            foreach(ref line; lines_){line.offset.y += offset_y;}
         }
 
         //Break text down to lines and realign it.
         void realign()
         {
-            string text = Text;
+            string text = text_;
 
             //we need to set font to get information about drawn size of lines
-            VideoDriver.get.font = Font;
-            VideoDriver.get.font_size = FontSize;
-            Lines = [];
+            VideoDriver.get.font = font_;
+            VideoDriver.get.font_size = font_size_;
+            lines_ = [];
             uint y_offset;
 
             //break text to lines and align them horizontally, then align vertically
             while(text.length > 0){text = add_line(text, y_offset, y_offset);}
             align_vertical();
 
-            Aligned = true;
+            aligned_ = true;
         }
 }               

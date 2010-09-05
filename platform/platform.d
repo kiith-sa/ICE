@@ -14,10 +14,10 @@ abstract class Platform
 {
     mixin Singleton;
     protected:
-        bool[Key.max] keys_pressed;
+        bool[Key.max] keys_pressed_;
 
     private:
-        bool Run = true;
+        bool run_ = true;
                  
     public:
         ///Emitted when a key is pressed. Passes the key, its state and unicode value.
@@ -31,10 +31,10 @@ abstract class Platform
         void die();
         
         ///Collect input and determine if the game should continue running.
-        bool run(){return Run;}
+        bool run(){return run_;}
 
         ///Quit the platform, i.e. the game.
-        final void quit(){Run = false;}
+        final void quit(){run_ = false;}
 
         ///Set window caption string to str.
         void window_caption(string str);
@@ -46,5 +46,5 @@ abstract class Platform
         void show_cursor();
 
         ///Determine if specified key is pressed.
-        final bool is_key_pressed(Key key){return keys_pressed[cast(uint)key];}
+        final bool is_key_pressed(Key key){return keys_pressed_[cast(uint)key];}
 }

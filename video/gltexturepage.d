@@ -47,13 +47,13 @@ package align(1) struct GLTexturePage(TexturePacker)
 {
     private:
         ///Packer, handles allocation of texture space.
-        TexturePacker Packer;
+        TexturePacker packer_;
         ///Size of the page in pixels.
-        Vector2u Size;
+        Vector2u size_;
         ///OpenGL texture object
-        GLuint  Texture;
+        GLuint  texture_;
         ///Color format of the page.
-        ColorFormat Format;
+        ColorFormat format_;
 
     public:
         ///Fake constructor. Returns a page with specified format and size.
@@ -68,8 +68,8 @@ package align(1) struct GLTexturePage(TexturePacker)
         ///Destroy the page.
         void die()
         {
-            Packer.die();
-            glDeleteTextures(1, &Texture);
+            packer_.die();
+            glDeleteTextures(1, &texture_);
         }
         
         ///Try to insert an image to this page and use it as a texture.
@@ -84,15 +84,15 @@ package align(1) struct GLTexturePage(TexturePacker)
         bool insert_texture(ref Image image, out Rectanglef texcoords, 
                             out Vector2u offset) 
         {
-            if(image.format != Format){return false;}
-            if(Packer.allocate_space(image.size, texcoords, offset))
+            if(image.format != format_){return false;}
+            if(packer_.allocate_space(image.size, texcoords, offset))
             {                                  
                 //get opengl color format parameters
                 GLenum gl_format, type;
                 GLint internal_format;
-                gl_color_format(Format, gl_format, type, internal_format);
+                gl_color_format(format_, gl_format, type, internal_format);
 
-                glBindTexture(GL_TEXTURE_2D, Texture);
+                glBindTexture(GL_TEXTURE_2D, texture_);
                 
                 //default GL alignment is 4 bytes which messes up less than
                 //4 Bpp textures (e.g. grayscale) when their row sizes are not
@@ -108,27 +108,27 @@ package align(1) struct GLTexturePage(TexturePacker)
         }
 
         ///Use this page to draw textured geometry from now on.
-        void start(){glBindTexture(GL_TEXTURE_2D, Texture);}
+        void start(){glBindTexture(GL_TEXTURE_2D, texture_);}
 
         ///Determine if this texture page is resident in the video memory.
         bool is_resident()
         {
             GLboolean resident;
-            glAreTexturesResident(1, &Texture, &resident);
+            glAreTexturesResident(1, &texture_, &resident);
             return cast(bool) resident;
         }
 
         ///Remove texture with specified bounds from this page.
-        void remove_texture(ref Rectangleu bounds){Packer.free_space(bounds);}
+        void remove_texture(ref Rectangleu bounds){packer_.free_space(bounds);}
 
         ///Determine if this page is empty (i.e. there are no textures on it).
-        bool empty(){return Packer.empty();}
+        bool empty(){return packer_.empty();}
 
         ///Return a string containing information about this page.
         string info()
         {
-            string info = "Color format: " ~ to_string(Format);
-            info ~= "\nSize: " ~ cast(string)Size;
+            string info = "Color format: " ~ to_string(format_);
+            info ~= "\nSize: " ~ cast(string)size_;
             return info;
         }
 
@@ -142,23 +142,23 @@ package align(1) struct GLTexturePage(TexturePacker)
         }
         body
         {
-            Size = size;
-            Format = format;
-            Packer = TexturePacker(size);
+            size_ = size;
+            format_ = format;
+            packer_ = TexturePacker(size);
 
             //create blank image to use as texture data
             scope Image image = new Image(size.x, size.y, format);
-            glGenTextures(1, &Texture);
+            glGenTextures(1, &texture_);
             
-            glBindTexture(GL_TEXTURE_2D, Texture);
+            glBindTexture(GL_TEXTURE_2D, texture_);
 
             GLenum gl_format;
             GLenum type;
             GLint internal_format;
             gl_color_format(format, gl_format, type, internal_format);
             
-            glTexImage2D(GL_TEXTURE_2D, 0, internal_format, Size.x, 
-                         Size.y, 0, gl_format, type, image.data.ptr);
+            glTexImage2D(GL_TEXTURE_2D, 0, internal_format, size_.x, 
+                         size_.y, 0, gl_format, type, image.data.ptr);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         }

@@ -18,34 +18,34 @@ abstract class Actor
     invariant
     {
         //At speeds like this, collision and precision errors start to appear.
-        assert(Velocity.length <= 1600.0, "Actor speed can't be greater than 1600");
+        assert(velocity_.length <= 1600.0, "Actor speed can't be greater than 1600");
     }
 
     protected:
         //Position of this actor this frame.
-        Vector2f Position;
+        Vector2f position_;
 
         //Position of this actor at the beginning of the next frame.
-        Vector2f NextPosition;
+        Vector2f next_position_;
         
         //Velocity of this actor.
-        Vector2f Velocity;
+        Vector2f velocity_;
 
     public:
         ///Return velocity of this actor.
-        final Vector2f velocity(){return Velocity;}
+        final Vector2f velocity(){return velocity_;}
 
         ///Return position of this actor.
-        final Vector2f position(){return Position;}
+        final Vector2f position(){return position_;}
 
         ///Update physics state of this Actor.
         void update_physics()
         {
-            NextPosition = Position + Velocity * ActorManager.get.frame_length();
+            next_position_ = position_ + velocity_ * ActorManager.get.frame_length();
         }
 
         ///Update this Actor.
-        void update(){Position = NextPosition;}
+        void update(){position_ = next_position_;}
 
         ///Draw this actor.
         void draw();
@@ -76,14 +76,14 @@ abstract class Actor
     package:
         //Return position this actor will have next frame. 
         //Should only be called from Actor::Update().
-        final Vector2f next_position(){return NextPosition;}
+        final Vector2f next_position(){return next_position_;}
 
     protected:
         //Construct Actor with specified properties.
         this(Vector2f position, Vector2f velocity = Vector2f(0.0, 0.0)) 
         {
-            Position = NextPosition = position;
-            Velocity = velocity;
+            position_ = next_position_ = position;
+            velocity_ = velocity;
             ActorManager.get.add_actor(this);
         };
 }

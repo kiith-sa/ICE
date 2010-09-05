@@ -2,6 +2,13 @@ START ESSENTIAL -------------------------------
 12:
     Change coding style of private members so that class names can't conflict
     with private members' names.
+
+    Type names: CapitalizedName
+    Functions/methods/public data: long_with_spaces
+    private data: long_with_spaces_ending_with_
+    local variables: long_or_shrt_wt_spc
+    
+
 13:
     File input, resource manager, use that for font and shader files,
     maybe also use resource manager for shaders/textures/pages/fonts

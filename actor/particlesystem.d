@@ -9,26 +9,27 @@ import math.vector2;
 ///Base class for particle systems.
 abstract class ParticleSystem : Actor
 {
-    protected:
+    private:
         //Time left for this system to live. 
         //If negative, particle system can exist indefinitely.
-        real LifeTime = -1.0;
+        real life_time_ = -1.0;
 
-        Actor Owner = null;
+    protected:
+        Actor owner_ = null;
 
     public:
         ///Set time left for this LineTrail to live. Negative means infinite.
-        final void life_time(real time){LifeTime = time;}
+        final void life_time(real time){life_time_ = time;}
 
         void update()
         {
             real frame_length = ActorManager.get.frame_length;
-            //If LifeTime reaches zero, destroy this 
-            if(LifeTime >= 0.0 && LifeTime - frame_length <= 0.0){die();}
-            LifeTime -= frame_length;
+            //If life_time_ reaches zero, destroy this 
+            if(life_time_ >= 0.0 && life_time_ - frame_length <= 0.0){die();}
+            life_time_ -= frame_length;
         }
 
-        final void detach(){Owner = null;}
+        final void detach(){owner_ = null;}
 
     protected:
         //Construct Actor with specified properties.
@@ -36,7 +37,7 @@ abstract class ParticleSystem : Actor
              Actor owner = null, real life_time = -1.0) 
         {
             super(position, velocity);
-            LifeTime = life_time;
-            Owner = owner;
+            life_time_ = life_time;
+            owner_ = owner;
         }
 }

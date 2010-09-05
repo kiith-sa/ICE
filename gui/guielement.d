@@ -16,18 +16,18 @@ import arrayutil;
 class GUIElement
 {
     protected:
-        GUIElement Parent = null;
-        GUIElement[] Children;
+        GUIElement parent_ = null;
+        GUIElement[] children_;
 
         //Color of the element's border.
-        Color BorderColor = Color(255, 255, 255, 96);
+        Color border_color_ = Color(255, 255, 255, 96);
         //Bounds of this element in screen space.
-        Rectanglei Bounds;
+        Rectanglei bounds_;
 
         //Is this element visible?
-        bool Visible = true;
+        bool visible_ = true;
         //Draw border of this element?
-        bool DrawBorder = true;
+        bool draw_border_ = true;
 
     public:
         ///Construct a new element with specified parameters.
@@ -40,7 +40,7 @@ class GUIElement
 
         ~this()
         {
-            assert(Parent is null && Children is null,
+            assert(parent_ is null && children_ is null,
                    "GUIElement must be cleared before it is destroyed");
         }
         
@@ -49,106 +49,106 @@ class GUIElement
         ///Destroy this element.
         void die()
         {
-            foreach(ref child; Children)
+            foreach(ref child; children_)
             {
                 child.die();
                 child = null;
             }
-            Children = null;
-            Parent = null;
+            children_ = null;
+            parent_ = null;
         }                 
 
         ///Get position in screen space.
-        final Vector2i position_global(){return Bounds.min;}
+        final Vector2i position_global(){return bounds_.min;}
 
         ///Set position in screen space.
         final void position_global(Vector2i position)
         out
         {
-            assert(Bounds.min == position, 
+            assert(bounds_.min == position, 
                    "Global position of a GUI element was not set correctly");
         }
         body
         {
-            Vector2i offset = position - Bounds.min;
-            Bounds += offset;
+            Vector2i offset = position - bounds_.min;
+            bounds_ += offset;
             //move the children with parent
-            foreach(ref child; Children)
+            foreach(ref child; children_)
             {
                 child.position_global = child.position_global + offset;
             }
         }
 
         ///Get position relative to parent element.
-        final Vector2i position_local(){return Bounds.min - Parent.Bounds.min;}
+        final Vector2i position_local(){return bounds_.min - parent_.bounds_.min;}
 
         ///Set position relative to parent element.
         final void position_local(Vector2i position)
         {
-            Vector2i offset = Parent is null ? Vector2i(0,0) : Parent.Bounds.min;
+            Vector2i offset = parent_ is null ? Vector2i(0,0) : parent_.bounds_.min;
             position_global(position + offset);
         }
         
         ///Return size of this element in screen space.
-        final Vector2u size(){return Vector2u(Bounds.size.x, Bounds.size.y);}
+        final Vector2u size(){return Vector2u(bounds_.size.x, bounds_.size.y);}
 
         ///Set size of this element in screen space.
         void size(Vector2u size)
         {
-            Bounds.max = Bounds.min + Vector2i(size.x, size.y);
+            bounds_.max = bounds_.min + Vector2i(size.x, size.y);
         }
 
         ///Add a child element.
         final void add_child(GUIElement child)
         {
-            Children ~= child;
-            child.Parent = this;
+            children_ ~= child;
+            child.parent_ = this;
         }
 
         ///Remove a child element.
         final void remove_child(GUIElement child)
         in
         {
-            assert(Children.contains(child, true) && child.Parent is this,
+            assert(children_.contains(child, true) && child.parent_ is this,
                    "Trying to remove a child that is not a child of this GUI "
                    "element.");
         }
         body
         {
-            Children.remove(child, true);
-            child.Parent = null;
+            children_.remove(child, true);
+            child.parent_ = null;
         }
 
         ///Return true if this element is visible, false if hidden.
-        final bool visible(){return Visible;}
+        final bool visible(){return visible_;}
 
         ///Set this element to visible or hidden.
-        final void visible(bool visible){Visible = visible;}
+        final void visible(bool visible){visible_ = visible;}
 
         ///Return parent of this element.
-        final GUIElement parent(){return Parent;}
+        final GUIElement parent(){return parent_;}
 
         ///Determine if an element is a child of this element.
-        final bool is_child(GUIElement element){return Parent is element;}
+        final bool is_child(GUIElement element){return parent_ is element;}
 
 
 
     package:
         final void draw_children()
         {
-            foreach(ref child; Children){child.draw();}
+            foreach(ref child; children_){child.draw();}
         }
 
     protected:
         void draw()
         {
-            if(!Visible){return;}
+            if(!visible_){return;}
 
-            if(DrawBorder)
+            if(draw_border_)
             {
-                Vector2f min = Vector2f(Bounds.min.x, Bounds.min.y);
-                Vector2f max = Vector2f(Bounds.max.x, Bounds.max.y);
-                VideoDriver.get.draw_rectangle(min, max, BorderColor);
+                Vector2f min = Vector2f(bounds_.min.x, bounds_.min.y);
+                Vector2f max = Vector2f(bounds_.max.x, bounds_.max.y);
+                VideoDriver.get.draw_rectangle(min, max, border_color_);
             }
 
             draw_children();
@@ -158,20 +158,20 @@ class GUIElement
         void key(KeyState state, Key key, dchar unicode)
         {
             //ignore for hidden elements
-            if(!Visible){return;}
+            if(!visible_){return;}
 
             //pass input to the children
-            foreach_reverse(ref child; Children){child.key(state, key, unicode);}
+            foreach_reverse(ref child; children_){child.key(state, key, unicode);}
         }
 
         //Process mouse key presses. 
         void mouse_key(KeyState state, MouseKey key, Vector2u position)
         {
             //ignore hidden elements
-            if(!Visible){return;}
+            if(!visible_){return;}
 
             //pass input to the children
-            foreach_reverse(ref child; Children)
+            foreach_reverse(ref child; children_)
             {
                 child.mouse_key(state, key, position);
             }
@@ -181,10 +181,10 @@ class GUIElement
         void mouse_move(Vector2u position, Vector2i relative)
         {
             //ignore hidden elements
-            if(!Visible){return;}
+            if(!visible_){return;}
 
             //pass input to the children
-            foreach_reverse(ref child; Children)
+            foreach_reverse(ref child; children_)
             {
                 child.mouse_move(position, relative);
             }

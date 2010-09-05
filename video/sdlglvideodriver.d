@@ -59,8 +59,8 @@ final class SDLGLVideoDriver : GLVideoDriver
                 throw new Exception("Could not initialize video mode");
             }
 
-            ScreenWidth = width;
-            ScreenHeight = height;
+            screen_width_ = width;
+            screen_height_ = height;
             
             init_gl();
         }

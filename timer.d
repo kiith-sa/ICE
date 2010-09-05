@@ -9,16 +9,16 @@ struct Timer
 {
     invariant
     {
-        assert(Delay >= 0.0, "Can't have a Timer with negative delay");
-        assert(Start >= 0.0, "Can't have a Timer with negative start");
+        assert(delay_ >= 0.0, "Can't have a Timer with negative delay");
+        assert(start_ >= 0.0, "Can't have a Timer with negative start");
     }
 
     private:
-        //Start time of the timer
-        real Start = 0.0;
+        //start_ time of the timer
+        real start_ = 0.0;
 
-        //Delay of the timer (i.e. how long after start does the timer expire)
-        real Delay = 0.0;
+        //delay_ of the timer (i.e. how long after start does the timer expire)
+        real delay_ = 0.0;
 
     public:
         ///Fake constructor. Returns a timer with given delay starting now.
@@ -28,8 +28,8 @@ struct Timer
         static Timer opCall(real delay, real time)
         {               
             Timer t;
-            t.Start = time;
-            t.Delay = delay; 
+            t.start_ = time;
+            t.delay_ = delay; 
             return t;
         }
 
@@ -39,7 +39,7 @@ struct Timer
          * Used for events that have to be synchronized (e.g. every event
          * during a frame must have time equal to start of that frame)
          */
-        real age(real time){return time - Start;}
+        real age(real time){return time - start_;}
 
         ///Returns time since start of the timer.
         real age(){return age(get_time());}
@@ -53,7 +53,7 @@ struct Timer
          * Used for events that have to be synchronized (e.g. every event
          * during a frame must have time equal to start of that frame)
          */
-        real age_relative(real time){return age(time) / Delay;}
+        real age_relative(real time){return age(time) / delay_;}
 
         /**
          * Returns time since start of the timer, relative to the timer's delay.
@@ -70,7 +70,7 @@ struct Timer
          * Used for events that have to be synchronized (e.g. every event
          * during a frame must have time equal to start of that frame)
          */
-        bool expired(real time){return time - Start > Delay;}
+        bool expired(real time){return time - start_ > delay_;}
 
         ///Determines if the timer is expired.
         bool expired(){return expired(get_time());}
@@ -81,7 +81,7 @@ struct Timer
          * Used for events that have to be synchronized (e.g. every event
          * during a frame must have time equal to start of that frame)
          */
-        void reset(real start){Start = start;}
+        void reset(real start){start_ = start;}
 
         ///Resets the timer with specified start time.
         void reset(){reset(get_time());}

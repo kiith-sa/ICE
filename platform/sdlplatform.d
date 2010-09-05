@@ -76,11 +76,11 @@ class SDLPlatform : Platform
         void process_key(SDL_KeyboardEvent event)
         {
             KeyState state = KeyState.Pressed;
-            keys_pressed[event.keysym.sym] = true;
+            keys_pressed_[event.keysym.sym] = true;
             if(event.type == SDL_KEYUP)
             {
                 state = KeyState.Released;
-                keys_pressed[event.keysym.sym] = false;
+                keys_pressed_[event.keysym.sym] = false;
             }
             key.emit(state, cast(Key)event.keysym.sym, 
                            event.keysym.unicode);

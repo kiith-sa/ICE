@@ -20,7 +20,7 @@ final class LineTrail : LineEmitter
 {
     private:
         //determines when it's time to update 
-        Timer UpdateTimer;
+        Timer update_timer_;
 
     public:
         /**
@@ -43,7 +43,7 @@ final class LineTrail : LineEmitter
             real time = ActorManager.get.frame_time;
             
             emit_frequency(100.0);
-            UpdateTimer = Timer(1.0 / super.emit_frequency, time);   
+            update_timer_ = Timer(1.0 / super.emit_frequency, time);   
         }
 
         override void emit_frequency(real frequency)
@@ -62,17 +62,17 @@ final class LineTrail : LineEmitter
                 //end of the current line
                 Vector2f v2;
                 //start color of the current line
-                Color c1 = EndColor;
+                Color c1 = end_color_;
                 //end color of the current line
                 Color c2;
                 real time = ActorManager.get.frame_time;
 
                 VideoDriver.get.line_aa = true;
-                VideoDriver.get.line_width = LineWidth;
+                VideoDriver.get.line_width = line_width_;
                 foreach(ref particle; Particles[1 .. $])
                 {
                     v2 = particle.position;
-                    c2 = EndColor.interpolated(StartColor, 
+                    c2 = end_color_.interpolated(start_color_, 
                          particle.timer.age_relative(time));
                     VideoDriver.get.draw_line(v1, v2, c1, c2);
                     v1 = v2;
@@ -87,17 +87,17 @@ final class LineTrail : LineEmitter
         //Emit particles if any should be emitted this frame.
         override void emit()
         {
-            if(Owner)
+            if(owner_)
             {
                 real time = ActorManager.get.frame_time;
-                if(UpdateTimer.expired(time))
+                if(update_timer_.expired(time))
                 {
                     Particle trail;
-                    trail.position = Owner.next_position;
+                    trail.position = owner_.next_position;
                     trail.timer = Timer(particle_life, time);
                     Particles ~= trail;
 
-                    UpdateTimer = Timer(1.0 / super.emit_frequency, time);
+                    update_timer_ = Timer(1.0 / super.emit_frequency, time);
                 }
             }
         }

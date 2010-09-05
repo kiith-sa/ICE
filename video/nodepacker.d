@@ -19,10 +19,10 @@ package align(1) struct NodePacker
                 Rectangleu rectangle;
             private:
                 //Children nodes.
-                Node* child_a;
-                Node* child_b;
+                Node* child_a_;
+                Node* child_b_;
                 //True if this node's area is taken by a texture.
-                bool full = false;
+                bool full_ = false;
 
             public:
                 ///Try to insert a texture with given size to this node.
@@ -38,16 +38,16 @@ package align(1) struct NodePacker
                 body
                 {
                     //if not a leaf
-                    if(child_a !is null && child_b !is null)
+                    if(child_a_ !is null && child_b_ !is null)
                     {
                         //try inserting to first child
-                        Node* new_node = child_a.insert(size);
+                        Node* new_node = child_a_.insert(size);
                         if(new_node !is null){return new_node;}
                         //no room, try the second 
                         //(which will return NULL if no room there either)
-                        return child_b.insert(size);
+                        return child_b_.insert(size);
                     }
-                    if(full){return null;}
+                    if(full_){return null;}
 
                     Vector2u rect_size = rectangle.size;
                     //if this node is too small
@@ -55,28 +55,28 @@ package align(1) struct NodePacker
                     //if exact fit
                     if(rect_size == size)
                     {
-                        full = true;
+                        full_ = true;
                         return this;
                     }
-                    child_a = alloc!(Node)();
-                    child_b = alloc!(Node)();
+                    child_a_ = alloc!(Node)();
+                    child_b_ = alloc!(Node)();
 
                     //decide which way to split
                     Vector2u free_space = rect_size - size;
-                    child_b.rectangle = child_a.rectangle = rectangle;
+                    child_b_.rectangle = child_a_.rectangle = rectangle;
                     //split with a vertical cut if more free space on the right
                     if(free_space.x > free_space.y)
                     {
-                        child_a.rectangle.max.x = rectangle.min.x + size.x;// - 1;
-                        child_b.rectangle.min.x += size.x;
+                        child_a_.rectangle.max.x = rectangle.min.x + size.x;// - 1;
+                        child_b_.rectangle.min.x += size.x;
                     }
                     //split with a horizontal cut if more free space on the bottom
                     else
                     {
-                        child_a.rectangle.max.y = rectangle.min.y + size.y;// - 1;
-                        child_b.rectangle.min.y += size.y;
+                        child_a_.rectangle.max.y = rectangle.min.y + size.y;// - 1;
+                        child_b_.rectangle.min.y += size.y;
                     }
-                    return child_a.insert(size);
+                    return child_a_.insert(size);
                 }
 
                 ///Try to remove a texture with specified area.
@@ -89,14 +89,14 @@ package align(1) struct NodePacker
                 bool remove(ref Rectangleu rect)
                 {
                     //exact fit, this is the area we want to free
-                    if(rect == rectangle && full)
+                    if(rect == rectangle && full_)
                     {
-                        full = false;
+                        full_ = false;
                         return true;
                     }
                     //try children
-                    if(child_a !is null && child_a.remove(rect)){return true;}
-                    if(child_b !is null && child_b.remove(rect)){return true;}
+                    if(child_a_ !is null && child_a_.remove(rect)){return true;}
+                    if(child_b_ !is null && child_b_.remove(rect)){return true;}
                     //can't remove from this node
                     return false;
                 }
@@ -104,35 +104,35 @@ package align(1) struct NodePacker
                 ///Determine if this node and all its subnodes are empty.
                 bool empty()
                 {
-                    if(full){return false;}
-                    if(child_a !is null && !child_a.empty()){return false;}
-                    if(child_b !is null && !child_b.empty()){return false;}
+                    if(full_){return false;}
+                    if(child_a_ !is null && !child_a_.empty()){return false;}
+                    if(child_b_ !is null && !child_b_.empty()){return false;}
                     return true;
                 }
 
                 ///Destroy this node and its children.
                 void die()
                 {
-                    if(child_a !is null)
+                    if(child_a_ !is null)
                     {
-                        child_a.die();
-                        free(child_a);
-                        child_a = null;
+                        child_a_.die();
+                        free(child_a_);
+                        child_a_ = null;
                     }
-                    if(child_b !is null)
+                    if(child_b_ !is null)
                     {
-                        child_b.die();
-                        free(child_b);
-                        child_b = null;
+                        child_b_.die();
+                        free(child_b_);
+                        child_b_ = null;
                     }
                 }
         }
 
         //Size of the area available to the packer, in pixels.
-        Vector2u Size;
+        Vector2u size_;
 
         //Root node of the packer tree.
-        Node* Root;
+        Node* root_;
 
     public:
         ///Fake constructor. Returns NodePacker with specified texture size.
@@ -146,8 +146,8 @@ package align(1) struct NodePacker
         ///Destroy this NodePacker and its nodes.
         void die()
         {
-            Root.die();
-            free(Root);
+            root_.die();
+            free(root_);
         }
 
         ///Try to allocate space for a texture with given size.
@@ -162,14 +162,14 @@ package align(1) struct NodePacker
         bool allocate_space(Vector2u size, out Rectanglef texcoords, 
                             out Vector2u offset)
         {
-            Node* node = Root.insert(size);
+            Node* node = root_.insert(size);
             if(node is null){return false;}
 
             Vector2f min = to!(float)(node.rectangle.min);
             Vector2f max = to!(float)(node.rectangle.max);
 
-            texcoords.min = Vector2f(min.x / Size.x, min.y / Size.y);
-            texcoords.max = Vector2f(max.x / Size.x, max.y / Size.y);
+            texcoords.min = Vector2f(min.x / size_.x, min.y / size_.y);
+            texcoords.max = Vector2f(max.x / size_.x, max.y / size_.y);
             offset = node.rectangle.min;
             return true;
         }
@@ -177,20 +177,20 @@ package align(1) struct NodePacker
         ///Free space taken by a texture.
         void free_space(ref Rectangleu rectangle)
         {
-            bool removed = Root.remove(rectangle);
+            bool removed = root_.remove(rectangle);
             assert(removed, "Trying to remove unallocated space from NodePacker");
         }
 
         ///Determine if this NodePacker is empty.
-        bool empty(){return Root.empty();}
+        bool empty(){return root_.empty();}
 
     private:
         ///Initialization method used by the fake constructor.
         void ctor(Vector2u size)
         {
-            Size = size;
-            Root = alloc!(Node)();
-            *Root = Node(Rectangleu(Vector2u(0, 0), size), null, null, false);
+            size_ = size;
+            root_ = alloc!(Node)();
+            *root_ = Node(Rectangleu(Vector2u(0, 0), size), null, null, false);
         }
 }   
 

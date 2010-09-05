@@ -13,19 +13,19 @@ final class EventCounter
 {
     private:
         //time when this eventcounter started
-        real StartTime;
+        real start_time_;
 
         //used for periodic updates
-        Timer Period;
+        Timer period_;
 
         //number of events last period
-        uint EventsPeriod = 0;
+        uint events_period_ = 0;
 
         //total number of events
-        uint EventsTotal = 0;
+        uint events_total_ = 0;
         
         //total number of events until the end of the last period
-        uint EventsTotalLastPeriod = 0;
+        uint events_total_last_period_ = 0;
 
     public:
         ///Emitted when a period ends - passes events per second.
@@ -34,34 +34,34 @@ final class EventCounter
         ///Construct an EventCounter with specified update period.
         this(real period)
         {
-            Period = Timer(period);
-            StartTime = get_time();
+            period_ = Timer(period);
+            start_time_ = get_time();
         }
 
         ///Count one event.
         void event()
         {
-            if(Period.expired())
+            if(period_.expired())
             {
-                EventsPeriod = EventsTotal - EventsTotalLastPeriod;
+                events_period_ = events_total_ - events_total_last_period_;
 
-                real updates_second = EventsPeriod / Period.age();
+                real updates_second = events_period_ / period_.age();
                 update.emit(updates_second);
 
-                EventsTotalLastPeriod = EventsTotal;
-                Period.reset();
+                events_total_last_period_ = events_total_;
+                period_.reset();
             }
-            ++EventsTotal;
+            ++events_total_;
         }
 
         ///Return a string containing statistics about events counted.
         string statistics()
         {
-            real time_total = get_time() - StartTime;
-            real events_second = EventsTotal / time_total;
+            real time_total = get_time() - start_time_;
+            real events_second = events_total_ / time_total;
 
             alias std.string.toString to_string;
-            return "Total events: " ~ to_string(EventsTotal) ~ "\n" 
+            return "Total events: " ~ to_string(events_total_) ~ "\n" 
                    ~ "Total Time: " ~ to_string(time_total) ~ "\n" 
                    ~ "Average events per second: " ~ to_string(events_second);
         }

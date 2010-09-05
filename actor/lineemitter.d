@@ -16,19 +16,19 @@ class LineEmitter : ParticleEmitter
 {
     invariant
     {
-        assert(LineLength > 0.0, "LineEmitter line length must be more than 0");
-        assert(LineWidth > 0.0, "LineEmitter line width must be more than 0");
+        assert(line_length_ > 0.0, "LineEmitter line length must be more than 0");
+        assert(line_width_ > 0.0, "LineEmitter line width must be more than 0");
     }
 
     protected:
         //Length of line particles drawn.
-        float LineLength = 8.0;
+        float line_length_ = 8.0;
         //Width of line particles drawn.
-        uint LineWidth = 2;
+        uint line_width_ = 2;
         //Color of particles at the beginning of their life.
-        Color StartColor = Color(255, 255, 255, 255);
+        Color start_color_ = Color(255, 255, 255, 255);
         //Color of particles at the end of their life.
-        Color EndColor = Color(255, 255, 255, 0);
+        Color end_color_ = Color(255, 255, 255, 0);
 
     public:
         this(Actor owner = null){super(owner);}
@@ -37,16 +37,16 @@ class LineEmitter : ParticleEmitter
         {
             auto driver = VideoDriver.get;
             driver.line_aa = true;
-            driver.line_width = LineWidth;
+            driver.line_width = line_width_;
             real time = ActorManager.get.frame_time;
             Color color;
             //draw particles
             foreach(ref p; Particles)
             {
-                color = EndColor.interpolated(StartColor, p.timer.age_relative(time));
+                color = end_color_.interpolated(start_color_, p.timer.age_relative(time));
                 //determine line from particle velocity
                 driver.draw_line(p.position, 
-                                 p.position + p.velocity.normalized * LineLength, 
+                                 p.position + p.velocity.normalized * line_length_, 
                                  color, color);
             }
             driver.line_width = 1;
@@ -54,14 +54,14 @@ class LineEmitter : ParticleEmitter
         }
 
         ///Set length of the line particles drawn.
-        final void line_length(real length){LineLength = length;}
+        final void line_length(real length){line_length_ = length;}
 
         ///Set width of the line particles drawn.
-        final void line_width(uint width){LineWidth = width;}
+        final void line_width(uint width){line_width_ = width;}
 
         ///Set color the particles have at the beginning of their lifetimes.
-        final void start_color(Color color){StartColor = color;}
+        final void start_color(Color color){start_color_ = color;}
 
         ///Set color the particles have at the end of their lifetimes.
-        final void end_color(Color color){EndColor = color;}
+        final void end_color(Color color){end_color_ = color;}
 }
