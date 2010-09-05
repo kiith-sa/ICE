@@ -13,7 +13,7 @@ import math.vector2;
 import math.line2;
 import math.rectangle;
 import video.videodriver;
-import video.glvideodriver;
+import video.sdlglvideodriver;
 import actor.actor;
 import actor.actormanager;
 import actor.lineemitter;
@@ -845,7 +845,7 @@ class Pong
 void main()
 {
     Platform.initialize!(SDLPlatform);
-    VideoDriver.initialize!(GLVideoDriver);
+    VideoDriver.initialize!(SDLGLVideoDriver);
 
     try
     {
