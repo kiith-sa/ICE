@@ -12,7 +12,7 @@ import video.gltexture;
 import video.gltexturepage;
 import video.shader;
 import video.texture;
-import video.font;
+import video.fontmanager;
 import math.math;
 import math.vector2;
 import math.line2;

@@ -1,6 +1,4 @@
 START ESSENTIAL -------------------------------
-14:
-    Split font.d to one class per file (if possible)
 12:
     Change coding style of private members so that class names can't conflict
     with private members' names.
