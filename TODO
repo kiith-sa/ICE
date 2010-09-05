@@ -1,15 +1,5 @@
 START ESSENTIAL -------------------------------
 12:
-    Packages, 1 file per class, at least a video package.
-    (maybe a math package too), also use package qualifiers
-    for classes, structs, members
-
-    Put _all_ non-game-specific actors including particle systems to single package
-    and use package instead of protected
-
-    split actormanager, particle system too
-
-
     use package qualifier where possible in these packages
 14:
     Refactoring/cleaning up run. Especially look into Actors and ActorManager
