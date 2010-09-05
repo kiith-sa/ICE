@@ -1,13 +1,10 @@
 START ESSENTIAL -------------------------------
 14:
-    Refactoring/cleaning up run. Especially look into Actors and ActorManager
+    Refactoring/cleaning up run. Especially look into Actors and ActorManager,
+    but also GLVideoDriver
 
     Use alias and/or with to simplify code.
     alias std.string.toString to_string
-
-    Remove Time class and keep get_time() as a global function.
-
-    Desingletonify allocator, maybe turn it into a plain module
 
     Use foreach_reverse where we're reverse iterating with for
     (e.g. delegate version of util.remove)
