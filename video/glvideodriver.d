@@ -10,6 +10,7 @@ import video.videodriver;
 import video.glshader;
 import video.gltexture;
 import video.gltexturepage;
+import video.shader;
 import video.texture;
 import video.font;
 import math.math;
@@ -20,6 +21,7 @@ import platform.platform;
 import color;
 import image;
 import allocator;
+
 
 
 ///Handles all drawing functionality.
@@ -40,11 +42,16 @@ abstract class GLVideoDriver : VideoDriver
         //Is line antialiasing enabled?
         bool LineAA = false;
 
-        GLShader LineShader;
-        GLShader TextureShader;
-        GLShader FontShader;
+        Shader LineShader;
+        Shader TextureShader;
+        Shader FontShader;
 
-        GLShader* CurrentShader;
+        uint CurrentShader = uint.max;
+
+        GLShader*[] Shaders;
+
+
+
 
         float LineWidth = 1.0;
 
@@ -66,9 +73,9 @@ abstract class GLVideoDriver : VideoDriver
 
         override void die()
         {
-            LineShader.die();
-            TextureShader.die();
-            FontShader.die();
+            delete_shader(LineShader);
+            delete_shader(TextureShader);
+            delete_shader(FontShader);
 
             FontManager.get.die();
 
@@ -92,8 +99,20 @@ abstract class GLVideoDriver : VideoDriver
                     texture = null;
                 }
             }
-            Pages.length = 0;
-            Textures.length = 0;
+
+            //delete any remaining shaders
+            foreach(ref shader; Shaders)
+            {
+                if(shader !is null)
+                {
+                    free(shader);
+                    shader = null;
+                }
+            }
+
+            Pages = [];
+            Textures = [];
+            Shaders = [];
             DerelictGL.unload();
         }
 
@@ -470,20 +489,49 @@ abstract class GLVideoDriver : VideoDriver
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-            LineShader = GLShader("line"); 
-            TextureShader = GLShader("texture"); 
-            FontShader = GLShader("font"); 
+            LineShader = create_shader("line");
+            TextureShader = create_shader("texture");
+            FontShader = create_shader("font");
         }
 
     private:
-        ///Use specified shader for drawing.
-        final void set_shader(ref GLShader shader)
+        //not ready for public interface yet- will take shader spec file in future
+        //Load shader with specified name.
+        final Shader create_shader(string name)
         {
-            //comparison of pointer values
-            if(&shader != CurrentShader)
+            GLShader* gl_shader = alloc!(GLShader)();
+            *gl_shader = GLShader(name);
+            Shaders ~= gl_shader;
+            return Shader(Shaders.length - 1);
+        }
+
+        //not ready for public interface yet
+        //Delete a shader.
+        final void delete_shader(Shader shader)
+        {
+            GLShader* gl_shader = Shaders[shader.index];
+            assert(gl_shader !is null, "Trying to delete a nonexistent shader");
+            free(Shaders[shader.index]);
+            Shaders[shader.index] = null;
+
+            //If we have null shaders at the end of the Shaders array, we
+            //can remove them without messing up indices
+            while(Shaders.length > 0 && Shaders[$ - 1] is null)
             {
-                CurrentShader = &shader;
-                shader.start();
+                Shaders = Shaders[0 .. $ - 1];
+            }
+        }
+
+        //not ready for public interface yet
+        //Use specified shader for drawing.
+        final void set_shader(Shader shader)
+        {
+            uint index = shader.index;
+
+            if(CurrentShader != index)
+            {
+                Shaders[index].start;
+                CurrentShader = index;
             }
         }
 

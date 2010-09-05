@@ -1,4 +1,4 @@
-module video.shader;
+module video.glshader;
 
 
 import std.string;

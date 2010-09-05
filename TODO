@@ -1,25 +1,25 @@
 START ESSENTIAL -------------------------------
 14:
-    Refactoring/cleaning up run. Especially look into Actors and ActorManager,
-    but also GLVideoDriver
-
     Split font.d to one class per file (if possible)
-
-    Shader should work like Texture works right now, i.e. two structs
-    connected by index. Actually, GLShader could be a class, for the
-    sake of convenience. Struct would be good for deterministic
-    de/allocation, though.
-
-    GLDriver destructor should destroy textures, pages, shaders
-    (shader dtor should delete shader program, etc)
-    This should be done by a member function
-    called by the dtor so we can clear videodriver resources at any time.
 12:
     Change coding style of private members so that class names can't conflict
     with private members' names.
 13:
     File input, resource manager, use that for font and shader files,
     maybe also use resource manager for shaders/textures/pages/fonts
+
+    Shaders should be an optional argument to draw_x. If no shader is passed,
+    default for fonts, lines, textures is used.
+    Just as images are passed to create textures, shader spec (ini) files
+    should be passed to create_shader. Both images and shader spec
+    files should be managed outside videodriver.
+    shader spec file should contain a spec for every videodriver supported.
+    GLSL shaders should be stored in whatever/shaders/glsl,
+    since those will be managed on the videodriver implementation side.
+    Actually, not necessarily spec per videodriver, but e.g. GLSL spec,
+    fixed function spec, Cg spec etc. 
+    E.g. any GLSL capable videodriver could use the GLSL spec.
+
 14:
     VideoDriver method that will return a string with data about all textures
 
@@ -91,20 +91,6 @@ START ESSENTIAL -------------------------------
 
     Could also look at the source of the Diamond memory debugger and
     use the ideas here to measure memory usage
-
-
-14:
-    If resource manager won't work for adding/removing shaders/textures/pages:
-    
-    Texture removing (and shader removing, if they work the same way),
-    same for texture pages:
-    Since we can't afford to invalidate indices, when a 
-    texture/page/shader is removed, mark that index as free 
-    (in an array of free indices maybe?) and when creating
-    textures/shaders, first check if we have any free indices.
-
-    If there are any free indices _at the end_ of the textures/pages/shaders
-    array, the array can be shrunk.
 15:
     Move away from DSSS, (include derelict)
     also, get the newest derelict
@@ -214,8 +200,7 @@ END ESSENTIAL -------------------------------
 22:
     Improved collision code to prevent/minimize tunneling
 22?: 
-    Try to separate physics and drawing into two threads
-    If not possible, try AI
+    Try AI and/or file loading in a separate thread
 23:
     Do some basic profiling: KCacheGrind (No OpenGL perspective),
     OProfile (better?), gettime - at least get total time and VideoDriver 
@@ -243,19 +228,12 @@ END ESSENTIAL -------------------------------
     and need for asserts for too large textures/pages.)
     (would require to pass textures/glyphs by value in font drawing code)
 24:
-    If needed, we could use classes for Particles.
-    We just need to measure memory and time impact.
-24:
     Selecting GUI elements with keyboard:
     only certain element types can be selected (e.g. button)
     (an element has a bool selectable() method):
     Arrows are used to select elements, maybe later tabs could
     select groups (would be more complicated) - if selected,
     Enter and/or some other keys could be used to control the element.
-
-24:
-    ResourceManager (?) - could load paddles, effects maybe, maps 
-    (for Pong AND Arkanoid)(?)
 25:
     Advanced shaders: custom matrix, etc. passing. - SEE OPENGL SUPERBIBLE
     Look at Humus, Mizanin, GL forums, GL3 tutorials, etc.
@@ -273,9 +251,8 @@ END ESSENTIAL -------------------------------
     differences.
 
     FontManager settings like FontAA and FastGlyphs should be set through INI
-
-15:
-    Save games (ini?)
+17:
+    Screen size change (in an Options dialog)
 25:
     User configurable key bindings - stored in HumanPlayer
 26: 
@@ -429,3 +406,5 @@ Maybe:
     If drawing text is too slow, we can cache glyph offsets for strings
     somewhere in videodriver (or a member class/struct of videodriver)
     We can search for cached strings quickly using simple bucket sort/search.
+15:
+    (Arkanoid)Save games (ini?)
