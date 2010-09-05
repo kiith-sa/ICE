@@ -23,7 +23,7 @@ struct Rectangle(T)
     {
         return Rectangle!(T)(Vector2!(T)(x1, y1), Vector2!(T)(x2, y2));
     }
-
+ 
     ///Fake constructor from 2 vectors
     static Rectangle!(T) opCall(Vector2!(T) v1, Vector2!(T) v2)
     {

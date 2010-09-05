@@ -3,9 +3,6 @@ START ESSENTIAL -------------------------------
     Refactoring/cleaning up run. Especially look into Actors and ActorManager,
     but also GLVideoDriver
 
-    Use static opCall as a struct ctor, esp. for stuff like Rectangles, Lines
-    and use ctor method instead of init
-
     We can't use casts to convert vectors as they can't be overloaded based
     on return value. Try writing a template Vector2!(T) to(T, U)(Vector2!(U) v)
     template function.

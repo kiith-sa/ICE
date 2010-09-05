@@ -384,7 +384,7 @@ class AIPlayer : Player
         this(string name, Paddle paddle, real update_time)
         {
             super(name, paddle);
-            UpdateTimer(update_time);
+            UpdateTimer = Timer(update_time);
         }
 
         override void update()
@@ -545,24 +545,20 @@ class Game
             Continue = true;
 
             WallLeft = new Wall(Vector2f(64.0, 64.0),
-                                Rectanglef(Vector2f(0.0, 0.0), 
-                                           Vector2f(64.0, 472.0)));
+                                Rectanglef(0.0, 0.0, 64.0, 472.0));
             WallRight = new Wall(Vector2f(672.0, 64.0),
-                                 Rectanglef(Vector2f(0.0, 0.0), 
-                                            Vector2f(64.0, 472.0)));
+                                 Rectanglef(0.0, 0.0, 64.0, 472.0));
             GoalUp = new Wall(Vector2f(64.0, 32.0),
-                              Rectanglef(Vector2f(0.0, 0.0), 
-                                         Vector2f(672.0, 32.0)));
+                              Rectanglef(0.0, 0.0, 672.0, 32.0));
             GoalDown = new Wall(Vector2f(64.0, 536.0),
-                                Rectanglef(Vector2f(0.0, 0.0), 
-                                           Vector2f(672.0, 32.0)));
-            auto limits1 = Rectanglef(Vector2f(128 + BallRadius * 2, 64), 
-                                      Vector2f(672 - BallRadius * 2, 128)); 
-            auto size = Rectanglef(Vector2f(-32, -8), Vector2f(32, 8)); 
+                                Rectanglef(0.0, 0.0, 672.0, 32.0));
+            auto limits1 = Rectanglef(128 + BallRadius * 2, 64, 
+                                      672 - BallRadius * 2, 128); 
+            auto size = Rectanglef(-32, -8, 32, 8); 
             Paddle1 = new Paddle(Vector2f(400, 96), size, limits1, 144);
 
-            auto limits2 = Rectanglef(Vector2f(128 + BallRadius * 2, 472), 
-                                      Vector2f(672 - BallRadius * 2, 536)); 
+            auto limits2 = Rectanglef(128 + BallRadius * 2, 472, 
+                                      672 - BallRadius * 2, 536); 
             Paddle2 = new Paddle(Vector2f(400, 504), size, limits2, 144);
 
             spawn_ball(BallSpeed);

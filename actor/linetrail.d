@@ -43,7 +43,7 @@ final class LineTrail : LineEmitter
             real time = ActorManager.get.frame_time;
             
             emit_frequency(100.0);
-            UpdateTimer(1.0 / super.emit_frequency, time);   
+            UpdateTimer = Timer(1.0 / super.emit_frequency, time);   
         }
 
         override void emit_frequency(real frequency)
@@ -94,10 +94,10 @@ final class LineTrail : LineEmitter
                 {
                     Particle trail;
                     trail.position = Owner.next_position;
-                    trail.timer(particle_life, time);
+                    trail.timer = Timer(particle_life, time);
                     Particles ~= trail;
 
-                    UpdateTimer(1.0 / super.emit_frequency, time);
+                    UpdateTimer = Timer(1.0 / super.emit_frequency, time);
                 }
             }
         }

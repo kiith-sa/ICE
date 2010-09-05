@@ -22,13 +22,15 @@ struct Timer
 
     public:
         ///Fake constructor. Returns a timer with given delay starting now.
-        void opCall(real delay){opCall(delay, get_time());}
+        static Timer opCall(real delay){return Timer(delay, get_time());}
 
         ///Fake constructor. Returns a timer with given delay starting at specified time.
-        void opCall(real delay, real time)
+        static Timer opCall(real delay, real time)
         {               
-            Start = time;
-            Delay = delay; 
+            Timer t;
+            t.Start = time;
+            t.Delay = delay; 
+            return t;
         }
 
         /**

@@ -131,7 +131,7 @@ abstract class ParticleEmitter : ParticleSystem
             {
                 Particle particle;
 
-                particle.timer(ParticleLife, time);
+                particle.timer = Timer(ParticleLife, time);
                 particle.position = Position;
                 real angle_delta = random(-AngleVariation, AngleVariation);
                 particle.velocity = EmitVelocity;

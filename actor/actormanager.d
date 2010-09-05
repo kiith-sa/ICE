@@ -55,7 +55,7 @@ final class ActorManager
         {
             singleton_ctor();
             //at most 120 updates per second
-            UpdateTimer(1.0 / 120.0);
+            UpdateTimer = Timer(1.0 / 120.0);
             UpdateCounter = new EventCounter(1.0);
             UpdateCounter.update.connect(&ups_update);
             FrameTime = get_time();

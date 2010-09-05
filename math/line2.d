@@ -24,6 +24,21 @@ struct Line2(T)
     ///End point of the line segment.
     Vector2!(T) end;
 
+    ///Fake constructor from 4 numbers
+    static Line2!(T) opCall(T x1, T y1, T x2, T y2)
+    {
+        return Line2!(T)(Vector2!(T)(x1, y1), Vector2!(T)(x2, y2));
+    }
+ 
+    ///Fake constructor from 2 vectors
+    static Line2!(T) opCall(Vector2!(T) v1, Vector2!(T) v2)
+    {
+        Line2!(T) line;
+        line.start = v1;
+        line.end = v2;
+        return line;
+    }
+
     ///Subtraction with a vector - used in translation.
     Line2!(T) opSub(Vector2!(T) s){return Line2!(T)(start - s, end - s);}
     

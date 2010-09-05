@@ -34,7 +34,7 @@ final class EventCounter
         ///Construct an EventCounter with specified update period.
         this(real period)
         {
-            Period(period);
+            Period = Timer(period);
             StartTime = get_time();
         }
 
