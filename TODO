@@ -14,9 +14,6 @@ START ESSENTIAL -------------------------------
     Use static opCall as a struct ctor, esp. for stuff like Rectangles,
     and use ctor method instead of init
 
-    Menu - Pong 
-    Pong - Game
-
     Currently, assert messages are caught in main and not displayed.
     Add a catch() for AssertErrors or whatever they're called and display
     their messages.
@@ -151,6 +148,9 @@ END ESSENTIAL -------------------------------
     (maybe a simple demo showing random balls or an AI-AI game in background)
 14:
     Look for files in main directory that can be put into packages.
+14:
+    Display score with text(orbitron?)
+    Make game area a bit narrower and taller
 14:
     Intro screen
 

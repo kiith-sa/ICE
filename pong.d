@@ -428,7 +428,7 @@ class AIPlayer : Player
             {
                 real frame_length = ActorManager.get.frame_length;
 
-                Ball ball = Pong.get.ball;
+                Ball ball = Game.get.ball;
                 float distance = PlayerPaddle.limits.distance(ball.position);
                 Vector2f ball_next = ball.position + ball.velocity * frame_length;
                 float distance_next = PlayerPaddle.limits.distance(ball_next);
@@ -452,7 +452,7 @@ class AIPlayer : Player
         //React to the ball closing in
         void ball_closing()
         {
-            Ball ball = Pong.get.ball;
+            Ball ball = Game.get.ball;
             //If paddle x position is roughly equal to ball, no need to move
             if(equals(PlayerPaddle.position.x, ball.position.x, 16.0f))
             {
@@ -546,7 +546,7 @@ class HumanPlayer : Player
         }
 }
 
-class Pong
+class Game
 {
     mixin Singleton;
     private:
@@ -570,7 +570,6 @@ class Pong
         bool Continue;
 
     public:
-        ///Start a Pong game.
         this(){singleton_ctor();}
 
         bool run()
@@ -704,7 +703,7 @@ class Pong
         }
 }
 
-class Menu
+class Pong
 {
     mixin Singleton;
     private:
@@ -722,6 +721,7 @@ class Menu
         this()
         {
             singleton_ctor();
+            Game.initialize!(Game);
             ActorManager.initialize!(ActorManager);
             GUIRoot.initialize!(GUIRoot);
             VideoDriver.get.set_video_mode(800, 600, ColorFormat.RGBA_8, 
@@ -764,7 +764,7 @@ class Menu
             {
                 //Count this frame
                 FPSCounter.event();
-                if(RunPong && !Pong.get.run())
+                if(RunPong && !Game.get.run())
                 {
                     pong_end();
                 }
@@ -774,7 +774,7 @@ class Menu
                 VideoDriver.get.start_frame();
                 if(RunPong)
                 {
-                    Pong.get.draw();
+                    Game.get.draw();
                 }
                 else
                 {
@@ -785,7 +785,7 @@ class Menu
                 VideoDriver.get.end_frame();
 
             }
-            Pong.get.die();
+            Game.get.die();
             writefln("FPS statistics:\n", FPSCounter.statistics, "\n");
             writefln("ActorManager statistics:\n", 
                      ActorManager.get.statistics, "\n");
@@ -798,7 +798,7 @@ class Menu
     private:
         void pong_end()
         {
-            Pong.get.end_game();
+            Game.get.end_game();
             Platform.get.key.connect(&key_handler);
             GUIRoot.get.add_child(MenuGUI);
             RunPong = false;
@@ -809,7 +809,7 @@ class Menu
             RunPong = true;
             GUIRoot.get.remove_child(MenuGUI);
             Platform.get.key.disconnect(&key_handler);
-            Pong.get.start_game();
+            Game.get.start_game();
         }
 
         void exit()
@@ -849,10 +849,9 @@ void main()
 
     try
     {
-        Menu.initialize!(Menu);
         Pong.initialize!(Pong);
-        Menu.get.run();
-        Menu.get.die();
+        Pong.get.run();
+        Pong.get.die();
     }
     catch(Exception e)
     {
