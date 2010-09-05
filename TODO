@@ -1,78 +1,48 @@
 START ESSENTIAL -------------------------------
-12:
-    use package qualifier where possible in these packages
 14:
     Refactoring/cleaning up run. Especially look into Actors and ActorManager
-    (Consider if Actors could somehow be turned into structs using
-    composition(probably not, though))
 
-    Also use alias and/or with to simplify code.
-
-    Remove Time class and just keeping get_time() as a global
-    function.
-
-    Consider desingletonifying allocator, turning to a plain module
-
+    Use alias and/or with to simplify code.
     alias std.string.toString to_string
+
+    Remove Time class and keep get_time() as a global function.
+
+    Desingletonify allocator, maybe turn it into a plain module
 
     Use foreach_reverse where we're reverse iterating with for
     (e.g. delegate version of util.remove)
 
-    Use final for classes that shouldn't be inherited
+    final for classes that shouldn't be inherited and functions where it makes sense
 
-    Use static opCall as a struct ctor, esp. for stuff like Rectangles
-    everywhere possible, and use ctor method instead of init
-
-    VideoDriver method that will return a string with
-    data about all textures
+    Use static opCall as a struct ctor, esp. for stuff like Rectangles,
+    and use ctor method instead of init
 
     Menu - Pong 
     Pong - Game
 
-    Currently, assert messages are caucgt in main and not displayed.
+    Currently, assert messages are caucht in main and not displayed.
     Add a catch() for AssertErrors or whatever they're called and display
     their messages.
 
-    Try to make casts between Vector2 types possible
-    so we can do cast(Vector2i)Vector2u, etc
+    Try to code casts between Vector2 types so we can e.g. cast(Vector2i)Vector2u
 
-    One line accessors
-
-    About the below: In D2, alias this should do the same job as
-    template mixins do in D1
-
-    point taken from here: turn parents of gltexturepage, nodepacker into
-    template mixins and use them as heap allocated structs
-    Replace die() with dtors and delete - at least with actors (not sure
-            if can be done with singletons)
-    actually about class dtors: clear() calls dtor, and gc then calls it again
-    also, dtor can't do anything with gc allocated class members
-    which means - we need to keep die() for actors
-    Also might consider die() for texturepage, texturepacker, or somehow
-    turn them into structs (or turn the parent classes into template mixins!
-    That might work! - or turn the implementations into template arguments
-    -less likely to work).
+    One line accessors, short scopes
 
     Shader should work like Texture works right now, i.e. two structs
     connected by index. Actually, GLShader could be a class, for the
     sake of convenience. Struct would be good for deterministic
     de/allocation, though.
 
-
-    GLDriver destructor should destroy all textures, pages, shaders
+    GLDriver destructor should destroy textures, pages, shaders
     (shader dtor should delete shader program, etc)
-    Actually, this should be done by a member function
+    This should be done by a member function
     called by the dtor so we can clear videodriver resources at any time.
 
-    In direct contact with OpenGL, use e.g. 1.0f instead of 1.0
-
-    Also use array arithmetic such as a[] = b[] + c[] if/where possible
+    Use array arithmetic such as a[] = b[] + c[] if/where possible
 
     Rename util.d to arrayutil.d
 
     Move code from videodriverutil to final methods in VideoDriver interface.
-    If not possible in D1, make VideoDriver a class that implements these methods
-    (as final, if D1 allows it) without accessing implementation details.
 
     If GLVideoDriver is still over 600 lines, consider moving
     texture code to a TextureManager singleton and just keeping
@@ -81,6 +51,8 @@ START ESSENTIAL -------------------------------
     File input, resource manager, use that for font and shader files,
     maybe also use resource manager for shaders/textures/pages/fonts
 14:
+    VideoDriver method that will return a string with data about all textures
+
     For this kind of debugging info, define a VideoDriver method
     info(enum DebugInfo) that will return a string with requested type
     of info. DebugInfo.All would return all info available.
@@ -498,6 +470,3 @@ Maybe:
     If drawing text is too slow, we can cache glyph offsets for strings
     somewhere in videodriver (or a member class/struct of videodriver)
     We can search for cached strings quickly using simple bucket sort/search.
-
-    
-

@@ -90,6 +90,8 @@ class Actor
         }
 
     package:
+        //Return position this actor will have next frame. 
+        //Should only be called from Actor::Update().
         Vector2f next_position()
         {
             return NextPosition;

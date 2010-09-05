@@ -14,7 +14,7 @@ import math.line2;
 import math.rectangle;
 import video.videodriver;
 import video.videodriverutil;
-import video.gldriver;
+import video.glvideodriver;
 import actor.actor;
 import actor.actormanager;
 import actor.lineemitter;

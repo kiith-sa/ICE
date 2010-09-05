@@ -14,8 +14,8 @@ import allocator;
 
 
 ///Convert a ColorFormat to OpenGL color format parameters.
-void gl_color_format(ColorFormat format, out GLenum gl_format,
-                     out GLenum type, out GLint internal_format)
+package void gl_color_format(ColorFormat format, out GLenum gl_format,
+                             out GLenum type, out GLint internal_format)
 {
     switch(format)
     {
