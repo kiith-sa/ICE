@@ -3,9 +3,7 @@ START ESSENTIAL -------------------------------
     Refactoring/cleaning up run. Especially look into Actors and ActorManager,
     but also GLVideoDriver
 
-    We can't use casts to convert vectors as they can't be overloaded based
-    on return value. Try writing a template Vector2!(T) to(T, U)(Vector2!(U) v)
-    template function.
+    Split font.d to one class per file (if possible)
 
     Shader should work like Texture works right now, i.e. two structs
     connected by index. Actually, GLShader could be a class, for the

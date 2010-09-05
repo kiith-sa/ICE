@@ -122,6 +122,15 @@ align(1) struct Vector2(T)
     }
 }
 
+///Convert Vector2 of one type to other. 
+/**
+ * Usage e.g. : VFloat=to!(float)VUint
+ */
+Vector2!(T)to(T, U)(Vector2!(U)v)
+{
+    return Vector2!(T)(cast(T)v.x, cast(T)v.y);
+}
+
 alias Vector2!(byte) Vector2b;
 alias Vector2!(ubyte) Vector2ub;
 alias Vector2!(short) Vector2s;

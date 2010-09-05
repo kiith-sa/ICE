@@ -35,7 +35,7 @@ abstract class GLVideoDriver : VideoDriver
         GLVersion Version;
 
         real ViewZoom = 0.0;
-        Vector2d ViewOffset = {0.0, 0.0};
+        Vector2d ViewOffset = Vector2d(0.0, 0.0);
 
         //Is line antialiasing enabled?
         bool LineAA = false;
@@ -187,9 +187,8 @@ abstract class GLVideoDriver : VideoDriver
                 CurrentPage = page_index;
             }
 
-            Vector2f vmin = Vector2f(position.x, position.y);
-            Vector2f vmax = Vector2f(position.x + texture.size.x,
-                                     position.y + texture.size.y);
+            Vector2f vmin = to!(float)(position);
+            Vector2f vmax = vmin + to!(float)(texture.size);
 
             Vector2f tmin = gl_texture.texcoords.min;
             Vector2f tmax = gl_texture.texcoords.max;

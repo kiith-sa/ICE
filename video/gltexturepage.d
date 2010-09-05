@@ -82,7 +82,7 @@ package align(1) struct GLTexturePage(TexturePacker)
          * @returns false on failure.
          */
         bool insert_texture(ref Image image, out Rectanglef texcoords, 
-                                     out Vector2u offset) 
+                            out Vector2u offset) 
         {
             if(image.format != Format){return false;}
             if(Packer.allocate_space(image.size, texcoords, offset))

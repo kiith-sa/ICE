@@ -165,8 +165,8 @@ package align(1) struct NodePacker
             Node* node = Root.insert(size);
             if(node is null){return false;}
 
-            Vector2f min = Vector2f(node.rectangle.min.x, node.rectangle.min.y);
-            Vector2f max = Vector2f(node.rectangle.max.x, node.rectangle.max.y);
+            Vector2f min = to!(float)(node.rectangle.min);
+            Vector2f max = to!(float)(node.rectangle.max);
 
             texcoords.min = Vector2f(min.x / Size.x, min.y / Size.y);
             texcoords.max = Vector2f(max.x / Size.x, max.y / Size.y);
@@ -190,7 +190,7 @@ package align(1) struct NodePacker
         {
             Size = size;
             Root = alloc!(Node)();
-            *Root = Node(Rectangleu(Vector2u(0,0), size), null, null, false);
+            *Root = Node(Rectangleu(Vector2u(0, 0), size), null, null, false);
         }
 }   
 
