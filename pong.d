@@ -13,7 +13,6 @@ import math.vector2;
 import math.line2;
 import math.rectangle;
 import video.videodriver;
-import video.videodriverutil;
 import video.glvideodriver;
 import actor.actor;
 import actor.actormanager;
@@ -53,7 +52,7 @@ class Wall : Actor
         override void draw()
         {
             static c = Color(240, 255, 240, 255);
-            draw_rectangle(Position + Size.min, Position + Size.max);
+            VideoDriver.get.draw_rectangle(Position + Size.min, Position + Size.max);
         }
 
         override bool collision(Actor actor, out Vector2f position, 
@@ -347,13 +346,14 @@ class Ball : Actor
 
         override void draw()
         {
-            VideoDriver.get.line_aa = true;
-            VideoDriver.get.line_width = 3;
-            draw_circle(Position, Radius - 2, Color(240, 240, 255, 255), 4);
-            VideoDriver.get.line_width = 1;
-            draw_circle(Position, Radius, Color(192, 192, 255, 192));
-            VideoDriver.get.line_width = 1;                  
-            VideoDriver.get.line_aa = false;
+            auto driver = VideoDriver.get;
+            driver.line_aa = true;
+            driver.line_width = 3;
+            driver.draw_circle(Position, Radius - 2, Color(240, 240, 255, 255), 4);
+            driver.line_width = 1;
+            driver.draw_circle(Position, Radius, Color(192, 192, 255, 192));
+            driver.line_width = 1;                  
+            driver.line_aa = false;
         }
 }
 

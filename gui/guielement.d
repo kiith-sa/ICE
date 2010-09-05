@@ -2,7 +2,6 @@ module gui.guielement;
 
 
 import video.videodriver;
-import video.videodriverutil;
 import math.vector2;
 import math.rectangle;
 import platform.platform;
@@ -152,7 +151,7 @@ class GUIElement
             {
                 Vector2f min = Vector2f(Bounds.min.x, Bounds.min.y);
                 Vector2f max = Vector2f(Bounds.max.x, Bounds.max.y);
-                draw_rectangle(min, max, BorderColor);
+                VideoDriver.get.draw_rectangle(min, max, BorderColor);
             }
 
             draw_children();

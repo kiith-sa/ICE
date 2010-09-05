@@ -40,11 +40,14 @@ START ESSENTIAL -------------------------------
 
     Use array arithmetic such as a[] = b[] + c[] if/where possible
 
-    Move code from videodriverutil to final methods in VideoDriver interface.
-
     If GLVideoDriver is still over 600 lines, consider moving
     texture code to a TextureManager singleton and just keeping
     the interface to pass parameters.
+
+    More contracts and unittests, e.g. for absurdly high or small values.
+12:
+    Change coding style of private members so that class names can't conflict
+    with private members' names.
 13:
     File input, resource manager, use that for font and shader files,
     maybe also use resource manager for shaders/textures/pages/fonts
@@ -138,7 +141,9 @@ START ESSENTIAL -------------------------------
     also, get the newest derelict
     Debug, release, doc targets
 
-    Consider xfBuild, since it's not dead
+    Consider xfBuild, since it's not dead  
+    Maybe even basic makefile.
+    Also, create a code::blocks project.
 
 
 END ESSENTIAL -------------------------------
@@ -307,21 +312,12 @@ END ESSENTIAL -------------------------------
     Consider moving FPSCounter to VideoDriver, Platform or somewhere else
     outside game specific code. Also need to move the code that writes
     out stats of these counters somewhere.
-28:
-    DSSS is dead - stop using it. We can include the Derelict bindings we need
-    in the package and use a simple Makefile, the SCons or some specialized
-    D build system from dsource.
-    Also create a CodeBlocks project (e.g. for easy Windows compilation)
 30?:
     Rotation (of 2D actors) - Velocity should then be in object space,
     not world space. Immediate use would be rotating balls.
     Also, the same paddle could be used up and down, just rotated.
-31:
-    Change coding style of private members so that class names can't conflict
-    with private members' names.
 32:
-    Textured quads? (Possibly leave that for top-down shooter project)
-    Also needs Drawable (base class for textured quad, line mesh),
+    Drawable (base class for textured quad, line mesh),
     serialization/file management
     Serialization should go through a standardized interface so
     we can change file format (INI, XML, binary, compressed...)
@@ -337,8 +333,6 @@ END ESSENTIAL -------------------------------
     8 sections (top, down... + corners), using > 1.0 texcoords
     to repeat textures for resizing/support of varying sizes. 
     (once textures are done)
-33:
-    Consider merging ParticleSystem with LineEmitter
 34:
     Drawable abstraction. 
     Can be a line mesh/mesh group, sprite (with many textures),
@@ -348,11 +342,6 @@ END ESSENTIAL -------------------------------
 
     First just support lines, then add sprites, and _maybe_ add 3d
     stuff later.
-35:
-    VideoDriver::draw_texture should have two versions:
-    With color and without color. The version with color
-    should probably use a specific shader and will only be used
-    by stuff like fonts anyway.
 35:
     GUI serialization (at least be able to set button fonts etc)
     Don't have to be able to add elements from plain ini GUI code,

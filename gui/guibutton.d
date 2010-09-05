@@ -3,7 +3,6 @@ module gui.guibutton;
 
 import gui.guielement;
 import gui.guistatictext;
-import video.videodriverutil;
 import video.videodriver;
 import math.vector2;
 import platform.platform;
@@ -140,7 +139,8 @@ class GUIButton : GUIElement
             {
                 Vector2f min = Vector2f(Bounds.min.x, Bounds.min.y);
                 Vector2f max = Vector2f(Bounds.max.x, Bounds.max.y);
-                draw_rectangle(min, max, States[CurrentState].border_color);
+                VideoDriver.get.draw_rectangle(min, max, 
+                                               States[CurrentState].border_color);
             }
 
             draw_children();
