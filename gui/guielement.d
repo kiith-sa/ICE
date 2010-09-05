@@ -7,7 +7,7 @@ import math.vector2;
 import math.rectangle;
 import platform.platform;
 import color;
-import util;
+import arrayutil;
 
 
 //In future, this should be rewritten to support background and border(?) textures,

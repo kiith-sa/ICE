@@ -10,7 +10,7 @@ import actor.particlesystem;
 import math.math;
 import math.vector2;
 import timer;
-import util;
+import arrayutil;
 
 
 ///Single particle of the particle system

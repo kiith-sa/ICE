@@ -10,7 +10,7 @@ import singleton;
 import time;
 import timer;
 import eventcounter;
-import util;
+import arrayutil;
 
 
 ///Stores and manages all Actors.
@@ -181,7 +181,7 @@ class ActorManager
             //Add or remove any actors requested
             foreach(actor; ActorsToRemove)
             {
-                alias util.remove remove;
+                alias arrayutil.remove remove;
                 Actors.remove(actor, true);
             }
 

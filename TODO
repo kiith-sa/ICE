@@ -40,8 +40,6 @@ START ESSENTIAL -------------------------------
 
     Use array arithmetic such as a[] = b[] + c[] if/where possible
 
-    Rename util.d to arrayutil.d
-
     Move code from videodriverutil to final methods in VideoDriver interface.
 
     If GLVideoDriver is still over 600 lines, consider moving

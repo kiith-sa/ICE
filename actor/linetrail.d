@@ -12,7 +12,7 @@ import math.math;
 import math.vector2;
 import color;
 import timer;
-import util;
+import arrayutil;
 
 
 ///Line trail particle system (trail following moving objects). Needs an owner to work.

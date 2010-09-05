@@ -9,8 +9,6 @@ import platform.key;
 import platform.platform;
 import math.vector2;
 import singleton;
-//import signal;
-///Handles platform specific functionality like input/output.
 
 class SDLPlatform : Platform
 {

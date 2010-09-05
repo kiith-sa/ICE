@@ -16,7 +16,7 @@ import singleton;
 import color;
 import file;
 import image;
-import util;
+import arrayutil;
 import allocator;
 
 
