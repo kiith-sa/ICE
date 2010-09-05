@@ -58,7 +58,7 @@ class ActorManager
             UpdateTimer(1.0 / 120.0);
             UpdateCounter = new EventCounter(1.0);
             UpdateCounter.update.connect(&ups_update);
-            FrameTime = Time.get_time();
+            FrameTime = get_time();
         }
 
         ///Get frame length in seconds, i.e. update "frame" length, not graphics.
@@ -111,11 +111,10 @@ class ActorManager
         void update()
         {
             //Explicitly passing time to UpdateTimer for synchronization.
-            real time = Time.get_time();
+            real time = get_time();
             if(UpdateTimer.expired(time))
             {
                 FrameLength = UpdateTimer.age(time) * TimeSpeed;
-                //FrameTime = time;
                 FrameTime += FrameLength;
                 UpdateTimer.reset(time);
                 update_actors();

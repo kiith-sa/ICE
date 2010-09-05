@@ -35,7 +35,7 @@ class EventCounter
         this(real period)
         {
             Period(period);
-            StartTime = Time.get_time();
+            StartTime = get_time();
         }
 
         ///Count one event.
@@ -57,7 +57,7 @@ class EventCounter
         ///Return a string containing statistics about events counted.
         string statistics()
         {
-            real time_total = Time.get_time() - StartTime;
+            real time_total = get_time() - StartTime;
             real events_second = EventsTotal / time_total;
 
             return "Total events: " ~ std.string.toString(EventsTotal) ~ "\n" 

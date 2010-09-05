@@ -20,7 +20,7 @@ START ESSENTIAL -------------------------------
     Menu - Pong 
     Pong - Game
 
-    Currently, assert messages are caucht in main and not displayed.
+    Currently, assert messages are caught in main and not displayed.
     Add a catch() for AssertErrors or whatever they're called and display
     their messages.
 
@@ -44,7 +44,8 @@ START ESSENTIAL -------------------------------
     texture code to a TextureManager singleton and just keeping
     the interface to pass parameters.
 
-    More contracts and unittests, e.g. for absurdly high or small values.
+    More contracts and unittests, maybe
+    invariants, e.g. for absurdly high or small values.
 12:
     Change coding style of private members so that class names can't conflict
     with private members' names.

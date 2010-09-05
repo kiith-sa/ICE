@@ -24,7 +24,7 @@ struct Timer
         ///(Fake) constructor. Constructs a timer with given delay starting now.
         void opCall(real delay)
         {               
-            opCall(delay, Time.get_time());
+            opCall(delay, get_time());
         }
 
         ///(Fake) constructor. Constructs a timer with given delay starting at specified time.
@@ -48,7 +48,7 @@ struct Timer
         ///Returns time since start of the timer.
         real age()
         {
-            return age(Time.get_time());
+            return age(get_time());
         }
 
         /**
@@ -74,7 +74,7 @@ struct Timer
          */
         real age_relative()
         {
-            return age_relative(Time.get_time());
+            return age_relative(get_time());
         }
 
         /**
@@ -95,7 +95,7 @@ struct Timer
         ///Determines if the timer is expired.
         bool expired()
         {
-            return expired(Time.get_time());
+            return expired(get_time());
         }
 
         /**
@@ -112,6 +112,6 @@ struct Timer
         ///Resets the timer with specified start time.
         void reset()
         {
-            reset(Time.get_time());
+            reset(get_time());
         }
 }

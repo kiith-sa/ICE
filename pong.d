@@ -844,7 +844,6 @@ class Menu
 
 void main()
 {
-    Time.initialize!(Time);
     Platform.initialize!(SDLPlatform);
     VideoDriver.initialize!(GLVideoDriver);
 
