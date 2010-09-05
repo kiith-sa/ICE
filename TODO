@@ -3,24 +3,12 @@ START ESSENTIAL -------------------------------
     Refactoring/cleaning up run. Especially look into Actors and ActorManager,
     but also GLVideoDriver
 
-    Use alias and/or with to simplify code.
-    alias std.string.toString to_string
-
-    Use foreach_reverse where we're reverse iterating with for
-    (e.g. delegate version of util.remove)
-
-    final for classes that shouldn't be inherited and functions where it makes sense
-
-    Use static opCall as a struct ctor, esp. for stuff like Rectangles,
+    Use static opCall as a struct ctor, esp. for stuff like Rectangles, Lines
     and use ctor method instead of init
 
-    Currently, assert messages are caught in main and not displayed.
-    Add a catch() for AssertErrors or whatever they're called and display
-    their messages.
-
-    Try to code casts between Vector2 types so we can e.g. cast(Vector2i)Vector2u
-
-    One line accessors, short scopes
+    We can't use casts to convert vectors as they can't be overloaded based
+    on return value. Try writing a template Vector2!(T) to(T, U)(Vector2!(U) v)
+    template function.
 
     Shader should work like Texture works right now, i.e. two structs
     connected by index. Actually, GLShader could be a class, for the
@@ -31,15 +19,6 @@ START ESSENTIAL -------------------------------
     (shader dtor should delete shader program, etc)
     This should be done by a member function
     called by the dtor so we can clear videodriver resources at any time.
-
-    Use array arithmetic such as a[] = b[] + c[] if/where possible
-
-    If GLVideoDriver is still over 600 lines, consider moving
-    texture code to a TextureManager singleton and just keeping
-    the interface to pass parameters.
-
-    More contracts and unittests, maybe
-    invariants, e.g. for absurdly high or small values.
 12:
     Change coding style of private members so that class names can't conflict
     with private members' names.

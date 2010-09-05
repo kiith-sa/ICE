@@ -11,40 +11,33 @@ import file;
 
 package struct GLShader
 {
-    invariant
-    {
-        assert(program != 0, "Shader program is null");
-    }
+    invariant{assert(program != 0, "Shader program is null");}
 
     private:
-		//GLSL linked shader program
+		//GLSL linked shader program.
         GLuint program = 0;
 
-        //Initialize specified shader 
-        void init(string name)
+        //Load specified shader.
+        void ctor(string name)
         {
             load_GLSL("data/shaders/" ~ name ~ ".vert", 
                       "data/shaders/" ~ name ~ ".frag");
         }
 
     public:
-        //Fake constructor
+        ///Fake constructor. Load shader with given name.
         static GLShader opCall(string name)
         {
             GLShader shader;
-            shader.init(name);
+            shader.ctor(name);
             return shader;
         }
 
-        void start()
-        {
-            glUseProgram(program);
-        }
-
-        void die()
-        {
-            glDeleteProgram(program);
-        }
+        ///use this shader in following drawing commands.
+        void start(){glUseProgram(program);}
+        
+        ///Destroy this shader.
+        void die(){glDeleteProgram(program);}
         
     private:
         //Load a GLSL shader

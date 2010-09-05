@@ -14,7 +14,7 @@ import arrayutil;
 
 
 ///Stores and manages all Actors.
-class ActorManager
+final class ActorManager
 {
     mixin Singleton;
 
@@ -61,29 +61,20 @@ class ActorManager
             FrameTime = get_time();
         }
 
+        ///Destroy the ActorManager. Should only be called on shutdown.
+        void die(){UpdateCounter.update.disconnect(&ups_update);}
+
         ///Get frame length in seconds, i.e. update "frame" length, not graphics.
-        real frame_length()
-        {
-            return FrameLength;
-        }
+        real frame_length(){return FrameLength;}
 
         ///Get time when the current update started.
-        real frame_time()
-        {
-            return FrameTime;
-        }
+        real frame_time(){return FrameTime;}
 
         ///Set time speed multiplier (0 for pause, 1 for normal speed).
-        void time_speed(real speed)
-        {
-            TimeSpeed = speed;
-        }
+        void time_speed(real speed){TimeSpeed = speed;}
 
         ///Get time speed multiplier.
-        real time_speed()
-        {
-            return TimeSpeed;
-        }
+        real time_speed(){return TimeSpeed;}
         
         /** 
          * Test for collision between given actor and any other actor/s.
@@ -99,10 +90,7 @@ class ActorManager
         {
             foreach(a; Actors)
             {
-                if(a.collision(actor, position, velocity))
-                {
-                    return true;
-                }
+                if(a.collision(actor, position, velocity)){return true;}
             }
             return false;
         }
@@ -124,41 +112,24 @@ class ActorManager
         ///Draw all actors.
         void draw()
         {
-            foreach(actor; Actors)
-            {
-                actor.draw();
-            }
+            foreach(actor; Actors){actor.draw();}
         }
 
         ///Remove all actors.
         void clear()
         {
-            foreach(actor; Actors)
-            {
-                actor.die();
-            }
+            foreach(actor; Actors){actor.die();}
             Actors = [];
             ActorsToAdd = [];
             ActorsToRemove = [];
         }
 
         ///Return a string with statistics about ActorManager run.
-        string statistics()
-        {
-            return "UPS statistics:\n" ~ UpdateCounter.statistics();
-        }
-
-        ~this()
-        {
-            UpdateCounter.update.disconnect(&ups_update);
-        }
+        string statistics(){return "UPS statistics:\n" ~ UpdateCounter.statistics();}
 
     package:
         ///Add a new actor. Will be added at the beginning of next frame.
-        void add_actor(Actor actor)
-        {
-            ActorsToAdd ~= actor;
-        }
+        void add_actor(Actor actor){ActorsToAdd ~= actor;}
 
         ///Remove an actor. Will be removed at the beginning of next frame.
         void remove_actor(Actor actor)
@@ -167,10 +138,7 @@ class ActorManager
             assert(Actors.contains(actor, true), 
                    "Can't remove an actor that is not in the ActorManager");
         }
-        body
-        {
-            ActorsToRemove ~= actor;
-        }
+        body{ActorsToRemove ~= actor;}
 
         //Update all actors
         void update_actors()
@@ -189,25 +157,13 @@ class ActorManager
             ActorsToRemove = [];
 
             //Update actors' states
-            foreach(actor; Actors)
-            {
-                actor.update_physics();
-            } 
-            foreach(actor; Actors)
-            {
-                actor.update();
-            } 
+            foreach(actor; Actors){actor.update_physics();} 
+            foreach(actor; Actors){actor.update();} 
         }
         
         //Update updates per second output
-        void ups_update(real ups)
-        {
-            writefln("UPS: ", ups);
-        }
+        void ups_update(real ups){writefln("UPS: ", ups);}
 
         //Determines if given actor is in this ActorManager
-        bool has_actor(Actor actor)
-        {
-            return Actors.contains(actor, true);
-        }
+        bool has_actor(Actor actor){return Actors.contains(actor, true);}
 }

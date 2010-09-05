@@ -55,12 +55,9 @@ class Wall : Actor
             VideoDriver.get.draw_rectangle(Position + Size.min, Position + Size.max);
         }
 
-        override bool collision(Actor actor, out Vector2f position, 
+        final override bool collision(Actor actor, out Vector2f position, 
                        out Vector2f velocity)
-        in
-        {
-            assert(actor !is null);
-        }
+        in{assert(actor !is null);}
         body
         {
             if(actor.classinfo == Ball.classinfo)
@@ -176,33 +173,20 @@ class Paddle : Wall
         }
 
         ///Return limits of movement of this paddle.
-        Rectanglef limits()
-        {
-            return Limits;
-        }
+        Rectanglef limits(){return Limits;}
 
         ///Control the paddle to move right (used by player or AI).
-        void move_right()
-        {   
-            Velocity = Speed * Vector2f(1.0, 0.0); 
-        }
+        void move_right(){Velocity = Speed * Vector2f(1.0, 0.0);}
 
         ///Control the paddle to move left (used by player or AI).
-        void move_left()
-        {   
-            Velocity = Speed * Vector2f(-1.0, 0.0); 
-        }
+        void move_left(){Velocity = Speed * Vector2f(-1.0, 0.0);}
 
         ///Control the paddle to stop (used by player or AI).
-        void stop()
-        {
-            Velocity = Vector2f(0.0, 0.0);
-        }
+        void stop(){Velocity = Vector2f(0.0, 0.0);}
 
         override void update_physics()
         {
-            NextPosition = Position + 
-                           Velocity * ActorManager.get.frame_length();
+            NextPosition = Position + Velocity * ActorManager.get.frame_length();
 
             Rectanglef position_limits = Rectanglef(Limits.min - Size.min,
                                                     Limits.max - Size.max);
@@ -317,10 +301,7 @@ class Ball : Actor
         }
  
         ///Return the radius of this ball.
-        float radius()
-        {
-            return Radius;
-        }
+        float radius(){return Radius;}
 
         override void update_physics()
         {
@@ -329,9 +310,7 @@ class Ball : Actor
             
             Vector2f position;
             Vector2f velocity;
-            if(ActorManager.get.collision(this, 
-                                               position,
-                                               velocity))
+            if(ActorManager.get.collision(this, position, velocity))
             {
                 NextPosition = position;
                 Velocity = velocity;
@@ -339,10 +318,7 @@ class Ball : Actor
             }
         }
 
-        override void update()
-        {
-            Position = NextPosition;
-        }
+        override void update(){Position = NextPosition;}
 
         override void draw()
         {
@@ -357,7 +333,7 @@ class Ball : Actor
         }
 }
 
-class Player
+abstract class Player
 {
     protected:
         //Name of this player
@@ -377,27 +353,16 @@ class Player
         }
 
         ///Get score of this player.
-        int score()
-        {
-            return Score;
-        }
+        int score(){return Score;}
 
         ///Get name of this player.
-        string name()
-        {
-            return Name;
-        }
+        string name(){return Name;}
 
         ///Update the player state.
-        void update()
-        {
-        }
+        void update(){}
 
         ///Destroy this player
-        void die()
-        {
-            delete this;
-        }
+        void die(){delete this;}
 
     protected:
         ///Construct a player with given name.
@@ -434,15 +399,9 @@ class AIPlayer : Player
                 float distance_next = PlayerPaddle.limits.distance(ball_next);
                 
                 //If the ball is closing to paddle movement area
-                if(distance_next <= distance)
-                {
-                    ball_closing();
-                }       
+                if(distance_next <= distance){ball_closing();}       
                 //If the ball is moving away from paddle movement area
-                else
-                {
-                    move_to_center();
-                }
+                else{move_to_center();}
 
                 UpdateTimer.reset();
             }
@@ -628,10 +587,7 @@ class Game
             Platform.get.key.disconnect(&key_handler);
         }
 
-        Ball ball()
-        {
-            return GameBall;
-        }
+        Ball ball(){return GameBall;}
 
         void draw()
         {
@@ -724,8 +680,7 @@ class Pong
             Game.initialize!(Game);
             ActorManager.initialize!(ActorManager);
             GUIRoot.initialize!(GUIRoot);
-            VideoDriver.get.set_video_mode(800, 600, ColorFormat.RGBA_8, 
-                                                false);
+            VideoDriver.get.set_video_mode(800, 600, ColorFormat.RGBA_8, false);
 
             //Update FPS every second
             FPSCounter = new EventCounter(1.0);
@@ -751,6 +706,7 @@ class Pong
 
         void die()
         {
+            ActorManager.get.die();
             VideoDriver.get.die();
             Platform.get.die();
             FPSCounter.update.disconnect(&fps_update);
@@ -764,22 +720,16 @@ class Pong
             {
                 //Count this frame
                 FPSCounter.event();
-                if(RunPong && !Game.get.run())
-                {
-                    pong_end();
-                }
+
+                if(RunPong && !Game.get.run()){pong_end();}
 
                 //update game state
                 ActorManager.get.update();
                 VideoDriver.get.start_frame();
-                if(RunPong)
-                {
-                    Game.get.draw();
-                }
-                else
-                {
-                    draw();
-                }
+
+                if(RunPong){Game.get.draw();}
+                else{draw();}
+
                 GUIRoot.get.draw();
                 ActorManager.get.draw();
                 VideoDriver.get.end_frame();
@@ -812,10 +762,7 @@ class Pong
             Game.get.start_game();
         }
 
-        void exit()
-        {
-            Continue = false;
-        }
+        void exit(){Continue = false;}
 
         void key_handler(KeyState state, Key key, dchar unicode)
         {
@@ -837,8 +784,7 @@ class Pong
 
         void fps_update(real fps)
         {
-            Platform.get.window_caption = "FPS: " ~
-                                               std.string.toString(fps);
+            Platform.get.window_caption = "FPS: " ~ std.string.toString(fps);
         }
 }
 

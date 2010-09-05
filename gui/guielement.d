@@ -33,10 +33,7 @@ class GUIElement
         ///Construct a new element with specified parameters.
         this(GUIElement parent, Vector2i position, Vector2u size)
         {
-            if(parent !is null)
-            {
-                parent.add_child(this);
-            }
+            if(parent !is null){parent.add_child(this);}
             this.size(size);
             position_local(position);
         }

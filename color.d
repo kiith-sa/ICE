@@ -97,10 +97,7 @@ struct Color
         }
 
         ///Returns luminance of the color.
-        ubyte luminance()
-        {
-            return round32(0.3 * r + 0.59 * g + 0.11 * b);
-        }
+        ubyte luminance(){return round32(0.3 * r + 0.59 * g + 0.11 * b);}
         
         ///Adds two colors (values are clamped to range 0 .. 255).
         Color opAdd(Color c)
@@ -133,17 +130,11 @@ struct Color
         }
 
         ///Set grayscale color.
-        void gray(ubyte gray)
-        {
-            r = g = b = a = gray;
-        }
+        void gray(ubyte gray){r = g = b = a = gray;}
 
         ///Gamma correct the color with specified factor.
         void gamma_correct(real factor)
-        in
-        {
-            assert(factor >= 0.0, "Can't gamma correct with a negative factor");
-        }
+        in{assert(factor >= 0.0, "Can't gamma correct with a negative factor");}
         body
         {
             real scale = 1.0, temp = 0.0;
@@ -169,10 +160,7 @@ struct Color
 
 ///Gamma correct a GRAY_8 color.
 ubyte gamma_correct(ubyte color, real factor)
-in
-{
-    assert(factor >= 0.0, "Can't gamma correct with a negative factor");
-}
+in{assert(factor >= 0.0, "Can't gamma correct with a negative factor");}
 body
 {
     return cast(ubyte)min(cast(real)color * factor, 255.0L);

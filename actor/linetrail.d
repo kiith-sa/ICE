@@ -16,7 +16,7 @@ import arrayutil;
 
 
 ///Line trail particle system (trail following moving objects). Needs an owner to work.
-class LineTrail : LineEmitter
+final class LineTrail : LineEmitter
 {
     private:
         //determines when it's time to update 
@@ -50,7 +50,6 @@ class LineTrail : LineEmitter
         {
             assert(frequency >= 0.0, "LineTrail emit frequency must be > 0");
             super.emit_frequency(frequency);
-
         } 
         
         ///Draw the particle system.

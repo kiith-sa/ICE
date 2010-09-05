@@ -80,10 +80,7 @@ class GUIStaticText : GUIElement
         }
 
         ///Set text color.
-        void text_color(Color color)
-        {
-            FontColor = color;
-        }
+        void text_color(Color color){FontColor = color;}
 
         ///Set size of this element in screen space.
         override void size(Vector2u size)
@@ -118,11 +115,7 @@ class GUIStaticText : GUIElement
         {
             super.draw();
             //must realign if settings changed
-            if(!Aligned)
-            {
-                realign();
-                Aligned = true;
-            }
+            if(!Aligned){realign();}
 
             VideoDriver.get.font = Font;
             VideoDriver.get.font_size = FontSize;
@@ -215,10 +208,11 @@ class GUIStaticText : GUIElement
             VideoDriver.get.font_size = FontSize;
             Lines = [];
             uint y_offset;
-            while(text.length > 0)
-            {
-                text = add_line(text, y_offset, y_offset);
-            }
+
+            //break text to lines and align them horizontally, then align vertically
+            while(text.length > 0){text = add_line(text, y_offset, y_offset);}
             align_vertical();
+
+            Aligned = true;
         }
 }               

@@ -14,10 +14,7 @@ template Signal(Args ...)
         ///Emit the signal (call all slots with given arguments).
         void emit(Args args)
         {
-            foreach (deleg; slots)
-            {
-                deleg(args);
-            }
+            foreach (deleg; slots){deleg(args);}
         }
 
         /**
@@ -27,14 +24,8 @@ template Signal(Args ...)
          * emitted.
          */
         void connect(void delegate(Args) deleg)
-        in
-        {
-            assert(deleg !is null, "Can't connect a null function to a signal");
-        }
-        body
-        {
-            slots ~= deleg;
-        }
+        in{assert(deleg !is null, "Can't connect a null function to a signal");}
+        body{slots ~= deleg;}
 
         /**
          * Disconnect a slot from the signal. 

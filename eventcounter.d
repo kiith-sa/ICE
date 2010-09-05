@@ -9,7 +9,7 @@ import signal;
 
 
 ///Generalization of an FPS counter - i.e. counts how frequently an event happens
-class EventCounter
+final class EventCounter
 {
     private:
         //time when this eventcounter started
@@ -60,9 +60,9 @@ class EventCounter
             real time_total = get_time() - StartTime;
             real events_second = EventsTotal / time_total;
 
-            return "Total events: " ~ std.string.toString(EventsTotal) ~ "\n" 
-                   ~ "Total Time: " ~ std.string.toString(time_total) ~ "\n" 
-                   ~ "Average events per second: " 
-                   ~ std.string.toString(events_second);
+            alias std.string.toString to_string;
+            return "Total events: " ~ to_string(EventsTotal) ~ "\n" 
+                   ~ "Total Time: " ~ to_string(time_total) ~ "\n" 
+                   ~ "Average events per second: " ~ to_string(events_second);
         }
 }

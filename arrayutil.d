@@ -14,23 +14,16 @@ void remove(T)(ref T[] array, T element, bool ident = false)
     {
         if(ident ? array_element is element : array_element == element)
         {
-            //remove the slot from slots
-            if(index == 0)
-            {
-                array = array[1 .. $];
-            }
-            else if(index + 1 == array.length)
-            {
-                array = array[0 .. index];
-            }
-            else
-            {
-                array = array[0 .. index] ~ array[index + 1 .. $];
-            }
+            //remove first element - no need to reallocate
+            if(index == 0){array = array[1 .. $];}
+            //remove last element - no need to reallocate
+            else if(index + 1 == array.length){array = array[0 .. index];}
+            //remove from the middle - ~ forces reallocate
+            else{array = array[0 .. index] ~ array[index + 1 .. $];}
             return;
         }
     }
-    assert(0, "Trying to remove an element not present in the array");
+    assert(false, "Trying to remove an element not present in the array");
 }
 
 
@@ -42,23 +35,16 @@ void remove(T)(ref T[] array, T element, bool ident = false)
   */
 void remove(T)(ref T[] array, bool delegate(ref T) deleg)
 {
-    uint elems = array.length;
-    for(int elem = elems - 1; elem >= 0; --elem)
+    foreach_reverse(int index, ref elem; array)
     {
-        if(deleg(array[elem]))
+        if(deleg(elem))
         {
-            if(elem == 0)
-            {
-                array = array[1 .. $];
-            }
-            else if(elem + 1 == array.length)
-            {
-                array = array[0 .. elem];
-            }
-            else
-            {
-                array = array[0 .. elem] ~ array[elem + 1 .. $];
-            }
+            //remove first element - no need to reallocate
+            if(index == 0){array = array[1 .. $];}
+            //remove last element - no need to reallocate
+            else if(index + 1 == array.length){array = array[0 .. index];}
+            //remove from the middle - ~ forces reallocate
+            else{array = array[0 .. index] ~ array[index + 1 .. $];}
         }
     }
 }
@@ -74,10 +60,7 @@ void remove(T)(ref T[] array, bool delegate(ref T) deleg)
  */
 int find(T)(ref T[] array, bool delegate(ref T) deleg)
 {
-    foreach(index, ref element; array)
-    {
-        if(deleg(element)){return index;}
-    }
+    foreach(index, ref element; array){if(deleg(element)){return index;}}
     return -1;
 }
 

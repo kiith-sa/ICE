@@ -34,28 +34,16 @@ struct Rectangle(T)
     }
     
     ///Addition with a vector - used to move the rectangle. 
-    Rectangle!(T) opAdd(Vector2!(T) v)
-    {
-        return Rectangle!(T)(min + v, max + v);
-    }
+    Rectangle!(T) opAdd(Vector2!(T) v){return Rectangle!(T)(min + v, max + v);}
 
     ///Subtraction with a vector - used to move the rectangle. 
-    Rectangle!(T) opSub(Vector2!(T) v)
-    {
-        return Rectangle!(T)(min - v, max - v);
-    }
+    Rectangle!(T) opSub(Vector2!(T) v){return Rectangle!(T)(min - v, max - v);}
 
     ///Returns the lower-left corner of the rectangle.
-    Vector2!(T) min_max()
-    {
-        return Vector2!(T)(min.x, max.y);
-    }
+    Vector2!(T) min_max(){return Vector2!(T)(min.x, max.y);}
 
     ///Returns the upper-right corner of the rectangle.
-    Vector2!(T) max_min()
-    {
-        return Vector2!(T)(max.x, min.y);
-    }
+    Vector2!(T) max_min(){return Vector2!(T)(max.x, min.y);}
 
     ///Addition-assignment with a vector - used to move the rectangle. 
     void opAddAssign(Vector2!(T) v)
@@ -82,10 +70,7 @@ struct Rectangle(T)
     }
 
     ///Returns distance from point to the rectangle.
-    T distance(Vector2!(T) point)
-    {
-        return (point - clamp(point)).length;
-    }
+    T distance(Vector2!(T) point){return (point - clamp(point)).length;}
 
     ///Determines if a point intersects with the rectangle.
     bool intersect(Vector2!(T) point)
@@ -95,28 +80,16 @@ struct Rectangle(T)
     }
 
     ///Returns center of the rectangle.
-    Vector2!(T) center()
-    {
-        return (min + max) / cast(T)2;
-    }
+    Vector2!(T) center(){return (min + max) / cast(T)2;}
     
     ///Returns width of the rectangle.
-    T width()
-    {
-        return max.x - min.x;
-    }
+    T width(){return max.x - min.x;}
 
     ///Returns height of the rectangle.
-    T height()
-    {
-        return max.y - min.y;
-    }
+    T height(){return max.y - min.y;}
     
     ///Returns size of the rectangle.
-    Vector2!(T) size()
-    {
-        return max - min;
-    }
+    Vector2!(T) size(){return max - min;}
     
     ///If the point is not in this rectangle, grow the rectangle to include it.
     void add_internal_point(Vector2!(T) point)

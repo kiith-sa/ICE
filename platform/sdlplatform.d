@@ -66,15 +66,9 @@ class SDLPlatform : Platform
             SDL_WM_SetCaption(toStringz(str), null); 
         }
 
-        override void hide_cursor()
-        {
-            SDL_ShowCursor(0);
-        }
+        override void hide_cursor(){SDL_ShowCursor(0);}
 
-        override void show_cursor()
-        {
-            SDL_ShowCursor(1);
-        }
+        override void show_cursor(){SDL_ShowCursor(1);}
 
     package:
         
@@ -96,10 +90,7 @@ class SDLPlatform : Platform
         void process_mouse_key(SDL_MouseButtonEvent event)
         {
             KeyState state = KeyState.Pressed;
-            if(event.type == SDL_MOUSEBUTTONUP)
-            {
-                state = KeyState.Released;
-            }
+            if(event.type == SDL_MOUSEBUTTONUP){state = KeyState.Released;}
 
             MouseKey key;
             switch(event.button)

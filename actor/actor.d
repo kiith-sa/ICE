@@ -13,12 +13,12 @@ import math.vector2;
  *
  * Actor with geometry that can collide with other actors and move.
  */
-class Actor
+abstract class Actor
 {
     invariant
     {
         //At speeds like this, collision and precision errors start to appear.
-        assert(Velocity.length <= 1600.0);
+        assert(Velocity.length <= 1600.0, "Actor speed can't be greater than 1600");
     }
 
     protected:
@@ -33,16 +33,10 @@ class Actor
 
     public:
         ///Return velocity of this actor.
-        Vector2f velocity()
-        {
-            return Velocity;
-        }
+        final Vector2f velocity(){return Velocity;}
 
         ///Return position of this actor.
-        Vector2f position()
-        {
-            return Position;
-        }
+        final Vector2f position(){return Position;}
 
         ///Update physics state of this Actor.
         void update_physics()
@@ -51,15 +45,10 @@ class Actor
         }
 
         ///Update this Actor.
-        void update()
-        {
-            Position = NextPosition;
-        }
+        void update(){Position = NextPosition;}
 
         ///Draw this actor.
-        void draw()
-        {
-        }
+        void draw();
 
         /**
          * Collision test with an actor. 
@@ -70,18 +59,13 @@ class Actor
          * 
          * Returns: true if there is a collision, false otherwise.
          */
-        bool collision(Actor actor, out Vector2f position, 
-                       out Vector2f velocity)
-        body
+        bool collision(Actor actor, out Vector2f position, out Vector2f velocity)
         {
             return false;
         }
 
         ///Destroy this actor.
-        void die()
-        {
-            ActorManager.get.remove_actor(this);
-        }
+        void die(){ActorManager.get.remove_actor(this);}
 
         ~this()
         {
@@ -92,10 +76,7 @@ class Actor
     package:
         //Return position this actor will have next frame. 
         //Should only be called from Actor::Update().
-        Vector2f next_position()
-        {
-            return NextPosition;
-        }
+        final Vector2f next_position(){return NextPosition;}
 
     protected:
         //Construct Actor with specified properties.

@@ -19,45 +19,24 @@ align(1) struct Vector2(T)
     //operators
 
     ///Negation.
-    Vector2!(T) opNeg()
-    {
-        return Vector2!(T)(-x, -y);
-    }
+    Vector2!(T) opNeg(){return Vector2!(T)(-x, -y);}
 
     ///Equality with a vector.
-    bool opEquals(Vector2!(T) v)
-    {
-        return equals(x, v.x) && equals(y, v.y);
-    }
+    bool opEquals(Vector2!(T) v){return equals(x, v.x) && equals(y, v.y);}
 
     ///Addition with a vector.
-    Vector2!(T) opAdd(Vector2!(T) v)
-    {
-        return Vector2!(T)(x + v.x, y + v.y);
-    }
+    Vector2!(T) opAdd(Vector2!(T) v){return Vector2!(T)(x + v.x, y + v.y);}
 
     ///Subtraction with a vector.
-    Vector2!(T) opSub(Vector2!(T) v)
-    {
-        return Vector2!(T)(x - v.x, y - v.y);
-    }
+    Vector2!(T) opSub(Vector2!(T) v){return Vector2!(T)(x - v.x, y - v.y);}
 
     ///Multiplication by a scalar.
-    Vector2!(T) opMul(T m)
-    {
-        return Vector2!(T)(x * m, y * m);
-    }
+    Vector2!(T) opMul(T m){return Vector2!(T)(x * m, y * m);}
 
     ///Division by a scalar. 
     Vector2!(T) opDiv(T d)
-    in
-    {
-        assert(d != 0.0, "Vector can not be divided by zero");
-    }
-    body
-    {
-        return Vector2!(T)(x / d, y / d);
-    }
+    in{assert(d != 0.0, "Vector can not be divided by zero");}
+    body{return Vector2!(T)(x / d, y / d);}
 
     ///Addition-assignment with a vector.
     void opAddAssign(Vector2!(T) v)
@@ -82,10 +61,7 @@ align(1) struct Vector2(T)
 
     ///Division-assignment by a scalar. 
     void opDivAssign(T d)
-    in
-    {
-        assert(d != 0.0, "Vector can not be divided by zero");
-    }
+    in{assert(d != 0.0, "Vector can not be divided by zero");}
     body
     {
         x /= d;
@@ -95,24 +71,17 @@ align(1) struct Vector2(T)
     ///String conversion for printing, serialization.
     string opCast()
     {
-        return "Vector2, " ~ std.string.toString(x) ~ ", " 
-                           ~ std.string.toString(y);
+        return "Vector2, " ~ std.string.toString(x) ~ ", " ~ std.string.toString(y);
     }
     
     ///Returns length of the vector.
-    T length()
-    {
-        return cast(T)(sqrt(cast(real)length_squared));
-    }
+    T length(){return cast(T)(sqrt(cast(real)length_squared));}
     
     ///Get angle of this vector.
     real angle()
     {
         real angle = atan2(cast(double)x, cast(double)y);
-        if(angle < 0.0)
-        {
-            return angle + 2 * PI;
-        }
+        if(angle < 0.0){return angle + 2 * PI;}
         return angle;
     }
 
@@ -126,31 +95,19 @@ align(1) struct Vector2(T)
     }
 
     ///Returns squared length of the vector.
-    T length_squared()
-    {
-        return x * x + y * y;
-    }
+    T length_squared(){return x * x + y * y;}
 
     ///Dot product with another vector.
-    T dot_product(Vector2!(T) v) 
-    {
-        return x * v.x + y * v.y;
-    }
+    T dot_product(Vector2!(T) v){return x * v.x + y * v.y;}
 
     ///Returns normal of this vector (a pependicular vector).
-    Vector2!(T) normal()
-    {
-        return Vector2!(T)(-y, x);
-    }
+    Vector2!(T) normal(){return Vector2!(T)(-y, x);}
 
     ///Returns unit vector of this vector.
     Vector2!(T) normalized()
     {
         T len = length();
-        if(equals(len, cast(T)0))
-        {
-            return Vector2!(T)(0, 0);
-        }
+        if(equals(len, cast(T)0)){return Vector2!(T)(0, 0);}
         return Vector2!(T)(x / len, y / len);
     }
 

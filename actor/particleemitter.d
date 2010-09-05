@@ -78,27 +78,24 @@ abstract class ParticleEmitter : ParticleSystem
             }
 
             //remove expired particles
-            bool expired(ref Particle particle)
-            {return particle.timer.expired(ActorManager.get.frame_time);}
+            real time = ActorManager.get.frame_time;
+            bool expired(ref Particle particle){return particle.timer.expired(time);}
             Particles.remove(&expired);
 
             //emit new particles
             emit();
 
             //update particles
-            foreach(ref particle; Particles)
-            {
-                particle.update();
-            }
+            foreach(ref particle; Particles){particle.update();}
 
             super.update();
         }
 
         ///Set life time of particles emitted.
-        void particle_life(real life){ParticleLife = life;}
+        final void particle_life(real life){ParticleLife = life;}
         
         ///Return life time of particles emitted.
-        real particle_life(){return ParticleLife;}
+        final real particle_life(){return ParticleLife;}
 
         ///Set number of particles to emit per second.
         void emit_frequency(real frequency)
@@ -110,16 +107,13 @@ abstract class ParticleEmitter : ParticleSystem
         }
         
         ///Return number of particles emitted per second.
-        real emit_frequency(){return EmitFrequency;}
+        final real emit_frequency(){return EmitFrequency;}
 
         ///Set velocity to emit particles at.
-        void emit_velocity(Vector2f velocity){EmitVelocity = velocity;}
+        final void emit_velocity(Vector2f velocity){EmitVelocity = velocity;}
 
         ///Set angle variation of particles emitted in radians.
-        void angle_variation(real variation)
-        {
-            AngleVariation = variation;
-        }
+        final void angle_variation(real variation){AngleVariation = variation;}
 
     protected:
         //Emit particles if any should be emitted this frame.

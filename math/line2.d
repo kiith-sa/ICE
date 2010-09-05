@@ -25,10 +25,7 @@ struct Line2(T)
     Vector2!(T) end;
 
     ///Subtraction with a vector - used in translation.
-    Line2!(T) opSub(Vector2!(T) s)
-    {
-        return Line2!(T)(start - s, end - s);
-    }
+    Line2!(T) opSub(Vector2!(T) s){return Line2!(T)(start - s, end - s);}
     
     ///Subtraction-assignment with a vector - used in translation.
     void opSubAssign(Vector2!(T) s)
@@ -38,28 +35,16 @@ struct Line2(T)
     }
 
     ///Returns direction vector of the line.
-    Vector2!(T) vector()
-    {
-        return end - start;
-    }
+    Vector2!(T) vector(){return end - start;}
 
     ///Returns normal vector of the line.
-    Vector2!(T) normal()
-    {
-        return vector.normal;
-    }
+    Vector2!(T) normal(){return vector.normal;}
     
     ///Returns length of the line segment.
-    T length()
-    {
-        return vector.length;
-    }
+    T length(){return vector.length;}
     
     ///Returns squared length of the line segment.
-    T length_squared()
-    {
-        return vector.length_squared;
-    }
+    T length_squared(){return vector.length_squared;}
     
     /**
      * Determines if point is to the right, left or on the line.
@@ -97,14 +82,8 @@ struct Line2(T)
 
         if(!full_line)
         {
-            if (t < 0.0) 
-            {
-                return start;
-            }
-            if (t > l) 
-            {
-                return end;
-            }
+            if (t < 0.0){return start;}
+            if (t > l){return end;}
         }
 
         v *= t;
@@ -136,14 +115,8 @@ struct Line2(T)
      * Returns: Distance to point.
      */
     T distance(Vector2!(T) point, bool full_line = true)
-    out(result)
-    {
-        assert(result >= 0.0);
-    }
-    body
-    {
-        return (point - closest_point(point, full_line)).length;
-    }
+    out(result){assert(result >= 0.0, "Negative distance of point from line");}
+    body{return (point - closest_point(point, full_line)).length;}
     unittest
     {
         Vector2d start = Vector2d(0.0, 0.0);
@@ -190,27 +163,26 @@ struct Line2(T)
       */
     LineIntersection intersect(Line2!(T) l, out Vector2!(T) i)
     {
-        T common_denominator = (l.end.y - l.start.y)*(end.x - start.x) -
-                                   (l.end.x - l.start.x)*(end.y - start.y);
+        T common_denominator = (l.end.y - l.start.y) * (end.x - start.x) -
+                               (l.end.x - l.start.x) * (end.y - start.y);
 
-        T numerator_a = (l.end.x - l.start.x)*(start.y - l.start.y) -
-                            (l.end.y - l.start.y)*(start.x -l.start.x);
+        T numerator_a = (l.end.x - l.start.x) * (start.y - l.start.y) -
+                        (l.end.y - l.start.y) * (start.x -l.start.x);
 
-        T numerator_b = (end.x - start.x)*(start.y - l.start.y) -
-                            (end.y - start.y)*(start.x -l.start.x);
+        T numerator_b = (end.x - start.x) * (start.y - l.start.y) -
+                        (end.y - start.y) * (start.x -l.start.x);
 
         if(equals(common_denominator, cast(T)0.0))
         {
             //if lines are coincident
-            if(equals(numerator_a, cast(T)0.0) && 
-               equals(numerator_b, cast(T)0.0))
+            if(equals(numerator_a, cast(T)0.0) && equals(numerator_b, cast(T)0.0))
             {
                 //if the lines are coincident, we return the
                 //end on this line that is the closest to
                 //start of given line
 
                 //this will of course result in strange behavior
-                //if we given line starts within this line,
+                //if the given line starts within this line,
                 //but this is usually used to check for collision
                 //with lines coming from outside.
                 
@@ -230,14 +202,8 @@ struct Line2(T)
                 //if lines intersect
                 if(start_in_line || end_in_line || contained)
                 {
-                    if((l.start - start).length < (l.start - end).length)
-                    {
-                        i = start;
-                    }
-                    else
-                    {
-                        i = end;
-                    }                                                
+                    if((l.start - start).length < (l.start - end).length){i = start;}
+                    else{i = end;}                                                
                     //coincident and intersect
                     return LineIntersection.CoincidentIntersection; 
                 }                                        

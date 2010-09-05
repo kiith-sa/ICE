@@ -8,10 +8,7 @@ import allocator;
 ///Image object capable of storing images in various color formats.
 final class Image
 {
-    invariant
-    {
-        assert(Data !is null, "Image with NULL data");
-    }
+    invariant{assert(Data !is null, "Image with NULL data");}
 
     private:
         //note: could be optimized by adding a pitch data member (bytes per row)    
@@ -33,28 +30,16 @@ final class Image
         }
 
         ///Destroy the image and free its memory.
-        ~this()
-        {
-            free(Data);
-        }
+        ~this(){free(Data);}
         
         ///Get color format of the image.
-        ColorFormat format()
-        {
-            return Format;
-        }
+        ColorFormat format(){return Format;}
 
         ///Get size of the image.
-        Vector2u size()
-        {
-            return Size;
-        }
+        Vector2u size(){return Size;}
 
         ///Get direct access to the data stored in the image.
-        ubyte[] data()
-        {
-            return Data;
-        }
+        ubyte[] data(){return Data;}
 
         ///Set RGBA pixel color.
         void set_pixel(uint x, uint y, Color color)
@@ -109,10 +94,7 @@ final class Image
                 for(uint x = 0; x < Size.x; ++x)
                 {
                     white = cast(bool)(x / size % 2);
-                    if(cast(bool)(y / size % 2))
-                    {
-                        white = !white;
-                    }
+                    if(cast(bool)(y / size % 2)){white = !white;}
                     if(white)
                     {
                         switch(Format)
@@ -166,8 +148,7 @@ final class Image
         void gamma_correct(real factor)
         in
         {
-            assert(factor >= 0.0, 
-                   "Gamma correction factor must not be negative");
+            assert(factor >= 0.0, "Gamma correction factor must not be negative");
         }
         body
         {
@@ -191,7 +172,6 @@ final class Image
                         default:
                             assert(false, "Unsupported color format "
                                           "for gamma correction");
-
                     }
                 }
             }

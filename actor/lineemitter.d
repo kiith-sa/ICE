@@ -31,10 +31,7 @@ class LineEmitter : ParticleEmitter
         Color EndColor = Color(255, 255, 255, 0);
 
     public:
-        this(Actor owner = null)
-        {
-            super(owner);
-        }
+        this(Actor owner = null){super(owner);}
 
         override void draw()
         {
@@ -57,26 +54,14 @@ class LineEmitter : ParticleEmitter
         }
 
         ///Set length of the line particles drawn.
-        void line_length(real length)
-        {
-            LineLength = length;
-        }
+        final void line_length(real length){LineLength = length;}
 
         ///Set width of the line particles drawn.
-        void line_width(uint width)
-        {
-            LineWidth = width;
-        }
+        final void line_width(uint width){LineWidth = width;}
 
         ///Set color the particles have at the beginning of their lifetimes.
-        void start_color(Color color)
-        {
-            StartColor = color;
-        }
+        final void start_color(Color color){StartColor = color;}
 
         ///Set color the particles have at the end of their lifetimes.
-        void end_color(Color color)
-        {
-            EndColor = color;
-        }
+        final void end_color(Color color){EndColor = color;}
 }

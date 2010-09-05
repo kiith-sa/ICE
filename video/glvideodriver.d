@@ -25,10 +25,8 @@ import allocator;
 ///Handles all drawing functionality.
 abstract class GLVideoDriver : VideoDriver
 {
-    invariant
-    {
-        assert(ViewZoom > 0.0);
-    }
+    invariant{assert(ViewZoom > 0.0);}
+
     protected:
         uint ScreenWidth = 0;
         uint ScreenHeight = 0;
@@ -109,12 +107,9 @@ abstract class GLVideoDriver : VideoDriver
             CurrentPage = uint.max;
         }
 
-        override void end_frame()
-        {
-            glFlush();
-        }
+        override void end_frame(){glFlush();}
 
-        override void draw_line(Vector2f v1, Vector2f v2, Color c1, Color c2)
+        final override void draw_line(Vector2f v1, Vector2f v2, Color c1, Color c2)
         {
             set_shader(LineShader);
             //The line is drawn as a rectangle with width slightly lower than
@@ -175,11 +170,8 @@ abstract class GLVideoDriver : VideoDriver
             }
         }
 
-        override void draw_texture(Vector2i position, ref Texture texture)
-        in
-        {
-            assert(texture.index < Textures.length);
-        }
+        final override void draw_texture(Vector2i position, ref Texture texture)
+        in{assert(texture.index < Textures.length);}
         body
         {
             set_shader(TextureShader);
@@ -215,7 +207,7 @@ abstract class GLVideoDriver : VideoDriver
             glEnd();
         }
         
-        override void draw_text(Vector2i position, string text, Color color)
+        final override void draw_text(Vector2i position, string text, Color color)
         {
             //font textures are grayscale and use a shader
             //to convert grayscale to alpha
@@ -279,20 +271,20 @@ abstract class GLVideoDriver : VideoDriver
             }
         }
         
-        override Vector2u text_size(string text)
+        final override Vector2u text_size(string text)
         {
             return FontManager.get.text_size(text);
         }
 
-        override void line_aa(bool aa){LineAA = aa;}
+        final override void line_aa(bool aa){LineAA = aa;}
         
-        override void line_width(float width){LineWidth = width;}
+        final override void line_width(float width){LineWidth = width;}
 
-        override void font(string font_name){FontManager.get.font = font_name;}
+        final override void font(string font_name){FontManager.get.font = font_name;}
 
-        override void font_size(uint size){FontManager.get.font_size = size;}
+        final override void font_size(uint size){FontManager.get.font_size = size;}
         
-        override void zoom(real zoom)
+        final override void zoom(real zoom)
         in
         {
             assert(zoom > 0.0001, "Can't zoom out further than 0.0001x");
@@ -304,21 +296,21 @@ abstract class GLVideoDriver : VideoDriver
             setup_ortho();
         }
         
-        override real zoom(){return ViewZoom;}
+        final override real zoom(){return ViewZoom;}
 
-        override void view_offset(Vector2d offset)
+        final override void view_offset(Vector2d offset)
         {
             ViewOffset = offset;
             setup_ortho();
         }
 
-        override Vector2d view_offset(){return ViewOffset;}
+        final override Vector2d view_offset(){return ViewOffset;}
 
-        override uint screen_width(){return ScreenWidth;}
+        final override uint screen_width(){return ScreenWidth;}
 
-        override uint screen_height(){return ScreenHeight;}
+        final override uint screen_height(){return ScreenHeight;}
 
-        override uint max_texture_size(ColorFormat format)
+        final override uint max_texture_size(ColorFormat format)
         {
             GLenum gl_format, type;
             GLint internal_format;
@@ -344,7 +336,7 @@ abstract class GLVideoDriver : VideoDriver
             return size;
         }
 
-        override string pages_info()
+        final override string pages_info()
         {
             string info = "Pages: " ~ std.string.toString(Pages.length) ~ "\n"; 
             foreach(index, page; Pages)
@@ -357,7 +349,7 @@ abstract class GLVideoDriver : VideoDriver
             return info;
         }
 
-		override Texture create_texture(ref Image image, bool force_page)
+		final override Texture create_texture(ref Image image, bool force_page)
         in
         {
             if(force_page)
@@ -413,7 +405,7 @@ abstract class GLVideoDriver : VideoDriver
             return create_texture(image, false);
 		}
 
-        override void delete_texture(Texture texture)
+        final override void delete_texture(Texture texture)
         {
             GLTexture* gl_texture = Textures[texture.index];
             assert(gl_texture !is null, "Trying to delete a nonexistent texture");
@@ -448,8 +440,45 @@ abstract class GLVideoDriver : VideoDriver
         }
 
     protected:
+        //Initialize OpenGL context.
+        final void init_gl()
+        {
+            //Force font manager to load if not yet loaded. 
+            //Placed here because font manager ctor needs working videodriver
+            //and a call to font manager ctor from videodriver ctor would
+            //result in infinite recursion.
+            FontManager.initialize!(FontManager);
+            try
+            {
+                //Loads the newest available OpenGL version
+                Version = DerelictGL.availableVersion();
+                if(Version < GLVersion.Version20)
+                {
+                    throw new Exception("Could not load OpenGL 2.0 or greater."
+                                        " Try updating graphics card driver.");
+                }
+            }
+            catch(SharedLibProcLoadException e)
+            {
+                throw new Exception("Could not load OpenGL. Try updating graphics "
+                                    "card driver.");
+            } 
+
+            glEnable(GL_CULL_FACE);
+            glCullFace(GL_BACK);
+			glEnable(GL_BLEND);
+            glEnable(GL_TEXTURE_2D);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+            LineShader = GLShader("line"); 
+            TextureShader = GLShader("texture"); 
+            FontShader = GLShader("font"); 
+        }
+
+    private:
         ///Use specified shader for drawing.
-        void set_shader(ref GLShader shader)
+        final void set_shader(ref GLShader shader)
         {
             //comparison of pointer values
             if(&shader != CurrentShader)
@@ -468,8 +497,8 @@ abstract class GLVideoDriver : VideoDriver
          * @param format     Color format of the page.
          * @param force_size Force page size to be exactly size_image.
          */
-        void create_page(Vector2u size_image, ColorFormat format, 
-                                  bool force_size = false)
+        final void create_page(Vector2u size_image, ColorFormat format, 
+                               bool force_size = false)
         {
             //1/16 MiB grayscale, 1/4 MiB RGBA8
             static uint size_min = 256;
@@ -527,51 +556,15 @@ abstract class GLVideoDriver : VideoDriver
             *Pages[$ - 1] = TexturePage(size, format);
         }
 
-        //Initialize OpenGL context.
-        void init_gl()
-        {
-            //Force font manager to load if not yet loaded. 
-            //Placed here because font manager ctor needs working videodriver
-            //and a call to font manager ctor from videodriver ctor would
-            //result in infinite recursion.
-            FontManager.initialize!(FontManager);
-            try
-            {
-                //Loads the newest available OpenGL version
-                Version = DerelictGL.availableVersion();
-                if(Version < GLVersion.Version20)
-                {
-                    throw new Exception("Could not load OpenGL 2.0 or greater."
-                                        " Try updating graphics card driver.");
-                }
-            }
-            catch(SharedLibProcLoadException e)
-            {
-                throw new Exception("Could not load OpenGL. Try updating graphics "
-                                    "card driver.");
-            } 
-
-            glEnable(GL_CULL_FACE);
-            glCullFace(GL_BACK);
-			glEnable(GL_BLEND);
-            glEnable(GL_TEXTURE_2D);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-
-            LineShader = GLShader("line"); 
-            TextureShader = GLShader("texture"); 
-            FontShader = GLShader("font"); 
-        }
-
         //Set up OpenGL viewport.
-        void setup_viewport()
+        final void setup_viewport()
         {
             glViewport(0, 0, ScreenWidth, ScreenHeight);
             setup_ortho();
         }
 
         //Set up orthographic projection.
-        void setup_ortho()
+        final void setup_ortho()
         {
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();

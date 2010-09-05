@@ -87,7 +87,7 @@ package align(1) struct FontRenderer
 }
 
 ///Handles all font resources. 
-package class FontManager
+package final class FontManager
 {
     mixin Singleton;
     private:
@@ -174,10 +174,7 @@ package class FontManager
 
         ///Set font size to use. force_load will set font (load if needed) immediately.
         void font_size(uint size, bool force_load = false)
-        in
-        {
-            assert(size < 128, "Font sizes greater than 127 are not supported");
-        }
+        in{assert(size < 128, "Font sizes greater than 127 are not supported");}
         body
         {
             //In optimized build, we don't have the assert so force size to at most 127
@@ -190,8 +187,7 @@ package class FontManager
         Vector2u text_size(string text)
         {
             load_font();
-            return Vector2u(CurrentFont.text_width(text), 
-                            CurrentFont.size);
+            return Vector2u(CurrentFont.text_width(text), CurrentFont.size);
         }
 
         ///Return renderer to draw text with.
@@ -286,49 +282,12 @@ private struct Font
         uint FastGlyphCount;
 
     public:
+        ///Fake constructor. Loads font with specified name, size and number of glyphs.
         static Font opCall(string name, uint size, uint fast_glyphs)
         {
             Font font;
             font.ctor(name, size, fast_glyphs);
             return font;
-        }
-
-        //Load font with specified name, size and number of fast glyphs.
-        void ctor(string name, uint size, uint fast_glyphs)
-        {
-            FastGlyphs = new Glyph*[fast_glyphs];
-            FastGlyphCount = fast_glyphs;
-            Name = name;
-
-            //this should be replaced by the resource manager later
-            name = "./data/fonts/" ~ name;
-            ubyte[] FontData = load_file(name);
-
-            FT_Open_Args args;
-            args.memory_base = FontData.ptr;
-            args.memory_size = FontData.length;
-            args.flags = FT_OPEN_MEMORY;
-            args.driver = null;
-            //we only support face 0 right now, so no bold, italic, etc. 
-            //unless it is in a separate font file.
-            int face = 0;
-            
-            //load face from memory buffer (FontData)
-            if(FT_Open_Face(FontManager.freetype, &args, face, &FontFace) != 0) 
-            {
-                throw new Exception("Couldn't load font face from font: " ~ name);
-            }
-            
-            //set font size in pixels
-            //could use a better approach, but worked for all fonts so far.
-            if(FT_Set_Pixel_Sizes(FontFace, 0, size) != 0)
-            {
-                throw new Exception("Couldn't set pixel size with font: " ~ name);
-            }
-
-            Height = size;
-            UseKerning = cast(bool)FT_HAS_KERNING(FontFace);
-            init_default_glyph();
         }
 
         ///Returns size of the font in pixels.
@@ -402,6 +361,44 @@ private struct Font
         }
 
     private:
+        //Load font with specified name, size and number of fast glyphs.
+        void ctor(string name, uint size, uint fast_glyphs)
+        {
+            FastGlyphs = new Glyph*[fast_glyphs];
+            FastGlyphCount = fast_glyphs;
+            Name = name;
+
+            //this should be replaced by the resource manager later
+            name = "./data/fonts/" ~ name;
+            ubyte[] FontData = load_file(name);
+
+            FT_Open_Args args;
+            args.memory_base = FontData.ptr;
+            args.memory_size = FontData.length;
+            args.flags = FT_OPEN_MEMORY;
+            args.driver = null;
+            //we only support face 0 right now, so no bold, italic, etc. 
+            //unless it is in a separate font file.
+            int face = 0;
+            
+            //load face from memory buffer (FontData)
+            if(FT_Open_Face(FontManager.freetype, &args, face, &FontFace) != 0) 
+            {
+                throw new Exception("Couldn't load font face from font: " ~ name);
+            }
+            
+            //set font size in pixels
+            //could use a better approach, but worked for all fonts so far.
+            if(FT_Set_Pixel_Sizes(FontFace, 0, size) != 0)
+            {
+                throw new Exception("Couldn't set pixel size with font: " ~ name);
+            }
+
+            Height = size;
+            UseKerning = cast(bool)FT_HAS_KERNING(FontFace);
+            init_default_glyph();
+        }
+
         ///Access glyph for specified (UTF-32) character.
         Glyph* get_glyph(dchar c)
         {
@@ -501,10 +498,7 @@ private struct Font
                 glyph.texture = VideoDriver.get.create_texture(image);
                 return glyph;
             }
-            else
-            {
-                return DefaultGlyph;
-            }
+            else{return DefaultGlyph;}
         }
         
         ///Get freetype render mode (antialiased or bitmap)

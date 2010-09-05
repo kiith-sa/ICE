@@ -48,8 +48,7 @@ class GUIButton : GUIElement
             super(parent, position, size);
 
             //initialize empty text
-            Text = new GUIStaticText(this, Vector2i(0, 0), size, text, 
-                                     "default", 12);
+            Text = new GUIStaticText(this, Vector2i(0, 0), size, text, "default", 12);
             Text.alignment_x = AlignX.Center;
             Text.alignment_y = AlignY.Center;
 
@@ -96,10 +95,8 @@ class GUIButton : GUIElement
             {
                 if(key == MouseKey.Left)
                 {
-                    if(state == KeyState.Pressed)
-                    {
-                        set_state(ButtonState.Clicked);
-                    }
+                    if(state == KeyState.Pressed){set_state(ButtonState.Clicked);}
+
                     //If the mouse is pressed _and_ released over the button,
                     //emit the signal
                     else if(state == KeyState.Released && 

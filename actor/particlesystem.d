@@ -18,29 +18,22 @@ abstract class ParticleSystem : Actor
 
     public:
         ///Set time left for this LineTrail to live. Negative means infinite.
-        void life_time(real time){LifeTime = time;}
+        final void life_time(real time){LifeTime = time;}
 
         void update()
         {
             real frame_length = ActorManager.get.frame_length;
             //If LifeTime reaches zero, destroy this 
-            if(LifeTime >= 0.0 && LifeTime - frame_length <= 0.0)
-            {
-                die();
-            }
+            if(LifeTime >= 0.0 && LifeTime - frame_length <= 0.0){die();}
             LifeTime -= frame_length;
         }
 
-        void detach()
-        {
-            Owner = null;
-        }
+        final void detach(){Owner = null;}
 
     protected:
         //Construct Actor with specified properties.
         this(Vector2f position, Vector2f velocity = Vector2f(0.0, 0.0),
-             Actor owner = null,
-             real life_time = -1.0) 
+             Actor owner = null, real life_time = -1.0) 
         {
             super(position, velocity);
             LifeTime = life_time;

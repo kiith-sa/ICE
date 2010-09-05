@@ -31,16 +31,10 @@ abstract class Platform
         void die();
         
         ///Collect input and determine if the game should continue running.
-        bool run()
-        {
-            return Run;
-        }
+        bool run(){return Run;}
 
         ///Quit the platform, i.e. the game.
-        void quit()
-        {
-            Run = false;
-        }
+        final void quit(){Run = false;}
 
         ///Set window caption string to str.
         void window_caption(string str);
@@ -52,8 +46,5 @@ abstract class Platform
         void show_cursor();
 
         ///Determine if specified key is pressed.
-        bool is_key_pressed(Key key)
-        {
-            return keys_pressed[cast(uint)key];
-        }
+        final bool is_key_pressed(Key key){return keys_pressed[cast(uint)key];}
 }

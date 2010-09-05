@@ -8,20 +8,19 @@ import color;
 
 
 ///Handles all drawing functionality.
-class SDLGLVideoDriver : GLVideoDriver
+final class SDLGLVideoDriver : GLVideoDriver
 {
     public:
-        this()
-        {
-            singleton_ctor();
-        }
+        this(){singleton_ctor();}
 
         override void set_video_mode(uint width, uint height, 
                                      ColorFormat format, bool fullscreen)
         in
         {
-            assert(width > 160 && width < 65536, "Can't set video mode with ridiculous width");
-            assert(height > 120 && width < 49152, "Can't set video mode with ridiculout height");
+            assert(width > 160 && width < 65536, 
+                   "Can't set video mode with ridiculous width");
+            assert(height > 120 && width < 49152, 
+                   "Can't set video mode with ridiculout height");
         }
         body
         {

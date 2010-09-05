@@ -1,14 +1,8 @@
 module time;
 
 
-version(linux)
-{
-    import std.c.linux.linux;
-}
-else
-{
-    import std.date;
-}
+version(linux){import std.c.linux.linux;}
+else{import std.date;}
 
 ///Returns time since start of epoch in seconds.
 static real get_time()
@@ -21,8 +15,5 @@ static real get_time()
         return tv.tv_sec + tv.tv_usec / 1000000.0;
     }
     //portable D standard library clock - usually millisecond precision
-    else
-    {
-        return getUTCtime() / cast(real)TicksPerSecond;
-    }
+    else{return getUTCtime() / cast(real)TicksPerSecond;}
 }

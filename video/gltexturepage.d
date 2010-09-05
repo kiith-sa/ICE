@@ -84,10 +84,7 @@ package align(1) struct GLTexturePage(TexturePacker)
         bool insert_texture(ref Image image, out Rectanglef texcoords, 
                                      out Vector2u offset) 
         {
-            if(image.format != Format)
-            {
-                return false;
-            }
+            if(image.format != Format){return false;}
             if(Packer.allocate_space(image.size, texcoords, offset))
             {                                  
                 //get opengl color format parameters
@@ -111,10 +108,7 @@ package align(1) struct GLTexturePage(TexturePacker)
         }
 
         ///Use this page to draw textured geometry from now on.
-        void start()
-        {
-            glBindTexture(GL_TEXTURE_2D, Texture);
-        }
+        void start(){glBindTexture(GL_TEXTURE_2D, Texture);}
 
         ///Determine if this texture page is resident in the video memory.
         bool is_resident()
@@ -125,16 +119,10 @@ package align(1) struct GLTexturePage(TexturePacker)
         }
 
         ///Remove texture with specified bounds from this page.
-        void remove_texture(ref Rectangleu bounds)
-        {
-            Packer.free_space(bounds);
-        }
+        void remove_texture(ref Rectangleu bounds){Packer.free_space(bounds);}
 
         ///Determine if this page is empty (i.e. there are no textures on it).
-        bool empty()
-        {
-            return Packer.empty();
-        }
+        bool empty(){return Packer.empty();}
 
         ///Return a string containing information about this page.
         string info()

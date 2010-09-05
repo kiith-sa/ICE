@@ -33,8 +33,7 @@ package align(1) struct NodePacker
                 Node* insert(Vector2u size)
                 in
                 {
-                    assert(size != Vector2u(0, 0), "Can't pack a zero sized "
-                                                   "texture");
+                    assert(size != Vector2u(0, 0), "Can't pack a zero sized texture");
                 }
                 body
                 {
@@ -52,10 +51,7 @@ package align(1) struct NodePacker
 
                     Vector2u rect_size = rectangle.size;
                     //if this node is too small
-                    if(rect_size.x < size.x || rect_size.y < size.y)
-                    {
-                        return null;
-                    }
+                    if(rect_size.x < size.x || rect_size.y < size.y){return null;}
                     //if exact fit
                     if(rect_size == size)
                     {
@@ -99,14 +95,8 @@ package align(1) struct NodePacker
                         return true;
                     }
                     //try children
-                    if(child_a !is null && child_a.remove(rect))
-                    {
-                        return true;
-                    }
-                    if(child_b !is null && child_b.remove(rect))
-                    {
-                        return true;
-                    }
+                    if(child_a !is null && child_a.remove(rect)){return true;}
+                    if(child_b !is null && child_b.remove(rect)){return true;}
                     //can't remove from this node
                     return false;
                 }
@@ -114,18 +104,9 @@ package align(1) struct NodePacker
                 ///Determine if this node and all its subnodes are empty.
                 bool empty()
                 {
-                    if(full)
-                    {
-                        return false;
-                    }
-                    if(child_a !is null && !child_a.empty())
-                    {
-                        return false;
-                    }
-                    if(child_b !is null && !child_b.empty())
-                    {
-                        return false;
-                    }
+                    if(full){return false;}
+                    if(child_a !is null && !child_a.empty()){return false;}
+                    if(child_b !is null && !child_b.empty()){return false;}
                     return true;
                 }
 
@@ -201,10 +182,7 @@ package align(1) struct NodePacker
         }
 
         ///Determine if this NodePacker is empty.
-        bool empty()
-        {
-            return Root.empty();
-        }
+        bool empty(){return Root.empty();}
 
     private:
         ///Initialization method used by the fake constructor.

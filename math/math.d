@@ -95,20 +95,14 @@ bool equals(byte i1, byte i2, byte tolerance = byte_epsilon)
   */
 T reduce(alias fun, T)(T seed, T elems [])
 {
-    foreach(elem; elems[])
-    {
-        seed = fun(seed, elem);
-    }
+    foreach(elem; elems[]){seed = fun(seed, elem);}
     return seed;
 }
 
 ///Returns minimum of two values.
 T min(T) (T a, T b)
 {
-    if(b < a)
-    {
-        return b;
-    }
+    if(b < a){return b;}
     return a;
 }
 
@@ -126,10 +120,7 @@ body
 ///Returns maximum of two values.
 T max(T) (T a, T b)
 {
-    if(b > a)
-    {
-        return b;
-    }
+    if(b > a){return b;}
     return a;
 }
 
@@ -139,16 +130,10 @@ in
 {
     assert(elems.length > 2, "Variadic max can't process less than 3 elements");
 }
-body
-{
-    return reduce!(max)(T.min, elems);
-}
+body{return reduce!(max)(T.min, elems);}
 
 ///Round a float value to a 32-bit int.
-int round32(T) (T f)
-{
-    return cast(int)round(f);
-}
+int round32(T) (T f){return cast(int)round(f);}
 
 ///Return a random real between given numbers
 real random(real min, real max)
@@ -157,18 +142,15 @@ real random(real min, real max)
     return min + (max - min) * scale;
 }
 
-const uint[32] powers_of_two = pot().pot;
+const uint[32] powers_of_two = generate_pot().pot;
 
 private struct pot_container{uint[32] pot;}
 
-private pot_container pot()
+private pot_container generate_pot()
 {
     uint[32] pot;
     pot[0] = 1;
-    for(uint p = 1; p < 32; ++p)
-    {
-        pot[p] = pot[p - 1] * 2;
-    }
+    for(uint p = 1; p < 32; ++p){pot[p] = pot[p - 1] * 2;}
     return pot_container(pot);
 }
 
@@ -191,10 +173,7 @@ body
 {
     foreach(pot; powers_of_two)
     {
-        if(pot >= num)
-        {
-            return pot;
-        }
+        if(pot >= num){return pot;}
     }
     assert(false);
 }
@@ -211,11 +190,7 @@ bool is_pot(uint num)
 {
     foreach(pot; powers_of_two)
     {
-        if(pot == num)
-        {
-            return true;
-        }
+        if(pot == num){return true;}
     }
     return false;
 }
-
