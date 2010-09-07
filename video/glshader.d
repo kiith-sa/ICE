@@ -7,7 +7,7 @@ import std.stdio;
 
 import derelict.opengl.gl;
 
-import file;
+import file.file;
 
 package struct GLShader
 {

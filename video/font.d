@@ -11,7 +11,7 @@ import video.texture;
 import math.vector2;
 import math.math;
 import color;
-import file;
+import file.file;
 import image;
 import arrayutil;
 import allocator;

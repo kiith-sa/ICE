@@ -1,30 +1,9 @@
 START ESSENTIAL -------------------------------
-12:
-    Change coding style of private members so that class names can't conflict
-    with private members' names.
-
-    Type names: CapitalizedName
-    Functions/methods/public data: long_with_spaces
-    private data: long_with_spaces_ending_with_
-    local variables: long_or_shrt_wt_spc
-    
-
 13:
-    File input, resource manager, use that for font and shader files,
-    maybe also use resource manager for shaders/textures/pages/fonts
-
-    Shaders should be an optional argument to draw_x. If no shader is passed,
-    default for fonts, lines, textures is used.
-    Just as images are passed to create textures, shader spec (ini) files
-    should be passed to create_shader. Both images and shader spec
-    files should be managed outside videodriver.
-    shader spec file should contain a spec for every videodriver supported.
-    GLSL shaders should be stored in whatever/shaders/glsl,
-    since those will be managed on the videodriver implementation side.
-    Actually, not necessarily spec per videodriver, but e.g. GLSL spec,
-    fixed function spec, Cg spec etc. 
-    E.g. any GLSL capable videodriver could use the GLSL spec.
-
+    Use new file i/o code for shaders, fonts - move current data/ to data/main/,
+    remove old file functions.
+14:
+    Use ulongs in allocator
 14:
     VideoDriver method that will return a string with data about all textures
 
@@ -95,7 +74,7 @@ START ESSENTIAL -------------------------------
     that'd call clear and gc.free()
 
     Could also look at the source of the Diamond memory debugger and
-    use the ideas here to measure memory usage
+    use the ideas there to measure memory usage
 15:
     Move away from DSSS, (include derelict)
     also, get the newest derelict
@@ -129,8 +108,6 @@ END ESSENTIAL -------------------------------
     Games should be limited by first to reach score or by time limit.
     Maybe both. (and overtime?) - that might require font work, though
 14:
-    AI difficulty settings;
-14:
     Graphics effect: either some kind of motion blur effect for the paddle,
     or some kind of pulsating lines inside the paddle.
 15:
@@ -144,9 +121,6 @@ END ESSENTIAL -------------------------------
 
     another alternative would be some other subtle background effect.
 16:
-    Video mode change in Menu/Pong/whatever its called by now.
-    Not in individual games, though.
-16:
     Graphics effect:
     Particle systems at destruction of paddles, balls (e.g. at the end of game 
     or when player loses a life) 
@@ -156,10 +130,8 @@ END ESSENTIAL -------------------------------
 16:
     Have a countdown before each ball spawn. Should also
     display the rough area where it might go (~ 90 deg)
-16:
-    Draw cursor
 17:
-    Look at LBreakout2 source, especially how they handle physics.
+    Look at LBreakout2, other pong/arkanoid games, especially how they handle physics.
     Maybe then implement ball reflection based on paddle movement.
 17: 
     Effects:
@@ -169,15 +141,13 @@ END ESSENTIAL -------------------------------
     to the left. we can do this with a guioffset member in gui root
 
     main menu could have an ai-ai game playing in the background
-17:
-    Multiplayer over a network (test with two computers)
 18:
     Maybe try to even remove .get from singletons (hybrid has done it somehow)
 19:
     Use the same doc format throughout. Either Doxygen or DDoc.
     DDoc would probably be better.
 20:
-    Look at demos in D/Games for graphics effect ideas
+    Look at other games/demos for graphics effect ideas
 20: 
     Get rid of immediate mode:
     support VAs and maybe VBOs (not that necessary right now) -
@@ -193,7 +163,6 @@ END ESSENTIAL -------------------------------
     Once we use custom matrices with shaders, we might simply
     stope projection matrices with caches and draw all out
     at the end, but we need to learn that
-
 23:
     Collision optimization: ignore too distant actors/lines/whatever
     early.
@@ -204,8 +173,6 @@ END ESSENTIAL -------------------------------
     until now, not by passing PhysicsObjects
 22:
     Improved collision code to prevent/minimize tunneling
-22?: 
-    Try AI and/or file loading in a separate thread
 23:
     Do some basic profiling: KCacheGrind (No OpenGL perspective),
     OProfile (better?), gettime - at least get total time and VideoDriver 
@@ -232,16 +199,6 @@ END ESSENTIAL -------------------------------
     by ~15%. However, would probably result in a bit uglier code
     and need for asserts for too large textures/pages.)
     (would require to pass textures/glyphs by value in font drawing code)
-24:
-    Selecting GUI elements with keyboard:
-    only certain element types can be selected (e.g. button)
-    (an element has a bool selectable() method):
-    Arrows are used to select elements, maybe later tabs could
-    select groups (would be more complicated) - if selected,
-    Enter and/or some other keys could be used to control the element.
-25:
-    Advanced shaders: custom matrix, etc. passing. - SEE OPENGL SUPERBIBLE
-    Look at Humus, Mizanin, GL forums, GL3 tutorials, etc.
 25:
     Settings from ini files, also paddle, ball, wall properties
     (possibility to add more walls from INI files, but hardcoded two paddles)
@@ -257,11 +214,45 @@ END ESSENTIAL -------------------------------
 
     FontManager settings like FontAA and FastGlyphs should be set through INI
 17:
-    Screen size change (in an Options dialog)
+    Screen size change (in an Options dialog in menu, not during Game run)
 25:
     User configurable key bindings - stored in HumanPlayer
 26: 
     Sounds
+17:
+    Multiplayer, with single PC and over a network (test with two computers)
+14:
+    AI difficulty settings;
+
+--AFTER PONG    
+12:
+    Shaders should be an optional argument to draw_x. If no shader is passed,
+    default for fonts, lines, textures is used.
+    Just as images are passed to create textures, shader spec (ini) files
+    should be passed to create_shader. Both images and shader spec
+    files should be managed outside videodriver.
+    shader spec file should contain a spec for every videodriver supported.
+    GLSL shaders should be stored in whatever/shaders/glsl,
+    since those will be managed on the videodriver implementation side.
+    Actually, not necessarily spec per videodriver, but e.g. GLSL spec,
+    fixed function spec, Cg spec etc. 
+    E.g. any GLSL capable videodriver could use the GLSL spec.
+13:
+    resource manager, use that for font, shader, ini 
+16:
+    Draw cursor
+24:
+    Selecting GUI elements with keyboard:
+    only certain element types can be selected (e.g. button)
+    (an element has a bool selectable() method):
+    Arrows are used to select elements, maybe later tabs could
+    select groups (would be more complicated) - if selected,
+    Enter and/or some other keys could be used to control the element.
+22?: 
+    Try AI and/or file loading in a separate thread
+25:
+    Advanced shaders: custom matrix, etc. passing. - see opengl superbible
+    Look at Humus, Mizanin, GL forums, GL3 tutorials, etc.
 27:
     Consider moving FPSCounter to VideoDriver, Platform or somewhere else
     outside game specific code. Also need to move the code that writes
@@ -270,12 +261,6 @@ END ESSENTIAL -------------------------------
     Rotation (of 2D actors) - Velocity should then be in object space,
     not world space. Immediate use would be rotating balls.
     Also, the same paddle could be used up and down, just rotated.
-32:
-    Drawable (base class for textured quad, line mesh),
-    serialization/file management
-    Serialization should go through a standardized interface so
-    we can change file format (INI, XML, binary, compressed...)
-    Also, need a separate default shader for textured quads
 33?:
     Might be left for later (e.g. before map editor):
     GUI: more advanced, moving/resizing (can be enabled/disabled),
@@ -293,6 +278,9 @@ END ESSENTIAL -------------------------------
     3d model (with many meshes)
     Alternatively can be a single class composed of any number of 
     lines/sprites/meshes
+
+    Serialization should go through a standardized interface so
+    we can change file format (INI, XML, binary, compressed...)
 
     First just support lines, then add sprites, and _maybe_ add 3d
     stuff later.
@@ -314,8 +302,6 @@ END ESSENTIAL -------------------------------
     ASAP. Needs resource management first, though.
 
     We could also use shaders to invert text colors if wanted, etc.
-36: 
-    Console        
 37:
     OpenGL driver profiling:
     Might consider an Image method to_bgra() and using GL_BGRA format.
@@ -334,7 +320,7 @@ END ESSENTIAL -------------------------------
 39:
     Allocator should record its memory usage e.g. every second.
     This could be a good experiment for threading (make sure the other
-    thread doesn't eat whole core - it must time out if not near timer 
+    thread doesn't eat whole core - it must sleep if not near timer 
     expiration)
 
     Alternatively, we don't need threaded timer: Record memory usage
@@ -342,7 +328,12 @@ END ESSENTIAL -------------------------------
     (we just need to add an uint to an array)
     Better, we could record memory usage and time of allocation.
     Maybe also index of type of object allocated (not the whole string)
-
+36: 
+    Console        
+37:
+    Platform and VideoDriver should have a static initialize(string impl_name)
+    method, that will initialize the singleton with implementation
+    with given name. (those names will be loaded from INI)
 39:
     Consider D2 (at this point it might be mature enough :p)
 
@@ -413,3 +404,6 @@ Maybe:
     We can search for cached strings quickly using simple bucket sort/search.
 15:
     (Arkanoid)Save games (ini?)
+16:
+    RGBA4 (converted from RGBA8 in VideoDriver implementation) 
+    -could be a switch for low-memory systems
