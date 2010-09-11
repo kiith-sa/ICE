@@ -14,14 +14,14 @@ public:
     T* alloc(T)(){return allocate!(T)();}
 
     ///Allocate an array of objects. Arrays allocated with alloc must NOT be resized.
-    T[] alloc(T)(uint elems){return allocate!(T)(elems);}
+    T[] alloc(T)(ulong elems){return allocate!(T)(elems);}
 
     ///Reallocate an array allocated by alloc() .
     /**
      * Contents of the array are preserved but array itself might be moved in memory,
      * invalidating any pointers pointing to it.
      */
-    T[] realloc(T)(T[] array, uint elems){return reallocate!(T)(array, elems);}
+    T[] realloc(T)(T[] array, ulong elems){return reallocate!(T)(array, elems);}
 
     ///Free an object allocated by alloc(). Will call die() method if defined.
     void free(T)(T* ptr){deallocate(ptr);}
@@ -40,11 +40,11 @@ private:
     struct Stats
     {
         //Total bytes allocated/freed.
-        long bytes;
+        ulong bytes;
         //Total allocations.
         uint allocations;
         //Total objects allocated.
-        long objects;
+        ulong objects;
 
         //Return a string with allocation data stored.
         string statistics()
@@ -84,7 +84,7 @@ private:
 
     //Allocate an array of objects with given number of elements.
     //Arrays returned by allocate() must NOT be resized.
-    T[] allocate(T)(uint elems)
+    T[] allocate(T)(ulong elems)
     out(result)
     {
         assert(result.length == elems, "Failed to allocate space for "
@@ -107,7 +107,7 @@ private:
     }
 
     //Reallocate an array allocated with allocate() to hold given number of elements.
-    T[] reallocate(T)(T[] array, uint elems)
+    T[] reallocate(T)(T[] array, ulong elems)
     in
     {
         //Debug

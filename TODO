@@ -1,7 +1,5 @@
 START ESSENTIAL -------------------------------
 14:
-    Use ulongs in allocator
-14:
     VideoDriver method that will return a string with data about all textures
 
     For this kind of debugging info, define a VideoDriver method
