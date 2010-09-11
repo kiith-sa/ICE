@@ -84,6 +84,9 @@ struct File
         }
         body{return cast(void[])data_;}
 
+        ///Return OS filesystem path of the file.
+        string path(){return path_;}
+
         ///Write data to file (only applicable in Write, Append modes)
         void write(void[] data)
         in
@@ -107,9 +110,3 @@ struct File
             write_used_ = needed;
         }
 }
-
-///A simple function to load a text file to a string.
-string load_text_file(string fname){return cast(string)read(fname);}
-
-///A simple function to load a file to a buffer.
-ubyte[] load_file(string fname){return cast(ubyte[])read(fname);}

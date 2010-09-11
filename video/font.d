@@ -11,7 +11,7 @@ import video.texture;
 import math.vector2;
 import math.math;
 import color;
-import file.file;
+import file.fileio;
 import image;
 import arrayutil;
 import allocator;
@@ -53,6 +53,9 @@ package struct Font
 
         //Number of glyphs accessible through normal instead of associative array.
         uint fast_glyph_count_;
+
+        //File this font was loaded from. (stores loaded file data)
+        File file_;
 
     public:
         ///Fake constructor. Loads font with specified name, size and number of glyphs.
@@ -131,6 +134,7 @@ package struct Font
 
             VideoDriver.get.delete_texture(default_glyph_.texture);
             FT_Done_Face(font_face_);
+            close_file(file_);
         }
 
     package:
@@ -168,30 +172,30 @@ package struct Font
             fast_glyph_count_ = fast_glyphs;
             name_ = name;
 
-            //this should be replaced by the resource manager later
-            name = "./data/fonts/" ~ name;
-            ubyte[] FontData = load_file(name);
+            file_ = open_file("fonts/" ~ name, FileMode.Read);
+            ubyte[] font_data = cast(ubyte[])file_.data;
+            scope(failure){close_file(file_);}
 
             FT_Open_Args args;
-            args.memory_base = FontData.ptr;
-            args.memory_size = FontData.length;
+            args.memory_base = font_data.ptr;
+            args.memory_size = font_data.length;
             args.flags = FT_OPEN_MEMORY;
             args.driver = null;
             //we only support face 0 right now, so no bold, italic, etc. 
             //unless it is in a separate font file.
             int face = 0;
             
-            //load face from memory buffer (FontData)
+            //load face from memory buffer (font_data)
             if(FT_Open_Face(FontManager.freetype, &args, face, &font_face_) != 0) 
             {
-                throw new Exception("Couldn't load font face from font: " ~ name);
+                throw new Exception("Couldn't load font face from font " ~ file_.path);
             }
             
             //set font size in pixels
             //could use a better approach, but worked for all fonts so far.
             if(FT_Set_Pixel_Sizes(font_face_, 0, size) != 0)
             {
-                throw new Exception("Couldn't set pixel size with font: " ~ name);
+                throw new Exception("Couldn't set pixel size with font " ~ file_.path);
             }
 
             height_ = size;

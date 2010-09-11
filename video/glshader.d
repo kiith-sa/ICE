@@ -7,7 +7,7 @@ import std.stdio;
 
 import derelict.opengl.gl;
 
-import file.file;
+import file.fileio;
 
 package struct GLShader
 {
@@ -20,8 +20,7 @@ package struct GLShader
         //Load specified shader.
         void ctor(string name)
         {
-            load_GLSL("data/shaders/" ~ name ~ ".vert", 
-                      "data/shaders/" ~ name ~ ".frag");
+            load_GLSL("shaders/" ~ name ~ ".vert", "shaders/" ~ name ~ ".frag");
         }
 
     public:
@@ -43,29 +42,34 @@ package struct GLShader
         //Load a GLSL shader
         void load_GLSL(string vfname, string ffname)
         {
-            char* vsrc;
-            char* fsrc;
+            File vfile;
+            File ffile;
             try
             {
-                //loading shader code
-                string vstring = load_text_file(vfname);
-                string fstring = load_text_file(ffname);
-                vsrc = toStringz(vstring);
-                fsrc = toStringz(fstring);
+                vfile = open_file(vfname, FileMode.Read);
+                ffile = open_file(ffname, FileMode.Read);
             }
-            catch(FileException e)
+            catch(Exception e)
             {
                 throw new Exception("Couldn't load shader " ~ vfname ~
                                     " and/or " ~ ffname);
             }                                 
+            scope(exit){close_file(vfile);}
+            scope(exit){close_file(ffile);}
+            string vsource = cast(string)vfile.data;
+            string fsource = cast(string)ffile.data;
+            int vlength = vsource.length; 
+            int flength = fsource.length; 
+            char* vptr = vsource.ptr;
+            char* fptr = fsource.ptr;
             
 			//creating OpenGL objects for shaders
             GLuint vshader = glCreateShader(GL_VERTEX_SHADER);
             GLuint fshader = glCreateShader(GL_FRAGMENT_SHADER);
 
 			//passing shader code to OpenGL
-			glShaderSource(vshader, 1, &vsrc, null);
-			glShaderSource(fshader, 1, &fsrc, null);
+			glShaderSource(vshader, 1, &vptr, &vlength);
+			glShaderSource(fshader, 1, &fptr, &flength);
 
 			//compiling shaders
 			int compiled;

@@ -1,7 +1,4 @@
 START ESSENTIAL -------------------------------
-13:
-    Use new file i/o code for shaders, fonts - move current data/ to data/main/,
-    remove old file functions.
 14:
     Use ulongs in allocator
 14:
@@ -161,8 +158,15 @@ END ESSENTIAL -------------------------------
     every time zoom/offset changes.
 
     Once we use custom matrices with shaders, we might simply
-    stope projection matrices with caches and draw all out
+    store projection matrices with caches and draw all out
     at the end, but we need to learn that
+25:
+    Advanced shaders: custom matrix, etc. passing. - see opengl superbible
+    Look at Humus, Mizanin, GL forums, GL3 tutorials, etc.
+    First pass matrices using loadMatrix, after it works, use
+    them as shader parameters.
+    also make sure to see gl3 tutorials for projection matrix
+    and to tes it with various zooms/offsets
 23:
     Collision optimization: ignore too distant actors/lines/whatever
     early.
@@ -213,6 +217,9 @@ END ESSENTIAL -------------------------------
     differences.
 
     FontManager settings like FontAA and FastGlyphs should be set through INI
+    (also the default font?, etc.)
+16:
+    Draw cursor
 17:
     Screen size change (in an Options dialog in menu, not during Game run)
 25:
@@ -225,6 +232,12 @@ END ESSENTIAL -------------------------------
     AI difficulty settings;
 
 --AFTER PONG    
+10:
+    Test mod directories with a simple Pong "mod" that replaces shaders
+    and/or fonts (say, with negative or black/white colors or something)
+11:
+    A debug (ini, console and/or debug GUI controlled) option to draw wireframe.
+    Also might want pure white wireframe option (with a custom shader)
 12:
     Shaders should be an optional argument to draw_x. If no shader is passed,
     default for fonts, lines, textures is used.
@@ -239,8 +252,6 @@ END ESSENTIAL -------------------------------
     E.g. any GLSL capable videodriver could use the GLSL spec.
 13:
     resource manager, use that for font, shader, ini 
-16:
-    Draw cursor
 24:
     Selecting GUI elements with keyboard:
     only certain element types can be selected (e.g. button)
@@ -248,11 +259,6 @@ END ESSENTIAL -------------------------------
     Arrows are used to select elements, maybe later tabs could
     select groups (would be more complicated) - if selected,
     Enter and/or some other keys could be used to control the element.
-22?: 
-    Try AI and/or file loading in a separate thread
-25:
-    Advanced shaders: custom matrix, etc. passing. - see opengl superbible
-    Look at Humus, Mizanin, GL forums, GL3 tutorials, etc.
 27:
     Consider moving FPSCounter to VideoDriver, Platform or somewhere else
     outside game specific code. Also need to move the code that writes
@@ -261,6 +267,11 @@ END ESSENTIAL -------------------------------
     Rotation (of 2D actors) - Velocity should then be in object space,
     not world space. Immediate use would be rotating balls.
     Also, the same paddle could be used up and down, just rotated.
+
+    for 3D rotation, we might want to use a Rotation struct with opague
+    implementation and stable interface so we can replace internals
+    with matrices, quaternions, euler angles or whatever (of course, 2D
+    rotation doesn't need this- just use a float for that)
 33?:
     Might be left for later (e.g. before map editor):
     GUI: more advanced, moving/resizing (can be enabled/disabled),
@@ -284,10 +295,6 @@ END ESSENTIAL -------------------------------
 
     First just support lines, then add sprites, and _maybe_ add 3d
     stuff later.
-35:
-    GUI serialization (at least be able to set button fonts etc)
-    Don't have to be able to add elements from plain ini GUI code,
-    just styles, etc.
 35:
     Logging messages (e.g. initializing GL, etc.)- not necessarily a logging
     system yet
@@ -362,6 +369,14 @@ see freetype.org
 
 
 
+
+Optimizations:
+1:
+    Allocator alloc/dealloc recording could be done using
+    an associative array with typeid as index instead of a string.
+    Typeid would be converted to string when writing to output.
+
+
 Maybe:
 1:
     Paddle acceleration
@@ -407,3 +422,5 @@ Maybe:
 16:
     RGBA4 (converted from RGBA8 in VideoDriver implementation) 
     -could be a switch for low-memory systems
+22: 
+    Try AI and/or file loading in a separate thread
