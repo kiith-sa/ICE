@@ -110,6 +110,13 @@ class GUIStaticText : GUIElement
             aligned_ = false;
         }
 
+        ///Set font size of the text.
+        void font_size(uint size)
+        {
+            font_size_ = size;
+            aligned_ = false;
+        }
+
     protected:
         override void draw()
         {

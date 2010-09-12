@@ -1,3 +1,22 @@
+
+videodriver debug gui element will show texture pages first.
+just draw the part of the page that fits the element 
+(do that with a custom, package, videodriver method)
+then maybe a count of draw calls of type x, count of triangles,
+shader changes, texture page changes, etc. per second
+(videodriver debug gui element can have its own subelements)
+Maybe graphs after that showing how these numbers change over time
+(pages, textures, nodes total, nodes per page as well)
+FPS would be also good to show, and in graph as well
+
+At the end, think about refactoring parts of debugger code to a 
+GUI element (tabwindow or something - an element with buttons-tabs that specify
+which subelement is displayed, e.g. texture pages view, draw counts view, etc)
+
+
+
+
+
 START ESSENTIAL -------------------------------
 14:
     VideoDriver method that will return a string with data about all textures
@@ -55,9 +74,11 @@ START ESSENTIAL -------------------------------
     Actually, this debugging GUI should turn into a set of blueprints
     /issues in an issue tracker so we don't have to do it all at once.
 
-
     Also consider dumping NodePacker tree and/or others to SVG as seen
     at blackpawn.com/blog/?p=211
+14:
+    Make it impossible to add a child that alread is a child to a GUI element.
+    (i.e. to add a child twice) - caused a bug recently - use an assert to do this
 14:
     Valgrind, Massif.
     Look (google, etc.) for ways to measure memory in detail.
@@ -230,6 +251,12 @@ END ESSENTIAL -------------------------------
     AI difficulty settings;
 
 --AFTER PONG    
+9:
+    GUI elements for vertical and horizontal arranging of items,
+    use them in debuggers, and refactor debugger GUI code.
+    Maybe even a tab bar + tab element? 
+    (since debuggers are basically sets of tabs with buttons)
+
 10:
     Test mod directories with a simple Pong "mod" that replaces shaders
     and/or fonts (say, with negative or black/white colors or something)

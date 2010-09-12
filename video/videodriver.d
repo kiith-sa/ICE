@@ -9,6 +9,7 @@ import math.vector2;
 import math.line2;
 import math.rectangle;
 import platform.platform;
+import test.subdebugger;
 import singleton;
 import color;
 import image;
@@ -154,4 +155,7 @@ abstract class VideoDriver
 
         ///Delete given texture.
         void delete_texture(Texture texture);
+
+        ///Get debugger GUI element for the VideoDriver implementation.
+        SubDebugger debugger(){return null;}
 }

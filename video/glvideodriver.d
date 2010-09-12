@@ -13,10 +13,12 @@ import video.gltexturepage;
 import video.shader;
 import video.texture;
 import video.fontmanager;
+import video.gldebugger;
 import math.math;
 import math.vector2;
 import math.line2;
 import math.rectangle;
+import test.subdebugger;
 import platform.platform;
 import color;
 import image;
@@ -452,6 +454,8 @@ abstract class GLVideoDriver : VideoDriver
                 }
             }
         }
+
+        SubDebugger debugger(){return new GLDebugger;}
 
     protected:
         //Initialize OpenGL context.

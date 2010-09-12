@@ -110,8 +110,7 @@ class GUIElement
         in
         {
             assert(children_.contains(child, true) && child.parent_ is this,
-                   "Trying to remove a child that is not a child of this GUI "
-                   "element.");
+                   "Trying to remove a child that is not a child of this GUI element.");
         }
         body
         {
@@ -130,8 +129,6 @@ class GUIElement
 
         ///Determine if an element is a child of this element.
         final bool is_child(GUIElement element){return parent_ is element;}
-
-
 
     package:
         final void draw_children()

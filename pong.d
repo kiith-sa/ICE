@@ -29,6 +29,7 @@ import timer;
 import eventcounter;
 import singleton;
 import color;
+import test.debugger;
 
 
 ///A wall of game area.
@@ -668,7 +669,6 @@ class Pong
         GUIButton exit_button_;
 
     public:
-
         ///Initialize Pong.
         this()
         {
@@ -681,8 +681,6 @@ class Pong
             //Update FPS every second
             fps_counter_ = new EventCounter(1.0);
             fps_counter_.update.connect(&fps_update);
-
-
 
             uint width = VideoDriver.get.screen_width;
             uint height = VideoDriver.get.screen_height;
@@ -711,6 +709,7 @@ class Pong
 
         void run()
         {                           
+            Platform.get.key.connect(&key_handler_global);
             Platform.get.key.connect(&key_handler);
             while(Platform.get.run() && continue_)
             {
@@ -726,10 +725,9 @@ class Pong
                 if(run_pong_){Game.get.draw();}
                 else{draw();}
 
-                GUIRoot.get.draw();
                 ActorManager.get.draw();
+                GUIRoot.get.draw();
                 VideoDriver.get.end_frame();
-
             }
             Game.get.die();
             writefln("FPS statistics:\n", fps_counter_.statistics, "\n");
@@ -760,6 +758,22 @@ class Pong
 
         void exit(){continue_ = false;}
 
+        void debugger_toggle()
+        {
+            static Debugger debugger = null;
+            if(debugger is null)
+            {
+                debugger = new Debugger(GUIRoot.get, Vector2i(16, 16), 
+                                        Vector2u(320, 200));
+            }
+            else
+            {
+                GUIRoot.get.remove_child(debugger);
+                debugger.die();
+                debugger = null;
+            }
+        }
+
         void key_handler(KeyState state, Key key, dchar unicode)
         {
             if(state == KeyState.Pressed)
@@ -771,6 +785,21 @@ class Pong
                         break;
                     case Key.Return:
                         pong_start();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
+        void key_handler_global(KeyState state, Key key, dchar unicode)
+        {
+            if(state == KeyState.Pressed)
+            {
+                switch(key)
+                {
+                    case Key.F10:
+                        debugger_toggle();
                         break;
                     default:
                         break;
