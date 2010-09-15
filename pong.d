@@ -1,9 +1,6 @@
 module pong;
 
 
-//TEMP
-import gui.guistatictext;
-
 import std.stdio;
 import std.string;
 import std.random;
@@ -694,13 +691,6 @@ class Pong
                                         Vector2u(144, 24), "Player vs AI");
             exit_button_ = new GUIButton(menu_, Vector2i(8, 144 + 32),
                                        Vector2u(144, 24), "Quit game");
-            
-            //TODO: REMOVE, TEMP
-            GUIStaticText huge_text_ = new GUIStaticText(menu_, Vector2i(-480, 320), 
-                                           Vector2u(256, 512), 
-                                           "ABCDEFGHIJ KLMNOPQRS "
-                                           "TUVWXYZ1234 567890!@#$% ^&*(*)-=,./",
-                                           "orbitron-light.ttf", 48);
             Platform.get.mouse_motion.connect(&GUIRoot.get.mouse_move);
             Platform.get.mouse_key.connect(&GUIRoot.get.mouse_key);
             start_button_.pressed.connect(&pong_start);

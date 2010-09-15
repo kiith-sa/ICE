@@ -65,11 +65,6 @@ abstract class GLVideoDriver : VideoDriver
         uint line_draws_, texture_draws_, text_draws_;
         uint vertices_, characters_, shader_changes_, page_changes_;
 
-
-
-        
-
-
     public:
         this()
         {
@@ -378,20 +373,6 @@ abstract class GLVideoDriver : VideoDriver
             }
             return size;
         }
-
-        /*XXX REMOVE IF NOT NEEDED
-        final override string pages_info()
-        {
-            string info = "Pages: " ~ std.string.toString(pages_.length) ~ "\n"; 
-            foreach(index, page; pages_)
-            {
-                info ~= std.string.toString(index) ~ ": \n";
-
-                if(page is null){info ~= "null\n";}
-                else{info ~= page.info ~ "\n";}
-            }
-            return info;
-        }*/
 
 		final override Texture create_texture(ref Image image, bool force_page)
         in

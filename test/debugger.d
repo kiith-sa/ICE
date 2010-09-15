@@ -17,9 +17,10 @@ class Debugger : GUIElement
         SubDebugger current_debugger_ = null;
 
     public:
-        ///Construct a new element with specified parameters.
+        ///Construct a new debugger with specified parameters.
         this(GUIElement parent, Vector2i position, Vector2u size)
         {
+
             size.x = max(size.x, 320u);
             size.y = max(size.y, 200u);
             super(parent, position, size);
