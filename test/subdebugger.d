@@ -5,6 +5,7 @@ import gui.guielement;
 import math.vector2;
 
 
+///Displays information about a particular subsystem. (will be removed)
 class SubDebugger : GUIElement
 {
     private:

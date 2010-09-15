@@ -1,6 +1,8 @@
 module video.nodepacker;
 
 
+import std.string;
+
 import math.math;
 import math.vector2;
 import math.rectangle;
@@ -10,6 +12,7 @@ import allocator;
 ///Binary tree based texture packer. Handles allocation of texture page space.
 package align(1) struct NodePacker
 {
+    alias std.string.toString to_string;
     private:
         //Single packer node.
         static align(1) struct Node
@@ -183,6 +186,43 @@ package align(1) struct NodePacker
 
         ///Determine if this NodePacker is empty.
         bool empty(){return root_.empty();}
+
+        ///Return a string containing information about this packer.
+        string info()
+        {
+            uint nodes, leaves, full, full_area;
+
+            //crawl nodes and get info about them.
+            void crawler(Node* n)
+            {
+                ++nodes;
+                if(n.child_a_ !is null){crawler(n.child_a_);}
+                if(n.child_b_ !is null){crawler(n.child_b_);}
+                if(n.child_a_ is null && n.child_b_ is null)
+                {
+                    ++leaves;
+                    if(n.full_)
+                    {
+                        ++full;
+                        full_area += n.rectangle.area;
+                    }
+                }
+            }
+
+            crawler(root_);
+
+            real total_area = size_.x * size_.y;
+            real full_percent = full_area / total_area * 100.0;
+            real empty_percent = 100.0 - full_percent;
+            string output;
+            output ~= "nodes: " ~ to_string(nodes) ~ "\n";
+            output ~= "leaves: " ~ to_string(leaves) ~ "\n";
+            output ~= "full: " ~ to_string(full) ~ "\n";
+            output ~= "empty: " ~ to_string(leaves - full) ~ "\n";
+            output ~= "farea: " ~ to_string(full_percent) ~ "%\n";
+            output ~= "earea: " ~ to_string(empty_percent) ~ "%\n";
+            return output;
+        }
 
     private:
         ///Initialization method used by the fake constructor.

@@ -147,8 +147,10 @@ abstract class VideoDriver
         ///Return maximum square texture size supported with given color format.
         uint max_texture_size(ColorFormat format);
 
+        /*TODO REMOVE IF NOT NEEDED
         ///Returns a string containing information about texture pages.
         string pages_info();
+        */
 
         ///Create a texture from given image. Optionally force the texture to have its own texture page.
 		Texture create_texture(ref Image image, bool force_page = false);

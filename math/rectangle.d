@@ -90,6 +90,12 @@ struct Rectangle(T)
     
     ///Returns size of the rectangle.
     Vector2!(T) size(){return max - min;}
+
+    ///Returns area of the rectangle.
+    T area()
+    {
+        return size.x * size.y;
+    }
     
     ///If the point is not in this rectangle, grow the rectangle to include it.
     void add_internal_point(Vector2!(T) point)

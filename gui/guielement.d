@@ -28,6 +28,8 @@ class GUIElement
         bool visible_ = true;
         //Draw border of this element?
         bool draw_border_ = true;
+        //Are the contents of this element aligned based on its current dimensions?
+        bool aligned_;
 
     public:
         ///Construct a new element with specified parameters.
@@ -93,9 +95,10 @@ class GUIElement
         final Vector2u size(){return Vector2u(bounds_.size.x, bounds_.size.y);}
 
         ///Set size of this element in screen space.
-        void size(Vector2u size)
+        final void size(Vector2u size)
         {
             bounds_.max = bounds_.min + Vector2i(size.x, size.y);
+            aligned_ = false;
         }
 
         ///Add a child element.
@@ -140,6 +143,8 @@ class GUIElement
         void draw()
         {
             if(!visible_){return;}
+
+            if(!aligned_){realign();}
 
             if(draw_border_)
             {
@@ -186,4 +191,7 @@ class GUIElement
                 child.mouse_move(position, relative);
             }
         }
+
+        //Realign contents of this element according to its dimensions.
+        void realign(){aligned_ = true;}
 }

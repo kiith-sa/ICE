@@ -36,18 +36,18 @@ uint bytes_per_pixel(ColorFormat format)
 
 //this should be trivial using compile time reflection in D2
 ///Return a string representation of given color format.
-string to_string(ColorFormat format)
+string to_string(ColorFormat format, bool short_format = false)
 {
     switch(format)
     {
         case ColorFormat.RGB_565:
-            return "ColorFormat.RGB_565";
+            return short_format ? "RGB_565" : "ColorFormat.RGB_565";
             break;
         case ColorFormat.RGBA_8:
-            return "ColorFormat.RGBA_8";
+            return short_format ? "RGBA_8" : "ColorFormat.RGBA_8";
             break;
         case ColorFormat.GRAY_8:
-            return "ColorFormat.GRAY_8";
+            return short_format ? "GRAY_8" : "ColorFormat.GRAY_8";
             break;
         default:
             assert(false, "Unsupported image color format!");

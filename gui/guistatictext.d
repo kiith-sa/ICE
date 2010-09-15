@@ -59,10 +59,6 @@ class GUIStaticText : GUIElement
         //Distance between lines, in pixels
         uint line_gap_;
 
-        //True if lines_ are aligned according to current settings, false otherwise.
-        //(used to determine whether or not lines_ need realigning before drawing)
-        bool aligned_;
-
     public:
         ///Construct a static text with specified parameters.
         this(GUIElement parent, Vector2i position, Vector2u size, string text, 
@@ -82,13 +78,13 @@ class GUIStaticText : GUIElement
         ///Set text color.
         void text_color(Color color){font_color_ = color;}
 
-        ///Set size of this element in screen space.
-        override void size(Vector2u size)
+        ///Set displayed text.
+        void text(string text)
         {
-            super.size(size);
+            text_ = text;
             aligned_ = false;
         }
-        
+
         ///Set horizontal alignment.
         void alignment_x(AlignX alignment)
         {
@@ -120,9 +116,9 @@ class GUIStaticText : GUIElement
     protected:
         override void draw()
         {
+            if(!visible_){return;}
+
             super.draw();
-            //must realign if settings changed
-            if(!aligned_){realign();}
 
             VideoDriver.get.font = font_;
             VideoDriver.get.font_size = font_size_;
@@ -133,31 +129,70 @@ class GUIStaticText : GUIElement
             }
         }
 
+        //Break text down to lines and realign it.
+        override void realign()
+        {
+            string text = text_;
+
+            //we need to set font to get information about drawn size of lines
+            VideoDriver.get.font = font_;
+            VideoDriver.get.font_size = font_size_;
+            lines_ = [];
+            uint y_offset;
+
+            //break text to lines and align them horizontally, then align vertically
+            while(text.length > 0){text = add_line(text, y_offset, y_offset);}
+            align_vertical();
+
+            aligned_ = true;
+        }
+
     private:
         //Add a TextLine from the text, and return rest of the text.
         string add_line(string text, uint y_offset_in, out uint y_offset_out)
         {
             //get leading space, if any, and following word from text
-            string get_word()
+            //also, break the line if (unix) newline found
+            string get_word(out bool end_line)
             {
+                end_line = false;
                 uint end;
-                foreach(i, dchar c; text){if(!iswhite(c)){end = i; break;}}
-                foreach(dchar c; text[end .. $]){if(iswhite(c)){break;}++end;}
+                foreach(i, dchar c; text)
+                {
+                    if(!iswhite(c)){break;}
+                    else if(c == '\n')
+                    {
+                        end_line = true;
+                        return text[0 .. end];
+                    }
+                    ++end;
+                }
+                foreach(dchar c; text[end .. $])
+                {
+                    if(iswhite(c)){break;}
+                    else if(c == '\n')
+                    {
+                        end_line = true;
+                        return text[0 .. end];
+                    }
+                    ++end;
+                }
                 return text[0 .. end];
             }
 
             //line we're constructing
             TextLine line;
             VideoDriver driver = VideoDriver.get;
-            uint width = super.size.x;
+            uint width = size.x;
+            bool end_line = false;
 
             while(text.length > 0)
             {
-                string word = get_word();
+                string word = get_word(end_line);
 
                 //can we add word to the line without passing width?
                 Vector2u line_size = driver.text_size(line.text ~ word);
-                if(line_size.x > width)
+                if(line_size.x > width || end_line)
                 {
                     //line too wide, don't add the word and break
                     if(line.text.length == 0)
@@ -191,6 +226,7 @@ class GUIStaticText : GUIElement
             lines_ ~= line;
             //strip leading space so the next line doesn't start with space
             return stripl(text);
+            return text;
         }
         
         //Align lines verically.
@@ -199,27 +235,9 @@ class GUIStaticText : GUIElement
             //if AlignY is Top, we're aligned as lines start at y == 0 by default
             if(lines_.length == 0 || align_y_ == AlignY.Top){return;}
             uint text_height = font_size_ * lines_.length + line_gap_ * (lines_.length - 1);
-            int offset_y = super.size.y - text_height;
+            int offset_y = size.y - text_height;
             if(align_y_ == AlignY.Center){offset_y /= 2;}
             //move lines according to the offset
             foreach(ref line; lines_){line.offset.y += offset_y;}
-        }
-
-        //Break text down to lines and realign it.
-        void realign()
-        {
-            string text = text_;
-
-            //we need to set font to get information about drawn size of lines
-            VideoDriver.get.font = font_;
-            VideoDriver.get.font_size = font_size_;
-            lines_ = [];
-            uint y_offset;
-
-            //break text to lines and align them horizontally, then align vertically
-            while(text.length > 0){text = add_line(text, y_offset, y_offset);}
-            align_vertical();
-
-            aligned_ = true;
         }
 }               

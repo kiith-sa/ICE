@@ -1,6 +1,7 @@
 module video.gltexturepage;
 
 
+import std.string;
 import derelict.opengl.gl;
 
 import video.gltexturepage;
@@ -57,8 +58,7 @@ package align(1) struct GLTexturePage(TexturePacker)
 
     public:
         ///Fake constructor. Returns a page with specified format and size.
-        static GLTexturePage!(TexturePacker) opCall(Vector2u size, 
-                                                    ColorFormat format)
+        static GLTexturePage!(TexturePacker) opCall(Vector2u size, ColorFormat format)
         {
             GLTexturePage!(TexturePacker) page;
             page.ctor(size, format);
@@ -124,12 +124,19 @@ package align(1) struct GLTexturePage(TexturePacker)
         ///Determine if this page is empty (i.e. there are no textures on it).
         bool empty(){return packer_.empty();}
 
+        ///Return size of the page.
+        Vector2u size(){return size_;}
+
         ///Return a string containing information about this page.
         string info()
         {
-            string info = "Color format: " ~ to_string(format_);
-            info ~= "\nSize: " ~ cast(string)size_;
-            return info;
+            string output;
+            output ~= "width: " ~ std.string.toString(size_.x) ~ "\n";
+            output ~= "height: " ~ std.string.toString(size_.y) ~ "\n";
+            output ~= "format: " ~ to_string(format_, true) ~ "\n";
+            output ~= "packer:\n";
+            output ~= packer_.info;
+            return output;
         }
 
     private:

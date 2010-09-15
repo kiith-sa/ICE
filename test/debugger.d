@@ -9,6 +9,7 @@ import math.vector2;
 import math.math;
 
 
+///Displays various debugging/profiling information about engine subsystems.
 class Debugger : GUIElement
 {
     private:
@@ -29,6 +30,7 @@ class Debugger : GUIElement
         }
 
     private:
+        //display videodriver debugger.
         void video()
         {
             disconnect_current();

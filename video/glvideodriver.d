@@ -25,7 +25,6 @@ import image;
 import allocator;
 
 
-
 ///Handles all drawing functionality.
 abstract class GLVideoDriver : VideoDriver
 {
@@ -34,8 +33,9 @@ abstract class GLVideoDriver : VideoDriver
     protected:
         uint screen_width_ = 0;
         uint screen_height_ = 0;
-
-    private:
+    
+    //using package to allow debugger access
+    package:
         GLVersion version_;
 
         real view_zoom_ = 0.0;
@@ -51,7 +51,7 @@ abstract class GLVideoDriver : VideoDriver
 
         GLShader* [] shaders_;
         //Index of currently used shader; uint.max means none.
-        uint current_shader = uint.max;
+        uint current_shader_ = uint.max;
 
         //Texture pages
         TexturePage* [] pages_;
@@ -60,6 +60,15 @@ abstract class GLVideoDriver : VideoDriver
 
         //Textures
         GLTexture* [] textures_;
+
+        //measuring/debugging data:
+        uint line_draws_, texture_draws_, text_draws_;
+        uint vertices_, characters_, shader_changes_, page_changes_;
+
+
+
+        
+
 
     public:
         this()
@@ -122,12 +131,16 @@ abstract class GLVideoDriver : VideoDriver
             glClear(GL_COLOR_BUFFER_BIT);
             setup_viewport();
             current_page_ = uint.max;
+            line_draws_ = texture_draws_ = text_draws_ = 0;
+            vertices_ = characters_ = shader_changes_ = page_changes_ = 0;
         }
 
         override void end_frame(){glFlush();}
 
         final override void draw_line(Vector2f v1, Vector2f v2, Color c1, Color c2)
         {
+            ++line_draws_;
+
             set_shader(line_shader_);
             //The line is drawn as a rectangle with width slightly lower than
             //line_width_ to prevent artifacts.
@@ -142,6 +155,8 @@ abstract class GLVideoDriver : VideoDriver
 
             if(line_aa_)
             {
+                vertices_ += 6;
+
                 //If AA is on, add two transparent vertices to the sides of the 
                 //rectangle.
                 Vector2f offset_aa = offset_base * (half_width + 0.4);
@@ -174,6 +189,8 @@ abstract class GLVideoDriver : VideoDriver
             }
             else
             {
+                vertices_ += 4;
+
                 glBegin(GL_TRIANGLE_STRIP);
                 glColor4ub(c1.r, c1.g, c1.b, c1.a);
                 glVertex2f(r1.x, r1.y);
@@ -191,6 +208,9 @@ abstract class GLVideoDriver : VideoDriver
         in{assert(texture.index < textures_.length);}
         body
         {
+            ++texture_draws_;
+            vertices_ += 4;
+
             set_shader(texture_shader_);
 
             GLTexture* gl_texture = textures_[texture.index];
@@ -200,6 +220,7 @@ abstract class GLVideoDriver : VideoDriver
                                                " a nonexistent page");
             if(current_page_ != page_index)
             {
+                ++page_changes_;
                 pages_[page_index].start();
                 current_page_ = page_index;
             }
@@ -225,6 +246,8 @@ abstract class GLVideoDriver : VideoDriver
         
         final override void draw_text(Vector2i position, string text, Color color)
         {
+            ++text_draws_;
+
             //font textures are grayscale and use a shader
             //to convert grayscale to alpha
             set_shader(font_shader_);
@@ -254,6 +277,9 @@ abstract class GLVideoDriver : VideoDriver
             //iterating over utf-32 chars (conversion is automatic)
             foreach(dchar c; text)
             {
+                ++characters_;
+                vertices_ += 4;
+
                 texture = renderer.glyph(c, offset);
                 gl_texture = textures_[texture.index];
                 page_index = gl_texture.page_index;
@@ -261,6 +287,7 @@ abstract class GLVideoDriver : VideoDriver
                 //change texture page if needed
                 if(current_page_ != page_index)
                 {
+                    ++page_changes_;
                     pages_[page_index].start();
                     current_page_ = page_index;
                 }
@@ -352,6 +379,7 @@ abstract class GLVideoDriver : VideoDriver
             return size;
         }
 
+        /*XXX REMOVE IF NOT NEEDED
         final override string pages_info()
         {
             string info = "Pages: " ~ std.string.toString(pages_.length) ~ "\n"; 
@@ -363,7 +391,7 @@ abstract class GLVideoDriver : VideoDriver
                 else{info ~= page.info ~ "\n";}
             }
             return info;
-        }
+        }*/
 
 		final override Texture create_texture(ref Image image, bool force_page)
         in
@@ -457,6 +485,40 @@ abstract class GLVideoDriver : VideoDriver
 
         SubDebugger debugger(){return new GLDebugger;}
 
+    package:
+        //Debugging: draw specified area of a page on the specified quad.
+        void draw_page(uint page_index, ref Rectanglef area, ref Rectanglef quad)
+        {
+            vertices_ += 4;  
+
+            set_shader(texture_shader_);
+
+            assert(pages_[page_index] !is null, "Trying to draw a nonexistent page");
+            if(current_page_ != page_index)
+            {
+                ++page_changes_;
+                pages_[page_index].start();
+                current_page_ = page_index;
+            }
+
+            Vector2f page_size = to!(float)(pages_[current_page_].size);
+
+            Vector2f tmin = area.min / page_size;
+            Vector2f tmax = area.max / page_size;
+
+            glColor4ub(255, 255, 255, 255);
+            glBegin(GL_TRIANGLE_STRIP);
+            glTexCoord2f(tmin.x, tmin.y);
+            glVertex2f(quad.min.x, quad.min.y);
+            glTexCoord2f(tmin.x, tmax.y);
+            glVertex2f(quad.min.x, quad.max.y);
+            glTexCoord2f(tmax.x, tmin.y);
+            glVertex2f(quad.max.x, quad.min.y);
+            glTexCoord2f(tmax.x, tmax.y);
+            glVertex2f(quad.max.x, quad.max.y);
+            glEnd();
+        }
+
     protected:
         //Initialize OpenGL context.
         final void init_gl()
@@ -528,10 +590,11 @@ abstract class GLVideoDriver : VideoDriver
         {
             uint index = shader.index;
 
-            if(current_shader != index)
+            if(current_shader_ != index)
             {
+                ++shader_changes_;
                 shaders_[index].start;
-                current_shader = index;
+                current_shader_ = index;
             }
         }
 

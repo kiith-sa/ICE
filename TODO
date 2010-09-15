@@ -1,83 +1,181 @@
+CLEAN UP, DOCUMENT, INVARIANTS/CONTRACTS AND COMMIT
 
-videodriver debug gui element will show texture pages first.
-just draw the part of the page that fits the element 
-(do that with a custom, package, videodriver method)
-then maybe a count of draw calls of type x, count of triangles,
-shader changes, texture page changes, etc. per second
-(videodriver debug gui element can have its own subelements)
-Maybe graphs after that showing how these numbers change over time
-(pages, textures, nodes total, nodes per page as well)
-FPS would be also good to show, and in graph as well
+CHANGE:
 
-At the end, think about refactoring parts of debugger code to a 
+CONSIDER A SYSTEM SIMILAR TO OPENRA, WHERE ELEMENT POSITIONS AND SIZES
+ARE DETERMINED E.G. PARENT_RIGHT - 100, WINDOW_RIGHT - 50,
+ETC (!!!)
+
+    SO E.G.: POSITION OF INFO_TEXT IN PAGESDEBUGGER CAN BE PARENT_RIGHT - 74, 2
+    AND SIZE CAN BE 72, 256 !!!
+
+
+    FOR NOW, WE DON'T EVEN NEED COMPLICATED EQUATIONS LIKE OPENRA, JUST OFFSETS
+    RELATIVE TO PARENT OR WINDOW(GUI ROOT) MIN/MAX COORDS,
+    BUT LATER, IT WOULD BE USEFUL TO PARSE STRINGS WITH SUBSTITUTIONS LIKE OPENRA DOES.
+    FIRST, JUST USE THESE OFFSETS, THOUGH.
+
+    ACTUALLY, WE MIGHT NEED PARSING SUPPORT FROM THE START AS THE FIRST EXAMPLE
+    (PARENT_RIGHT - 74, 2) NEEDS TO OFFSET MAX FOR X, MIN FOR Y.
+
+    SO, IMPLEMENT A SIMPLE EQUATION PARSER WITH ONLY SUBSTITUTION, ADDITION AND 
+    SUBTRACTION FOR NOW.
+
+    ELEMENTS WILL NEED STRING MEMBERS FOR HEIGHT, WIDTH, POS_X AND POS_Y
+    AND ACTUAL BOUNDS WILL BE BASED ON THESE (CALCULATED IN REALIGN).
+
+
+    GOOGLE EQUATION PARSING- MAYBE USE A GENERATOR, OR, 
+    FIRST REMOVE SPACES, THEN SUBSTITUTE MACROS, THEN CONVERT TO POSTFIX,
+    THEN COMPUTE
+
+
+    AFTER ALL THAT IS DONE, WE'LL ONLY NEED TABCONTROL TO SIMPLIFY DEBUGGER CODE
+    (AND GET RID OF SUBDEBUGGER)
+
+
+    ALSO, STILL CONSIDER REMOVING MOST (ALL?) ARGS FROM ELEMENT'S CTORS
+    AND SETTING STUFF THROUGH ACCESSORS (ESP. POSITION, SIZE)
+    BUT FOR NOW (ONCE WE HAVE THE PARSER WORKING) WE CAN TEMPORARILY HAVE
+    TWO CONSTRUCTORS UNTIL WE MOVE THE CODE OVER 
+
+    ALSO, WE NEED THE UPDATE() METHOD FOR GUI ELEMENTS, CALLED BEFORE FRAME STARTS
+
+    ALSO: RENAME DEBUGGER TO MONITOR
+
+    Also abstract debugger font, button sizes
+
+    ANYWAY: PARSER FIRST (AFTER CLEANING UP)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+In the end, think about refactoring parts of debugger code to a 
 GUI element (tabwindow or something - an element with buttons-tabs that specify
-which subelement is displayed, e.g. texture pages view, draw counts view, etc)
+which subdebugger is displayed
+
+along the way, we might want to get rid of the SubDebugger class -it's
+useless now.
+
+The tabwindow will need a verticalpacker, horizontalpacker,
+just like QT- code this and it might end up being adequate
+for positioning all game GUI code.
+
+Tabview or tabcontrol might be a better name for tabwindow
+
+NOTE: WE MUST KEEP IN MIND THAT WE NEED TO SUPPORT RA2-LIKE GUI
+WITH FULLY TEXTURED, NON-RESIZABLE ELEMENTS!
+WHICH MEANS IT MIGHT BE A GOOD IDEA TO GIVE UP ON THESE IDEAS (AT LEAST FOR NOW)
+
+ACTUALLY, LET'S CONTINUE - WE CAN SIMPLY DISABLE STRETCHING ON ELEMENTS THAT CAN'T 
+BE STRETCHED- THAT WAY E.G. PAGE VIEW OR MENU WILL BE STRETCHED, BUT NOT
+INDIVIDUAL BUTTONS, CAMEOS, IMAGE ELEMENTS IN MENU, ETC.
+START WITH UNSTRETCHABLE TAB BUTTONS TO TEST HOW THIS WORKS
+(ACTUALLY, TABCONTROL CLASS WILL HANDLE THAT)
 
 
+Partially-obsolete:
+    packers might make ctors with positions obsolete, so maybe move 
+    positions from GUIElement and derived classes' ctors to an accessor.
+    (as they'll only be needed when no packer is used)
+    Packers would still be optional, though, e.g. current main menu doesn't really need
+    them
+    Also, maybe within packers, we could have horizontal/vertical 
+    (depending on packer type) aligns- elements with left will be placed left,
+    those with right will be placed right, anything in between will be stretched?
 
+Instead:
+    Use QT style layouts not GUI elements, derived from a Layout class.
+    Layouts can be added to GUI elements using GUIElement.layout(Layout layout)
+    Layout set then manages the element's widgets.
+    So e.g. for PagesDebugger(can call it PagesView, too),
+    we set XBoxLayout (equivalent to HBoxLayout), and that will handle
+    the two elements inside (view and info text) based on spacing set, 
+    their base sizes (?) and stretch factors (read on that) - 
+    that will need a SizePolicy enum or class too.
+
+    Also, we need spacers for layouts (at least horizontal/vertical ones-
+    not necessarily for grid if ever impemented)
+
+    Maybe we should also be able to add sublayouts to layouts,
+    i.e. not only layout->add_element() but also layout->add_layout()
+    similarly, we should have add_spacer() (would just add an int)
+
+    also, stretch  factors should be set with layout->add_element,
+    not members of elements.
+
+    However, MinimumSize and SizePolicy need to be element specific
+    (we don't need Size (as in not minimum) for now) - minimum size
+    is the size we have by default, e.g. the 320xwhatever debugger, 
+    and real size will depend on stretching.
+    MinimumSize will probably be set in ctor.
+
+We might also want not to connect widgets to parents at construction.
+Widgets might also be connected through layouts so we can add leyout specific arguments.
+
+Temporarily, we might need two constructors for elements so we can change GUI subsystem
+withough immendiately breaking all the existing code.
+
+
+Anyway, read a bit on QT/Tk/Hybrid/Agar/whatever first
+
+First test tabwindow on gldebugger (which already has more than one tab),
+then main debugger.
+
+Also refactor debugger font size from everywhere around the place to 
+a single int (global function in debugger maybe?)
+or better- one font size per debugger, e.g. gldebugger has its font
+size, global debugger has its own, etc.
+Same with button sizes and maybe with their positions
+
+GUI elements might also need an update() method, 
+update frame length, etc., like actormanager - with updates happening less
+frequently (15UPS?)
+GUIRoot update() could call draw(), just like ActorManager.
+However, it'd be better to keep them separate, so e.g. debugger can
+get videodriver data before the frame has started.
+Also, gldebugger subdebuggers' update timers could be checked at this update.
+Especially as they must be update outside the draw phase to show correct values.
 
 
 START ESSENTIAL -------------------------------
 14:
-    VideoDriver method that will return a string with data about all textures
-
-    For this kind of debugging info, define a VideoDriver method
-    info(enum DebugInfo) that will return a string with requested type
-    of info. DebugInfo.All would return all info available.
-    If the implementation can't return any info for wanted DebugInfo,
-    it just returns "N/A\n"
-    
-    The stuff below _might_ be done by a GUI element tree at VideoDriver
-    implementation side, root of which would be returned by VideoDriver 
-    implementation method. If possible, though, make it general.
-
-    Debugging utility: make VideoDriver functionality to
-    draw texture pages on screen (just draw the whole page as a big square
-    with 0,0 1,1 texcoords)
-    Would work as a dialog (could be launched by a shortcut for now,
-    in future from console)
-    Should also draw rectangles of all textures on that page.
-    That dialog could be expanded with more subdialogs in future.
-
-    Should be its own GUIElement subclass, like DebugGUI
-
-    With this, we can check adding/removing textures and how it affect pages
-    (e.g. do freed areas in the page get filled again with new textures?)
-    Should have dialogs to add specified sizes of checkered textures at 
-    specified offsets.
-    
-    Page viewed could be switched, by, say, Enter, and navigated by
-    arrows if it's too big (the page would be displayed separate
-    from GUI by a method of VideoDriver)
-
-    It should also show stats about overhead of all textures in the driver,
-    currently viewed page, and its packer (and all its nodes) - in
-    subdialogs that can be shown/hidden
-
-    Maybe something similar for the memory allocator
-    (and ActorManager?) - always use the statistics() method- can even
-    use templates.
-
-    Also show current manually allocated memory in bytes.
-    Will help in combination with ksysguard to determine GC allocated memory 
-    size. This could be shown by a graph like in KSysGuard.
-    Could also show graph for memory usage by a type if selected.
-
-    Similarly, VideoDriver could show graphs like how many textures
-    it has, or how many draw calls of which type per frame averaged 
-    each second etc.
-    We should probably have a specific Graph widget for that.
-    (or chart? engrish iz konfuzing)
-
-    In future, we could have graphs about how much time per frame
-    do drawing, etc. calls take.
-    Actually, this debugging GUI should turn into a set of blueprints
-    /issues in an issue tracker so we don't have to do it all at once.
-
-    Also consider dumping NodePacker tree and/or others to SVG as seen
-    at blackpawn.com/blog/?p=211
-14:
-    Make it impossible to add a child that alread is a child to a GUI element.
+    Make it impossible to add a child that already is a child to a GUI element.
     (i.e. to add a child twice) - caused a bug recently - use an assert to do this
 14:
     Valgrind, Massif.
@@ -251,11 +349,29 @@ END ESSENTIAL -------------------------------
     AI difficulty settings;
 
 --AFTER PONG    
+8:
+    Subset of HTML tags for text drawing (just support <br> for now),
+    will need a parser (fast!) and e.g. StaticText will need to use
+    a class/module that will split the html text into lines.
+
+    Alternatively, something like txt2tags or markdown. Look for
+    info about both. E.g. in txt2tags two newlines in a row would
+    separate paragraphs, resulting in a gap between lines.
+
+    lightweight markup language would be good for source readability,
+    html e.g. for tables (although those might work in a lml too -
+    especially if we do them our own way
 9:
     GUI elements for vertical and horizontal arranging of items,
     use them in debuggers, and refactor debugger GUI code.
     Maybe even a tab bar + tab element? 
     (since debuggers are basically sets of tabs with buttons)
+    
+    maybe, but probably not :
+    GUI should support a simple box model similar to HTML/CSS,
+    with margin, padding, absolute, relative to parent, relative to previous
+    child positioning,
+    and vertical/horizontal aligning.
 
 10:
     Test mod directories with a simple Pong "mod" that replaces shaders
@@ -366,6 +482,21 @@ END ESSENTIAL -------------------------------
     Platform and VideoDriver should have a static initialize(string impl_name)
     method, that will initialize the singleton with implementation
     with given name. (those names will be loaded from INI)
+15:
+    FormattedText class/struct that could contain various
+    formatting options like line width, line spacing, 
+    left/right justified/centered, in future maybe even various 
+    font colors, sizes, etc.
+    Would need its own viewer GUI element. (actually, just a class to break
+    it up into lines  GUIStaticText and any other future text widgets could
+    draw it OK)
+    Maybe just use txt2tags/other lightweight markup language 
+    with simple CSS or CSS-like something.
+    Or a subset of HTML tags (there should be good tutorials for that and it
+    would be familiar to users)
+
+    Especially, use of <br> or some other explicit line break would be good
+    instead of using \n as explicit newline.
 39:
     Consider D2 (at this point it might be mature enough :p)
 
@@ -393,13 +524,36 @@ we need to give credit to freetype based on its license (if used).
 see freetype.org
 
 
-
+Debugger:
+1:
+    Allocator debugger. Maybe memory usage graphs (and per-type graphs?)
+    Would need a graph GUI element.
+2:
+    Measurements of how much time per frame does e.g. line drawing take,
+    and display them somehow. Could measure times of non-videodriver code as well.
+3:
+    TexturePages info: show free/used space with slight red/blue tints,
+    show borders of the texture, and borders of nodes.
+    Also might be useful to have buttons to show only node borders/
+    texture page/free-used
+4:
+    Graphs showing how various debugger data changes over time
+    FPS would be also good to show, and in graph as well
+5:
+    Show stats about overhead of all textures in the driver,
+    each page and its packer
 
 Optimizations:
 1:
     Allocator alloc/dealloc recording could be done using
     an associative array with typeid as index instead of a string.
     Typeid would be converted to string when writing to output.
+
+GUI:
+1:
+    Progress bars should be simple animation with frame depending
+    of progress of something. This way we can have various fancy
+    loading bars, unit construction progress C&C style, etc.
 
 
 Maybe:
@@ -422,14 +576,6 @@ Maybe:
     base it on object height) - every frame, a simple bucket sort should
     be used to sort objects to depth groups, then every group should
     be sorted using heapsort or something.
-15:
-    FormattedText class/struct that could contain various
-    formatting options like line width, line spacing, 
-    left/right justified/centered, in future maybe even various 
-    font colors, sizes, etc.
-    Would need its own viewer GUI element.
-    Or maybe just use txt2tags format with simple CSS or CSS-like something.
-
 16:
     If multitextures will be supported in future, their data should
     be stored in pairs/triplets/quadruplets/etc of pages at same coords.

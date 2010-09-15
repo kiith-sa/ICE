@@ -206,7 +206,7 @@ package struct Font
         ///Initialize default (placeholder) glyph.
         void init_default_glyph()
         {
-            scope Image image = new Image(height_ / 2, height_);
+            scope Image image = new Image(height_ / 2, height_, ColorFormat.GRAY_8);
             with(default_glyph_)
             {
                 texture = VideoDriver.get.create_texture(image);
