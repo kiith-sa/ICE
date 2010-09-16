@@ -7,7 +7,7 @@ import video.videodriver;
 import video.glvideodriver;
 import video.gltexturepage;
 import gui.guielement;
-import gui.guibutton;
+import gui.guimenu;
 import gui.guistatictext;
 import math.vector2;
 import math.rectangle;
@@ -16,7 +16,7 @@ import timer;
 
 
 ///Displays info about texture pages.
-package class PagesMonitor : GUIElement
+final package class PagesMonitor : GUIElement
 {
     private:
         alias std.string.toString to_string;
@@ -74,12 +74,7 @@ package class PagesMonitor : GUIElement
         
         PageView view_;
 
-        //Changing pages.
-        GUIButton next_button_, prev_button_;
-        //Navigating viewed page.
-        GUIButton left_button_, right_button_, up_button_, down_button_;
-        //Zooming viewed page.
-        GUIButton zoom_in_button_, zoom_out_button_;
+        GUIMenu menu_;
         
         //Information about the page.
         GUIStaticText info_text_;
@@ -98,7 +93,7 @@ package class PagesMonitor : GUIElement
             update_timer_ = Timer(0.5);
 
             init_view();
-            init_buttons();
+            init_menu();
             init_text();
         }
 
@@ -127,38 +122,29 @@ package class PagesMonitor : GUIElement
             add_child(view_);
         }
 
-        void init_buttons()
+        void init_menu()
         {
-            uint buttons = 0;
-
-            void add_button(ref GUIButton button, string button_text, 
-                            void delegate() deleg)
+            menu_ = new GUIMenu;
+            with(menu_)
             {
-                button = new GUIButton;
-                with(button)
-                {
-                    position_x = "p_left + 2";
-                    position_y = "p_top + 2 + " ~ to_string(16 * buttons);
-                    width = "24";
-                    height = "14";
-                    text = button_text;
-                    font_size = 8;
-                }
-                button.pressed.connect(deleg);
-                add_child(button);
-                ++buttons;
+                position_x = "p_left";
+                position_y = "p_top";
+
+                add_item("Next", &next);
+                add_item("Prev", &prev);
+                add_item("Left", &view_.left);
+                add_item("Right", &view_.right);
+                add_item("Up", &view_.up);
+                add_item("Down", &view_.down);
+                add_item("+", &view_.zoom_in);
+                add_item("-", &view_.zoom_out);
+
+                item_font_size = 8;
+                item_width = "24";
+                item_height = "14";
+                item_spacing = "2";
             }
-
-            add_button(next_button_, "Next", &next);
-            add_button(prev_button_, "Prev", &prev);
-
-            add_button(left_button_, "Left", &view_.left);
-            add_button(right_button_, "Right", &view_.right);
-            add_button(up_button_, "Up", &view_.up);
-            add_button(down_button_, "Down", &view_.down);
-
-            add_button(zoom_in_button_, "+", &view_.zoom_in);
-            add_button(zoom_out_button_, "-", &view_.zoom_out);
+            add_child(menu_);
         }
 
         void init_text()
@@ -223,7 +209,7 @@ package class PagesMonitor : GUIElement
 }
 
 ///Displays info about draw calls, state changes and primitives.
-package class DrawsMonitor : GUIElement
+final package class DrawsMonitor : GUIElement
 {
     private:
         alias std.string.toString to_string;
@@ -285,11 +271,10 @@ package class DrawsMonitor : GUIElement
 }
 
 ///Displays info about GLVideoDriver.
-package class GLMonitor : GUIElement
+final package class GLMonitor : GUIElement
 {
     private:
-        GUIButton pages_button_;
-        GUIButton draws_button_;
+        GUIMenu menu_;
         GUIElement current_monitor_ = null;
         
     public:
@@ -297,37 +282,30 @@ package class GLMonitor : GUIElement
         {
             super();
 
-            uint buttons = 0;
-
-            void add_button(ref GUIButton button, string button_text, 
-                            void delegate() deleg)
+            menu_ = new GUIMenu;
+            with(menu_)
             {
-                button = new GUIButton;
-                with(button)
-                {
-                    position_x = "p_left + 4";
-                    position_y = "p_top + 4 + " ~ to_string(16 * buttons);
-                    width = "40";
-                    height = "12";
-                    text = button_text;
-                    font_size = 8;
-                }
-                button.pressed.connect(deleg);
-                add_child(button);
-                ++buttons;
-            }
+                position_x = "p_left";
+                position_y = "p_top";
 
-            add_button(pages_button_, "Pages", &pages);
-            add_button(draws_button_, "Draws", &draws);
+                add_item("Pages", &pages);
+                add_item("Draws", &draws);
+
+                item_font_size = 8;
+                item_width = "40";
+                item_height = "12";
+                item_spacing = "4";
+            }
+            add_child(menu_);
         }
 
-        //display texture pages monitor
-        void pages(){submonitor(new PagesMonitor);}
+        //Display texture pages monitor.
+        void pages(){monitor(new PagesMonitor);}
+        //Display draws monitor.
+        void draws(){monitor(new DrawsMonitor);}
 
-        //display draws monitor
-        void draws(){submonitor(new DrawsMonitor);}
-
-        void submonitor(GUIElement monitor)
+        //Display specified submonitor.
+        void monitor(GUIElement monitor)
         {
             if(current_monitor_ !is null)
             {

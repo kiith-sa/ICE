@@ -3,16 +3,16 @@ module monitor.monitor;
 
 import video.videodriver;
 import gui.guielement;
-import gui.guibutton;
+import gui.guimenu;
 import math.vector2;
 import math.math;
 
 
 ///Displays various debugging/profiling information about engine subsystems.
-class Monitor : GUIElement
+final class Monitor : GUIElement
 {
     private:
-        GUIButton video_button_;
+        GUIMenu menu_;
         GUIElement current_monitor_ = null;
 
     public:
@@ -21,34 +21,29 @@ class Monitor : GUIElement
         {
             super();
 
-            uint buttons = 0;
-
-            void add_button(ref GUIButton button, string button_text, 
-                            void delegate() deleg)
+            menu_ = new GUIMenu;
+            with(menu_)
             {
-                button = new GUIButton;
-                with(button)
-                {
-                    position_x = "p_left + 4 + " ~ to_string(56 * buttons);
-                    position_y = "p_top + 4";
-                    width = "48";
-                    height = "14";
-                    text = button_text;
-                    font_size = 8;
-                }
-                button.pressed.connect(deleg);
-                add_child(button);
-                ++buttons;
-            }
+                position_x = "p_left";
+                position_y = "p_top";
+                orientation = MenuOrientation.Horizontal;
 
-            add_button(video_button_, "Video", &video);
+                add_item("Video", &video);
+
+                item_font_size = 8;
+                item_width = "48";
+                item_height = "14";
+                item_spacing = "4";
+            }
+            add_child(menu_);
         }
 
     private:
-        //display videodriver monitor.
-        void video(){submonitor(VideoDriver.get.monitor);}
+        //Display videodriver monitor.
+        void video(){monitor(VideoDriver.get.monitor);}
 
-        void submonitor(GUIElement monitor)
+        //Display specified monitor.
+        void monitor(GUIElement monitor)
         {
             if(current_monitor_ !is null)
             {

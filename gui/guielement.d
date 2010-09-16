@@ -18,8 +18,9 @@ import arrayutil;
 ///Base class for all GUI elements. Can be used directly to draw empty elements.
 class GUIElement
 {
-    alias std.string.toString to_string;
     protected:
+        alias std.string.toString to_string;
+
         GUIElement parent_ = null;
         GUIElement[] children_;
 
@@ -35,11 +36,11 @@ class GUIElement
         //Are the contents of this element aligned based on its current dimensions?
         bool aligned_ = false;
 
-        string x_string_ = "0";
-        string y_string_ = "0";
+        string x_string_ = "w_right / 2";
+        string y_string_ = "w_bottom / 2";
 
-        string width_string_ = "1";
-        string height_string_ = "1";
+        string width_string_ = "64";
+        string height_string_ = "64";
 
     public:
         this(){}

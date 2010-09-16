@@ -20,7 +20,7 @@ import actor.lineemitter;
 import actor.linetrail;
 import gui.guielement;
 import gui.guiroot;
-import gui.guibutton;
+import gui.guimenu;
 import platform.platform;
 import platform.sdlplatform;
 import monitor.monitor;
@@ -664,9 +664,8 @@ class Pong
         bool run_pong_ = false;
         bool continue_ = true;
 
-        GUIElement menu_;
-        GUIButton start_button_;
-        GUIButton exit_button_;
+        GUIElement menu_container_;
+        GUIMenu menu_;
 
     public:
         ///Initialize Pong.
@@ -688,37 +687,30 @@ class Pong
             Platform.get.mouse_motion.connect(&GUIRoot.get.mouse_move);
             Platform.get.mouse_key.connect(&GUIRoot.get.mouse_key);
 
-            menu_ = new GUIElement;
-            with(menu_)
+            menu_container_ = new GUIElement;
+            with(menu_container_)
             {
                 position_x = "w_right - 176";
                 position_y = "16";
                 width = "160";
                 height = "w_bottom - 32";
             }
-            GUIRoot.get.add_child(menu_);
+            GUIRoot.get.add_child(menu_container_);
 
-
-            uint buttons = 0;
-            void add_button(ref GUIButton button, string button_text, 
-                            void delegate() deleg)
+            menu_ = new GUIMenu;
+            with(menu_)
             {
-                button = new GUIButton;
-                with(button)
-                {
-                    position_x = "p_left + 8";
-                    position_y = "p_top + 144 + " ~ to_string(32 * buttons);
-                    width = "144";
-                    height = "24";
-                    text = button_text;
-                }
-                button.pressed.connect(deleg);
-                menu_.add_child(button);
-                ++buttons;
-            }
+                position_x = "w_right - 176";
+                position_y = "p_top + 136";
 
-            add_button(start_button_, "Player vs AI", &pong_start);
-            add_button(exit_button_, "Quit", &exit);
+                add_item("Player vs AI", &pong_start);
+                add_item("Quit", &exit);
+
+                item_width = "144";
+                item_height = "24";
+                item_spacing = "8";
+            }
+            menu_container_.add_child(menu_);
         }
 
         void die()
