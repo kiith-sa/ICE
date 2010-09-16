@@ -23,16 +23,20 @@ final class GUIRoot : GUIElement
         this()
         {
             singleton_ctor();
-            auto driver = VideoDriver.get;
-            //GUI size is equal to screen size
-            Vector2u max = Vector2u(driver.screen_width, driver.screen_height);
-            super(null, Vector2i(0,0), max);
+            super();
+
+            position_x = "0";
+            position_y = "0";
+            width = "w_right";
+            height = "w_bottom";
         }
 
         ///Draw the GUI.
-        void draw()
+        final void draw()
         {
             if(!visible_){return;}
+
+            if(!aligned_){realign();}
 
             auto driver = VideoDriver.get;
 
@@ -50,6 +54,12 @@ final class GUIRoot : GUIElement
             //restore zoom and offset
             driver.zoom = zoom;
             driver.view_offset = offset;
+        }
+
+        final void update()
+        {
+            if(!visible_){return;}
+            update_children();
         }
 
         ///Pass keyboard input to the GUI.

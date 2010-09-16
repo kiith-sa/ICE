@@ -13,13 +13,13 @@ import video.gltexturepage;
 import video.shader;
 import video.texture;
 import video.fontmanager;
-import video.gldebugger;
+import video.glmonitor;
 import math.math;
 import math.vector2;
 import math.line2;
 import math.rectangle;
-import test.subdebugger;
 import platform.platform;
+import gui.guielement;
 import color;
 import image;
 import allocator;
@@ -464,7 +464,7 @@ abstract class GLVideoDriver : VideoDriver
             }
         }
 
-        SubDebugger debugger(){return new GLDebugger;}
+        GUIElement monitor(){return new GLMonitor;}
 
     package:
         //Debugging: draw specified area of a page on the specified quad.

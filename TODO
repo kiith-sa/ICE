@@ -5,6 +5,24 @@ START ESSENTIAL -------------------------------
 14:
     Valgrind, Massif.
     Look (google, etc.) for ways to measure memory in detail.
+    Also look at digital mars profiler, and maybe for ways to measure GC allocs/frees
+    (and their types?)
+
+    Also, profile with callgrind, cachegrind, gprof, 
+    oprofile - CPU usage, mispredicts, cache misses, maybe more
+    sysprof
+    AMD CodeAnalyst
+
+    and: xfProf (for D) - useless - windows only
+    Look for all kinds of profilers anyway, both for D and general
+    (especially non-intrusive ones)
+
+    Try to write a script that will:
+    launch OProfile (needs to be used as root)
+    launch Pong
+    then, the user can play Pong
+    when user finishes with Pong, script will quit and output measurements to a file.
+
 14:
     Complete overhaul of memory usage everywhere 
     (with classes as well, e.g. maybe actors should truly be removed)
@@ -14,6 +32,7 @@ START ESSENTIAL -------------------------------
 
     Could also look at the source of the Diamond memory debugger and
     use the ideas there to measure memory usage
+
 15:
     Move away from DSSS, (include derelict)
     also, get the newest derelict

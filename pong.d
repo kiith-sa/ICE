@@ -23,7 +23,7 @@ import gui.guiroot;
 import gui.guibutton;
 import platform.platform;
 import platform.sdlplatform;
-import test.debugger;
+import monitor.monitor;
 import signal;
 import time;
 import timer;
@@ -684,17 +684,41 @@ class Pong
 
             uint width = VideoDriver.get.screen_width;
             uint height = VideoDriver.get.screen_height;
-            menu_ = new GUIElement(GUIRoot.get, 
-                                     Vector2i(width - 176, 16),
-                                     Vector2u(160, height - 32));
-            start_button_ = new GUIButton(menu_, Vector2i(8, 144),
-                                        Vector2u(144, 24), "Player vs AI");
-            exit_button_ = new GUIButton(menu_, Vector2i(8, 144 + 32),
-                                       Vector2u(144, 24), "Quit game");
+
             Platform.get.mouse_motion.connect(&GUIRoot.get.mouse_move);
             Platform.get.mouse_key.connect(&GUIRoot.get.mouse_key);
-            start_button_.pressed.connect(&pong_start);
-            exit_button_.pressed.connect(&exit);
+
+            menu_ = new GUIElement;
+            with(menu_)
+            {
+                position_x = "w_right - 176";
+                position_y = "16";
+                width = "160";
+                height = "w_bottom - 32";
+            }
+            GUIRoot.get.add_child(menu_);
+
+
+            uint buttons = 0;
+            void add_button(ref GUIButton button, string button_text, 
+                            void delegate() deleg)
+            {
+                button = new GUIButton;
+                with(button)
+                {
+                    position_x = "p_left + 8";
+                    position_y = "p_top + 144 + " ~ to_string(32 * buttons);
+                    width = "144";
+                    height = "24";
+                    text = button_text;
+                }
+                button.pressed.connect(deleg);
+                menu_.add_child(button);
+                ++buttons;
+            }
+
+            add_button(start_button_, "Player vs AI", &pong_start);
+            add_button(exit_button_, "Quit", &exit);
         }
 
         void die()
@@ -719,6 +743,8 @@ class Pong
 
                 //update game state
                 ActorManager.get.update();
+                GUIRoot.get.update();
+
                 VideoDriver.get.start_frame();
 
                 if(run_pong_){Game.get.draw();}
@@ -759,17 +785,24 @@ class Pong
 
         void debugger_toggle()
         {
-            static Debugger debugger = null;
-            if(debugger is null)
+            static Monitor monitor = null;
+            if(monitor is null)
             {
-                debugger = new Debugger(GUIRoot.get, Vector2i(16, 16), 
-                                        Vector2u(320, 200));
+                monitor = new Monitor;
+                with(monitor)
+                {
+                    position_x = "16";
+                    position_y = "16";
+                    width = "192 + w_right / 4";
+                    height = "168 + w_bottom / 6";
+                }
+                GUIRoot.get.add_child(monitor);
             }
             else
             {
-                GUIRoot.get.remove_child(debugger);
-                debugger.die();
-                debugger = null;
+                GUIRoot.get.remove_child(monitor);
+                monitor.die();
+                monitor = null;
             }
         }
 

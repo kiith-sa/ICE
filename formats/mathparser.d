@@ -7,8 +7,6 @@ import std.conv;
 import arrayutil;
 
 
-//OK, NOW CLEAN UP, AND WE CAN COMMIT AS WELL
-
 ///Parse given string as a math expression.
 /**
  * An associative array of substitutions can be passed

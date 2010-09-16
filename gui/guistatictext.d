@@ -41,7 +41,7 @@ class GUIStaticText : GUIElement
         }
 
         //Text of the element. This is broken into TextLines according to width.
-        string text_;
+        string text_ = "";
 
         AlignX align_x_ = AlignX.Left;
         AlignY align_y_ = AlignY.Top;
@@ -50,9 +50,9 @@ class GUIStaticText : GUIElement
         TextLine[] lines_;
 
         //Name of the font used.
-        string font_;
+        string font_ = "default";
 
-        uint font_size_;
+        uint font_size_ = 12;
         
         Color font_color_ = Color(255, 255, 255, 255);
 
@@ -60,19 +60,12 @@ class GUIStaticText : GUIElement
         uint line_gap_;
 
     public:
-        ///Construct a static text with specified parameters.
-        this(GUIElement parent, Vector2i position, Vector2u size, string text, 
-             string font, uint font_size)
+        ///Construct an empty static text.
+        this()
         {
-            super(parent, position, size);
-            text = expandtabs(text);
+            super();
             draw_border_ = false;
-            font_ = font;
-            font_size_ = font_size;
-            line_gap_ = max(2u, font_size_ / 6);
-            text_ = text;
             realign();
-            aligned_ = true;
         }
 
         ///Set text color.
@@ -81,7 +74,7 @@ class GUIStaticText : GUIElement
         ///Set displayed text.
         void text(string text)
         {
-            text_ = text;
+            text_ = expandtabs(text);
             aligned_ = false;
         }
 
@@ -132,6 +125,10 @@ class GUIStaticText : GUIElement
         //Break text down to lines and realign it.
         override void realign()
         {
+            super.realign();
+
+            line_gap_ = max(2u, font_size_ / 6);
+
             string text = text_;
 
             //we need to set font to get information about drawn size of lines
@@ -143,8 +140,6 @@ class GUIStaticText : GUIElement
             //break text to lines and align them horizontally, then align vertically
             while(text.length > 0){text = add_line(text, y_offset, y_offset);}
             align_vertical();
-
-            aligned_ = true;
         }
 
     private:

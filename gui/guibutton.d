@@ -42,15 +42,23 @@ class GUIButton : GUIElement
         ///Emitted when this button is pressed.
         mixin Signal!() pressed;
 
-        ///Construct a button with specified parameters.
-        this(GUIElement parent, Vector2i position, Vector2u size, string text)
+        ///Construct an empty button.
+        this()
         {
-            super(parent, position, size);
+            super();
 
             //initialize empty text
-            text_ = new GUIStaticText(this, Vector2i(0, 0), size, text, "default", 12);
-            text_.alignment_x = AlignX.Center;
-            text_.alignment_y = AlignY.Center;
+            text_ = new GUIStaticText();
+            with(text_)
+            {
+                alignment_x = AlignX.Center;
+                alignment_y = AlignY.Center;
+                position_x = "p_left";
+                position_y = "p_top";
+                width = "p_right - p_left";
+                height = "p_bottom - p_top";
+            }
+            add_child(text_);
 
             //set default colors for button states
             states_[ButtonState.Normal].border_color = Color(192, 192, 255, 96);
@@ -68,6 +76,8 @@ class GUIButton : GUIElement
             super.die();
             text_ = null;
         }
+
+        final void text(string text){text_.text = text;}
 
         ///Set text color for specified button state.
         final void text_color(Color color, ButtonState state)

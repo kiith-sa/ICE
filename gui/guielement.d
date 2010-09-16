@@ -1,10 +1,13 @@
 module gui.guielement;
 
 
+import std.string;
+
 import video.videodriver;
 import math.vector2;
 import math.rectangle;
 import platform.platform;
+import formats.mathparser;
 import color;
 import arrayutil;
 
@@ -15,6 +18,7 @@ import arrayutil;
 ///Base class for all GUI elements. Can be used directly to draw empty elements.
 class GUIElement
 {
+    alias std.string.toString to_string;
     protected:
         GUIElement parent_ = null;
         GUIElement[] children_;
@@ -29,16 +33,16 @@ class GUIElement
         //Draw border of this element?
         bool draw_border_ = true;
         //Are the contents of this element aligned based on its current dimensions?
-        bool aligned_;
+        bool aligned_ = false;
+
+        string x_string_ = "0";
+        string y_string_ = "0";
+
+        string width_string_ = "1";
+        string height_string_ = "1";
 
     public:
-        ///Construct a new element with specified parameters.
-        this(GUIElement parent, Vector2i position, Vector2u size)
-        {
-            if(parent !is null){parent.add_child(this);}
-            this.size(size);
-            position_local(position);
-        }
+        this(){}
 
         ~this()
         {
@@ -60,46 +64,22 @@ class GUIElement
             parent_ = null;
         }                 
 
+        final void position_x(string pos){x_string_ = pos; aligned_ = false;}
+
+        final void position_y(string pos){y_string_ = pos; aligned_ = false;}
+
+        final void width(string width){width_string_ = width; aligned_ = false;}
+
+        final void height(string height){height_string_ = height; aligned_ = false;}
+
         ///Get position in screen space.
         final Vector2i position_global(){return bounds_.min;}
 
-        ///Set position in screen space.
-        final void position_global(Vector2i position)
-        out
-        {
-            assert(bounds_.min == position, 
-                   "Global position of a GUI element was not set correctly");
-        }
-        body
-        {
-            Vector2i offset = position - bounds_.min;
-            bounds_ += offset;
-            //move the children with parent
-            foreach(ref child; children_)
-            {
-                child.position_global = child.position_global + offset;
-            }
-        }
-
         ///Get position relative to parent element.
         final Vector2i position_local(){return bounds_.min - parent_.bounds_.min;}
-
-        ///Set position relative to parent element.
-        final void position_local(Vector2i position)
-        {
-            Vector2i offset = parent_ is null ? Vector2i(0,0) : parent_.bounds_.min;
-            position_global(position + offset);
-        }
         
         ///Return size of this element in screen space.
         final Vector2u size(){return Vector2u(bounds_.size.x, bounds_.size.y);}
-
-        ///Set size of this element in screen space.
-        final void size(Vector2u size)
-        {
-            bounds_.max = bounds_.min + Vector2i(size.x, size.y);
-            aligned_ = false;
-        }
 
         ///Add a child element.
         final void add_child(GUIElement child)
@@ -139,6 +119,11 @@ class GUIElement
             foreach(ref child; children_){child.draw();}
         }
 
+        final void update_children()
+        {
+            foreach(ref child; children_){child.update();}
+        }
+
     protected:
         void draw()
         {
@@ -155,6 +140,8 @@ class GUIElement
 
             draw_children();
         }
+
+        void update(){update_children();}
 
         //Process keyboard input.
         void key(KeyState state, Key key, dchar unicode)
@@ -193,5 +180,36 @@ class GUIElement
         }
 
         //Realign contents of this element according to its dimensions.
-        void realign(){aligned_ = true;}
+        void realign()
+        {
+            int[string] substitutions;
+            auto driver = VideoDriver.get;
+
+            substitutions["w_right"] = driver.screen_width;
+            substitutions["w_bottom"] = driver.screen_height;
+            substitutions["p_left"] = parent_ is null ? 0 : parent_.bounds_.min.x;
+            substitutions["p_right"] = parent_ is null ? 0 : parent_.bounds_.max.x;
+            substitutions["p_top"] = parent_ is null ? 0 : parent_.bounds_.min.y;
+            substitutions["p_bottom"] = parent_ is null ? 0 : parent_.bounds_.max.y;
+
+            bounds_.min = Vector2i(parse_math(x_string_, substitutions), 
+                                   parse_math(y_string_, substitutions));
+
+            int width = parse_math(width_string_, substitutions);
+            int height = parse_math(height_string_, substitutions);
+
+            if(height < 0 || width < 0)
+            {
+                throw new Exception("Negative width and/or height of a GUI element!");
+            }
+
+            bounds_.max = bounds_.min + Vector2i(width, height);
+
+            foreach(ref child; children_)
+            {
+                child.realign();
+            }
+
+            aligned_ = true;
+        }
 }
