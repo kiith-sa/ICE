@@ -43,9 +43,9 @@ final package class PagesMonitor : GUIElement
                 GLVideoDriver driver = cast(GLVideoDriver)VideoDriver.get;
 
                 //no page to draw
-                if(driver.pages_.length == 0){return;}
+                if(driver.pages.length == 0){return;}
                 //current page was deleted, change to another one
-                while(driver.pages_[current_page_] == null){next();}
+                while(driver.pages[current_page_] == null){next();}
 
                 //draw the page view
                 //texture area to draw, rectanglef quad to map the texture area on
@@ -82,7 +82,7 @@ final package class PagesMonitor : GUIElement
         //Timer used to determine when to update the page info.
         Timer update_timer_;
 
-        //Currently viewed page index (in GLVideoDriver.pages_).
+        //Currently viewed page index (in GLVideoDriver.pages).
         uint current_page_ = 0;
 
     public:
@@ -166,10 +166,10 @@ final package class PagesMonitor : GUIElement
         void next()
         {
             GLVideoDriver driver = cast(GLVideoDriver)VideoDriver.get;
-            if(current_page_ >= driver.pages_.length - 1){current_page_ = 0;}
+            if(current_page_ >= driver.pages.length - 1){current_page_ = 0;}
             else{++current_page_;}
-            if(driver.pages_.length == 0){return;}
-            if(driver.pages_[current_page_] == null)
+            if(driver.pages.length == 0){return;}
+            if(driver.pages[current_page_] == null)
             {
                 next();
                 return;
@@ -181,10 +181,10 @@ final package class PagesMonitor : GUIElement
         void prev()
         {
             GLVideoDriver driver = cast(GLVideoDriver)VideoDriver.get;
-            if(current_page_ == 0){current_page_ = driver.pages_.length - 1;}
+            if(current_page_ == 0){current_page_ = driver.pages.length - 1;}
             else{--current_page_;}
-            if(driver.pages_.length == 0){return;}
-            if(driver.pages_[current_page_] is null)
+            if(driver.pages.length == 0){return;}
+            if(driver.pages[current_page_] is null)
             {
                 prev();
                 return;
@@ -196,15 +196,15 @@ final package class PagesMonitor : GUIElement
         void update_text()
         {
             GLVideoDriver driver = cast(GLVideoDriver)VideoDriver.get;
-            if(driver.pages_.length == 0)
+            if(driver.pages.length == 0)
             {
                 info_text_.text = "No pages";
                 return;
             }
-            while(driver.pages_[current_page_] == null){next();}
+            while(driver.pages[current_page_] == null){next();}
 
             info_text_.text = "page index: " ~ to_string(current_page_) ~ "\n" ~
-                              driver.pages_[current_page_].info;
+                              driver.pages[current_page_].info;
         }
 }
 

@@ -35,7 +35,7 @@ abstract class GLVideoDriver : VideoDriver
         uint screen_height_ = 0;
     
     //using package to allow debugger access
-    package:
+    private:
         GLVersion version_;
 
         real view_zoom_ = 0.0;
@@ -61,6 +61,7 @@ abstract class GLVideoDriver : VideoDriver
         //Textures
         GLTexture* [] textures_;
 
+    package:
         //measuring/debugging data:
         uint line_draws_, texture_draws_, text_draws_;
         uint vertices_, characters_, shader_changes_, page_changes_;
@@ -499,6 +500,8 @@ abstract class GLVideoDriver : VideoDriver
             glVertex2f(quad.max.x, quad.max.y);
             glEnd();
         }
+
+        TexturePage*[] pages(){return pages_;}
 
     protected:
         //Initialize OpenGL context.
