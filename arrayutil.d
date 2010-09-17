@@ -1,4 +1,4 @@
-module util;
+module arrayutil;
 
 
 ///Remove element from the array.

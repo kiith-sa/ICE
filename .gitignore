@@ -2,4 +2,7 @@
 *~
 dsss.last
 dsss_objs/
-pong
+pong-debug
+pong-release
+cdc
+*.o

@@ -1,16 +1,5 @@
-START ESSENTIAL -------------------------------
-15:
-    Move away from DSSS, (include derelict)
-    also, get the newest derelict
-    Debug, release, doc targets
-
-    Consider xfBuild, since it's not dead  
-    Maybe even basic makefile.
-    Also, create a code::blocks project.
-
-
-END ESSENTIAL -------------------------------
-
+12:
+    Debug, release targets (modify cdc script, add simple command line args)
 13: 
     Credits button and text 
     (maybe a simple demo showing random balls or an AI-AI game in background)
