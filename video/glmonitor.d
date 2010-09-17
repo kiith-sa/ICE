@@ -139,7 +139,7 @@ final package class PagesMonitor : GUIElement
                 add_item("+", &view_.zoom_in);
                 add_item("-", &view_.zoom_out);
 
-                item_font_size = 8;
+                item_font_size = GLMonitor.font_size;
                 item_width = "24";
                 item_height = "14";
                 item_spacing = "2";
@@ -157,7 +157,7 @@ final package class PagesMonitor : GUIElement
                 position_y = "p_top + 2";
                 width = "72";
                 height = "p_bottom - p_top - 4";
-                font_size = 8;
+                font_size = GLMonitor.font_size;
             }
             add_child(info_text_);
             update_text();
@@ -232,7 +232,7 @@ final package class DrawsMonitor : GUIElement
                 position_y = "p_top + 2";
                 width = "96";
                 height = "p_bottom - p_top - 4";
-                font_size = 8;
+                font_size = GLMonitor.font_size;
             }
             add_child(draws_text_);
             update_text();
@@ -291,7 +291,7 @@ final package class GLMonitor : GUIElement
                 add_item("Pages", &pages);
                 add_item("Draws", &draws);
 
-                item_font_size = 8;
+                item_font_size = GLMonitor.font_size;
                 item_width = "40";
                 item_height = "12";
                 item_spacing = "4";
@@ -323,4 +323,6 @@ final package class GLMonitor : GUIElement
             }
             add_child(current_monitor_);
         }
+
+        static uint font_size(){return 8;}
 }

@@ -684,9 +684,6 @@ class Pong
             uint width = VideoDriver.get.screen_width;
             uint height = VideoDriver.get.screen_height;
 
-            Platform.get.mouse_motion.connect(&GUIRoot.get.mouse_move);
-            Platform.get.mouse_key.connect(&GUIRoot.get.mouse_key);
-
             menu_container_ = new GUIElement;
             with(menu_container_)
             {
@@ -775,29 +772,6 @@ class Pong
 
         void exit(){continue_ = false;}
 
-        void debugger_toggle()
-        {
-            static Monitor monitor = null;
-            if(monitor is null)
-            {
-                monitor = new Monitor;
-                with(monitor)
-                {
-                    position_x = "16";
-                    position_y = "16";
-                    width = "192 + w_right / 4";
-                    height = "168 + w_bottom / 6";
-                }
-                GUIRoot.get.add_child(monitor);
-            }
-            else
-            {
-                GUIRoot.get.remove_child(monitor);
-                monitor.die();
-                monitor = null;
-            }
-        }
-
         void key_handler(KeyState state, Key key, dchar unicode)
         {
             if(state == KeyState.Pressed)
@@ -822,9 +796,6 @@ class Pong
             {
                 switch(key)
                 {
-                    case Key.F10:
-                        debugger_toggle();
-                        break;
                     default:
                         break;
                 }

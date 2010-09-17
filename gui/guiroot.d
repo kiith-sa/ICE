@@ -5,6 +5,7 @@ import gui.guielement;
 import video.videodriver;
 import math.vector2;
 import platform.platform;
+import monitor.monitor;
 import singleton;
 
 
@@ -29,6 +30,10 @@ final class GUIRoot : GUIElement
             position_y = "0";
             width = "w_right";
             height = "w_bottom";
+
+            Platform.get.mouse_motion.connect(&mouse_move);
+            Platform.get.mouse_key.connect(&mouse_key);
+            Platform.get.key.connect(&key);
         }
 
         ///Draw the GUI.
@@ -56,27 +61,63 @@ final class GUIRoot : GUIElement
             driver.view_offset = offset;
         }
 
-        final void update()
-        {
-            if(!visible_){return;}
-            update_children();
-        }
+        final void update(){update_children();}
 
         ///Pass keyboard input to the GUI.
         void key(KeyState state, Key key, dchar unicode)
         {
+            if(!visible_){return;}
+
+            ///Global hardcoded keys when GUI is used.
+            if(state == KeyState.Pressed)
+            {
+                switch(key)
+                {
+                    case Key.F10:
+                        monitor_toggle();
+                        break;
+                    default:
+                        break;
+                }
+            }
             super.key(state, key, unicode);
         }
 
         ///Pass mouse key press input to the GUI.
         void mouse_key(KeyState state, MouseKey key, Vector2u position)
         {
+            if(!visible_){return;}
             super.mouse_key(state, key, position);
         }
 
         ///Pass mouse move input to the GUI.
         void mouse_move(Vector2u position, Vector2i relative)
         {
+            if(!visible_){return;}
             super.mouse_move(position, relative);
+        }
+
+    private:
+        void monitor_toggle()
+        {
+            static Monitor monitor = null;
+            if(monitor is null)
+            {
+                monitor = new Monitor;
+                with(monitor)
+                {
+                    position_x = "16";
+                    position_y = "16";
+                    width = "192 + w_right / 4";
+                    height = "168 + w_bottom / 6";
+                }
+                add_child(monitor);
+            }
+            else
+            {
+                remove_child(monitor);
+                monitor.die();
+                monitor = null;
+            }
         }
 }
