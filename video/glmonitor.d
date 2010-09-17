@@ -12,7 +12,6 @@ import gui.guistatictext;
 import math.vector2;
 import math.rectangle;
 import math.math;
-import timer;
 
 
 ///Displays info about texture pages.
@@ -79,9 +78,6 @@ final package class PagesMonitor : GUIElement
         //Information about the page.
         GUIStaticText info_text_;
 
-        //Timer used to determine when to update the page info.
-        Timer update_timer_;
-
         //Currently viewed page index (in GLVideoDriver.pages).
         uint current_page_ = 0;
 
@@ -89,8 +85,6 @@ final package class PagesMonitor : GUIElement
         this()
         {
             super();
-
-            update_timer_ = Timer(0.5);
 
             init_view();
             init_menu();
@@ -101,11 +95,7 @@ final package class PagesMonitor : GUIElement
         override void update()
         {
             super.update();
-            if(update_timer_.expired())
-            {
-                update_text();
-                update_timer_.reset();
-            }
+            update_text();
         }
 
     private:
@@ -216,14 +206,12 @@ final package class DrawsMonitor : GUIElement
 
         //text showing information about draws.
         GUIStaticText draws_text_;
-        //timer used to determine when to update draws_text_.
-        Timer update_timer_;
 
     public:
         this()
         {
             super();
-            update_timer_ = Timer(0.5);
+
             draws_text_ = new GUIStaticText;
             with(draws_text_)
             {
@@ -242,11 +230,7 @@ final package class DrawsMonitor : GUIElement
         override void update()
         {
             super.update();
-            if(update_timer_.expired())
-            {
-                update_text();
-                update_timer_.reset();
-            }
+            update_text();
         }
 
     private:

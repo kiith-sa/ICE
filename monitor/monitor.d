@@ -6,6 +6,7 @@ import gui.guielement;
 import gui.guimenu;
 import math.vector2;
 import math.math;
+import timer;
 
 
 ///Displays various debugging/profiling information about engine subsystems.
@@ -14,6 +15,7 @@ final class Monitor : GUIElement
     private:
         GUIMenu menu_;
         GUIElement current_monitor_ = null;
+        Timer update_timer_;
 
     public:
         ///Construct a new monitor with specified parameters.
@@ -36,6 +38,18 @@ final class Monitor : GUIElement
                 item_spacing = "4";
             }
             add_child(menu_);
+
+            update_timer_ = Timer(0.5);
+        }
+
+    protected:
+        override void update()
+        {
+            if(update_timer_.expired())
+            {
+                update_children();
+                update_timer_.reset();
+            }
         }
 
     private:

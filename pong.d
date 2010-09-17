@@ -758,14 +758,14 @@ class Pong
         {
             Game.get.end_game();
             Platform.get.key.connect(&key_handler);
-            GUIRoot.get.add_child(menu_);
+            GUIRoot.get.add_child(menu_container_);
             run_pong_ = false;
         }
 
         void pong_start()
         {
             run_pong_ = true;
-            GUIRoot.get.remove_child(menu_);
+            GUIRoot.get.remove_child(menu_container_);
             Platform.get.key.disconnect(&key_handler);
             Game.get.start_game();
         }
