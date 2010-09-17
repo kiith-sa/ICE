@@ -1,8 +1,5 @@
 START ESSENTIAL -------------------------------
 14:
-    Make it impossible to add a child that already is a child to a GUI element.
-    (i.e. to add a child twice) - caused a bug recently - use an assert to do this
-14:
     Valgrind, Massif.
     Look (google, etc.) for ways to measure memory in detail.
     Also look at digital mars profiler, and maybe for ways to measure GC allocs/frees

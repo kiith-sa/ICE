@@ -84,6 +84,12 @@ class GUIElement
 
         ///Add a child element.
         final void add_child(GUIElement child)
+        in
+        {
+            assert(!children_.contains(child, true), 
+                   "Trying to add a child that is already a child of this GUI element.");
+        }
+        body
         {
             children_ ~= child;
             child.parent_ = this;
