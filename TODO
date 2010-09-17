@@ -1,35 +1,4 @@
 START ESSENTIAL -------------------------------
-14:
-    Valgrind, Massif.
-    Look (google, etc.) for ways to measure memory in detail.
-    Also look at digital mars profiler, and maybe for ways to measure GC allocs/frees
-    (and their types?)
-
-    Also, profile with callgrind, cachegrind, gprof, 
-    oprofile - CPU usage, mispredicts, cache misses, maybe more
-    sysprof
-    AMD CodeAnalyst
-
-    and: xfProf (for D) - useless - windows only
-    Look for all kinds of profilers anyway, both for D and general
-    (especially non-intrusive ones)
-
-    Try to write a script that will:
-    launch OProfile (needs to be used as root)
-    launch Pong
-    then, the user can play Pong
-    when user finishes with Pong, script will quit and output measurements to a file.
-
-14:
-    Complete overhaul of memory usage everywhere 
-    (with classes as well, e.g. maybe actors should truly be removed)
-
-    In D2, might even attempt a delete!(T)() function for classes
-    that'd call clear and gc.free()
-
-    Could also look at the source of the Diamond memory debugger and
-    use the ideas there to measure memory usage
-
 15:
     Move away from DSSS, (include derelict)
     also, get the newest derelict
@@ -136,31 +105,11 @@ END ESSENTIAL -------------------------------
 22:
     Improved collision code to prevent/minimize tunneling
 23:
-    Do some basic profiling: KCacheGrind (No OpenGL perspective),
-    OProfile (better?), gettime - at least get total time and VideoDriver 
-    methods' time
+    Profiling:
+    Valgrind, Massif, Callgrind, Cachegrind, Sysprof, CodeAnalyst(OProfile GUI),
+    manual time measurement - at least get total time and VideoDriver methods' time
     Don't forget to do this with an optimized build.
-    Also check with valgrind for memory leaks (if any).
-    Also add precision time-based measurement code like in MiniINI
-    to determine e.g. exact time spent with GL calls,
-    exact time spent in VideoDriver outside GL and maybe more.
 
-    Profile both debug and optimized.
-
-    Notable stuff to profile:
-    use of arrays in particle systems. Maybe create a global particle pool
-    or something.
-
-    Drawing of huge texts
-
-    If memory is a problem, maybe try to turn Timer into a template class 
-    taking float, double or real to specify precision.
-
-    Textures could be made smaller by using Vector2s for size
-    instead of Vector2u. This has proven to speed up font drawing
-    by ~15%. However, would probably result in a bit uglier code
-    and need for asserts for too large textures/pages.)
-    (would require to pass textures/glyphs by value in font drawing code)
 25:
     Settings from ini files, also paddle, ball, wall properties
     (possibility to add more walls from INI files, but hardcoded two paddles)
@@ -213,13 +162,16 @@ END ESSENTIAL -------------------------------
     with margin, padding, absolute, relative to parent, relative to previous
     child positioning,
     and vertical/horizontal aligning.
-
 10:
     Test mod directories with a simple Pong "mod" that replaces shaders
     and/or fonts (say, with negative or black/white colors or something)
 11:
     A debug (ini, console and/or debug GUI controlled) option to draw wireframe.
     Also might want pure white wireframe option (with a custom shader)
+    Would be a good feature for GLMonitor.
+14:
+    Could also look at the source of the Diamond memory debugger and
+    use the ideas there to measure memory usage
 12:
     Shaders should be an optional argument to draw_x. If no shader is passed,
     default for fonts, lines, textures is used.
@@ -389,6 +341,25 @@ Optimizations:
     Allocator alloc/dealloc recording could be done using
     an associative array with typeid as index instead of a string.
     Typeid would be converted to string when writing to output.
+2!:
+    Right now, when the same font is loaded with different font sizes,
+    it is loaded to memory twice. Share that buffer between all font
+    instances with same font name to prevent duplication of memory
+    (Resource manager might help here)
+3!:
+    Store particles in particle systems in something else than arrays,
+    or use arrays with preallocated space (like C++ vectors), or use
+    manual arrays. Array appending in particle systems takes 30 %
+    of execution time right now.
+4?:
+    If particle memory usage is a problem, try to turn Timer into a template class 
+    taking float, double or real to specify precision.
+5?:
+    Textures could be made smaller by using Vector2s for size
+    instead of Vector2u. This has proven to speed up font drawing
+    by ~15%. However, would probably result in a bit uglier code
+    and need for asserts for too large textures/pages.)
+    (would require to pass textures/glyphs by value in font drawing code)
 
 GUI:
 1:
