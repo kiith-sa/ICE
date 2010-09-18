@@ -4,5 +4,6 @@ dsss.last
 dsss_objs/
 pong-debug
 pong-release
+wrapper
 cdc
 *.o

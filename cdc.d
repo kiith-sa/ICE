@@ -128,6 +128,33 @@ int main(char[][] args)
 	return 0;
 	*/
 
+    string build = "debug";
+
+    string[] extra_args;
+
+    if(args.length > 1)
+    {
+        build = args[1];
+        foreach(arg; args[2 .. $]){extra_args ~= arg;}
+    }
+
+    string[] compiler_args;
+
+    switch(build)
+    {
+        case "debug":
+            compiler_args = ["-unittest", "-gc", "-ofpong-debug"];
+            break;
+        case "release":
+            compiler_args = ["-O", "-inline", "-release", "-gc", "-ofpong-release"];
+            break;
+        default:
+            writefln("unknown build target: ", build);
+            break;
+    }
+
+    compiler_args ~= extra_args;
+
 	CDC.compile([
                  "dependencies/", 
                  
@@ -138,7 +165,7 @@ int main(char[][] args)
                  "image.d", "pong.d", "signal.d", "singleton.d", "time.d",
                  "timer.d"
                  ],
-                 ["-unittest", "-gc", "-ofpong-debug"]);
+                 compiler_args);
 	return 0;
 }
 
