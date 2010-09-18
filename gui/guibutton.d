@@ -118,8 +118,8 @@ class GUIButton : GUIElement
                     else if(state == KeyState.Released && 
                             state_ == ButtonState.Clicked)
                     {
-                        pressed.emit();
                         set_state(ButtonState.MouseOver);
+                        pressed.emit();
                     }
                 }
                 return;

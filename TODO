@@ -68,6 +68,16 @@
     Texture/Font will not - we can pass it as a param to
     the shader.
 
+    If slow, instead of Catom like caching of everything in frame to one VBO,
+    first consider caching computed data (such as the VBO) for each
+    draw call. (store using bucket sort based e.g. on drawing position)
+    basically, if the same draw call is made in multiple frames,
+    it's VBO and/or other data is computed at the first call, then stored.
+    If a draw call is not made for X frames, (e.g. 8), it's deleted.
+    This might be fast, but might also be very slow, we need to find out.
+    Maybe it'd be good to abstract an interface for drawing lines/etc.
+    within VideoDriver so we could try and switch multiple implementations.
+
     If we cache per frame like in Catom, we have to draw stuff out
     every time zoom/offset changes.
 
@@ -96,7 +106,6 @@
     Valgrind, Massif, Callgrind, Cachegrind, Sysprof, CodeAnalyst(OProfile GUI),
     manual time measurement - at least get total time and VideoDriver methods' time
     Don't forget to do this with an optimized build.
-
 25:
     Settings from ini files, also paddle, ball, wall properties
     (possibility to add more walls from INI files, but hardcoded two paddles)
@@ -126,6 +135,12 @@
     AI difficulty settings;
 
 --AFTER PONG    
+7:
+    GUI substitutes:
+    p_width
+    p_height
+    width  (width of this) - would require realign() to compute width first
+    height  (height of this) - would require realign() to compute width first
 8:
     Subset of HTML tags for text drawing (just support <br> for now),
     will need a parser (fast!) and e.g. StaticText will need to use
@@ -138,17 +153,6 @@
     lightweight markup language would be good for source readability,
     html e.g. for tables (although those might work in a lml too -
     especially if we do them our own way
-9:
-    GUI elements for vertical and horizontal arranging of items,
-    use them in debuggers, and refactor debugger GUI code.
-    Maybe even a tab bar + tab element? 
-    (since debuggers are basically sets of tabs with buttons)
-    
-    maybe, but probably not :
-    GUI should support a simple box model similar to HTML/CSS,
-    with margin, padding, absolute, relative to parent, relative to previous
-    child positioning,
-    and vertical/horizontal aligning.
 10:
     Test mod directories with a simple Pong "mod" that replaces shaders
     and/or fonts (say, with negative or black/white colors or something)
@@ -304,9 +308,9 @@ we need to give credit to freetype based on its license (if used).
 see freetype.org
 
 
-Debugger:
+Monitor:
 1:
-    Allocator debugger. Maybe memory usage graphs (and per-type graphs?)
+    Allocator monitor. Maybe memory usage graphs (and per-type graphs?)
     Would need a graph GUI element.
 2:
     Measurements of how much time per frame does e.g. line drawing take,

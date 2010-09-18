@@ -111,8 +111,11 @@ class GUIElement
         ///Return true if this element is visible, false if hidden.
         final bool visible(){return visible_;}
 
-        ///Set this element to visible or hidden.
-        final void visible(bool visible){visible_ = visible;}
+        ///Hide this element and its children.
+        final void hide(){visible_ = false;}
+
+        ///Make this element and its children visible;
+        final void show(){visible_ = true;}
 
         ///Return parent of this element.
         final GUIElement parent(){return parent_;}

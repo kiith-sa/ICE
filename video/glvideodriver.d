@@ -151,7 +151,7 @@ abstract class GLVideoDriver : VideoDriver
 
             if(line_aa_)
             {
-                vertices_ += 6;
+                vertices_ += 8;
 
                 //If AA is on, add two transparent vertices to the sides of the 
                 //rectangle.

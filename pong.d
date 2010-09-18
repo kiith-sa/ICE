@@ -21,6 +21,8 @@ import actor.linetrail;
 import gui.guielement;
 import gui.guiroot;
 import gui.guimenu;
+import gui.guibutton;
+import gui.guistatictext;
 import platform.platform;
 import platform.sdlplatform;
 import monitor.monitor;
@@ -656,6 +658,70 @@ class Game
         }
 }
 
+
+///Credits screen.
+class Credits : GUIElement
+{
+    private:
+        static credits_ = 
+        "Credits\n"~
+        ".\n"~
+        "Pong was written by Ferdinand Majerech aka Kiith-Sa in the D Programming language\n"~
+        ".\n"~
+        "Other tools used to create Pong:\n"~
+        ".\n"
+        "OpenGL graphics programming API\n"~
+        "SDL library\n"~
+        "The Freetype Project\n"~
+        "Derelict D bindings\n"~
+        "CDC build script\n"~
+        "Linux OS\n"~
+        "Vim text editor\n"~
+        "Valgrind debugging and profiling suite\n"~
+        "Git revision control system\n"~
+        ".\n"~
+        "Pong is released under the terms of the Boost license."
+        ;
+
+        GUIButton close_button_;
+        GUIStaticText text_;
+
+    public:
+        ///Emitted when this credits dialog is closed.
+        mixin Signal!() closed;
+
+        this()
+        {
+            position_x = "p_left + 96";
+            position_y = "p_top + 16";
+            width = "p_right - 192";
+            height = "p_bottom - 32";
+
+            close_button_ = new GUIButton;
+            with(close_button_)
+            {
+                position_x = "p_left + (p_right - p_left) / 2 - 72";
+                position_y = "p_bottom - 32";
+                width = "144";
+                height = "24";
+                text = "Close";
+            }
+            add_child(close_button_);
+            close_button_.pressed.connect(&closed.emit);
+
+            text_ = new GUIStaticText;
+            with(text_)
+            {
+                position_x = "p_left + 16";
+                position_y = "p_top + 16";
+                width = "p_right - p_left - 32";
+                height = "p_bottom - p_top - 56";
+                text = credits_;
+            }
+            add_child(text_);
+        }
+}
+
 class Pong
 {
     mixin Singleton;
@@ -666,6 +732,8 @@ class Pong
 
         GUIElement menu_container_;
         GUIMenu menu_;
+
+        Credits credits_;
 
     public:
         ///Initialize Pong.
@@ -701,6 +769,7 @@ class Pong
                 position_y = "p_top + 136";
 
                 add_item("Player vs AI", &pong_start);
+                add_item("Credits", &credits_start);
                 add_item("Quit", &exit);
 
                 item_width = "144";
@@ -758,16 +827,34 @@ class Pong
         {
             Game.get.end_game();
             Platform.get.key.connect(&key_handler);
-            GUIRoot.get.add_child(menu_container_);
+            menu_container_.show();
             run_pong_ = false;
         }
 
         void pong_start()
         {
             run_pong_ = true;
-            GUIRoot.get.remove_child(menu_container_);
+            menu_container_.hide();
             Platform.get.key.disconnect(&key_handler);
             Game.get.start_game();
+        }
+
+        void credits_start()
+        {
+            menu_container_.hide();
+            Platform.get.key.disconnect(&key_handler);
+            credits_ = new Credits;
+            GUIRoot.get.add_child(credits_);
+            credits_.closed.connect(&credits_end);
+        }
+
+        void credits_end()
+        {
+            GUIRoot.get.remove_child(credits_);
+            credits_.die();
+            credits_ = null;
+            Platform.get.key.connect(&key_handler);
+            menu_container_.show();
         }
 
         void exit(){continue_ = false;}
