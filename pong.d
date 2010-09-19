@@ -512,6 +512,9 @@ class Game
 {
     mixin Singleton;
     private:
+        alias std.string.toString to_string;  
+     
+
         Ball ball_;
         real ball_radius_ = 6.0;
         real ball_speed_ = 215.0;
@@ -530,6 +533,9 @@ class Game
         
         //Continue running?
         bool continue_;
+
+        GUIStaticText score_text_1_;
+        GUIStaticText score_text_2_;
 
     public:
         this(){singleton_ctor();}
@@ -566,15 +572,45 @@ class Game
 
             spawn_ball(ball_speed_);
 
-            player_1_ = new AIPlayer("Player 1", paddle_1_, 0.15);
-            player_2_ = new HumanPlayer("Player 2", paddle_2_);
+            player_1_ = new AIPlayer("AI", paddle_1_, 0.15);
+            player_2_ = new HumanPlayer("Human", paddle_2_);
 
             goal_up_.ball_hit.connect(&respawn_ball);
             goal_down_.ball_hit.connect(&respawn_ball);
             goal_up_.ball_hit.connect(&player_2_.score);
             goal_down_.ball_hit.connect(&player_1_.score);
+            goal_up_.ball_hit.connect(&update_score);
+            goal_down_.ball_hit.connect(&update_score);
 
             Platform.get.key.connect(&key_handler);
+
+            score_text_1_ = new GUIStaticText;
+            with(score_text_1_)
+            {
+                position_x = "p_left + 8";
+                position_y = "p_top + 8";
+                width = "96";
+                height = "16";
+                alignment_x = AlignX.Right;
+                font = "orbitron-light.ttf";
+                font_size = 16;
+            }
+            GUIRoot.get.add_child(score_text_1_);
+
+            score_text_2_ = new GUIStaticText;
+            with(score_text_2_)
+            {
+                position_x = "p_left + 8";
+                position_y = "p_bottom - 24";
+                width = "96";
+                height = "16";
+                alignment_x = AlignX.Right;
+                font = "orbitron-light.ttf";
+                font_size = 16;
+            }
+            GUIRoot.get.add_child(score_text_2_);
+
+            update_score();
         }
 
         void end_game()
@@ -583,30 +619,24 @@ class Game
             player_1_.die();
             player_2_.die();
 
+            GUIRoot.get.remove_child(score_text_1_);
+            GUIRoot.get.remove_child(score_text_2_);
+
             Platform.get.key.disconnect(&key_handler);
         }
 
         Ball ball(){return ball_;}
 
+        //the argument is redunant here (at least for now) - 
+        //used for compatibility with signal 
+        void update_score(Ball ball = null)
+        {
+            score_text_1_.text = player_1_.name ~ ": " ~ to_string(player_1_.score);
+            score_text_2_.text = player_2_.name ~ ": " ~ to_string(player_2_.score);
+        }
+
         void draw()
         {
-            uint score1 = player_1_.score;
-            uint score2 = player_2_.score;
-            Vector2f position = Vector2f(32, 8);
-            Vector2f line_end;
-            for(uint score = 0; score < score1; ++score)
-            {
-                line_end = position + Vector2f(0, 16);
-                VideoDriver.get.draw_line(position, line_end);
-                position.x += 4;
-            }
-            position = Vector2f(32, 576);
-            for(uint score = 0; score < score2; ++score)
-            {
-                line_end = position + Vector2f(0, 16);
-                VideoDriver.get.draw_line(position, line_end);
-                position.x += 4;
-            }
         }
 
     private:
@@ -755,17 +785,17 @@ class Pong
             menu_container_ = new GUIElement;
             with(menu_container_)
             {
-                position_x = "w_right - 176";
+                position_x = "p_right - 176";
                 position_y = "16";
                 width = "160";
-                height = "w_bottom - 32";
+                height = "p_bottom - 32";
             }
             GUIRoot.get.add_child(menu_container_);
 
             menu_ = new GUIMenu;
             with(menu_)
             {
-                position_x = "w_right - 176";
+                position_x = "p_left";
                 position_y = "p_top + 136";
 
                 add_item("Player vs AI", &pong_start);

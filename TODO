@@ -103,6 +103,11 @@
     Valgrind, Massif, Callgrind, Cachegrind, Sysprof, CodeAnalyst(OProfile GUI),
     manual time measurement - at least get total time and VideoDriver methods' time
     Don't forget to do this with an optimized build.
+24:
+    Options start: player names (also, whether the player is AI or human-
+    so we can have AI/AI, AI/human, human/human)
+
+    After that, keyboard settings for each player
 25:
     Settings from ini files, also paddle, ball, wall properties
     (possibility to add more walls from INI files, but hardcoded two paddles)
