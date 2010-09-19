@@ -158,12 +158,11 @@ int main(char[][] args)
 	CDC.compile([
                  "dependencies/", 
                  
-                 "actor/", "file/", "formats/", "gui/",
-                 "math/", "monitor/", "platform/", "video/",
+                 "actor/", "file/", "formats/", "gui/", "math/", "monitor/", 
+                 "platform/", "time/", "video/",
 
-                 "allocator.d", "arrayutil.d", "color.d", "eventcounter.d",
-                 "image.d", "pong.d", "signal.d", "singleton.d", "time.d",
-                 "timer.d"
+                 "allocator.d", "arrayutil.d", "color.d", "image.d", "pong.d",
+                 "signal.d", "singleton.d"
                  ],
                  compiler_args);
 	return 0;

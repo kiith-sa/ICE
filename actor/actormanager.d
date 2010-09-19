@@ -6,10 +6,10 @@ import std.stdio;
 
 import actor.actor;
 import math.vector2;
+import time.time;
+import time.timer;
+import time.eventcounter;
 import singleton;
-import time;
-import timer;
-import eventcounter;
 import arrayutil;
 
 

@@ -1,10 +1,10 @@
-module eventcounter;
+module time.eventcounter;
 
 
 import std.string;
 
-import time;
-import timer;
+import time.time;
+import time.timer;
 import signal;
 
 

@@ -1,7 +1,7 @@
-module timer;
+module time.timer;
 
 
-import time;
+import time.time;
 
 
 ///A timer struct; handles timing of various delayed or periodic events.

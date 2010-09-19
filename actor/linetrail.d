@@ -10,8 +10,8 @@ import actor.lineemitter;
 import video.videodriver;
 import math.math;
 import math.vector2;
+import time.timer;
 import color;
-import timer;
 import arrayutil;
 
 

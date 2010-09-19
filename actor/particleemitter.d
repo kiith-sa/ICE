@@ -9,7 +9,7 @@ import actor.actormanager;
 import actor.particlesystem;
 import math.math;
 import math.vector2;
-import timer;
+import time.timer;
 import arrayutil;
 
 

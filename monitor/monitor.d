@@ -6,7 +6,7 @@ import gui.guielement;
 import gui.guimenu;
 import math.vector2;
 import math.math;
-import timer;
+import time.timer;
 
 
 ///Displays various debugging/profiling information about engine subsystems.

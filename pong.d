@@ -26,10 +26,10 @@ import gui.guistatictext;
 import platform.platform;
 import platform.sdlplatform;
 import monitor.monitor;
+import time.time;
+import time.timer;
+import time.eventcounter;
 import signal;
-import time;
-import timer;
-import eventcounter;
 import singleton;
 import color;
 

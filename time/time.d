@@ -1,4 +1,4 @@
-module time;
+module time.time;
 
 
 version(linux){import std.c.linux.linux;}
