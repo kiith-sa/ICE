@@ -71,6 +71,9 @@ class GUIStaticText : GUIElement
         ///Set text color.
         void text_color(Color color){font_color_ = color;}
 
+        ///Return displayed text.
+        string text(){return text_;}
+
         ///Set displayed text.
         void text(string text)
         {

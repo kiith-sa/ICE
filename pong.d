@@ -507,13 +507,125 @@ class HumanPlayer : Player
         }
 }
 
+///Displays score screen at the end of game.
+class ScoreScreen : GUIElement
+{
+    private:
+        alias std.string.toString to_string;  
+
+        Timer timer_;
+
+        GUIStaticText winner_text_;
+        GUIStaticText names_text_;
+        GUIStaticText scores_text_;
+        GUIStaticText time_text_;
+
+    public:
+        mixin Signal!() expired;
+
+        this(Player player_1, Player player_2, real time)
+        in
+        {
+            assert(player_1.score != player_2.score, 
+                   "Score screen shown but neither of the players is victorious");
+        }
+        body
+        {
+            position_x = "p_right / 2 - 192";
+            position_y = "p_bottom / 2 - 128";
+            width = "384";
+            height = "256";
+
+            border_color_ = Color(160, 160, 255, 160);
+
+            string winner = player_1.score > player_2.score ? 
+                            player_1.name : player_2.name;
+
+            //text showing the winner of the game
+            winner_text_ = new GUIStaticText;
+            with(winner_text_)
+            {
+                position_x = "p_left";
+                position_y = "p_top + 16";
+                width = "p_right - p_left";
+                height = "32";
+                font_size = 24;
+                text_color = Color(192, 192, 255, 128);
+                alignment_x = AlignX.Center;
+                font = "orbitron-bold.ttf";
+                text = "WINNER: " ~ winner;
+            }
+            add_child(winner_text_);
+
+            //text showing time the game took
+            time_text_ = new GUIStaticText;
+            with(time_text_)
+            {
+                position_x = "p_left + 48";
+                position_y = "p_top + 96";
+                width = "128";
+                height = "16";
+                font_size = 14;
+                text_color = Color(224, 224, 255, 160);
+                font = "orbitron-light.ttf";
+                text = "Time: " ~ time_string(time);
+            }
+            add_child(time_text_);
+
+            init_scores(player_1, player_2);
+
+            timer_ = Timer(8);
+        }
+
+    protected:
+        override void update()
+        {
+            super.update();
+            if(timer_.expired){expired.emit();}
+        }
+        
+    private:
+        //Initialize players/scores list.
+        void init_scores(Player player_1, Player player_2)
+        {
+            names_text_ = new GUIStaticText;
+            with(names_text_)
+            {
+                position_x = "p_left + 48";
+                position_y = "p_top + 48";
+                width = "128";
+                height = "32";
+                font_size = 14;
+                text_color = Color(160, 160, 255, 128);
+                font = "orbitron-light.ttf";
+                text = player_1.name ~ "\n" ~ player_2.name;
+            }
+            add_child(names_text_);
+
+            scores_text_ = new GUIStaticText;
+            with(scores_text_)
+            {
+                position_x = "p_right - 128";
+                position_y = "p_top + 48";
+                width = "64";
+                height = "32";
+                font_size = 14;
+                text_color = Color(224, 224, 255, 160);
+                font = "orbitron-bold.ttf";
+                text = to_string(player_1.score) ~ "\n" 
+                       ~ to_string(player_2.score);
+                alignment_x = AlignX.Right;
+            }
+            add_child(scores_text_);
+        }
+}
+
 class Game
 {
     mixin Singleton;
     private:
         alias std.string.toString to_string;  
      
-
         Ball ball_;
         real ball_radius_ = 6.0;
         real ball_speed_ = 215.0;
@@ -535,14 +647,54 @@ class Game
 
         GUIStaticText score_text_1_;
         GUIStaticText score_text_2_;
+        GUIStaticText time_text_;
+
+        uint score_limit_;
+        real time_limit_;
+        Timer game_timer_;
+
+        ScoreScreen score_screen_;
+
+        //true while the players are playing the game
+        bool playing_;
 
     public:
         this(){singleton_ctor();}
 
         bool run()
         {
-            player_1_.update();
-            player_2_.update();
+            if(playing_)
+            {
+                //update time display
+                real time = time_limit_ - game_timer_.age;
+                time = max(time, 0.0L);
+                string time_str = time_string(time);
+                static Color color_start = Color(160, 160, 255, 160);
+                static Color color_end = Color(255, 0, 0, 255);
+                if(time_str != time_text_.text)
+                {
+                    time_text_.text = time_str != "0:0" 
+                                      ? time_str : time_str ~ " !";
+
+                    real t = time / time_limit_;
+                    time_text_.text_color = color_start.interpolated(color_end, t);
+                }
+
+                //update player state
+                player_1_.update();
+                player_2_.update();
+
+                //check for victory conditions
+                if(player_1_.score >= score_limit_ || player_2_.score >= score_limit_)
+                {
+                    game_won();
+                }
+                if(game_timer_.expired)
+                {
+                    if(player_1_.score != player_2_.score){game_won();}
+                }
+            }
+
             return continue_;
         }
 
@@ -550,7 +702,11 @@ class Game
 
         void start_game()
         {
+            //should be set from options and INI when that is implemented.
+            score_limit_ = 10;
+            time_limit_ = 300;
             continue_ = true;
+            playing_ = true;
 
             auto wall_rect = Rectanglef(0.0, 0.0, 32.0, 536.0);
             wall_left_ = new Wall(Vector2f(120.0, 32.0), wall_rect);
@@ -582,6 +738,29 @@ class Game
 
             Platform.get.key.connect(&key_handler);
 
+            init_hud();
+            update_score();
+
+            game_timer_ = Timer(time_limit_);
+        }
+
+        Ball ball(){return ball_;}
+
+        //the argument is redunant here (at least for now) - 
+        //used for compatibility with signal 
+        void update_score(Ball ball = null)
+        {
+            score_text_1_.text = player_1_.name ~ ": " ~ to_string(player_1_.score);
+            score_text_2_.text = player_2_.name ~ ": " ~ to_string(player_2_.score);
+        }
+
+        void draw()
+        {
+        }
+
+    private:
+        void init_hud()
+        {
             score_text_1_ = new GUIStaticText;
             with(score_text_1_)
             {
@@ -608,36 +787,34 @@ class Game
             }
             GUIRoot.get.add_child(score_text_2_);
 
-            update_score();
+            time_text_ = new GUIStaticText;
+            with(time_text_)
+            {
+                position_x = "p_right - 112";
+                position_y = "p_bottom - 24";
+                width = "96";
+                height = "16";
+                font = "orbitron-bold.ttf";
+                font_size = 16;
+            }
+            GUIRoot.get.add_child(time_text_);
         }
 
-        void end_game()
+        void destroy_hud()
         {
-            ActorManager.get.clear();
-            player_1_.die();
-            player_2_.die();
-
             GUIRoot.get.remove_child(score_text_1_);
+            score_text_1_.die();
+            score_text_1_ = null;
+
             GUIRoot.get.remove_child(score_text_2_);
+            score_text_2_.die();
+            score_text_2_ = null;
 
-            Platform.get.key.disconnect(&key_handler);
+            GUIRoot.get.remove_child(time_text_);
+            time_text_.die();
+            time_text_ = null;
         }
 
-        Ball ball(){return ball_;}
-
-        //the argument is redunant here (at least for now) - 
-        //used for compatibility with signal 
-        void update_score(Ball ball = null)
-        {
-            score_text_1_.text = player_1_.name ~ ": " ~ to_string(player_1_.score);
-            score_text_2_.text = player_2_.name ~ ": " ~ to_string(player_2_.score);
-        }
-
-        void draw()
-        {
-        }
-
-    private:
         void respawn_ball(Ball ball)
         {
             ball_.die();
@@ -655,8 +832,44 @@ class Game
             {
                 direction.random_direction();
             }
-            ball_ = new Ball(Vector2f(400.0, 300.0), direction * speed, 
-                                ball_radius_);
+            ball_ = new Ball(Vector2f(400.0, 300.0), direction * speed, ball_radius_);
+        }
+
+        //Called when one of the players wins the game.
+        void game_won()
+        {
+            //hide the HUD
+            score_text_1_.hide();
+            score_text_2_.hide();
+            time_text_.hide();
+
+            //show the score screen and end the game after it expires
+            score_screen_ = new ScoreScreen(player_1_, player_2_, game_timer_.age());
+            GUIRoot.get.add_child(score_screen_);
+            score_screen_.expired.connect(&end_game);
+            ActorManager.get.time_speed = 0.0;
+
+            playing_ = false;
+        }
+
+        void end_game()
+        {
+            destroy_hud();
+            if(score_screen_ !is null)
+            {
+                GUIRoot.get.remove_child(score_screen_);
+                score_screen_.die();
+                score_screen_ = null;
+            }
+            playing_ = false;
+            continue_ = false;
+            ActorManager.get.time_speed = 1.0;
+
+            ActorManager.get.clear();
+            player_1_.die();
+            player_2_.die();
+
+            Platform.get.key.disconnect(&key_handler);
         }
 
         void key_handler(KeyState state, Key key, dchar unicode)
@@ -666,18 +879,14 @@ class Game
                 switch(key)
                 {
                     case Key.Escape:
-                        continue_ = false;
-                        ActorManager.get.time_speed = 1.0;
+                        end_game();
                         break;
                     case Key.K_P:
                         if(equals(ActorManager.get.time_speed, cast(real)0.0))
                         {
                             ActorManager.get.time_speed = 1.0;
                         }
-                        else
-                        {
-                            ActorManager.get.time_speed = 0.0;
-                        }
+                        else{ActorManager.get.time_speed = 0.0;}
                         break;
                     default:
                         break;
@@ -842,8 +1051,7 @@ class Pong
             }
             Game.get.die();
             writefln("FPS statistics:\n", fps_counter_.statistics, "\n");
-            writefln("ActorManager statistics:\n", 
-                     ActorManager.get.statistics, "\n");
+            writefln("ActorManager statistics:\n", ActorManager.get.statistics, "\n");
         }
 
         void draw()
@@ -853,7 +1061,6 @@ class Pong
     private:
         void pong_end()
         {
-            Game.get.end_game();
             Platform.get.key.connect(&key_handler);
             menu_container_.show();
             run_pong_ = false;

@@ -1,15 +1,11 @@
+DOCUMENT, REFACTOR, CONTRACTS... COMMIT
+
+
 14:
-    Intro screen
-
-    Some kind of start game animation and a possibility to end game
-    and start anew
-
-    Also will need a victory condition that ends game as well
-    as allow the player to end the game (in both cases, returning
-    to intro screen/menu)
-
-    Games should be limited by first to reach score or by time limit.
-    Maybe both. (and overtime?) - that might require font work, though
+    start game animation
+16:
+    Have a countdown before each ball spawn. Should also
+    display the rough area where it might go (~ 90 deg)
 14:
     Graphics effect: either some kind of motion blur effect for the paddle,
     or some kind of pulsating lines inside the paddle.
@@ -30,11 +26,9 @@
     Effects both for normal (ESC) exit and victory/defeat exit
     also an effect on start of game, and a countdown until the
     ball is thrown
-16:
-    Have a countdown before each ball spawn. Should also
-    display the rough area where it might go (~ 90 deg)
 17:
-    Look at LBreakout2, other pong/arkanoid games, especially how they handle physics.
+    Look at LBreakout2, SDLBall, other pong/arkanoid games, 
+    especially how they handle physics.
     Maybe then implement ball reflection based on paddle movement.
 17: 
     Effects:
@@ -83,6 +77,10 @@
     them as shader parameters.
     also make sure to see gl3 tutorials for projection matrix
     and to tes it with various zooms/offsets
+25:
+    Stop printing UPS to stdout, maybe move to monitor or get rid of it altogether.
+25:
+    Show current time of day in the HUD
 14:
     Look for D files in main directory that can be put into packages.
 23:
@@ -103,6 +101,9 @@
 24:
     Options start: player names (also, whether the player is AI or human-
     so we can have AI/AI, AI/human, human/human)
+    Character count should be limited to fit to score statictexts.
+    Also time/score limit.
+
 
     After that, keyboard settings for each player
 25:
@@ -139,6 +140,13 @@
 
 
 --AFTER PONG    
+6:
+    Consider mipmapping using 
+    glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE)
+    -automatically regenerates mipmaps at SubImage calls
+    - maximum mipmap level might be preferrable to not mess up very distant zooms,
+    e.g. texparameter GL_TEXTURE_MAX_LEVEL (at 2, 3 or 4)
+
 7:
     GUI substitutes:
     p_width
@@ -228,6 +236,8 @@
     Logging messages (e.g. initializing GL, etc.)- not necessarily a logging
     system yet
 35:
+    Screenshots (read from color buffer, but check for GL3 corecompliance)
+35:
     Translatable text, and a simple string format with 
     bold/italic/underlined and text colors.
     That would be passed to the code that draws fonts.
@@ -251,6 +261,13 @@
     might have better cache performance than 4096x4096.
 38: 
     Culling at videodriver level
+38:
+    Remapping should be done with shaders using colors with alpha 0 
+    as remap colors. Only RGBA 0,0,0,0 should be a valid totally transparent color.
+    R 1-255 should be used as remap index (255 remaps colors at most)
+    G 0-255 (256 values) should be used as lightness of the remap color,
+    and G 1-255 (255 values) as its alpha colors 
+    (0 is fully transparent and should be RGBA 0,0,0,0).
 39:
     Custom exception class, should add the message to the log.
 39:
@@ -324,12 +341,16 @@ Monitor:
     show borders of the texture, and borders of nodes.
     Also might be useful to have buttons to show only node borders/
     texture page/free-used
+    Show whether the texture is resident, too.
 4:
     Graphs showing how various debugger data changes over time
     FPS would be also good to show, and in graph as well
 5:
     Show stats about overhead of all textures in the driver,
     each page and its packer
+6:  
+    Pages: use glGetTexLevelParameteriv with some argument to get
+    size the page takes up in the video memory.
 
 Optimizations:
 1:
@@ -355,12 +376,24 @@ Optimizations:
     by ~15%. However, would probably result in a bit uglier code
     and need for asserts for too large textures/pages.)
     (would require to pass textures/glyphs by value in font drawing code)
-
+6?: 
+    Alpha testing could be used in combination with blending. I.e.
+    a fragment with 0 alpha would automatically be discarded.
+    This would break our remap plans, though.
+    However, if we could do this in shader (need to learn how to discard
+    a fragment in shader), everything would work right.
 GUI:
 1:
     Progress bars should be simple animation with frame depending
     of progress of something. This way we can have various fancy
     loading bars, unit construction progress C&C style, etc.
+
+GL1:
+1:
+    Remapping equivalent to shader based remapping 
+    (i.e. using colors with alpha 0 as remap) can be done without shaders
+    using GL_ARB_imaging with color tables, or with core OpenGL 1.x pixel
+    mapping. OpenGL SuperBible explains how to use this.
 
 
 Maybe:
@@ -386,6 +419,9 @@ Maybe:
     non-realtime anyway. Try to do this through our VideoDriver
     so that any future non-OpenGL backends can be used (e.g. raytracer?)
     Note that we don't need perspective on this; ortho is OK.
+    Accumulation buffer could be used for high quality AA, and per pixel lighting
+    could be used as well. In future, even normals used for 3D lighting could be drawn
+    (with a specific shader).
 13:
     (Arkanoid) High scores - all stuff made of lines
 14:
