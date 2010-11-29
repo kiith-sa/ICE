@@ -78,6 +78,9 @@ class Wall : Actor
             return false;
         }
 
+        ///Set wall velocity.
+        void velocity(Vector2f v){velocity_ = v;}
+
     protected:
         //Note: This test doesn't handle tunnelling, so it can result in
         //undetected collisions with very high speeds or low FPS
@@ -722,6 +725,8 @@ class BallSpawner : Actor
 
         void update()
         {
+            if(!Game.get.playing){die();}
+
             if(timer_.expired)
             {
                 //emit the ball in a random, previously generated direction
@@ -863,6 +868,9 @@ class Game
 
         //true while the players are playing the game
         bool playing_;
+        bool started_;
+
+        Timer intro_timer_;
 
     public:
         this(){singleton_ctor();}
@@ -902,26 +910,38 @@ class Game
                 }
             }
 
+            if(!started_ && intro_timer_.expired())
+            {
+                wall_left_.velocity = Vector2f(0.0, 0.0);
+                wall_right_.velocity = Vector2f(0.0, 0.0);
+                goal_up_.velocity = Vector2f(0.0, 0.0);
+                goal_down_.velocity = Vector2f(0.0, 0.0);
+                started_ = true;
+                start_game();
+            }
+
             return continue_;
         }
 
         void die(){}
 
-        void start_game()
+        void intro()
         {
-            //should be set from options and INI when that is implemented.
-            score_limit_ = 10;
-            time_limit_ = 300;
+            intro_timer_ = Timer(2.5);
+            playing_ = started_ = false;
             continue_ = true;
-            playing_ = true;
 
             auto wall_rect = Rectanglef(0.0, 0.0, 32.0, 536.0);
-            wall_left_ = new Wall(Vector2f(120.0, 32.0), wall_rect);
-            wall_right_ = new Wall(Vector2f(648.0, 32.0), wall_rect);
+            wall_left_ = new Wall(Vector2f(-64.0, 32.0), wall_rect);
+            wall_left_.velocity = Vector2f(73.6, 0.0);
+            wall_right_ = new Wall(Vector2f(832.0, 32.0), wall_rect);
+            wall_right_.velocity = Vector2f(-73.6, 0.0);
 
             auto goal_rect = Rectanglef(0.0, 0.0, 560.0, 28.0);
-            goal_up_ = new Wall(Vector2f(120.0, 4.0), goal_rect);
-            goal_down_ = new Wall(Vector2f(120.0, 568.0), goal_rect);
+            goal_up_ = new Wall(Vector2f(-680.0, 4.0), goal_rect);
+            goal_up_.velocity = Vector2f(320.0, 0.0);
+            goal_down_ = new Wall(Vector2f(920.0, 568.0), goal_rect);
+            goal_down_.velocity = Vector2f(-320.0, 0.0);
 
             auto size = Rectanglef(-32, -8, 32, 8); 
             auto limits1 = Rectanglef(152 + ball_radius_ * 2, 36, 
@@ -931,11 +951,21 @@ class Game
                                       648 - ball_radius_ * 2, 564); 
             paddle_2_ = new Paddle(Vector2f(400, 544), size, limits2, 144);
 
-            auto spawner = new BallSpawner(spawn_time_, spawn_spread_, ball_speed_);
-            spawner.spawn_ball.connect(&spawn_ball);
-
             player_1_ = new AIPlayer("AI", paddle_1_, 0.15);
             player_2_ = new HumanPlayer("Human", paddle_2_);
+
+            Platform.get.key.connect(&key_handler);
+        }
+
+        void start_game()
+        {
+            //should be set from options and INI when that is implemented.
+            score_limit_ = 10;
+            time_limit_ = 300;
+            playing_ = true;
+
+            auto spawner = new BallSpawner(spawn_time_, spawn_spread_, ball_speed_);
+            spawner.spawn_ball.connect(&spawn_ball);
 
             goal_up_.ball_hit.connect(&destroy_ball);
             goal_down_.ball_hit.connect(&destroy_ball);
@@ -943,8 +973,6 @@ class Game
             goal_down_.ball_hit.connect(&player_1_.score);
             goal_up_.ball_hit.connect(&update_score);
             goal_down_.ball_hit.connect(&update_score);
-
-            Platform.get.key.connect(&key_handler);
 
             init_hud();
             update_score();
@@ -971,6 +999,9 @@ class Game
         void draw()
         {
         }
+
+        ///Are we still playing the game or is it finished already?
+        bool playing(){return playing_;}
 
     private:
         void init_hud()
@@ -1279,7 +1310,7 @@ class Pong
             run_pong_ = true;
             menu_container_.hide();
             Platform.get.key.disconnect(&key_handler);
-            Game.get.start_game();
+            Game.get.intro();
         }
 
         void credits_start()

@@ -1,5 +1,8 @@
 14:
-    start game animation
+    Refactor Game into at least two classes(!), removing at least 100 lines
+    from Game (either moving elsewhere or removing entirely)
+    or at least refactor Game's methods (that might show opportunities to
+    split the class itself)
 14:
     Graphics effect: either some kind of motion blur effect for the paddle,
     or some kind of pulsating lines inside the paddle.
