@@ -1,11 +1,5 @@
-DOCUMENT, REFACTOR, CONTRACTS... COMMIT
-
-
 14:
     start game animation
-16:
-    Have a countdown before each ball spawn. Should also
-    display the rough area where it might go (~ 90 deg)
 14:
     Graphics effect: either some kind of motion blur effect for the paddle,
     or some kind of pulsating lines inside the paddle.
@@ -153,6 +147,15 @@ DOCUMENT, REFACTOR, CONTRACTS... COMMIT
     p_height
     width  (width of this) - would require realign() to compute width first
     height  (height of this) - would require realign() to compute width first
+
+8:
+    timer calling a given function at expiration,
+    and some kind of singleton or module to update these timers to
+    check for expiration - that update would be called by whole
+    pong, not game. maybe later it could be updated from separate thread, but probably
+    not.
+    Would be used like e.g. time.delayed_call(function(args), delay);
+    
 8:
     Subset of HTML tags for text drawing (just support <br> for now),
     will need a parser (fast!) and e.g. StaticText will need to use

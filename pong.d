@@ -336,6 +336,7 @@ class Ball : Actor
         }
 }
 
+///Player controlling a paddle.
 abstract class Player
 {
     protected:
@@ -375,6 +376,7 @@ abstract class Player
         }
 }
 
+//AI player
 class AIPlayer : Player
 {
     protected:
@@ -393,27 +395,35 @@ class AIPlayer : Player
         {
             if(update_timer_.expired())
             {
+                update_timer_.reset();
                 real frame_length = ActorManager.get.frame_length;
 
-                Ball ball = Game.get.ball;
+                //currently only support zero or one ball
+                Ball[] balls = Game.get.balls;
+                assert(balls.length <= 1, 
+                       "AI supports only zero or one ball at the moment");
+                if(balls.length == 0)
+                {
+                    move_to_center;
+                    return;
+                }
+                Ball ball = balls[0];
+
                 float distance = paddle_.limits.distance(ball.position);
                 Vector2f ball_next = ball.position + ball.velocity * frame_length;
                 float distance_next = paddle_.limits.distance(ball_next);
                 
                 //If the ball is closing to paddle movement area
-                if(distance_next <= distance){ball_closing();}       
+                if(distance_next <= distance){ball_closing(ball);}       
                 //If the ball is moving away from paddle movement area
                 else{move_to_center();}
-
-                update_timer_.reset();
             }
         }
 
     protected:
         //React to the ball closing in
-        void ball_closing()
+        void ball_closing(Ball ball)
         {
-            Ball ball = Game.get.ball;
             //If paddle x position is roughly equal to ball, no need to move
             if(equals(paddle_.position.x, ball.position.x, 16.0f))
             {
@@ -449,6 +459,7 @@ class AIPlayer : Player
         }
 }
 
+//Human player controlling the game through user input.
 class HumanPlayer : Player
 {
     public:
@@ -512,7 +523,8 @@ class ScoreScreen : GUIElement
 {
     private:
         alias std.string.toString to_string;  
-
+        
+        //score screen ends when this timer expires.
         Timer timer_;
 
         GUIStaticText winner_text_;
@@ -620,6 +632,197 @@ class ScoreScreen : GUIElement
         }
 }
 
+///Handles ball respawning and related effects.
+/**
+  When the spawner is created, it generates a set of directions the ball
+  can be spawned at, in roughly the same direction (determined by specified spread)
+  Then, during its lifetime, it displays the directions to the player 
+  (as rays), gives the player a bit of time and spawns the ball with one
+  of generated directions.
+ */
+class BallSpawner : Actor
+{
+    invariant
+    {
+        assert(min_angle_ < PI * 0.5, 
+               "Ball spawn angle restriction larger or equal than PI / 2 "
+               "would make it impossible to spawn a ball in any direction");
+        assert(ball_speed_ > 1.0, "Too low ball speed");
+        assert(direction_count_ > 0, 
+               "There must be at least one direction to spawn the ball with");
+        assert(light_speed_ > 0.0, "Zero light speed");
+        assert(light_width_ > 0.0, "Zero light width");
+    }
+
+    private:
+        //When this timer expires, the ball is spawned and the spawner destroyed.
+        Timer timer_;
+        
+        //Speed to spawn balls with.
+        real ball_speed_;
+
+        //Minimum angle difference from 0.5*pi or 1.5*pi (from horizontal line).
+        //Prevents the ball from being spawned too horizontally.
+        real min_angle_ = PI * 0.125;
+         
+        //Number of possible directions to spawn the ball at to generate.
+        uint direction_count_ = 12;
+        
+        //Directions the ball can be spawned at, in radians.
+        real[] directions_;
+
+        //"light" direction used by the rays effect.
+        //The light rotates and shows the rays within its range.
+        real light_ = 0;
+
+        //Rotation speed of the "light", in radians per second.
+        real light_speed_;
+
+        //Angular width of the "light" in radians.
+        real light_width_ = PI / 6.0; 
+
+        //Draw the "light" ?
+        bool light_expired = false;
+
+    public:
+        mixin Signal!(Vector2f, real) spawn_ball;
+        
+        /**
+         * Constructs a BallSpawner with specified parameters.
+         * 
+         * Params:    time       = Time until the ball is spawned.
+         *                         70% of this time will be taken by
+         *                         the rays effect.
+         *            spread     = "Randomness" of the spawn directions.
+         *                         Zero will result in only one definite direction,
+         *                         1 will result in completely random direction
+         *                         (except for horizontal directions that are 
+         *                         disallowed to prevent ball from getting stuck)
+         *            ball_speed = Speed to spawn the ball at.
+         *
+         */
+        this(real time, real spread, real ball_speed)
+        in
+        {
+            assert(time >= 0.0, "Negative ball spawning time");
+            assert(spread >= 0.0, "Negative ball spawning spread");
+        }
+        body
+        {                
+            super(Vector2f(0.0, 0.0));
+
+            ball_speed_ = ball_speed;
+            timer_ = Timer(time);
+            //leave a third of time without the rays effect to give time
+            //to the player
+            light_speed_ = (2 * PI) / (time * 0.70);
+
+            generate_directions(spread);
+        }
+
+        void update()
+        {
+            if(timer_.expired)
+            {
+                //emit the ball in a random, previously generated direction
+                Vector2f direction = Vector2f(1.0f, 1.0f);
+                direction.angle = directions_[std.random.rand % directions_.length];
+                spawn_ball.emit(direction, ball_speed_);
+                die();
+            }
+            if(!light_expired && light_ >= (2 * PI)){light_expired = true;}
+
+            //update light direction
+            light_ += light_speed_ * ActorManager.get.frame_length();
+        }
+
+        void draw()
+        {
+            VideoDriver.get.line_aa = true;
+            scope(exit){VideoDriver.get.line_aa = false;} 
+
+            Vector2f center = Vector2f(400.0, 300.0);
+            //base color of the rays
+            Color base_color = Color(224, 224, 255, 128);
+            Color light_color = Color(224, 224, 255, 4);
+            Color light_color_end = Color(224, 224, 255, 0);
+
+            real ray_length = 600.0;
+
+            Vector2f direction = Vector2f(1.0f, 1.0f);
+            if(!light_expired)
+            {
+                //draw the light
+                direction.angle = light_ + light_width_;
+                VideoDriver.get.draw_line(center, center + direction * ray_length, 
+                                          light_color, light_color_end);
+                direction.angle = light_ - light_width_;
+                VideoDriver.get.draw_line(center, center + direction * ray_length, 
+                                          light_color, light_color_end);
+            }
+
+            VideoDriver.get.line_width = 2;
+            scope(exit){VideoDriver.get.line_width = 1;} 
+            
+            //draw the rays in range of the light
+            foreach(d; directions_)
+            {
+                real distance = std.math.abs(d - light_);
+                if(distance > light_width_){continue;}
+
+                Color color = base_color;
+                color.a *= 1.0 - distance / light_width_;
+
+                direction.angle = d;
+                VideoDriver.get.draw_line(center, center + direction * ray_length, 
+                                          color, color);
+            }
+        }
+
+    private:
+        /**
+         * Generate the directions ball might be spawned with.
+         * 
+         * Params:    spread = "Randomness" of the spawn directions.
+         *                     Zero will result in only one definite direction,
+         *                     1 will result in completely random direction
+         *                     (except for horizontal directions that are 
+         *                     disallowed to prevent ball from getting stuck)
+         */
+        void generate_directions(real spread)
+        {
+            //base direction of all generated directions
+            real base = math.math.random(0.0, 1.0);
+            //adjust spread according to how much of the circle is "allowed" 
+            //directions - i.e. nearly horizontal directions are not allowed
+            spread *= 1 - (2 * min_angle_) / PI; 
+
+            for(uint d = 0; d < direction_count_; d++)
+            {
+                real direction = math.math.random(base - spread, base + spread);
+                //integer part of the direction is stripped so that
+                //it's in the 0.0 - 1.0 range
+                direction = std.math.abs(direction - cast(int)direction);
+
+                //"allowed" part of the circle in radians
+                real range = 2.0 * PI - 4.0 * min_angle_;
+                                                   
+                //0.0 - 0.5 gets mapped to 0.5pi+min_angle - 1.5pi-min_angle range
+                if(direction < 0.5)
+                {
+                    direction = PI * 0.5 + min_angle_ + direction * range;
+                }
+                //0.5 - 1.0 gets mapped to 1.5pi+min_angle - 0.5pi-min_angle range
+                else
+                {
+                    direction = PI * 1.5 + min_angle_ + (direction - 0.5) * range;
+                }
+
+                directions_ ~= direction;
+            }
+        }
+}
+
 class Game
 {
     mixin Singleton;
@@ -629,6 +832,9 @@ class Game
         Ball ball_;
         real ball_radius_ = 6.0;
         real ball_speed_ = 215.0;
+
+        real spawn_time_ = 4.0;
+        real spawn_spread_ = 0.32;
 
         Wall wall_right_;
         Wall wall_left_;
@@ -641,7 +847,7 @@ class Game
 
         Player player_1_;
         Player player_2_;
-        
+
         //Continue running?
         bool continue_;
 
@@ -685,7 +891,8 @@ class Game
                 player_2_.update();
 
                 //check for victory conditions
-                if(player_1_.score >= score_limit_ || player_2_.score >= score_limit_)
+                if(player_1_.score >= score_limit_ || 
+                   player_2_.score >= score_limit_)
                 {
                     game_won();
                 }
@@ -724,13 +931,14 @@ class Game
                                       648 - ball_radius_ * 2, 564); 
             paddle_2_ = new Paddle(Vector2f(400, 544), size, limits2, 144);
 
-            spawn_ball(ball_speed_);
+            auto spawner = new BallSpawner(spawn_time_, spawn_spread_, ball_speed_);
+            spawner.spawn_ball.connect(&spawn_ball);
 
             player_1_ = new AIPlayer("AI", paddle_1_, 0.15);
             player_2_ = new HumanPlayer("Human", paddle_2_);
 
-            goal_up_.ball_hit.connect(&respawn_ball);
-            goal_down_.ball_hit.connect(&respawn_ball);
+            goal_up_.ball_hit.connect(&destroy_ball);
+            goal_down_.ball_hit.connect(&destroy_ball);
             goal_up_.ball_hit.connect(&player_2_.score);
             goal_down_.ball_hit.connect(&player_1_.score);
             goal_up_.ball_hit.connect(&update_score);
@@ -744,7 +952,13 @@ class Game
             game_timer_ = Timer(time_limit_);
         }
 
-        Ball ball(){return ball_;}
+        ///Returns an array of balls currently used in the game.
+        Ball[] balls()
+        {
+            Ball[] output;
+            if(ball_ !is null){output ~= ball_;}
+            return output;
+        }
 
         //the argument is redunant here (at least for now) - 
         //used for compatibility with signal 
@@ -815,23 +1029,17 @@ class Game
             time_text_ = null;
         }
 
-        void respawn_ball(Ball ball)
+        void destroy_ball(Ball ball)
         {
             ball_.die();
-            spawn_ball(ball_speed_);
+            ball_ = null;
+
+            auto spawner = new BallSpawner(spawn_time_, spawn_spread_, ball_speed_);
+            spawner.spawn_ball.connect(&spawn_ball);
         }
 
-        void spawn_ball(real speed)
+        void spawn_ball(Vector2f direction, real speed)
         {
-            long x = std.random.rand();
-            long y = std.random.rand();
-            Vector2f direction;
-            direction.random_direction();
-            //if the angle is too horizontal, adjust it
-            while(abs(direction.y / direction.x) < 0.2)
-            {
-                direction.random_direction();
-            }
             ball_ = new Ball(Vector2f(400.0, 300.0), direction * speed, ball_radius_);
         }
 

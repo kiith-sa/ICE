@@ -30,6 +30,8 @@ package align(1) struct NodePacker
             public:
                 ///Try to insert a texture with given size to this node.
                 /**
+                 * @param size Size of the space needed.
+                 *
                  * @return node with space for the texture on success.
                  * @return null on failure.
                 */

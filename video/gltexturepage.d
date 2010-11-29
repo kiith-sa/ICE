@@ -78,8 +78,8 @@ package align(1) struct GLTexturePage(TexturePacker)
          * @param texcoords Texture coords of the texture will be output here.
          * @param offset Offset of the texture relative to page will be output here.
          *
-         * @returns true on success.
-         * @returns false on failure.
+         * @return true on success.
+         * @return false on failure.
          */
         bool insert_texture(ref Image image, out Rectanglef texcoords, 
                             out Vector2u offset) 
