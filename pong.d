@@ -828,12 +828,122 @@ class BallSpawner : Actor
         }
 }
 
+///In game HUD.
+class HUD
+{
+    private:
+        alias std.string.toString to_string;  
+     
+        //Displays players' scores.
+        GUIStaticText score_text_1_, score_text_2_;
+        //Displays time left.
+        GUIStaticText time_text_;
+
+        //Maximum time the game can take.
+        real time_limit_;
+
+    public:
+        /**
+         * Constructs HUD with specified parameters.
+         *
+         * Params:    time_limit = Maximum time the game will take.
+         */
+        this(real time_limit)
+        {
+            time_limit_ = time_limit;
+
+            score_text_1_ = new GUIStaticText;
+            with(score_text_1_)
+            {
+                position_x = "p_left + 8";
+                position_y = "p_top + 8";
+                width = "96";
+                height = "16";
+                alignment_x = AlignX.Right;
+                font = "orbitron-light.ttf";
+                font_size = 16;
+            }
+            GUIRoot.get.add_child(score_text_1_);
+
+            score_text_2_ = new GUIStaticText;
+            with(score_text_2_)
+            {
+                position_x = "p_left + 8";
+                position_y = "p_bottom - 24";
+                width = "96";
+                height = "16";
+                alignment_x = AlignX.Right;
+                font = "orbitron-light.ttf";
+                font_size = 16;
+            }
+            GUIRoot.get.add_child(score_text_2_);
+
+            time_text_ = new GUIStaticText;
+            with(time_text_)
+            {
+                position_x = "p_right - 112";
+                position_y = "p_bottom - 24";
+                width = "96";
+                height = "16";
+                font = "orbitron-bold.ttf";
+                font_size = 16;
+            }
+            GUIRoot.get.add_child(time_text_);
+        }
+
+        /**
+         * Update the HUD.
+         *
+         * Params:    time_left = Time left until time limit runs out.
+         *            player_1  = First player of the game.
+         *            player_2  = Second player of the game. 
+         */
+        void update(real time_left, Player player_1, Player player_2)
+        {
+            //update time display
+            time_left = max(time_left, 0.0L);
+            string time_str = time_string(time_left);
+            static Color color_start = Color(160, 160, 255, 160);
+            static Color color_end = Color(255, 0, 0, 255);
+            //only update if the text has changed
+            if(time_str != time_text_.text)
+            {
+                time_text_.text = time_str != "0:0" 
+                                  ? time_str : time_str ~ " !";
+
+                real t = time_left / time_limit_;
+                time_text_.text_color = color_start.interpolated(color_end, t);
+            }
+
+            //update score displays
+            string score_str_1 = player_1.name ~ ": " ~ to_string(player_1.score);
+            string score_str_2 = player_2.name ~ ": " ~ to_string(player_2.score);
+            //only update if the text has changed
+            if(score_text_1_.text != score_str_1){score_text_1_.text = score_str_1;}
+            if(score_text_2_.text != score_str_2){score_text_2_.text = score_str_2;}
+        }
+
+        ///Destroy the HUD.
+        void die()
+        {
+            GUIRoot.get.remove_child(score_text_1_);
+            score_text_1_.die();
+            score_text_1_ = null;
+
+            GUIRoot.get.remove_child(score_text_2_);
+            score_text_2_.die();
+            score_text_2_ = null;
+
+            GUIRoot.get.remove_child(time_text_);
+            time_text_.die();
+            time_text_ = null;
+        }
+}
+
 class Game
 {
     mixin Singleton;
     private:
-        alias std.string.toString to_string;  
-     
         Ball ball_;
         real ball_radius_ = 6.0;
         real ball_speed_ = 215.0;
@@ -841,30 +951,22 @@ class Game
         real spawn_time_ = 4.0;
         real spawn_spread_ = 0.32;
 
-        Wall wall_right_;
-        Wall wall_left_;
+        Wall wall_right_, wall_left_; 
+        Wall goal_up_, goal_down_; 
+        Paddle paddle_1_, paddle_2_;
 
-        Wall goal_up_;
-        Wall goal_down_;
-
-        Paddle paddle_1_;
-        Paddle paddle_2_;
-
-        Player player_1_;
-        Player player_2_;
+        Player player_1_, player_2_;
 
         //Continue running?
         bool continue_;
-
-        GUIStaticText score_text_1_;
-        GUIStaticText score_text_2_;
-        GUIStaticText time_text_;
 
         uint score_limit_;
         real time_limit_;
         Timer game_timer_;
 
         ScoreScreen score_screen_;
+
+        HUD hud_;
 
         //true while the players are playing the game
         bool playing_;
@@ -879,20 +981,7 @@ class Game
         {
             if(playing_)
             {
-                //update time display
-                real time = time_limit_ - game_timer_.age;
-                time = max(time, 0.0L);
-                string time_str = time_string(time);
-                static Color color_start = Color(160, 160, 255, 160);
-                static Color color_end = Color(255, 0, 0, 255);
-                if(time_str != time_text_.text)
-                {
-                    time_text_.text = time_str != "0:0" 
-                                      ? time_str : time_str ~ " !";
-
-                    real t = time / time_limit_;
-                    time_text_.text_color = color_start.interpolated(color_end, t);
-                }
+                hud_.update(time_limit_ - game_timer_.age, player_1_, player_2_);
 
                 //update player state
                 player_1_.update();
@@ -971,11 +1060,8 @@ class Game
             goal_down_.ball_hit.connect(&destroy_ball);
             goal_up_.ball_hit.connect(&player_2_.score);
             goal_down_.ball_hit.connect(&player_1_.score);
-            goal_up_.ball_hit.connect(&update_score);
-            goal_down_.ball_hit.connect(&update_score);
 
-            init_hud();
-            update_score();
+            hud_ = new HUD(time_limit_);
 
             game_timer_ = Timer(time_limit_);
         }
@@ -988,14 +1074,6 @@ class Game
             return output;
         }
 
-        //the argument is redunant here (at least for now) - 
-        //used for compatibility with signal 
-        void update_score(Ball ball = null)
-        {
-            score_text_1_.text = player_1_.name ~ ": " ~ to_string(player_1_.score);
-            score_text_2_.text = player_2_.name ~ ": " ~ to_string(player_2_.score);
-        }
-
         void draw()
         {
         }
@@ -1004,62 +1082,6 @@ class Game
         bool playing(){return playing_;}
 
     private:
-        void init_hud()
-        {
-            score_text_1_ = new GUIStaticText;
-            with(score_text_1_)
-            {
-                position_x = "p_left + 8";
-                position_y = "p_top + 8";
-                width = "96";
-                height = "16";
-                alignment_x = AlignX.Right;
-                font = "orbitron-light.ttf";
-                font_size = 16;
-            }
-            GUIRoot.get.add_child(score_text_1_);
-
-            score_text_2_ = new GUIStaticText;
-            with(score_text_2_)
-            {
-                position_x = "p_left + 8";
-                position_y = "p_bottom - 24";
-                width = "96";
-                height = "16";
-                alignment_x = AlignX.Right;
-                font = "orbitron-light.ttf";
-                font_size = 16;
-            }
-            GUIRoot.get.add_child(score_text_2_);
-
-            time_text_ = new GUIStaticText;
-            with(time_text_)
-            {
-                position_x = "p_right - 112";
-                position_y = "p_bottom - 24";
-                width = "96";
-                height = "16";
-                font = "orbitron-bold.ttf";
-                font_size = 16;
-            }
-            GUIRoot.get.add_child(time_text_);
-        }
-
-        void destroy_hud()
-        {
-            GUIRoot.get.remove_child(score_text_1_);
-            score_text_1_.die();
-            score_text_1_ = null;
-
-            GUIRoot.get.remove_child(score_text_2_);
-            score_text_2_.die();
-            score_text_2_ = null;
-
-            GUIRoot.get.remove_child(time_text_);
-            time_text_.die();
-            time_text_ = null;
-        }
-
         void destroy_ball(Ball ball)
         {
             ball_.die();
@@ -1077,11 +1099,6 @@ class Game
         //Called when one of the players wins the game.
         void game_won()
         {
-            //hide the HUD
-            score_text_1_.hide();
-            score_text_2_.hide();
-            time_text_.hide();
-
             //show the score screen and end the game after it expires
             score_screen_ = new ScoreScreen(player_1_, player_2_, game_timer_.age());
             GUIRoot.get.add_child(score_screen_);
@@ -1093,20 +1110,24 @@ class Game
 
         void end_game()
         {
-            destroy_hud();
-            if(score_screen_ !is null)
-            {
-                GUIRoot.get.remove_child(score_screen_);
-                score_screen_.die();
-                score_screen_ = null;
+            if(started_){
+                hud_.die();
+                hud_ = null;
+                if(score_screen_ !is null)
+                {
+                    GUIRoot.get.remove_child(score_screen_);
+                    score_screen_.die();
+                    score_screen_ = null;
+                }
+                ActorManager.get.time_speed = 1.0;
             }
-            playing_ = false;
-            continue_ = false;
-            ActorManager.get.time_speed = 1.0;
 
             ActorManager.get.clear();
             player_1_.die();
             player_2_.die();
+
+            playing_ = false;
+            continue_ = false;
 
             Platform.get.key.disconnect(&key_handler);
         }
