@@ -1,20 +1,6 @@
-15:
-    Graphics effect:
-    Add a lot of almost invisible fast moving balls, or just trails, that bounce normally,
-    but don't matter in game score. Generate them randomly (from center? 
-    from a random point on center horizontal line? or, from 
-    a point that is moving around but always within screen)
-    Alternatively a few short-trail balls that can bounce off of each others'
-    trails
-
-    another alternative would be some other subtle background effect.
 16:
-    Graphics effect:
-    Particle systems at destruction of paddles, balls (e.g. at the end of game 
-    or when player loses a life) 
+    Graphics effect(or not?):
     Effects both for normal (ESC) exit and victory/defeat exit
-    also an effect on start of game, and a countdown until the
-    ball is thrown
 17:
     Look at LBreakout2, SDLBall, other pong/arkanoid games, 
     especially how they handle physics.
@@ -32,8 +18,11 @@
 19:
     Use the same doc format throughout. Either Doxygen or DDoc.
     DDoc would probably be better.
+    Then generate the docs, use CandyDoc or something to make them
+    not look like shit.
 20:
-    Look at other games/demos for graphics effect ideas
+    Look at other games/demos for graphics effect ideas...
+    or maybe we have enough effects by now...
 20: 
     Get rid of immediate mode:
     support VAs and maybe VBOs (not that necessary right now) -
@@ -131,6 +120,11 @@
 
 
 --AFTER PONG    
+5:
+    Ball and such should be subclasses of PhysicsActor or something like that
+    that would always get coldetected.
+    Currently we need to check classinfo which is not a good OO design.
+    Physics data should probably be a class composited into PhysicsActor.
 6:
     Consider mipmapping using 
     glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE)

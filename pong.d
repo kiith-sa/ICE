@@ -63,7 +63,8 @@ class Wall : Actor
         in{assert(actor !is null);}
         body
         {
-            if(actor.classinfo == Ball.classinfo)
+            if(actor.classinfo == Ball.classinfo ||
+               actor.classinfo == DummyBall.classinfo)
             {
                 Ball ball = cast(Ball)actor;
                 Vector2f collision_point;
@@ -71,7 +72,7 @@ class Wall : Actor
                 if(collision_ball(ball, position, collision_point))
                 {
                     velocity = reflect_ball(ball, collision_point);
-                    ball_hit.emit(ball);
+                    if(actor.classinfo == Ball.classinfo){ball_hit.emit(ball);}
                     return true;
                 }
             }
@@ -221,7 +222,7 @@ class Paddle : Wall
         }
 
         ///Destroy the paddle.
-        void die()
+        override void die()
         {
             emitter_.life_time = 1.0;
             emitter_.emit_frequency = 0.0;
@@ -320,7 +321,7 @@ class Ball : Actor
         }
 
         ///Destroy this ball.
-        void die()
+        override void die()
         {
             trail_.life_time = 0.5;
             trail_.detach();
@@ -361,6 +362,32 @@ class Ball : Actor
             driver.line_width = 1;                  
             driver.line_aa = false;
         }
+}
+
+///A dummy ball that doesn't affect gameplay, only exists for graphics effect.
+class DummyBall : Ball
+{
+    public:
+        /**
+         * Construct a dummy ball with specified parameters.
+         *
+         * Params:    position = Position to spawn the ball at.
+         *            velocity = Starting velocity of the ball.
+         */
+        this(Vector2f position, Vector2f velocity)
+        {
+            super(position, velocity, 5.0);
+            trail_.start_color = Color(240, 240, 255, 8);
+            with(emitter_)
+            {
+                start_color = Color(240, 240, 255, 4);
+                line_length = 3.0;
+                emit_frequency = 24;
+            }
+        }
+
+        ///Overrides parent draw() so that we don't draw the ball itself.
+        override void draw(){}
 }
 
 ///Player controlling a paddle.
@@ -975,6 +1002,9 @@ class Game
         real spawn_time_ = 4.0;
         real spawn_spread_ = 0.32;
 
+        DummyBall[] dummies_;
+        uint dummy_count_ = 8;
+
         Wall wall_right_, wall_left_; 
         Wall goal_up_, goal_down_; 
         Paddle paddle_1_, paddle_2_;
@@ -1051,10 +1081,10 @@ class Game
             auto size = Rectanglef(-32, -8, 32, 8); 
             auto limits1 = Rectanglef(152 + ball_radius_ * 2, 36, 
                                       648 - ball_radius_ * 2, 76); 
-            paddle_1_ = new Paddle(Vector2f(400, 56), size, limits1, 144);
+            paddle_1_ = new Paddle(Vector2f(400, 56), size, limits1, 148);
             auto limits2 = Rectanglef(152 + ball_radius_ * 2, 524, 
                                       648 - ball_radius_ * 2, 564); 
-            paddle_2_ = new Paddle(Vector2f(400, 544), size, limits2, 144);
+            paddle_2_ = new Paddle(Vector2f(400, 544), size, limits2, 148);
 
             player_1_ = new AIPlayer("AI", paddle_1_, 0.15);
             player_2_ = new HumanPlayer("Human", paddle_2_);
@@ -1064,6 +1094,14 @@ class Game
 
         void start_game()
         {
+            Vector2f direction;
+            for(uint dummy = 0; dummy < dummy_count_; dummy++)
+            {
+                direction.random_direction();
+                dummies_ ~= new DummyBall(Vector2f(400.0, 300.0), 
+                                          ball_speed_ * direction);
+            }
+
             //should be set from options and INI when that is implemented.
             score_limit_ = 10;
             time_limit_ = 300;
@@ -1131,6 +1169,7 @@ class Game
         {
             if(started_)
             {
+                foreach(dummy; dummies_){dummy.die();}
                 hud_.die();
                 hud_ = null;
                 if(score_screen_ !is null)
@@ -1173,7 +1212,6 @@ class Game
             }
         }
 }
-
 
 ///Credits screen.
 class Credits : GUIElement
