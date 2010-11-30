@@ -1,11 +1,3 @@
-14:
-    Refactor Game into at least two classes(!), removing at least 100 lines
-    from Game (either moving elsewhere or removing entirely)
-    or at least refactor Game's methods (that might show opportunities to
-    split the class itself)
-14:
-    Graphics effect: either some kind of motion blur effect for the paddle,
-    or some kind of pulsating lines inside the paddle.
 15:
     Graphics effect:
     Add a lot of almost invisible fast moving balls, or just trails, that bounce normally,
@@ -100,6 +92,8 @@
     so we can have AI/AI, AI/human, human/human)
     Character count should be limited to fit to score statictexts.
     Also time/score limit.
+
+    Also graphics settings (enable/disable certain particle systems, maybe more)
 
 
     After that, keyboard settings for each player

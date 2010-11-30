@@ -169,6 +169,8 @@ class Paddle : Wall
         //reflected ball velocity will be 1:1.
         real max_xy_ratio_ = 1.0;
 
+        //Particle trail of the paddle
+        LineEmitter emitter_;
     public:
         ///Construct a paddle with specified parameters.
         this(Vector2f position, Rectanglef size, Rectanglef limits, real speed)
@@ -176,6 +178,19 @@ class Paddle : Wall
             super(position, size);
             speed_ = speed;
             limits_ = limits;
+
+            emitter_ = new LineEmitter(this);
+            with(emitter_)
+            {
+                particle_life = 3.0;
+                emit_frequency = 30;
+                emit_velocity = Vector2f(speed * 0.15, 0.0);
+                angle_variation = 2 * PI;
+                line_length = 2.0;
+                line_width = 1;
+                start_color = Color(255, 255, 255, 64);
+                end_color = Color(64, 64, 255, 0);
+            }
         }
 
         ///Return limits of movement of this paddle.
@@ -203,6 +218,15 @@ class Paddle : Wall
                 stop();
                 next_position_ = position_;
             }
+        }
+
+        ///Destroy the paddle.
+        void die()
+        {
+            emitter_.life_time = 1.0;
+            emitter_.emit_frequency = 0.0;
+            emitter_.detach();
+            super.die();
         }
 
     protected:
@@ -999,15 +1023,7 @@ class Game
                 }
             }
 
-            if(!started_ && intro_timer_.expired())
-            {
-                wall_left_.velocity = Vector2f(0.0, 0.0);
-                wall_right_.velocity = Vector2f(0.0, 0.0);
-                goal_up_.velocity = Vector2f(0.0, 0.0);
-                goal_down_.velocity = Vector2f(0.0, 0.0);
-                started_ = true;
-                start_game();
-            }
+            if(!started_ && intro_timer_.expired()){start_game();}
 
             return continue_;
         }
@@ -1051,7 +1067,12 @@ class Game
             //should be set from options and INI when that is implemented.
             score_limit_ = 10;
             time_limit_ = 300;
-            playing_ = true;
+            started_ = playing_ = true;
+
+            wall_left_.velocity = Vector2f(0.0, 0.0);
+            wall_right_.velocity = Vector2f(0.0, 0.0);
+            goal_up_.velocity = Vector2f(0.0, 0.0);
+            goal_down_.velocity = Vector2f(0.0, 0.0);
 
             auto spawner = new BallSpawner(spawn_time_, spawn_spread_, ball_speed_);
             spawner.spawn_ball.connect(&spawn_ball);
@@ -1074,9 +1095,7 @@ class Game
             return output;
         }
 
-        void draw()
-        {
-        }
+        void draw(){}
 
         ///Are we still playing the game or is it finished already?
         bool playing(){return playing_;}
@@ -1110,7 +1129,8 @@ class Game
 
         void end_game()
         {
-            if(started_){
+            if(started_)
+            {
                 hud_.die();
                 hud_ = null;
                 if(score_screen_ !is null)
@@ -1126,8 +1146,7 @@ class Game
             player_1_.die();
             player_2_.die();
 
-            playing_ = false;
-            continue_ = false;
+            playing_ = continue_ = false;
 
             Platform.get.key.disconnect(&key_handler);
         }
