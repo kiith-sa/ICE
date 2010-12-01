@@ -41,7 +41,7 @@ abstract class Actor
         ///Update physics state of this Actor.
         void update_physics()
         {
-            next_position_ = position_ + velocity_ * ActorManager.get.frame_length();
+            next_position_ = position_ + velocity_ * ActorManager.get.time_step();
         }
 
         ///Update this Actor.

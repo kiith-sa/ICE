@@ -22,7 +22,7 @@ private struct Particle
     Vector2f velocity;
     
     //Update state of the particle.
-    void update(){position += velocity * ActorManager.get.frame_length;}
+    void update(){position += velocity * ActorManager.get.time_step;}
 }
 
 ///Base class for particle emitting particle systems.
@@ -57,12 +57,12 @@ abstract class ParticleEmitter : ParticleSystem
         this(Actor owner = null)
         {
             super(Vector2f(0.0f,0.0f), Vector2f(0.0f,0.0f), owner);
-            emit_start_ = ActorManager.get.frame_time;
+            emit_start_ = ActorManager.get.game_time;
         }
         
         override void update()
         {
-            real frame_length = ActorManager.get.frame_length;
+            real frame_length = ActorManager.get.time_step;
 
             //update position
             if(owner_ !is null)
@@ -78,7 +78,7 @@ abstract class ParticleEmitter : ParticleSystem
             }
 
             //remove expired particles
-            real time = ActorManager.get.frame_time;
+            real time = ActorManager.get.game_time;
             bool expired(ref Particle particle){return particle.timer.expired(time);}
             Particles.remove(&expired);
 
@@ -103,7 +103,7 @@ abstract class ParticleEmitter : ParticleSystem
             emit_frequency_ = frequency;
             //Reset emit counters
             total_emitted_ = 0;
-            emit_start_ = ActorManager.get.frame_time;
+            emit_start_ = ActorManager.get.game_time;
         }
         
         ///Return number of particles emitted per second.
@@ -119,7 +119,7 @@ abstract class ParticleEmitter : ParticleSystem
         //Emit particles if any should be emitted this frame.
         void emit()
         {
-            real time = ActorManager.get.frame_time;
+            real time = ActorManager.get.game_time;
             //Total number of particles that should be emitted by now
             uint particles_needed = round32((time - emit_start_) * emit_frequency_);
             //Particles to emit (using int for error checking)

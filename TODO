@@ -1,10 +1,84 @@
-16:
-    Graphics effect(or not?):
-    Effects both for normal (ESC) exit and victory/defeat exit
+Physics thoughts:
+
+
+(design in UML)
+
+Only plan for convex objects, triangulation will be added later
+
+
+SpatialManager singleton (can be a quadtree, etc; used for broad coldetect search, culling)
+First design this - other stuff can be added later (just exchange actors for physicsobjects)
+Actually, maybe it should only contain actors, so that culling code can use it as well as
+physics code. We just must make sure all references are destroyed then 
+(since we'll also want a scene manager later)
+
+Also, an F10 GUI tool showing contents of the SpatialManager implementation - right affter coding it
+so we know it works correctly
+
+Any position changes are passed to the SpatialManager ASAP
+PhysicsEngine singleton:
+    Contains PhysicsObjects
+        PhysicsObject has a physical representation (e.g. a polygon or a group of triangles), an AABB, velocity, position, etc. Actor has none of these.
+        PhysicsObject has a signal for collision that passes both objects involved
+
+    has a broad coltetect phase- identifies colliding pairs
+          narrow coldetect phase- does the coldetect
+
+          colresponse phase - collision response depends on PhysicsObjects' implementations
+                              e.g. paddle will have its own implementation that
+                              reflects objects based on where they collided
+                              also some objects, e.g. paddles, walls will not be affected by colliding objects
+
+                              Ball should be: BallPhysics
+                              Wall:           StaticPhysics (or WallPhysics?)
+                              Paddle:         PaddlePhysics : StaticPhysics
+
+
+
+
+
+                              We should separate response to anti-penetration phase and response itself
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 17:
+    ok... so:
+
+    let's go develop a complete physics engine
+    start coding it while keeping current physics code, just displaying
+    the collisions detected in broad and in narrow phase, and logging
+    data about them.
+
+    we need a separate physics manager or something and a physics data class
+
+
     Look at LBreakout2, SDLBall, other pong/arkanoid games, 
     especially how they handle physics.
     Maybe then implement ball reflection based on paddle movement.
+
+
+    LOOK AT OPENRA ACTORS, COLDETECT TOO, GET NEWEST OPENRA SOURCE
+
+17:
+    Then, effect at ball-paddle collision
 17: 
     Effects:
     When buttons etc. working:
@@ -59,6 +133,10 @@
     Stop printing UPS to stdout, maybe move to monitor or get rid of it altogether.
 25:
     Show current time of day in the HUD
+26:
+    Optional(user options) smarter AI that takes note of ray hints from BallSpawner
+    (only if those rays intersect with the goal - ignore if they're intersecting
+     the walls to prevent extra stupidity)
 14:
     Look for D files in main directory that can be put into packages.
 23:

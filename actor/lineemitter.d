@@ -38,7 +38,7 @@ class LineEmitter : ParticleEmitter
             auto driver = VideoDriver.get;
             driver.line_aa = true;
             driver.line_width = line_width_;
-            real time = ActorManager.get.frame_time;
+            real time = ActorManager.get.game_time;
             Color color;
             //draw particles
             foreach(ref p; Particles)

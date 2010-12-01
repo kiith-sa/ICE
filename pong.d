@@ -89,7 +89,7 @@ class Wall : Actor
         bool collision_ball(Ball ball, out Vector2f position, 
                             out Vector2f collision_point)
         {
-            real frame_length = ActorManager.get.frame_length;
+            real frame_length = ActorManager.get.time_step;
             //Translate the rectangle to world space
             Rectanglef size = size_ + position_ + velocity_ * frame_length;
             
@@ -208,7 +208,7 @@ class Paddle : Wall
 
         override void update_physics()
         {
-            next_position_ = position_ + velocity_ * ActorManager.get.frame_length();
+            next_position_ = position_ + velocity_ * ActorManager.get.time_step();
 
             Rectanglef position_limits = Rectanglef(limits_.min - size_.min,
                                                     limits_.max - size_.max);
@@ -336,7 +336,7 @@ class Ball : Actor
 
         override void update_physics()
         {
-            real frame_length = ActorManager.get.frame_length;
+            real frame_length = ActorManager.get.time_step;
             next_position_ = position_ + velocity_ * frame_length;
             
             Vector2f position;
@@ -450,7 +450,7 @@ class AIPlayer : Player
             if(update_timer_.expired())
             {
                 update_timer_.reset();
-                real frame_length = ActorManager.get.frame_length;
+                real frame_length = ActorManager.get.time_step;
 
                 //currently only support zero or one ball
                 Ball[] balls = Game.get.balls;
@@ -766,7 +766,7 @@ class BallSpawner : Actor
             super(Vector2f(0.0, 0.0));
 
             ball_speed_ = ball_speed;
-            timer_ = Timer(time);
+            timer_ = Timer(time, ActorManager.get.game_time);
             //leave a third of time without the rays effect to give time
             //to the player
             light_speed_ = (2 * PI) / (time * 0.70);
@@ -776,20 +776,19 @@ class BallSpawner : Actor
 
         void update()
         {
-            if(!Game.get.playing){die();}
-
-            if(timer_.expired)
+            if(timer_.expired(ActorManager.get.game_time))
             {
                 //emit the ball in a random, previously generated direction
                 Vector2f direction = Vector2f(1.0f, 1.0f);
                 direction.angle = directions_[std.random.rand % directions_.length];
                 spawn_ball.emit(direction, ball_speed_);
                 die();
+                return;
             }
             if(!light_expired && light_ >= (2 * PI)){light_expired = true;}
 
             //update light direction
-            light_ += light_speed_ * ActorManager.get.frame_length();
+            light_ += light_speed_ * ActorManager.get.time_step();
         }
 
         void draw()
@@ -1035,7 +1034,9 @@ class Game
         {
             if(playing_)
             {
-                hud_.update(time_limit_ - game_timer_.age, player_1_, player_2_);
+                real time_left = time_limit_ - 
+                                 game_timer_.age(ActorManager.get.game_time);
+                hud_.update(time_left, player_1_, player_2_);
 
                 //update player state
                 player_1_.update();
@@ -1047,13 +1048,16 @@ class Game
                 {
                     game_won();
                 }
-                if(game_timer_.expired)
+                if(game_timer_.expired(ActorManager.get.game_time))
                 {
                     if(player_1_.score != player_2_.score){game_won();}
                 }
             }
 
-            if(!started_ && intro_timer_.expired()){start_game();}
+            if(!started_ && intro_timer_.expired(ActorManager.get.game_time))
+            {
+                start_game();
+            }
 
             return continue_;
         }
@@ -1062,7 +1066,7 @@ class Game
 
         void intro()
         {
-            intro_timer_ = Timer(2.5);
+            intro_timer_ = Timer(2.5, ActorManager.get.game_time);
             playing_ = started_ = false;
             continue_ = true;
 
@@ -1122,7 +1126,7 @@ class Game
 
             hud_ = new HUD(time_limit_);
 
-            game_timer_ = Timer(time_limit_);
+            game_timer_ = Timer(time_limit_, ActorManager.get.game_time);
         }
 
         ///Returns an array of balls currently used in the game.
@@ -1134,9 +1138,6 @@ class Game
         }
 
         void draw(){}
-
-        ///Are we still playing the game or is it finished already?
-        bool playing(){return playing_;}
 
     private:
         void destroy_ball(Ball ball)
@@ -1157,7 +1158,8 @@ class Game
         void game_won()
         {
             //show the score screen and end the game after it expires
-            score_screen_ = new ScoreScreen(player_1_, player_2_, game_timer_.age());
+            score_screen_ = new ScoreScreen(player_1_, player_2_, 
+                                            game_timer_.age(ActorManager.get.game_time));
             GUIRoot.get.add_child(score_screen_);
             score_screen_.expired.connect(&end_game);
             ActorManager.get.time_speed = 0.0;
@@ -1169,7 +1171,6 @@ class Game
         {
             if(started_)
             {
-                foreach(dummy; dummies_){dummy.die();}
                 hud_.die();
                 hud_ = null;
                 if(score_screen_ !is null)
@@ -1371,9 +1372,7 @@ class Pong
             writefln("ActorManager statistics:\n", ActorManager.get.statistics, "\n");
         }
 
-        void draw()
-        {
-        }
+        void draw(){}
 
     private:
         void pong_end()

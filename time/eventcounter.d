@@ -54,6 +54,9 @@ final class EventCounter
             ++events_total_;
         }
 
+        ///Get number of events counted so far.
+        uint events(){return events_total_;}
+
         ///Return a string containing statistics about events counted.
         string statistics()
         {

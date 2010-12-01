@@ -23,7 +23,7 @@ abstract class ParticleSystem : Actor
 
         void update()
         {
-            real frame_length = ActorManager.get.frame_length;
+            real frame_length = ActorManager.get.time_step;
             //If life_time_ reaches zero, destroy this 
             if(life_time_ >= 0.0 && life_time_ - frame_length <= 0.0){die();}
             life_time_ -= frame_length;

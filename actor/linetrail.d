@@ -40,7 +40,7 @@ final class LineTrail : LineEmitter
 
             super(owner);
 
-            real time = ActorManager.get.frame_time;
+            real time = ActorManager.get.game_time;
             
             emit_frequency(100.0);
             update_timer_ = Timer(1.0 / super.emit_frequency, time);   
@@ -65,7 +65,7 @@ final class LineTrail : LineEmitter
                 Color c1 = end_color_;
                 //end color of the current line
                 Color c2;
-                real time = ActorManager.get.frame_time;
+                real time = ActorManager.get.game_time;
 
                 VideoDriver.get.line_aa = true;
                 VideoDriver.get.line_width = line_width_;
@@ -89,7 +89,7 @@ final class LineTrail : LineEmitter
         {
             if(owner_)
             {
-                real time = ActorManager.get.frame_time;
+                real time = ActorManager.get.game_time;
                 if(update_timer_.expired(time))
                 {
                     Particle trail;
