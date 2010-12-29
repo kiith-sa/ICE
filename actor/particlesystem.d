@@ -3,6 +3,7 @@ module actor.particlesystem;
 
 import actor.actor;
 import actor.actormanager;
+import physics.physicsbody;
 import math.vector2;
 
 
@@ -33,10 +34,10 @@ abstract class ParticleSystem : Actor
 
     protected:
         //Construct Actor with specified properties.
-        this(Vector2f position, Vector2f velocity = Vector2f(0.0, 0.0),
-             Actor owner = null, real life_time = -1.0) 
+        this(PhysicsBody physics_body, Actor owner = null, real life_time = -1.0) 
         {
-            super(position, velocity);
+            //super(position, velocity);
+            super(physics_body);
             life_time_ = life_time;
             owner_ = owner;
         }

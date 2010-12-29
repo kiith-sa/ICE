@@ -1,6 +1,9 @@
 module arrayutil;
 
 
+import std.math;
+
+
 ///Remove element from the array.
 /**
   * Only the first occurence of elem will be removed.
@@ -80,4 +83,92 @@ bool contains(T)(T[] array, T element, bool ident = false)
         }
     }
     return false;
+}
+
+/**
+ * Returns minimum value from an array.
+ *
+ * Uses the > operator (opCmp for structs and classes) to get the minimum.
+ *
+ * Params:  array = Array to find the minimum in. Must not be empty.
+ *
+ * Returns: Minimum of the array.
+ */
+T min(T) (T array []){return min(array, (ref T a, ref T b){return a > b;});}
+
+/**
+ * Returns minimum value from an array.
+ *
+ * Uses a function delegate to compare elements and get the minimum.
+ *
+ * Params:  array = Array to find the minimum in. Must not be empty.
+ *          deleg = Function to use for comparison. Must take, by reference,
+ *                  two parameters of the type stored in array and return a
+ *                  bool value that is true when the first parameter is greater
+ *                  than the second, false otherwise.
+ *
+ * Returns: Minimum of the array.
+ */
+T min(T) (T array [], bool delegate(ref T a, ref T b) deleg)
+in{assert(array.length > 0, "Can't get minimum of an empty array");}
+body
+{
+    //working with pointers to prevent copying when structs are used.
+    T* minimum = &array[0];
+    foreach(ref elem; array[1 .. $])
+    {
+        if(deleg(*minimum, elem)){minimum = &elem;}
+    }
+    return *minimum;
+}
+unittest
+{
+    int[5] ints = [2, 1, 4, 5, -5];
+    assert(min(ints) == -5);
+    assert(min(ints,(ref int a, ref int b){return abs(a) > abs(b);}) == 1);
+}
+
+/**
+ * Returns maximum value from an array.
+ *
+ * Uses the > operator (opCmp for structs and classes) to get the maximum.
+ *
+ * Params:  array = Array to find the maximum in. Must not be empty.
+ *
+ * Returns: Maximum of the array.
+ */
+T max(T) (T array []){return max(array, (ref T a, ref T b){return a > b;});}
+
+/**
+ * Returns maximum value from an array.
+ *
+ * Uses a function delegate to compare elements and get the maximum.
+ *
+ * Params:  array = Array to find the maximum in. Must not be empty.
+ *          deleg = Function to use for comparison. Must take, by reference,
+ *                  two parameters of the type stored in array and return a
+ *                  bool value that is true when the first parameter is greater
+ *                  than the second, false otherwise.
+ *
+ * Returns: Maximum of the array.
+ */
+T max(T) (T array [], bool delegate(ref T a, ref T b) deleg)
+in{assert(array.length > 0, "Can't get maximum of an empty array");}
+body
+{
+    //pretty much the same code as minimum
+
+    //working with pointers to prevent copying when structs are used.
+    T* maximum = &array[0];
+    foreach(ref elem; array[1 .. $])
+    {
+        if(deleg(elem, *maximum)){maximum = &elem;}
+    }
+    return *maximum;
+}
+unittest
+{
+    int[5] ints = [-2, 1, -4, -5, -5];
+    assert(max(ints) == 1);
+    assert(max(ints,(ref int a, ref int b){return abs(a) > abs(b);}) == -5);
 }

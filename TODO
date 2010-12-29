@@ -1,84 +1,43 @@
-Physics thoughts:
+check everything, then commit
 
+16:
+    profile and optimize physics
+    (runtime type identification as well as some code-written-to-be-pretty
+    might result in slowdown)
 
-(design in UML)
-
-Only plan for convex objects, triangulation will be added later
-
-
-SpatialManager singleton (can be a quadtree, etc; used for broad coldetect search, culling)
-First design this - other stuff can be added later (just exchange actors for physicsobjects)
-Actually, maybe it should only contain actors, so that culling code can use it as well as
-physics code. We just must make sure all references are destroyed then 
-(since we'll also want a scene manager later)
-
-Also, an F10 GUI tool showing contents of the SpatialManager implementation - right affter coding it
-so we know it works correctly
-
-Any position changes are passed to the SpatialManager ASAP
-PhysicsEngine singleton:
-    Contains PhysicsObjects
-        PhysicsObject has a physical representation (e.g. a polygon or a group of triangles), an AABB, velocity, position, etc. Actor has none of these.
-        PhysicsObject has a signal for collision that passes both objects involved
-
-    has a broad coltetect phase- identifies colliding pairs
-          narrow coldetect phase- does the coldetect
-
-          colresponse phase - collision response depends on PhysicsObjects' implementations
-                              e.g. paddle will have its own implementation that
-                              reflects objects based on where they collided
-                              also some objects, e.g. paddles, walls will not be affected by colliding objects
-
-                              Ball should be: BallPhysics
-                              Wall:           StaticPhysics (or WallPhysics?)
-                              Paddle:         PaddlePhysics : StaticPhysics
-
-
-
-
-
-                              We should separate response to anti-penetration phase and response itself
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    Especially profile with many DummyBalls (e.g. 60-100)
 
 17:
-    ok... so:
+    Physics gui monitor
+    Ideas:
+    1:snapshot of all collisions in a certain frame
+    2:monitor velocities of all bodies
+    3:not only velocities
+    4:detailed look on an object, i.e. select object and see all its parameters
+    5:also show how many penetration, resolution iterations this frame, etc
+     (maybe this one would be in snapshot? - or a graph, ksysguard style)
+17:
+    Coarse collision detection (SpatialManager)
+    Maybe make SpatialManager general enough so we can use the same class
+    (not same instance, probably) for both coarse collision detection and culling
 
-    let's go develop a complete physics engine
-    start coding it while keeping current physics code, just displaying
-    the collisions detected in broad and in narrow phase, and logging
-    data about them.
+    Thoughts:
 
-    we need a separate physics manager or something and a physics data class
+    narrow collision testing can better be done by
+    passing through the spatialmanager (e.g. quadtree),
+    and for each e.g. node, get all its pairs and detect contacts
 
+    We could do this using delegates, i.e. the spatialmanager could have a method that
+    takes a delegate that is applied on every group of nearby objects.
 
-    Look at LBreakout2, SDLBall, other pong/arkanoid games, 
-    especially how they handle physics.
-    Maybe then implement ball reflection based on paddle movement.
-
-
-    LOOK AT OPENRA ACTORS, COLDETECT TOO, GET NEWEST OPENRA SOURCE
-
+    alternatively: just return a reference per each array of nearby objects (content of each quadtree node)
+    - without copying the array itself
+17: 
+    SpatialManager GUI monitor
 17:
     Then, effect at ball-paddle collision
+17:
+    Rename ActorManager to SceneManager and its directory to scene/
 17: 
     Effects:
     When buttons etc. working:
@@ -209,14 +168,12 @@ PhysicsEngine singleton:
     -automatically regenerates mipmaps at SubImage calls
     - maximum mipmap level might be preferrable to not mess up very distant zooms,
     e.g. texparameter GL_TEXTURE_MAX_LEVEL (at 2, 3 or 4)
-
 7:
     GUI substitutes:
     p_width
     p_height
     width  (width of this) - would require realign() to compute width first
     height  (height of this) - would require realign() to compute width first
-
 8:
     timer calling a given function at expiration,
     and some kind of singleton or module to update these timers to
@@ -376,6 +333,11 @@ PhysicsEngine singleton:
     instead of using \n as explicit newline.
 39:
     Consider D2 (at this point it might be mature enough :p)
+40?:
+    Particle system overhaul - turn ParticleEmitter into PointEmitter,
+    add something like PolygonEmitter (or at least RectangleEmitter, LineEmitter),
+    and in general, make particles more flexible.
+   
 
 
 

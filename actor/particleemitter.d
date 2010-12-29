@@ -7,6 +7,7 @@ import std.math;
 import actor.actor;
 import actor.actormanager;
 import actor.particlesystem;
+import physics.physicsbody;
 import math.math;
 import math.vector2;
 import time.timer;
@@ -56,7 +57,9 @@ abstract class ParticleEmitter : ParticleSystem
         ///Constructor. If attached to an owner, must be detached.
         this(Actor owner = null)
         {
-            super(Vector2f(0.0f,0.0f), Vector2f(0.0f,0.0f), owner);
+            super(new PhysicsBody(null, Vector2f(0.0f, 0.0f), Vector2f(0.0f, 0.0f), 2.0),
+                  owner);
+            
             emit_start_ = ActorManager.get.game_time;
         }
         
@@ -68,13 +71,7 @@ abstract class ParticleEmitter : ParticleSystem
             if(owner_ !is null)
             {
                 //get position from owner
-                position_ = owner_.next_position;
-            }
-            else
-            {
-                //update position normally (don't need update_physics since
-                //we don't collide with anything)
-                position_ += velocity_ * frame_length;
+                physics_body_.position = owner_.position;
             }
 
             //remove expired particles
@@ -116,7 +113,7 @@ abstract class ParticleEmitter : ParticleSystem
         final void angle_variation(real variation){angle_variation_ = variation;}
 
     protected:
-        //Emit particles if any should be emitted this frame.
+        //Emit particles if any sho0uld be emitted this frame.
         void emit()
         {
             real time = ActorManager.get.game_time;
@@ -132,7 +129,7 @@ abstract class ParticleEmitter : ParticleSystem
                 Particle particle;
 
                 particle.timer = Timer(particle_life_, time);
-                particle.position = position_;
+                particle.position = physics_body_.position;
                 real angle_delta = random(-angle_variation_, angle_variation_);
                 particle.velocity = emit_velocity_;
                 particle.velocity.angle = particle.velocity.angle + angle_delta;

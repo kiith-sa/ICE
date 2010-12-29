@@ -5,6 +5,7 @@ import std.string;
 import std.stdio;
 
 import actor.actor;
+import physics.physicsengine;
 import math.vector2;
 import time.time;
 import time.timer;
@@ -58,6 +59,7 @@ final class ActorManager
         this()
         {
             singleton_ctor();
+            PhysicsEngine.initialize!(PhysicsEngine);
             update_counter_ = new EventCounter(1.0);
             update_counter_.update.connect(&ups_update);
             game_time_ = 0.0;
@@ -65,9 +67,12 @@ final class ActorManager
         }
 
         ///Destroy the ActorManager. Should only be called on shutdown.
-        void die(){update_counter_.update.disconnect(&ups_update);}
+        void die()
+        {
+            clear();
+            update_counter_.update.disconnect(&ups_update);
+        }
 
-        ///RENAME TO TIMESTEP
         ///Get frame length in seconds, i.e. update "frame" length, not graphics.
         real time_step(){return time_step_;}
 
@@ -79,25 +84,6 @@ final class ActorManager
 
         ///Get time speed multiplier.
         real time_speed(){return time_speed_;}
-        
-        /** 
-         * Test for collision between given actor and any other actor/s.
-         *
-         * If there is more than one collision, resulting point and normal
-         * are averaged.
-         *
-         * Params:    actor    = Actor to test collision with.
-         *            point    = Vector to write collision _point to.
-         *            velocity = Vector to write new _velocity of colliding _actor to.
-         */
-        bool collision(Actor actor, out Vector2f position, out Vector2f velocity)
-        {
-            foreach(a; actors_)
-            {
-                if(a.collision(actor, position, velocity)){return true;}
-            }
-            return false;
-        }
         
         ///Update the actor manager.
         void update()
@@ -116,6 +102,7 @@ final class ActorManager
             {
                 game_time_ += time_step_;
                 accumulated_time_ -= time_step_;
+                PhysicsEngine.get.update();
                 update_actors();
             }
         }
@@ -175,7 +162,6 @@ final class ActorManager
             actors_to_remove_ = [];
 
             //Update actors' states
-            foreach(actor; actors_){actor.update_physics();} 
             foreach(actor; actors_){actor.update();} 
         }
         

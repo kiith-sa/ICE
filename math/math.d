@@ -110,10 +110,12 @@ T min(T) (T a, T b)
 T min(T) (T elems [] ...)
 in
 {
-    assert(elems.length > 2, "Variadic min can't process less than 3 elements");
+    assert(elems.length != 0, "Can't get a minimum from an array of 0 elements");
 }
 body
 {
+    if(elems.length == 1){return elems[0];}
+    if(elems.length == 2){return min(elems[0], elems[1]);}
     return reduce!(min)(T.max, elems);
 }
 
@@ -128,9 +130,14 @@ T max(T) (T a, T b)
 T max(T) (T elems [] ...)
 in
 {
-    assert(elems.length > 2, "Variadic max can't process less than 3 elements");
+    assert(elems.length != 0, "Can't get a maximum from an array of 0 elements");
 }
-body{return reduce!(max)(T.min, elems);}
+body
+{
+    if(elems.length == 1){return elems[0];}
+    if(elems.length == 2){return max(elems[0], elems[1]);}
+    return reduce!(max)(T.min, elems);
+}
 
 ///Round a float value to a 32-bit int.
 int round32(T) (T f){return cast(int)round(f);}

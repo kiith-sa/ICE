@@ -108,7 +108,7 @@ align(1) struct Vector2(T)
     ///Returns normal of this vector (a pependicular vector).
     Vector2!(T) normal(){return Vector2!(T)(-y, x);}
 
-    ///Returns unit vector of this vector.
+    ///Returns unit vector of this vector. 
     Vector2!(T) normalized()
     {
         T len = length();
@@ -116,15 +116,31 @@ align(1) struct Vector2(T)
         return Vector2!(T)(x / len, y / len);
     }
 
-    ///Turns this vector into a random (unit) direction vector
-    void random_direction()
-    {
-        long x_int = std.random.rand();
-        long y_int = std.random.rand();
-        x = cast(T)(x_int % 2 ? x_int / 2 : -x_int / 2);
-        y = cast(T)(y_int % 2 ? y_int / 2 : -y_int / 2);
-        *this = normalized;
-    }
+    ///Turns this vector into a zero vector.
+    void zero(){x = y = cast(T)0;}
+}
+
+///Turns this vector into a random (unit) direction vector.
+Vector2!(T)random_direction(T)()
+{
+    long x_int = std.random.rand();
+    long y_int = std.random.rand();
+    T x = cast(T)(x_int % 2 ? x_int / 2 : -x_int / 2);
+    T y = cast(T)(y_int % 2 ? y_int / 2 : -y_int / 2);
+    return Vector2!(T)(x, y).normalized;
+}
+
+/**
+ * Return a random position in a circle.
+ *
+ * Params:  center = Center of the circle.
+ *          radius = Radius of the circle.
+ *
+ * Returns: Random position in the specified circle.
+ */
+Vector2!(T)random_position(T)(Vector2!(T) center, T radius)
+{
+    return center + random_direction!(T) * random(0, radius);
 }
 
 ///Convert Vector2 of one type to other. 

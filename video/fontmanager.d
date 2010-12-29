@@ -160,6 +160,7 @@ package final class FontManager
         in{assert(size < 128, "Font sizes greater than 127 are not supported");}
         body
         {
+            alias math.math.min min;
             //In optimized build, we don't have the assert so force size to at most 127
             size = min(size, 127u);
             font_size_ = size;

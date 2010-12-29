@@ -27,12 +27,7 @@ final class LineTrail : LineEmitter
          * Construct a LineTrail with specifed parameters.
          * If attached to an owner, must be detached.
          *
-         * Params:    position   = Starting position of the trail.
-         *            trail_time = Delay between front and end of the tail.
-         *            start      = Color of start of the trail.
-         *            end        = Color of end of the trail.
-         *            width      = Width of the trail.
-         *            owner      = Owner of the trail. LineTrail must have an owner to work properly.
+         * Params:    owner      = Owner of the trail. LineTrail must have an owner to work properly.
          */
         this(Actor owner = null)
         {
@@ -93,7 +88,7 @@ final class LineTrail : LineEmitter
                 if(update_timer_.expired(time))
                 {
                     Particle trail;
-                    trail.position = owner_.next_position;
+                    trail.position = owner_.position;
                     trail.timer = Timer(particle_life, time);
                     Particles ~= trail;
 

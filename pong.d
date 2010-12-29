@@ -18,6 +18,10 @@ import actor.actor;
 import actor.actormanager;
 import actor.lineemitter;
 import actor.linetrail;
+import physics.physicsbody;
+import physics.collisionaabbox;
+import physics.collisioncircle;
+import physics.contact;
 import gui.guielement;
 import gui.guiroot;
 import gui.guimenu;
@@ -39,146 +43,184 @@ class Wall : Actor
 {
     protected:
         //Area taken up by the wall
-        Rectanglef size_;
+        Rectanglef box_;
 
     public:
-        ///Emitted when a ball hits the wall.
-        mixin Signal!(Ball) ball_hit;
+        ///Emitted when a ball hits the wall. Will emit const BallBody after D2 move.
+        mixin Signal!(BallBody) ball_hit;
 
-        ///Construct a wall with specified position and size.
-        this(Vector2f position, Rectanglef size)
+        ///Construct a wall with specified position and box.
+        this(Vector2f position, Rectanglef box, PhysicsBody physics_body = null)
         {
-            size_ = size;
-            super(position, Vector2f(0.0f, 0.0f));
+            box_ = box;
+            auto aabbox = new CollisionAABBox(box.min, box.max - box.min);
+            
+            if(physics_body is null)
+            {
+                physics_body = new PhysicsBody(aabbox, position, 
+                                               Vector2f(0.0f, 0.0f), real.infinity);
+            }
+            super(physics_body);
         }
 
         override void draw()
         {
             static c = Color(240, 255, 240, 255);
-            VideoDriver.get.draw_rectangle(position_ + size_.min, position_ + size_.max);
+            Vector2f position = physics_body_.position;
+            VideoDriver.get.draw_rectangle(position + box_.min, position + box_.max);
         }
 
-        final override bool collision(Actor actor, out Vector2f position, 
-                       out Vector2f velocity)
-        in{assert(actor !is null);}
-        body
+        override void update()
         {
-            if(actor.classinfo == Ball.classinfo ||
-               actor.classinfo == DummyBall.classinfo)
+            foreach(collider; physics_body_.colliders)
             {
-                Ball ball = cast(Ball)actor;
-                Vector2f collision_point;
-
-                if(collision_ball(ball, position, collision_point))
+                if(collider.classinfo == BallBody.classinfo)
                 {
-                    velocity = reflect_ball(ball, collision_point);
-                    if(actor.classinfo == Ball.classinfo){ball_hit.emit(ball);}
-                    return true;
+                    ball_hit.emit(cast(BallBody)collider);
                 }
             }
-            return false;
         }
 
         ///Set wall velocity.
-        void velocity(Vector2f v){velocity_ = v;}
-
-    protected:
-        //Note: This test doesn't handle tunnelling, so it can result in
-        //undetected collisions with very high speeds or low FPS
-        //Collision test with a ball
-        bool collision_ball(Ball ball, out Vector2f position, 
-                            out Vector2f collision_point)
-        {
-            real frame_length = ActorManager.get.time_step;
-            //Translate the rectangle to world space
-            Rectanglef size = size_ + position_ + velocity_ * frame_length;
-            
-            //Get the closest point to the ball on this wall
-            Vector2f closest = size.clamp(ball.position);
-
-            //If the ball collides with the ball
-            if((ball.position - closest).length < ball.radius)
-            {
-                //Time step used to move the ball back
-                real step_length = 1.0 / ball.velocity.length();
-                //Ball position at the end of the frame
-                Vector2f ball_position = ball.position() + ball.velocity() 
-                                         * frame_length;
-                
-                //Moving the ball back to the point where it didn't collide.
-                while((ball_position - closest).length < ball.radius)
-                {
-                    ball_position -= (ball.velocity - velocity_) * step_length;
-                    closest = size.clamp(ball_position);
-                }
-
-                position = ball_position;
-                collision_point = closest;
-
-                return true;
-            }
-            return false;
-        }
-        
-        //Reflect a ball off the wall - return new velocity of the ball.
-        Vector2f reflect_ball(Ball ball, Vector2f collision_point)
-        {
-            //Translate the rectangle to world space
-            Rectanglef size = size_ + position_;
-
-            //If we're reflecting off the vertical sides of the wall
-            if(equals(collision_point.x, size.min.x) || 
-               equals(collision_point.x, size.max.x))
-            {
-                return Vector2f(-ball.velocity.x, ball.velocity.y);
-            }
-            //If we're reflecting off the horizontal sides of the wall
-            else
-            {
-                return Vector2f(ball.velocity.x, -ball.velocity.y);
-            }
-        }
+        void velocity(Vector2f v){physics_body_.velocity = v;}
 }             
 
-///A paddle controlled by a player or AI.
-class Paddle : Wall
+/**
+ * Physics body of a paddle. 
+ *
+ * Contains functionality to make Arkanoid style ball reflection possible.
+ */
+class PaddleBody : PhysicsBody
 {
-    invariant
-    {
-        Rectanglef box = size_ + position_;
-        assert(box.max.x <= limits_.max.x && 
-               box.max.y <= limits_.max.y &&
-               box.min.x >= limits_.min.x && 
-               box.min.y >= limits_.min.y,
-               "Paddle outside of limits");
-        assert(equals(box.max.x - position_.x, position_.x - box.min.x, 1.0f),
-               "Paddle not symmetric on the X axis");
-        assert(equals(box.max.y - position_.y, position_.y - box.min.y, 1.0f),
-               "Paddle not symmetric on the Y axis");
-    }
-
     private:
-        //Limits of movement of this paddle
-        Rectanglef limits_;
-
-        //Speed of this paddle
-        real speed_;
-
         //Max ratio of X and Y speed when reflecting the ball,
         //i.e., if this is 1.0, and the ball gets reflected from
         //the corner of the paddle, ratio of X and Y members of
         //reflected ball velocity will be 1:1.
         real max_xy_ratio_ = 1.0;
 
+        //Limits of paddle body movement in world space.
+        Rectanglef limits_;
+
+    public:
+        /**
+         * Construct a paddle body with specified parameters.
+         *
+         * Params:  position = Starting position of the body.
+         *          velocity = Starting velocity of the body.
+         *          mass     = Mass of the body.
+         *          box      = Rectangle representing aligned bounding box of the
+         *                     body in world space.
+         */
+        this(Vector2f position, Vector2f velocity, real mass, ref Rectanglef box, 
+             ref Rectanglef limits)
+        {
+            auto aabbox = new CollisionAABBox(box.min, box.max - box.min); 
+            super(aabbox, position, velocity, mass);
+            limits_ = limits;
+        }
+
+        /**
+         * Return velocity to reflect given BallBody at.
+         *
+         * Used by BallBody collision response.
+         *
+         * Params:  ball = BallBody to reflect.
+         *
+         * Returns: Velocity the BallBody should be reflected at.
+         */
+        Vector2f reflected_ball_velocity(BallBody ball)
+        {
+            //Translate the aabbox to world space
+            Rectanglef box = aabbox + position_;
+
+            Vector2f closest = box.clamp(ball.position);
+
+            Vector2f contact_direction = (closest - ball.position).normalized;
+
+            Vector2f contact_point = ball.position + ball.radius * contact_direction;
+
+            Vector2f velocity;
+            
+            //reflection angle depends on where on the paddle does the ball fall
+            velocity.x = max_xy_ratio_ * (contact_point.x - position_.x) / 
+                         (box.max.x - position_.x);
+            velocity.y = (contact_point.y - position_.y) / 
+                         (box.max.y - position_.y);
+
+            //If the velocity is too horizontal, randomly nudge it up or down so that 
+            //we don't end up with a ball bouncing between the same points forever
+            //NOTE that this is a quick fix and it might not make sense if paddles 
+            //are positioned on left-right sides of the screen instead of up/down
+            if(velocity.y / velocity.x < 0.001)
+            {
+                float y_mod = velocity.x / 1000.0;
+                //rand() % 2 means random bool 
+                y_mod *= std.random.rand() % 2 ? -1.0 : 1.0;
+                velocity.y += y_mod;
+            }
+
+            //keep the same velocity
+            return velocity.normalized * ball.velocity.length;
+        }
+
+        override void update()
+        {
+            //keep the paddle within the limits
+            Rectanglef box = aabbox;
+            Rectanglef position_limits = Rectanglef(limits_.min - box.min,
+                                                    limits_.max - box.max);
+            position = position_limits.clamp(position);
+
+            super.update();
+        }
+
+        ///Return limits of movement of this paddle body.
+        public Rectanglef limits(){return limits_;}
+
+    private:
+        ///Return rectangle representing bounding box of this body in world space.
+        Rectanglef aabbox()
+        in
+        {
+            //checking here because invariant can't call public function members
+            assert(volume.classinfo == CollisionAABBox.classinfo,
+                   "Collision volume of a paddle must be an axis aligned bounding box");
+        }
+        body{return (cast(CollisionAABBox)volume).bounding_box;}
+}
+
+///A paddle controlled by a player or AI.
+class Paddle : Wall
+{
+    invariant
+    {
+        //this could be done by keeping reference to aabbox of the physics body
+        //and translating that by physicsbody's position
+        Vector2f position = physics_body_.position;
+        Rectanglef box = box_ + position;
+
+        assert(equals(box.max.x - position.x, position.x - box.min.x, 1.0f),
+               "Paddle not symmetric on the X axis");
+        assert(equals(box.max.y - position.y, position.y - box.min.y, 1.0f),
+               "Paddle not symmetric on the Y axis");
+        assert(physics_body_.classinfo == PaddleBody.classinfo,
+               "Physics body of a paddle must be a PaddleBody");
+    }
+
+    private:
+        //Speed of this paddle
+        real speed_;
+
         //Particle trail of the paddle
         LineEmitter emitter_;
     public:
         ///Construct a paddle with specified parameters.
-        this(Vector2f position, Rectanglef size, Rectanglef limits, real speed)
+        this(Vector2f position, ref Rectanglef box, ref Rectanglef limits, real speed)
         {
-            super(position, size);
+            super(position, box, 
+                  new PaddleBody(position, Vector2f(0.0f, 0.0f), real.infinity, box, limits));
             speed_ = speed;
-            limits_ = limits;
 
             emitter_ = new LineEmitter(this);
             with(emitter_)
@@ -195,31 +237,16 @@ class Paddle : Wall
         }
 
         ///Return limits of movement of this paddle.
-        Rectanglef limits(){return limits_;}
+        Rectanglef limits(){return (cast(PaddleBody)physics_body_).limits;}
 
         ///Control the paddle to move right (used by player or AI).
-        void move_right(){velocity_ = speed_ * Vector2f(1.0, 0.0);}
+        void move_right(){physics_body_.velocity = speed_ * Vector2f(1.0, 0.0);}
 
         ///Control the paddle to move left (used by player or AI).
-        void move_left(){velocity_ = speed_ * Vector2f(-1.0, 0.0);}
+        void move_left(){physics_body_.velocity = speed_ * Vector2f(-1.0, 0.0);}
 
         ///Control the paddle to stop (used by player or AI).
-        void stop(){velocity_ = Vector2f(0.0, 0.0);}
-
-        override void update_physics()
-        {
-            next_position_ = position_ + velocity_ * ActorManager.get.time_step();
-
-            Rectanglef position_limits = Rectanglef(limits_.min - size_.min,
-                                                    limits_.max - size_.max);
-
-            //If we're going outside limits, stop
-            if(next_position_ != position_limits.clamp(next_position_))
-            {
-                stop();
-                next_position_ = position_;
-            }
-        }
+        void stop(){physics_body_.velocity = Vector2f(0.0, 0.0);}
 
         ///Destroy the paddle.
         override void die()
@@ -229,50 +256,59 @@ class Paddle : Wall
             emitter_.detach();
             super.die();
         }
+}
 
-    protected:
-        override Vector2f reflect_ball(Ball ball, Vector2f collision_point)
+/**
+ * Physics body of a ball. 
+ *
+ * Overrides default collision response to get Arkanoid style ball behavior.
+ */
+class BallBody : PhysicsBody
+{
+    invariant{assert(radius_ > 1.0f, "Ball radius must be at least 1.0");}
+    private:
+        float radius_;
+
+    public:
+        /**
+         * Construct a ball body with specified parameters.
+         *
+         * Params:  position = Starting position of the body.
+         *          velocity = Starting velocity of the body.
+         *          mass     = Mass of the body.
+         *          radius   = Radius of a circle representing bounding circle
+         *                     of this body (centered at body's position).
+         */
+        this(Vector2f position, Vector2f velocity, real mass, float radius)
         {
-            //Translate the rectangle to world space
-            Rectanglef size = size_ + position_;
-
-            Vector2f velocity;
-            
-            //reflection angle depends on where on the paddle does the ball
-            //fall
-            velocity.x = max_xy_ratio_ * (collision_point.x - position_.x) / 
-                         (size.max.x - position_.x);
-            velocity.y = (collision_point.y - position_.y) / 
-                         (size.max.y - position_.y);
-
-            //If the velocity is too horizontal, randomly nudge it up or down
-            //so that we don't end up with a ball bouncing between the same
-            //points forever
-            //NOTE that this is a quick fix and it might not make sense
-            //if non-rectangular paddles are added or they are positioned
-            //on left-right sides of the screen instead of up/down
-            if(velocity.y / velocity.x < 0.001)
-            {
-                float y_mod = velocity.x / 1000.0;
-                //rand() % 2 means random bool 
-                y_mod *= std.random.rand() % 2 ? -1.0 : 1.0;
-                velocity.y += y_mod;
-            }
-            velocity = velocity.normalized * ball.velocity.length;
-
-            return velocity;
+            radius_ = radius;
+            auto circle = new CollisionCircle(Vector2f(0.0f, 0.0f), radius);
+            super(circle, position, velocity, mass);
         }
+
+        override void collision_response(ref Contact contact)
+        {
+            PhysicsBody other = this is contact.body_a ? contact.body_b : contact.body_a;
+            //handle paddle collisions separately
+            if(other.classinfo == PaddleBody.classinfo)
+            {
+                PaddleBody paddle = cast(PaddleBody)other;
+                //let paddle reflect this ball
+                velocity_ = paddle.reflected_ball_velocity(this);
+                //prevent any further resolving (since we're not doing precise physics)
+                contact.resolved = true;
+                return;
+            }
+            super.collision_response(contact);
+        }
+
+        ///Returns radius of this ball body.
+        float radius(){return radius_;}
 }
 
 ///A ball that can bounce off other objects.
 class Ball : Actor
 {
-    invariant
-    {
-        assert(velocity_.length > 0.0, "A ball can't be static");
-        assert(radius_ >= 1.0, "A ball can't have radius lower than 1.0");
-    }
-
     private:
         //Particle trail of the ball
         LineEmitter emitter_;
@@ -282,17 +318,11 @@ class Ball : Actor
 
         //Line trail of the ball (particle effect)
         LineTrail trail_;
-
-        //Radius of the ball (used for collision detection)
-        real radius_;
-
     public:
         ///Construct a ball with specified parameters.
-        this(Vector2f position, Vector2f velocity, real radius)
+        this(Vector2f position, Vector2f velocity, float radius)
         {
-            super(position, velocity);
-
-            radius_ = radius;
+            super(init_body(position, velocity, radius));
 
             trail_ = new LineTrail(this);
                                   
@@ -311,7 +341,7 @@ class Ball : Actor
             {
                 particle_life = 2.0;
                 emit_frequency = 160;
-                emit_velocity = -this.velocity_.normalized * particle_speed_;
+                emit_velocity = -this.physics_body_.velocity.normalized * particle_speed_;
                 angle_variation = PI / 4;
                 line_length = 2.0;
                 line_width = 1;
@@ -332,35 +362,79 @@ class Ball : Actor
         }
  
         ///Return the radius of this ball.
-        float radius(){return radius_;}
+        float radius(){return (cast(BallBody)physics_body_).radius;}
 
-        override void update_physics()
+        override void update()
         {
-            real frame_length = ActorManager.get.time_step;
-            next_position_ = position_ + velocity_ * frame_length;
-            
-            Vector2f position;
-            Vector2f velocity;
-            if(ActorManager.get.collision(this, position, velocity))
+            //Ball can only change direction after a collision
+            if(physics_body_.collided())
             {
-                next_position_ = position;
-                velocity_ = velocity;
-                emitter_.emit_velocity = -velocity_.normalized * particle_speed_;
+                emitter_.emit_velocity = -physics_body_.velocity.normalized * particle_speed_;
             }
         }
-
-        override void update(){position_ = next_position_;}
 
         override void draw()
         {
             auto driver = VideoDriver.get;
+            Vector2f position = physics_body_.position;
             driver.line_aa = true;
             driver.line_width = 3;
-            driver.draw_circle(position_, radius_ - 2, Color(240, 240, 255, 255), 4);
+            driver.draw_circle(position, radius - 2, Color(240, 240, 255, 255), 4);
             driver.line_width = 1;
-            driver.draw_circle(position_, radius_, Color(192, 192, 255, 192));
+            driver.draw_circle(position, radius, Color(192, 192, 255, 192));
             driver.line_width = 1;                  
             driver.line_aa = false;
+        }
+
+    protected:
+        /**
+         * Initializes and returns physics body to be used by this ball.
+         *
+         * Params:  position = Starting position of the body.
+         *          velocity = Starting velocity of the body.
+         *          radius   = Radius of the body.
+         * 
+         * Returns: Physics body to use.
+         */
+        PhysicsBody init_body(Vector2f position, Vector2f velocity, float radius)
+        {
+            return new BallBody(position, velocity, 100.0, radius);
+        }
+}
+
+/**
+ * Physics body of a dummy ball. 
+ *
+ * Limits dummy ball speed to prevent it being thrown out of the gameplay
+ * area after collision with a ball. (normal ball has no limits- it's speed
+ * can change, slightly, by collisions with dummy balls)
+ */
+class DummyBallBody : BallBody
+{
+    public:
+        /**
+         * Construct a dummy ball body with specified parameters.
+         *
+         * Params:  position = Starting position of the body.
+         *          velocity = Starting velocity of the body.
+         *          mass     = Mass of the body.
+         *          radius   = Radius of a circle representing bounding circle
+         *                     of this body (centered at body's position).
+         */
+        this(Vector2f position, Vector2f velocity, real mass, float radius)
+        {
+            super(position, velocity, mass, radius);
+        }
+
+        override void collision_response(ref Contact contact)
+        {
+            //keep the speed unchanged
+            float speed = velocity_.length;
+            super.collision_response(contact);
+            velocity_ = speed * velocity_.normalized;
+
+            //prevent any further resolving (since we're not doing precise physics)
+            contact.resolved = true;
         }
 }
 
@@ -368,7 +442,7 @@ class Ball : Actor
 class DummyBall : Ball
 {
     public:
-        /**
+        /**                                               
          * Construct a dummy ball with specified parameters.
          *
          * Params:    position = Position to spawn the ball at.
@@ -377,10 +451,12 @@ class DummyBall : Ball
         this(Vector2f position, Vector2f velocity)
         {
             super(position, velocity, 5.0);
+
+            physics_body_.mass = 1;
             trail_.start_color = Color(240, 240, 255, 8);
             with(emitter_)
             {
-                start_color = Color(240, 240, 255, 4);
+                start_color = Color(240, 240, 255, 6);
                 line_length = 3.0;
                 emit_frequency = 24;
             }
@@ -388,6 +464,12 @@ class DummyBall : Ball
 
         ///Overrides parent draw() so that we don't draw the ball itself.
         override void draw(){}
+
+    protected:
+        override PhysicsBody init_body(Vector2f position, Vector2f velocity, float radius)
+        {
+            return new DummyBallBody(position, velocity, 100.0, radius);
+        }
 }
 
 ///Player controlling a paddle.
@@ -404,10 +486,7 @@ abstract class Player
 
     public:
         ///Increase score of this player.
-        void score(Ball ball)
-        {
-            score_++;
-        }
+        void score(BallBody ball_body){score_++;}
 
         ///Get score of this player.
         int score(){return score_;}
@@ -763,7 +842,7 @@ class BallSpawner : Actor
         }
         body
         {                
-            super(Vector2f(0.0, 0.0));
+            super(null);
 
             ball_speed_ = ball_speed;
             timer_ = Timer(time, ActorManager.get.game_time);
@@ -996,13 +1075,13 @@ class Game
     private:
         Ball ball_;
         real ball_radius_ = 6.0;
-        real ball_speed_ = 215.0;
+        real ball_speed_ = 191.0;
 
         real spawn_time_ = 4.0;
-        real spawn_spread_ = 0.32;
+        real spawn_spread_ = 0.28;
 
         DummyBall[] dummies_;
-        uint dummy_count_ = 8;
+        uint dummy_count_ = 12;
 
         Wall wall_right_, wall_left_; 
         Wall goal_up_, goal_down_; 
@@ -1085,10 +1164,10 @@ class Game
             auto size = Rectanglef(-32, -8, 32, 8); 
             auto limits1 = Rectanglef(152 + ball_radius_ * 2, 36, 
                                       648 - ball_radius_ * 2, 76); 
-            paddle_1_ = new Paddle(Vector2f(400, 56), size, limits1, 148);
+            paddle_1_ = new Paddle(Vector2f(400, 56), size, limits1, 135);
             auto limits2 = Rectanglef(152 + ball_radius_ * 2, 524, 
                                       648 - ball_radius_ * 2, 564); 
-            paddle_2_ = new Paddle(Vector2f(400, 544), size, limits2, 148);
+            paddle_2_ = new Paddle(Vector2f(400, 544), size, limits2, 135);
 
             player_1_ = new AIPlayer("AI", paddle_1_, 0.15);
             player_2_ = new HumanPlayer("Human", paddle_2_);
@@ -1098,12 +1177,11 @@ class Game
 
         void start_game()
         {
-            Vector2f direction;
             for(uint dummy = 0; dummy < dummy_count_; dummy++)
             {
-                direction.random_direction();
-                dummies_ ~= new DummyBall(Vector2f(400.0, 300.0), 
-                                          ball_speed_ * direction);
+                dummies_ ~= new DummyBall(random_position!(float)(Vector2f(400.0f, 300.0f),
+                                                                  12.0f),
+                                          3.0 * ball_speed_ * random_direction!(float)());
             }
 
             //should be set from options and INI when that is implemented.
@@ -1119,10 +1197,10 @@ class Game
             auto spawner = new BallSpawner(spawn_time_, spawn_spread_, ball_speed_);
             spawner.spawn_ball.connect(&spawn_ball);
 
-            goal_up_.ball_hit.connect(&destroy_ball);
-            goal_down_.ball_hit.connect(&destroy_ball);
             goal_up_.ball_hit.connect(&player_2_.score);
             goal_down_.ball_hit.connect(&player_1_.score);
+            goal_up_.ball_hit.connect(&destroy_ball);
+            goal_down_.ball_hit.connect(&destroy_ball);
 
             hud_ = new HUD(time_limit_);
 
@@ -1140,7 +1218,14 @@ class Game
         void draw(){}
 
     private:
-        void destroy_ball(Ball ball)
+        void destroy_ball(BallBody ball_body)
+        in
+        {
+            assert(ball_ !is null && ball_body is ball_.physics_body,
+                   "Only one ball is supported right now yet "
+                   "a ball body not belonging to this ball is used");
+        }
+        body
         {
             ball_.die();
             ball_ = null;

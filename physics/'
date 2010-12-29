@@ -1,0 +1,104 @@
+module physics.contact;
+
+
+import physics.physicsbody;
+import math.vector2;
+import math.math;
+
+
+package struct Contact
+{
+    //TODO CONSIDER MAKING THESE PRIVATE AS WELL AND SETTING THEM THROUGH CTOR
+    //     OR A METHOD TO SET BODIES, AND METHOD TO SET NORMAL AND PENETRATION
+    public:
+        PhysicsBody body_a;
+        PhysicsBody body_b;
+
+        //contact normal is the direction we must move body_b from body_a to
+        //resolve penetration (of course, due to restitution we move both)
+        Vector2f contact_normal;
+
+        float penetration;
+
+    private:
+        Vector2f contact_velocity_;
+
+        real desired_delta_velocity_;
+
+    public:
+        /* CYCLONE
+         * Swaps the bodies in the contact, so body a is at body b and
+         * vice versa. This also changes the direction of the contact normal.
+         */
+        void swap_bodies()
+        {
+            contact_normal *= -1.0f;
+
+            PhysicsBody temp = body_a;
+            body_a = body_b;
+            body_b = temp;
+        }
+
+        void calculate_internals()
+        {
+            calculate_contact_velocity();
+            calculate_desired_delta_velocity();
+        }
+
+        void resolve_penetration(out Vector2f change_a, out Vector2f change_b)
+        in
+        {
+            assert(body_a !is null && body_b !is null,
+                   "Can't resolve penetration of a contact with no bodies");
+        }
+        body
+        {
+            real inertia_a = body_a.inverse_mass;
+            real inertia_b = body_b.inverse_mass;
+            real inertia_total = inertia_a + inertia_b;
+
+            //if both inverse masses are 0 (masses are infinite),
+            //don't move anything (degenerate case)
+            //maybe handle this differently if bugs arise
+            if(equals(inertia_total, 0.0L)){return;}
+
+            //XXX IF RESOLUTION DOESN'T WORK, WE NEED TO SWAP SIGNS HERE
+            real move_a = penetration * (inertia_a / inertia_total) * -1.0;
+            real move_b = penetration * (inertia_b / inertia_total) * 1.0;
+
+            change_a = contact_normal * move_a;
+            change_b = contact_normal * move_b;
+
+            body_a.position = body_a.position + change_a;
+            body_b.position = body_a.position + change_b;
+        }
+
+        //for sorting
+        int opCmp(Contact other)
+        {
+            float difference = penetration - other.penetration;
+            //no need to check for rough equality as we need strict ordering anyway
+            if(difference > 0){return 1;}
+            if(difference < 0){return -1;}
+            return 0;
+        }
+
+        //for sorting
+        static Contact min()
+        {
+            Contact contact;
+            contact.penetration = float.min;
+            return contact;
+        }
+
+    private:
+        calculate_contact_velocity()
+        {
+            contact_velocity_ = body_a.velocity - body_b.velocity;
+            //LOCAL VELOCITY OF ONE - LOCAL VELOCITY OF OTHER
+        }
+
+        calculate_desired_delta_velocity()
+        {
+        }
+}        
