@@ -1,12 +1,3 @@
-check everything, then commit
-
-16:
-    profile and optimize physics
-    (runtime type identification as well as some code-written-to-be-pretty
-    might result in slowdown)
-
-    Especially profile with many DummyBalls (e.g. 60-100)
-
 17:
     Physics gui monitor
     Ideas:
@@ -35,6 +26,9 @@ check everything, then commit
 17: 
     SpatialManager GUI monitor
 17:
+    Consider writing mixin + asm based D equivalent to C xmmintrin.h
+    and using that instead of direct asm in vector operations
+17:
     Then, effect at ball-paddle collision
 17:
     Rename ActorManager to SceneManager and its directory to scene/
@@ -46,6 +40,8 @@ check everything, then commit
     to the left. we can do this with a guioffset member in gui root
 
     main menu could have an ai-ai game playing in the background
+18:
+    cdc should have help
 18:
     Maybe try to even remove .get from singletons (hybrid has done it somehow)
 19:
@@ -416,6 +412,23 @@ Optimizations:
     This would break our remap plans, though.
     However, if we could do this in shader (need to learn how to discard
     a fragment in shader), everything would work right.
+7?:
+    If color interpolation is a problem, we can create a ColorInterpolator class,
+    which is basically a lookup table constructed with color a, color b, 
+    and an integer specifying number of colors in the table. Any call to interpolate()
+    method of that class would then return the closest table value for
+    float given as ann interpolation value.
+8?
+    fast sqrt in math.math using a lookup table
+    like, if the input is between 0-1, look it up in table #1 with 100 (float)
+    results for 0.00, ... 0.99
+    if 1-10, table #2 with 90 results for 1.0, ... 9.9
+    etc for 100, 1000
+    if more, use usual sqrtf
+
+    alternatively: look at how opensource 3D engines do sqrt and google for other 
+    methods, maybe try using carmacks' reciprocal sqrt 
+    (1/sqrt, so 1/reciprocal is sqrt)
 GUI:
 1:
     Progress bars should be simple animation with frame depending

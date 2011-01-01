@@ -130,41 +130,64 @@ int main(char[][] args)
 
     string build = "debug";
 
+    bool no_sse = false;
+
     string[] extra_args;
 
     if(args.length > 1)
     {
         build = args[1];
-        foreach(arg; args[2 .. $]){extra_args ~= arg;}
+        foreach(arg; args[2 .. $])
+        {
+            if(arg == "no-sse"){no_sse = true;}
+            else{extra_args ~= arg;}
+        }
     }
 
-    string[] compiler_args;
+    string sse3 = " -version=sse3 -version=sse2 -version=sse1";
+    if(!no_sse){extra_args ~= sse3;}
+    
+
+    string[] debug_args = ["-unittest", "-gc", "-ofpong-debug"];
+    string[] no_contracts_args = ["-release", "-gc", "-ofpong-no-contracts"];
+    string[] release_args = ["-O", "-inline", "-release", "-gc", "-ofpong-release"];
+
+    void compile(string [] arguments)
+    {
+        CDC.compile([
+                     "dependencies/", 
+                     
+                     "physics/", "actor/", "file/", "formats/", "gui/", "math/", 
+                     "monitor/", "platform/", "time/", "video/", 
+
+                     "allocator.d", "arrayutil.d", "color.d", "image.d", "pong.d",
+                     "signal.d", "singleton.d"
+                     ],
+                     arguments ~ extra_args);
+    }
 
     switch(build)
     {
         case "debug":
-            compiler_args = ["-unittest", "-gc", "-ofpong-debug"];
+            compile(debug_args);
+            break;
+        case "no-contracts":
+            compile(no_contracts_args);
             break;
         case "release":
-            compiler_args = ["-O", "-inline", "-release", "-gc", "-ofpong-release"];
+            compile(release_args);
+            break;
+        case "all":
+            compile(debug_args);
+            compile(no_contracts_args);
+            compile(release_args);
             break;
         default:
             writefln("unknown build target: ", build);
+            writefln("available targets: 'debug', 'no-contracts', 'release', 'all'");
             break;
     }
 
-    compiler_args ~= extra_args;
-
-	CDC.compile([
-                 "dependencies/", 
-                 
-                 "physics/", "actor/", "file/", "formats/", "gui/", "math/", 
-                 "monitor/", "platform/", "time/", "video/", 
-
-                 "allocator.d", "arrayutil.d", "color.d", "image.d", "pong.d",
-                 "signal.d", "singleton.d"
-                 ],
-                 compiler_args);
 	return 0;
 }
 

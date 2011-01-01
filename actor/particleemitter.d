@@ -23,7 +23,7 @@ private struct Particle
     Vector2f velocity;
     
     //Update state of the particle.
-    void update(){position += velocity * ActorManager.get.time_step;}
+    void update(real time_step){position += velocity * time_step;}
 }
 
 ///Base class for particle emitting particle systems.
@@ -43,8 +43,6 @@ abstract class ParticleEmitter : ParticleSystem
         ulong total_emitted_ = 0;
         //Time when emit_frequency_ was changed last.
         real emit_start_;
-        //Velocity to emit particles at.
-        Vector2f emit_velocity_ = Vector2f(1.0, 0.0);
         //Variation of the angle of particles velocities (in radians).
         real angle_variation_ = PI / 2;
         //Emit frequency in particles per second.
@@ -52,6 +50,9 @@ abstract class ParticleEmitter : ParticleSystem
 
     protected:
         Particle [] Particles;
+
+        //Velocity to emit particles at.
+        Vector2f emit_velocity_ = Vector2f(1.0, 0.0);
 
     public:
         ///Constructor. If attached to an owner, must be detached.
@@ -83,7 +84,7 @@ abstract class ParticleEmitter : ParticleSystem
             emit();
 
             //update particles
-            foreach(ref particle; Particles){particle.update();}
+            foreach(ref particle; Particles){particle.update(frame_length);}
 
             super.update();
         }

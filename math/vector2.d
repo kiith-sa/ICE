@@ -6,7 +6,8 @@ import std.math;
 import std.random;
 
 import math.math;
-                   
+
+
 ///2D vector struct.
 align(1) struct Vector2(T)
 {
@@ -27,10 +28,8 @@ align(1) struct Vector2(T)
     ///Addition with a vector.
     Vector2!(T) opAdd(Vector2!(T) v){return Vector2!(T)(x + v.x, y + v.y);}
 
-    ///Subtraction with a vector.
     Vector2!(T) opSub(Vector2!(T) v){return Vector2!(T)(x - v.x, y - v.y);}
 
-    ///Multiplication by a scalar.
     Vector2!(T) opMul(T m){return Vector2!(T)(x * m, y * m);}
 
     ///Division by a scalar. 
@@ -40,7 +39,11 @@ align(1) struct Vector2(T)
 
     ///Division by a vector. 
     Vector2!(T) opDiv(Vector2!(T) v)
-    in{assert(v.x != 0.0 && v.y != 0.0, "Can't divide by vector with zero component");}
+    in
+    {
+        assert(v.x != 0.0 && v.y != 0.0, 
+               "Vector can not be divided by a vector with a zero component");
+    }
     body{return Vector2!(T)(x / v.x, y / v.y);}
 
     ///Addition-assignment with a vector.
@@ -79,9 +82,6 @@ align(1) struct Vector2(T)
         return "Vector2, " ~ std.string.toString(x) ~ ", " ~ std.string.toString(y);
     }
     
-    ///Returns length of the vector.
-    T length(){return cast(T)(sqrt(cast(real)length_squared));}
-    
     ///Get angle of this vector.
     real angle()
     {
@@ -101,6 +101,40 @@ align(1) struct Vector2(T)
 
     ///Returns squared length of the vector.
     T length_squared(){return x * x + y * y;}
+    
+    ///Returns length of the vector.
+    T length()
+    {
+        version(sse3)
+        {
+            static if(typeid(T) is typeid(float))
+            {
+                Vector2!(T) vector = *this;
+                asm
+                {                             
+                    //copy vector to lower half of xmm0
+                    movlps XMM0, vector;
+                    //square all floats in xmm0 
+                    mulps XMM0, XMM0;        
+                    //xmm0.x = x*x + y*y //aka squared length
+                    //y,z,w don't matter
+                    haddps XMM0, XMM0;
+                    //square root of xmm0.x
+                    sqrtss XMM0, XMM0;
+                    //copy back to vector
+                    movlps vector, XMM0;
+                }
+                return vector.x;
+            }
+            else{return length_safe();}
+        }
+        else{return length_safe();}
+    }
+
+    T length_safe()
+    {
+        return cast(T)(sqrt(cast(real)length_squared));
+    }
 
     ///Dot product with another vector.
     T dot_product(Vector2!(T) v){return x * v.x + y * v.y;}
@@ -108,12 +142,71 @@ align(1) struct Vector2(T)
     ///Returns normal of this vector (a pependicular vector).
     Vector2!(T) normal(){return Vector2!(T)(-y, x);}
 
-    ///Returns unit vector of this vector. 
+    ///Turns this into a unit vector. Result is undefined if this is a zero vector.
+    void normalize()
+    {
+        version(sse3)
+        {
+            static if(typeid(T) is typeid(float))
+            {
+                Vector2!(T)* vector = this;
+                asm
+                {     
+                    mov EBX, vector;
+                    //copy this vector to both low and high half of xmm0
+                    //this instruction is supposed to take a double and
+                    //duplicate it, but two floats works too
+                    movddup XMM0, [EBX];
+                    //movlps XMM0, [EBX];
+                    //copy vector to xmm2
+                    movaps XMM2, XMM0;       
+                    //square all floats in xmm0 
+                    mulps XMM0, XMM0;        
+                    //xmm0.x = xmm0.y = x*x + y*y //aka squared length
+                    //z,w don't matter
+                    haddps XMM0, XMM0;
+                    //reciprocal square root to get reciprocal lengths
+                    rsqrtps XMM0, XMM0 ;
+                    //multiply x and y with that and we have a normalized 2D vector
+                    mulps XMM2, XMM0;
+                    //copy xmm2.x, xmm2y into this vector.
+                    movlps [EBX], XMM2;
+                }
+                return;
+            }
+            else
+            {
+                T len = length();
+                x /= len;
+                y /= len;
+                return;
+            }
+        }
+        else
+        {
+            T len = length();
+            x /= len;
+            y /= len;
+            return;
+        }
+    }
+
+    ///Normalize this vector, or don't do anything if this is a zero vector.
+    void normalize_safe()
+    {
+        T len = length_safe();
+        if(equals(length, cast(T)0)){return;}
+        x /= len;
+        y /= len;
+        return;
+    }
+
+    ///Returns unit vector of this vector. Result is undefined if this is a zero vector.
     Vector2!(T) normalized()
     {
-        T len = length();
-        if(equals(len, cast(T)0)){return Vector2!(T)(0, 0);}
-        return Vector2!(T)(x / len, y / len);
+        Vector2!(T) normalized = *this;
+        normalized.normalize();
+        return normalized;
     }
 
     ///Turns this vector into a zero vector.

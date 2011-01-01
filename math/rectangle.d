@@ -5,7 +5,7 @@ import math.math;
 import math.vector2;
 
 ///Rectangle defined by vectors of its limits.
-struct Rectangle(T)
+align(1) struct Rectangle(T)
 {
     invariant
     {

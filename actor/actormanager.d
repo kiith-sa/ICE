@@ -70,6 +70,7 @@ final class ActorManager
         void die()
         {
             clear();
+            PhysicsEngine.get.die();
             update_counter_.update.disconnect(&ups_update);
         }
 
@@ -116,6 +117,14 @@ final class ActorManager
         ///Remove all actors.
         void clear()
         {
+            //these actors are already dead, so remove them first
+            foreach(actor; actors_to_remove_)
+            {
+                alias arrayutil.remove remove;
+                actors_.remove(actor, true);
+            }
+
+            //kill all actors still alive
             foreach(actor; actors_){actor.die();}
             actors_ = [];
             actors_to_add_ = [];

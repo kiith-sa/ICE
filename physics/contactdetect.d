@@ -12,17 +12,18 @@ import math.vector2;
 import math.rectangle;
 import arrayutil;
 
-
-/**
+package:
+/*
  * Test for collision between two physics bodies.
  *
  * Params:    body_a  = First of the tested bodies.
  *            body_b  = Second of the tested bodies.
  *            contact = Contact struct to write to if there is a collision.
+ *                      Is ref instead of out purely for performance reasons.
  *
  * Returns:    True if a collision is detected, false otherwise.
  */
-bool detect_contact(PhysicsBody body_a, PhysicsBody body_b, out Contact contact)
+bool detect_contact(PhysicsBody body_a, PhysicsBody body_b, ref Contact contact)
 in
 {
     assert(body_a !is body_b, "Trying to detect contact of an object with itself.");
@@ -95,7 +96,7 @@ body
                                  cast(CollisionAABBox)volume2,
                                  contact);
         }
-        if(class_b == circle)
+        else if(class_b == circle)
         {
             return aabbox_circle(position1, position2, 
                                  cast(CollisionAABBox)volume1, 
@@ -104,7 +105,7 @@ body
         }
         assert(false, "Unsupported collision volume");
     }
-    if(class_a == circle)
+    else if(class_a == circle)
     {
         if(class_b == aabbox)
         {
@@ -116,7 +117,7 @@ body
             contact.swap_bodies();
             return result;
         }
-        if(class_b == circle)
+        else if(class_b == circle)
         {
             return circle_circle(position1, position2, 
                                  cast(CollisionCircle)volume1, 
@@ -212,25 +213,24 @@ bool circle_circle(Vector2f circle1_position,
                    CollisionCircle circle2, 
                    ref Contact contact)
 {
-    //convert to world space
-    Vector2f circle1_center = circle1.offset + circle1_position;
-    Vector2f circle2_center = circle2.offset + circle2_position;
+    //difference of circle positions in world space
+    Vector2f difference = (circle2.offset + circle2_position) - 
+                          (circle1.offset + circle1_position);
 
-    //distance between centers of the circles
-    float distance = (circle2_center - circle1_center).length;
+    float radius_total = circle1.radius + circle2.radius;
 
     //will be positive if the objects are interpenetrating
-    float penetration = (circle1.radius + circle2.radius) - distance;
+    float penetration_sq = radius_total * radius_total - difference.length_squared;
 
-    if(penetration < 0.0){return false;}
+    if(penetration_sq < 0.0){return false;}
 
-    contact.penetration = penetration;
+    contact.penetration = sqrt(penetration_sq);
 
-    Vector2f difference = circle2_center - circle1_center;
     //degenerate case when the circles are at the same position
     if(difference == Vector2f(0.0f, 0.0f)){difference.x = 1.0;}
 
-    contact.contact_normal = difference.normalized();
+    difference.normalize_safe();
+    contact.contact_normal = difference;
 
     return true;
 }
@@ -268,25 +268,26 @@ bool aabbox_circle(Vector2f box_position,
                    CollisionCircle circle, 
                    ref Contact contact)
 {
-    //convert to world space
-    Vector2f circle_center = circle.offset + circle_position;
-    Rectanglef box_rectangle = box.rectangle + box_position;
+    //convert to box space
+    Vector2f circle_center = circle.offset + circle_position - box_position;
 
-    //closest point to the circle on the box
-    Vector2f closest = box_rectangle.clamp(circle_center);
+    //closest point to the circle on the box 
+    Vector2f closest = box.rectangle.clamp(circle_center);
 
     //distance from the center of the circle to the box
-    Vector2f distance = circle_center - closest;
-    //degenerate case when the circle is exactly on the border of the box
-    if(distance == Vector2f(0.0f, 0.0f)){distance.x = 1.0;}
+    Vector2f difference = circle_center - closest;
 
     //will be positive if the objects are interpenetrating
-    float penetration = circle.radius - distance.length;
+    float penetration_sq = circle.radius * circle.radius - difference.length_squared;
 
-    if(penetration < 0.0){return false;}
+    if(penetration_sq < 0.0){return false;}
 
-    contact.penetration = penetration;
-    contact.contact_normal = distance.normalized();
+    //degenerate case when the circle is exactly on the border of the box
+    if(difference == Vector2f(0.0f, 0.0f)){difference.x = 1.0;}
+
+    contact.penetration = sqrt(penetration_sq);
+    difference.normalize_safe();
+    contact.contact_normal = difference;
 
     return true;
 }
@@ -298,7 +299,7 @@ unittest
     auto circle1 = new CollisionCircle(zero, 4.0f);
     auto circle2 = new CollisionCircle(Vector2f(0.0f, 6.5f), 3.0f);
     auto box1 = new CollisionAABBox(zero, Vector2f(4.0f, 3.0f));
-    auto box2 = new CollisionAABBox(Vector2f(0.0f, -6.9f), Vector2f(4.0f, 3.0f));
+    auto box2 = new CollisionAABBox(Vector2f(-2.0f, -6.9f), Vector2f(4.0f, 3.0f));
 
     Contact contact;
     assert(aabbox_circle(zero, zero, box2, circle1, contact) == true);

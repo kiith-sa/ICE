@@ -4,9 +4,9 @@ module math.math;
 import std.math;
 import std.random;
 
-const f32_epsilon = float.epsilon * 100.0;
-const f64_epsilon = double.epsilon * 100.0;
-const fmax_epsilon = real.epsilon * 100.0;
+const f32_epsilon = float.epsilon * 500.0;
+const f64_epsilon = double.epsilon * 500.0;
+const fmax_epsilon = real.epsilon * 500.0;
 const uint uint_epsilon = 0;
 const int int_epsilon = 0;
 const ushort ushort_epsilon = 0;
@@ -22,7 +22,7 @@ bool equals(float f1, float f2, float tolerance = f32_epsilon)
 unittest
 {
     assert(equals(7.0f / 5.0f, 1.4f));
-    assert(!equals(7.0f / 5.0f, 1.4001f));
+    assert(!equals(7.0f / 5.0f, 1.4002f));
     assert(equals(7.0f, 5.0f, 2.0f));
 }
 
@@ -139,8 +139,15 @@ body
     return reduce!(max)(T.min, elems);
 }
 
-///Round a float value to a 32-bit int.
+///Round a float value to a signed 32-bit int.
 int round32(T) (T f){return cast(int)round(f);}
+
+///Convert a float value to an unsigned 8-bit int (truncating fraction part).
+ubyte float_to_u8(float f)
+{
+    f += 256.0f;
+    return ((*cast(int*)&f)&0x7fffff)>>15;
+}
 
 ///Return a random real between given numbers
 real random(real min, real max)

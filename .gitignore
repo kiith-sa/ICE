@@ -7,3 +7,6 @@ pong-release
 wrapper
 cdc
 *.o
+*.tbp.dir
+*.ebp.dir
+*.caw

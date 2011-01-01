@@ -17,7 +17,7 @@ enum LineIntersection
 }
 
 ///2D line segment between two points.
-struct Line2(T)
+align(1) struct Line2(T)
 {
     ///Start point of the line segment.
     Vector2!(T) start;
@@ -106,18 +106,18 @@ struct Line2(T)
     }
     unittest
     {
-        Vector2d start = Vector2d(0.0, 0.0);
-        Vector2d end = Vector2d(1.0, 1.0);
-        Line2d line = Line2d(start, end);
-        Vector2d point = Vector2d(1.0, 0.0);
-        assert(line.closest_point(point) == Vector2d(0.5, 0.5));
-        assert(line.closest_point(point, false) == Vector2d(0.5, 0.5));
-        point = Vector2d(-1.0, -1.0);
-        assert(line.closest_point(point) == Vector2d(-1.0, -1.0));
-        assert(line.closest_point(point, false) == Vector2d(0.0, 0.0));
-        point = Vector2d(2.0, 2.0);
-        assert(line.closest_point(point) == Vector2d(2.0, 2.0));
-        assert(line.closest_point(point, false) == Vector2d(1.0, 1.0));
+        Vector2f start = Vector2f(0.0, 0.0);
+        Vector2f end = Vector2f(1.0, 1.0);
+        Line2f line = Line2f(start, end);
+        Vector2f point = Vector2f(1.0, 0.0);
+        assert(line.closest_point(point) == Vector2f(0.5, 0.5));
+        assert(line.closest_point(point, false) == Vector2f(0.5, 0.5));
+        point = Vector2f(-1.0, -1.0);
+        assert(line.closest_point(point) == Vector2f(-1.0, -1.0));
+        assert(line.closest_point(point, false) == Vector2f(0.0, 0.0));
+        point = Vector2f(2.0, 2.0);
+        assert(line.closest_point(point) == Vector2f(2.0, 2.0));
+        assert(line.closest_point(point, false) == Vector2f(1.0, 1.0));
     }
 
     /**
@@ -134,19 +134,19 @@ struct Line2(T)
     body{return (point - closest_point(point, full_line)).length;}
     unittest
     {
-        Vector2d start = Vector2d(0.0, 0.0);
-        Vector2d end = Vector2d(1.0, 1.0);
-        Line2d line = Line2d(start, end);
-        Vector2d point = Vector2d(1.0, 0.0);
-        double sqrt_1_2 = cast(double)std.math.SQRT1_2;
-        assert(equals(line.distance(point), sqrt_1_2, 0.00001));
-        assert(equals(line.distance(point, false), sqrt_1_2, 0.00001));
-        point = Vector2d(-1.0, -1.0);
-        assert(equals(line.distance(point), 0.0, 0.00001));
-        assert(equals(line.distance(point, false), sqrt_1_2 * 2, 0.0001));
-        point = Vector2d(2.0, 2.0);
-        assert(equals(line.distance(point), 0.0, 0.00001));
-        assert(equals(line.distance(point, false), sqrt_1_2 * 2, 0.0001));
+        Vector2f start = Vector2f(0.0, 0.0);
+        Vector2f end = Vector2f(1.0, 1.0);
+        Line2f line = Line2f(start, end);
+        Vector2f point = Vector2f(1.0, 0.0);
+        float sqrt_1_2 = cast(float)std.math.SQRT1_2;
+        assert(equals(line.distance(point), sqrt_1_2, 0.00001f));
+        assert(equals(line.distance(point, false), sqrt_1_2, 0.00001f));
+        point = Vector2f(-1.0, -1.0);
+        assert(equals(line.distance(point), 0.0f, 0.00001f));
+        assert(equals(line.distance(point, false), sqrt_1_2 * 2.0f, 0.0001f));
+        point = Vector2f(2.0, 2.0);
+        assert(equals(line.distance(point), 0.0f, 0.00001f));
+        assert(equals(line.distance(point, false), sqrt_1_2 * 2.0f, 0.0001f));
     }
 
     ///Returns the _point symmetric to given _point according to line defined by this segment.
@@ -158,13 +158,13 @@ struct Line2(T)
     }
     unittest
     {
-        Vector2d start = Vector2d(0.0, 0.0);
-        Vector2d end = Vector2d(1.0, 1.0);
-        Line2d line = Line2d(start, end);
-        Vector2d point = Vector2d(1.0, 0.0);
-        assert(line.symmetric_point(point) == Vector2d(0.0, 1.0));
-        point = Vector2d(0.5, 0.5);
-        assert(line.symmetric_point(point) == Vector2d(0.5, 0.5));
+        Vector2f start = Vector2f(0.0, 0.0);
+        Vector2f end = Vector2f(1.0, 1.0);
+        Line2f line = Line2f(start, end);
+        Vector2f point = Vector2f(1.0, 0.0);
+        assert(line.symmetric_point(point) == Vector2f(0.0, 1.0));
+        point = Vector2f(0.5, 0.5);
+        assert(line.symmetric_point(point) == Vector2f(0.5, 0.5));
     }
 
     //Code based on the Irrlicht engine: irrlicht.sourceforge.net
@@ -270,13 +270,13 @@ struct Line2(T)
     }
     unittest
     {
-        Line2d l1 = Line2d(Vector2d(0.0, 0.0), Vector2d(2.0, 2.0));
-        Line2d l2 = Line2d(Vector2d(0.0, 2.0), Vector2d(2.0, 0.0));
-        Line2d l3 = Line2d(Vector2d(-1.0, 2.0), Vector2d(2.0, 5.0));
-        Vector2d intersection;
+        Line2f l1 = Line2f(Vector2f(0.0, 0.0), Vector2f(2.0, 2.0));
+        Line2f l2 = Line2f(Vector2f(0.0, 2.0), Vector2f(2.0, 0.0));
+        Line2f l3 = Line2f(Vector2f(-1.0, 2.0), Vector2f(2.0, 5.0));
+        Vector2f intersection;
         //perpendicular
         assert(l1.intersect(l2, intersection) == LineIntersection.Intersection);
-        assert(intersection == Vector2d(1.0, 1.0));
+        assert(intersection == Vector2f(1.0, 1.0));
         //parallel
         assert(l1.intersect(l3, intersection) == LineIntersection.NoIntersection);
         //perpendicular but segments don't intersect - only lines do
@@ -285,4 +285,3 @@ struct Line2(T)
 }
 
 alias Line2!(float) Line2f;
-alias Line2!(double) Line2d;

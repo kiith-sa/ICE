@@ -18,6 +18,8 @@ class LineEmitter : ParticleEmitter
     {
         assert(line_length_ > 0.0, "LineEmitter line length must be more than 0");
         assert(line_width_ > 0.0, "LineEmitter line width must be more than 0");
+        assert(emit_velocity_ != Vector2f(0.0, 0.0), 
+               "Can't emit line particles with zero velocity");
     }
 
     protected:
@@ -45,6 +47,8 @@ class LineEmitter : ParticleEmitter
             {
                 color = end_color_.interpolated(start_color_, p.timer.age_relative(time));
                 //determine line from particle velocity
+                //note-we assume here that particle velocity is never zero,
+                //otherwise normalization would break
                 driver.draw_line(p.position, 
                                  p.position + p.velocity.normalized * line_length_, 
                                  color, color);

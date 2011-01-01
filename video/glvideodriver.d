@@ -135,14 +135,18 @@ abstract class GLVideoDriver : VideoDriver
 
         final override void draw_line(Vector2f v1, Vector2f v2, Color c1, Color c2)
         {
+            //can't draw zero-sized lines
+            if(v1 == v2){return;}
             ++line_draws_;
 
             set_shader(line_shader_);
             //The line is drawn as a rectangle with width slightly lower than
             //line_width_ to prevent artifacts.
-            Vector2f offset_base = (v2 - v1).normal.normalized;
-            float half_width = line_width_ / 2.0;
-            Vector2f offset = offset_base * (half_width);
+            //equivalent to (v2 - v1).normal;
+            Vector2f offset_base = Vector2f(v1.y - v2.y, v2.x - v1.x); 
+            offset_base.normalize();
+            float half_width = line_width_ * 0.5;
+            Vector2f offset = offset_base * half_width;
             Vector2f r1, r2, r3, r4;
             r1 = v1 + offset;
             r2 = v1 - offset;
@@ -162,25 +166,30 @@ abstract class GLVideoDriver : VideoDriver
                 aa3 = v2 + offset_aa;
                 aa4 = v2 - offset_aa;
 
+                Color c3 = c1;
+                Color c4 = c2;
+                c3.a = 0;
+                c4.a = 0;
+
                 glBegin(GL_TRIANGLE_STRIP);
-                glColor4ub(c1.r, c1.g, c1.b, 0);
-                glVertex2f(aa1.x, aa1.y);
-                glColor4ub(c2.r, c2.g, c2.b, 0);
-                glVertex2f(aa3.x, aa3.y);
+                glColor4ubv(cast(ubyte*)&c3);
+                glVertex2fv(cast(float*)&aa1);
+                glColor4ubv(cast(ubyte*)&c4);
+                glVertex2fv(cast(float*)&aa3);
 
-                glColor4ub(c1.r, c1.g, c1.b, c1.a);
-                glVertex2f(r1.x, r1.y);
-                glColor4ub(c2.r, c2.g, c2.b, c2.a);
-                glVertex2f(r3.x, r3.y);
-                glColor4ub(c1.r, c1.g, c1.b, c1.a);
-                glVertex2f(r2.x, r2.y);
-                glColor4ub(c2.r, c2.g, c2.b, c2.a);
-                glVertex2f(r4.x, r4.y);
+                glColor4ubv(cast(ubyte*)&c1);
+                glVertex2fv(cast(float*)&r1);
+                glColor4ubv(cast(ubyte*)&c2);
+                glVertex2fv(cast(float*)&r3);
+                glColor4ubv(cast(ubyte*)&c1);
+                glVertex2fv(cast(float*)&r2);
+                glColor4ubv(cast(ubyte*)&c2);
+                glVertex2fv(cast(float*)&r4);
 
-                glColor4ub(c1.r, c1.g, c1.b, 0);
-                glVertex2f(aa2.x, aa2.y);
-                glColor4ub(c2.r, c2.g, c2.b, 0);
-                glVertex2f(aa4.x, aa4.y);
+                glColor4ubv(cast(ubyte*)&c3);
+                glVertex2fv(cast(float*)&aa2);
+                glColor4ubv(cast(ubyte*)&c4);
+                glVertex2fv(cast(float*)&aa4);
                 glEnd();
             }
             else
@@ -188,14 +197,14 @@ abstract class GLVideoDriver : VideoDriver
                 vertices_ += 4;
 
                 glBegin(GL_TRIANGLE_STRIP);
-                glColor4ub(c1.r, c1.g, c1.b, c1.a);
-                glVertex2f(r1.x, r1.y);
-                glColor4ub(c2.r, c2.g, c2.b, c2.a);
-                glVertex2f(r3.x, r3.y);
-                glColor4ub(c1.r, c1.g, c1.b, c1.a);
-                glVertex2f(r2.x, r2.y);
-                glColor4ub(c2.r, c2.g, c2.b, c2.a);
-                glVertex2f(r4.x, r4.y);
+                glColor4ubv(cast(ubyte*)&c1);
+                glVertex2fv(cast(float*)&r1);
+                glColor4ubv(cast(ubyte*)&c2);
+                glVertex2fv(cast(float*)&r3);
+                glColor4ubv(cast(ubyte*)&c1);
+                glVertex2fv(cast(float*)&r2);
+                glColor4ubv(cast(ubyte*)&c2);
+                glVertex2fv(cast(float*)&r4);
                 glEnd();
             }
         }

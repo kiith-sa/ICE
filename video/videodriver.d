@@ -42,7 +42,17 @@ abstract class VideoDriver
         ///Finish drawing a frame.
         void end_frame();
 
-        ///Draw a line between specified points.
+        /**
+         * Draw a line between specified points, with specified colors.
+         *
+         * Colors are interpolated from start to end of the line.
+         * If the points specified are identical, drawn result is undefined.
+         *
+         * Params:  v1 = Start point of the line.
+         *          v2 = End point of the line.
+         *          c1 = Color at the start point.
+         *          c2 = Color at the end point.
+         */
         void draw_line(Vector2f v1, Vector2f v2,
                        Color c1 = Color(255, 255, 255, 255), 
                        Color c2 = Color(255, 255, 255, 255));

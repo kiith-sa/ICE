@@ -59,10 +59,16 @@ final class PhysicsEngine
         //Don't bother resolving velocity errors smaller than this.
         real acceptable_velocity_error = 0.05;
 
-
     public:
         //Construct the PhysicsEngine.
         this(){singleton_ctor();}
+
+        ///Destroy this PhysicsEngine. Should only be called at shutdown.
+        void die()
+        {
+            foreach(physics_body; bodies_){physics_body.die();}
+            bodies_ = [];
+        }
 
         ///Run the physics simulation of a single frame.
         void update()
@@ -92,9 +98,9 @@ final class PhysicsEngine
             {
                 //we only need to check a subrange of bodies_
                 //since we'd get the same pairs of objects checked anyway
-                foreach(body_b; bodies_[a + 1 .. $])
+                for(uint b = a + 1; b < bodies_.length; b++)
                 {
-                    if(detect_contact(body_a, body_b, current_contact))
+                    if(detect_contact(body_a, bodies_[b], current_contact))
                     {
                         contacts_ ~= current_contact;
                     }

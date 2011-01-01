@@ -56,7 +56,7 @@ string to_string(ColorFormat format, bool short_format = false)
 }
 
 ///32-bit RGBA8 color
-struct Color
+align(1) struct Color
 {
     public:
         ubyte r;
@@ -115,8 +115,8 @@ struct Color
             assert(color3 + color1 == Color(255, 255, 255, 255));
         }
         
-        ///Interpolates the color with a real value between 0 and 1 to another color.
-        Color interpolated(Color c, real d)
+        ///Interpolates the color with a float between 0 and 1 to another color.
+        Color interpolated(Color c, float d)
         in
         {
             assert(d >= 0.0 && d <= 1.0, 
@@ -124,9 +124,12 @@ struct Color
         }
         body
         {
-            real inv = 1.0 - d;
-            return Color(round32(r * d + c.r * inv), round32(g * d + c.g * inv),
-                         round32(b * d + c.b * inv), round32(a * d + c.a * inv));
+            float inv = 1.0 - d;
+            //this truncates the fraction part and hence is imprecise, but is fast.
+            return Color(float_to_u8(r * d + c.r * inv), 
+                         float_to_u8(g * d + c.g * inv),
+                         float_to_u8(b * d + c.b * inv), 
+                         float_to_u8(a * d + c.a * inv));
         }
 
         ///Set grayscale color.

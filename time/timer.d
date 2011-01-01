@@ -5,7 +5,7 @@ import time.time;
 
 
 ///A timer struct; handles timing of various delayed or periodic events.
-struct Timer
+align(1) struct Timer
 {
     invariant
     {

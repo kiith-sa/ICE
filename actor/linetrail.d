@@ -64,11 +64,13 @@ final class LineTrail : LineEmitter
 
                 VideoDriver.get.line_aa = true;
                 VideoDriver.get.line_width = line_width_;
-                foreach(ref particle; Particles[1 .. $])
+
+                //using for instead of foreach purely for performance reasons
+                for(uint p = 1; p < Particles.length; p++)
                 {
-                    v2 = particle.position;
+                    v2 = Particles[p].position;
                     c2 = end_color_.interpolated(start_color_, 
-                         particle.timer.age_relative(time));
+                         Particles[p].timer.age_relative(time));
                     VideoDriver.get.draw_line(v1, v2, c1, c2);
                     v1 = v2;
                     c1 = c2;

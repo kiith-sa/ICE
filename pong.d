@@ -136,7 +136,9 @@ class PaddleBody : PhysicsBody
 
             Vector2f closest = box.clamp(ball.position);
 
-            Vector2f contact_direction = (closest - ball.position).normalized;
+            Vector2f contact_direction = closest - ball.position;
+
+            contact_direction.normalize_safe();
 
             Vector2f contact_point = ball.position + ball.radius * contact_direction;
 
@@ -161,7 +163,8 @@ class PaddleBody : PhysicsBody
             }
 
             //keep the same velocity
-            return velocity.normalized * ball.velocity.length;
+            velocity.normalize_safe();
+            return velocity * ball.velocity.length;
         }
 
         override void update()
@@ -184,10 +187,10 @@ class PaddleBody : PhysicsBody
         in
         {
             //checking here because invariant can't call public function members
-            assert(volume.classinfo == CollisionAABBox.classinfo,
+            assert(collision_volume.classinfo == CollisionAABBox.classinfo,
                    "Collision volume of a paddle must be an axis aligned bounding box");
         }
-        body{return (cast(CollisionAABBox)volume).bounding_box;}
+        body{return (cast(CollisionAABBox)collision_volume).bounding_box;}
 }
 
 ///A paddle controlled by a player or AI.
@@ -429,9 +432,10 @@ class DummyBallBody : BallBody
         override void collision_response(ref Contact contact)
         {
             //keep the speed unchanged
-            float speed = velocity_.length;
+            float speed = velocity_.length_safe;
             super.collision_response(contact);
-            velocity_ = speed * velocity_.normalized;
+            velocity_.normalize_safe();
+            velocity_ *= speed;
 
             //prevent any further resolving (since we're not doing precise physics)
             contact.resolved = true;
@@ -452,7 +456,7 @@ class DummyBall : Ball
         {
             super(position, velocity, 5.0);
 
-            physics_body_.mass = 1;
+            physics_body_.mass = 2;
             trail_.start_color = Color(240, 240, 255, 8);
             with(emitter_)
             {
@@ -1075,13 +1079,13 @@ class Game
     private:
         Ball ball_;
         real ball_radius_ = 6.0;
-        real ball_speed_ = 191.0;
+        real ball_speed_ = 185.0;
 
         real spawn_time_ = 4.0;
         real spawn_spread_ = 0.28;
 
         DummyBall[] dummies_;
-        uint dummy_count_ = 12;
+        uint dummy_count_ = 55;
 
         Wall wall_right_, wall_left_; 
         Wall goal_up_, goal_down_; 
@@ -1181,7 +1185,7 @@ class Game
             {
                 dummies_ ~= new DummyBall(random_position!(float)(Vector2f(400.0f, 300.0f),
                                                                   12.0f),
-                                          3.0 * ball_speed_ * random_direction!(float)());
+                                          2.5 * ball_speed_ * random_direction!(float)());
             }
 
             //should be set from options and INI when that is implemented.

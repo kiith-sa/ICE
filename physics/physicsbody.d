@@ -13,9 +13,9 @@ import arrayutil;
 ///Object in physics simulation. Currently a (very) simple rigid body.
 class PhysicsBody
 {
-    private:
+    package:
         //Collision volume of this body. If null, this body can't collide
-        CollisionVolume volume_;
+        CollisionVolume volume;
 
     protected:
         //Position of this body in world space.
@@ -40,7 +40,7 @@ class PhysicsBody
          */
         this(CollisionVolume volume, Vector2f position, Vector2f velocity, real mass)
         {
-            volume_ = volume;
+            this.volume = volume;
             position_ = position;
             velocity_ = velocity;
             this.mass = mass;
@@ -64,7 +64,9 @@ class PhysicsBody
             Vector2f scaled_normal = contact.contact_normal * contact.desired_delta_velocity;
             Vector2f change = scaled_normal * (inverse_mass_ / contact.inverse_mass_total);
             if(change.length < 0.00001){change.zero();}
-            velocity_ += this == contact.body_a ? -1.0 * change : change;
+            if(this is contact.body_a){velocity_ -= change;}
+            else{velocity_ += change;}
+            
         }
 
         /**
@@ -102,7 +104,7 @@ class PhysicsBody
         final real inverse_mass(){return inverse_mass_;}
 
         ///Return collision volume of this body.
-        final CollisionVolume volume(){return volume_;}
+        final CollisionVolume collision_volume(){return volume;}
 
         ///Return an array of bodies this body has collided with during last physics update.
         PhysicsBody[] colliders(){return colliders_;} 
