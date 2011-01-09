@@ -1,16 +1,28 @@
 17:
-    Physics gui monitor
-    Ideas:
-    1:snapshot of all collisions in a certain frame
-    2:monitor velocities of all bodies
-    3:not only velocities
-    4:detailed look on an object, i.e. select object and see all its parameters
-    5:also show how many penetration, resolution iterations this frame, etc
-     (maybe this one would be in snapshot? - or a graph, ksysguard style)
+    update GLMonitor and GLVideoDriver according to PhysicsMonitor and PhysicsEngine
+    i.e. use graphmonitor
+
+    Possibly, GLMonitor and PhysicsMonitor could have a shared base class
+    that handles submonitors.
+
+    Also, possibly, string mixins could be used to create a base class
+    for all the GraphMonitor based monitors.
+    basically, user'd call 
+    new XXXGraphMonitor<PhysicsEngine>(["bodies", "collision_bodies"], [Color(...), Color(...)])
+    and fetch_statistics etc would be generated automatically.
+    Of course, e.g. mode would have to be public, as well as e.g. add_mode_buttons.
+    Still, this would reduce cost of new graph based stat-feching monitor class
+    to a simple function instead of a whole class.
+    
+
+    In the end, profile the monitor, possibly implement line strip in glvideodriver
 17:
     Coarse collision detection (SpatialManager)
     Maybe make SpatialManager general enough so we can use the same class
     (not same instance, probably) for both coarse collision detection and culling
+
+    For now, just implement a grid, not quadtree. Might be enough in the end.
+    Also profile how many object-object comparisons there are for contact detection.
 
     Thoughts:
 
@@ -29,7 +41,7 @@
     Consider writing mixin + asm based D equivalent to C xmmintrin.h
     and using that instead of direct asm in vector operations
 17:
-    Then, effect at ball-paddle collision
+    Effect at ball-paddle collision
 17:
     Rename ActorManager to SceneManager and its directory to scene/
 17: 
@@ -77,6 +89,16 @@
     Once we use custom matrices with shaders, we might simply
     store projection matrices with caches and draw all out
     at the end, but we need to learn that
+
+    use gDebugger to profile OGL performance
+24:
+    Ability to run monitor graphs in background w/o rendering them and then 
+    render them to file (SVG or PNG)
+24:
+    Alongside mouse_move and mouse_key, consider more advanced
+    mouse_click (triggered by quick succeeding press and release),
+    and mouse_drag
+    these would be detected by platfom and sent to e.g GUI
 25:
     Advanced shaders: custom matrix, etc. passing. - see opengl superbible
     Look at Humus, Mizanin, GL forums, GL3 tutorials, etc.
@@ -94,16 +116,7 @@
      the walls to prevent extra stupidity)
 14:
     Look for D files in main directory that can be put into packages.
-23:
-    Collision optimization: ignore too distant actors/lines/whatever
-    early.
-22:
-    Both graphics data and physics data should have their
-    own classes (or completely abstract interfaces) - contained in Actor.
-    Actors should collide in update_physics() by passing Actors just like 
-    until now, not by passing PhysicsObjects
-22:
-    Improved collision code to prevent/minimize tunneling
+    Maybe create the dreaded util package.
 23:
     Profiling:
     Valgrind, Massif, Callgrind, Cachegrind, Sysprof, CodeAnalyst(OProfile GUI),
@@ -361,10 +374,9 @@ see freetype.org
 
 Monitor:
 1:
-    Allocator monitor. Maybe memory usage graphs (and per-type graphs?)
-    Would need a graph GUI element.
+    Allocator monitor. Memory usage graphs (and per-type graphs?)
 2:
-    Measurements of how much time per frame does e.g. line drawing take,
+    Measurements and graphs of how much time per frame does e.g. line drawing take,
     and display them somehow. Could measure times of non-videodriver code as well.
 3:
     TexturePages info: show free/used space with slight red/blue tints,
@@ -373,14 +385,18 @@ Monitor:
     texture page/free-used
     Show whether the texture is resident, too.
 4:
-    Graphs showing how various debugger data changes over time
-    FPS would be also good to show, and in graph as well
+    FPS graph
 5:
     Show stats about overhead of all textures in the driver,
     each page and its packer
 6:  
     Pages: use glGetTexLevelParameteriv with some argument to get
     size the page takes up in the video memory.
+7:
+    PhysicsMonitor ideas:
+    1:need listbox: snapshot of all collisions in a certain frame
+    2:need listbox: detailed look on an object, i.e. select object and see all its parameters
+
 
 Optimizations:
 1:
@@ -446,12 +462,6 @@ GL1:
 Maybe:
 1:
     Paddle acceleration
-2: 
-    NOTE: needed if we can set position of actors
-    We need to assert that an actor's position is not being changed
-    (through its position() API function) between its update_physics()
-    and update() calls. Maybe use a bool data member only used in
-    debug builds.
 3:
     Graphics: Filled rectangles/circles
 4:

@@ -99,6 +99,17 @@ T reduce(alias fun, T)(T seed, T elems [])
     return seed;
 }
 
+/**
+ * Clamps a value to specified range.
+ *
+ * Params:  v       = Value to clamp.
+ *          minimum = Minimum of the range. 
+ *          maximum = Maximum of the range.
+ *
+ * Returns: Clamped value.
+ */
+T clamp(T)(T v, T minimum, T maximum){return min(maximum, max(minimum, v));}
+
 ///Returns minimum of two values.
 T min(T) (T a, T b)
 {

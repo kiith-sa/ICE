@@ -43,6 +43,19 @@ abstract class VideoDriver
         void end_frame();
 
         /**
+         * Enable scissor test using specified rectangle as scissor area.
+         *
+         * Until scissor test is disabled, only specified area of the screen
+         * will be drawn to. This can be used e.g. for 2D clipping of GUI.
+         *
+         * Params:  scissor_area = Scissor area in screen coordinates.
+         */
+        void scissor(ref Rectanglei scissor_area);
+
+        ///Disable scissor test.
+        void disable_scissor();
+
+        /**
          * Draw a line between specified points, with specified colors.
          *
          * Colors are interpolated from start to end of the line.
@@ -57,10 +70,28 @@ abstract class VideoDriver
                        Color c1 = Color(255, 255, 255, 255), 
                        Color c2 = Color(255, 255, 255, 255));
 
+        /**
+         * Draw a line strip through specified points with specified color.
+         *
+         * Params:  v = Vertices of the strip.
+         *          c = Color of the strip.
+         */
+        void draw_line_strip(Vector2f[] v, Color c)
+        in{assert(v.length >= 2, "Must have at least 2 vertices to draw a line strip");}
+        body
+        {
+            Vector2f start = v[0];
+            foreach(Vector2f end; v[1 .. $])
+            {
+                draw_line(start, end, c, c);
+                start = end;
+            }
+        }
+
         ///Draw a circle with specified center, radius, color and number of vertices.
-        final void draw_circle(Vector2f center, float radius, 
-                               Color color = Color(255, 255, 255, 255), 
-                               uint vertex_count = 32)
+        void draw_circle(Vector2f center, float radius, 
+                         Color color = Color(255, 255, 255, 255), 
+                         uint vertex_count = 32)
         in
         {
             assert(radius >= 0, "Can't draw a circle with negative radius");
@@ -94,8 +125,7 @@ abstract class VideoDriver
         }
 
         ///Draw a rectangle with specified extents and color.
-        final void draw_rectangle(Vector2f min, Vector2f max,
-                                  Color color = Color(255, 255, 255, 255))
+        void draw_rectangle(Vector2f min, Vector2f max, Color color = Color(255, 255, 255, 255))
         in
         {
             assert(min.x <= max.x && min.y <= max.y, 
@@ -130,7 +160,8 @@ abstract class VideoDriver
         ///Set line width.
         void line_width(float width);
 
-        ///Set font to draw text with.
+        
+        ///Set font to draw text with. If font_name is "default", default font will be used.
         void font(string font_name);
 
         ///Set font size to draw text with.

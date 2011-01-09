@@ -71,7 +71,6 @@ class SDLPlatform : Platform
         override void show_cursor(){SDL_ShowCursor(1);}
 
     package:
-        
         //Process a keyboard event.
         void process_key(SDL_KeyboardEvent event)
         {

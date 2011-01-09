@@ -82,6 +82,9 @@ class GUIElement
         ///Return size of this element in screen space.
         final Vector2u size(){return Vector2u(bounds_.size.x, bounds_.size.y);}
 
+        ///Return bounding rectangle of this GUI element in screen space.
+        final Rectanglei bounds_global(){return bounds_;}
+
         ///Add a child element.
         final void add_child(GUIElement child)
         in

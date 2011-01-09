@@ -1,6 +1,7 @@
 module monitor.monitor;
 
 
+import physics.physicsengine;
 import video.videodriver;
 import gui.guielement;
 import gui.guimenu;
@@ -31,9 +32,10 @@ final class Monitor : GUIElement
                 orientation = MenuOrientation.Horizontal;
 
                 add_item("Video", &video);
+                add_item("Physics", &physics);
 
                 item_font_size = 8;
-                item_width = "48";
+                item_width = "44";
                 item_height = "14";
                 item_spacing = "4";
             }
@@ -53,8 +55,11 @@ final class Monitor : GUIElement
         }
 
     private:
-        //Display videodriver monitor.
+        //Display video driver monitor.
         void video(){monitor(VideoDriver.get.monitor);}
+
+        //Display physics engine monitor.
+        void physics(){monitor(PhysicsEngine.get.monitor);}
 
         //Display specified monitor.
         void monitor(GUIElement monitor)

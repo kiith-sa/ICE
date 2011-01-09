@@ -4,7 +4,10 @@ module physics.physicsengine;
 import physics.physicsbody;
 import physics.contact;
 import physics.contactdetect;
+import physics.physicsmonitor;
+import gui.guielement;
 import math.vector2;
+import signal;
 import singleton;
 import arrayutil;
 
@@ -59,6 +62,36 @@ final class PhysicsEngine
         //Don't bother resolving velocity errors smaller than this.
         real acceptable_velocity_error = 0.05;
 
+        //Statistics data for monitoring.
+        Statistics statistics_;
+
+    package:
+        ///Used to send statistics data to physics monitors.
+        mixin Signal!(Statistics) send_statistics;
+
+        ///Used to gather statistics data to be sent to physics monitors.
+        struct Statistics
+        {
+            //Physics bodies at the moment.
+            uint bodies = 0;
+            //Physics bodies with collision volumes at the moment.
+            uint collision_bodies = 0;
+            //Contract tests this frame.
+            uint tests;
+            //Contacts detected this frame.
+            uint contacts;
+            //Penetration resolution iterations this frame.
+            uint penetration_iterations;
+            //Collision response iterations this frame.
+            uint response_iterations;
+
+            //Reset the statistics gathered for the next frame.
+            void zero()
+            {
+                tests = contacts = penetration_iterations = response_iterations = 0;
+            }
+        }
+
     public:
         //Construct the PhysicsEngine.
         this(){singleton_ctor();}
@@ -83,11 +116,17 @@ final class PhysicsEngine
             resolve_penetrations();
             collision_response();
 
+            statistics_.contacts = contacts_.length;
+            send_statistics.emit(statistics_);
+            statistics_.zero();
+
             //clear contacts
             contacts_.length = 0;
-
             updating_ = false;
         }
+
+        ///Return monitor GUI element for the physics engine.
+        GUIElement monitor(){return new PhysicsMonitor;}
 
     private:
         //Detect collisions between bodies.
@@ -100,6 +139,7 @@ final class PhysicsEngine
                 //since we'd get the same pairs of objects checked anyway
                 for(uint b = a + 1; b < bodies_.length; b++)
                 {
+                    statistics_.tests++;
                     if(detect_contact(body_a, bodies_[b], current_contact))
                     {
                         contacts_ ~= current_contact;
@@ -131,6 +171,7 @@ final class PhysicsEngine
             //resolve penetrations from greatest to smallest
             for(uint iteration = 0; iteration < iterations; iteration++)
             {
+                statistics_.penetration_iterations++;
                 //note: this is probably slow, but readable, will be fixed only
                 //if slowdown is measurable
 
@@ -184,6 +225,7 @@ final class PhysicsEngine
             //velocity change
             for(uint iteration = 0; iteration < iterations; iteration++)
             {
+                statistics_.response_iterations++;
                 //get the contact with maximum desired delta velocity
                 contact = contacts_.max((ref Contact a, ref Contact b)
                                         {return a.desired_delta_velocity > 
@@ -210,7 +252,13 @@ final class PhysicsEngine
                    "Adding the same physics body twice");
             assert(!updating_, "Can't add new physics bodies during a physics update");
         }
-        body{bodies_ ~= physics_body;}
+        body
+        {
+            statistics_.bodies++;
+            if(physics_body.volume is null){statistics_.collision_bodies++;}
+
+            bodies_ ~= physics_body;
+        }
 
         //Remove a physics body from the simulation
         //Can't be called during an update.
@@ -224,6 +272,10 @@ final class PhysicsEngine
         body
         {
             alias arrayutil.remove remove;
+
+            statistics_.bodies--;
+            if(physics_body.volume is null){statistics_.collision_bodies--;}
+
             bodies_.remove(physics_body, true);
         }
 }

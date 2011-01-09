@@ -133,6 +133,16 @@ abstract class GLVideoDriver : VideoDriver
 
         override void end_frame(){glFlush();}
 
+        void scissor(ref Rectanglei scissor_area)
+        {
+            glEnable(GL_SCISSOR_TEST);
+            glScissor(scissor_area.min.x, 
+                      screen_height_ - scissor_area.min.y - scissor_area.height,
+                      scissor_area.width, scissor_area.height);
+        }
+
+        void disable_scissor(){glDisable(GL_SCISSOR_TEST);}
+
         final override void draw_line(Vector2f v1, Vector2f v2, Color c1, Color c2)
         {
             //can't draw zero-sized lines
