@@ -6,6 +6,7 @@ import physics.contact;
 import physics.contactdetect;
 import physics.physicsmonitor;
 import gui.guielement;
+import monitor.monitormenu;
 import math.vector2;
 import signal;
 import singleton;
@@ -66,31 +67,8 @@ final class PhysicsEngine
         Statistics statistics_;
 
     package:
-        ///Used to send statistics data to physics monitors.
+        //Used to send statistics data to physics monitors.
         mixin Signal!(Statistics) send_statistics;
-
-        ///Used to gather statistics data to be sent to physics monitors.
-        struct Statistics
-        {
-            //Physics bodies at the moment.
-            uint bodies = 0;
-            //Physics bodies with collision volumes at the moment.
-            uint collision_bodies = 0;
-            //Contract tests this frame.
-            uint tests;
-            //Contacts detected this frame.
-            uint contacts;
-            //Penetration resolution iterations this frame.
-            uint penetration_iterations;
-            //Collision response iterations this frame.
-            uint response_iterations;
-
-            //Reset the statistics gathered for the next frame.
-            void zero()
-            {
-                tests = contacts = penetration_iterations = response_iterations = 0;
-            }
-        }
 
     public:
         //Construct the PhysicsEngine.
@@ -125,8 +103,8 @@ final class PhysicsEngine
             updating_ = false;
         }
 
-        ///Return monitor GUI element for the physics engine.
-        GUIElement monitor(){return new PhysicsMonitor;}
+        ///Return monitor menu for the physics engine monitors.
+        MonitorMenu monitor_menu(){return new PhysicsEngineMonitor(this);}
 
     private:
         //Detect collisions between bodies.
@@ -171,7 +149,7 @@ final class PhysicsEngine
             //resolve penetrations from greatest to smallest
             for(uint iteration = 0; iteration < iterations; iteration++)
             {
-                statistics_.penetration_iterations++;
+                statistics_.penetration++;
                 //note: this is probably slow, but readable, will be fixed only
                 //if slowdown is measurable
 
@@ -225,7 +203,7 @@ final class PhysicsEngine
             //velocity change
             for(uint iteration = 0; iteration < iterations; iteration++)
             {
-                statistics_.response_iterations++;
+                statistics_.response++;
                 //get the contact with maximum desired delta velocity
                 contact = contacts_.max((ref Contact a, ref Contact b)
                                         {return a.desired_delta_velocity > 
@@ -255,7 +233,7 @@ final class PhysicsEngine
         body
         {
             statistics_.bodies++;
-            if(physics_body.volume is null){statistics_.collision_bodies++;}
+            if(physics_body.volume is null){statistics_.col_bodies++;}
 
             bodies_ ~= physics_body;
         }
@@ -274,7 +252,7 @@ final class PhysicsEngine
             alias arrayutil.remove remove;
 
             statistics_.bodies--;
-            if(physics_body.volume is null){statistics_.collision_bodies--;}
+            if(physics_body.volume is null){statistics_.col_bodies--;}
 
             bodies_.remove(physics_body, true);
         }

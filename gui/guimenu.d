@@ -5,6 +5,7 @@ import std.string;
 
 import gui.guielement;
 import gui.guibutton;
+import gui.guistatictext;
 import video.videodriver;
 
 
@@ -20,6 +21,9 @@ class GUIMenu : GUIElement
         alias std.string.toString to_string;
 
         uint item_count_;
+
+        //Font size of the buttons in the menu.
+        uint font_size_ = GUIStaticText.default_font_size();
 
         GUIButton[] items_;
 
@@ -95,6 +99,7 @@ class GUIMenu : GUIElement
 
         void item_font_size(uint size)
         {
+            font_size_ = size;
             foreach(ref item; items_){item.font_size = size;}
             aligned_ = false;
         }
@@ -104,6 +109,7 @@ class GUIMenu : GUIElement
             auto button = new GUIButton;
             button.text = text;
             button.pressed.connect(deleg);
+            button.font_size = font_size_;
             items_ ~= button;
             add_child(button);
             aligned_ = false;

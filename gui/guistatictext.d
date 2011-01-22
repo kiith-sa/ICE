@@ -52,7 +52,8 @@ class GUIStaticText : GUIElement
         //Name of the font used.
         string font_ = "default";
 
-        uint font_size_ = 12;
+        //Size of the font in points.
+        uint font_size_ = default_font_size();
         
         Color font_color_ = Color(255, 255, 255, 255);
 
@@ -115,6 +116,9 @@ class GUIStaticText : GUIElement
             font_ = font;
             aligned_ = false;
         }
+
+        ///Get default font size of GUIStaticText instances.
+        static uint default_font_size(){return 12;}
 
     protected:
         override void draw()

@@ -5,9 +5,11 @@ import gui.guigraph;
 import gui.guilinegraph;
 import gui.guielement;
 import gui.guibutton;
+import gui.guimenu;
 import math.vector2;
 import math.rectangle;
 import platform.platform;
+import monitor.monitor;
 import color;
 
 
@@ -28,16 +30,8 @@ abstract class GraphMonitor : GUIElement
         //Buttons used to toggle display of values on the graph.
         //Not using menu since we need to control color of each button.
         GUIButton[string] value_buttons_;
-        
-        //Button used to decrease data point time, or increase time resolution of the graph.
-        GUIButton resolution_plus_;
-        //Button used to increase data point time, or decrease time resolution of the graph.
-        GUIButton resolution_minus_;
-
-        //Button used to set sum graph mode.
-        GUIButton sum_;
-        //Button used to set average graph mode.
-        GUIButton average_;
+        //Menu of buttons controlling the graph.
+        GUIMenu menu_;
 
         //note: in D2, this can be replaced with closures
         //Function object used by buttons for graph method calls to toggle display of values.
@@ -69,7 +63,7 @@ abstract class GraphMonitor : GUIElement
         this(string[] value_names ...)
         {
             init_toggles(value_names);
-            init_resolution_buttons();
+            init_menu();
 
             graph_ = new GUILineGraph(value_names);
             with(graph_)
@@ -77,11 +71,19 @@ abstract class GraphMonitor : GUIElement
                 position_x = "p_left + 52";
                 position_y = "p_top + 2";
                 width = "p_right - p_left - 54";
-                height = "p_bottom - p_top - 34";
+                height = "p_bottom - p_top - 26";
             }
             add_child(graph_);
 
             scale_x_default_ = graph_.scale_x;
+            font_size = Monitor.font_size;
+        }
+
+        ///Set font size of all elements of this graph.
+        void font_size(uint size)
+        {
+            graph_.font_size = size;
+            foreach(value; value_buttons_.values){value.font_size = size;}
         }
 
     protected:
@@ -111,31 +113,8 @@ abstract class GraphMonitor : GUIElement
         //Add buttons changing graph mode. Can optionally be used by some implementations.
         void add_mode_buttons()
         {
-            sum_ = new GUIButton;
-            sum_.pressed.connect(&sum);
-            with(sum_)
-            {
-                text = "sum";
-                font_size = 8;
-                position_x = "p_left + 52";
-                position_y = "p_bottom - 15";
-                width = "(p_right - p_left - 54) / 2 - 1";
-                height = "13";
-            }
-            add_child(sum_);
-
-            average_ = new GUIButton;
-            average_.pressed.connect(&average);
-            with(average_)
-            {
-                text = "average";
-                font_size = 8;
-                position_x = "p_right - (p_right - p_left - 54) / 2 - 1";
-                position_y = "p_bottom - 15";
-                width = "(p_right - p_left - 54) / 2 - 1";
-                height = "13";
-            }
-            add_child(average_);
+            menu_.add_item("sum", &sum);
+            menu_.add_item("avg", &average);
         }
 
         override void mouse_key(KeyState state, MouseKey key, Vector2u position)
@@ -231,34 +210,25 @@ abstract class GraphMonitor : GUIElement
             }
         }
 
-        //Initialize buttons changing data point time (resolution) of the graph.
-        void init_resolution_buttons()
+        //Initialize menu. 
+        void init_menu()
         {
-            resolution_plus_ = new GUIButton;
-            resolution_plus_.pressed.connect(&resolution_increase);
-            with(resolution_plus_)
+            menu_ = new GUIMenu;
+            with(menu_)
             {
-                text = "resolution +";
-                font_size = 8;
-                position_x = "p_left + 52";
-                position_y = "p_bottom - 30";
-                width = "(p_right - p_left - 54) / 2 - 1";
-                height = "13";
-            }
-            add_child(resolution_plus_);
+                position_x = "p_left + 50";
+                position_y = "p_bottom - 24";
+                orientation = MenuOrientation.Horizontal;
 
-            resolution_minus_ = new GUIButton;
-            resolution_minus_.pressed.connect(&resolution_decrease);
-            with(resolution_minus_)
-            {
-                text = "resolution -";
-                font_size = 8;
-                position_x = "p_right - (p_right - p_left - 54) / 2 - 1";
-                position_y = "p_bottom - 30";
-                width = "(p_right - p_left - 54) / 2 - 1";
-                height = "13";
+                add_item("res +", &resolution_increase);
+                add_item("res -", &resolution_decrease);
+
+                item_font_size = 8;
+                item_width = "48";
+                item_height = "20";
+                item_spacing = "2";
             }
-            add_child(resolution_minus_);
+            add_child(menu_);
         }
 
         //Decrease graph data point time - used by resolution + button.
@@ -273,3 +243,88 @@ abstract class GraphMonitor : GUIElement
         //Set average graph mode - used by average button
         void average(){graph_.mode = GraphMode.Average;}
 }
+
+/**
+ * Generate constructor code for a graph monitor implementation.
+ * Initializes graph monitor with specified values to monitor, 
+ * automatically sets their colors, and connectss a callback
+ * to fetch statistics from the monitored object. 
+ * This code should be inserted to a graph monitor implementation constructor
+ * with a string mixin.
+ *
+ * Note: The constructor must have access to the monitored object through a variable
+ * called "monitored", the monitored object must have a "send_statistics" signal
+ * that passes a struct/class called "Statistics" to a method called 
+ * "fetch_statistics" in the implementation, which should be generated by a string
+ * mixin generating code with the generate_graph_fetch_statistics function.
+ *
+ * Params: values = Names of the values monitored by the graph monitor that will
+ *                  use the generated code. Colors will be automatically assigned
+ *                  to the values from a limited palette, limiting number of values
+ *                  supported (8 right now). Parameters passed here must be the same
+ *                  as ones passed to corresponding generate_graph_fetch_statistics
+ *                  call.
+ *
+ * Returns: Generated code, ready to be inserted into a graph monitor constructor.
+ */
+string generate_graph_monitor_ctor(string[] values...)
+in
+{
+    assert(values.length <= palette.length && values.length > 0, 
+           "Too many or no values to track");
+}
+body
+{
+    string result = "super(\"" ~ values[0] ~ "\"";
+
+    foreach(value; values[1 .. $]){result ~= ", \"" ~ value ~ "\"";}
+
+    result ~= ");";
+    result ~= "monitored.send_statistics.connect(&fetch_statistics);";
+
+    foreach(v, value; values)
+    {
+        result ~= "color(\"" ~ value ~ "\", " ~ palette[v] ~ ");";
+    }
+
+    return result;
+}
+
+/**
+ * Generate a statistics fetching method for a graph monitor implementation.
+ * Pases values of data members of a struct/class called Statistics to 
+ * values of the same name in the graph monitor.
+ * This code should be inserted to a graph monitor implementation as a method
+ * with a string mixin.
+ *
+ * Params: values = Names of the values monitored by the graph monitor that will
+ *                  use the generated code. These have to correspond with data members
+ *                  of the Statistics class/struct passed.
+ *
+ * Returns: Generated code, ready to be inserted into a graph monitor implementation.
+ */
+string generate_graph_fetch_statistics(string[] values...)
+in{assert(values.length > 0 , "No values to track");}
+body
+{
+    string result = "void fetch_statistics(Statistics statistics)"
+                    "{";
+    foreach(value; values)
+    {
+        result ~= "add_value(\"" ~ value ~ "\", statistics." ~ value ~ ");";
+    }
+    result ~= "}";
+    return result;
+}
+
+private:
+
+///Palette of colors used by graph monitor code generated with string mixins.
+const string[] palette = ["Color(255, 0, 0, 255)",
+                          "Color(0, 255, 0, 255)",
+                          "Color(0, 0, 255, 255)",
+                          "Color(255, 255, 0, 255)",
+                          "Color(0, 255, 255, 255)",
+                          "Color(255, 0, 255, 255)",
+                          "Color(128, 0, 0, 255)",
+                          "Color(0, 128, 0, 255)"];

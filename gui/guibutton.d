@@ -96,10 +96,7 @@ class GUIButton : GUIElement
         }
 
         ///Set font size of the button text.
-        final void font_size(uint size)
-        {
-            text_.font_size = size;
-        }
+        final void font_size(uint size){text_.font_size = size;}
 
     protected:    
         void mouse_key(KeyState state, MouseKey key, Vector2u position)

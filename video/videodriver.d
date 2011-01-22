@@ -10,6 +10,7 @@ import math.line2;
 import math.rectangle;
 import platform.platform;
 import gui.guielement;
+import monitor.monitormenu;
 import singleton;
 import color;
 import image;
@@ -194,6 +195,6 @@ abstract class VideoDriver
         ///Delete given texture.
         void delete_texture(Texture texture);
 
-        ///Get monitor GUI element for the VideoDriver implementation.
-        GUIElement monitor(){return null;}
+        ///Get monitor menu for the VideoDriver implementation.
+        MonitorMenu monitor_menu();
 }

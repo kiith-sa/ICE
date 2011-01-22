@@ -78,17 +78,13 @@ abstract class GUIGraph : GUIElement
                  * Returns: Resulting array of data points.
                  */
                 real[] data_points(real start, real end, real period)
-                    //TODO ASSERT START > END
+                in
                 {
-                    /*
-                    real[] output;
-
-                    //data point we're currently accumulating to
-                    real data_point = 0.0;
-                    uint value_count = 0;
-                    */
-
-
+                    assert(start < end, "Can't retrieve data points for a time window"
+                                        " that ends before it starts");
+                }
+                body
+                {
                     real[] data_points;
                     uint[] value_counts;
 
@@ -115,30 +111,6 @@ abstract class GUIGraph : GUIElement
                             data_points[point] /= value_counts[point];
                         } 
                     }
-                    /*
-                    //could be optimized by binary search
-                    foreach(ref value; values_)
-                    {
-                        //ignore values before start time
-                        if(value.time < start){continue;}
-                        //if we've hit end time, we're done
-                        if(value.time > end){break;}
-                        //FIXME THIS SHOULD BE SOMETHING LIKE WHILE,
-                        // SINCE WE CAN HAVE LONG TIME W/O VALUES AND THEN
-                        //ONE VALUE
-                        //we've hit a value outside this data point, start a new one
-                        if(value.time - start > period)
-                        {
-                            if(mode_ == GraphMode.Average){output ~= data_point / value_count;}
-                            else if(mode_ == GraphMode.Sum){output ~= data_point;}
-                            else{assert(false, "Unknown GUI graph mode");}
-                            data_point = 0.0;
-                            value_count = 0;
-                            start += period;
-                        }
-                        data_point += value.value;
-                        value_count += value.value_count;
-                    }*/
 
                     //return output;
                     return data_points;
@@ -178,7 +150,7 @@ abstract class GUIGraph : GUIElement
         Graph[string] graphs_;
 
         //Graph display mode, i.e. display sums for time period or average values.
-        GraphMode mode_ = GraphMode.Sum;
+        GraphMode mode_ = GraphMode.Average;
 
         //Time when this guigraph was created
         real start_time_;

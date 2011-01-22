@@ -1,146 +1,83 @@
 module physics.physicsmonitor;
 
 import physics.physicsengine;
-import monitor.graphmonitor;
 import gui.guielement;
 import gui.guimenu;
 import gui.guigraph;
+import monitor.monitor;
+import monitor.monitormenu;
+import monitor.graphmonitor;
 import color;
 
+
+///Used to gather statistics data to be sent by PhysicsEngine to physics monitors.
+package struct Statistics
+{
+    //Physics bodies at the moment.
+    uint bodies = 0;
+    //Physics bodies with collision volumes at the moment.
+    uint col_bodies = 0;
+    //Contract tests this frame.
+    uint tests;
+    //Contacts detected this frame.
+    uint contacts;
+    //Penetration resolution iterations this frame.
+    uint penetration;
+    //Collision response iterations this frame.
+    uint response;
+
+    //Reset the statistics gathered for the next frame.
+    void zero(){tests = contacts = penetration = response = 0;}
+}
 
 ///Graph showing values related to fine collision detection.
 final package class ContactMonitor : GraphMonitor
 {
     public:
-        ///Construct a ContactMonitor, set value names and colors.
-        this()
+        ///Construct a ContactMonitor.
+        this(PhysicsEngine monitored)
         {
-            super("contacts", "penetration", "response");
-
-            PhysicsEngine.get.send_statistics.connect(&fetch_statistics);
-            color("contacts", Color(255, 255, 0, 255));
-            color("penetration", Color(255, 0, 0, 255));
-            color("response", Color(255, 128, 0, 255));
+            mixin(generate_graph_monitor_ctor("contacts", "penetration", "response"));
             add_mode_buttons();
         }
 
     private:
-        ///Callback called by PhysicsMonitor once per frame to update monitored statistics.
-        void fetch_statistics(PhysicsEngine.Statistics statistics)
-        {
-            with(statistics)
-            {             
-                add_value("contacts", contacts);
-                add_value("penetration", penetration_iterations);
-                add_value("response", response_iterations);
-            }
-        }
+        //Callback called by PhysicsMonitor once per frame to update monitored statistics.
+        mixin(generate_graph_fetch_statistics("contacts", "penetration", "response"));
 }
 
 ///Graph showing values related to coarse collision detection.
 final package class CoarseContactMonitor : GraphMonitor
 {
     public:
-        ///Construct a CoarseContactMonitor, set value names and colors.
-        this()
+        ///Construct a CoarseContactMonitor.
+        this(PhysicsEngine monitored)
         {
-            super("tests");
-
-            PhysicsEngine.get.send_statistics.connect(&fetch_statistics);
-            color("tests", Color(255, 0, 0, 255));
-            mode(GraphMode.Average);
+            mixin(generate_graph_monitor_ctor("tests"));
             add_mode_buttons();
         }
 
     private:
-        ///Callback called by PhysicsMonitor once per frame to update monitored statistics.
-        void fetch_statistics(PhysicsEngine.Statistics statistics)
-        {
-            add_value("tests", statistics.tests);
-        }
+        //Callback called by PhysicsMonitor once per frame to update monitored statistics.
+        mixin(generate_graph_fetch_statistics("tests"));
 }
 
 ///Graph showing statistics about physics bodies.
 final package class BodiesMonitor : GraphMonitor
 {
     public:
-        ///Construct a BodiesMonitor, set value names and colors.
-        this()
+        ///Construct a BodiesMonitor.
+        this(PhysicsEngine monitored)
         {
-            super("bodies", "col_bodies");
-
-            PhysicsEngine.get.send_statistics.connect(&fetch_statistics);
-            color("bodies", Color(255, 255, 0, 255));
-            color("col_bodies", Color(255, 0, 0, 255));
-            mode(GraphMode.Average);
+            mixin(generate_graph_monitor_ctor("bodies", "col_bodies"));
         }
 
     private:
-        ///Callback called by PhysicsMonitor once per frame to update monitored statistics.
-        void fetch_statistics(PhysicsEngine.Statistics statistics)
-        {
-            add_value("bodies", statistics.bodies);
-            add_value("col_bodies", statistics.collision_bodies);
-        }
+        //Callback called by PhysicsMonitor once per frame to update monitored statistics.
+        mixin(generate_graph_fetch_statistics("bodies", "col_bodies"));
 }
 
-final package class PhysicsMonitor : GUIElement
-{
-    private:
-        GUIMenu menu_;
-        GUIElement current_monitor_ = null;
-
-    public:
-        this()
-        {
-            super();
-
-            menu_ = new GUIMenu;
-            with(menu_)
-            {
-                position_x = "p_left";
-                position_y = "p_top";
-
-                add_item("Bodies", &bodies);
-                add_item("Contact", &contact);
-                add_item("Coarse", &coarse);
-
-                item_font_size = PhysicsMonitor.font_size;
-                item_width = "40";
-                item_height = "12";
-                item_spacing = "4";
-            }
-            add_child(menu_);
-        }
-
-        //Display bodies monitor.
-        void bodies(){monitor(new BodiesMonitor);}
-
-        //Display fine collision monitor.
-        void contact(){monitor(new ContactMonitor);}
-
-        //Display coarse collision monitor.
-        void coarse(){monitor(new CoarseContactMonitor);}
-
-        //Display specified submonitor.
-        void monitor(GUIElement monitor)
-        {
-            if(current_monitor_ !is null)
-            {
-                remove_child(current_monitor_);
-                current_monitor_.die();
-            }
-
-            current_monitor_ = monitor;
-            with(current_monitor_)
-            {
-                position_x = "p_left + 48";
-                position_y = "p_top + 4";
-                width = "p_right - p_left - 52";
-                height = "p_bottom - p_top - 8";
-            }
-            add_child(current_monitor_);
-        }
-
-        static uint font_size(){return 8;}
-}
+///PhysicsEngineMonitor class - a MonitorMenu implementation is generated here.
+mixin(generate_monitor_menu("PhysicsEngine", 
+                            ["Bodies", "Contacts", "Coarse"], 
+                            ["BodiesMonitor", "ContactMonitor", "CoarseContactMonitor"]));

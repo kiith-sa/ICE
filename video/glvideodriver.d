@@ -20,9 +20,11 @@ import math.line2;
 import math.rectangle;
 import platform.platform;
 import gui.guielement;
+import monitor.monitormenu;
 import color;
 import image;
 import allocator;
+import signal;
 
 
 ///Handles all drawing functionality.
@@ -60,12 +62,14 @@ abstract class GLVideoDriver : VideoDriver
 
         //Textures
         GLTexture* [] textures_;
+                              
+        //Statistics data for monitoring.
+        Statistics statistics_;
 
     package:
-        //measuring/debugging data:
-        uint line_draws_, texture_draws_, text_draws_;
-        uint vertices_, characters_, shader_changes_, page_changes_;
-
+        //Used to send statistics data to physics monitors.
+        mixin Signal!(Statistics) send_statistics;
+        
     public:
         this()
         {
@@ -127,8 +131,8 @@ abstract class GLVideoDriver : VideoDriver
             glClear(GL_COLOR_BUFFER_BIT);
             setup_viewport();
             current_page_ = uint.max;
-            line_draws_ = texture_draws_ = text_draws_ = 0;
-            vertices_ = characters_ = shader_changes_ = page_changes_ = 0;
+            send_statistics.emit(statistics_);
+            statistics_.zero();
         }
 
         override void end_frame(){glFlush();}
@@ -147,7 +151,7 @@ abstract class GLVideoDriver : VideoDriver
         {
             //can't draw zero-sized lines
             if(v1 == v2){return;}
-            ++line_draws_;
+            ++statistics_.lines;
 
             set_shader(line_shader_);
             //The line is drawn as a rectangle with width slightly lower than
@@ -165,7 +169,7 @@ abstract class GLVideoDriver : VideoDriver
 
             if(line_aa_)
             {
-                vertices_ += 8;
+                statistics_.vertices += 8;
 
                 //If AA is on, add two transparent vertices to the sides of the 
                 //rectangle.
@@ -204,7 +208,7 @@ abstract class GLVideoDriver : VideoDriver
             }
             else
             {
-                vertices_ += 4;
+                statistics_.vertices += 4;
 
                 glBegin(GL_TRIANGLE_STRIP);
                 glColor4ubv(cast(ubyte*)&c1);
@@ -223,8 +227,8 @@ abstract class GLVideoDriver : VideoDriver
         in{assert(texture.index < textures_.length);}
         body
         {
-            ++texture_draws_;
-            vertices_ += 4;
+            ++statistics_.textures;
+            statistics_.vertices += 4;
 
             set_shader(texture_shader_);
 
@@ -235,7 +239,7 @@ abstract class GLVideoDriver : VideoDriver
                                                " a nonexistent page");
             if(current_page_ != page_index)
             {
-                ++page_changes_;
+                ++statistics_.page;
                 pages_[page_index].start();
                 current_page_ = page_index;
             }
@@ -261,7 +265,7 @@ abstract class GLVideoDriver : VideoDriver
         
         final override void draw_text(Vector2i position, string text, Color color)
         {
-            ++text_draws_;
+            ++statistics_.texts;
 
             //font textures are grayscale and use a shader
             //to convert grayscale to alpha
@@ -292,8 +296,8 @@ abstract class GLVideoDriver : VideoDriver
             //iterating over utf-32 chars (conversion is automatic)
             foreach(dchar c; text)
             {
-                ++characters_;
-                vertices_ += 4;
+                ++statistics_.characters;
+                statistics_.vertices += 4;
 
                 texture = renderer.glyph(c, offset);
                 gl_texture = textures_[texture.index];
@@ -302,7 +306,7 @@ abstract class GLVideoDriver : VideoDriver
                 //change texture page if needed
                 if(current_page_ != page_index)
                 {
-                    ++page_changes_;
+                    ++statistics_.page;
                     pages_[page_index].start();
                     current_page_ = page_index;
                 }
@@ -484,20 +488,20 @@ abstract class GLVideoDriver : VideoDriver
             }
         }
 
-        GUIElement monitor(){return new GLMonitor;}
+        MonitorMenu monitor_menu(){return new GLVideoDriverMonitor(this);}
 
     package:
         //Debugging: draw specified area of a page on the specified quad.
         void draw_page(uint page_index, ref Rectanglef area, ref Rectanglef quad)
         {
-            vertices_ += 4;  
+            statistics_.vertices += 4;  
 
             set_shader(texture_shader_);
 
             assert(pages_[page_index] !is null, "Trying to draw a nonexistent page");
             if(current_page_ != page_index)
             {
-                ++page_changes_;
+                ++statistics_.page;
                 pages_[page_index].start();
                 current_page_ = page_index;
             }
@@ -595,7 +599,7 @@ abstract class GLVideoDriver : VideoDriver
 
             if(current_shader_ != index)
             {
-                ++shader_changes_;
+                ++statistics_.shader;
                 shaders_[index].start;
                 current_shader_ = index;
             }

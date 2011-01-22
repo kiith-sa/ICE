@@ -1,0 +1,17 @@
+General:
+    Clear names for everything, as few words as needed but no fewer.
+
+Classes:
+    Document what an instance represents(or if it's a singleton), invariants.
+    Document immutability of classes.
+
+Functions:
+    Preconditions, postconditions, side effects, format of passed parameters ,
+    esp. strings and what they represent), what we can and can't do
+    with passed or returned instance 
+    (do we have to call a specific method to delete instance produced by this call?
+     will changing this instance we passed result in error?)
+    units of parameters (pixels, world units, which space this coordinate is in...)
+    when they can or can't be called
+    Principle of least astonishment - functions should do what user expects 
+    (from the function name) - without significant unexpected side effects.

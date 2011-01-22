@@ -9,10 +9,33 @@ import video.gltexturepage;
 import gui.guielement;
 import gui.guimenu;
 import gui.guistatictext;
+import gui.guigraph;
+import monitor.monitor;
+import monitor.graphmonitor;
+import monitor.monitormenu;
 import math.vector2;
 import math.rectangle;
 import math.math;
+import color;
+import signal;
 
+
+///Used to gather statistics data to be sent by GLVideoDriver to GL monitors.
+package struct Statistics
+{
+    //Draw calls.
+    uint lines, textures, texts;
+    //Drawing primitives.
+    uint vertices, characters;
+    //State changes.
+    uint shader, page;
+
+    //Reset the statistics gathered for the next frame.
+    void zero()
+    {    
+        lines = textures = texts = vertices = characters = shader = page = 0;
+    }
+}
 
 ///Displays info about texture pages.
 final package class PagesMonitor : GUIElement
@@ -82,7 +105,7 @@ final package class PagesMonitor : GUIElement
         uint current_page_ = 0;
 
     public:
-        this()
+        this(GLVideoDriver driver)
         {
             super();
 
@@ -129,7 +152,7 @@ final package class PagesMonitor : GUIElement
                 add_item("+", &view_.zoom_in);
                 add_item("-", &view_.zoom_out);
 
-                item_font_size = GLMonitor.font_size;
+                item_font_size = Monitor.font_size;
                 item_width = "24";
                 item_height = "14";
                 item_spacing = "2";
@@ -147,7 +170,7 @@ final package class PagesMonitor : GUIElement
                 position_y = "p_top + 2";
                 width = "72";
                 height = "p_bottom - p_top - 4";
-                font_size = GLMonitor.font_size;
+                font_size = Monitor.font_size;
             }
             add_child(info_text_);
             update_text();
@@ -198,115 +221,53 @@ final package class PagesMonitor : GUIElement
         }
 }
 
-///Displays info about draw calls, state changes and primitives.
-final package class DrawsMonitor : GUIElement
+///Displays info about draw calls
+final package class DrawsMonitor : GraphMonitor
 {
-    private:
-        alias std.string.toString to_string;
-
-        //text showing information about draws.
-        GUIStaticText draws_text_;
-
     public:
-        this()
+        ///Construct a DrawsMonitor, set value names and colors.
+        this(GLVideoDriver monitored)
         {
-            super();
-
-            draws_text_ = new GUIStaticText;
-            with(draws_text_)
-            {
-                alignment_x = AlignX.Right;
-                position_x = "p_left + 2";
-                position_y = "p_top + 2";
-                width = "96";
-                height = "p_bottom - p_top - 4";
-                font_size = GLMonitor.font_size;
-            }
-            add_child(draws_text_);
-            update_text();
-        }
-
-    protected:
-        override void update()
-        {
-            super.update();
-            update_text();
+            mixin(generate_graph_monitor_ctor("lines", "textures", "texts"));
         }
 
     private:
-        //update shown drawing information.
-        void update_text()
-        {
-            GLVideoDriver driver = cast(GLVideoDriver)VideoDriver.get;
-            with(driver)
-            {
-                draws_text_.text = "draw calls/frame:\n" 
-                                   "lines: " ~ to_string(line_draws_) ~ "\n"
-                                   "textures: " ~ to_string(texture_draws_) ~ "\n"
-                                   "texts: " ~ to_string(text_draws_) ~ "\n"
-                                   "elements/frame:\n"
-                                   "vertices: " ~ to_string(vertices_) ~ "\n"
-                                   "characters: " ~ to_string(characters_) ~ "\n"
-                                   "state changes/frame:\n"
-                                   "shader: " ~ to_string(shader_changes_) ~ "\n"
-                                   "texture page: " ~ to_string(page_changes_) ~ "\n";
-            }
-        }
+        //Callback called by GLVideoDriver once per frame to update monitored statistics.
+        mixin(generate_graph_fetch_statistics("lines", "textures", "texts"));
 }
-
-///Displays info about GLVideoDriver.
-final package class GLMonitor : GUIElement
+  
+///Displays info about graphics primitives drawn
+final package class PrimitivesMonitor : GraphMonitor
 {
+     public:
+        ///Construct a PrimitivesMonitor.
+        this(GLVideoDriver monitored)
+        {
+            mixin(generate_graph_monitor_ctor("vertices", "characters"));
+        }
+
     private:
-        GUIMenu menu_;
-        GUIElement current_monitor_ = null;
-        
+        //Callback called by GLVideoDriver once per frame to update monitored statistics.
+        mixin(generate_graph_fetch_statistics("vertices", "characters"));
+}            
+          
+///Displays info about state changes during the frame
+final package class ChangesMonitor : GraphMonitor
+{ 
     public:
-        this()
+        ///Construct a ChangesMonitor.
+        this(GLVideoDriver monitored)
         {
-            super();
-
-            menu_ = new GUIMenu;
-            with(menu_)
-            {
-                position_x = "p_left";
-                position_y = "p_top";
-
-                add_item("Pages", &pages);
-                add_item("Draws", &draws);
-
-                item_font_size = GLMonitor.font_size;
-                item_width = "40";
-                item_height = "12";
-                item_spacing = "4";
-            }
-            add_child(menu_);
+            mixin(generate_graph_monitor_ctor("shader", "page"));
         }
 
-        //Display texture pages monitor.
-        void pages(){monitor(new PagesMonitor);}
-        //Display draws monitor.
-        void draws(){monitor(new DrawsMonitor);}
+    private:
+        //Callback called by GLVideoDriver once per frame to update monitored statistics.
+        mixin(generate_graph_fetch_statistics("shader", "page"));
+}         
 
-        //Display specified submonitor.
-        void monitor(GUIElement monitor)
-        {
-            if(current_monitor_ !is null)
-            {
-                remove_child(current_monitor_);
-                current_monitor_.die();
-            }
-
-            current_monitor_ = monitor;
-            with(current_monitor_)
-            {
-                position_x = "p_left + 48";
-                position_y = "p_top + 4";
-                width = "p_right - p_left - 52";
-                height = "p_bottom - p_top - 8";
-            }
-            add_child(current_monitor_);
-        }
-
-        static uint font_size(){return 8;}
-}
+///GLVideoDriverMonitor class - a MonitorMenu implementation is generated here.
+mixin(generate_monitor_menu("GLVideoDriver", 
+                            ["Pages", "Draws", "Primitives", "Changes"], 
+                            ["PagesMonitor", "DrawsMonitor", "PrimitivesMonitor",
+                             "ChangesMonitor"]));

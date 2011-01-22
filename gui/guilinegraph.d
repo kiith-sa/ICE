@@ -64,6 +64,8 @@ final class GUILineGraph : GUIGraph
         GraphDisplay[string] graphics_;
         //Horizontal lines on the graph.
         Line[] lines_;
+        //Font size used for numbers describing values represented by the lines.
+        uint font_size_ = 8;
 
         //Time between two data points displayed on the graph.
         real data_point_time_ = 1.0;
@@ -148,6 +150,9 @@ final class GUILineGraph : GUIGraph
 
         ///Get Y scale of the graph. 
         float scale_y(){return scale_y_;}
+
+        ///Set font size of this graph.
+        void font_size(uint size){font_size_ = size;}
 
     protected:
         override void update()

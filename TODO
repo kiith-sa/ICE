@@ -1,21 +1,54 @@
 17:
-    update GLMonitor and GLVideoDriver according to PhysicsMonitor and PhysicsEngine
-    i.e. use graphmonitor
+    NOW cleanup, commit
+17:
+    Profile the monitors, possibly implement line strip in glvideodriver
+17:
+    Try to desingletonify game by passing delegates to players.
+17: 
+    Consider removing Timer::reset based on its usage. Constructing timers is cheap.
+    Could be made immutable if reset is removed. (if immutable, document that)
+    Also, look at any classes that can be made immutable.
+    Look for huge param lists and consider passing structs using the builder pattern.
+17:
+    Consider subclassing menu to horizontal and vertical menu
+    (probably in the same module) - menu would be abstract.
+    Game menu will still be menu, but implementation will be verticalmenu.
 
-    Possibly, GLMonitor and PhysicsMonitor could have a shared base class
-    that handles submonitors.
+    consider making GUIRoot not a GUIElement, but rather making both
+    GUINodes and, in guielement::realign,
+    asserting that we have a parent
 
-    Also, possibly, string mixins could be used to create a base class
-    for all the GraphMonitor based monitors.
-    basically, user'd call 
-    new XXXGraphMonitor<PhysicsEngine>(["bodies", "collision_bodies"], [Color(...), Color(...)])
-    and fetch_statistics etc would be generated automatically.
-    Of course, e.g. mode would have to be public, as well as e.g. add_mode_buttons.
-    Still, this would reduce cost of new graph based stat-feching monitor class
-    to a simple function instead of a whole class.
-    
+    Better: No GUINode, simply make GUIRoot a non-derived class
+    that contains an invisible, root GUIElement
+17:
+    Improve testability by looking at ctors and removing new calls from them.
+    All/most that a class needs should be passed to ctor, created outside.
+    maybe use factories
+    E.g. actors should not construct their physics bodies themselves,
+    and passing actormanager to do that is evil, too
+    So, need a factory with access to actormanager, or actormanager to be the
+    factory or something like that
+    (maybe actormanager or some factory should have a template method, string
+     mixin method/s for construction, or there should be a template/string mixin
+     factory class)
+17: 
+    Color: special ctor for RGB only with only 3 args, setting alpha to 255.
+17:
+    Try desingletonifying some singletons (yes-single instance, no-global access)
+    For instance, physics engine could be a member of actormanager,
+    accessible from there through an accessor.
+    If all Actors need from ActorManager is update time,
+    we can pass that with updates, desingletonify actormanager,
+    include it as a member of Game.
+    We can also pass reference to actormanager, physicsengine on update.
+    Also desingletonify GUIRoot - just force single instance, not global
+    access
 
-    In the end, profile the monitor, possibly implement line strip in glvideodriver
+    Singletons should probably be kept for videodriver and platform,
+    those have external dependencies and are not that testable anyway
+    still, might try-draw methods would need to pass videodriver, for instance
+
+    If this results in better testability, more unittests
 17:
     Coarse collision detection (SpatialManager)
     Maybe make SpatialManager general enough so we can use the same class
@@ -23,6 +56,21 @@
 
     For now, just implement a grid, not quadtree. Might be enough in the end.
     Also profile how many object-object comparisons there are for contact detection.
+
+    the manager interface allows iteration over groups (groups
+    of objects that might collide) - same object can be in multiple groups.
+
+    This manager would probably need to contain actors, not bodies,
+    to be usable to draw only visible actors, or a separate one for bodies and actors.
+
+    Start with code using the API, then write the API itself,
+    or, just write a dummy API that does no management, has just bare
+    working methods and returns a group of all objects for coldetection,
+    write user code both for coldetection and graphics,
+    and fix the API based on results.
+
+    The manager should contain actor, but for coarse coldetection,
+    should have a mathod to return groups of bodies taken from the actors.
 
     Thoughts:
 
@@ -35,6 +83,9 @@
 
     alternatively: just return a reference per each array of nearby objects (content of each quadtree node)
     - without copying the array itself
+17:
+    GUI substitutions: parent width and height, and rewrite math expressions with these
+    substitutions
 17: 
     SpatialManager GUI monitor
 17:
@@ -61,9 +112,29 @@
     DDoc would probably be better.
     Then generate the docs, use CandyDoc or something to make them
     not look like shit.
+                                                                  
+    Find a way to generate DDoc for public only, or public+protected etc.
+    Maybe CandyDoc can do that?
+
+    Also add some coding examples to e.g. GUI DDoc, maybe VideoDriver
+20:
+    Make GUIGraph a separate, non-GUI class and make GUILineGraph
+    compose it, istead of inheriting. This will allow us to package
+    the same GUIGraph in various classes providing different graphical
+    representations. E.g. GraphMonitor could offer a list view, not only graph view.
 20:
     Look at other games/demos for graphics effect ideas...
     or maybe we have enough effects by now...
+20:
+    Resolution change in-game.
+    Yeah, probably need to get all texture pages out of GPU memory and back and save other GL state.
+    Only do this after end_frame, before start_frame.
+    Also will need changes in Platform code.
+    Better now than never (since when VBOs are done they'll need saving as well)
+    Test just with a button for now, options will be added later.
+    to get texture page from GPU, use glGetTexImage.
+20:
+    Screenshot. Probable glReadPixels from framebuffer. Also need PNG output 
 20: 
     Get rid of immediate mode:
     support VAs and maybe VBOs (not that necessary right now) -
@@ -94,6 +165,13 @@
 24:
     Ability to run monitor graphs in background w/o rendering them and then 
     render them to file (SVG or PNG)
+    Monitors should have an 'enable' button that will make them 
+    persistent, running in background even when not viewing them.
+    This should be handled by a base class used by all submonitors,
+    and some kind of monitor manager.
+    I.e. physicsmonitor (or w/e) requests e.g. 
+    MonitorManager.get_monitor("MonitorName") which will either create new monitor
+    and return it or return already existing monitor.
 24:
     Alongside mouse_move and mouse_key, consider more advanced
     mouse_click (triggered by quick succeeding press and release),
@@ -159,18 +237,50 @@
     Multiplayer, with single PC and over a network (test with two computers)
 14:
     AI difficulty settings;
+14:
+    Unittests for actors, bodies etc.
+    We can make actors and bodies more testable by 
+    removing self-registration/self-deletion from
+    body, actor ctors/die()/dtors
+    Then we can test them with simple dummy manager classes,
+    or, if needed, subclassed real managers with most methods as dummies
+
+    also try to unittests subsystems, maybe using subclassed semi-dummy
+    implementations - can't do this for platform/videodriver,
+    others should work.
+
+    If not possible, subsystem tests (separate app/s - tests for physicsengine, videodriver,
+                     GUI, actormanager/scenemanager, actors)
+    first test managers, then data managed by them
+    Also look for where we can put unittests
+    Still, try initializing singletons in unittest blocks first 
+    (and deleting them on the end of unit tests)
+    maybe create specific implementations of singletons for testing
+    -based on actually used implementations.
+    If needed- try to modify the code to make it more testable
+    (i.e. decouple subsystems and classes they manage)
+15:
+    Consider tree-based math parser. Advantage is:
+    GUI elements can keep the tree and just change the vaues of substitution,
+    tree can be evaluated w/o being regenerated. If this is not needed, move it to 
+    optimization TODOs
+    This parser would use the current code to convert to postfix notation and generate
+    the tree from that.
 15:
     Maybe show an AI/AI game on the background of the credits screen.
     (i.e. just start the game with two AI players in credits_start
      and call pong_end from credits_end)
-
-
+16:
+    Ensure everything is documented in DDoc and push, for the first time
+    to gitorious or github. Not necessarily announcing it.
 --AFTER PONG    
+4:
+    Consider D2 (at this point it might be mature enough :p)
 5:
-    Ball and such should be subclasses of PhysicsActor or something like that
-    that would always get coldetected.
-    Currently we need to check classinfo which is not a good OO design.
-    Physics data should probably be a class composited into PhysicsActor.
+    Find some use for multithreading, e.g. asynchronous drawing
+    or physics, or maybe OpenMP style (or just 2-4 threads)
+    for collision detection (not penetration resolution or response,
+    at least for now)
 6:
     Consider mipmapping using 
     glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE)
@@ -340,8 +450,6 @@
 
     Especially, use of <br> or some other explicit line break would be good
     instead of using \n as explicit newline.
-39:
-    Consider D2 (at this point it might be mature enough :p)
 40?:
     Particle system overhaul - turn ParticleEmitter into PointEmitter,
     add something like PolygonEmitter (or at least RectangleEmitter, LineEmitter),
@@ -426,7 +534,7 @@ Optimizations:
     Alpha testing could be used in combination with blending. I.e.
     a fragment with 0 alpha would automatically be discarded.
     This would break our remap plans, though.
-    However, if we could do this in shader (need to learn how to discard
+    However, if we culd do this in shader (need to learn how to discard
     a fragment in shader), everything would work right.
 7?:
     If color interpolation is a problem, we can create a ColorInterpolator class,
@@ -450,6 +558,10 @@ GUI:
     Progress bars should be simple animation with frame depending
     of progress of something. This way we can have various fancy
     loading bars, unit construction progress C&C style, etc.
+2:
+    once loading GUI from files, CSS-like style code (subset),
+    and look at YAGE GUI
+
 
 GL1:
 1:
