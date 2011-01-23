@@ -7,7 +7,7 @@ import video.glvideodriver;
 import color;
 
 
-///Handles all drawing functionality.
+///GLVideoDriver implementation using SDL to set up video mode.
 final class SDLGLVideoDriver : GLVideoDriver
 {
     public:
@@ -18,9 +18,9 @@ final class SDLGLVideoDriver : GLVideoDriver
         in
         {
             assert(width > 160 && width < 65536, 
-                   "Can't set video mode with ridiculous width");
+                   "Can't set video mode with such ridiculous width");
             assert(height > 120 && width < 49152, 
-                   "Can't set video mode with ridiculout height");
+                   "Can't set video mode with such ridiculous height");
         }
         body
         {

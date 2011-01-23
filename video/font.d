@@ -19,7 +19,7 @@ import allocator;
 
 //use of bytes here limits font size to about 128 pixels,
 //but it also decreases struct size to 20 bytes allowing faster copying.
-///Single font glyph.
+///Immutable font glyph structure.
 package align(4) struct Glyph
 {
     Texture texture;

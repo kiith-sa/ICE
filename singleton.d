@@ -1,8 +1,10 @@
 module singleton;
 
-///Singleton template mixin with support for polymorphism.
+
 /**
- * @note: Any non-abstract singleton class must call singleton_ctor() in its ctor.
+ * Singleton template mixin with support for polymorphism.
+ *
+ * Note: Any non-abstract singleton class must call singleton_ctor() in its ctor.
  */
 template Singleton()
 {

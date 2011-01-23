@@ -1,8 +1,10 @@
 17: 
-    Consider removing Timer::reset based on its usage. Constructing timers is cheap.
-    Could be made immutable if reset is removed. (if immutable, document that)
-    Also, look at any classes that can be made immutable.
+    Look at any classes that can be made immutable.
     Look for huge param lists and consider passing structs using the builder pattern.
+17:
+    experimental: consider a string mixin to generate factories/builders for GUI
+    elements, and using that to construct gui elements 
+    (first optional, but if all code is moved to that, remove current setters)
 17:
     Consider subclassing menu to horizontal and vertical menu
     (probably in the same module) - menu would be abstract.

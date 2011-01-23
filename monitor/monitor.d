@@ -20,7 +20,6 @@ final class Monitor : GUIElement
         //Currently shown menu (can be the main menu or a subsystem monitor menu).
         GUIMenu current_menu_;
         GUIElement current_monitor_ = null;
-        Timer update_timer_;
 
     public:
         ///Construct a new monitor with specified parameters.
@@ -44,22 +43,13 @@ final class Monitor : GUIElement
                 item_spacing = "4";
             }
             add_child(main_menu_);
-
-            update_timer_ = Timer(0.5);
         }
 
         ///Return font size to be used by monitor widgets.
         static uint font_size(){return 8;}
 
     protected:
-        override void update()
-        {
-            if(update_timer_.expired())
-            {
-                update_children();
-                update_timer_.reset();
-            }
-        }
+        override void update(){update_children();}
 
     private:
         //Display video driver monitor.

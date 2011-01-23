@@ -216,8 +216,10 @@ final package class PagesMonitor : GUIElement
             }
             while(driver.pages[current_page_] == null){next();}
 
-            info_text_.text = "page index: " ~ to_string(current_page_) ~ "\n" ~
-                              driver.pages[current_page_].info;
+            string text = "page index: " ~ to_string(current_page_) ~ "\n" ~
+                          driver.pages[current_page_].info;
+
+            if(info_text_.text != text){info_text_.text = text;}
         }
 }
 
