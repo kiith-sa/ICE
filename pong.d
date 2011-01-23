@@ -34,7 +34,7 @@ import time.time;
 import time.timer;
 import time.eventcounter;
 import signal;
-import singleton;
+import weaksingleton;
 import color;
 
 
@@ -498,8 +498,12 @@ abstract class Player
         ///Get name of this player.
         string name(){return name_;}
 
-        ///Update the player state.
-        void update(){}
+        /**
+         * Update the player state.
+         * 
+         * Params:  game = Reference to the game that updates the player.
+         */
+        void update(Game game){}
 
         ///Destroy this player
         void die(){delete this;}
@@ -528,7 +532,7 @@ class AIPlayer : Player
             update_timer_ = Timer(update_time);
         }
 
-        override void update()
+        override void update(Game game)
         {
             if(update_timer_.expired())
             {
@@ -536,7 +540,7 @@ class AIPlayer : Player
                 real frame_length = ActorManager.get.time_step;
 
                 //currently only support zero or one ball
-                Ball[] balls = Game.get.balls;
+                Ball[] balls = game.balls;
                 assert(balls.length <= 1, 
                        "AI supports only zero or one ball at the moment");
                 if(balls.length == 0)
@@ -1075,7 +1079,7 @@ class HUD
 
 class Game
 {
-    mixin Singleton;
+    mixin WeakSingleton;
     private:
         Ball ball_;
         real ball_radius_ = 6.0;
@@ -1122,8 +1126,8 @@ class Game
                 hud_.update(time_left, player_1_, player_2_);
 
                 //update player state
-                player_1_.update();
-                player_2_.update();
+                player_1_.update(this);
+                player_2_.update(this);
 
                 //check for victory conditions
                 if(player_1_.score >= score_limit_ || 
@@ -1145,7 +1149,7 @@ class Game
             return continue_;
         }
 
-        void die(){}
+        void die(){singleton_dtor();}
 
         void intro()
         {
@@ -1368,7 +1372,7 @@ class Credits : GUIElement
 
 class Pong
 {
-    mixin Singleton;
+    mixin WeakSingleton;
     private:
         EventCounter fps_counter_;
         bool run_pong_ = false;
@@ -1376,6 +1380,7 @@ class Pong
 
         GUIElement menu_container_;
         GUIMenu menu_;
+        Game game;
 
         Credits credits_;
 
@@ -1384,10 +1389,12 @@ class Pong
         this()
         {
             singleton_ctor();
-            Game.initialize!(Game);
+
             ActorManager.initialize!(ActorManager);
             GUIRoot.initialize!(GUIRoot);
             VideoDriver.get.set_video_mode(800, 600, ColorFormat.RGBA_8, false);
+
+            game = new Game;
 
             //Update FPS every second
             fps_counter_ = new EventCounter(1.0);
@@ -1430,6 +1437,8 @@ class Pong
             Platform.get.die();
             fps_counter_.update.disconnect(&fps_update);
             GUIRoot.get.die();
+
+            singleton_dtor();
         }
 
         void run()
@@ -1441,7 +1450,7 @@ class Pong
                 //Count this frame
                 fps_counter_.event();
 
-                if(run_pong_ && !Game.get.run()){pong_end();}
+                if(run_pong_ && !game.run()){pong_end();}
 
                 //update game state
                 ActorManager.get.update();
@@ -1449,14 +1458,14 @@ class Pong
 
                 VideoDriver.get.start_frame();
 
-                if(run_pong_){Game.get.draw();}
+                if(run_pong_){game.draw();}
                 else{draw();}
 
                 ActorManager.get.draw();
                 GUIRoot.get.draw();
                 VideoDriver.get.end_frame();
             }
-            Game.get.die();
+            game.die();
             writefln("FPS statistics:\n", fps_counter_.statistics, "\n");
             writefln("ActorManager statistics:\n", ActorManager.get.statistics, "\n");
         }
@@ -1476,7 +1485,7 @@ class Pong
             run_pong_ = true;
             menu_container_.hide();
             Platform.get.key.disconnect(&key_handler);
-            Game.get.intro();
+            game.intro();
         }
 
         void credits_start()
@@ -1542,9 +1551,9 @@ void main()
 
     try
     {
-        Pong.initialize!(Pong);
-        Pong.get.run();
-        Pong.get.die();
+        Pong pong = new Pong;
+        pong.run();
+        pong.die();
     }
     catch(Exception e)
     {
