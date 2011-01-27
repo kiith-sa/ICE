@@ -9,26 +9,11 @@ import gui.guistatictext;
 import video.videodriver;
 import factory;
 
-
-enum MenuOrientation
+abstract class GUIMenu : GUIElement
 {
-    Horizontal,
-    Vertical
-}
-
-class GUIMenu : GUIElement
-{
-    private:
-        alias std.string.toString to_string;
-
-        uint item_count_;
-
-        //Font size of the buttons in the menu.
-        uint font_size_ = GUIStaticText.default_font_size();
-
+    alias std.string.toString to_string;
+    protected:
         GUIButton[] items_;
-
-        MenuOrientation orientation_ = MenuOrientation.Vertical;
 
         //Math expression used to calculate width of a menu element.
         string item_width_;
@@ -36,6 +21,10 @@ class GUIMenu : GUIElement
         string item_height_;
         //Math expression used to calculate spacing between menu elements.
         string item_spacing_;
+
+    private:
+        //Font size of the buttons in the menu.
+        uint font_size_ = GUIStaticText.default_font_size();
 
     protected:
         /*
@@ -47,7 +36,6 @@ class GUIMenu : GUIElement
          *          y              = Y position math expression. 
          *          width          = Width math expression. 
          *          height         = Height math expression. 
-         *          orientation    = Menu orientation (horizontal or vertical)
          *          item_width     = Menu item width math expression.
          *          item_height    = Menu item height math expression.
          *          item_spacing   = Math expression used to calculate spacing between menu items.
@@ -55,42 +43,26 @@ class GUIMenu : GUIElement
          *          items          = Names and callback functions of menu items.
          */
         this(string x, string y, string width, string height, 
-             MenuOrientation orientation, 
              string item_width, string item_height, string item_spacing, 
              uint item_font_size, MenuItemData[] items)
         {
             super(x, y, width, height);
             draw_border_ = false;
-            orientation_ = orientation;
-            item_width_ = item_width;
-            item_height_ = item_height;
-            item_spacing_ = item_spacing;
+            //parentheses prevent unwanted operator precedence, simplify realigning code
+            item_width_ = "(" ~ item_width ~ ")";
+            item_height_ = "(" ~ item_height ~ ")";
+            item_spacing_ = "(" ~ item_spacing ~ ")";
             font_size_ = item_font_size;
             aligned_ = false;
 
             foreach(ref item; items){add_item(item.text, item.deleg);}
         }
 
-        override void realign()
-        {
-            string spacing = "(" ~ item_spacing_ ~ ")";
+        ///Get math expression for X position of a new item.
+        string new_item_x();
 
-            if(orientation_ == MenuOrientation.Horizontal)
-            {
-                string offset = "((" ~ item_width_ ~ ") + " ~ spacing ~ ")";
-                width_string_ = spacing ~ " + " ~ offset ~ " * " ~ to_string(items_.length);
-                height_string_ = spacing ~ " * 2 + (" ~ item_height_ ~ ")";
-            }
-            else if(orientation_ == MenuOrientation.Vertical)
-            {
-
-                string offset = "((" ~ item_height_ ~ ") + " ~ spacing ~ ")";
-                width_string_ = spacing ~ " * 2 + (" ~ item_width_ ~ ")";
-                height_string_ = spacing ~ " + " ~ offset ~ " * " ~ to_string(items_.length);
-            }
-            else{assert(false, "Unknown menu orientation");}
-            super.realign();
-        }
+        ///Get math expression for Y position of a new item.
+        string new_item_y();
 
     private:
         /**
@@ -120,49 +92,113 @@ class GUIMenu : GUIElement
             add_child(button);
             aligned_ = false;
         }
+}
 
-        ///Get math expression for X position of a new item.
-        string new_item_x()
+class GUIMenuHorizontal : GUIMenu
+{
+    protected:
+        /*
+         * Construct a horizontal menu with specified parameters.
+         *
+         * See_Also: GUIElement.this 
+         *
+         * Params:  x              = X position math expression.
+         *          y              = Y position math expression. 
+         *          width          = Width math expression. 
+         *          height         = Height math expression. 
+         *          item_width     = Menu item width math expression.
+         *          item_height    = Menu item height math expression.
+         *          item_spacing   = Math expression used to calculate spacing between menu items.
+         *          item_font_size = Font size of menu items.
+         *          items          = Names and callback functions of menu items.
+         */
+        this(string x, string y, string width, string height, 
+             string item_width, string item_height, string item_spacing, 
+             uint item_font_size, MenuItemData[] items)
         {
-            string spacing = "(" ~ item_spacing_ ~ ")";
-            if(orientation_ == MenuOrientation.Horizontal)
-            {
-                string offset = "((" ~ item_width_ ~ ") + " ~ spacing ~ ")";
-                return spacing ~ " + p_left + " ~ offset ~ " * " ~ to_string(items_.length);
-            }
-            else{return "p_left + " ~ spacing;}
+            super(x, y, width, height, item_width, item_height, item_spacing,
+                  item_font_size, items);
         }
 
-        ///Get math expression for Y position of a new item.
-        string new_item_y()
+        override void realign()
         {
-            string spacing = "(" ~ item_spacing_ ~ ")";
-            if(orientation_ == MenuOrientation.Horizontal){return "p_top + " ~ spacing;}
-            else
-            {
-                string offset = "((" ~ item_height_ ~ ") + " ~ spacing ~ ")";
-                return spacing ~ " + p_top + " ~ offset ~ " * " ~ to_string(items_.length);
-            }
+            string offset = "(" ~ item_width_ ~ " + " ~ item_spacing_ ~ ")";
+            width_string_ = item_spacing_ ~ " + " ~ offset ~ " * " ~ to_string(items_.length);
+            height_string_ = item_spacing_ ~ " * 2 + " ~ item_height_;
+            super.realign();
+        }
+
+        override string new_item_x()
+        {
+            string offset = "(" ~ item_width_ ~ " + " ~ item_spacing_ ~ ")";
+            return item_spacing_ ~ " + p_left + " ~ offset ~ " * " ~ to_string(items_.length);
+        }
+
+        override string new_item_y(){return "p_top + " ~ item_spacing_;}
+}
+
+class GUIMenuVertical : GUIMenu
+{
+    protected:
+        /*
+         * Construct a vertical menu with specified parameters.
+         *
+         * See_Also: GUIElement.this 
+         *
+         * Params:  x              = X position math expression.
+         *          y              = Y position math expression. 
+         *          width          = Width math expression. 
+         *          height         = Height math expression. 
+         *          item_width     = Menu item width math expression.
+         *          item_height    = Menu item height math expression.
+         *          item_spacing   = Math expression used to calculate spacing between menu items.
+         *          item_font_size = Font size of menu items.
+         *          items          = Names and callback functions of menu items.
+         */
+        this(string x, string y, string width, string height, 
+             string item_width, string item_height, string item_spacing, 
+             uint item_font_size, MenuItemData[] items)
+        {
+            super(x, y, width, height, item_width, item_height, item_spacing,
+                  item_font_size, items);
+        }
+
+        override void realign()
+        {
+            string offset = "(" ~ item_height_ ~ " + " ~ item_spacing_ ~ ")";
+            width_string_ = item_spacing_ ~ " * 2 + " ~ item_width_;
+            height_string_ = item_spacing_ ~ " + " ~ offset ~ " * " ~ to_string(items_.length);
+            super.realign();
+        }
+
+        override string new_item_x(){return "p_left + " ~ item_spacing_;}
+
+        override string new_item_y()
+        {
+            string offset = "(" ~ item_height_ ~ " + " ~ item_spacing_ ~ ")";
+            return item_spacing_ ~ " + p_top + " ~ offset ~ " * " ~ to_string(items_.length);
         }
 }
 
 /**
  * Factory used for menu construction.
  *
+ * GUIMenuHorizontalFactory and GUIMenuVerticalFactory are just aliases of this
+ * class with GUIMenuHorizontal and GUIMenuVertical as the template parameter,
+ * so documentation of this class applies to both of them.
+ *
  * See_Also: GUIElementFactoryBase
  *
- * Params:  orientation    = Menu orientation (horizontal or vertical)
- *          item_width     = Menu item width math expression.
+ * Params:  item_width     = Menu item width math expression.
  *          item_height    = Menu item height math expression.
  *          item_spacing   = Math expression used to calculate spacing between menu items.
  *          item_font_size = Font size of menu items.
  *          add_item       = Add a menu item with specified text and callback to 
  *                           be called when the item is clicked.
  */
-final class GUIMenuFactory : GUIElementFactoryBase!(GUIMenu)
+class GUIMenuFactory(T) : GUIElementFactoryBase!(T)
 {
-    mixin(generate_factory("MenuOrientation $ orientation $ MenuOrientation.Vertical", 
-                           "string $ item_width $ \"128\"", 
+    mixin(generate_factory("string $ item_width $ \"128\"", 
                            "string $ item_height $ \"24\"",
                            "string $ item_spacing $ \"4\"",
                            "uint $ item_font_size $ GUIStaticText.default_font_size()"));
@@ -172,12 +208,15 @@ final class GUIMenuFactory : GUIElementFactoryBase!(GUIMenu)
     public:
         void add_item(string text, void delegate() deleg){items_ ~= MenuItemData(text, deleg);}
 
-        override GUIMenu produce()
+        override T produce()
         {
-            return new GUIMenu(x_, y_, width_, height_, orientation_, item_width_, 
-                               item_height_, item_spacing_, item_font_size_, items_);
+            return new T(x_, y_, width_, height_, item_width_, 
+                         item_height_, item_spacing_, item_font_size_, items_);
         }
 }
+
+alias GUIMenuFactory!(GUIMenuHorizontal) GUIMenuHorizontalFactory;
+alias GUIMenuFactory!(GUIMenuVertical) GUIMenuVerticalFactory;
 
 private:
 //Data structure holding data needed to create a menu item.

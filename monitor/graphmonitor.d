@@ -32,7 +32,7 @@ abstract class GraphMonitor : SubMonitor
         //Not using menu since we need to control color of each button.
         GUIButton[string] value_buttons_;
         //Menu of buttons controlling the graph.
-        GUIMenu menu_;
+        GUIMenuHorizontal menu_;
 
         //note: in D2, this can be replaced with closures
         //Function object used by buttons for graph method calls to toggle display of values.
@@ -196,11 +196,10 @@ abstract class GraphMonitor : SubMonitor
          */
         void init_menu()
         {
-            with(new GUIMenuFactory)
+            with(new GUIMenuHorizontalFactory)
             {
                 x = "p_left + 50";
                 y = "p_bottom - 24";
-                orientation = MenuOrientation.Horizontal;
                 item_width = "48";
                 item_height = "20";
                 item_spacing = "2";

@@ -1,8 +1,4 @@
 17:
-    Subclass menu to horizontal and vertical menu
-    (probably in the same module) - menu would be abstract.
-    Game menu will still be menu, but implementation will be verticalmenu.
-
     consider making GUIRoot not a GUIElement, but rather making both
     GUINodes and, in guielement::realign, asserting that we have a parent.
 

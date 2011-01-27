@@ -1422,7 +1422,7 @@ class Pong
 
             GUIRoot.get.add_child(menu_container_);
 
-            with(new GUIMenuFactory)
+            with(new GUIMenuVerticalFactory)
             {
                 x = "p_left";
                 y = "p_top + 136";

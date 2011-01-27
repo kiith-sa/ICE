@@ -17,7 +17,7 @@ final class Monitor : GUIElement
 {
     private:
         //Main menu used to access menus of subsystems' monitors.
-        GUIMenu main_menu_;
+        GUIMenuHorizontal main_menu_;
         //Currently shown submenu(if any).
         MonitorMenu current_menu_;
         //Currently shown monitor.
@@ -42,11 +42,10 @@ final class Monitor : GUIElement
         {
             super("16", "16", "192 + w_right / 4", "168 + w_bottom / 6");
 
-            with(new GUIMenuFactory)
+            with(new GUIMenuHorizontalFactory)
             {
                 x = "p_left";
                 y = "p_top";
-                orientation = MenuOrientation.Horizontal;
                 item_width = "44";
                 item_height = "14";
                 item_spacing = "4";

@@ -13,7 +13,7 @@ abstract class MonitorMenu
 {
     private:
         ///GUI element displaying the menu.
-        GUIMenu menu_;
+        GUIMenuHorizontal menu_;
 
     public:
         ///Signal used to return back to parent menu.
@@ -34,11 +34,10 @@ abstract class MonitorMenu
          * Params:  factory = Factory used to build the menu.
          *                    Overriding class must add menu items to the factory.
          */
-        this(GUIMenuFactory factory)
+        this(GUIMenuHorizontalFactory factory)
         {
             with(factory)
             {
-                orientation = MenuOrientation.Horizontal;
                 item_width = "44";
                 item_height = "14";
                 item_spacing = "4";
@@ -96,7 +95,7 @@ body
 
     string ctor_start = "    public this(" ~ name ~ " monitored)\n"
                         "    {\n"
-                        "        auto factory = new GUIMenuFactory;\n";
+                        "        auto factory = new GUIMenuHorizontalFactory;\n";
     string ctor_items = "        factory.add_item(\"Back\", &back_to_parent);\n";
     foreach(monitor; monitor_names)
     {
@@ -123,7 +122,7 @@ unittest
         "    private Monitored monitored_;\n" 
         "    public this(Monitored monitored)\n"
         "    {\n"
-        "        auto factory = new GUIMenuFactory;\n"
+        "        auto factory = new GUIMenuHorizontalFactory;\n"
         "        factory.add_item(\"Back\", &back_to_parent);\n"
         "        factory.add_item(\"A\", &A);\n"
         "        factory.add_item(\"B\", &B);\n"

@@ -104,7 +104,7 @@ final package class PagesMonitor : SubMonitor
         
         PageView view_;
 
-        GUIMenu menu_;
+        GUIMenuVertical menu_;
         
         //Information about the page.
         GUIStaticText info_text_;
@@ -138,7 +138,7 @@ final package class PagesMonitor : SubMonitor
 
         void init_menu()
         {
-            with(new GUIMenuFactory)
+            with(new GUIMenuVerticalFactory)
             {
                 x = "p_left";
                 y = "p_top";
