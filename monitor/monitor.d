@@ -40,7 +40,7 @@ final class Monitor : GUIElement
          */
         this(string x, string y, string width, string height)
         {
-            super("16", "16", "192 + w_right / 4", "168 + w_bottom / 6");
+            super(x, y, width, height);
 
             with(new GUIMenuHorizontalFactory)
             {

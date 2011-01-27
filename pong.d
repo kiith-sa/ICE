@@ -23,7 +23,6 @@ import physics.collisionaabbox;
 import physics.collisioncircle;
 import physics.contact;
 import gui.guielement;
-import gui.guiroot;
 import gui.guimenu;
 import gui.guibutton;
 import gui.guistatictext;
@@ -1399,8 +1398,8 @@ class Pong
             singleton_ctor();
 
             ActorManager.initialize!(ActorManager);
-            GUIRoot.initialize!(GUIRoot);
             VideoDriver.get.set_video_mode(800, 600, ColorFormat.RGBA_8, false);
+            GUIRoot.initialize!(GUIRoot);
 
             game = new Game;
 

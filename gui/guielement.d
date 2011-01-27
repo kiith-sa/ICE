@@ -8,9 +8,11 @@ import math.vector2;
 import math.rectangle;
 import platform.platform;
 import formats.mathparser;
+import monitor.monitor;
 import color;
 import arrayutil;
 import factory;
+import singleton;
 
 
 //In future, this should be rewritten to support background and border(?) textures,
@@ -265,6 +267,110 @@ class GUIElement
             }
 
             aligned_ = true;
+        }
+}
+
+///GUI root singleton. Contains drawing and input handling methods.
+final class GUIRoot
+{
+    mixin Singleton;
+    private:
+        //The actual GUI root element.
+        GUIElement root_;
+
+    public:
+        ///Construct the GUI root with size equal to screen size.
+        this()
+        {
+            singleton_ctor();
+
+            with(new GUIElementFactory)
+            {
+                x = "0";
+                y = "0";
+                width = "w_right";
+                height = "w_bottom";
+                root_ = produce();
+            }
+            root_.realign();
+
+            Platform.get.key.connect(&key);
+            Platform.get.mouse_motion.connect(&root_.mouse_move);
+            Platform.get.mouse_key.connect(&root_.mouse_key);
+        }
+
+        ///Draw the GUI.
+        void draw()
+        {
+            auto driver = VideoDriver.get;
+
+            //save view zoom and offset
+            real zoom = driver.zoom;
+            auto offset = driver.view_offset; 
+
+            //set 1:1 zoom and zero offset for GUI drawing
+            driver.zoom = 1.0;
+            driver.view_offset = Vector2d(0.0, 0.0);
+
+            //draw the elements
+            root_.draw_children();
+
+            //restore zoom and offset
+            driver.zoom = zoom;
+            driver.view_offset = offset;
+        }
+
+        void update(){root_.update_children();}
+
+        ///Pass keyboard input to the GUI.
+        void key(KeyState state, Key key, dchar unicode)
+        {
+            ///Global hardcoded keys when GUI is used.
+            if(state == KeyState.Pressed)
+            {
+                switch(key)
+                {
+                    case Key.F10:
+                        monitor_toggle();
+                        break;
+                    default:
+                        break;
+                }
+            }
+            root_.key(state, key, unicode);
+        }
+
+        ///Add a child element.
+        void add_child(GUIElement child){root_.add_child(child);}
+
+        ///Remove a child element.
+        void remove_child(GUIElement child){root_.remove_child(child);}
+
+        ///Destroy this GUIRoot.
+        void die(){root_.die();}
+
+    private:
+        void monitor_toggle()
+        {
+            static Monitor monitor = null;
+            if(monitor is null)
+            {
+                with(new MonitorFactory)
+                {
+                    x = "16";
+                    y = "16";
+                    width ="192 + w_right / 4";
+                    height ="168 + w_bottom / 6";
+                    monitor = produce();
+                }
+                root_.add_child(monitor);
+            }
+            else
+            {
+                root_.remove_child(monitor);
+                monitor.die();
+                monitor = null;
+            }
         }
 }
 
