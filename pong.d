@@ -1536,6 +1536,8 @@ class Pong
                     case Key.Return:
                         pong_start();
                         break;
+                    case Key.F10:
+                        monitor_toggle();
                     default:
                         break;
                 }
@@ -1557,6 +1559,30 @@ class Pong
         void fps_update(real fps)
         {
             Platform.get.window_caption = "FPS: " ~ std.string.toString(fps);
+        }
+
+        ///Toggle monitor display.
+        void monitor_toggle()
+        {
+            static Monitor monitor = null;
+            if(monitor is null)
+            {
+                with(new MonitorFactory)
+                {
+                    x = "16";
+                    y = "16";
+                    width ="192 + w_right / 4";
+                    height ="168 + w_bottom / 6";
+                    monitor = produce();
+                }
+                GUIRoot.get.add_child(monitor);
+            }
+            else
+            {
+                GUIRoot.get.remove_child(monitor);
+                monitor.die();
+                monitor = null;
+            }
         }
 }
 

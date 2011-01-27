@@ -1,14 +1,4 @@
 17:
-    consider making GUIRoot not a GUIElement, but rather making both
-    GUINodes and, in guielement::realign, asserting that we have a parent.
-
-    Better: No GUINode, simply make GUIRoot a non-derived class
-    that contains an invisible, root GUIElement.
-    Also try making GUIRoot a weak singleton.
-
-    Monitor construction could also be moved out of GUIRoot
-    (Monitor still needs access to the stuff it's monitoring)
-17:
     Improve testability by looking at ctors and removing new calls from them.
     All/most that a class needs should be passed to ctor, created outside.
     maybe use factories

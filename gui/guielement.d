@@ -294,7 +294,7 @@ final class GUIRoot
             }
             root_.realign();
 
-            Platform.get.key.connect(&key);
+            Platform.get.key.connect(&root_.key);
             Platform.get.mouse_motion.connect(&root_.mouse_move);
             Platform.get.mouse_key.connect(&root_.mouse_key);
         }
@@ -320,25 +320,8 @@ final class GUIRoot
             driver.view_offset = offset;
         }
 
+        ///Update the GUI.
         void update(){root_.update_children();}
-
-        ///Pass keyboard input to the GUI.
-        void key(KeyState state, Key key, dchar unicode)
-        {
-            ///Global hardcoded keys when GUI is used.
-            if(state == KeyState.Pressed)
-            {
-                switch(key)
-                {
-                    case Key.F10:
-                        monitor_toggle();
-                        break;
-                    default:
-                        break;
-                }
-            }
-            root_.key(state, key, unicode);
-        }
 
         ///Add a child element.
         void add_child(GUIElement child){root_.add_child(child);}
@@ -348,30 +331,6 @@ final class GUIRoot
 
         ///Destroy this GUIRoot.
         void die(){root_.die();}
-
-    private:
-        void monitor_toggle()
-        {
-            static Monitor monitor = null;
-            if(monitor is null)
-            {
-                with(new MonitorFactory)
-                {
-                    x = "16";
-                    y = "16";
-                    width ="192 + w_right / 4";
-                    height ="168 + w_bottom / 6";
-                    monitor = produce();
-                }
-                root_.add_child(monitor);
-            }
-            else
-            {
-                root_.remove_child(monitor);
-                monitor.die();
-                monitor = null;
-            }
-        }
 }
 
 /**
