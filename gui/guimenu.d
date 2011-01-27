@@ -52,12 +52,12 @@ class GUIMenu : GUIElement
          *          item_height    = Menu item height math expression.
          *          item_spacing   = Math expression used to calculate spacing between menu items.
          *          item_font_size = Font size of menu items.
-         *          items          = Names and function callbacks of menu items.
+         *          items          = Names and callback functions of menu items.
          */
         this(string x, string y, string width, string height, 
              MenuOrientation orientation, 
              string item_width, string item_height, string item_spacing, 
-             uint item_font_size, void delegate()[string] items)
+             uint item_font_size, MenuItemData[] items)
         {
             super(x, y, width, height);
             draw_border_ = false;
@@ -68,7 +68,7 @@ class GUIMenu : GUIElement
             font_size_ = item_font_size;
             aligned_ = false;
 
-            foreach(text; items.keys){add_item(text, items[text]);}
+            foreach(ref item; items){add_item(item.text, item.deleg);}
         }
 
         override void realign()
@@ -167,13 +167,24 @@ final class GUIMenuFactory : GUIElementFactoryBase!(GUIMenu)
                            "string $ item_spacing $ \"4\"",
                            "uint $ item_font_size $ GUIStaticText.default_font_size()"));
     private:
-        void delegate()[string] items_;
+        //Text and callback for each menu item.
+        MenuItemData[] items_;
     public:
-        void add_item(string text, void delegate() deleg){items_[text] = deleg;}
+        void add_item(string text, void delegate() deleg){items_ ~= MenuItemData(text, deleg);}
 
         override GUIMenu produce()
         {
             return new GUIMenu(x_, y_, width_, height_, orientation_, item_width_, 
                                item_height_, item_spacing_, item_font_size_, items_);
         }
+}
+
+private:
+//Data structure holding data needed to create a menu item.
+struct MenuItemData
+{
+    //Text of the menu item.
+    string text;
+    //Function to call when the item is clicked.
+    void delegate() deleg;
 }

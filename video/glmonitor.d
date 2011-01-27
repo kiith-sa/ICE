@@ -9,6 +9,7 @@ import video.gltexturepage;
 import gui.guielement;
 import gui.guimenu;
 import gui.guistatictext;
+import gui.guilinegraph;
 import graphdata;
 import monitor.monitor;
 import monitor.graphmonitor;

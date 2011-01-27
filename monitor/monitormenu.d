@@ -28,10 +28,11 @@ abstract class MonitorMenu
         void die(){menu.die();}
 
     protected:
-        /**
+        /*
          * Construct a MonitorMenu.
          * 
-         * Params:  items = Texts and callbacks of menu items.
+         * Params:  factory = Factory used to build the menu.
+         *                    Overriding class must add menu items to the factory.
          */
         this(GUIMenuFactory factory)
         {
@@ -46,12 +47,14 @@ abstract class MonitorMenu
             }
         }
 
-        ///Return back to parent menu.
+        //Return back to parent menu.
         void back_to_parent(){back.emit();}
 }
 
 /**
  * Generate a MonitorMenu implementation class providing access to specified monitors.
+ *
+ * Note: To use this as a mixin, you have to import gui.guimenu .
  *
  * Used as a string mixin.
  * Output is a class like the following:

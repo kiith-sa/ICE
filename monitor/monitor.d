@@ -24,7 +24,6 @@ final class Monitor : GUIElement
         GUIElement current_monitor_ = null;
 
     public:
-
         ///Return font size to be used by monitor widgets.
         static uint font_size(){return 8;}
 

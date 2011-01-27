@@ -1,6 +1,4 @@
 17:
-    GUI menu items should not be sorted. Fix that (don't use AA)
-17:
     Unittests for code generating functions that compare generated result
     with example result.
 17:

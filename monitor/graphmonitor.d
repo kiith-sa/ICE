@@ -56,22 +56,20 @@ abstract class GraphMonitor : SubMonitor
         bool left_pressed_;
 
     protected:
-        /**
+        /*
          * Construct a GraphMonitor monitoring values with specified names.
          *
-         * Params:  names  = Names of values to monitor.
-         *          colors = Colors of the values on the graph.
+         * Params:  factory = Factory used to produce the graph widget.
+         *                    Derived class is responsible with adding value
+         *                    graphs to the factory.
          */
-        this(string[] names, Color[] colors)
+        this(GUILineGraphFactory factory)
         {
             super();
-
-            init_toggles(names, colors);
             init_menu();
 
-            with(new GUILineGraphFactory)
+            with(factory)
             {
-                foreach(n, name; names){add_graph(name, colors[n]);}
                 x = "p_left + 52";
                 y = "p_top + 2";
                 width = "p_right - p_left - 54";
@@ -161,46 +159,36 @@ abstract class GraphMonitor : SubMonitor
             if(left_pressed_){graph_.scroll(-relative.x);}
         }
 
-    private:
+    protected:
         /*
-         * Initialize value display toggling buttons.
+         * Add a value display toggling button for a value.
          *
-         * Params:  names  = Names of the graphs toggled by the buttons.
-         *          colors = Colors of the buttons' texts.
-         */
-        void init_toggles(string[] names, Color[] colors)
+         * Params:  name  = Name of the graph toggled by the button.
+         *          color = Color of the button text.
+         */  
+        void add_toggle(string name, Color color)
         {
-            auto factory = new GUIButtonFactory;
-            with(factory)
+            auto value = new Toggle(name);
+            with(new GUIButtonFactory)
             {
                 x = "p_left + 2";
                 width = "48";
                 height = "12";
                 font_size = 8;
-            }
+                y = "p_top + " ~ to_string(2 + 14 * value_buttons_.keys.length);
+                font_size = Monitor.font_size;
+                text_color(ButtonState.Normal, color);
+                text = name;
 
-            uint y_offset = 2;
-            foreach(n, name; names)
-            {
-                auto value = new Toggle(name);
-
-                with(factory)
-                {
-                    y = "p_top + " ~ to_string(y_offset);
-                    font_size = Monitor.font_size;
-                    text_color(ButtonState.Normal, colors[n]);
-                    text = name;
-                }
-                auto button = factory.produce();
-
+                auto button = produce();
                 button.pressed.connect(&(value.toggle));
                 value_buttons_[name] = button;
                 add_child(button);
-                values_ ~= value;
-                y_offset += 14;
             }
-        }
+            values_ ~= value;
+        }     
 
+    private:
         /*
          * Initialize menu. 
          *
@@ -241,6 +229,9 @@ abstract class GraphMonitor : SubMonitor
 
 /**
  * Generate constructor code for a graph monitor implementation.
+ *
+ * Note: To use this as a mixin, you have to import gui.guilinegraph .
+ *
  * Initializes graph monitor with specified values to monitor, 
  * automatically sets their colors, and connectss a callback
  * to fetch statistics from the monitored object. 
@@ -270,21 +261,19 @@ in
 }
 body
 {
-    string super_start = "super(";
-
-    string names = "[\"" ~ values[0] ~ "\"";
-    foreach(value; values[1 .. $]){names ~= ", \"" ~ value ~ "\"";}
-    names ~= "],";
-
-    string colors = "[" ~ palette[0];
-    for(uint c = 1; c < values.length; c++){colors ~= "," ~ palette[c];}
-    colors ~= "]";
-
-    string super_end = ");\n";
+    string factory = "auto factory = new GUILineGraphFactory;\n";
+    //code adding graphs for values measured to the factory
+    string values_str;
+    foreach(color, value; values)
+    {
+        values_str ~= "factory.add_graph(\"" ~ value ~ "\", " ~ palette[color] ~ ");\n";
+        values_str ~= "add_toggle(\"" ~ value ~ "\", " ~ palette[color] ~ ");\n";
+    }
+    string super_call = "super(factory);\n";
 
     string connect = "monitored.send_statistics.connect(&fetch_statistics);\n";
 
-    return super_start ~ names ~ colors ~ super_end ~ connect;
+    return factory ~ values_str ~ super_call ~ connect;
 }
 
 /**

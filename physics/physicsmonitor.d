@@ -3,6 +3,7 @@ module physics.physicsmonitor;
 import physics.physicsengine;
 import gui.guielement;
 import gui.guimenu;
+import gui.guilinegraph;
 import graphdata;
 import monitor.monitor;
 import monitor.monitormenu;
