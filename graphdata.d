@@ -56,7 +56,6 @@ final class GraphData
                 //Values recorded, sorted from earliest to latest.
                 Value[] values_;
 
-            public:
                 /*
                  * Construct the graph with specified starting time.
                  *
@@ -80,6 +79,19 @@ final class GraphData
                     current_value_.value_count = 0;
                 }
 
+                /*
+                 * Add a value to the graph. 
+                 * 
+                 * Params:  value = Value to add. 
+                 */
+                void add_value(real value)
+                {
+                    //accumulate the value
+                    current_value_.value += value;
+                    current_value_.value_count++;
+                }
+
+            public:
                 /*
                  * Accumulate recorded values to data points, one point per
                  * period specified, each data point being an sum or average of values
@@ -129,18 +141,6 @@ final class GraphData
 
                     //return output;
                     return data_points;
-                }
-
-                /*
-                 * Add a value to the graph. 
-                 * 
-                 * Params:  value = Value to add. 
-                 */
-                void add_value(real value)
-                {
-                    //accumulate the value
-                    current_value_.value += value;
-                    current_value_.value_count++;
                 }
 
                 /*

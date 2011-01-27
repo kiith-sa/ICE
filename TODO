@@ -1,8 +1,4 @@
 17:
-    GUIElement unittests for element size and mouse events. 
-    Also maybe unittests for math expression code, and graphdata, 
-    and look for more stuff that's testable.
-17:
     Rewrite graph generating functions so that:
     generate_graph_monitor_ctor() saves values used in a global and
     generate_graph_fetch_statistics uses those, w/o needing arguments
