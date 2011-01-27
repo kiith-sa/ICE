@@ -1,7 +1,4 @@
 17:
-    Unittests for code generating functions that compare generated result
-    with example result.
-17:
     Subclass menu to horizontal and vertical menu
     (probably in the same module) - menu would be abstract.
     Game menu will still be menu, but implementation will be verticalmenu.
@@ -108,6 +105,13 @@
 17:
     GUI substitutions: parent width and height, and rewrite math expressions with these
     substitutions
+17:
+    Profile:
+    a) VERY (~30 mins) long run with a GUIGraph, note memory usage over time, FPS,
+       and, code analyst stats.
+       If it turns out to be that a lot of time is spent iterating in
+       GraphMonitor.Graph.data_points(), optimize it with binary search.
+       If it's drawing, wait until glvideodriver overhaul.
 17: 
     SpatialManager GUI monitor
 17:
@@ -185,7 +189,9 @@
     Window resizing
 24:
     Ability to run monitor graphs in background w/o rendering them and then 
-    render them to file (SVG or PNG)
+    render them to file (SVG or PNG).
+    Even better: write out simple text, binary or gzipped file and have a 
+    python or D script to render them.
     Monitors should have an 'enable' button that will make them 
     persistent, running in background even when not viewing them.
     This should be handled by a base class used by all submonitors,
@@ -193,6 +199,13 @@
     I.e. physicsmonitor (or w/e) requests e.g. 
     MonitorManager.get_monitor("MonitorName") which will either create new monitor
     and return it or return already existing monitor.
+
+    As for memory usage: consider more
+    advanced recording and storage 
+    (monitor running in background, not measuring all the time, 
+     gradual data loss, gzipping in memory, dumping to file)
+    Also consider making graph data time independent, supplying time
+    to it through methods.
 24:
     Alongside mouse_move and mouse_key, consider more advanced
     mouse_click (triggered by quick succeeding press and release),

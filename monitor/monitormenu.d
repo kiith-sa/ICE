@@ -115,3 +115,27 @@ body
 
     return header ~ monitored ~ ctor_start ~ ctor_items ~ ctor_end ~ setters ~ footer; 
 }
+unittest
+{
+    string expected =
+        "final package class MonitoredMonitor : MonitorMenu\n"
+        "{\n"
+        "    private Monitored monitored_;\n" 
+        "    public this(Monitored monitored)\n"
+        "    {\n"
+        "        auto factory = new GUIMenuFactory;\n"
+        "        factory.add_item(\"Back\", &back_to_parent);\n"
+        "        factory.add_item(\"A\", &A);\n"
+        "        factory.add_item(\"B\", &B);\n"
+        "        super(factory);\n"
+        "        monitored_ = monitored;\n"
+        "    }\n"
+        "    private:\n"
+        "        void A(){set_monitor.emit(new AMonitor(monitored_));}\n"
+        "        void B(){set_monitor.emit(new BMonitor(monitored_));}\n"
+        "}\n";
+    assert(expected == generate_monitor_menu("Monitored",
+                                             ["A", "B"],
+                                             ["AMonitor", "BMonitor"]),
+           "Unexpected monitor menu code generated");
+}

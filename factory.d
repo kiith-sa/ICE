@@ -44,6 +44,18 @@ string generate_factory(string parameter_strings []...)
 
     return "protected:\n" ~ data ~ "public:\n" ~ setters;
 }
+unittest
+{
+    string expected =
+        "protected:\n"
+        "string a_ = \"default\";\n"
+        "int b_ = 42;\n"
+        "public:\n"
+        "void a(string a){a_ = a;}\n"
+        "void b(int b){b_ = b;}\n";
+    assert(expected == generate_factory("string $ a $ \"default\"", "int $ b $ 42"),
+           "Unexpected factory code generated");
+}
 
 private: 
 

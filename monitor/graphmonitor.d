@@ -275,6 +275,19 @@ body
 
     return factory ~ values_str ~ super_call ~ connect;
 }
+unittest
+{
+    string expected =
+        "auto factory = new GUILineGraphFactory;\n"
+        "factory.add_graph(\"a\", " ~ palette[0] ~ ");\n"
+        "add_toggle(\"a\", " ~ palette[0] ~ ");\n"
+        "factory.add_graph(\"b\", " ~ palette[1] ~ ");\n"
+        "add_toggle(\"b\", " ~ palette[1] ~ ");\n"
+        "super(factory);\n"
+        "monitored.send_statistics.connect(&fetch_statistics);\n"; 
+    assert(expected == generate_graph_monitor_ctor("a","b"),
+           "Unexpected graph monitor ctor code generated");
+}
 
 /**
  * Generate a statistics fetching method for a graph monitor implementation.
@@ -298,9 +311,20 @@ body
     string update_values;
     foreach(value; values)
     {
-        update_values ~= "update_value(\"" ~ value ~ "\", statistics." ~ value ~ ");\n";
+        update_values ~= "    update_value(\"" ~ value ~ "\", statistics." ~ value ~ ");\n";
     }
     return header ~ update_values ~ "}\n";
+}
+unittest
+{
+    string expected =
+        "void fetch_statistics(Statistics statistics)\n"
+        "{\n"
+        "    update_value(\"a\", statistics.a);\n"
+        "    update_value(\"b\", statistics.b);\n"
+        "}\n";
+    assert(expected == generate_graph_fetch_statistics("a","b"),
+           "Unexpected graph monitor fetch_statistics() code generated");
 }
 
 private:
