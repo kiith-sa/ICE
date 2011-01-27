@@ -3,7 +3,7 @@ module physics.physicsmonitor;
 import physics.physicsengine;
 import gui.guielement;
 import gui.guimenu;
-import gui.guigraph;
+import graphdata;
 import monitor.monitor;
 import monitor.monitormenu;
 import monitor.graphmonitor;
@@ -38,7 +38,6 @@ final package class ContactMonitor : GraphMonitor
         this(PhysicsEngine monitored)
         {
             mixin(generate_graph_monitor_ctor("contacts", "penetration", "response"));
-            add_mode_buttons();
         }
 
     private:
@@ -51,11 +50,7 @@ final package class CoarseContactMonitor : GraphMonitor
 {
     public:
         ///Construct a CoarseContactMonitor.
-        this(PhysicsEngine monitored)
-        {
-            mixin(generate_graph_monitor_ctor("tests"));
-            add_mode_buttons();
-        }
+        this(PhysicsEngine monitored){mixin(generate_graph_monitor_ctor("tests"));}
 
     private:
         //Callback called by PhysicsMonitor once per frame to update monitored statistics.

@@ -1,21 +1,36 @@
-17: 
-    Look at any classes that can be made immutable.
-    Look for huge param lists and consider passing structs using the builder pattern.
 17:
-    experimental: consider a string mixin to generate factories/builders for GUI
-    elements, and using that to construct gui elements 
-    (first optional, but if all code is moved to that, remove current setters)
+    GUIElement unittests for element size and mouse events. 
+    Also maybe unittests for math expression code, and graphdata, 
+    and look for more stuff that's testable.
 17:
-    Consider subclassing menu to horizontal and vertical menu
+    Rewrite graph generating functions so that:
+    generate_graph_monitor_ctor() saves values used in a global and
+    generate_graph_fetch_statistics uses those, w/o needing arguments
+    - but can't have two successive calls to the same generating function-
+    use a global flag for that
+17:
+    Score screen and such should own GUI elements instead of being GUI elements.
+    Maybe even MonitorMenu and implementations (would result in Monitor
+    having to call MonitorMenu methods to connect and disconnect the menu,
+    but might still be cleaner code)
+    Some GUI code unittests, especially GUIElement(coords calculation)
+17:
+    Unittests for code generating functions that compare generated result
+    with example result.
+17:
+    Subclass menu to horizontal and vertical menu
     (probably in the same module) - menu would be abstract.
     Game menu will still be menu, but implementation will be verticalmenu.
 
     consider making GUIRoot not a GUIElement, but rather making both
-    GUINodes and, in guielement::realign,
-    asserting that we have a parent
+    GUINodes and, in guielement::realign, asserting that we have a parent.
 
     Better: No GUINode, simply make GUIRoot a non-derived class
-    that contains an invisible, root GUIElement
+    that contains an invisible, root GUIElement.
+    Also try making GUIRoot a weak singleton.
+
+    Monitor construction could also be moved out of GUIRoot
+    (Monitor still needs access to the stuff it's monitoring)
 17:
     Improve testability by looking at ctors and removing new calls from them.
     All/most that a class needs should be passed to ctor, created outside.
@@ -32,6 +47,8 @@
     VideoDriver: a videodriver version of draw_line with only one color,
     calling current draw_line. This will siplify user code and support
     future optimizations.
+
+    Also, color constats like White, Black, etc., and rewrite code to use them
 17:
     Try desingletonifying some singletons (yes-single instance, no-global access)
     For instance, physics engine could be a member of actormanager,
@@ -47,7 +64,29 @@
     those have external dependencies and are not that testable anyway
     still, might try-draw methods would need to pass videodriver, for instance
 
+    Actors such as paddles and walls should be constructed in factories with 
+    dependency injection.
+
     If this results in better testability, more unittests
+17:
+    Clean up GraphData, GUILineGraph.
+    Make GUILineGraph only "link" to graph data, user code updating graph data values
+    and such. This way, we can have two GUI classes share the same GraphData, managed
+    by someone else.
+17:
+    Consider dependency injection in case of GraphMonitor-GUILineGraph-GraphData
+    i.e. GraphMonitor factory would first construct GraphData, the GUILineGraph
+    by injecting that GraphData, then GraphMonitor by injecting GUILineGraph.
+
+    Better approach might be for GUILineGraph factory to inject GraphData
+    and for GraphMonitor factory to inject product of that.
+
+    Or maybe not. Any other classes using GUILineGraph might need their
+    own dependency injection.
+
+
+    After(if) this is done, unittests for GraphData and even GUILineGraph,
+    GraphMonitor, if possible.
 17:
     Coarse collision detection (SpatialManager)
     Maybe make SpatialManager general enough so we can use the same class
@@ -117,11 +156,6 @@
 
     Also add some coding examples to e.g. GUI DDoc, maybe VideoDriver
 20:
-    Make GUIGraph a separate, non-GUI class and make GUILineGraph
-    compose it, istead of inheriting. This will allow us to package
-    the same GUIGraph in various classes providing different graphical
-    representations. E.g. GraphMonitor could offer a list view, not only graph view.
-20:
     Look at other games/demos for graphics effect ideas...
     or maybe we have enough effects by now...
 20:
@@ -132,6 +166,8 @@
     Better now than never (since when VBOs are done they'll need saving as well)
     Test just with a button for now, options will be added later.
     to get texture page from GPU, use glGetTexImage.
+20:
+    Multiple (two, and maybe option to generate) color schemes
 20:
     Screenshot. Probable glReadPixels from framebuffer. Also need PNG output 
 20: 
@@ -162,6 +198,8 @@
 
     use gDebugger to profile OGL performance
 24:
+    Window resizing
+24:
     Ability to run monitor graphs in background w/o rendering them and then 
     render them to file (SVG or PNG)
     Monitors should have an 'enable' button that will make them 
@@ -176,6 +214,12 @@
     mouse_click (triggered by quick succeeding press and release),
     and mouse_drag
     these would be detected by platfom and sent to e.g GUI
+25:
+    Consider abstracting
+    GLTexturePage to TexturePage and moving as much code as possile to VideoDriver,
+    in such a way that VideoDriver, not GLVideoDriver, manages pages,
+    using GLVideoDriver overriden methods. I.e. algorithms in VideoDriver,
+    specific stuff in GLVideoDriver.
 25:
     Advanced shaders: custom matrix, etc. passing. - see opengl superbible
     Look at Humus, Mizanin, GL forums, GL3 tutorials, etc.

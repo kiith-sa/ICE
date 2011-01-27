@@ -2,6 +2,7 @@ module monitor.monitormenu;
 
 
 import monitor.monitor;
+import monitor.submonitor;
 import gui.guielement;
 import gui.guimenu;
 import signal;
@@ -11,25 +12,23 @@ import signal;
 abstract class MonitorMenu : GUIMenu
 {
     public:
-        //Construct a MonitorMenu.
-        this()
-        {
-            add_item("Back", &back_to_parent);
-            position_x = "p_left";
-            position_y = "p_top";
-            orientation = MenuOrientation.Horizontal;
-            item_font_size = Monitor.font_size;
-            item_width = "44";
-            item_height = "14";
-            item_spacing = "4";
-
-            super();
-        }
-
         ///Signal used to return back to parent menu.
         mixin Signal!() back;
         ///Signal used to set monitor selected by this menu.
-        mixin Signal!(GUIElement) set_monitor;
+        mixin Signal!(SubMonitor) set_monitor;
+
+    protected:
+        /**
+         * Construct a MonitorMenu.
+         * 
+         * Params:  items = Texts and callbacks of menu items.
+         */
+        this(void delegate()[string] items)
+        {
+            items["Back"] = &back_to_parent;
+            super("p_left", "p_top", "0", "0", MenuOrientation.Horizontal,
+                  "44", "14", "4", Monitor.font_size, items);
+        }
 
     private:
         ///Return back to parent menu.
@@ -40,7 +39,7 @@ abstract class MonitorMenu : GUIMenu
  * Generate a MonitorMenu implementation class providing access to specified monitors.
  *
  * Used as a string mixin.
- * Result will be a class like the following:
+ * Output is a class like the following:
  *
  * final package class ExampleMonitor : MonitoMenu
  * {
@@ -61,6 +60,8 @@ abstract class MonitorMenu : GUIMenu
  *                            Generated class will be named name~Monitor.
  *          monitor_names   = Button texts of menu items corresponding to respective monitors.
  *          monitor_classes = Names of monitor classes accessed through the menu.
+ *
+ * Returns: Generated menu monitor implementation class.
  */
 string generate_monitor_menu(string name, string[] monitor_names, 
                              string[] monitor_classes)
@@ -71,28 +72,28 @@ in
 }
 body
 {
-    string result = "final package class " ~ name ~ "Monitor : MonitorMenu"
-                    "{"
-                        "private " ~ name ~ " monitored_;"
-                        "public this(" ~ name ~ " monitored)"
-                        "{"
-                            "super();"
-                            "monitored_ = monitored;";
-    
+    string header = "final package class " ~ name ~ "Monitor : MonitorMenu\n"
+                    "{\n";
+    string monitored = "    private " ~ name ~ " monitored_;\n" ;
+
+    string ctor_start = "    public this(" ~ name ~ " monitored)\n"
+                        "    {\n"
+                        "        void delegate()[string] items;\n";
+    string ctor_items;
     foreach(monitor; monitor_names)
     {
-        result ~= "add_item(\"" ~ monitor ~ "\",&" ~ monitor ~ ");";
+        ctor_items ~= "        items[\"" ~ monitor ~ "\"] = &" ~ monitor ~ ";\n";
     }
-
-    result ~= "}private:";
-
+    string ctor_end = "        super(items);\n"
+                      "        monitored_ = monitored;\n"
+                      "    }\n";
+    string setters = "    private:\n";
     for(uint monitor; monitor < monitor_names.length; monitor++)
     {
-        result ~= "void " ~ monitor_names[monitor] ~ "()"
-                  "{set_monitor.emit(new " ~ monitor_classes[monitor] ~ "(monitored_));}"; 
+        setters ~= "        void " ~ monitor_names[monitor] ~ "()"
+                  "{set_monitor.emit(new " ~ monitor_classes[monitor] ~ "(monitored_));}\n"; 
     }
+    string footer = "}\n";
 
-    result ~= "}";
-
-    return result;
+    return header ~ monitored ~ ctor_start ~ ctor_items ~ ctor_end ~ setters ~ footer; 
 }

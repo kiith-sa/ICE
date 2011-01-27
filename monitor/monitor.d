@@ -9,6 +9,9 @@ import math.vector2;
 import math.math;
 import time.timer;
 import monitor.monitormenu;
+import monitor.submonitor;
+
+import std.stdio;
 
 
 ///Displays various debugging/profiling information about engine subsystems.
@@ -22,33 +25,42 @@ final class Monitor : GUIElement
         GUIElement current_monitor_ = null;
 
     public:
-        ///Construct a new monitor with specified parameters.
-        this()
-        {
-            super();
-
-            main_menu_ = current_menu_ = new GUIMenu;
-            with(main_menu_)
-            {
-                position_x = "p_left";
-                position_y = "p_top";
-                orientation = MenuOrientation.Horizontal;
-
-                add_item("Video", &video);
-                add_item("Physics", &physics);
-
-                item_font_size = 8;
-                item_width = "44";
-                item_height = "14";
-                item_spacing = "4";
-            }
-            add_child(main_menu_);
-        }
 
         ///Return font size to be used by monitor widgets.
         static uint font_size(){return 8;}
 
     protected:
+        /**
+         * Construct a new monitor with specified parameters.
+         * 
+         * See_Also: GUIElement.this
+         *
+         * Params:  x      = X position math expression.
+         *          y      = Y position math expression. 
+         *          width  = Width math expression. 
+         *          height = Height math expression. 
+         */
+        this(string x, string y, string width, string height)
+        {
+            super("16", "16", "192 + w_right / 4", "168 + w_bottom / 6");
+
+            with(new GUIMenuFactory)
+            {
+                x = "p_left";
+                y = "p_top";
+                orientation = MenuOrientation.Horizontal;
+                item_width = "44";
+                item_height = "14";
+                item_spacing = "4";
+                item_font_size = font_size;
+                add_item("Video", &video);
+                add_item("Physics", &physics);
+                main_menu_ = produce();
+            }
+
+            current_menu_ = main_menu_;
+            add_child(main_menu_);
+        }
         override void update(){update_children();}
 
     private:
@@ -79,14 +91,16 @@ final class Monitor : GUIElement
         }
         body
         {
+            writefln("show_main_menu");
             remove_child(current_menu_);
             current_menu_.die();
             main_menu_.show();
             current_menu_ = main_menu_;
+            writefln("show_main_menu end");
         }
 
         //Show given monitor, replacing any monitor previously shown.
-        void monitor(GUIElement monitor)
+        void monitor(SubMonitor monitor)
         {
             if(current_monitor_ !is null)
             {
@@ -95,13 +109,16 @@ final class Monitor : GUIElement
             }
 
             current_monitor_ = monitor;
-            with(current_monitor_)
-            {
-                position_x = "p_left + 4";
-                position_y = "p_top + 22";
-                width = "p_right - p_left - 8";
-                height = "p_bottom - p_top - 26";
-            }
             add_child(current_monitor_);
         }
+}
+
+/**
+ * Factory used for monitor construction.
+ *
+ * See_Also: GUIElementFactoryBase
+ */
+final class MonitorFactory : GUIElementFactoryBase!(Monitor)
+{
+    public Monitor produce(){return new Monitor(x_, y_, width_, height_);}
 }

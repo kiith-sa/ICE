@@ -9,6 +9,7 @@ import math.math;
 import math.vector2;
 import math.rectangle;
 import color;
+import factory;
 
 
 ///Horizontal alignments.
@@ -43,32 +44,24 @@ class GUIStaticText : GUIElement
         //Text of the element. This is broken into TextLines according to width.
         string text_ = "";
 
-        AlignX align_x_ = AlignX.Left;
-        AlignY align_y_ = AlignY.Top;
+        AlignX align_x_;
+        AlignY align_y_;
         
         //Lines of text to draw.
         TextLine[] lines_;
 
         //Name of the font used.
-        string font_ = "default";
+        string font_;
 
         //Size of the font in points.
-        uint font_size_ = default_font_size();
+        uint font_size_;
         
-        Color font_color_ = Color(255, 255, 255, 255);
+        Color font_color_;
 
         //Distance between lines, in pixels
         uint line_gap_;
 
     public:
-        ///Construct an empty static text.
-        this()
-        {
-            super();
-            draw_border_ = false;
-            realign();
-        }
-
         ///Set text color.
         void text_color(Color color){font_color_ = color;}
 
@@ -82,45 +75,45 @@ class GUIStaticText : GUIElement
             aligned_ = false;
         }
 
-        ///Set horizontal alignment.
-        void alignment_x(AlignX alignment)
-        {
-            align_x_ = alignment;
-            aligned_ = false;
-        }
-
-        ///Set vertical alignment.
-        void alignment_y(AlignY alignment)
-        {
-            align_y_ = alignment;
-            aligned_ = false;
-        }
-
-        ///Set distance between lines.
-        void line_gap(uint gap)
-        {
-            line_gap_ = gap;
-            aligned_ = false;
-        }
-
-        ///Set font size of the text.
-        void font_size(uint size)
-        {
-            font_size_ = size;
-            aligned_ = false;
-        }
-
-        ///Set font used to draw the text.
-        void font(string font)
-        {
-            font_ = font;
-            aligned_ = false;
-        }
-
         ///Get default font size of GUIStaticText instances.
         static uint default_font_size(){return 12;}
 
     protected:
+        /*
+         * Construct a static text with specified parameters.
+         *
+         * See_Also: GUIElement.this 
+         *
+         * Params:  x           = X position math expression.
+         *          y           = Y position math expression. 
+         *          width       = Width math expression. 
+         *          height      = Height math expression. 
+         *          text_color  = Color of the text.
+         *          text        = Text to display.
+         *          align_x     = Horizontal alignment of the text.
+         *          align_y     = Vertical alignment of the text.
+         *          line_gap    = Spacing between lines of the text.
+         *          font_size   = Size of text font.
+         *          font        = Name of the font to use.
+         */
+        this(string x, string y, string width, string height, 
+             Color text_color, string text, 
+             AlignX align_x, AlignY align_y, uint line_gap,
+             uint font_size, string font)
+        {
+            super(x, y, width, height);
+
+            draw_border_ = false;
+            font_color_ = text_color;
+            text_ = expandtabs(text);
+            align_x_ = align_x;
+            align_y_ = align_y;
+            line_gap_ = line_gap;
+            font_size_ = font_size;
+            font_ = font;
+            aligned_ = false;
+        }
+
         override void draw()
         {
             if(!visible_){return;}
@@ -250,3 +243,32 @@ class GUIStaticText : GUIElement
             foreach(ref line; lines_){line.offset.y += offset_y;}
         }
 }               
+
+/**
+ * Factory used for static text construction.
+ *
+ * See_Also: GUIElementFactoryBase
+ *
+ * Params:  text_color  = Color of the text.
+ *          text        = Text to display.
+ *          align_x     = Horizontal alignment of the text.
+ *          align_y     = Vertical alignment of the text.
+ *          line_gap    = Spacing between lines of the text.
+ *          font_size   = Size of text font.
+ *          font        = Name of the font to use.
+ */
+final class GUIStaticTextFactory : GUIElementFactoryBase!(GUIStaticText)
+{
+    mixin(generate_factory("Color $ text_color $ Color(255, 255, 255, 255)", 
+                           "string $ text $ \"\"", 
+                           "AlignX $ align_x $ AlignX.Left", 
+                           "AlignY $ align_y $ AlignY.Top", 
+                           "uint $ line_gap $ 0",
+                           "uint $ font_size $ GUIStaticText.default_font_size()",
+                           "string $ font $ \"default\""));
+    public override GUIStaticText produce()
+    {
+        return new GUIStaticText(x_, y_, width_, height_, text_color_, text_, 
+                                 align_x_, align_y_, line_gap_, font_size_, font_);
+    }
+}

@@ -684,46 +684,41 @@ class ScoreScreen : GUIElement
         }
         body
         {
-            position_x = "p_right / 2 - 192";
-            position_y = "p_bottom / 2 - 128";
-            width = "384";
-            height = "256";
+            super("p_right / 2 - 192", "p_bottom / 2 - 128", "384", "256");
 
             border_color_ = Color(160, 160, 255, 160);
 
             string winner = player_1.score > player_2.score ? 
                             player_1.name : player_2.name;
 
-            //text showing the winner of the game
-            winner_text_ = new GUIStaticText;
-            with(winner_text_)
+            with(new GUIStaticTextFactory)
             {
-                position_x = "p_left";
-                position_y = "p_top + 16";
-                width = "p_right - p_left";
-                height = "32";
-                font_size = 24;
-                text_color = Color(192, 192, 255, 128);
-                alignment_x = AlignX.Center;
-                font = "orbitron-bold.ttf";
-                text = "WINNER: " ~ winner;
-            }
-            add_child(winner_text_);
-
-            //text showing time the game took
-            time_text_ = new GUIStaticText;
-            with(time_text_)
-            {
-                position_x = "p_left + 48";
-                position_y = "p_top + 96";
+                x = "p_left + 48";
+                y = "p_top + 96";
                 width = "128";
                 height = "16";
                 font_size = 14;
                 text_color = Color(224, 224, 255, 160);
                 font = "orbitron-light.ttf";
                 text = "Time: " ~ time_string(time);
+                //text showing time the game took
+                time_text_ = produce();
+
+                x = "p_left";
+                y = "p_top + 16";
+                width = "p_right - p_left";
+                height = "32";
+                font_size = 24;
+                text_color = Color(192, 192, 255, 128);
+                align_x = AlignX.Center;
+                font = "orbitron-bold.ttf";
+                text = "WINNER: " ~ winner;
+                //text showing the winner of the game
+                winner_text_ = produce();
             }
+
             add_child(time_text_);
+            add_child(winner_text_);
 
             init_scores(player_1, player_2);
 
@@ -741,34 +736,28 @@ class ScoreScreen : GUIElement
         //Initialize players/scores list.
         void init_scores(Player player_1, Player player_2)
         {
-            names_text_ = new GUIStaticText;
-            with(names_text_)
+            with(new GUIStaticTextFactory)
             {
-                position_x = "p_left + 48";
-                position_y = "p_top + 48";
+                x = "p_left + 48";
+                y = "p_top + 48";
                 width = "128";
                 height = "32";
                 font_size = 14;
                 text_color = Color(160, 160, 255, 128);
                 font = "orbitron-light.ttf";
                 text = player_1.name ~ "\n" ~ player_2.name;
-            }
-            add_child(names_text_);
+                names_text_ = produce();
 
-            scores_text_ = new GUIStaticText;
-            with(scores_text_)
-            {
-                position_x = "p_right - 128";
-                position_y = "p_top + 48";
+                x = "p_right - 128";
                 width = "64";
-                height = "32";
-                font_size = 14;
                 text_color = Color(224, 224, 255, 160);
                 font = "orbitron-bold.ttf";
-                text = to_string(player_1.score) ~ "\n" 
-                       ~ to_string(player_2.score);
-                alignment_x = AlignX.Right;
+                text = to_string(player_1.score) ~ "\n" ~ to_string(player_2.score);
+                align_x = AlignX.Right;
+                scores_text_ = produce();
             }
+
+            add_child(names_text_);
             add_child(scores_text_);
         }
 }
@@ -989,42 +978,27 @@ class HUD
         {
             time_limit_ = time_limit;
 
-            score_text_1_ = new GUIStaticText;
-            with(score_text_1_)
+            with(new GUIStaticTextFactory)
             {
-                position_x = "p_left + 8";
-                position_y = "p_top + 8";
+                x = "p_left + 8";
+                y = "p_top + 8";
                 width = "96";
                 height = "16";
-                alignment_x = AlignX.Right;
-                font = "orbitron-light.ttf";
                 font_size = 16;
-            }
-            GUIRoot.get.add_child(score_text_1_);
-
-            score_text_2_ = new GUIStaticText;
-            with(score_text_2_)
-            {
-                position_x = "p_left + 8";
-                position_y = "p_bottom - 24";
-                width = "96";
-                height = "16";
-                alignment_x = AlignX.Right;
                 font = "orbitron-light.ttf";
-                font_size = 16;
-            }
-            GUIRoot.get.add_child(score_text_2_);
+                align_x = AlignX.Right;
+                score_text_1_ = produce();
 
-            time_text_ = new GUIStaticText;
-            with(time_text_)
-            {
-                position_x = "p_right - 112";
-                position_y = "p_bottom - 24";
-                width = "96";
-                height = "16";
+                y = "p_bottom - 24";
+                score_text_2_ = produce();
+
+                x = "p_right - 112";
                 font = "orbitron-bold.ttf";
-                font_size = 16;
+                time_text_ = produce();
             }
+
+            GUIRoot.get.add_child(score_text_1_);
+            GUIRoot.get.add_child(score_text_2_);
             GUIRoot.get.add_child(time_text_);
         }
 
@@ -1340,33 +1314,31 @@ class Credits : GUIElement
 
         this()
         {
-            position_x = "p_left + 96";
-            position_y = "p_top + 16";
-            width = "p_right - 192";
-            height = "p_bottom - 32";
+            super("p_left + 96", "p_top + 16", "p_right - 192" , "p_bottom - 32");
 
-            close_button_ = new GUIButton;
-            with(close_button_)
+            with(new GUIStaticTextFactory)
             {
-                position_x = "p_left + (p_right - p_left) / 2 - 72";
-                position_y = "p_bottom - 32";
-                width = "144";
-                height = "24";
-                text = "Close";
-            }
-            add_child(close_button_);
-            close_button_.pressed.connect(&closed.emit);
-
-            text_ = new GUIStaticText;
-            with(text_)
-            {
-                position_x = "p_left + 16";
-                position_y = "p_top + 16";
+                x = "p_left + 16";
+                y = "p_top + 16";
                 width = "p_right - p_left - 32";
                 height = "p_bottom - p_top - 56";
                 text = credits_;
+                this.text_ = produce();
             }
+
+            with(new GUIButtonFactory)
+            {
+                x = "p_left + (p_right - p_left) / 2 - 72";
+                y = "p_bottom - 32";
+                width = "144";
+                height = "24";
+                text = "Close";
+                close_button_ = produce();
+            }
+
             add_child(text_);
+            add_child(close_button_);
+            close_button_.pressed.connect(&closed.emit);
         }
 }
 
@@ -1403,30 +1375,30 @@ class Pong
             uint width = VideoDriver.get.screen_width;
             uint height = VideoDriver.get.screen_height;
 
-            menu_container_ = new GUIElement;
-            with(menu_container_)
+            with(new GUIElementFactory)
             {
-                position_x = "p_right - 176";
-                position_y = "16";
+                x = "p_right - 176";
+                y = "16";
                 width = "160";
                 height = "p_bottom - 32";
+                menu_container_ = produce();
             }
+
             GUIRoot.get.add_child(menu_container_);
 
-            menu_ = new GUIMenu;
-            with(menu_)
+            with(new GUIMenuFactory)
             {
-                position_x = "p_left";
-                position_y = "p_top + 136";
-
-                add_item("Player vs AI", &pong_start);
-                add_item("Credits", &credits_start);
-                add_item("Quit", &exit);
-
+                x = "p_left";
+                y = "p_top + 136";
                 item_width = "144";
                 item_height = "24";
                 item_spacing = "8";
+                add_item("Player vs AI", &pong_start);
+                add_item("Credits", &credits_start);
+                add_item("Quit", &exit);
+                menu_ = produce();
             }
+
             menu_container_.add_child(menu_);
         }
 

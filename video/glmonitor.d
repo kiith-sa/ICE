@@ -9,10 +9,11 @@ import video.gltexturepage;
 import gui.guielement;
 import gui.guimenu;
 import gui.guistatictext;
-import gui.guigraph;
+import graphdata;
 import monitor.monitor;
 import monitor.graphmonitor;
 import monitor.monitormenu;
+import monitor.submonitor;
 import math.vector2;
 import math.rectangle;
 import math.math;
@@ -38,7 +39,7 @@ package struct Statistics
 }
 
 ///Displays info about texture pages.
-final package class PagesMonitor : GUIElement
+final package class PagesMonitor : SubMonitor
 {
     private:
         alias std.string.toString to_string;
@@ -56,6 +57,12 @@ final package class PagesMonitor : GUIElement
             real zoom_mult_ = 1.2;
             //Current zoom.
             real zoom_ = 1.0;
+
+            this()
+            {
+                super("p_left + 28", "p_top + 2", 
+                      "p_right - p_left - 106", "p_bottom - p_top - 4");
+            }
 
             override void draw()
             {
@@ -125,24 +132,19 @@ final package class PagesMonitor : GUIElement
         void init_view()
         {
             view_ = new PageView;
-            with(view_)
-            {
-                position_x = "p_left + 28";
-                position_y = "p_top + 2";
-                width = "p_right - p_left - 106";
-                height = "p_bottom - p_top - 4";
-            }
             add_child(view_);
         }
 
         void init_menu()
         {
-            menu_ = new GUIMenu;
-            with(menu_)
+            with(new GUIMenuFactory)
             {
-                position_x = "p_left";
-                position_y = "p_top";
-
+                x = "p_left";
+                y = "p_top";
+                item_width = "24";
+                item_height = "14";
+                item_spacing = "2";
+                item_font_size = Monitor.font_size;
                 add_item("Next", &next);
                 add_item("Prev", &prev);
                 add_item("Left", &view_.left);
@@ -151,26 +153,22 @@ final package class PagesMonitor : GUIElement
                 add_item("Down", &view_.down);
                 add_item("+", &view_.zoom_in);
                 add_item("-", &view_.zoom_out);
-
-                item_font_size = Monitor.font_size;
-                item_width = "24";
-                item_height = "14";
-                item_spacing = "2";
+                menu_ = produce();
             }
             add_child(menu_);
         }
 
         void init_text()
         {
-            info_text_ = new GUIStaticText;
-            with(info_text_)
+            with(new GUIStaticTextFactory)
             {
-                alignment_x = AlignX.Right;
-                position_x = "p_right - 74";
-                position_y = "p_top + 2";
+                x = "p_right - 74";
+                y = "p_top + 2";
                 width = "72";
                 height = "p_bottom - p_top - 4";
                 font_size = Monitor.font_size;
+                align_x = AlignX.Right;
+                info_text_ = produce();
             }
             add_child(info_text_);
             update_text();

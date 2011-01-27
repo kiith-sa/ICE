@@ -1,7 +1,6 @@
-module gui.guigraph;
+module graphdata;
 
 
-import gui.guielement;
 import math.math;
 import time.time;
 import time.timer;
@@ -16,8 +15,10 @@ enum GraphMode
     Average
 }
 
-///Base class for all graph widgets.
-abstract class GUIGraph : GUIElement
+/**
+ * Stores graph data accumulating over time.
+ */
+final class GraphData
 {
     protected:
         ///Stores values accumulated over a time period set by GUIGraph's time_resolution.
@@ -31,6 +32,20 @@ abstract class GUIGraph : GUIElement
             uint value_count = 0;
         }
 
+        ///Graphs of values measured, indexed by values' names.
+        Graph[string] graphs_;
+
+        //Graph display mode, i.e. display sums for time period or average values.
+        GraphMode mode_ = GraphMode.Average;
+
+        //Time when this guigraph was created
+        real start_time_;
+        //Shortest time period to accumulate values for.
+        real time_resolution_ = 0.03125;
+        //Timer used to time graph updates.
+        Timer update_timer_;
+
+    public:
         ///Graph data related to measurement of single value over time.
         class Graph
         {
@@ -45,22 +60,22 @@ abstract class GUIGraph : GUIElement
                 /*
                  * Construct the graph with specified starting time.
                  *
-                 * Params:  time = Starting time of the graph.
+                 * Params:  time =            Starting time of the graph.
                  */
                 this(real time)
                 {
-                    current_value_.time = time + time_resolution_ * 0.5; 
+                    current_value_.time = time + time_resolution * 0.5; 
                 }
 
                 /*
                  * Update the graph and finish accumulating a value.
                  *
-                 * Params:  time = End time of the accumulated value.
+                 * Params:  time =            End time of the accumulated value.
                  */
                 void update(real time)
                 {
                     values_ ~= current_value_;
-                    current_value_.time = time + time_resolution_ * 0.5;
+                    current_value_.time = time + time_resolution * 0.5;
                     current_value_.value = 0.0;
                     current_value_.value_count = 0;
                 }
@@ -146,28 +161,14 @@ abstract class GUIGraph : GUIElement
                 body{return values_[0].time;}
         }
 
-        ///Graphs of values measured, indexed by values' names.
-        Graph[string] graphs_;
-
-        //Graph display mode, i.e. display sums for time period or average values.
-        GraphMode mode_ = GraphMode.Average;
-
-        //Time when this guigraph was created
-        real start_time_;
-        //Shortest time period to accumulate values for.
-        real time_resolution_ = 0.03125;
-        //Timer used to time graph updates.
-        Timer update_timer_;
-
-    public:
         /**
          * Construct a graph with specified names of measured values.
          *
          * Params:  graph_names = Names of values in the graph.
          */
         this(string[] graph_names ...)
+        in
         {
-            //moved here due to contract inheritance
             foreach(index_a, name_a; graph_names)
             {
                 foreach(index_b, name_b; graph_names)
@@ -176,9 +177,9 @@ abstract class GUIGraph : GUIElement
                            "GUIGraph can't show multiple values with identical names");
                 }
             }
-
-            super();
-
+        }
+        body
+        {
             start_time_ = get_time();
 
             foreach(name; graph_names){graphs_[name] = new Graph(start_time_);}
@@ -187,27 +188,29 @@ abstract class GUIGraph : GUIElement
         }
 
         ///Set graph display mode, i.e. should data points be sums or averages?
-        final void mode(GraphMode mode)
-        {
-            aligned_ = false;
-            mode_ = mode;
-        }
+        final void mode(GraphMode mode){mode_ = mode;}
+
+        ///Get time resolution of the graph.
+        final real time_resolution(){return time_resolution_;}
+
+        ///Get time when this graph started to exist.
+        final real start_time(){return start_time_;}
+
+        ///Get graphs of values measured, indexed by values' names.
+        final Graph[string] graphs(){return graphs_;}
 
         ///Add a value to the graph for value with specified name.
-        final void add_value(string name, real value)
+        final void update_value(string name, real value)
         in{assert(graphs_.keys.contains(name), "Adding unknown value to graph");}
         body{graphs_[name].add_value(value);}
 
-    protected:
+        ///Update graph data memory representation.
         void update()
         {
-            super.update();
-
             if(update_timer_.expired)
             {
                 real time = get_time();
                 foreach(graph; graphs_.values){graph.update(time);}
             }
         }
-
 }

@@ -1,7 +1,7 @@
 module monitor.graphmonitor;
 
 
-import gui.guigraph;
+import graphdata;
 import gui.guilinegraph;
 import gui.guielement;
 import gui.guibutton;
@@ -10,6 +10,7 @@ import math.vector2;
 import math.rectangle;
 import platform.platform;
 import monitor.monitor;
+import monitor.submonitor;
 import color;
 
 
@@ -20,7 +21,7 @@ import color;
  * change data point time, average or sum mode and toggle display of
  * monitored values.
  */
-abstract class GraphMonitor : GUIElement
+abstract class GraphMonitor : SubMonitor
 {
     private:
         alias std.string.toString to_string;  
@@ -54,68 +55,45 @@ abstract class GraphMonitor : GUIElement
         //Is the left mouse button pressed? Used to detect mouse dragging for scrolling.
         bool left_pressed_;
 
-    public:
+    protected:
         /**
          * Construct a GraphMonitor monitoring values with specified names.
          *
-         * Params:  value_names = Names of values to monitor.
+         * Params:  names  = Names of values to monitor.
+         *          colors = Colors of the values on the graph.
          */
-        this(string[] value_names ...)
+        this(string[] names, Color[] colors)
         {
-            init_toggles(value_names);
+            super();
+
+            init_toggles(names, colors);
             init_menu();
 
-            graph_ = new GUILineGraph(value_names);
-            with(graph_)
+            with(new GUILineGraphFactory)
             {
-                position_x = "p_left + 52";
-                position_y = "p_top + 2";
+                foreach(n, name; names){add_graph(name, colors[n]);}
+                x = "p_left + 52";
+                y = "p_top + 2";
                 width = "p_right - p_left - 54";
                 height = "p_bottom - p_top - 26";
+                graph_ = produce();
             }
+
             add_child(graph_);
 
             scale_x_default_ = graph_.scale_x;
-            font_size = Monitor.font_size;
         }
 
-        ///Set font size of all elements of this graph.
-        void font_size(uint size)
-        {
-            graph_.font_size = size;
-            foreach(value; value_buttons_.values){value.font_size = size;}
-        }
-
-    protected:
         /**
          * Add a new measurement to value with specified name.
          *
          * Params:  name  = Name of the value to add to.
          *          value = Measurement to add.
          */
-        final void add_value(string name, real value){graph_.add_value(name,value);}
-
-        /**
-         * Set color of specified value in the graph (and its toggle button)
-         *
-         * Params:  name  = Name of the value.
-         *          color = Color to set.
-         */
-        final void color(string name, Color color)
-        {
-            graph_.color(name, color);
-            value_buttons_[name].text_color(color, ButtonState.Normal);
-        }
+        final void update_value(string name, real value){graph_.update_value(name,value);}
 
         ///Set graph mode.
         final void mode(GraphMode graph_mode){graph_.mode(graph_mode);}
-
-        //Add buttons changing graph mode. Can optionally be used by some implementations.
-        void add_mode_buttons()
-        {
-            menu_.add_item("sum", &sum);
-            menu_.add_item("avg", &average);
-        }
 
         override void mouse_key(KeyState state, MouseKey key, Vector2u position)
         {
@@ -184,25 +162,38 @@ abstract class GraphMonitor : GUIElement
         }
 
     private:
-        //Initialize value display toggling buttons.
-        void init_toggles(string[] value_names)
+        /*
+         * Initialize value display toggling buttons.
+         *
+         * Params:  names  = Names of the graphs toggled by the buttons.
+         *          colors = Colors of the buttons' texts.
+         */
+        void init_toggles(string[] names, Color[] colors)
         {
-            uint y_offset = 2;
-            foreach(name; value_names)
+            auto factory = new GUIButtonFactory;
+            with(factory)
             {
-                auto button = new GUIButton;
+                x = "p_left + 2";
+                width = "48";
+                height = "12";
+                font_size = 8;
+            }
+
+            uint y_offset = 2;
+            foreach(n, name; names)
+            {
                 auto value = new Toggle(name);
 
-                button.pressed.connect(&(value.toggle));
-                with(button)
+                with(factory)
                 {
+                    y = "p_top + " ~ to_string(y_offset);
+                    font_size = Monitor.font_size;
+                    text_color(ButtonState.Normal, colors[n]);
                     text = name;
-                    font_size = 8;
-                    position_x = "p_left + 2";
-                    position_y = "p_top + " ~ to_string(y_offset);
-                    width = "48";
-                    height = "12";
                 }
+                auto button = factory.produce();
+
+                button.pressed.connect(&(value.toggle));
                 value_buttons_[name] = button;
                 add_child(button);
                 values_ ~= value;
@@ -210,23 +201,27 @@ abstract class GraphMonitor : GUIElement
             }
         }
 
-        //Initialize menu. 
+        /*
+         * Initialize menu. 
+         *
+         * Params:  mode_buttons = Add buttons for changing graph mode?
+         */
         void init_menu()
         {
-            menu_ = new GUIMenu;
-            with(menu_)
+            with(new GUIMenuFactory)
             {
-                position_x = "p_left + 50";
-                position_y = "p_bottom - 24";
+                x = "p_left + 50";
+                y = "p_bottom - 24";
                 orientation = MenuOrientation.Horizontal;
-
-                add_item("res +", &resolution_increase);
-                add_item("res -", &resolution_decrease);
-
-                item_font_size = 8;
                 item_width = "48";
                 item_height = "20";
                 item_spacing = "2";
+                item_font_size = Monitor.font_size;
+                add_item ("res +", &resolution_increase);
+                add_item ("res -", &resolution_decrease);
+                add_item ("sum", &sum);
+                add_item ("avg", &average);
+                menu_ = produce();
             }
             add_child(menu_);
         }
@@ -275,19 +270,21 @@ in
 }
 body
 {
-    string result = "super(\"" ~ values[0] ~ "\"";
+    string super_start = "super(";
 
-    foreach(value; values[1 .. $]){result ~= ", \"" ~ value ~ "\"";}
+    string names = "[\"" ~ values[0] ~ "\"";
+    foreach(value; values[1 .. $]){names ~= ", \"" ~ value ~ "\"";}
+    names ~= "],";
 
-    result ~= ");";
-    result ~= "monitored.send_statistics.connect(&fetch_statistics);";
+    string colors = "[" ~ palette[0];
+    for(uint c = 1; c < values.length; c++){colors ~= "," ~ palette[c];}
+    colors ~= "]";
 
-    foreach(v, value; values)
-    {
-        result ~= "color(\"" ~ value ~ "\", " ~ palette[v] ~ ");";
-    }
+    string super_end = ");\n";
 
-    return result;
+    string connect = "monitored.send_statistics.connect(&fetch_statistics);\n";
+
+    return super_start ~ names ~ colors ~ super_end ~ connect;
 }
 
 /**
@@ -307,14 +304,14 @@ string generate_graph_fetch_statistics(string[] values...)
 in{assert(values.length > 0 , "No values to track");}
 body
 {
-    string result = "void fetch_statistics(Statistics statistics)"
-                    "{";
+    string header = "void fetch_statistics(Statistics statistics)\n"
+                    "{\n";
+    string update_values;
     foreach(value; values)
     {
-        result ~= "add_value(\"" ~ value ~ "\", statistics." ~ value ~ ");";
+        update_values ~= "update_value(\"" ~ value ~ "\", statistics." ~ value ~ ");\n";
     }
-    result ~= "}";
-    return result;
+    return header ~ update_values ~ "}\n";
 }
 
 private:
@@ -327,4 +324,8 @@ const string[] palette = ["Color(255, 0, 0, 255)",
                           "Color(0, 255, 255, 255)",
                           "Color(255, 0, 255, 255)",
                           "Color(128, 0, 0, 255)",
-                          "Color(0, 128, 0, 255)"];
+                          "Color(0, 128, 0, 255)",
+                          "Color(0, 0, 128, 255)",
+                          "Color(128, 128, 0, 255)",
+                          "Color(0, 128, 128, 255)",
+                          "Color(128, 0, 128, 255)"];

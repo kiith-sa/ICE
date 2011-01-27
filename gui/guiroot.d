@@ -24,12 +24,8 @@ final class GUIRoot : GUIElement
         this()
         {
             singleton_ctor();
-            super();
 
-            position_x = "0";
-            position_y = "0";
-            width = "w_right";
-            height = "w_bottom";
+            super("0", "0", "w_right", "w_bottom");
 
             Platform.get.mouse_motion.connect(&mouse_move);
             Platform.get.mouse_key.connect(&mouse_key);
@@ -103,13 +99,13 @@ final class GUIRoot : GUIElement
             static Monitor monitor = null;
             if(monitor is null)
             {
-                monitor = new Monitor;
-                with(monitor)
+                with(new MonitorFactory)
                 {
-                    position_x = "16";
-                    position_y = "16";
-                    width = "192 + w_right / 4";
-                    height = "168 + w_bottom / 6";
+                    x = "16";
+                    y = "16";
+                    width ="192 + w_right / 4";
+                    height ="168 + w_bottom / 6";
+                    monitor = produce();
                 }
                 add_child(monitor);
             }

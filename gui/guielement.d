@@ -10,6 +10,7 @@ import platform.platform;
 import formats.mathparser;
 import color;
 import arrayutil;
+import factory;
 
 
 //In future, this should be rewritten to support background and border(?) textures,
@@ -36,15 +37,16 @@ class GUIElement
         //Are the contents of this element aligned based on its current dimensions?
         bool aligned_ = false;
 
-        string x_string_ = "w_right / 2";
-        string y_string_ = "w_bottom / 2";
-
-        string width_string_ = "64";
-        string height_string_ = "64";
+        //Math expression used to calculate X position of the element.
+        string x_string_;
+        //Math expression used to calculate Y position of the element.
+        string y_string_;
+        //Math expression used to calculate width of the element.
+        string width_string_;
+        //Math expression used to calculate height of the element.
+        string height_string_;
 
     public:
-        this(){}
-
         ~this()
         {
             assert(parent_ is null && children_ is null,
@@ -64,14 +66,6 @@ class GUIElement
             children_ = null;
             parent_ = null;
         }                 
-
-        final void position_x(string pos){x_string_ = pos; aligned_ = false;}
-
-        final void position_y(string pos){y_string_ = pos; aligned_ = false;}
-
-        final void width(string width){width_string_ = width; aligned_ = false;}
-
-        final void height(string height){height_string_ = height; aligned_ = false;}
 
         ///Get position in screen space.
         final Vector2i position_global(){return bounds_.min;}
@@ -129,15 +123,56 @@ class GUIElement
     package:
         final void draw_children()
         {
-            foreach(ref child; children_){child.draw();}
+            foreach(ref child; children_)
+            {
+                if(child is null){continue;}
+                child.draw();
+            }
         }
 
         final void update_children()
         {
-            foreach(ref child; children_){child.update();}
+            foreach(ref child; children_)
+            {
+                if(child is null){continue;}
+                child.update();
+            }
         }
 
     protected:
+        /*
+         * Construct a GUI element with specified parameters.
+         *
+         * Position and size of GUI elements are specified with
+         * strings containing simple math expressions which
+         * are evaluated to determine the actual coordinates.
+         *
+         * Supported operators are + +,-,*,/ as well as parentheses.
+         *
+         * Furthermore, there are builtin macros representing window and parent
+         * coordinates. These are:
+         *
+         * w_right  : Window right end (left end is always 0, so this is window width)
+         * w_bottom : Window bottom end (top end is always 0, so this is window height)
+         * p_left   : Parent left end
+         * p_right  : Parent right end
+         * p_top    : Parent top end
+         * p_bottom : Parent bottom end
+         *
+         * Params:  x      = X position math expression.
+         *          y      = Y position math expression. 
+         *          width  = Width math expression. 
+         *          height = Height math expression. 
+         */
+        this(string x, string y, string width, string height)
+        {
+            x_string_ = x;
+            y_string_ = y;
+            width_string_ = width;
+            height_string_ = height;
+            aligned_ = false;
+        }
+
         void draw()
         {
             if(!visible_){return;}
@@ -163,7 +198,11 @@ class GUIElement
             if(!visible_){return;}
 
             //pass input to the children
-            foreach_reverse(ref child; children_){child.key(state, key, unicode);}
+            foreach_reverse(ref child; children_)
+            {
+                if(child is null){continue;}
+                child.key(state, key, unicode);
+            }
         }
 
         //Process mouse key presses. 
@@ -175,6 +214,7 @@ class GUIElement
             //pass input to the children
             foreach_reverse(ref child; children_)
             {
+                if(child is null){continue;}
                 child.mouse_key(state, key, position);
             }
         }
@@ -188,6 +228,7 @@ class GUIElement
             //pass input to the children
             foreach_reverse(ref child; children_)
             {
+                if(child is null){continue;}
                 child.mouse_move(position, relative);
             }
         }
@@ -225,4 +266,49 @@ class GUIElement
 
             aligned_ = true;
         }
+}
+
+/**
+ * Factory used for GUI element construction.
+ *
+ * See_Also: GUIElementFactoryBase
+ */
+final class GUIElementFactory : GUIElementFactoryBase!(GUIElement)
+{
+    public GUIElement produce(){return new GUIElement(x_, y_, width_, height_);}
+}
+
+/**
+ * Template base class for all GUI element factories, template input
+ * specifies type of GUI element constructed by the factory.
+ *
+ * Position and size of GUI elements are specified with
+ * strings containing simple math expressions which
+ * are evaluated to determine the actual coordinates.
+ *
+ * Supported operators are + +,-,*,/ as well as parentheses.
+ *
+ * Furthermore, there are builtin macros representing window and parent
+ * coordinates. These are:
+ *
+ * w_right  : Window right end (left end is always 0, so this is window width)
+ * w_bottom : Window bottom end (top end is always 0, so this is window height)
+ * p_left   : Parent left end
+ * p_right  : Parent right end
+ * p_top    : Parent top end
+ * p_bottom : Parent bottom end
+ *
+ * Params:  x      = X position math expression.
+ *          y      = Y position math expression. 
+ *          width  = Width math expression. 
+ *          height = Height math expression. 
+ */
+abstract class GUIElementFactoryBase(T)
+{
+    mixin(generate_factory("string $ x $ \"w_right / 2\"", 
+                           "string $ y $ \"w_bottom / 2\"", 
+                           "string $ width $ \"64\"", 
+                           "string $ height $ \"64\""));
+    ///Return a new instance of the class produced by the factory with parameters of the factory.
+    public T produce();
 }

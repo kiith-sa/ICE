@@ -161,7 +161,8 @@ int main(char[][] args)
                      "monitor/", "platform/", "time/", "video/", 
 
                      "allocator.d", "arrayutil.d", "color.d", "image.d", "pong.d",
-                     "signal.d", "singleton.d"
+                     "signal.d", "singleton.d", "factory.d", "stringctfe.d", 
+                     "graphdata.d"
                      ],
                      arguments ~ extra_args);
     }

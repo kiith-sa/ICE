@@ -7,13 +7,18 @@ import std.string;
 import video.videodriver;
 import math.math;
 import math.vector2;
-import gui.guigraph;
+import gui.guielement;
+import graphdata;
 import time.time;
 import time.timer;
 import color;
+import factory;
 
-///Line graph widget, showing changing values system monitor style.
-final class GUILineGraph : GUIGraph
+/**
+ * Line graph widget, showing multiple changing values, 
+ * each in its own graph system monitor style.
+ */
+final class GUILineGraph : GUIElement
 {
     invariant
     {
@@ -45,6 +50,9 @@ final class GUILineGraph : GUIGraph
             float y;
         }
 
+        //Graph data we're displaying.
+        GraphData graph_;
+
         //Time offset of the graph view (used for scrolling)
         //Time offset is actually time since start of graph the data point
         //at the left end of graph display is showing.
@@ -74,23 +82,22 @@ final class GUILineGraph : GUIGraph
 
     public:
         /**
-         * Construct a line graph with specified names of measured values.
+         * Add a value to the graph for value with specified name.
          *
-         * Params:  graph_names = Names of values shown in the graph.
+         * Params:  name  = Name of the value to update.
+         *          value = Value to add. 
          */
-        this(string[] graph_names ...)
-        {
-            super(graph_names);
-            reset_timer(get_time());
-            foreach(name; graph_names){graphics_[name] = new GraphDisplay;}
-        }
+        final void update_value(string name, real value){graph_.update_value(name, value);}
+
+        ///Set graph display mode, i.e. should data points be sums or averages?
+        final void mode(GraphMode mode){graph_.mode = mode;}
 
         ///Set time between two graph data points.
         void data_point_time(real time)
         {
             aligned_ = false;
             //limiting to prevent absurd values
-            data_point_time_ = clamp(time, time_resolution_, 64.0L);
+            data_point_time_ = clamp(time, graph_.time_resolution, 64.0L);
         }
 
         ///Return time between two graph data points.
@@ -102,14 +109,6 @@ final class GUILineGraph : GUIGraph
             auto graphics = graphics_[value];
             graphics.visible = !graphics.visible;
         }
-
-        /**
-         * Set color of graph of specified value.
-         *
-         * Params:  value = Value to set color for.
-         *          color = Color to set.
-         */
-        void color(string value, Color color){graphics_[value].color = color;}
 
         ///If true, Y axis of the graph will be scaled automatically according to highest value.
         void auto_scale(bool scale){aligned_ = false; auto_scale_ = scale;}
@@ -155,9 +154,34 @@ final class GUILineGraph : GUIGraph
         void font_size(uint size){font_size_ = size;}
 
     protected:
+        /**
+         * Construct a GUILineGraph with specified parameters.
+         *
+         * See_Also: GUIElement.this 
+         *
+         * Params:  x      = X position math expression.
+         *          y      = Y position math expression. 
+         *          width  = Width math expression. 
+         *          height = Height math expression. 
+         *          graphs = Names of values measured and colors of their graphs.
+         */
+        this(string x, string y, string width, string height, Color[string] graphs)
+        {
+            super(x, y, width, height);
+
+            graph_ = new GraphData(graphs.keys);
+            reset_timer(get_time());
+            foreach(name, color; graphs)
+            {
+                graphics_[name] = new GraphDisplay;
+                graphics_[name].color = color;
+            }
+        }
+
         override void update()
         {
             super.update();
+            graph_.update();
 
             real time = get_time();
             //time to update display
@@ -174,7 +198,7 @@ final class GUILineGraph : GUIGraph
 
             super.draw();
 
-            foreach(graph; graphs_.keys){draw_graph(graph);}
+            foreach(graph; graph_.graphs.keys){draw_graph(graph);}
             draw_info();
         }
 
@@ -193,10 +217,10 @@ final class GUILineGraph : GUIGraph
             display_timer_ = Timer(clamp(data_point_time_, 0.125L, 8.0L), time);
         }
 
-        //Returns age of this timer at last display timer reset.
+        //Returns age of this graph at last display timer reset.
         real age()
         {
-            return display_timer_.start - start_time_;
+            return display_timer_.start - graph_.start_time;
         }
 
         //This is quite ineffective (associative array accesses),
@@ -218,17 +242,19 @@ final class GUILineGraph : GUIGraph
 
             update_lines();
 
+            auto graphs = graph_.graphs;
+
             //generate line strips
-            foreach(name; graphs_.keys)
+            foreach(name; graphs.keys)
             {
                 real[] points = data_points[name];
-                auto graph = graphs_[name];
+                auto graph = graphs[name];
                 auto graphics = graphics_[name];
                 graphics.line_strip.length = 0;
                 if(graph.empty){continue;}
 
                 float x = bounds_.max.x - scale_x_ * (points.length - 1);
-                x += (graph.start_time - start_time_) * scale_x_;
+                x += (graph.start_time - graph_.start_time) * scale_x_;
                 float y = bounds_.max.y;
 
                 foreach(real point; points)
@@ -258,16 +284,18 @@ final class GUILineGraph : GUIGraph
             //why +3 : get a few more points so the graph is always full if there's enough data
             real time_width = (bounds_.width / scale_x_ + 3) * data_point_time_;
 
-            real end_time = start_time_ + time_offset_;
+            real end_time = graph_.start_time + time_offset_;
             real start_time = end_time - time_width;
 
             maximum = 0.0;
             real[][string] data_points;
 
+            auto graphs = graph_.graphs;
+
             //getting all data points and the maximum
-            foreach(name; graphs_.keys)
+            foreach(name; graphs.keys)
             {
-                real[] points = graphs_[name].data_points(start_time, end_time, data_point_time_);
+                real[] points = graphs[name].data_points(start_time, end_time, data_point_time_);
 
                 data_points[name] = points;
                 if(points.length <= 1){continue;}
@@ -313,7 +341,7 @@ final class GUILineGraph : GUIGraph
          */
         void draw_graph(string name)
         {
-            auto graph = graphs_[name];
+            auto graph = graph_.graphs[name];
             auto graphics = graphics_[name];
 
             if(!graphics.visible || graphics.line_strip.length <= 1){return;}
@@ -364,4 +392,23 @@ final class GUILineGraph : GUIGraph
 
             driver.disable_scissor();
         }
+}
+
+/**
+ * Factory used for line graph construction.
+ *
+ * See_Also: GUIElementFactoryBase
+ *
+ * Params:  add_graph = Add a graph for value with specified name with specified color.
+ */
+final class GUILineGraphFactory : GUIElementFactoryBase!(GUILineGraph)
+{
+    private:
+        //Name and color of graph for each value.
+        Color[string] graphs_;
+    public:
+        void add_graph(string name, Color color){graphs_[name] = color;}
+
+        ///Produce a GUILineGraph with parameters of the factory.
+        GUILineGraph produce(){return new GUILineGraph(x_, y_, width_, height_, graphs_);}
 }
