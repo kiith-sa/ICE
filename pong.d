@@ -660,13 +660,15 @@ class HumanPlayer : Player
 }
 
 ///Displays score screen at the end of game.
-class ScoreScreen : GUIElement
+class ScoreScreen
 {
     private:
         alias std.string.toString to_string;  
         
         //score screen ends when this timer expires.
         Timer timer_;
+
+        GUIElement container_;
 
         GUIStaticText winner_text_;
         GUIStaticText names_text_;
@@ -676,7 +678,16 @@ class ScoreScreen : GUIElement
     public:
         mixin Signal!() expired;
 
-        this(Player player_1, Player player_2, real time)
+        /**
+         * Construct a score screen.
+         *
+         * Params: container = GUI element to use as container in which score screen
+         *                     widgets will be placed.
+         *         player_1  = First player of the game.
+         *         player_2  = Second player of the game.
+         *         time      = Time the game took in seconds.
+         */
+        this(GUIElement container, Player player_1, Player player_2, real time)
         in
         {
             assert(player_1.score != player_2.score, 
@@ -684,9 +695,7 @@ class ScoreScreen : GUIElement
         }
         body
         {
-            super("p_right / 2 - 192", "p_bottom / 2 - 128", "384", "256");
-
-            border_color_ = Color(160, 160, 255, 160);
+            container_ = container;
 
             string winner = player_1.score > player_2.score ? 
                             player_1.name : player_2.name;
@@ -717,19 +726,23 @@ class ScoreScreen : GUIElement
                 winner_text_ = produce();
             }
 
-            add_child(time_text_);
-            add_child(winner_text_);
+            container_.add_child(time_text_);
+            container_.add_child(winner_text_);
 
             init_scores(player_1, player_2);
 
             timer_ = Timer(8);
         }
 
-    protected:
-        override void update()
+        void update()
         {
-            super.update();
             if(timer_.expired){expired.emit();}
+        }
+
+        void die()
+        {
+            GUIRoot.get.remove_child(container_);
+            container_.die();
         }
         
     private:
@@ -757,8 +770,8 @@ class ScoreScreen : GUIElement
                 scores_text_ = produce();
             }
 
-            add_child(names_text_);
-            add_child(scores_text_);
+            container_.add_child(names_text_);
+            container_.add_child(scores_text_);
         }
 }
 
@@ -1115,6 +1128,8 @@ class Game
                 }
             }
 
+            if(score_screen_ !is null){score_screen_.update();}
+
             if(!started_ && intro_timer_.expired(ActorManager.get.game_time))
             {
                 start_game();
@@ -1224,10 +1239,19 @@ class Game
         //Called when one of the players wins the game.
         void game_won()
         {
+            GUIElement container;
+            with(new GUIElementFactory)
+            {
+                x = "p_right / 2 - 192";
+                y = "p_bottom / 2 - 128";
+                width = "384";
+                height = "256";
+                container = produce();
+            }
+            GUIRoot.get.add_child(container);
             //show the score screen and end the game after it expires
-            score_screen_ = new ScoreScreen(player_1_, player_2_, 
+            score_screen_ = new ScoreScreen(container, player_1_, player_2_,
                                             game_timer_.age(ActorManager.get.game_time));
-            GUIRoot.get.add_child(score_screen_);
             score_screen_.expired.connect(&end_game);
             ActorManager.get.time_speed = 0.0;
 
@@ -1242,7 +1266,6 @@ class Game
                 hud_ = null;
                 if(score_screen_ !is null)
                 {
-                    GUIRoot.get.remove_child(score_screen_);
                     score_screen_.die();
                     score_screen_ = null;
                 }
@@ -1282,7 +1305,7 @@ class Game
 }
 
 ///Credits screen.
-class Credits : GUIElement
+class Credits
 {
     private:
         static credits_ = 
@@ -1305,6 +1328,7 @@ class Credits : GUIElement
         "Pong is released under the terms of the Boost license."
         ;
 
+        GUIElement container_;
         GUIButton close_button_;
         GUIStaticText text_;
 
@@ -1312,9 +1336,14 @@ class Credits : GUIElement
         ///Emitted when this credits dialog is closed.
         mixin Signal!() closed;
 
-        this()
+        /**
+         * Construct a Credits screen.
+         *
+         * Params:  container = GUI element used as a container for the credits GUI elements.
+         */
+        this(GUIElement container)
         {
-            super("p_left + 96", "p_top + 16", "p_right - 192" , "p_bottom - 32");
+            container_ = container;
 
             with(new GUIStaticTextFactory)
             {
@@ -1336,9 +1365,16 @@ class Credits : GUIElement
                 close_button_ = produce();
             }
 
-            add_child(text_);
-            add_child(close_button_);
+            container_.add_child(text_);
+            container_.add_child(close_button_);
             close_button_.pressed.connect(&closed.emit);
+        }
+
+        ///Destroy this credits screen.
+        void die()
+        {
+            GUIRoot.get.remove_child(container_);
+            container_.die();
         }
 }
 
@@ -1464,14 +1500,23 @@ class Pong
         {
             menu_container_.hide();
             Platform.get.key.disconnect(&key_handler);
-            credits_ = new Credits;
-            GUIRoot.get.add_child(credits_);
+
+            GUIElement container;
+            with(new GUIElementFactory)
+            {
+                x = "p_left + 96";
+                y = "p_top + 16";
+                width = "p_right - 192";
+                height = "p_bottom - 32";
+                container = produce();
+            }
+            GUIRoot.get.add_child(container);
+            credits_ = new Credits(container);
             credits_.closed.connect(&credits_end);
         }
 
         void credits_end()
         {
-            GUIRoot.get.remove_child(credits_);
             credits_.die();
             credits_ = null;
             Platform.get.key.connect(&key_handler);

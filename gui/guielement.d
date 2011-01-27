@@ -305,8 +305,8 @@ final class GUIElementFactory : GUIElementFactoryBase!(GUIElement)
  */
 abstract class GUIElementFactoryBase(T)
 {
-    mixin(generate_factory("string $ x $ \"w_right / 2\"", 
-                           "string $ y $ \"w_bottom / 2\"", 
+    mixin(generate_factory("string $ x $ \"p_left\"", 
+                           "string $ y $ \"p_top\"", 
                            "string $ width $ \"64\"", 
                            "string $ height $ \"64\""));
     ///Return a new instance of the class produced by the factory with parameters of the factory.

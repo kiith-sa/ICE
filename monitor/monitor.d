@@ -11,8 +11,6 @@ import time.timer;
 import monitor.monitormenu;
 import monitor.submonitor;
 
-import std.stdio;
-
 
 ///Displays various debugging/profiling information about engine subsystems.
 final class Monitor : GUIElement
@@ -20,8 +18,9 @@ final class Monitor : GUIElement
     private:
         //Main menu used to access menus of subsystems' monitors.
         GUIMenu main_menu_;
-        //Currently shown menu (can be the main menu or a subsystem monitor menu).
-        GUIMenu current_menu_;
+        //Currently shown submenu(if any).
+        MonitorMenu current_menu_;
+        //Currently shown monitor.
         GUIElement current_monitor_ = null;
 
     public:
@@ -58,7 +57,6 @@ final class Monitor : GUIElement
                 main_menu_ = produce();
             }
 
-            current_menu_ = main_menu_;
             add_child(main_menu_);
         }
         override void update(){update_children();}
@@ -72,31 +70,34 @@ final class Monitor : GUIElement
 
         //Replace main menu with specified monitor menu.
         void menu(MonitorMenu menu)
+        in
         {
-            if(current_menu_ is main_menu_){main_menu_.hide();}
+            assert(main_menu_.visible, "Trying to replace main menu but it's not visible");
+        }
+        body
+        {
+            main_menu_.hide();
 
             menu.back.connect(&show_main_menu);
             menu.set_monitor.connect(&monitor);
 
             current_menu_ = menu;
-            add_child(current_menu_);
+            add_child(menu.menu);
         }
 
         //Show main menu, removing currently shown submenu.
         void show_main_menu()
         in
         {
-            assert(main_menu_ != current_menu_ && !main_menu_.visible,
+            assert(!main_menu_.visible,
                    "Trying to show monitor main menu even though it's shown already");
         }
         body
         {
-            writefln("show_main_menu");
-            remove_child(current_menu_);
+            remove_child(current_menu_.menu);
             current_menu_.die();
+            current_menu_ = null;
             main_menu_.show();
-            current_menu_ = main_menu_;
-            writefln("show_main_menu end");
         }
 
         //Show given monitor, replacing any monitor previously shown.

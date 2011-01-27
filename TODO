@@ -1,15 +1,5 @@
 17:
-    Rewrite graph generating functions so that:
-    generate_graph_monitor_ctor() saves values used in a global and
-    generate_graph_fetch_statistics uses those, w/o needing arguments
-    - but can't have two successive calls to the same generating function-
-    use a global flag for that
-17:
-    Score screen and such should own GUI elements instead of being GUI elements.
-    Maybe even MonitorMenu and implementations (would result in Monitor
-    having to call MonitorMenu methods to connect and disconnect the menu,
-    but might still be cleaner code)
-    Some GUI code unittests, especially GUIElement(coords calculation)
+    GUI menu items should not be sorted. Fix that (don't use AA)
 17:
     Unittests for code generating functions that compare generated result
     with example result.

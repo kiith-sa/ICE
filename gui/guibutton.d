@@ -9,7 +9,6 @@ import platform.platform;
 import color;
 import signal;
 import factory;
-import std.stdio;
 
 
 ///Enumerates states a button can be in.
@@ -111,7 +110,6 @@ class GUIButton : GUIElement
                             state_ == ButtonState.Clicked)
                     {
                         set_state(ButtonState.MouseOver);
-                        writefln("pressed.emit");
                         pressed.emit();
                     }
                 }

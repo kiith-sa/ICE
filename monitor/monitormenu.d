@@ -9,13 +9,23 @@ import signal;
 
 
 ///Base class for monitor menus.
-abstract class MonitorMenu : GUIMenu
+abstract class MonitorMenu
 {
+    private:
+        ///GUI element displaying the menu.
+        GUIMenu menu_;
+
     public:
         ///Signal used to return back to parent menu.
         mixin Signal!() back;
         ///Signal used to set monitor selected by this menu.
         mixin Signal!(SubMonitor) set_monitor;
+
+        ///Get the menu GUI element.
+        GUIMenu menu(){return menu_;}
+
+        ///Destroy this MonitorMenu
+        void die(){menu.die();}
 
     protected:
         /**
@@ -23,14 +33,19 @@ abstract class MonitorMenu : GUIMenu
          * 
          * Params:  items = Texts and callbacks of menu items.
          */
-        this(void delegate()[string] items)
+        this(GUIMenuFactory factory)
         {
-            items["Back"] = &back_to_parent;
-            super("p_left", "p_top", "0", "0", MenuOrientation.Horizontal,
-                  "44", "14", "4", Monitor.font_size, items);
+            with(factory)
+            {
+                orientation = MenuOrientation.Horizontal;
+                item_width = "44";
+                item_height = "14";
+                item_spacing = "4";
+                item_font_size = Monitor.font_size;
+                menu_ = produce();
+            }
         }
 
-    private:
         ///Return back to parent menu.
         void back_to_parent(){back.emit();}
 }
@@ -78,13 +93,13 @@ body
 
     string ctor_start = "    public this(" ~ name ~ " monitored)\n"
                         "    {\n"
-                        "        void delegate()[string] items;\n";
-    string ctor_items;
+                        "        auto factory = new GUIMenuFactory;\n";
+    string ctor_items = "        factory.add_item(\"Back\", &back_to_parent);\n";
     foreach(monitor; monitor_names)
     {
-        ctor_items ~= "        items[\"" ~ monitor ~ "\"] = &" ~ monitor ~ ";\n";
+        ctor_items ~= "        factory.add_item(\"" ~ monitor ~ "\", &" ~ monitor ~ ");\n";
     }
-    string ctor_end = "        super(items);\n"
+    string ctor_end = "        super(factory);\n"
                       "        monitored_ = monitored;\n"
                       "    }\n";
     string setters = "    private:\n";
