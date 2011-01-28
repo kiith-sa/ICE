@@ -522,6 +522,8 @@ class AIPlayer : Player
     protected:
         //Timer determining when to update the AI
         Timer update_timer_;
+        //Position of the ball during last AI update.
+        Vector2f ball_last_;
 
     public:
         ///Construct an AI controlling specified paddle
@@ -536,7 +538,6 @@ class AIPlayer : Player
             if(update_timer_.expired())
             {
                 update_timer_.reset();
-                real frame_length = ActorManager.get.time_step;
 
                 //currently only support zero or one ball
                 Ball[] balls = game.balls;
@@ -544,19 +545,23 @@ class AIPlayer : Player
                        "AI supports only zero or one ball at the moment");
                 if(balls.length == 0)
                 {
-                    move_to_center;
+                    //Setting last ball position to center of paddle limits prevents
+                    //any weird AI movements when ball first appears.
+                    ball_last_ = paddle_.limits.center;
+                    move_to_center();
                     return;
                 }
                 Ball ball = balls[0];
 
                 float distance = paddle_.limits.distance(ball.position);
-                Vector2f ball_next = ball.position + ball.velocity * frame_length;
-                float distance_next = paddle_.limits.distance(ball_next);
+                float distance_last = paddle_.limits.distance(ball_last_);
                 
                 //If the ball is closing to paddle movement area
-                if(distance_next <= distance){ball_closing(ball);}       
+                if(distance_last >= distance){ball_closing(ball);}       
                 //If the ball is moving away from paddle movement area
                 else{move_to_center();}
+
+                ball_last_ = ball.position;
             }
         }
 
@@ -809,20 +814,16 @@ class BallSpawner : Actor
          
         //Number of possible directions to spawn the ball at to generate.
         uint direction_count_ = 12;
-        
         //Directions the ball can be spawned at, in radians.
         real[] directions_;
 
         //"light" direction used by the rays effect.
         //The light rotates and shows the rays within its range.
         real light_ = 0;
-
         //Rotation speed of the "light", in radians per second.
         real light_speed_;
-
         //Angular width of the "light" in radians.
         real light_width_ = PI / 6.0; 
-
         //Draw the "light" ?
         bool light_expired = false;
 
@@ -832,32 +833,26 @@ class BallSpawner : Actor
         /**
          * Constructs a BallSpawner with specified parameters.
          * 
-         * Params:    time       = Time until the ball is spawned.
-         *                         70% of this time will be taken by
-         *                         the rays effect.
+         * Params:    timer      = Ball will be spawned when this timer (game time) expires.
+         *                         70% of the time will be taken by the rays effect.
          *            spread     = "Randomness" of the spawn directions.
          *                         Zero will result in only one definite direction,
          *                         1 will result in completely random direction
          *                         (except for horizontal directions that are 
          *                         disallowed to prevent ball from getting stuck)
          *            ball_speed = Speed to spawn the ball at.
-         *
          */
-        this(real time, real spread, real ball_speed)
-        in
-        {
-            assert(time >= 0.0, "Negative ball spawning time");
-            assert(spread >= 0.0, "Negative ball spawning spread");
-        }
+        this(Timer timer, real spread, real ball_speed)
+        in{assert(spread >= 0.0, "Negative ball spawning spread");}
         body
         {                
             super(null);
 
             ball_speed_ = ball_speed;
-            timer_ = Timer(time, ActorManager.get.game_time);
+            timer_ = timer;
             //leave a third of time without the rays effect to give time
             //to the player
-            light_speed_ = (2 * PI) / (time * 0.70);
+            light_speed_ = (2 * PI) / (timer.delay * 0.70);
 
             generate_directions(spread);
         }
@@ -1067,6 +1062,8 @@ class Game
 {
     mixin WeakSingleton;
     private:
+        ActorManager actor_manager_;
+        
         Ball ball_;
         real ball_radius_ = 6.0;
         real ball_speed_ = 185.0;
@@ -1101,14 +1098,18 @@ class Game
         Timer intro_timer_;
 
     public:
-        this(){singleton_ctor();}
+        this(ActorManager actor_manager)
+        {
+            singleton_ctor();
+            actor_manager_ = actor_manager;
+        }
 
         bool run()
         {
+            real time = actor_manager_.game_time;
             if(playing_)
             {
-                real time_left = time_limit_ - 
-                                 game_timer_.age(ActorManager.get.game_time);
+                real time_left = time_limit_ - game_timer_.age(time);
                 hud_.update(time_left, player_1_, player_2_);
 
                 //update player state
@@ -1116,12 +1117,11 @@ class Game
                 player_2_.update(this);
 
                 //check for victory conditions
-                if(player_1_.score >= score_limit_ || 
-                   player_2_.score >= score_limit_)
+                if(player_1_.score >= score_limit_ || player_2_.score >= score_limit_)
                 {
                     game_won();
                 }
-                if(game_timer_.expired(ActorManager.get.game_time))
+                if(game_timer_.expired(time))
                 {
                     if(player_1_.score != player_2_.score){game_won();}
                 }
@@ -1129,10 +1129,7 @@ class Game
 
             if(score_screen_ !is null){score_screen_.update();}
 
-            if(!started_ && intro_timer_.expired(ActorManager.get.game_time))
-            {
-                start_game();
-            }
+            if(!started_ && intro_timer_.expired(time)){start_game(time);}
 
             return continue_;
         }
@@ -1141,7 +1138,7 @@ class Game
 
         void intro()
         {
-            intro_timer_ = Timer(2.5, ActorManager.get.game_time);
+            intro_timer_ = Timer(2.5, actor_manager_.game_time);
             playing_ = started_ = false;
             continue_ = true;
 
@@ -1171,7 +1168,19 @@ class Game
             Platform.get.key.connect(&key_handler);
         }
 
-        void start_game()
+        ///Returns an array of balls currently used in the game.
+        Ball[] balls()
+        {
+            Ball[] output;
+            if(ball_ !is null){output ~= ball_;}
+            return output;
+        }
+
+        void draw(){}
+
+    private:
+        ///Start the game, at specified game time
+        void start_game(real start_time)
         {
             for(uint dummy = 0; dummy < dummy_count_; dummy++)
             {
@@ -1189,8 +1198,9 @@ class Game
             wall_right_.velocity = Vector2f(0.0, 0.0);
             goal_up_.velocity = Vector2f(0.0, 0.0);
             goal_down_.velocity = Vector2f(0.0, 0.0);
-
-            auto spawner = new BallSpawner(spawn_time_, spawn_spread_, ball_speed_);
+            
+            auto spawn_timer = Timer(spawn_time_, start_time);
+            auto spawner = new BallSpawner(spawn_timer, spawn_spread_, ball_speed_);
             spawner.spawn_ball.connect(&spawn_ball);
 
             goal_up_.ball_hit.connect(&player_2_.score);
@@ -1200,20 +1210,9 @@ class Game
 
             hud_ = new HUD(time_limit_);
 
-            game_timer_ = Timer(time_limit_, ActorManager.get.game_time);
+            game_timer_ = Timer(time_limit_, start_time);
         }
 
-        ///Returns an array of balls currently used in the game.
-        Ball[] balls()
-        {
-            Ball[] output;
-            if(ball_ !is null){output ~= ball_;}
-            return output;
-        }
-
-        void draw(){}
-
-    private:
         void destroy_ball(BallBody ball_body)
         in
         {
@@ -1226,7 +1225,8 @@ class Game
             ball_.die();
             ball_ = null;
 
-            auto spawner = new BallSpawner(spawn_time_, spawn_spread_, ball_speed_);
+            auto spawn_timer = Timer(spawn_time_, actor_manager_.game_time);
+            auto spawner = new BallSpawner(spawn_timer, spawn_spread_, ball_speed_);
             spawner.spawn_ball.connect(&spawn_ball);
         }
 
@@ -1250,9 +1250,9 @@ class Game
             GUIRoot.get.add_child(container);
             //show the score screen and end the game after it expires
             score_screen_ = new ScoreScreen(container, player_1_, player_2_,
-                                            game_timer_.age(ActorManager.get.game_time));
+                                            game_timer_.age(actor_manager_.game_time));
             score_screen_.expired.connect(&end_game);
-            ActorManager.get.time_speed = 0.0;
+            actor_manager_.time_speed = 0.0;
 
             playing_ = false;
         }
@@ -1268,10 +1268,10 @@ class Game
                     score_screen_.die();
                     score_screen_ = null;
                 }
-                ActorManager.get.time_speed = 1.0;
+                actor_manager_.time_speed = 1.0;
             }
 
-            ActorManager.get.clear();
+            actor_manager_.clear();
             player_1_.die();
             player_2_.die();
 
@@ -1290,11 +1290,11 @@ class Game
                         end_game();
                         break;
                     case Key.K_P:
-                        if(equals(ActorManager.get.time_speed, cast(real)0.0))
+                        if(equals(actor_manager_.time_speed, cast(real)0.0))
                         {
-                            ActorManager.get.time_speed = 1.0;
+                            actor_manager_.time_speed = 1.0;
                         }
-                        else{ActorManager.get.time_speed = 0.0;}
+                        else{actor_manager_.time_speed = 0.0;}
                         break;
                     default:
                         break;
@@ -1385,6 +1385,8 @@ class Pong
         bool run_pong_ = false;
         bool continue_ = true;
 
+        ActorManager actor_manager_;
+
         GUIElement menu_container_;
         GUIMenu menu_;
         Game game;
@@ -1397,11 +1399,12 @@ class Pong
         {
             singleton_ctor();
 
-            ActorManager.initialize!(ActorManager);
             VideoDriver.get.set_video_mode(800, 600, ColorFormat.RGBA_8, false);
+            ActorManager.initialize!(ActorManager);
+            actor_manager_ = ActorManager.get;
             GUIRoot.initialize!(GUIRoot);
 
-            game = new Game;
+            game = new Game(actor_manager_);
 
             //Update FPS every second
             fps_counter_ = new EventCounter(1.0);
@@ -1439,7 +1442,7 @@ class Pong
 
         void die()
         {
-            ActorManager.get.die();
+            actor_manager_.die();
             VideoDriver.get.die();
             Platform.get.die();
             fps_counter_.update.disconnect(&fps_update);
@@ -1460,7 +1463,7 @@ class Pong
                 if(run_pong_ && !game.run()){pong_end();}
 
                 //update game state
-                ActorManager.get.update();
+                actor_manager_.update();
                 GUIRoot.get.update();
 
                 VideoDriver.get.start_frame();
@@ -1468,13 +1471,13 @@ class Pong
                 if(run_pong_){game.draw();}
                 else{draw();}
 
-                ActorManager.get.draw();
+                actor_manager_.draw();
                 GUIRoot.get.draw();
                 VideoDriver.get.end_frame();
             }
             game.die();
             writefln("FPS statistics:\n", fps_counter_.statistics, "\n");
-            writefln("ActorManager statistics:\n", ActorManager.get.statistics, "\n");
+            writefln("ActorManager statistics:\n", actor_manager_.statistics, "\n");
         }
 
         void draw(){}

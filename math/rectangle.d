@@ -24,12 +24,17 @@ align(1) struct Rectangle(T)
         return Rectangle!(T)(Vector2!(T)(x1, y1), Vector2!(T)(x2, y2));
     }
  
-    ///Fake constructor from 2 vectors
-    static Rectangle!(T) opCall(Vector2!(T) v1, Vector2!(T) v2)
+    /**
+     * Fake constructor from 2 vectors
+     *
+     * Params:  min = Upper-left corner of the rectangle.
+     *          max = Lower-right corner of the rectangle.
+     */
+    static Rectangle!(T) opCall(Vector2!(T) min, Vector2!(T) max)
     {
         Rectangle rect;
-        rect.min = v1;
-        rect.max = v2;
+        rect.min = min;
+        rect.max = max;
         return rect;
     }
     

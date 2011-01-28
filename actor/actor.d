@@ -63,12 +63,6 @@ abstract class Actor
             ActorManager.get.remove_actor(this);
         }
 
-        ~this()
-        {
-            assert(!ActorManager.get.has_actor(this), 
-                   "Actor must be removed from the ActorManager before destruction");
-        }
-
     protected:
         //Construct Actor with specified properties.
         this(PhysicsBody physics_body) 

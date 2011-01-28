@@ -36,6 +36,9 @@ align(1) struct Timer
         ///Returns time when the timer was started.
         real start(){return start_;}
 
+        ///Returns delay of this timer.
+        real delay(){return delay_;}
+
         /**
          * Returns time since start of the timer at given time.
          *

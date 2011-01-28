@@ -176,7 +176,4 @@ final class ActorManager
         
         //Update updates per second output
         void ups_update(real ups){writefln("UPS: ", ups);}
-
-        //Determines if given actor is in this ActorManager
-        bool has_actor(Actor actor){return actors_.contains(actor, true);}
 }

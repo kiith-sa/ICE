@@ -1,11 +1,26 @@
 17:
-    Look for ways of removing ActorManager.get, combined
-    with dependency injection of stuff needed by actors.
+    Construct actors with dependency injection, after constructed,
+    actor_manager_.add_actor manually, similarly remove_actor after
+    death.
+17:
+    Turn ActorManager into a weak singleton.
+17:
+    After we fully turn ActorManager into a weak singleton:
+    Try to put actomanager update,draw into game update,draw remove it from pong,
+    initialize actormanager at each game start, destroying it at game end.
+    (actually - use dependency injection - injecting code might e.g.
+     keep the ActorManager instance in future, just clearing it, if needed,
+     of course we don't want that now so just init ActorManager, pass to Game,
+     and, when we kill the game, also kill ActorManager. If this is messy,
+     a DI container or factory can do it. One advantage is that game does
+     not need to clean up its mess as much as before, user of Game has to do that.)
 
-    E.g. we can easily pass ActorManager references around in
-    methods called for every actor, such as update,
-    as well as in die() and such.
-    Also, where possible, just pass the data really needed (like frame time)
+    Actually, do use a GameFactory. So Pong has no idea about ActorManager at all.
+
+    This means we'll have to move PhysicsEngine init/die out of ActorManager.
+17:
+    Try to see if anything is testable now, and if so, write tests
+    (stuff dependent on PhysicsEngine still won't be testable)
 17:
     Improve testability: remove new from ctors
     Most dependencies should be passed to ctor, created outside.
@@ -158,6 +173,11 @@
 24:
     Window resizing
 24:
+    1:
+    Move FPS counter out of game code, UPS out of ActorManager. Get rid of
+    statistics method/s, maybe eventcounter if can't find a use for it. 
+    We can have monitor/s for that. Need to separate monitor GUI and logic.
+
     Ability to run monitor graphs in background w/o rendering them and then 
     render them to file (SVG or PNG).
     Even better: write out simple text, binary or gzipped file and have a 
@@ -210,6 +230,11 @@
     Valgrind, Massif, Callgrind, Cachegrind, Sysprof, CodeAnalyst(OProfile GUI),
     manual time measurement - at least get total time and VideoDriver methods' time
     Don't forget to do this with an optimized build.
+24:
+    Weak singleton class handling time, updating actormanager and perhaps other
+    stuff. Pass this class when updating actors, instead of time_step, game_time.
+    This class will also allow timed delegates,
+    both delayed in real time and in game time. Use this in BallSpawner, ScoreScreen.
 24:
     Options start: player names (also, whether the player is AI or human-
     so we can have AI/AI, AI/human, human/human)
