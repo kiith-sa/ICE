@@ -1,14 +1,5 @@
 17:
-    Improve testability by looking at ctors and removing new calls from them.
-    All/most that a class needs should be passed to ctor, created outside.
-    maybe use factories
-    E.g. actors should not construct their physics bodies themselves,
-    and passing actormanager to do that is evil, too
-    So, need a factory with access to actormanager, or actormanager to be the
-    factory or something like that
-    (maybe actormanager or some factory should have a template method, string
-     mixin method/s for construction, or there should be a template/string mixin
-     factory class)
+    Try to get rid of GraphData.graphs() accessor - exposes much
 17: 
     Color: special ctor for RGB only with only 3 args, setting alpha to 255.
     VideoDriver: a videodriver version of draw_line with only one color,
@@ -16,6 +7,17 @@
     future optimizations.
 
     Also, color constats like White, Black, etc., and rewrite code to use them
+17:
+    Improve testability by looking at ctors and removing new calls from them.
+    All/most that a class needs should be passed to ctor, created outside.
+    maybe use factories
+    E.g. actors should not construct their physics bodies themselves,
+    and passing actormanager to do that is evil, too
+So, need a factory with access to actormanager, or actormanager to be the
+    factory or something like that
+    (maybe actormanager or some factory should have a template method, string
+     mixin method/s for construction, or there should be a template/string mixin
+     factory class)
 17:
     Try desingletonifying some singletons (yes-single instance, no-global access)
     For instance, physics engine could be a member of actormanager,
@@ -35,11 +37,6 @@
     dependency injection.
 
     If this results in better testability, more unittests
-17:
-    Clean up GraphData, GUILineGraph.
-    Make GUILineGraph only "link" to graph data, user code updating graph data values
-    and such. This way, we can have two GUI classes share the same GraphData, managed
-    by someone else.
 17:
     Consider dependency injection in case of GraphMonitor-GUILineGraph-GraphData
     i.e. GraphMonitor factory would first construct GraphData, the GUILineGraph

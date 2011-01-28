@@ -51,3 +51,20 @@ string strip(string str)
     return str[left .. right + 1];
 }
 
+/**
+ * Replacement for std.string.join, which can't be evaluated at compile time.
+ *
+ * Joins all given strings into one string with specified separator.
+ *
+ * Params:  words = Strings to join.
+ *          sep   = Separator to use.
+ *
+ * Returns: Joined string.
+ */
+string join(string[] words, string sep)
+{
+    if(words.length == 0){return "";}
+    string result = words[0];
+    foreach(word; words[1 .. $]){result ~= sep ~ word;}
+    return result;
+}

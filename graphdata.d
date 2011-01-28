@@ -6,7 +6,7 @@ import time.time;
 import time.timer;
 import arrayutil;
 
-///Graph display modes.
+///Graph modes.
 enum GraphMode
 {
     ///Show totals per time unit.
@@ -35,7 +35,7 @@ final class GraphData
         ///Graphs of values measured, indexed by values' names.
         Graph[string] graphs_;
 
-        //Graph display mode, i.e. display sums for time period or average values.
+        //Graph mode, i.e. are data points sums or averages over time?
         GraphMode mode_ = GraphMode.Average;
 
         //Time when this guigraph was created
@@ -59,7 +59,7 @@ final class GraphData
                 /*
                  * Construct the graph with specified starting time.
                  *
-                 * Params:  time =            Starting time of the graph.
+                 * Params:  time = Starting time of the graph.
                  */
                 this(real time)
                 {
@@ -139,7 +139,6 @@ final class GraphData
                         } 
                     }
 
-                    //return output;
                     return data_points;
                 }
 
@@ -162,9 +161,9 @@ final class GraphData
         }
 
         /**
-         * Construct a graph with specified names of measured values.
+         * Construct graph data with specified names of measured values.
          *
-         * Params:  graph_names = Names of values in the graph.
+         * Params:  graph_names = Names of measured values.
          */
         this(string[] graph_names ...)
         in
@@ -187,7 +186,7 @@ final class GraphData
             update_timer_ = Timer(time_resolution_, start_time_);
         }
 
-        ///Set graph display mode, i.e. should data points be sums or averages?
+        ///Set graph mode, i.e. should data points be sums or averages?
         final void mode(GraphMode mode){mode_ = mode;}
 
         ///Get time resolution of the graph.

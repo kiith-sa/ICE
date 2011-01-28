@@ -1,6 +1,8 @@
 module monitor.graphmonitor;
 
 
+import stringctfe;
+
 import graphdata;
 import gui.guilinegraph;
 import gui.guielement;
@@ -23,9 +25,11 @@ import color;
  */
 abstract class GraphMonitor : SubMonitor
 {
+    protected:
+        //Measured graph data.
+        GraphData data_;
     private:
         alias std.string.toString to_string;  
-
         //Graph widget controlled by this monitor.
         GUILineGraph graph_;
         //Buttons used to toggle display of values on the graph.
@@ -59,14 +63,16 @@ abstract class GraphMonitor : SubMonitor
         /*
          * Construct a GraphMonitor monitoring values with specified names.
          *
-         * Params:  factory = Factory used to produce the graph widget.
-         *                    Derived class is responsible with adding value
-         *                    graphs to the factory.
+         * Params:  factory    = Factory used to produce the graph widget.
+         *                       Derived class is responsible with adding value
+         *                       graphs to the factory.
+         *          graph_data = Graph data to link the graph widget to.
          */
-        this(GUILineGraphFactory factory)
+        this(GUILineGraphFactory factory, GraphData graph_data)
         {
             super();
             init_menu();
+            data_ = graph_data;
 
             with(factory)
             {
@@ -74,6 +80,7 @@ abstract class GraphMonitor : SubMonitor
                 y = "p_top + 2";
                 width = "p_right - p_left - 54";
                 height = "p_bottom - p_top - 26";
+                data = graph_data;
                 graph_ = produce();
             }
 
@@ -88,10 +95,10 @@ abstract class GraphMonitor : SubMonitor
          * Params:  name  = Name of the value to add to.
          *          value = Measurement to add.
          */
-        final void update_value(string name, real value){graph_.update_value(name,value);}
+        final void update_value(string name, real value){data_.update_value(name,value);}
 
         ///Set graph mode.
-        final void mode(GraphMode graph_mode){graph_.mode(graph_mode);}
+        final void mode(GraphMode graph_mode){data_.mode(graph_mode);}
 
         override void mouse_key(KeyState state, MouseKey key, Vector2u position)
         {
@@ -159,7 +166,6 @@ abstract class GraphMonitor : SubMonitor
             if(left_pressed_){graph_.scroll(-relative.x);}
         }
 
-    protected:
         /*
          * Add a value display toggling button for a value.
          *
@@ -187,6 +193,12 @@ abstract class GraphMonitor : SubMonitor
             }
             values_ ~= value;
         }     
+
+        override void update()
+        {
+            super.update();
+            data_.update();
+        }
 
     private:
         /*
@@ -220,10 +232,10 @@ abstract class GraphMonitor : SubMonitor
         void resolution_decrease(){graph_.data_point_time = graph_.data_point_time * 2.0;}
 
         //Set sum graph mode - used by sum button
-        void sum(){graph_.mode = GraphMode.Sum;}
+        void sum(){data_.mode = GraphMode.Sum;}
 
         //Set average graph mode - used by average button
-        void average(){graph_.mode = GraphMode.Average;}
+        void average(){data_.mode = GraphMode.Average;}
 }
 
 /**
@@ -265,24 +277,26 @@ body
     string values_str;
     foreach(color, value; values)
     {
-        values_str ~= "factory.add_graph(\"" ~ value ~ "\", " ~ palette[color] ~ ");\n";
+        values_str ~= "factory.graph_color(\"" ~ value ~ "\", " ~ palette[color] ~ ");\n";
         values_str ~= "add_toggle(\"" ~ value ~ "\", " ~ palette[color] ~ ");\n";
     }
-    string super_call = "super(factory);\n";
+    string data = "auto data = new GraphData(\"" ~ values.join("\", \"") ~ "\");\n";
+    string super_call = "super(factory, data);\n";
 
     string connect = "monitored.send_statistics.connect(&fetch_statistics);\n";
 
-    return factory ~ values_str ~ super_call ~ connect;
+    return factory ~ values_str ~ data ~ super_call ~ connect;
 }
 unittest
 {
     string expected =
         "auto factory = new GUILineGraphFactory;\n"
-        "factory.add_graph(\"a\", " ~ palette[0] ~ ");\n"
+        "factory.graph_color(\"a\", " ~ palette[0] ~ ");\n"
         "add_toggle(\"a\", " ~ palette[0] ~ ");\n"
-        "factory.add_graph(\"b\", " ~ palette[1] ~ ");\n"
+        "factory.graph_color(\"b\", " ~ palette[1] ~ ");\n"
         "add_toggle(\"b\", " ~ palette[1] ~ ");\n"
-        "super(factory);\n"
+        "auto data = new GraphData(\"a\", \"b\");\n"
+        "super(factory, data);\n"
         "monitored.send_statistics.connect(&fetch_statistics);\n"; 
     assert(expected == generate_graph_monitor_ctor("a","b"),
            "Unexpected graph monitor ctor code generated");
@@ -310,7 +324,7 @@ body
     string update_values;
     foreach(value; values)
     {
-        update_values ~= "    update_value(\"" ~ value ~ "\", statistics." ~ value ~ ");\n";
+        update_values ~= "    data_.update_value(\"" ~ value ~ "\", statistics." ~ value ~ ");\n";
     }
     return header ~ update_values ~ "}\n";
 }
@@ -319,8 +333,8 @@ unittest
     string expected =
         "void fetch_statistics(Statistics statistics)\n"
         "{\n"
-        "    update_value(\"a\", statistics.a);\n"
-        "    update_value(\"b\", statistics.b);\n"
+        "    data_.update_value(\"a\", statistics.a);\n"
+        "    data_.update_value(\"b\", statistics.b);\n"
         "}\n";
     assert(expected == generate_graph_fetch_statistics("a","b"),
            "Unexpected graph monitor fetch_statistics() code generated");
