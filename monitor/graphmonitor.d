@@ -343,15 +343,15 @@ unittest
 private:
 
 ///Palette of colors used by graph monitor code generated with string mixins.
-const string[] palette = ["Color(255, 0, 0, 255)",
-                          "Color(0, 255, 0, 255)",
-                          "Color(0, 0, 255, 255)",
-                          "Color(255, 255, 0, 255)",
-                          "Color(0, 255, 255, 255)",
-                          "Color(255, 0, 255, 255)",
-                          "Color(128, 0, 0, 255)",
+const string[] palette = ["Color.red",
+                          "Color.green",
+                          "Color.blue",
+                          "Color.yellow",
+                          "Color.cyan",
+                          "Color.magenta",
+                          "Color.burgundy",
                           "Color(0, 128, 0, 255)",
                           "Color(0, 0, 128, 255)",
-                          "Color(128, 128, 0, 255)",
+                          "Color.forest_green",
                           "Color(0, 128, 128, 255)",
-                          "Color(128, 0, 128, 255)"];
+                          "Color.dark_purple"];

@@ -28,7 +28,7 @@ class LineEmitter : ParticleEmitter
         //Width of line particles drawn.
         uint line_width_ = 2;
         //Color of particles at the beginning of their life.
-        Color start_color_ = Color(255, 255, 255, 255);
+        Color start_color_ = Color.white;
         //Color of particles at the end of their life.
         Color end_color_ = Color(255, 255, 255, 0);
 

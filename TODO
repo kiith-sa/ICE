@@ -1,12 +1,5 @@
 17:
-    Try to get rid of GraphData.graphs() accessor - exposes much
-17: 
-    Color: special ctor for RGB only with only 3 args, setting alpha to 255.
-    VideoDriver: a videodriver version of draw_line with only one color,
-    calling current draw_line. This will siplify user code and support
-    future optimizations.
-
-    Also, color constats like White, Black, etc., and rewrite code to use them
+    Zero vector constant and use it (const, not static)
 17:
     Improve testability by looking at ctors and removing new calls from them.
     All/most that a class needs should be passed to ctor, created outside.

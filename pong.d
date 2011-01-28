@@ -64,7 +64,7 @@ class Wall : Actor
 
         override void draw()
         {
-            static c = Color(240, 255, 240, 255);
+            static c = Color(240, 255, 240);
             Vector2f position = physics_body_.position;
             VideoDriver.get.draw_rectangle(position + box_.min, position + box_.max);
         }
@@ -331,7 +331,7 @@ class Ball : Actor
             with(trail_)
             {
                 particle_life = 0.5;
-                start_color = Color(240, 240, 255, 255);
+                start_color = Color(240, 240, 255);
                 end_color = Color(240, 240, 255, 0);
                 line_width = 1;
             }
@@ -381,7 +381,7 @@ class Ball : Actor
             Vector2f position = physics_body_.position;
             driver.line_aa = true;
             driver.line_width = 3;
-            driver.draw_circle(position, radius - 2, Color(240, 240, 255, 255), 4);
+            driver.draw_circle(position, radius - 2, Color(240, 240, 255), 4);
             driver.line_width = 1;
             driver.draw_circle(position, radius, Color(192, 192, 255, 192));
             driver.line_width = 1;                  
@@ -1027,7 +1027,7 @@ class HUD
             time_left = max(time_left, 0.0L);
             string time_str = time_string(time_left);
             static Color color_start = Color(160, 160, 255, 160);
-            static Color color_end = Color(255, 0, 0, 255);
+            static Color color_end = Color.red;
             //only update if the text has changed
             if(time_str != time_text_.text)
             {

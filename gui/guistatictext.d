@@ -259,7 +259,7 @@ class GUIStaticText : GUIElement
  */
 final class GUIStaticTextFactory : GUIElementFactoryBase!(GUIStaticText)
 {
-    mixin(generate_factory("Color $ text_color $ Color(255, 255, 255, 255)", 
+    mixin(generate_factory("Color $ text_color $ Color.white", 
                            "string $ text $ \"\"", 
                            "AlignX $ align_x $ AlignX.Left", 
                            "AlignY $ align_y $ AlignY.Top", 

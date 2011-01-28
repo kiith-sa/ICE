@@ -64,6 +64,36 @@ align(1) struct Color
         ubyte b;
         ubyte a;
 
+        ///Common color constants, identical to HTML
+        const Color white = Color(255, 255, 255);
+        const Color grey = Color(128, 128, 128);
+        const Color black = Color(0, 0, 0);
+
+        const Color red = Color(255, 0, 0);
+        const Color green = Color(0, 255, 0);
+        const Color blue = Color(0, 0, 255);
+        const Color burgundy = Color(128, 0, 0);
+
+        const Color yellow = Color(255, 255, 0);
+        const Color cyan = Color(0, 255, 255);
+        const Color magenta = Color(255, 0, 255);
+        const Color forest_green = Color(128, 128, 0);
+        const Color dark_purple = Color(128, 0, 128);
+
+        ///Fake constructor.
+        static Color opCall(ubyte r, ubyte g, ubyte b, ubyte a)
+        {
+            Color color;
+            color.r = r;
+            color.g = g;
+            color.b = b;
+            color.a = a;
+            return color;
+        }
+
+        ///Fake constructor for RGB without alpha.
+        static Color opCall(ubyte r, ubyte g, ubyte b){return Color(r, g, b, 255);}
+
         ///Returns the average intensity of the color.
         ubyte average()
         {

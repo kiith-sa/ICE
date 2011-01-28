@@ -34,7 +34,7 @@ final class GUILineGraph : GUIElement
             //Is this graph visible?
             bool visible = true;
             //Color of the graph.
-            Color color = Color(128, 128, 128, 255);
+            Color color = Color.grey;
             //Vertices of the line strip used to display the graph, in screen space.
             Vector2f[] line_strip;
         }
@@ -327,7 +327,6 @@ final class GUILineGraph : GUIElement
          */
         void draw_graph(string name)
         {
-            auto graph = data_.graphs[name];
             auto graphics = graphics_[name];
 
             if(!graphics.visible || graphics.line_strip.length <= 1){return;}

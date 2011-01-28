@@ -104,7 +104,7 @@ final class Image
                                 data_[(y * size_.x + x) * 2 + 1] = 255;
                                 break;
                             case ColorFormat.RGBA_8:
-                                set_pixel(x, y, Color(255, 255, 255, 255));
+                                set_pixel(x, y, Color.white);
                                 break;
                             case ColorFormat.GRAY_8:
                                 set_pixel(x, y, 255);
@@ -133,7 +133,7 @@ final class Image
                                 data_[(y * size_.x + x) * 2 + 1] = 255;
                                 break;
                             case ColorFormat.RGBA_8:
-                                set_pixel(x, y, Color(255, 255, 255, 255));
+                                set_pixel(x, y, Color.white);
                                 break;
                             case ColorFormat.GRAY_8:
                                 set_pixel(x, y, 255);

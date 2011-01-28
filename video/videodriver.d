@@ -67,9 +67,7 @@ abstract class VideoDriver
          *          c1 = Color at the start point.
          *          c2 = Color at the end point.
          */
-        void draw_line(Vector2f v1, Vector2f v2,
-                       Color c1 = Color(255, 255, 255, 255), 
-                       Color c2 = Color(255, 255, 255, 255));
+        void draw_line(Vector2f v1, Vector2f v2, Color c1, Color c2);
 
         /**
          * Draw a line strip through specified points with specified color.
