@@ -82,12 +82,12 @@ final class PhysicsEngine
         }
 
         ///Run the physics simulation of a single frame.
-        void update()
+        void update(real time_step)
         {
             updating_ = true;
 
             //update all bodies' states
-            foreach(physics_body; bodies_){physics_body.update();}
+            foreach(physics_body; bodies_){physics_body.update(time_step);}
 
             //handle collisions
             detect_contacts();

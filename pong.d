@@ -166,7 +166,7 @@ class PaddleBody : PhysicsBody
             return velocity * ball.velocity.length;
         }
 
-        override void update()
+        override void update(real time_step)
         {
             //keep the paddle within the limits
             Rectanglef box = aabbox;
@@ -174,7 +174,7 @@ class PaddleBody : PhysicsBody
                                                     limits_.max - box.max);
             position = position_limits.clamp(position);
 
-            super.update();
+            super.update(time_step);
         }
 
         ///Return limits of movement of this paddle body.

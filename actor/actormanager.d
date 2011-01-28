@@ -103,7 +103,7 @@ final class ActorManager
             {
                 game_time_ += time_step_;
                 accumulated_time_ -= time_step_;
-                PhysicsEngine.get.update();
+                PhysicsEngine.get.update(time_step_);
                 update_actors();
             }
         }

@@ -1,18 +1,26 @@
 17:
-    Zero vector constant and use it (const, not static)
+    Look for ways of removing ActorManager.get, combined
+    with dependency injection of stuff needed by actors.
+
+    E.g. we can easily pass ActorManager references around in
+    methods called for every actor, such as update,
+    as well as in die() and such.
+    Also, where possible, just pass the data really needed (like frame time)
 17:
-    Improve testability by looking at ctors and removing new calls from them.
-    All/most that a class needs should be passed to ctor, created outside.
-    maybe use factories
-    E.g. actors should not construct their physics bodies themselves,
-    and passing actormanager to do that is evil, too
-So, need a factory with access to actormanager, or actormanager to be the
-    factory or something like that
+    Improve testability: remove new from ctors
+    Most dependencies should be passed to ctor, created outside.
+    Use factories where needed.
+
+    E.g:
+    Actors should not construct their physics bodies themselves,
+    and passing actormanager would be too much.
+
+    Need a factory with access to actormanager, or actormanager to be the
+    factory etc.
     (maybe actormanager or some factory should have a template method, string
-     mixin method/s for construction, or there should be a template/string mixin
-     factory class)
+     mixin method/s for construction, or use generated factory like GUI)
 17:
-    Try desingletonifying some singletons (yes-single instance, no-global access)
+    Desingletonification to weak singletons where possible
     For instance, physics engine could be a member of actormanager,
     accessible from there through an accessor.
     If all Actors need from ActorManager is update time,
@@ -30,20 +38,6 @@ So, need a factory with access to actormanager, or actormanager to be the
     dependency injection.
 
     If this results in better testability, more unittests
-17:
-    Consider dependency injection in case of GraphMonitor-GUILineGraph-GraphData
-    i.e. GraphMonitor factory would first construct GraphData, the GUILineGraph
-    by injecting that GraphData, then GraphMonitor by injecting GUILineGraph.
-
-    Better approach might be for GUILineGraph factory to inject GraphData
-    and for GraphMonitor factory to inject product of that.
-
-    Or maybe not. Any other classes using GUILineGraph might need their
-    own dependency injection.
-
-
-    After(if) this is done, unittests for GraphData and even GUILineGraph,
-    GraphMonitor, if possible.
 17:
     Coarse collision detection (SpatialManager)
     Maybe make SpatialManager general enough so we can use the same class

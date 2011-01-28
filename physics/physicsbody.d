@@ -66,17 +66,6 @@ class PhysicsBody
             if(change.length < 0.00001){change.zero();}
             if(this is contact.body_a){velocity_ -= change;}
             else{velocity_ += change;}
-            
-        }
-
-        /**
-         * Return estimated position of the object for the next frame 
-         *
-         * (not taking e.g. collisions to account)
-         */
-        Vector2f estimated_next_position()
-        {
-            return position_ + velocity_ * ActorManager.get.time_step();
         }
 
         ///Return position of the body.
@@ -113,9 +102,9 @@ class PhysicsBody
         bool collided(){return colliders_.length > 0;}
 
         //Update physics state of this body to the next frame.
-        void update()
+        void update(real time_step)
         {
-            position_ += velocity_ * ActorManager.get.time_step();
+            position_ += velocity_ * time_step;
             colliders_.length = 0; 
         }
 

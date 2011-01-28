@@ -16,8 +16,6 @@ align(1) struct Vector2(T)
     T x = 0;
     ///Y value of the vector.
     T y = 0;
-    
-    //operators
 
     ///Negation.
     Vector2!(T) opNeg(){return Vector2!(T)(-x, -y);}
@@ -28,8 +26,10 @@ align(1) struct Vector2(T)
     ///Addition with a vector.
     Vector2!(T) opAdd(Vector2!(T) v){return Vector2!(T)(x + v.x, y + v.y);}
 
+    ///Subtraction with a vector.
     Vector2!(T) opSub(Vector2!(T) v){return Vector2!(T)(x - v.x, y - v.y);}
 
+    ///Multiplication with a vector.
     Vector2!(T) opMul(T m){return Vector2!(T)(x * m, y * m);}
 
     ///Division by a scalar. 
