@@ -39,10 +39,8 @@ abstract class ParticleEmitter : ParticleSystem
     private:
         //Lifetime of particles emitted.
         real particle_life_ = 5.0;
-        //Total particles emitted since emit_start_
-        ulong total_emitted_ = 0;
-        //Time when emit_frequency_ was changed last.
-        real emit_start_;
+        //Time since last particle was emit.
+        real time_accumulated_ = 0.0;
         //Variation of the angle of particles velocities (in radians).
         real angle_variation_ = PI / 2;
         //Emit frequency in particles per second.
@@ -53,6 +51,8 @@ abstract class ParticleEmitter : ParticleSystem
 
         //Velocity to emit particles at.
         Vector2f emit_velocity_ = Vector2f(1.0, 0.0);
+        //Current game time.
+        real game_time_;
 
     public:
         ///Constructor. If attached to an owner, must be detached.
@@ -60,14 +60,10 @@ abstract class ParticleEmitter : ParticleSystem
         {
             super(new PhysicsBody(null, Vector2f(0.0f, 0.0f), Vector2f(0.0f, 0.0f), 2.0),
                   owner);
-            
-            emit_start_ = ActorManager.get.game_time;
         }
         
-        override void update()
+        override void update(real time_step, real game_time)
         {
-            real frame_length = ActorManager.get.time_step;
-
             //update position
             if(owner_ !is null)
             {
@@ -75,18 +71,19 @@ abstract class ParticleEmitter : ParticleSystem
                 physics_body_.position = owner_.position;
             }
 
+            game_time_ = game_time;
+
             //remove expired particles
-            real time = ActorManager.get.game_time;
-            bool expired(ref Particle particle){return particle.timer.expired(time);}
+            bool expired(ref Particle particle){return particle.timer.expired(game_time);}
             Particles.remove(&expired);
 
             //emit new particles
-            emit();
+            emit(time_step);
 
             //update particles
-            foreach(ref particle; Particles){particle.update(frame_length);}
+            foreach(ref particle; Particles){particle.update(time_step);}
 
-            super.update();
+            super.update(time_step, game_time);
         }
 
         ///Set life time of particles emitted.
@@ -96,13 +93,7 @@ abstract class ParticleEmitter : ParticleSystem
         final real particle_life(){return particle_life_;}
 
         ///Set number of particles to emit per second.
-        void emit_frequency(real frequency)
-        {
-            emit_frequency_ = frequency;
-            //Reset emit counters
-            total_emitted_ = 0;
-            emit_start_ = ActorManager.get.game_time;
-        }
+        void emit_frequency(real frequency){emit_frequency_ = frequency;}
         
         ///Return number of particles emitted per second.
         final real emit_frequency(){return emit_frequency_;}
@@ -114,30 +105,29 @@ abstract class ParticleEmitter : ParticleSystem
         final void angle_variation(real variation){angle_variation_ = variation;}
 
     protected:
-        //Emit particles if any sho0uld be emitted this frame.
-        void emit()
+        /*
+         * Emit particles if any should be emitted this frame.
+         * 
+         * Params:  time_step = Time step in seconds.
+         */
+        void emit(real time_step)
         {
-            real time = ActorManager.get.game_time;
-            //Total number of particles that should be emitted by now
-            uint particles_needed = round32((time - emit_start_) * emit_frequency_);
-            //Particles to emit (using int for error checking)
-            int particles = particles_needed - total_emitted_;
-            assert(particles >= 0, "Can't emit negative number of particles");
-
-            //Emit particles, if any
-            for(uint p = 0; p < particles; ++p)
+            time_accumulated_ += time_step;
+            if(equals(emit_frequency_, 0.0L)){return;}
+            real emit_period = 1.0 / emit_frequency_;
+            while(time_accumulated_ >= emit_period)
             {
                 Particle particle;
 
-                particle.timer = Timer(particle_life_, time);
+                particle.timer = Timer(particle_life_, game_time_);
                 particle.position = physics_body_.position;
                 real angle_delta = random(-angle_variation_, angle_variation_);
                 particle.velocity = emit_velocity_;
                 particle.velocity.angle = particle.velocity.angle + angle_delta;
 
                 Particles ~= particle;
-            }
 
-            total_emitted_ += particles;
+                time_accumulated_ -= emit_period;
+            }
         }
 }

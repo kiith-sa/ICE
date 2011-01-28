@@ -69,7 +69,7 @@ class Wall : Actor
             VideoDriver.get.draw_rectangle(position + box_.min, position + box_.max);
         }
 
-        override void update()
+        override void update(real time_step, real game_time)
         {
             foreach(collider; physics_body_.colliders)
             {
@@ -366,7 +366,7 @@ class Ball : Actor
         ///Return the radius of this ball.
         float radius(){return (cast(BallBody)physics_body_).radius;}
 
-        override void update()
+        override void update(real time_step, real game_time)
         {
             //Ball can only change direction after a collision
             if(physics_body_.collided())
@@ -862,9 +862,9 @@ class BallSpawner : Actor
             generate_directions(spread);
         }
 
-        void update()
+        override void update(real time_step, real game_time)
         {
-            if(timer_.expired(ActorManager.get.game_time))
+            if(timer_.expired(game_time))
             {
                 //emit the ball in a random, previously generated direction
                 Vector2f direction = Vector2f(1.0f, 1.0f);
@@ -876,7 +876,7 @@ class BallSpawner : Actor
             if(!light_expired && light_ >= (2 * PI)){light_expired = true;}
 
             //update light direction
-            light_ += light_speed_ * ActorManager.get.time_step();
+            light_ += light_speed_ * time_step;
         }
 
         void draw()

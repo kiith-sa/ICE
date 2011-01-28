@@ -171,7 +171,7 @@ final class ActorManager
             actors_to_remove_ = [];
 
             //Update actors' states
-            foreach(actor; actors_){actor.update();} 
+            foreach(actor; actors_){actor.update(time_step_, game_time_);} 
         }
         
         //Update updates per second output

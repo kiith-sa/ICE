@@ -35,10 +35,10 @@ final class LineTrail : LineEmitter
 
             super(owner);
 
-            real time = ActorManager.get.game_time;
-            
             emit_frequency(100.0);
-            update_timer_ = Timer(1.0 / super.emit_frequency, time);   
+
+            //this will expire and be reset at first emit call.
+            update_timer_ = Timer(0.0, 0.0);   
         }
 
         override void emit_frequency(real frequency)
@@ -60,7 +60,6 @@ final class LineTrail : LineEmitter
                 Color c1 = end_color_;
                 //end color of the current line
                 Color c2;
-                real time = ActorManager.get.game_time;
 
                 VideoDriver.get.line_aa = true;
                 VideoDriver.get.line_width = line_width_;
@@ -70,7 +69,7 @@ final class LineTrail : LineEmitter
                 {
                     v2 = Particles[p].position;
                     c2 = end_color_.interpolated(start_color_, 
-                         Particles[p].timer.age_relative(time));
+                         Particles[p].timer.age_relative(game_time_));
                     VideoDriver.get.draw_line(v1, v2, c1, c2);
                     v1 = v2;
                     c1 = c2;
@@ -81,20 +80,18 @@ final class LineTrail : LineEmitter
         }
 
     protected:
-        //Emit particles if any should be emitted this frame.
-        override void emit()
+        override void emit(real time_step)
         {
             if(owner_)
             {
-                real time = ActorManager.get.game_time;
-                if(update_timer_.expired(time))
+                if(update_timer_.expired(game_time_))
                 {
                     Particle trail;
                     trail.position = owner_.position;
-                    trail.timer = Timer(particle_life, time);
+                    trail.timer = Timer(particle_life, game_time_);
                     Particles ~= trail;
 
-                    update_timer_ = Timer(1.0 / super.emit_frequency, time);
+                    update_timer_ = Timer(1.0 / super.emit_frequency, game_time_);
                 }
             }
         }

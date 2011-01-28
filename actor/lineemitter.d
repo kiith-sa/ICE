@@ -40,12 +40,12 @@ class LineEmitter : ParticleEmitter
             auto driver = VideoDriver.get;
             driver.line_aa = true;
             driver.line_width = line_width_;
-            real time = ActorManager.get.game_time;
             Color color;
             //draw particles
             foreach(ref p; Particles)
             {
-                color = end_color_.interpolated(start_color_, p.timer.age_relative(time));
+                color = end_color_.interpolated(start_color_, 
+                                                p.timer.age_relative(game_time_));
                 //determine line from particle velocity
                 //note-we assume here that particle velocity is never zero,
                 //otherwise normalization would break

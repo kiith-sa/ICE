@@ -101,7 +101,11 @@ class PhysicsBody
         ///Has this body collided with anything during the last physics update?
         bool collided(){return colliders_.length > 0;}
 
-        //Update physics state of this body to the next frame.
+        /**
+         * Update physics state of this body to the next frame.
+         *
+         * Params:  time_step = Time length of the frame in seconds.
+         */
         void update(real time_step)
         {
             position_ += velocity_ * time_step;

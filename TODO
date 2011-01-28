@@ -289,6 +289,9 @@
 4:
     Get the thing to compile on Windows (if it doesn't work already)
     - will need windows specific high-resolution clock
+4:
+    Particle system overhaul. Every particle should have its own color,
+    etc; and whole thing should have a better structure.
 5:
     Find some use for multithreading, e.g. asynchronous drawing
     or physics, or maybe OpenMP style (or just 2-4 threads)

@@ -45,8 +45,13 @@ abstract class Actor
         ///Return a reference to physics body of this actor. Will return const after D2 move.
         final PhysicsBody physics_body(){return physics_body_;}
 
-        ///Update this Actor.
-        void update();
+        /**
+         * Update this Actor.
+         *
+         * Params:  time_step = Time step in seconds.
+         *          game_time = Current game time.
+         */
+        void update(real time_step, real game_time);
 
         ///Draw this actor.
         void draw();
