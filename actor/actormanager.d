@@ -5,6 +5,7 @@ import std.string;
 import std.stdio;
 
 import actor.actor;
+import actor.actorcontainer;
 import physics.physicsengine;
 import math.vector2;
 import time.time;
@@ -15,7 +16,7 @@ import arrayutil;
 
 
 ///Stores and manages all Actors.
-final class ActorManager
+final class ActorManager : ActorContainer
 {
     mixin Singleton;
 
@@ -134,8 +135,13 @@ final class ActorManager
         ///Return a string with statistics about ActorManager run.
         string statistics(){return "UPS statistics:\n" ~ update_counter_.statistics();}
 
-    package:
-        ///Add a new actor. Will be added at the beginning of next frame.
+        /**
+         * Add a new actor. Will be added at the beginning of next frame.
+         * 
+         * Note: this should only be used by actor constructor.
+         *
+         * Params:  actor = Actor to add. Must not already be in the ActorManager.
+         */
         void add_actor(Actor actor)
         in
         {
@@ -145,7 +151,13 @@ final class ActorManager
         }
         body{actors_to_add_ ~= actor;}
 
-        ///Remove an actor. Will be removed at the beginning of next frame.
+        /**
+         * Remove an actor. Will be removed at the beginning of next frame.
+         * 
+         * Note: this should only be used by actor die() or destructor.
+         *
+         * Params:  actor = Actor to remove. Must be in the ActorManager.
+         */
         void remove_actor(Actor actor)
         in
         {
@@ -154,6 +166,7 @@ final class ActorManager
         }
         body{actors_to_remove_ ~= actor;}
 
+    package:
         //Update all actors
         void update_actors()
         {

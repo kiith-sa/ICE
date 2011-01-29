@@ -16,6 +16,8 @@ import video.videodriver;
 import video.sdlglvideodriver;
 import actor.actor;
 import actor.actormanager;
+import actor.actorcontainer;
+import actor.particleemitter;
 import actor.lineemitter;
 import actor.linetrail;
 import physics.physicsbody;
@@ -35,9 +37,10 @@ import time.eventcounter;
 import signal;
 import weaksingleton;
 import color;
+import factory;
 
 
-///A wall of game area.
+///A rectangular wall in the game area.
 class Wall : Actor
 {
     protected:
@@ -47,20 +50,6 @@ class Wall : Actor
     public:
         ///Emitted when a ball hits the wall. Will emit const BallBody after D2 move.
         mixin Signal!(BallBody) ball_hit;
-
-        ///Construct a wall with specified position and box.
-        this(Vector2f position, Rectanglef box, PhysicsBody physics_body = null)
-        {
-            box_ = box;
-            auto aabbox = new CollisionAABBox(box.min, box.max - box.min);
-            
-            if(physics_body is null)
-            {
-                physics_body = new PhysicsBody(aabbox, position, 
-                                               Vector2f(0.0f, 0.0f), real.infinity);
-            }
-            super(physics_body);
-        }
 
         override void draw()
         {
@@ -82,7 +71,52 @@ class Wall : Actor
 
         ///Set wall velocity.
         void velocity(Vector2f v){physics_body_.velocity = v;}
+
+    protected:
+        /*
+         * Construct a wall with specified parameters.
+         *
+         * Params:  container    = Container to manage the wall.
+         *          physics_body = Physics body of the wall.
+         *          box          = Rectangle used for graphical representation of the
+         *                         wall.
+         */
+        this(ActorContainer container, PhysicsBody physics_body, ref Rectanglef box)
+        {
+            super(container, physics_body);
+            box_ = box;
+        }
 }             
+
+/**
+ * Base class for factories constructing Wall and derived classes.
+ *
+ * Params:  box_min = Minimum extent of the wall relative to its position.
+ *                    Default: Vector2f(0.0f, 0.0f)
+ *          box_max = Maximum extent of the wall relative to its position.
+ *                    Default: Vector2f(1.0f, 1.0f)
+ */
+abstract class WallFactoryBase(T) : ActorFactory!(T)
+{
+    mixin(generate_factory("Vector2f $ box_min $ Vector2f(0.0f, 0.0f)", 
+                           "Vector2f $ box_max $ Vector2f(1.0f, 1.0f)"));
+    private:
+        //Get a collision aabbox based on factory parameters. Used in produce().
+        CollisionAABBox bbox(){return new CollisionAABBox(box_min_, box_max_ - box_min_);}
+        //Get a bounds rectangle based on factory parameters. Used in produce().
+        Rectanglef rectangle(){return Rectanglef(box_min_, box_max_);}
+}
+
+///Factory used to construct walls.
+class WallFactory : WallFactoryBase!(Wall)
+{
+    public override Wall produce(ActorContainer container)
+    {
+        auto physics_body = new PhysicsBody(bbox, position_, velocity_, real.infinity);
+        return new Wall(container, physics_body, rectangle);
+    }
+}
+
 
 /**
  * Physics body of a paddle. 
@@ -102,23 +136,6 @@ class PaddleBody : PhysicsBody
         Rectanglef limits_;
 
     public:
-        /**
-         * Construct a paddle body with specified parameters.
-         *
-         * Params:  position = Starting position of the body.
-         *          velocity = Starting velocity of the body.
-         *          mass     = Mass of the body.
-         *          box      = Rectangle representing aligned bounding box of the
-         *                     body in world space.
-         */
-        this(Vector2f position, Vector2f velocity, real mass, ref Rectanglef box, 
-             ref Rectanglef limits)
-        {
-            auto aabbox = new CollisionAABBox(box.min, box.max - box.min); 
-            super(aabbox, position, velocity, mass);
-            limits_ = limits;
-        }
-
         /**
          * Return velocity to reflect given BallBody at.
          *
@@ -180,6 +197,23 @@ class PaddleBody : PhysicsBody
         ///Return limits of movement of this paddle body.
         public Rectanglef limits(){return limits_;}
 
+    protected:
+        /*
+         * Construct a paddle body with specified parameters.
+         *
+         * Params:  aabbox   = Collision aabbox of the body. 
+         *          position = Starting position of the body.
+         *          velocity = Starting velocity of the body.
+         *          mass     = Mass of the body.
+         *          limits   = Limits of body's movement
+         */
+        this(CollisionAABBox aabbox,Vector2f position, Vector2f velocity, 
+             real mass, ref Rectanglef limits)
+        {
+            super(aabbox, position, velocity, mass);
+            limits_ = limits;
+        }
+
     private:
         ///Return rectangle representing bounding box of this body in world space.
         Rectanglef aabbox()
@@ -189,7 +223,7 @@ class PaddleBody : PhysicsBody
             assert(collision_volume.classinfo == CollisionAABBox.classinfo,
                    "Collision volume of a paddle must be an axis aligned bounding box");
         }
-        body{return (cast(CollisionAABBox)collision_volume).bounding_box;}
+        body{return(cast(CollisionAABBox)collision_volume).bounding_box;}
 }
 
 ///A paddle controlled by a player or AI.
@@ -214,30 +248,10 @@ class Paddle : Wall
         //Speed of this paddle
         real speed_;
 
-        //Particle trail of the paddle
-        LineEmitter emitter_;
+        //Particle emitter of the paddle
+        ParticleEmitter emitter_;
+
     public:
-        ///Construct a paddle with specified parameters.
-        this(Vector2f position, ref Rectanglef box, ref Rectanglef limits, real speed)
-        {
-            super(position, box, 
-                  new PaddleBody(position, Vector2f(0.0f, 0.0f), real.infinity, box, limits));
-            speed_ = speed;
-
-            emitter_ = new LineEmitter(this);
-            with(emitter_)
-            {
-                particle_life = 3.0;
-                emit_frequency = 30;
-                emit_velocity = Vector2f(speed * 0.15, 0.0);
-                angle_variation = 2 * PI;
-                line_length = 2.0;
-                line_width = 1;
-                start_color = Color(255, 255, 255, 64);
-                end_color = Color(64, 64, 255, 0);
-            }
-        }
-
         ///Return limits of movement of this paddle.
         Rectanglef limits(){return (cast(PaddleBody)physics_body_).limits;}
 
@@ -258,7 +272,68 @@ class Paddle : Wall
             emitter_.detach();
             super.die();
         }
+
+    protected:
+        /*
+         * Construct a paddle with specified parameters.
+         *
+         * Params:  container    = Container to manage this actor.
+         *          physics_body = Physics body of the paddle.
+         *          box          = Rectangle used for graphics representation of the paddle.
+         *          speed        = Speed of paddle movement.
+         *          emitter      = Particle emitter of the paddle.
+         */
+        this(ActorContainer container, PaddleBody physics_body, ref Rectanglef box,
+             real speed, ParticleEmitter emitter)
+        {
+            super(container, physics_body, box);
+            speed_ = speed;
+            emitter_ = emitter;
+            emitter.attach(this);
+        }
 }
+
+/**
+ * Factory used to construct paddles.
+ *
+ * Params:  limits_min = Minimum extent of paddle movement limits in world space.
+ *                       Default: Vector2f(-2.0f, -2.0f)
+ *          limits_max = Maximum extent of paddle movement limits in world space.
+ *                       Default: Vector2f(2.0f, 2.0f)
+ *          speed      = Speed of paddle movement.
+ *                       Default: 135.0
+ */
+class PaddleFactory : WallFactoryBase!(Paddle)
+{
+    mixin(generate_factory("Vector2f $ limits_min $ Vector2f(-2.0f, -2.0f)", 
+                           "Vector2f $ limits_max $ Vector2f(2.0f, 2.0f)",
+                           "real $ speed $ 135.0"));
+
+    public override Paddle produce(ActorContainer container)
+    {
+        auto limits = Rectanglef(limits_min_, limits_max_);
+        auto physics_body = new PaddleBody(bbox, position_, velocity_, real.infinity,
+                                           limits);
+
+        //construct particle system of the paddle
+        LineEmitter emitter;
+        with(new LineEmitterFactory)
+        {
+            particle_life = 3.0;
+            emit_frequency = 30;
+            emit_velocity = Vector2f(speed_ * 0.15, 0.0);
+            angle_variation = 2 * PI;
+            line_length = 2.0;
+            line_width = 1;
+            start_color = Color(255, 255, 255, 64);
+            end_color = Color(64, 64, 255, 0);
+            emitter = produce(container);
+        }
+
+        return new Paddle(container, physics_body, rectangle, speed_, emitter);
+    }
+}
+
 
 /**
  * Physics body of a ball. 
@@ -272,22 +347,6 @@ class BallBody : PhysicsBody
         float radius_;
 
     public:
-        /**
-         * Construct a ball body with specified parameters.
-         *
-         * Params:  position = Starting position of the body.
-         *          velocity = Starting velocity of the body.
-         *          mass     = Mass of the body.
-         *          radius   = Radius of a circle representing bounding circle
-         *                     of this body (centered at body's position).
-         */
-        this(Vector2f position, Vector2f velocity, real mass, float radius)
-        {
-            radius_ = radius;
-            auto circle = new CollisionCircle(Vector2f(0.0f, 0.0f), radius);
-            super(circle, position, velocity, mass);
-        }
-
         override void collision_response(ref Contact contact)
         {
             PhysicsBody other = this is contact.body_a ? contact.body_b : contact.body_a;
@@ -304,54 +363,83 @@ class BallBody : PhysicsBody
             super.collision_response(contact);
         }
 
-        ///Returns radius of this ball body.
+        ///Returns radius of this ball body for drawing.
         float radius(){return radius_;}
+
+    protected:
+        /**
+         * Construct a ball body with specified parameters.
+         *
+         * Params:  circle   = Collision circle of the ball.
+         *          position = Starting position of the body.
+         *          velocity = Starting velocity of the body.
+         *          mass     = Mass of the body.
+         *          radius   = Radius of a circle representing bounding circle
+         *                     of this body (centered at body's position).
+         */
+        this(CollisionCircle circle, Vector2f position, Vector2f velocity, 
+             real mass, float radius)
+        {
+            radius_ = radius;
+            super(circle, position, velocity, mass);
+        }
+}
+
+/**
+ * Physics body of a dummy ball. 
+ *
+ * Limits dummy ball speed to prevent it being thrown out of the gameplay
+ * area after collision with a ball. (normal ball has no limits- it's speed
+ * can change, slightly, by collisions with dummy balls)
+ */
+class DummyBallBody : BallBody
+{
+    public:
+        override void collision_response(ref Contact contact)
+        {
+            //keep the speed unchanged
+            float speed = velocity_.length_safe;
+            super.collision_response(contact);
+            velocity_.normalize_safe();
+            velocity_ *= speed;
+
+            //prevent any further resolving (since we're not doing precise physics)
+            contact.resolved = true;
+        }
+
+    protected:
+        /**
+         * Construct a dummy ball body with specified parameters.
+         *
+         * Params:  circle   = Collision circle of the body.
+         *          position = Starting position of the body.
+         *          velocity = Starting velocity of the body.
+         *          mass     = Mass of the body.
+         *          radius   = Radius of a circle representing bounding circle
+         *                     of this body (centered at body's position).
+         */
+        this(CollisionCircle circle, Vector2f position, Vector2f velocity, 
+             real mass, float radius)
+        {
+            super(circle, position, velocity, mass, radius);
+        }
+
 }
 
 ///A ball that can bounce off other objects.
 class Ball : Actor
 {
     private:
-        //Particle trail of the ball
-        LineEmitter emitter_;
-
-        //Speed of particles emitted by the ball
-        real particle_speed_;
-
-        //Line trail of the ball (particle effect)
+        //Particle trail of the ball.
+        ParticleEmitter emitter_;
+        //Speed of particles emitted by the ball.
+        float particle_speed_;
+        //Line trail of the ball (particle effect).
         LineTrail trail_;
+        //Draw the ball itself or only the particle systems?
+        bool draw_ball_;
+
     public:
-        ///Construct a ball with specified parameters.
-        this(Vector2f position, Vector2f velocity, float radius)
-        {
-            super(init_body(position, velocity, radius));
-
-            trail_ = new LineTrail(this);
-                                  
-            with(trail_)
-            {
-                particle_life = 0.5;
-                start_color = Color(240, 240, 255);
-                end_color = Color(240, 240, 255, 0);
-                line_width = 1;
-            }
-
-            particle_speed_ = 25.0;
-            
-            emitter_ = new LineEmitter(this);
-            with(emitter_)
-            {
-                particle_life = 2.0;
-                emit_frequency = 160;
-                emit_velocity = -this.physics_body_.velocity.normalized * particle_speed_;
-                angle_variation = PI / 4;
-                line_length = 2.0;
-                line_width = 1;
-                start_color = Color(224, 224, 255, 32);
-                end_color = Color(224, 224, 255, 0);
-            }
-        }
-
         ///Destroy this ball.
         override void die()
         {
@@ -377,6 +465,7 @@ class Ball : Actor
 
         override void draw()
         {
+            if(!draw_ball_){return;}
             auto driver = VideoDriver.get;
             Vector2f position = physics_body_.position;
             driver.line_aa = true;
@@ -389,75 +478,116 @@ class Ball : Actor
         }
 
     protected:
-        /**
-         * Initializes and returns physics body to be used by this ball.
+        /*
+         * Construct a ball with specified parameters.
          *
-         * Params:  position = Starting position of the body.
-         *          velocity = Starting velocity of the body.
-         *          radius   = Radius of the body.
-         * 
-         * Returns: Physics body to use.
+         * Params:  container      = Container to manage this actor.
+         *          physics_body   = Physics body of the ball.
+         *          trail          = Line trail of the ball.
+         *          emitter        = Particle trail of the ball.
+         *          particle_speed = Speed of particles in the particle trail.
+         *          draw_ball      = Draw the ball itself or only particle effects?
          */
-        PhysicsBody init_body(Vector2f position, Vector2f velocity, float radius)
+        this(ActorContainer container, BallBody physics_body, LineTrail trail,
+             ParticleEmitter emitter, float particle_speed, bool draw_ball)
         {
-            return new BallBody(position, velocity, 100.0, radius);
+            super(container, physics_body);
+            trail_ = trail;
+            trail.attach(this);
+            emitter_ = emitter;
+            emitter.attach(this);
+            particle_speed_ = particle_speed;
+            draw_ball_ = draw_ball;
         }
 }
 
 /**
- * Physics body of a dummy ball. 
+ * Factory used to produce balls.
  *
- * Limits dummy ball speed to prevent it being thrown out of the gameplay
- * area after collision with a ball. (normal ball has no limits- it's speed
- * can change, slightly, by collisions with dummy balls)
+ * Params:  radius         = Radius of the ball.
+ *                           Default: Vector2f(-2.0f, -2.0f)
+ *          particle_speed = Speed of particles in the ball's particle trail.
+ *                           Default: Vector2f(-2.0f, -2.0f)
  */
-class DummyBallBody : BallBody
+class BallFactory : ActorFactory!(Ball)
 {
+    mixin(generate_factory("float $ radius $ 6.0f",
+                           "float $ particle_speed $ 25.0f"));
+    private:
+        //factory for ball line trail
+        LineTrailFactory trail_factory_;
+        //factory for ball particle trail
+        LineEmitterFactory emitter_factory_;
+
     public:
-        /**
-         * Construct a dummy ball body with specified parameters.
-         *
-         * Params:  position = Starting position of the body.
-         *          velocity = Starting velocity of the body.
-         *          mass     = Mass of the body.
-         *          radius   = Radius of a circle representing bounding circle
-         *                     of this body (centered at body's position).
-         */
-        this(Vector2f position, Vector2f velocity, real mass, float radius)
+        ///Construct a BallFactory, initializing factory data.
+        this()
         {
-            super(position, velocity, mass, radius);
+            trail_factory_ = new LineTrailFactory;
+            emitter_factory_ = new LineEmitterFactory;
         }
 
-        override void collision_response(ref Contact contact)
+        override Ball produce(ActorContainer container)
         {
-            //keep the speed unchanged
-            float speed = velocity_.length_safe;
-            super.collision_response(contact);
-            velocity_.normalize_safe();
-            velocity_ *= speed;
+            with(trail_factory_)
+            {
+                particle_life = 0.5;
+                emit_frequency = 60;
+                start_color = Color(240, 240, 255);
+                end_color = Color(240, 240, 255, 0);
+            }
 
-            //prevent any further resolving (since we're not doing precise physics)
-            contact.resolved = true;
+            with(emitter_factory_)
+            {
+                particle_life = 2.0;
+                emit_frequency = 160;
+                emit_velocity = -this.velocity_.normalized * particle_speed_;
+                angle_variation = PI / 4;
+                line_length = 2.0;
+                start_color = Color(224, 224, 255, 32);
+                end_color = Color(224, 224, 255, 0);
+            }
+
+            adjust_factories();
+            return new Ball(container, ball_body, 
+                            trail_factory_.produce(container),
+                            emitter_factory_.produce(container),
+                            particle_speed_, draw_ball);
         }
-}
 
-///A dummy ball that doesn't affect gameplay, only exists for graphics effect.
-class DummyBall : Ball
-{
-    public:
-        /**                                               
-         * Construct a dummy ball with specified parameters.
-         *
-         * Params:    position = Position to spawn the ball at.
-         *            velocity = Starting velocity of the ball.
-         */
-        this(Vector2f position, Vector2f velocity)
+    protected:
+        //Construct collision circle with factory parameters.
+        final CollisionCircle circle()
         {
-            super(position, velocity, 5.0);
+            return new CollisionCircle(Vector2f(0.0f, 0.0f), radius_);
+        }
 
-            physics_body_.mass = 2;
-            trail_.start_color = Color(240, 240, 255, 8);
-            with(emitter_)
+        //Construct ball body with factory parameters.
+        BallBody ball_body()
+        {
+            return new BallBody(circle, position_, velocity_, 100.0, radius_);
+        }
+
+        //Adjust particle effect factories. Used by derived classes.
+        void adjust_factories(){};
+
+        //Determine if the produced ball should draw itself, instead of just particle systems.
+        bool draw_ball(){return true;}
+}             
+
+///Factory used to produce dummy balls.
+class DummyBallFactory : BallFactory
+{
+    protected:
+        override BallBody ball_body()
+        {
+            return new DummyBallBody(circle, position_, velocity_, 2.0, radius_);
+        }
+
+        override void adjust_factories()
+        {
+            trail_factory_.start_color = Color(240, 240, 255, 8); 
+            with(emitter_factory_)
             {
                 start_color = Color(240, 240, 255, 6);
                 line_length = 3.0;
@@ -465,14 +595,7 @@ class DummyBall : Ball
             }
         }
 
-        ///Overrides parent draw() so that we don't draw the ball itself.
-        override void draw(){}
-
-    protected:
-        override PhysicsBody init_body(Vector2f position, Vector2f velocity, float radius)
-        {
-            return new DummyBallBody(position, velocity, 100.0, radius);
-        }
+        override bool draw_ball(){return false;}
 }
 
 ///Player controlling a paddle.
@@ -779,13 +902,14 @@ class ScoreScreen
         }
 }
 
-///Handles ball respawning and related effects.
 /**
-  When the spawner is created, it generates a set of directions the ball
-  can be spawned at, in roughly the same direction (determined by specified spread)
-  Then, during its lifetime, it displays the directions to the player 
-  (as rays), gives the player a bit of time and spawns the ball with one
-  of generated directions.
+ * Handles ball respawning and related effects.
+ *
+ * When the spawner is created, it generates a set of directions the ball
+ * can be spawned at, in roughly the same direction (determined by specified spread)
+ * Then, during its lifetime, it displays the directions to the player 
+ * (as rays), gives the player a bit of time and spawns the ball with one
+ * of generated directions.
  */
 class BallSpawner : Actor
 {
@@ -829,33 +953,6 @@ class BallSpawner : Actor
 
     public:
         mixin Signal!(Vector2f, real) spawn_ball;
-        
-        /**
-         * Constructs a BallSpawner with specified parameters.
-         * 
-         * Params:    timer      = Ball will be spawned when this timer (game time) expires.
-         *                         70% of the time will be taken by the rays effect.
-         *            spread     = "Randomness" of the spawn directions.
-         *                         Zero will result in only one definite direction,
-         *                         1 will result in completely random direction
-         *                         (except for horizontal directions that are 
-         *                         disallowed to prevent ball from getting stuck)
-         *            ball_speed = Speed to spawn the ball at.
-         */
-        this(Timer timer, real spread, real ball_speed)
-        in{assert(spread >= 0.0, "Negative ball spawning spread");}
-        body
-        {                
-            super(null);
-
-            ball_speed_ = ball_speed;
-            timer_ = timer;
-            //leave a third of time without the rays effect to give time
-            //to the player
-            light_speed_ = (2 * PI) / (timer.delay * 0.70);
-
-            generate_directions(spread);
-        }
 
         override void update(real time_step, real game_time)
         {
@@ -879,7 +976,7 @@ class BallSpawner : Actor
             VideoDriver.get.line_aa = true;
             scope(exit){VideoDriver.get.line_aa = false;} 
 
-            Vector2f center = Vector2f(400.0, 300.0);
+            Vector2f center = physics_body_.position;
             //base color of the rays
             Color base_color = Color(224, 224, 255, 128);
             Color light_color = Color(224, 224, 255, 4);
@@ -915,6 +1012,36 @@ class BallSpawner : Actor
                 VideoDriver.get.draw_line(center, center + direction * ray_length, 
                                           color, color);
             }
+        }
+
+    protected:
+        /*
+         * Constructs a BallSpawner with specified parameters.
+         * 
+         * Params:    container  = Container to manage this actor.
+         *            timer      = Ball will be spawned when this timer (game time) expires.
+         *                         70% of the time will be taken by the rays effect.
+         *            spread     = "Randomness" of the spawn directions.
+         *                         Zero will result in only one definite direction,
+         *                         1 will result in completely random direction
+         *                         (except for horizontal directions that are 
+         *                         disallowed to prevent ball from getting stuck)
+         *            ball_speed = Speed to spawn the ball at.
+         */
+        this(ActorContainer container, Timer timer, real spread, real ball_speed)
+        in{assert(spread >= 0.0, "Negative ball spawning spread");}
+        body
+        {                
+            super(container, new PhysicsBody(null, Vector2f(400.0f, 300.0f), 
+                                             Vector2f(0.0f, 0.0f), real.infinity));
+
+            ball_speed_ = ball_speed;
+            timer_ = timer;
+            //leave a third of time without the rays effect to give time
+            //to the player
+            light_speed_ = (2 * PI) / (timer.delay * 0.70);
+
+            generate_directions(spread);
         }
 
     private:
@@ -960,6 +1087,45 @@ class BallSpawner : Actor
             }
         }
 }
+
+/**
+ * Factory used to construct ball spawners.
+ *
+ * Params:  time       = Time to spawn the ball in.
+ *                       Default: 5.0
+ *          spread     = "Randomness" of the spawn directions.
+ *                       Zero will result in only one definite direction,
+ *                       1 will result in completely random direction
+ *                       (except for horizontal directions that are 
+ *                       disallowed to prevent ball from getting stuck)
+ *                       Default: 0.25
+ *          ball_speed = Speed of the spawned ball.
+ *                       Default: 200
+ */
+final class BallSpawnerFactory : ActorFactory!(BallSpawner)
+{
+    mixin(generate_factory("real $ time $ 5.0",
+                           "real $ spread $ 0.25",
+                           "real $ ball_speed $ 200"));
+    private:
+        //Start time of the spawners' timer.
+        real start_time_;
+    public:
+        /**
+         * Construct a BallSpawnerFactory with specified start time.
+         *
+         * Params: start_time = Start time of the produced spawner.
+         *                      The time when the ball will be spawned
+         *                      is relative to this time.
+         */
+        this(real start_time){start_time_ = start_time;}
+
+        override BallSpawner produce(ActorContainer container)
+        {
+            return new BallSpawner(container, Timer(time_, start_time_), spread_, ball_speed_);
+        }
+}
+
 
 ///In game HUD.
 class HUD
@@ -1071,7 +1237,7 @@ class Game
         real spawn_time_ = 4.0;
         real spawn_spread_ = 0.28;
 
-        DummyBall[] dummies_;
+        Ball[] dummies_;
         uint dummy_count_ = 55;
 
         Wall wall_right_, wall_left_; 
@@ -1142,26 +1308,46 @@ class Game
             playing_ = started_ = false;
             continue_ = true;
 
-            auto wall_rect = Rectanglef(0.0, 0.0, 32.0, 536.0);
-            wall_left_ = new Wall(Vector2f(-64.0, 32.0), wall_rect);
-            wall_left_.velocity = Vector2f(73.6, 0.0);
-            wall_right_ = new Wall(Vector2f(832.0, 32.0), wall_rect);
-            wall_right_.velocity = Vector2f(-73.6, 0.0);
+            with(new WallFactory)
+            {
+                box_max = Vector2f(32.0f, 536.0f);
+                //walls slowly move into place when game starts
+                velocity = Vector2f(73.6f, 0.0f);
+                position = Vector2f(-64.0f, 32.0f);
+                wall_left_ = produce(actor_manager_);
 
-            auto goal_rect = Rectanglef(0.0, 0.0, 560.0, 28.0);
-            goal_up_ = new Wall(Vector2f(-680.0, 4.0), goal_rect);
-            goal_up_.velocity = Vector2f(320.0, 0.0);
-            goal_down_ = new Wall(Vector2f(920.0, 568.0), goal_rect);
-            goal_down_.velocity = Vector2f(-320.0, 0.0);
+                velocity = Vector2f(-73.6f, 0.0f);
+                position = Vector2f(832.0, 32.0f);
+                wall_right_ = produce(actor_manager_);
 
-            auto size = Rectanglef(-32, -8, 32, 8); 
-            auto limits1 = Rectanglef(152 + ball_radius_ * 2, 36, 
-                                      648 - ball_radius_ * 2, 76); 
-            paddle_1_ = new Paddle(Vector2f(400, 56), size, limits1, 135);
-            auto limits2 = Rectanglef(152 + ball_radius_ * 2, 524, 
-                                      648 - ball_radius_ * 2, 564); 
-            paddle_2_ = new Paddle(Vector2f(400, 544), size, limits2, 135);
+                box_max = Vector2f(560.0f, 28.0f);
+                velocity = Vector2f(320.0f, 0.0f);
+                position = Vector2f(-680.0f, 4.0f);
+                goal_up_ = produce(actor_manager_);
 
+                velocity = Vector2f(-320.0f, 0.0f);
+                position = Vector2f(920.0f, 568.0f);
+                goal_down_ = produce(actor_manager_);
+            }
+
+            float limits_min_x = 152.0f + 2.0 * ball_radius_;
+            float limits_max_x = 648.0f - 2.0 * ball_radius_;
+            with(new PaddleFactory)
+            {
+                box_min = Vector2f(-32.0f, -4.0f);
+                box_max = Vector2f(32.0f, 4.0f);
+                position = Vector2f(400.0f, 56.0f);
+                limits_min = Vector2f(limits_min_x, 36.0f);
+                limits_max = Vector2f(limits_max_x, 76.0f);
+                speed = 135.0;
+                paddle_1_ = produce(actor_manager_);
+
+                position = Vector2f(400.0f, 544.0f);
+                limits_min = Vector2f(limits_min_x, 524.0f);
+                limits_max = Vector2f(limits_max_x, 564.0f);
+                paddle_2_ = produce(actor_manager_);
+            }
+            
             player_1_ = new AIPlayer("AI", paddle_1_, 0.15);
             player_2_ = new HumanPlayer("Human", paddle_2_);
 
@@ -1182,11 +1368,16 @@ class Game
         ///Start the game, at specified game time
         void start_game(real start_time)
         {
-            for(uint dummy = 0; dummy < dummy_count_; dummy++)
+            with(new DummyBallFactory)
             {
-                dummies_ ~= new DummyBall(random_position!(float)(Vector2f(400.0f, 300.0f),
-                                                                  12.0f),
-                                          2.5 * ball_speed_ * random_direction!(float)());
+                radius = 5.0;
+
+                for(uint dummy = 0; dummy < dummy_count_; dummy++)
+                {
+                    position = random_position!(float)(Vector2f(400.0f, 300.0f), 12.0f);
+                    velocity = 2.5 * ball_speed_ * random_direction!(float)(); 
+                    dummies_ ~= produce(actor_manager_);
+                }
             }
 
             //should be set from options and INI when that is implemented.
@@ -1199,9 +1390,14 @@ class Game
             goal_up_.velocity = Vector2f(0.0, 0.0);
             goal_down_.velocity = Vector2f(0.0, 0.0);
             
-            auto spawn_timer = Timer(spawn_time_, start_time);
-            auto spawner = new BallSpawner(spawn_timer, spawn_spread_, ball_speed_);
-            spawner.spawn_ball.connect(&spawn_ball);
+            with(new BallSpawnerFactory(start_time))
+            {
+                time = spawn_time_;
+                spread = spawn_spread_;
+                ball_speed = ball_speed_;
+                auto spawner = produce(actor_manager_);
+                spawner.spawn_ball.connect(&spawn_ball);
+            }
 
             goal_up_.ball_hit.connect(&player_2_.score);
             goal_down_.ball_hit.connect(&player_1_.score);
@@ -1225,14 +1421,25 @@ class Game
             ball_.die();
             ball_ = null;
 
-            auto spawn_timer = Timer(spawn_time_, actor_manager_.game_time);
-            auto spawner = new BallSpawner(spawn_timer, spawn_spread_, ball_speed_);
-            spawner.spawn_ball.connect(&spawn_ball);
+            with(new BallSpawnerFactory(actor_manager_.game_time))
+            {
+                time = spawn_time_;
+                spread = spawn_spread_;
+                ball_speed = ball_speed_;
+                auto spawner = produce(actor_manager_);
+                spawner.spawn_ball.connect(&spawn_ball);
+            }
         }
 
         void spawn_ball(Vector2f direction, real speed)
         {
-            ball_ = new Ball(Vector2f(400.0, 300.0), direction * speed, ball_radius_);
+            with(new BallFactory)
+            {
+                position = Vector2f(400.0, 300.0);
+                velocity = direction * speed;
+                radius = ball_radius_;
+                ball_ = produce(actor_manager_);
+            }
         }
 
         //Called when one of the players wins the game.
@@ -1539,8 +1746,6 @@ class Pong
                     case Key.Return:
                         pong_start();
                         break;
-                    case Key.F10:
-                        monitor_toggle();
                     default:
                         break;
                 }
@@ -1553,6 +1758,9 @@ class Pong
             {
                 switch(key)
                 {
+                    case Key.F10:
+                        monitor_toggle();
+                        break;
                     default:
                         break;
                 }

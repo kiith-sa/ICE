@@ -5,13 +5,14 @@ import std.random;
 import std.math;
 
 import actor.actor;
-import actor.actormanager;
+import actor.actorcontainer;
 import actor.particlesystem;
 import physics.physicsbody;
 import math.math;
 import math.vector2;
 import time.timer;
 import arrayutil;
+import factory;
 
 
 ///Single particle of the particle system
@@ -55,13 +56,6 @@ abstract class ParticleEmitter : ParticleSystem
         real game_time_;
 
     public:
-        ///Constructor. If attached to an owner, must be detached.
-        this(Actor owner = null)
-        {
-            super(new PhysicsBody(null, Vector2f(0.0f, 0.0f), Vector2f(0.0f, 0.0f), 2.0),
-                  owner);
-        }
-        
         override void update(real time_step, real game_time)
         {
             //update position
@@ -106,6 +100,32 @@ abstract class ParticleEmitter : ParticleSystem
 
     protected:
         /*
+         * Construct a ParticleEmitter with specified parameters.
+         *
+         * Params:  container       = Container to manage the emitter.
+         *          physics_body    = Physics body of the emitter.
+         *          owner           = Class to attach this emitter to. 
+         *                            If null, the emitter is independent.
+         *          life_time       = Life time of the emitter. 
+         *                            If negative, lifetime is indefinite.
+         *          particle_life   = Life time of particles emitted.
+         *          emit_frequency  = Frequency at which to emit particles, 
+         *                            in particles per second.
+         *          emit_velocity   = Base velocity of particles emitted.
+         *          angle_variation = Variation of angle of emit velocity, in radians.
+         */                          
+        this(ActorContainer container, PhysicsBody physics_body, Actor owner, 
+             real life_time, real particle_life, real emit_frequency, 
+             Vector2f emit_velocity, real angle_variation)
+        {
+            particle_life_ = particle_life;
+            emit_frequency_ = emit_frequency;
+            angle_variation_ = angle_variation;
+            emit_velocity_ = emit_velocity;
+            super(container, physics_body, owner, life_time);
+        }
+
+        /*
          * Emit particles if any should be emitted this frame.
          * 
          * Params:  time_step = Time step in seconds.
@@ -130,4 +150,25 @@ abstract class ParticleEmitter : ParticleSystem
                 time_accumulated_ -= emit_period;
             }
         }
+}
+
+/*
+ * Base class for factories producing ParticleEmitter derived classes.
+ *
+ * Params:  particle_life   = Life time of particles emitted in seconds.
+ *                            Default: 5.0
+ *          emit_frequency  = Frequency at which to emit particles, 
+ *                            in particles per second.
+ *                            Default: 10.0
+ *          emit_velocity   = Base velocity of particles emitted.
+ *                            Default: Vector2f(1.0f, 1.0f)
+ *          angle_variation = Variation of angle of emit velocity, in radians.
+ *                            Default: PI / 2
+ */                          
+abstract class ParticleEmitterFactory(T) : ParticleSystemFactory!(T)
+{
+    mixin(generate_factory("real $ particle_life $ 5.0",
+                           "real $ emit_frequency $ 10.0",
+                           "Vector2f $ emit_velocity $ Vector2f(1.0f, 1.0f)",
+                           "real $ angle_variation $ PI / 2"));
 }

@@ -1,9 +1,12 @@
 17:
-    Construct actors with dependency injection, after constructed,
-    actor_manager_.add_actor manually, similarly remove_actor after
-    death.
+    make ctors protected,
+    remove old ctors and accessors (keep some accessors, though)
+
+    then document, cleanup etc.
 17:
     Turn ActorManager into a weak singleton.
+17:
+    Document default values in GUI factories.
 17:
     After we fully turn ActorManager into a weak singleton:
     Try to put actomanager update,draw into game update,draw remove it from pong,
@@ -21,6 +24,11 @@
 17:
     Try to see if anything is testable now, and if so, write tests
     (stuff dependent on PhysicsEngine still won't be testable)
+17:
+    PhysicsEngine desingletonification.
+    To prevent requirement of every body having a ref to physicsengine
+    to remove itself, let it be removed by ActorManager in remove_actor
+    (use package accesor to get body)
 17:
     Improve testability: remove new from ctors
     Most dependencies should be passed to ctor, created outside.
@@ -100,6 +108,12 @@
 17: 
     SpatialManager GUI monitor
 17:
+    Look at allocator code and try to make it more new/delete like
+    by alloc, or its specific version,
+    calling fake ctor, if any exists, and free calling die()
+    -of course, after moving to D2, this would call the usual ctor/dtor.
+    Maybe an allocator GUI monitor.
+17:
     Consider writing mixin + asm based D equivalent to C xmmintrin.h
     and using that instead of direct asm in vector operations
 17:
@@ -110,7 +124,7 @@
     Effects:
     When buttons etc. working:
     when changing the gui, (e.g. moving from menu to pong, or between dialogs), 
-    draw an animation with gui leaving the screen
+    draw an animation with gui leaving the screen                    
     to the left. we can do this with a guioffset member in gui root
 
     main menu could have an ai-ai game playing in the background
@@ -143,6 +157,15 @@
     Multiple (two, and maybe option to generate) color schemes
 20:
     Screenshot. Probable glReadPixels from framebuffer. Also need PNG output 
+24:
+    Weak singleton class handling time, updating actormanager and perhaps other
+    stuff. Pass this class when updating actors, instead of time_step, game_time.
+    This class will also allow timed delegates,
+    both delayed in real time and in game time. Use this in BallSpawner, ScoreScreen.
+    Might allow timers, which, when expired, call a delegate, as well as timed signals,
+    and signals that are fired at the beginning of the next frame.
+    However, that might require globally accessible singletons (no testability) 
+    -only do stuff that needs no singletons
 20: 
     Get rid of immediate mode:
     support VAs and maybe VBOs (not that necessary right now) -
@@ -231,11 +254,6 @@
     manual time measurement - at least get total time and VideoDriver methods' time
     Don't forget to do this with an optimized build.
 24:
-    Weak singleton class handling time, updating actormanager and perhaps other
-    stuff. Pass this class when updating actors, instead of time_step, game_time.
-    This class will also allow timed delegates,
-    both delayed in real time and in game time. Use this in BallSpawner, ScoreScreen.
-24:
     Options start: player names (also, whether the player is AI or human-
     so we can have AI/AI, AI/human, human/human)
     Character count should be limited to fit to score statictexts.
@@ -317,6 +335,19 @@
 4:
     Particle system overhaul. Every particle should have its own color,
     etc; and whole thing should have a better structure.
+    Also, LineTrail might not need to be derived from LineEmitter
+    (no need for line length, angle variation, emit velocity,
+     so why is it derived?)
+    and particleemitter might be merged with particlesystem
+
+    One good idea might be to base the new particle system code
+    on templates, template mixins and string mixins.
+    Also look at policy based design.
+
+    Probably, each particle should contain all the data it needs to draw
+    itself and contain all drawing, updating logic.
+    This way, most particle systems would only need to be template classes
+    with the particle class as the template parameter.
 5:
     Find some use for multithreading, e.g. asynchronous drawing
     or physics, or maybe OpenMP style (or just 2-4 threads)
@@ -361,6 +392,9 @@
     A debug (ini, console and/or debug GUI controlled) option to draw wireframe.
     Also might want pure white wireframe option (with a custom shader)
     Would be a good feature for GLMonitor.
+12:
+    Consider a hierarchical ActorManager. Physics objects would also
+    need some hierarchy (or not - will see)
 14:
     Could also look at the source of the Diamond memory debugger and
     use the ideas there to measure memory usage

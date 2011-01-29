@@ -4,10 +4,11 @@ module actor.actor;
 import std.string;
 import std.stdio;
 
-import actor.actormanager;
+import actor.actorcontainer;
 import physics.physicsbody;
 import math.vector2;
 import math.rectangle;
+import factory;
 
 
 /** 
@@ -18,6 +19,13 @@ import math.rectangle;
 abstract class Actor
 {
     protected:
+        /*
+         * Container owning this actor, with ability to add more actors.
+         *
+         * (most likely ActorManager)
+         */
+        ActorContainer container_;
+
         PhysicsBody physics_body_;
 
     public:
@@ -59,15 +67,49 @@ abstract class Actor
         ///Destroy this actor.
         void die()
         {
-            if(physics_body_ !is null){physics_body_.die();}
-            ActorManager.get.remove_actor(this);
+            physics_body_.die();
+            container_.remove_actor(this);
+            container_ = null;
         }
 
     protected:
-        //Construct Actor with specified properties.
-        this(PhysicsBody physics_body) 
+        /*
+         * Construct Actor with specified properties.
+         *
+         * Params:  container    = Container to manage the actor and any actors it creates.
+         *          physics_body = Physics body of the actor.
+         */
+        this(ActorContainer container, PhysicsBody physics_body) 
+        in
+        {
+            assert(container !is null, "Actor must have a non-null container");
+            assert(physics_body !is null, 
+                   "Can't construct an actor without a physics body");
+        }
+        body
         {
             physics_body_ = physics_body;
-            ActorManager.get.add_actor(this);
+            container.add_actor(this);
+            container_ = container;
         };
+}
+
+/**
+ * Base class for all actor factories, template input specifies actor
+ * type the factory constructs.
+ *
+ * Params:  position = Starting position of the actor.
+ *          velocity = Starting velocity of the actor.
+ */
+abstract class ActorFactory(T)
+{
+    mixin(generate_factory("Vector2f $ position $ Vector2f(0.0f, 0.0f)", 
+                           "Vector2f $ velocity $ Vector2f(0.0f, 0.0f)"));
+    /**
+     * Return a new instance of the actor type produced by the factory with specified parameters.
+     *
+     * Params:  container = Container to manage the actor and any actors it creates. 
+     *                      Should probably be the ActorManager.
+     */
+    public T produce(ActorContainer container);
 }
