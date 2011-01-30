@@ -11,13 +11,14 @@ import math.rectangle;
 import platform.platform;
 import gui.guielement;
 import monitor.monitormenu;
+import monitor.monitorable;
 import singleton;
 import color;
 import image;
 
 
 ///Handles all drawing functionality.
-abstract class VideoDriver
+abstract class VideoDriver : Monitorable
 {
     mixin Singleton;
     public:
@@ -193,6 +194,11 @@ abstract class VideoDriver
         ///Delete given texture.
         void delete_texture(Texture texture);
 
-        ///Get monitor menu for the VideoDriver implementation.
-        MonitorMenu monitor_menu();
+        MonitorMenu monitor_menu()
+        {
+            //This exists due to what appears to be a linker bug - linker
+            //doesn't work if this is not implemented even for abstract class
+            //(even though it's overriden by child)
+            return null;
+        }
 }

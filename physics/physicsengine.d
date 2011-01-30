@@ -7,6 +7,7 @@ import physics.contactdetect;
 import physics.physicsmonitor;
 import gui.guielement;
 import monitor.monitormenu;
+import monitor.monitorable;
 import math.vector2;
 import signal;
 import singleton;
@@ -19,7 +20,7 @@ import arrayutil;
  * Physics is processed on PhysicsBodies which contain state like mass, velocity
  * and collision volume.
  */
-final class PhysicsEngine
+final class PhysicsEngine : Monitorable
 {
     mixin Singleton;
 
@@ -103,7 +104,6 @@ final class PhysicsEngine
             updating_ = false;
         }
 
-        ///Return monitor menu for the physics engine monitors.
         MonitorMenu monitor_menu(){return new PhysicsEngineMonitor(this);}
 
     private:

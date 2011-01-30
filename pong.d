@@ -1818,6 +1818,8 @@ class Pong
                     y = "16";
                     width ="192 + w_right / 4";
                     height ="168 + w_bottom / 6";
+                    add_monitorable("Video", VideoDriver.get);
+                    add_monitorable("Physics", PhysicsEngine.get);
                     monitor = produce();
                 }
                 GUIRoot.get.add_child(monitor);
