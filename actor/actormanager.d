@@ -69,7 +69,7 @@ final class ActorManager : ActorContainer
             singleton_ctor();
         }
 
-        ///Destroy the ActorManager. Should only be called on shutdown.
+        ///Destroy the ActorManager.
         void die()
         {
             clear();

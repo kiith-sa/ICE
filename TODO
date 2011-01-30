@@ -1,16 +1,3 @@
-Clean up, document, etc, commit
-
-
-
-
-monitor and physicsengine: weak singletons
-then: construct physicsengine in GameContainer
-
-17:                                     
-    PhysicsEngine desingletonification, dependency injection.
-    To prevent requirement of every body having a ref to physicsengine
-    to remove itself, let it be removed by ActorManager in remove_actor
-    (use package accesor to get body)
 17:
     After PhysicsEngine desingletonification, put this to Actor.
     Also, more tests, if and where possible.

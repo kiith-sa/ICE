@@ -1543,7 +1543,7 @@ class GameContainer
         body
         {
             monitor_ = monitor;
-            physics_engine_ = PhysicsEngine.get;
+            physics_engine_ = new PhysicsEngine;
             monitor_.add_monitorable("Physics", physics_engine_);
             actor_manager_ = new ActorManager(physics_engine_);
             game_ = new Game(actor_manager_);
@@ -1557,6 +1557,7 @@ class GameContainer
             writefln("ActorManager statistics:\n", actor_manager_.statistics, "\n");
             actor_manager_.die();
             monitor_.remove_monitorable(physics_engine_);
+            physics_engine_.die();
             game_ = null;
             actor_manager_ = null;
             physics_engine_ = null;
@@ -1664,7 +1665,6 @@ class Pong
 
             VideoDriver.get.set_video_mode(800, 600, ColorFormat.RGBA_8, false);
             GUIRoot.initialize!(GUIRoot);
-            PhysicsEngine.initialize!(PhysicsEngine);
 
             //Construct the monitor.
             with(new MonitorFactory)
@@ -1719,7 +1719,6 @@ class Pong
         ///Destroy all subsystems.
         void die()
         {
-            PhysicsEngine.get.die();
             fps_counter_.update.disconnect(&fps_update);
 
             GUIRoot.get.remove_child(monitor_);

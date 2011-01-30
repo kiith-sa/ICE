@@ -10,7 +10,7 @@ import monitor.monitormenu;
 import monitor.monitorable;
 import math.vector2;
 import signal;
-import singleton;
+import weaksingleton;
 import arrayutil;
 
 
@@ -22,7 +22,7 @@ import arrayutil;
  */
 final class PhysicsEngine : Monitorable
 {
-    mixin Singleton;
+    mixin WeakSingleton;
 
     invariant
     {
@@ -75,11 +75,12 @@ final class PhysicsEngine : Monitorable
         //Construct the PhysicsEngine.
         this(){singleton_ctor();}
 
-        ///Destroy this PhysicsEngine. Should only be called at shutdown.
+        ///Destroy this PhysicsEngine.
         void die()
         {
             foreach(physics_body; bodies_){physics_body.die();}
             bodies_ = [];
+            singleton_dtor();
         }
 
         ///Run the physics simulation of a single frame.
