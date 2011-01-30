@@ -796,6 +796,10 @@ class ScoreScreen
         //score screen ends when this timer expires.
         Timer timer_;
 
+        //Parent of the score screen container.
+        GUIElement parent_;
+
+        //Container of all score screen GUI elements.
         GUIElement container_;
 
         GUIStaticText winner_text_;
@@ -809,13 +813,12 @@ class ScoreScreen
         /**
          * Construct a score screen.
          *
-         * Params: container = GUI element to use as container in which score screen
-         *                     widgets will be placed.
+         * Params: parent    = GUI element to attach the score screen to.
          *         player_1  = First player of the game.
          *         player_2  = Second player of the game.
          *         time      = Time the game took in seconds.
          */
-        this(GUIElement container, Player player_1, Player player_2, real time)
+        this(GUIElement parent, Player player_1, Player player_2, real time)
         in
         {
             assert(player_1.score != player_2.score, 
@@ -823,7 +826,17 @@ class ScoreScreen
         }
         body
         {
-            container_ = container;
+            with(new GUIElementFactory)
+            {
+                x = "p_right / 2 - 192";
+                y = "p_bottom / 2 - 128";
+                width = "384";
+                height = "256";
+                container_ = produce();
+            }
+
+            parent_ = parent;
+            parent_.add_child(container_);
 
             string winner = player_1.score > player_2.score ? 
                             player_1.name : player_2.name;
@@ -869,7 +882,7 @@ class ScoreScreen
 
         void die()
         {
-            GUIRoot.get.remove_child(container_);
+            parent_.remove_child(container_);
             container_.die();
         }
         
@@ -1448,18 +1461,8 @@ class Game
         //Called when one of the players wins the game.
         void game_won()
         {
-            GUIElement container;
-            with(new GUIElementFactory)
-            {
-                x = "p_right / 2 - 192";
-                y = "p_bottom / 2 - 128";
-                width = "384";
-                height = "256";
-                container = produce();
-            }
-            GUIRoot.get.add_child(container);
             //show the score screen and end the game after it expires
-            score_screen_ = new ScoreScreen(container, player_1_, player_2_,
+            score_screen_ = new ScoreScreen(GUIRoot.get.root, player_1_, player_2_,
                                             game_timer_.age(actor_manager_.game_time));
             score_screen_.expired.connect(&end_game);
             actor_manager_.time_speed = 0.0;

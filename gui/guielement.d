@@ -270,7 +270,7 @@ class GUIElement
         }
 }
 
-///GUI root singleton. Contains drawing and input handling methods.
+///GUI root container. Contains drawing and input handling methods.
 final class GUIRoot
 {
     mixin Singleton;
@@ -319,6 +319,9 @@ final class GUIRoot
             driver.zoom = zoom;
             driver.view_offset = offset;
         }
+
+        ///Get the actual root element of the GUI.
+        GUIElement root(){return root_;}
 
         ///Update the GUI.
         void update(){root_.update_children();}
