@@ -1523,10 +1523,16 @@ class GameContainer
         ActorManager actor_manager_;
         //Game itself.
         Game game_;
+        //Monitor monitoring game subsystems.
+        Monitor monitor_;
 
     public:
-        ///Produce a Game and return a reference to it.
-        Game produce()
+        /**
+         * Produce a Game and return a reference to it.
+         *
+         * Params:  monitor = Monitor to monitor game subsystems.
+         */
+        Game produce(Monitor monitor)
         in
         {
             assert(physics_engine_ is null && 
@@ -1536,7 +1542,9 @@ class GameContainer
         }
         body
         {
+            monitor_ = monitor;
             physics_engine_ = PhysicsEngine.get;
+            monitor_.add_monitorable("Physics", physics_engine_);
             actor_manager_ = new ActorManager(physics_engine_);
             game_ = new Game(actor_manager_);
             return game_;
@@ -1546,11 +1554,13 @@ class GameContainer
         void destroy()
         {
             game_.die();
-            actor_manager_.die();
             writefln("ActorManager statistics:\n", actor_manager_.statistics, "\n");
+            actor_manager_.die();
+            monitor_.remove_monitorable(physics_engine_);
             game_ = null;
             actor_manager_ = null;
             physics_engine_ = null;
+            monitor_ = null;
         }
 }
 
@@ -1643,6 +1653,9 @@ class Pong
 
         Credits credits_;
 
+        //Monitor used for debugging, statistics about game subsystems.
+        Monitor monitor_;
+
     public:
         ///Initialize Pong.
         this()
@@ -1652,9 +1665,24 @@ class Pong
             VideoDriver.get.set_video_mode(800, 600, ColorFormat.RGBA_8, false);
             GUIRoot.initialize!(GUIRoot);
             PhysicsEngine.initialize!(PhysicsEngine);
-            game_container_ = new GameContainer;
 
-            //Update FPS every second
+            //Construct the monitor.
+            with(new MonitorFactory)
+            {
+                x = "16";
+                y = "16";
+                width ="192 + w_right / 4";
+                height ="168 + w_bottom / 6";
+                add_monitorable("Video", VideoDriver.get);
+                monitor_ = produce();
+            }
+            GUIRoot.get.add_child(monitor_);
+            //We don't want to see the monitor unless the user requests it.
+            monitor_.hide();
+
+            game_container_ = new GameContainer();
+
+            //Update FPS every second.
             fps_counter_ = new EventCounter(1.0);
             fps_counter_.update.connect(&fps_update);
 
@@ -1688,14 +1716,17 @@ class Pong
             menu_container_.add_child(menu_);
         }
 
+        ///Destroy all subsystems.
         void die()
         {
             PhysicsEngine.get.die();
+            fps_counter_.update.disconnect(&fps_update);
+
+            GUIRoot.get.remove_child(monitor_);
+            monitor_.die();
+            GUIRoot.get.die();
             VideoDriver.get.die();
             Platform.get.die();
-            fps_counter_.update.disconnect(&fps_update);
-            GUIRoot.get.die();
-
             singleton_dtor();
         }
 
@@ -1741,7 +1772,7 @@ class Pong
             run_pong_ = true;
             menu_container_.hide();
             Platform.get.key.disconnect(&key_handler);
-            game_ = game_container_.produce();
+            game_ = game_container_.produce(monitor_);
             game_.intro();
         }
 
@@ -1815,27 +1846,8 @@ class Pong
         ///Toggle monitor display.
         void monitor_toggle()
         {
-            static Monitor monitor = null;
-            if(monitor is null)
-            {
-                with(new MonitorFactory)
-                {
-                    x = "16";
-                    y = "16";
-                    width ="192 + w_right / 4";
-                    height ="168 + w_bottom / 6";
-                    add_monitorable("Video", VideoDriver.get);
-                    add_monitorable("Physics", PhysicsEngine.get);
-                    monitor = produce();
-                }
-                GUIRoot.get.add_child(monitor);
-            }
-            else
-            {
-                GUIRoot.get.remove_child(monitor);
-                monitor.die();
-                monitor = null;
-            }
+            if(monitor_.visible){monitor_.hide();}
+            else{monitor_.show();}
         }
 }
 
