@@ -1,54 +1,26 @@
 17:
-    After PhysicsEngine desingletonification, put this to Actor.
-    Also, more tests, if and where possible.
-
-unittest
-{
-    class ActorContainerTest : ActorContainer
-    {
-        private:
-            uint add_counter;
-            uint remove_counter;
-        public:
-            override void add_actor(Actor actor){add_counter++;}
-            override void remove_actor(Actor actor){remove_counter++;}
-            bool ok(){return add_counter == 1 && remove_counter == 1;}
-    }
-
-
-    class ActorTest : Actor
-    {    
-        public:
-            override void update(real time_step, real game_time){}
-            override void draw(){}
-            this(ActorContainer container){super(container, null);}
-    }
-
-    auto container = new ActorContainerTest;
-    auto test = new ActorTest(container);
-    test.die();
-
-    assert(container.ok, "Error in actor registration with ActorManager");
-}
+    Desingletonify GUIRoot
 17:
-    Desingletonification to weak singletons where possible
-    For instance, physics engine could be a member of actormanager,
-    accessible from there through an accessor.
-    If all Actors need from ActorManager is update time,
-    we can pass that with updates, desingletonify actormanager,
-    include it as a member of Game.
-    We can also pass reference to actormanager, physicsengine on update.
-    Also desingletonify GUIRoot - just force single instance, not global
-    access
+    Desingletonify VideoDriver, FontManager and manage them in
+    a VideoDriverContainer.
+    If possible, we could have a single instance of FontManager used
+    even if VideoDriver is replaced. However, as FontManager
+    loads fonts as textures to VideoDriver, it should have
+    a method to reload these textures to videodriver again.
+    Implement this, the code for loading fontmanager textures again,
+    and a unittest to prove it works (slow unittest due to file I/O,
+    but, after all, unittests can be disabled in release build)
 
-    Singletons should probably be kept for videodriver and platform,
-    those have external dependencies and are not that testable anyway
-    still, might try-draw methods would need to pass videodriver, for instance
-
-    Actors such as paddles and walls should be constructed in factories with 
-    dependency injection.
-
-    If this results in better testability, more unittests
+    Also, we might have a debug button to test reconstruction of VideoDriver,
+    to see if e.g. the GUI stays the same.
+17:
+    Desingletonify Platform, if at all possible.
+    Also test destroying/reconstructing platform.
+    Of course, platform destruction will require VideoDriver
+    destruction, so they probably should be managed by the same container
+    (PlatformContainer manages VideoDriverContainer?)
+17:
+    Unittests where obviously easy.
 17:
     Coarse collision detection (SpatialManager)
     Maybe make SpatialManager general enough so we can use the same class

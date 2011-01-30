@@ -108,6 +108,37 @@ abstract class Actor
         //Interface to draw the actor by ActorManager.
         final void draw_actor(){draw();}
 }
+unittest
+{
+    class ActorContainerTest : ActorContainer
+    {
+        private:
+            uint add_counter;
+            uint remove_counter;
+        public:
+            override void add_actor(Actor actor){add_counter++;}
+            override void remove_actor(Actor actor){remove_counter++;}
+            bool ok(){return add_counter == 1 && remove_counter == 1;}
+    }
+
+    class ActorTest : Actor
+    {    
+        public:
+            override void update(real time_step, real game_time){}
+            override void draw(){}
+            this(ActorContainer container)
+            {
+                auto zero = Vector2f(0.0f, 0.0f);
+                super(container, new PhysicsBody(null, zero, zero, 10.0));
+            }
+    }
+
+    auto container = new ActorContainerTest;
+    auto test = new ActorTest(container);
+    test.die();
+
+    assert(container.ok, "Error in actor registration with ActorManager");
+}
 
 /**
  * Base class for all actor factories, template input specifies actor
