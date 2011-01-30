@@ -179,14 +179,23 @@ final class ActorManager : ActorContainer
             {
                 alias arrayutil.remove remove;
                 actors_.remove(actor, true);
+                physics_engine_.remove_body(actor.physics_body);
             }
 
             actors_ ~= actors_to_add_;
+            foreach(actor; actors_to_add_)
+            {
+                physics_engine_.add_body(actor.physics_body);
+            }
+
             actors_to_add_ = [];
             actors_to_remove_ = [];
 
             //Update actors' states
-            foreach(actor; actors_){actor.update_actor(time_step_, game_time_);} 
+            foreach(actor; actors_)
+            {
+                actor.update_actor(time_step_, game_time_);
+            }
         }
         
         //Update updates per second output

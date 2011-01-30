@@ -18,21 +18,6 @@ import factory;
  */
 abstract class Actor
 {
-    package:
-        /*
-         * Interface to update the actor by ActorManager.
-         *
-         * Params:  time_step = Time step in seconds.
-         *          game_time = Current game time.
-         */
-        final void update_actor(real game_time, real time_step)
-        {
-            update(game_time, time_step);
-        }
-
-        //Interface to draw the actor by ActorManager.
-        final void draw_actor(){draw();}
-
     protected:
         /*
          * Container owning this actor, with ability to add more actors.
@@ -107,6 +92,21 @@ abstract class Actor
 
         //Draw this actor.
         void draw();
+
+    package:
+        /*
+         * Interface to update the actor by ActorManager.
+         *
+         * Params:  time_step = Time step in seconds.
+         *          game_time = Current game time.
+         */
+        final void update_actor(real game_time, real time_step)
+        {
+            update(game_time, time_step);
+        }
+
+        //Interface to draw the actor by ActorManager.
+        final void draw_actor(){draw();}
 }
 
 /**

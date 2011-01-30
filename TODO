@@ -1,5 +1,3 @@
-then: actormanager adds/removes bodies to/from physicsengine
-then: desingletonification
 then: adding and removing monitorable stuff 
       (showing/hiding monitor instead of constructing/destroying,
        also a button in monitor to show no submonitor (i.e. disable current
@@ -7,6 +5,7 @@ then: adding and removing monitorable stuff
       if current submonitor is from the monitorable removed,
       it must be destroyed as the monitorable is removed
       (since PhysicsEngine can be destroyed)
+desingletonification
 then: construct physicsengine in GameContainer
 
 17:                                     

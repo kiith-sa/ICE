@@ -106,6 +106,42 @@ final class PhysicsEngine : Monitorable
 
         MonitorMenu monitor_menu(){return new PhysicsEngineMonitor(this);}
 
+        //Add a new physics body to the simulation
+        //Can't be called during an update.
+        void add_body(PhysicsBody physics_body)
+        in
+        {
+            assert(!bodies_.contains(physics_body, true), 
+                   "Adding the same physics body twice");
+            assert(!updating_, "Can't add new physics bodies during a physics update");
+        }
+        body
+        {
+            statistics_.bodies++;
+            if(physics_body.volume is null){statistics_.col_bodies++;}
+
+            bodies_ ~= physics_body;
+        }
+
+        //Remove a physics body from the simulation
+        //Can't be called during an update.
+        void remove_body(PhysicsBody physics_body)
+        in
+        {
+            assert(bodies_.contains(physics_body, true), 
+                   "Can't remove a physics body that is not in the PhysicsEngine");
+            assert(!updating_, "Can't remove physics bodies during a physics update");
+        }
+        body
+        {
+            alias arrayutil.remove remove;
+
+            statistics_.bodies--;
+            if(physics_body.volume is null){statistics_.col_bodies--;}
+
+            bodies_.remove(physics_body, true);
+        }
+
     private:
         //Detect collisions between bodies.
         void detect_contacts()
@@ -218,42 +254,5 @@ final class PhysicsEngine : Monitorable
                 //bodies from currently resolved contact as they are computed
                 //on demand
             }
-        }
-
-    package:
-        //Add a new physics body to the simulation
-        //Can't be called during an update.
-        void add_body(PhysicsBody physics_body)
-        in
-        {
-            assert(!bodies_.contains(physics_body, true), 
-                   "Adding the same physics body twice");
-            assert(!updating_, "Can't add new physics bodies during a physics update");
-        }
-        body
-        {
-            statistics_.bodies++;
-            if(physics_body.volume is null){statistics_.col_bodies++;}
-
-            bodies_ ~= physics_body;
-        }
-
-        //Remove a physics body from the simulation
-        //Can't be called during an update.
-        void remove_body(PhysicsBody physics_body)
-        in
-        {
-            assert(bodies_.contains(physics_body, true), 
-                   "Can't remove a physics body that is not in the PhysicsEngine");
-            assert(!updating_, "Can't remove physics bodies during a physics update");
-        }
-        body
-        {
-            alias arrayutil.remove remove;
-
-            statistics_.bodies--;
-            if(physics_body.volume is null){statistics_.col_bodies--;}
-
-            bodies_.remove(physics_body, true);
         }
 }

@@ -44,11 +44,11 @@ class PhysicsBody
             position_ = position;
             velocity_ = velocity;
             this.mass = mass;
-            PhysicsEngine.get.add_body(this);
         }
 
         ///Destroy this physics object.
-        void die(){PhysicsEngine.get.remove_body(this);}
+        void die(){}
+        
 
         /**
          * Perform collision response to the given contact.
