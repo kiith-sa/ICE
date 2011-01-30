@@ -1,11 +1,4 @@
 17:
-    make ctors protected,
-    remove old ctors and accessors (keep some accessors, though)
-
-    then document, cleanup etc.
-17:
-    Turn ActorManager into a weak singleton.
-17:
     Document default values in GUI factories.
 17:
     After we fully turn ActorManager into a weak singleton:

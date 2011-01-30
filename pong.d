@@ -1607,11 +1607,8 @@ class Pong
             singleton_ctor();
 
             VideoDriver.get.set_video_mode(800, 600, ColorFormat.RGBA_8, false);
-            ActorManager.initialize!(ActorManager);
-            actor_manager_ = ActorManager.get;
+            actor_manager_ = new ActorManager;
             GUIRoot.initialize!(GUIRoot);
-
-            game = new Game(actor_manager_);
 
             //Update FPS every second
             fps_counter_ = new EventCounter(1.0);
@@ -1682,7 +1679,6 @@ class Pong
                 GUIRoot.get.draw();
                 VideoDriver.get.end_frame();
             }
-            game.die();
             writefln("FPS statistics:\n", fps_counter_.statistics, "\n");
             writefln("ActorManager statistics:\n", actor_manager_.statistics, "\n");
         }
@@ -1692,6 +1688,7 @@ class Pong
     private:
         void pong_end()
         {
+            game.die();
             Platform.get.key.connect(&key_handler);
             menu_container_.show();
             run_pong_ = false;
@@ -1702,6 +1699,7 @@ class Pong
             run_pong_ = true;
             menu_container_.hide();
             Platform.get.key.disconnect(&key_handler);
+            game = new Game(actor_manager_);
             game.intro();
         }
 

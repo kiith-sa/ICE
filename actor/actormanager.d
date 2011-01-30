@@ -11,14 +11,14 @@ import math.vector2;
 import time.time;
 import time.timer;
 import time.eventcounter;
-import singleton;
+import weaksingleton;
 import arrayutil;
 
 
 ///Stores and manages all Actors.
 final class ActorManager : ActorContainer
 {
-    mixin Singleton;
+    mixin WeakSingleton;
 
     invariant
     {
@@ -59,12 +59,12 @@ final class ActorManager : ActorContainer
         //Construct the ActorManager; set up update frequency.
         this()
         {
-            singleton_ctor();
             PhysicsEngine.initialize!(PhysicsEngine);
             update_counter_ = new EventCounter(1.0);
             update_counter_.update.connect(&ups_update);
             game_time_ = 0.0;
             frame_start_ = get_time();
+            singleton_ctor();
         }
 
         ///Destroy the ActorManager. Should only be called on shutdown.
@@ -73,6 +73,7 @@ final class ActorManager : ActorContainer
             clear();
             PhysicsEngine.get.die();
             update_counter_.update.disconnect(&ups_update);
+            singleton_dtor();
         }
 
         ///Get frame length in seconds, i.e. update "frame" length, not graphics.
