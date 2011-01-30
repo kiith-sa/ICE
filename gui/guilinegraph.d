@@ -384,7 +384,7 @@ final class GUILineGraph : GUIElement
  *
  * See_Also: GUIElementFactoryBase
  *
- * Params:  data        = Graph data to display.
+ * Params:  data        = Graph data to display. Must be specified.
  *          graph_color = Set color for graph of measured value with specified name.
  */
 final class GUILineGraphFactory : GUIElementFactoryBase!(GUILineGraph)

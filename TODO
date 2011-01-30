@@ -1,6 +1,4 @@
 17:
-    Document default values in GUI factories.
-17:
     After we fully turn ActorManager into a weak singleton:
     Try to put actomanager update,draw into game update,draw remove it from pong,
     initialize actormanager at each game start, destroying it at game end.

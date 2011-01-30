@@ -190,8 +190,11 @@ class GUIMenuVertical : GUIMenu
  * See_Also: GUIElementFactoryBase
  *
  * Params:  item_width     = Menu item width math expression.
+ *                           Default: 128
  *          item_height    = Menu item height math expression.
+ *                           Default: 24
  *          item_spacing   = Math expression used to calculate spacing between menu items.
+ *                           Default: 4
  *          item_font_size = Font size of menu items.
  *          add_item       = Add a menu item with specified text and callback to 
  *                           be called when the item is clicked.

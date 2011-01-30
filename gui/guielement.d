@@ -364,9 +364,13 @@ final class GUIElementFactory : GUIElementFactoryBase!(GUIElement)
  * p_bottom : Parent bottom end
  *
  * Params:  x      = X position math expression.
+ *                   Default: "p_left"
  *          y      = Y position math expression. 
+ *                   Default: "p_top"
  *          width  = Width math expression. 
+ *                   Default: "64"
  *          height = Height math expression. 
+ *                   Default: "64"
  */
 abstract class GUIElementFactoryBase(T)
 {

@@ -165,6 +165,7 @@ class GUIButton : GUIElement
  * See_Also: GUIElementFactoryBase
  *
  * Params:  text         = Button text.
+ *                         Default: ""
  *          font_size    = Font size of the button text.
  *          text_color   = Text color for specified button state.
  *          border_color = Border color for specified button state.

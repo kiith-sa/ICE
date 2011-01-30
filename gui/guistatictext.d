@@ -250,12 +250,18 @@ class GUIStaticText : GUIElement
  * See_Also: GUIElementFactoryBase
  *
  * Params:  text_color  = Color of the text.
+ *                        Default: Color.white
  *          text        = Text to display.
+ *                        Default: ""
  *          align_x     = Horizontal alignment of the text.
+ *                        Default: AlignX.Left
  *          align_y     = Vertical alignment of the text.
+ *                        Default: AlignY.Top
  *          line_gap    = Spacing between lines of the text.
+ *                        Default: 0
  *          font_size   = Size of text font.
  *          font        = Name of the font to use.
+ *                        Default: "default"
  */
 final class GUIStaticTextFactory : GUIElementFactoryBase!(GUIStaticText)
 {
