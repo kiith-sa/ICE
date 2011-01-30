@@ -1517,6 +1517,8 @@ class Game
 class GameContainer
 {
     private:
+        //Physics engine used by the actor manager.
+        PhysicsEngine physics_engine_;
         //Actor manager used by the game.
         ActorManager actor_manager_;
         //Game itself.
@@ -1527,12 +1529,15 @@ class GameContainer
         Game produce()
         in
         {
-            assert(actor_manager_ is null && game_ is null,
+            assert(physics_engine_ is null && 
+                   actor_manager_ is null && 
+                   game_ is null,
                    "Can't produce two games at once with GameContainer");
         }
         body
         {
-            actor_manager_ = new ActorManager;
+            physics_engine_ = PhysicsEngine.get;
+            actor_manager_ = new ActorManager(physics_engine_);
             game_ = new Game(actor_manager_);
             return game_;
         }
@@ -1541,10 +1546,11 @@ class GameContainer
         void destroy()
         {
             game_.die();
-            writefln("ActorManager statistics:\n", actor_manager_.statistics, "\n");
             actor_manager_.die();
-            actor_manager_ = null;
+            writefln("ActorManager statistics:\n", actor_manager_.statistics, "\n");
             game_ = null;
+            actor_manager_ = null;
+            physics_engine_ = null;
         }
 }
 

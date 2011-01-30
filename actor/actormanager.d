@@ -29,6 +29,9 @@ final class ActorManager : ActorContainer
     }
 
     private:
+        //Physics engine managing physics bodies of the actors.
+        PhysicsEngine physics_engine_;
+
         Actor[] actors_;
 
         //Actors to be added at the beginning of the next frame
@@ -51,9 +54,14 @@ final class ActorManager : ActorContainer
         EventCounter update_counter_;
 
     public:
-        //Construct the ActorManager; set up update frequency.
-        this()
+        /**
+         * Construct the ActorManager; set up update frequency.
+         *
+         * Params:  physics_engine = Physics engine for the actor manager to use.
+         */
+        this(PhysicsEngine physics_engine)
         {
+            physics_engine_ = physics_engine;
             update_counter_ = new EventCounter(1.0);
             update_counter_.update.connect(&ups_update);
             game_time_ = 0.0;
@@ -98,7 +106,7 @@ final class ActorManager : ActorContainer
             {
                 game_time_ += time_step_;
                 accumulated_time_ -= time_step_;
-                PhysicsEngine.get.update(time_step_);
+                physics_engine_.update(time_step_);
                 update_actors();
             }
         }
