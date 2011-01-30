@@ -20,6 +20,7 @@ import actor.actorcontainer;
 import actor.particleemitter;
 import actor.lineemitter;
 import actor.linetrail;
+import physics.physicsengine;
 import physics.physicsbody;
 import physics.collisionaabbox;
 import physics.collisioncircle;
@@ -51,24 +52,6 @@ class Wall : Actor
         ///Emitted when a ball hits the wall. Will emit const BallBody after D2 move.
         mixin Signal!(BallBody) ball_hit;
 
-        override void draw()
-        {
-            static c = Color(240, 255, 240);
-            Vector2f position = physics_body_.position;
-            VideoDriver.get.draw_rectangle(position + box_.min, position + box_.max);
-        }
-
-        override void update(real time_step, real game_time)
-        {
-            foreach(collider; physics_body_.colliders)
-            {
-                if(collider.classinfo == BallBody.classinfo)
-                {
-                    ball_hit.emit(cast(BallBody)collider);
-                }
-            }
-        }
-
         ///Set wall velocity.
         void velocity(Vector2f v){physics_body_.velocity = v;}
 
@@ -85,6 +68,24 @@ class Wall : Actor
         {
             super(container, physics_body);
             box_ = box;
+        }
+
+        override void draw()
+        {
+            static c = Color(240, 255, 240);
+            Vector2f position = physics_body_.position;
+            VideoDriver.get.draw_rectangle(position + box_.min, position + box_.max);
+        }
+
+        override void update(real time_step, real game_time)
+        {
+            foreach(collider; physics_body_.colliders)
+            {
+                if(collider.classinfo == BallBody.classinfo)
+                {
+                    ball_hit.emit(cast(BallBody)collider);
+                }
+            }
         }
 }             
 
@@ -454,29 +455,6 @@ class Ball : Actor
         ///Return the radius of this ball.
         float radius(){return (cast(BallBody)physics_body_).radius;}
 
-        override void update(real time_step, real game_time)
-        {
-            //Ball can only change direction after a collision
-            if(physics_body_.collided())
-            {
-                emitter_.emit_velocity = -physics_body_.velocity.normalized * particle_speed_;
-            }
-        }
-
-        override void draw()
-        {
-            if(!draw_ball_){return;}
-            auto driver = VideoDriver.get;
-            Vector2f position = physics_body_.position;
-            driver.line_aa = true;
-            driver.line_width = 3;
-            driver.draw_circle(position, radius - 2, Color(240, 240, 255), 4);
-            driver.line_width = 1;
-            driver.draw_circle(position, radius, Color(192, 192, 255, 192));
-            driver.line_width = 1;                  
-            driver.line_aa = false;
-        }
-
     protected:
         /*
          * Construct a ball with specified parameters.
@@ -498,6 +476,29 @@ class Ball : Actor
             emitter.attach(this);
             particle_speed_ = particle_speed;
             draw_ball_ = draw_ball;
+        }
+
+        override void update(real time_step, real game_time)
+        {
+            //Ball can only change direction after a collision
+            if(physics_body_.collided())
+            {
+                emitter_.emit_velocity = -physics_body_.velocity.normalized * particle_speed_;
+            }
+        }
+
+        override void draw()
+        {
+            if(!draw_ball_){return;}
+            auto driver = VideoDriver.get;
+            Vector2f position = physics_body_.position;
+            driver.line_aa = true;
+            driver.line_width = 3;
+            driver.draw_circle(position, radius - 2, Color(240, 240, 255), 4);
+            driver.line_width = 1;
+            driver.draw_circle(position, radius, Color(192, 192, 255, 192));
+            driver.line_width = 1;                  
+            driver.line_aa = false;
         }
 }
 
@@ -954,6 +955,36 @@ class BallSpawner : Actor
     public:
         mixin Signal!(Vector2f, real) spawn_ball;
 
+    protected:
+        /*
+         * Constructs a BallSpawner with specified parameters.
+         * 
+         * Params:    container  = Container to manage this actor.
+         *            timer      = Ball will be spawned when this timer (game time) expires.
+         *                         70% of the time will be taken by the rays effect.
+         *            spread     = "Randomness" of the spawn directions.
+         *                         Zero will result in only one definite direction,
+         *                         1 will result in completely random direction
+         *                         (except for horizontal directions that are 
+         *                         disallowed to prevent ball from getting stuck)
+         *            ball_speed = Speed to spawn the ball at.
+         */
+        this(ActorContainer container, Timer timer, real spread, real ball_speed)
+        in{assert(spread >= 0.0, "Negative ball spawning spread");}
+        body
+        {                
+            super(container, new PhysicsBody(null, Vector2f(400.0f, 300.0f), 
+                                             Vector2f(0.0f, 0.0f), real.infinity));
+
+            ball_speed_ = ball_speed;
+            timer_ = timer;
+            //leave a third of time without the rays effect to give time
+            //to the player
+            light_speed_ = (2 * PI) / (timer.delay * 0.70);
+
+            generate_directions(spread);
+        }
+
         override void update(real time_step, real game_time)
         {
             if(timer_.expired(game_time))
@@ -1012,36 +1043,6 @@ class BallSpawner : Actor
                 VideoDriver.get.draw_line(center, center + direction * ray_length, 
                                           color, color);
             }
-        }
-
-    protected:
-        /*
-         * Constructs a BallSpawner with specified parameters.
-         * 
-         * Params:    container  = Container to manage this actor.
-         *            timer      = Ball will be spawned when this timer (game time) expires.
-         *                         70% of the time will be taken by the rays effect.
-         *            spread     = "Randomness" of the spawn directions.
-         *                         Zero will result in only one definite direction,
-         *                         1 will result in completely random direction
-         *                         (except for horizontal directions that are 
-         *                         disallowed to prevent ball from getting stuck)
-         *            ball_speed = Speed to spawn the ball at.
-         */
-        this(ActorContainer container, Timer timer, real spread, real ball_speed)
-        in{assert(spread >= 0.0, "Negative ball spawning spread");}
-        body
-        {                
-            super(container, new PhysicsBody(null, Vector2f(400.0f, 300.0f), 
-                                             Vector2f(0.0f, 0.0f), real.infinity));
-
-            ball_speed_ = ball_speed;
-            timer_ = timer;
-            //leave a third of time without the rays effect to give time
-            //to the player
-            light_speed_ = (2 * PI) / (timer.delay * 0.70);
-
-            generate_directions(spread);
         }
 
     private:
@@ -1264,12 +1265,6 @@ class Game
         Timer intro_timer_;
 
     public:
-        this(ActorManager actor_manager)
-        {
-            singleton_ctor();
-            actor_manager_ = actor_manager;
-        }
-
         bool run()
         {
             real time = actor_manager_.game_time;
@@ -1297,10 +1292,10 @@ class Game
 
             if(!started_ && intro_timer_.expired(time)){start_game(time);}
 
+            actor_manager_.update();
+
             return continue_;
         }
-
-        void die(){singleton_dtor();}
 
         void intro()
         {
@@ -1362,9 +1357,17 @@ class Game
             return output;
         }
 
-        void draw(){}
+        void draw(){actor_manager_.draw();}
 
     private:
+        this(ActorManager actor_manager)
+        {
+            singleton_ctor();
+            actor_manager_ = actor_manager;
+        }
+
+        void die(){singleton_dtor();}
+
         ///Start the game, at specified game time
         void start_game(real start_time)
         {
@@ -1510,29 +1513,63 @@ class Game
         }
 }
 
+///Container managing dependencies and construction of Game.
+class GameContainer
+{
+    private:
+        //Actor manager used by the game.
+        ActorManager actor_manager_;
+        //Game itself.
+        Game game_;
+
+    public:
+        ///Produce a Game and return a reference to it.
+        Game produce()
+        in
+        {
+            assert(actor_manager_ is null && game_ is null,
+                   "Can't produce two games at once with GameContainer");
+        }
+        body
+        {
+            actor_manager_ = new ActorManager;
+            game_ = new Game(actor_manager_);
+            return game_;
+        }
+
+        ///Destroy the contained Game.
+        void destroy()
+        {
+            game_.die();
+            writefln("ActorManager statistics:\n", actor_manager_.statistics, "\n");
+            actor_manager_.die();
+            actor_manager_ = null;
+            game_ = null;
+        }
+}
+
 ///Credits screen.
 class Credits
 {
     private:
         static credits_ = 
-        "Credits\n"~
-        ".\n"~
-        "Pong was written by Ferdinand Majerech aka Kiith-Sa in the D Programming language\n"~
-        ".\n"~
-        "Other tools used to create Pong:\n"~
+        "Credits\n"
         ".\n"
-        "OpenGL graphics programming API\n"~
-        "SDL library\n"~
-        "The Freetype Project\n"~
-        "Derelict D bindings\n"~
-        "CDC build script\n"~
-        "Linux OS\n"~
-        "Vim text editor\n"~
-        "Valgrind debugging and profiling suite\n"~
-        "Git revision control system\n"~
-        ".\n"~
-        "Pong is released under the terms of the Boost license."
-        ;
+        "Pong was written by Ferdinand Majerech aka Kiith-Sa in the D Programming language\n"
+        ".\n"
+        "Other tools used to create Pong:\n"
+        ".\n"
+        "OpenGL graphics programming API\n"
+        "SDL library\n"
+        "The Freetype Project\n"
+        "Derelict D bindings\n"
+        "CDC build script\n"
+        "Linux OS\n"
+        "Vim text editor\n"
+        "Valgrind debugging and profiling suite\n"
+        "Git revision control system\n"
+        ".\n"
+        "Pong is released under the terms of the Boost license.";
 
         GUIElement container_;
         GUIButton close_button_;
@@ -1592,11 +1629,11 @@ class Pong
         bool run_pong_ = false;
         bool continue_ = true;
 
-        ActorManager actor_manager_;
+        GameContainer game_container_;
 
         GUIElement menu_container_;
         GUIMenu menu_;
-        Game game;
+        Game game_;
 
         Credits credits_;
 
@@ -1607,8 +1644,9 @@ class Pong
             singleton_ctor();
 
             VideoDriver.get.set_video_mode(800, 600, ColorFormat.RGBA_8, false);
-            actor_manager_ = new ActorManager;
             GUIRoot.initialize!(GUIRoot);
+            PhysicsEngine.initialize!(PhysicsEngine);
+            game_container_ = new GameContainer;
 
             //Update FPS every second
             fps_counter_ = new EventCounter(1.0);
@@ -1646,7 +1684,7 @@ class Pong
 
         void die()
         {
-            actor_manager_.die();
+            PhysicsEngine.get.die();
             VideoDriver.get.die();
             Platform.get.die();
             fps_counter_.update.disconnect(&fps_update);
@@ -1664,23 +1702,20 @@ class Pong
                 //Count this frame
                 fps_counter_.event();
 
-                if(run_pong_ && !game.run()){pong_end();}
+                if(run_pong_ && !game_.run()){pong_end();}
 
                 //update game state
-                actor_manager_.update();
                 GUIRoot.get.update();
 
                 VideoDriver.get.start_frame();
 
-                if(run_pong_){game.draw();}
+                if(run_pong_){game_.draw();}
                 else{draw();}
 
-                actor_manager_.draw();
                 GUIRoot.get.draw();
                 VideoDriver.get.end_frame();
             }
             writefln("FPS statistics:\n", fps_counter_.statistics, "\n");
-            writefln("ActorManager statistics:\n", actor_manager_.statistics, "\n");
         }
 
         void draw(){}
@@ -1688,7 +1723,8 @@ class Pong
     private:
         void pong_end()
         {
-            game.die();
+            game_container_.destroy();
+            game_ = null;
             Platform.get.key.connect(&key_handler);
             menu_container_.show();
             run_pong_ = false;
@@ -1699,8 +1735,8 @@ class Pong
             run_pong_ = true;
             menu_container_.hide();
             Platform.get.key.disconnect(&key_handler);
-            game = new Game(actor_manager_);
-            game.intro();
+            game_ = game_container_.produce();
+            game_.intro();
         }
 
         void credits_start()

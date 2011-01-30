@@ -1,38 +1,40 @@
-17:
-    After we fully turn ActorManager into a weak singleton:
-    Try to put actomanager update,draw into game update,draw remove it from pong,
-    initialize actormanager at each game start, destroying it at game end.
-    (actually - use dependency injection - injecting code might e.g.
-     keep the ActorManager instance in future, just clearing it, if needed,
-     of course we don't want that now so just init ActorManager, pass to Game,
-     and, when we kill the game, also kill ActorManager. If this is messy,
-     a DI container or factory can do it. One advantage is that game does
-     not need to clean up its mess as much as before, user of Game has to do that.)
-
-    Actually, do use a GameFactory. So Pong has no idea about ActorManager at all.
-
-    This means we'll have to move PhysicsEngine init/die out of ActorManager.
-17:
-    Try to see if anything is testable now, and if so, write tests
-    (stuff dependent on PhysicsEngine still won't be testable)
-17:
-    PhysicsEngine desingletonification.
+17:                                     
+    PhysicsEngine desingletonification, dependency injection.
     To prevent requirement of every body having a ref to physicsengine
     to remove itself, let it be removed by ActorManager in remove_actor
     (use package accesor to get body)
 17:
-    Improve testability: remove new from ctors
-    Most dependencies should be passed to ctor, created outside.
-    Use factories where needed.
+    After PhysicsEngine desingletonification, put this to Actor.
+    Also, more tests, if and where possible.
 
-    E.g:
-    Actors should not construct their physics bodies themselves,
-    and passing actormanager would be too much.
+unittest
+{
+    class ActorContainerTest : ActorContainer
+    {
+        private:
+            uint add_counter;
+            uint remove_counter;
+        public:
+            override void add_actor(Actor actor){add_counter++;}
+            override void remove_actor(Actor actor){remove_counter++;}
+            bool ok(){return add_counter == 1 && remove_counter == 1;}
+    }
 
-    Need a factory with access to actormanager, or actormanager to be the
-    factory etc.
-    (maybe actormanager or some factory should have a template method, string
-     mixin method/s for construction, or use generated factory like GUI)
+
+    class ActorTest : Actor
+    {    
+        public:
+            override void update(real time_step, real game_time){}
+            override void draw(){}
+            this(ActorContainer container){super(container, null);}
+    }
+
+    auto container = new ActorContainerTest;
+    auto test = new ActorTest(container);
+    test.die();
+
+    assert(container.ok, "Error in actor registration with ActorManager");
+}
 17:
     Desingletonification to weak singletons where possible
     For instance, physics engine could be a member of actormanager,
@@ -210,6 +212,9 @@
      gradual data loss, gzipping in memory, dumping to file)
     Also consider making graph data time independent, supplying time
     to it through methods.
+
+    Also manual memory management for GraphData.
+    That will allow us to at least monitor its usage, and be a bit faster.
 24:
     Alongside mouse_move and mouse_key, consider more advanced
     mouse_click (triggered by quick succeeding press and release),

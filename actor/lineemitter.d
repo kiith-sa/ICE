@@ -35,28 +35,6 @@ class LineEmitter : ParticleEmitter
         Color end_color_ = Color(255, 255, 255, 0);
 
     public:
-        override void draw()
-        {
-            auto driver = VideoDriver.get;
-            driver.line_aa = true;
-            driver.line_width = line_width_;
-            Color color;
-            //draw particles
-            foreach(ref p; Particles)
-            {
-                color = end_color_.interpolated(start_color_, 
-                                                p.timer.age_relative(game_time_));
-                //determine line from particle velocity
-                //note-we assume here that particle velocity is never zero,
-                //otherwise normalization would break
-                driver.draw_line(p.position, 
-                                 p.position + p.velocity.normalized * line_length_, 
-                                 color, color);
-            }
-            driver.line_width = 1.0f;
-            driver.line_aa = false;
-        }
-
         ///Set length of the line particles drawn.
         final void line_length(float length){line_length_ = length;}
 
@@ -100,6 +78,28 @@ class LineEmitter : ParticleEmitter
             end_color_ = end_color;
             super(container, physics_body, owner, life_time, particle_life,
                   emit_frequency, emit_velocity, angle_variation);
+        }
+
+        override void draw()
+        {
+            auto driver = VideoDriver.get;
+            driver.line_aa = true;
+            driver.line_width = line_width_;
+            Color color;
+            //draw particles
+            foreach(ref p; Particles)
+            {
+                color = end_color_.interpolated(start_color_, 
+                                                p.timer.age_relative(game_time_));
+                //determine line from particle velocity
+                //note-we assume here that particle velocity is never zero,
+                //otherwise normalization would break
+                driver.draw_line(p.position, 
+                                 p.position + p.velocity.normalized * line_length_, 
+                                 color, color);
+            }
+            driver.line_width = 1.0f;
+            driver.line_aa = false;
         }
 }
 

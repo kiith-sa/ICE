@@ -56,30 +56,6 @@ abstract class ParticleEmitter : ParticleSystem
         real game_time_;
 
     public:
-        override void update(real time_step, real game_time)
-        {
-            //update position
-            if(owner_ !is null)
-            {
-                //get position from owner
-                physics_body_.position = owner_.position;
-            }
-
-            game_time_ = game_time;
-
-            //remove expired particles
-            bool expired(ref Particle particle){return particle.timer.expired(game_time);}
-            Particles.remove(&expired);
-
-            //emit new particles
-            emit(time_step);
-
-            //update particles
-            foreach(ref particle; Particles){particle.update(time_step);}
-
-            super.update(time_step, game_time);
-        }
-
         ///Set life time of particles emitted.
         final void particle_life(real life){particle_life_ = life;}
         
@@ -123,6 +99,30 @@ abstract class ParticleEmitter : ParticleSystem
             angle_variation_ = angle_variation;
             emit_velocity_ = emit_velocity;
             super(container, physics_body, owner, life_time);
+        }
+
+        override void update(real time_step, real game_time)
+        {
+            //update position
+            if(owner_ !is null)
+            {
+                //get position from owner
+                physics_body_.position = owner_.position;
+            }
+
+            game_time_ = game_time;
+
+            //remove expired particles
+            bool expired(ref Particle particle){return particle.timer.expired(game_time);}
+            Particles.remove(&expired);
+
+            //emit new particles
+            emit(time_step);
+
+            //update particles
+            foreach(ref particle; Particles){particle.update(time_step);}
+
+            super.update(time_step, game_time);
         }
 
         /*

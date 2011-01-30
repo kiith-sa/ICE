@@ -29,38 +29,6 @@ final class LineTrail : LineEmitter
             assert(frequency >= 0.0, "LineTrail emit frequency must be > 0");
             super.emit_frequency(frequency);
         } 
-        
-        ///Draw the particle system.
-        override void draw()
-        {
-            if(Particles.length >= 2)
-            {
-                //start of the current line
-                Vector2f v1 = Particles[0].position;
-                //end of the current line
-                Vector2f v2;
-                //start color of the current line
-                Color c1 = end_color_;
-                //end color of the current line
-                Color c2;
-
-                VideoDriver.get.line_aa = true;
-                VideoDriver.get.line_width = line_width_;
-
-                //using for instead of foreach purely for performance reasons
-                for(uint p = 1; p < Particles.length; p++)
-                {
-                    v2 = Particles[p].position;
-                    c2 = end_color_.interpolated(start_color_, 
-                         Particles[p].timer.age_relative(game_time_));
-                    VideoDriver.get.draw_line(v1, v2, c1, c2);
-                    v1 = v2;
-                    c1 = c2;
-                }
-                VideoDriver.get.line_width = 1;
-                VideoDriver.get.line_aa = false;
-            }
-        }
 
     protected:
         /*
@@ -102,6 +70,38 @@ final class LineTrail : LineEmitter
                 Particles ~= trail;
 
                 update_timer_ = Timer(1.0 / super.emit_frequency, game_time_);
+            }
+        }
+        
+        ///Draw the particle system.
+        override void draw()
+        {
+            if(Particles.length >= 2)
+            {
+                //start of the current line
+                Vector2f v1 = Particles[0].position;
+                //end of the current line
+                Vector2f v2;
+                //start color of the current line
+                Color c1 = end_color_;
+                //end color of the current line
+                Color c2;
+
+                VideoDriver.get.line_aa = true;
+                VideoDriver.get.line_width = line_width_;
+
+                //using for instead of foreach purely for performance reasons
+                for(uint p = 1; p < Particles.length; p++)
+                {
+                    v2 = Particles[p].position;
+                    c2 = end_color_.interpolated(start_color_, 
+                         Particles[p].timer.age_relative(game_time_));
+                    VideoDriver.get.draw_line(v1, v2, c1, c2);
+                    v1 = v2;
+                    c1 = c2;
+                }
+                VideoDriver.get.line_width = 1;
+                VideoDriver.get.line_aa = false;
             }
         }
 }      

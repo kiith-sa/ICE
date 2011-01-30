@@ -33,33 +33,27 @@ final class ActorManager : ActorContainer
 
         //Actors to be added at the beginning of the next frame
         Actor[] actors_to_add_;
-
         //Actors to be removed at the beginning of the next frame
         Actor[] actors_to_remove_;
 
         //Time taken by single game update.
         real time_step_ = 1.0 / 120.0; 
-
         //Time this update started, in game time
         real game_time_;
-        
         //Time this frame (which can have multiple updates) started, in absolute time
         real frame_start_;
-
         //Time we're behind in updates.
         real accumulated_time_ = 0;
+        //Time speed multiplier
+        real time_speed_ = 1.0;
 
         //collects statistics about actor updates
         EventCounter update_counter_;
-
-        //Time speed multiplier
-        real time_speed_ = 1.0;
 
     public:
         //Construct the ActorManager; set up update frequency.
         this()
         {
-            PhysicsEngine.initialize!(PhysicsEngine);
             update_counter_ = new EventCounter(1.0);
             update_counter_.update.connect(&ups_update);
             game_time_ = 0.0;
@@ -71,7 +65,6 @@ final class ActorManager : ActorContainer
         void die()
         {
             clear();
-            PhysicsEngine.get.die();
             update_counter_.update.disconnect(&ups_update);
             singleton_dtor();
         }
@@ -113,7 +106,7 @@ final class ActorManager : ActorContainer
         ///Draw all actors.
         void draw()
         {
-            foreach(actor; actors_){actor.draw();}
+            foreach(actor; actors_){actor.draw_actor();}
         }
 
         ///Remove all actors.
@@ -185,7 +178,7 @@ final class ActorManager : ActorContainer
             actors_to_remove_ = [];
 
             //Update actors' states
-            foreach(actor; actors_){actor.update(time_step_, game_time_);} 
+            foreach(actor; actors_){actor.update_actor(time_step_, game_time_);} 
         }
         
         //Update updates per second output

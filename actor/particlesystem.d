@@ -24,13 +24,6 @@ abstract class ParticleSystem : Actor
         ///Set time left for this LineTrail to live. Negative means infinite.
         final void life_time(real time){life_time_ = time;}
 
-        override void update(real time_step, real game_time)
-        {
-            //If life_time_ reaches zero, destroy this 
-            if(life_time_ >= 0.0 && life_time_ - time_step <= 0.0){die();}
-            life_time_ -= time_step;
-        }
-
         /**
          * Attach this particle system to specified actor.
          *
@@ -58,6 +51,13 @@ abstract class ParticleSystem : Actor
             life_time_ = life_time;
             owner_ = owner;
             super(container, physics_body);
+        }
+
+        override void update(real time_step, real game_time)
+        {
+            //If life_time_ reaches zero, destroy this 
+            if(life_time_ >= 0.0 && life_time_ - time_step <= 0.0){die();}
+            life_time_ -= time_step;
         }
 }
 
