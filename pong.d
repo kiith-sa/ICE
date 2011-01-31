@@ -1596,6 +1596,10 @@ class Credits
         ".\n"
         "Pong is released under the terms of the Boost license.";
 
+        //Parent of the container.
+        GUIElement parent_;
+
+        //GUI element containing all elements of the credits screen.
         GUIElement container_;
         GUIButton close_button_;
         GUIStaticText text_;
@@ -1607,11 +1611,21 @@ class Credits
         /**
          * Construct a Credits screen.
          *
-         * Params:  container = GUI element used as a container for the credits GUI elements.
+         * Params:  parent = GUI element to attach the credits screen to.
          */
-        this(GUIElement container)
+        this(GUIElement parent)
         {
-            container_ = container;
+            parent_ = parent;
+
+            with(new GUIElementFactory)
+            {
+                x = "p_left + 96";
+                y = "p_top + 16";
+                width = "p_right - 192";
+                height = "p_bottom - 32";
+                container_ = produce();
+            }
+            parent_.add_child(container_);
 
             with(new GUIStaticTextFactory)
             {
@@ -1641,7 +1655,7 @@ class Credits
         ///Destroy this credits screen.
         void die()
         {
-            GUIRoot.get.remove_child(container_);
+            parent_.remove_child(container_);
             container_.die();
         }
 }
@@ -1788,17 +1802,7 @@ class Pong
             menu_container_.hide();
             Platform.get.key.disconnect(&key_handler);
 
-            GUIElement container;
-            with(new GUIElementFactory)
-            {
-                x = "p_left + 96";
-                y = "p_top + 16";
-                width = "p_right - 192";
-                height = "p_bottom - 32";
-                container = produce();
-            }
-            GUIRoot.get.add_child(container);
-            credits_ = new Credits(container);
+            credits_ = new Credits(GUIRoot.get.root);
             credits_.closed.connect(&credits_end);
         }
 
