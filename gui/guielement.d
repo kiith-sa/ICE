@@ -123,12 +123,12 @@ class GUIElement
         final bool is_child(GUIElement element){return parent_ is element;}
 
     package:
-        final void draw_children()
+        final void draw_children(VideoDriver driver)
         {
             foreach(ref child; children_)
             {
                 if(child is null){continue;}
-                child.draw();
+                child.draw(driver);
             }
         }
 
@@ -175,20 +175,20 @@ class GUIElement
             aligned_ = false;
         }
 
-        void draw()
+        void draw(VideoDriver driver)
         {
             if(!visible_){return;}
 
-            if(!aligned_){realign();}
+            if(!aligned_){realign(driver);}
 
             if(draw_border_)
             {
                 Vector2f min = Vector2f(bounds_.min.x, bounds_.min.y);
                 Vector2f max = Vector2f(bounds_.max.x, bounds_.max.y);
-                VideoDriver.get.draw_rectangle(min, max, border_color_);
+                driver.draw_rectangle(min, max, border_color_);
             }
 
-            draw_children();
+            draw_children(driver);
         }
 
         void update(){update_children();}
@@ -236,10 +236,9 @@ class GUIElement
         }
 
         //Realign contents of this element according to its dimensions.
-        void realign()
+        void realign(VideoDriver driver)
         {
             int[string] substitutions;
-            auto driver = VideoDriver.get;
 
             substitutions["w_right"] = driver.screen_width;
             substitutions["w_bottom"] = driver.screen_height;
@@ -263,7 +262,7 @@ class GUIElement
 
             foreach(ref child; children_)
             {
-                child.realign();
+                child.realign(driver);
             }
 
             aligned_ = true;
@@ -292,7 +291,8 @@ final class GUIRoot
                 height = "w_bottom";
                 root_ = produce();
             }
-            root_.realign();
+
+            root_.draw_border_ = false;
 
             Platform.get.key.connect(&root_.key);
             Platform.get.mouse_motion.connect(&root_.mouse_move);
@@ -300,10 +300,8 @@ final class GUIRoot
         }
 
         ///Draw the GUI.
-        void draw()
+        void draw(VideoDriver driver)
         {
-            auto driver = VideoDriver.get;
-
             //save view zoom and offset
             real zoom = driver.zoom;
             auto offset = driver.view_offset; 
@@ -313,7 +311,7 @@ final class GUIRoot
             driver.view_offset = Vector2d(0.0, 0.0);
 
             //draw the elements
-            root_.draw_children();
+            root_.draw(driver);
 
             //restore zoom and offset
             driver.zoom = zoom;

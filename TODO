@@ -1,7 +1,10 @@
-Pass VideoDriver to
-GUIRoot
+ActorManager:
+Shouldn't own a ref to VideoDriver, just pass it when drawing
+
+remove VideoDriver.get:
 Font
-then where it's left in pong.d
+
+where it's left in pong.d
 
 
 17:
@@ -22,6 +25,11 @@ then where it's left in pong.d
     Of course, we want to do stuff like changing video mode
     without replacing video driver later, but now, it's an excellent way of testing
     this.
+
+
+    Note that a reset of VideoDriver will also require to change
+    the VideoDriver of Monitor,
+    so we'll need methods for that.
 17:
     Desingletonify Platform, if at all possible.
     Also test destroying/reconstructing platform.
@@ -122,6 +130,8 @@ then where it's left in pong.d
     to get texture page from GPU, use glGetTexImage.
 20:
     Multiple (two, and maybe option to generate) color schemes
+20:
+    draw_border GUI element parameter should be set in factory.
 20:
     Screenshot. Probable glReadPixels from framebuffer. Also need PNG output 
 24:

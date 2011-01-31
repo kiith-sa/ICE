@@ -1899,7 +1899,7 @@ class Pong
             singleton_ctor();
 
             VideoDriver.get.set_video_mode(800, 600, ColorFormat.RGBA_8, false);
-            gui_root_ = new GUIRoot;
+            gui_root_ = new GUIRoot();
 
             game_container_ = new GameContainer();
 
@@ -1942,15 +1942,12 @@ class Pong
                 VideoDriver.get.start_frame();
 
                 if(run_pong_){game_.draw();}
-                else{draw();}
 
-                gui_root_.draw();
+                gui_root_.draw(VideoDriver.get);
                 VideoDriver.get.end_frame();
             }
             writefln("FPS statistics:\n", fps_counter_.statistics, "\n");
         }
-
-        void draw(){}
 
     private:
         void pong_end()

@@ -133,7 +133,7 @@ class GUIButton : GUIElement
             else{set_state(ButtonState.Normal);}
         }
 
-        override void draw()
+        override void draw(VideoDriver driver)
         {
             if(!visible_){return;}
 
@@ -143,11 +143,10 @@ class GUIButton : GUIElement
             {
                 Vector2f min = Vector2f(bounds_.min.x, bounds_.min.y);
                 Vector2f max = Vector2f(bounds_.max.x, bounds_.max.y);
-                VideoDriver.get.draw_rectangle(min, max, 
-                                               states_[state_].border_color);
+                driver.draw_rectangle(min, max, states_[state_].border_color);
             }
 
-            draw_children();
+            draw_children(driver);
         }
 
     private:

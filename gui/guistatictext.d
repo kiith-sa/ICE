@@ -114,44 +114,45 @@ class GUIStaticText : GUIElement
             aligned_ = false;
         }
 
-        override void draw()
+        override void draw(VideoDriver driver)
         {
             if(!visible_){return;}
 
-            super.draw();
+            super.draw(driver);
 
-            VideoDriver.get.font = font_;
-            VideoDriver.get.font_size = font_size_;
+            driver.font = font_;
+            driver.font_size = font_size_;
             foreach(ref line; lines_)
             {
                 Vector2i offset = bounds_.min + line.offset;
-                VideoDriver.get.draw_text(offset, line.text, font_color_);
+                driver.draw_text(offset, line.text, font_color_);
             }
         }
 
         //Break text down to lines and realign it.
-        override void realign()
+        override void realign(VideoDriver driver)
         {
-            super.realign();
+            super.realign(driver);
 
             line_gap_ = max(2u, font_size_ / 6);
 
             string text = text_;
 
             //we need to set font to get information about drawn size of lines
-            VideoDriver.get.font = font_;
-            VideoDriver.get.font_size = font_size_;
+            driver.font = font_;
+            driver.font_size = font_size_;
             lines_ = [];
             uint y_offset;
 
             //break text to lines and align them horizontally, then align vertically
-            while(text.length > 0){text = add_line(text, y_offset, y_offset);}
+            while(text.length > 0){text = add_line(driver, text, y_offset, y_offset);}
             align_vertical();
         }
 
     private:
         //Add a TextLine from the text, and return rest of the text.
-        string add_line(string text, uint y_offset_in, out uint y_offset_out)
+        string add_line(VideoDriver driver, string text, 
+                        uint y_offset_in, out uint y_offset_out)
         {
             //get leading space, if any, and following word from text
             //also, break the line if (unix) newline found
@@ -184,7 +185,6 @@ class GUIStaticText : GUIElement
 
             //line we're constructing
             TextLine line;
-            VideoDriver driver = VideoDriver.get;
             uint width = size.x;
             bool end_line = false;
 

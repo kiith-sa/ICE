@@ -181,19 +181,19 @@ final class GUILineGraph : GUIElement
             }
         }
 
-        override void draw()
+        override void draw(VideoDriver driver)
         {
             if(!visible_){return;}
 
-            super.draw();
+            super.draw(driver);
 
-            foreach(graph; data_.graphs.keys){draw_graph(graph);}
-            draw_info();
+            foreach(graph; data_.graphs.keys){draw_graph(driver, graph);}
+            draw_info(driver);
         }
 
-        override void realign()
+        override void realign(VideoDriver driver)
         {
-            super.realign();
+            super.realign(driver);
 
             update_view();
         }
@@ -323,14 +323,14 @@ final class GUILineGraph : GUIElement
         /**
          * Draw specified graph.
          *
-         * Params:  name = Name of the graph to draw.
+         * Params:  driver = Video driver to draw with.
+         *          name   = Name of the graph to draw.
          */
-        void draw_graph(string name)
+        void draw_graph(VideoDriver driver, string name)
         {
             auto graphics = graphics_[name];
 
             if(!graphics.visible || graphics.line_strip.length <= 1){return;}
-            auto driver = VideoDriver.get;
 
             //Use scissor test to only draw within bounds of the graph.
             driver.scissor(bounds_);
@@ -344,8 +344,12 @@ final class GUILineGraph : GUIElement
             driver.disable_scissor();
         }
 
-        ///Draw graph related information, e.g. the horizontal lines and data point time.
-        void draw_info()
+        /**
+         * Draw graph related information, e.g. the horizontal lines and data point time.
+         *
+         * Params:  driver = VideoDriver to draw with.
+         */
+        void draw_info(VideoDriver driver)
         {
             static data_time_color = Color(255, 0, 0, 192);
             static data_time_offset = Vector2i(-32, 4);
@@ -357,7 +361,6 @@ final class GUILineGraph : GUIElement
             Vector2i text_start;
             text_start.x = bounds_.min.x;
 
-            auto driver = VideoDriver.get;
             driver.font = "default";
             driver.font_size = 8;
             driver.scissor(bounds_);

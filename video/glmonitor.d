@@ -3,6 +3,7 @@ module video.glmonitor;
 
 import std.string;
 
+import video.videodriver;
 import video.glvideodriver;
 import video.gltexturepage;
 import gui.guielement;
@@ -64,10 +65,10 @@ final package class PagesMonitor : SubMonitor
                       "p_right - p_left - 106", "p_bottom - p_top - 4");
             }
 
-            override void draw()
+            override void draw(VideoDriver driver)
             {
                 if(!visible_){return;}
-                super.draw();
+                super.draw(driver);
 
                 //no page to draw
                 if(driver_.pages.length == 0){return;}

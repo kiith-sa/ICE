@@ -120,12 +120,12 @@ class GUIMenuHorizontal : GUIMenu
                   item_font_size, items);
         }
 
-        override void realign()
+        override void realign(VideoDriver driver)
         {
             string offset = "(" ~ item_width_ ~ " + " ~ item_spacing_ ~ ")";
             width_string_ = item_spacing_ ~ " + " ~ offset ~ " * " ~ to_string(items_.length);
             height_string_ = item_spacing_ ~ " * 2 + " ~ item_height_;
-            super.realign();
+            super.realign(driver);
         }
 
         override string new_item_x()
@@ -163,12 +163,12 @@ class GUIMenuVertical : GUIMenu
                   item_font_size, items);
         }
 
-        override void realign()
+        override void realign(VideoDriver driver)
         {
             string offset = "(" ~ item_height_ ~ " + " ~ item_spacing_ ~ ")";
             width_string_ = item_spacing_ ~ " * 2 + " ~ item_width_;
             height_string_ = item_spacing_ ~ " + " ~ offset ~ " * " ~ to_string(items_.length);
-            super.realign();
+            super.realign(driver);
         }
 
         override string new_item_x(){return "p_left + " ~ item_spacing_;}
