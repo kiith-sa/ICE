@@ -1,4 +1,6 @@
 17:
+    PongGUI.
+17:
     Desingletonify GUIRoot
 17:
     Desingletonify VideoDriver, FontManager and manage them in
@@ -13,6 +15,11 @@
 
     Also, we might have a debug button to test reconstruction of VideoDriver,
     to see if e.g. the GUI stays the same.
+    Actually, we can do that with a "change video mode" setting
+    in an Options screen.
+    Of course, we want to do stuff like changing video mode
+    without replacing video driver later, but now, it's an excellent way of testing
+    this.
 17:
     Desingletonify Platform, if at all possible.
     Also test destroying/reconstructing platform.

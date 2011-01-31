@@ -1214,7 +1214,7 @@ class HUD
                 time_text_.text = time_str != "0:0" 
                                   ? time_str : time_str ~ " !";
 
-                real t = time_left / time_limit_;
+                real t = max(time_left / time_limit_, 1.0L);
                 time_text_.text_color = color_start.interpolated(color_end, t);
             }
 
@@ -1224,6 +1224,22 @@ class HUD
             //only update if the text has changed
             if(score_text_1_.text != score_str_1){score_text_1_.text = score_str_1;}
             if(score_text_2_.text != score_str_2){score_text_2_.text = score_str_2;}
+        }
+
+        ///Hide the HUD.
+        void hide()
+        {
+            score_text_1_.hide();
+            score_text_2_.hide();
+            time_text_.hide();
+        }
+
+        ///Show the HUD.
+        void show()
+        {
+            score_text_1_.show();
+            score_text_2_.show();
+            time_text_.show();
         }
 
         ///Destroy the HUD.
@@ -1240,6 +1256,84 @@ class HUD
             parent_.remove_child(time_text_);
             time_text_.die();
             time_text_ = null;
+        }
+}
+
+///Class holding all GUI used by Game.
+class GameGUI
+{
+    private:
+        //Parent of all game GUI elements.
+        GUIElement parent_;
+        //Game HUD.
+        HUD hud_;
+        //Score screen show at the end of game.
+        ScoreScreen score_screen_;
+
+    public:
+        ///Emitted when the score screen expires.
+        mixin Signal!() score_expired;
+
+        /**
+         * Construct a GameGUI with specified parameters.
+         *
+         * Params:  parent     = GUI element to attach all game GUI elements to.
+         *          time_limit = Time limit of the game.
+         */
+        this(GUIElement parent, real time_limit)
+        {
+            parent_ = parent;
+            hud_ = new HUD(parent, time_limit);
+            hud_.hide();
+        }
+
+        ///Show the HUD.
+        void show_hud(){hud_.show();}
+
+        /**
+         * Show score screen.
+         *
+         * Should only be called at the end of game.
+         * Hides the HUD. When the score screen expires,
+         * score_expired is emitted.
+         *
+         * Params:  time_total = Total time the game took, in game time.
+         *          player_1   = First player of the game.
+         *          player_2   = Second player of the game.
+         */
+        void show_scores(real time_total, Player player_1, Player player_2)
+        in{assert(score_screen_ is null, "Can't show score screen twice");}
+        body
+        {
+            hud_.hide();
+            score_screen_ = new ScoreScreen(root_, player_1, player_2, time_total);
+            score_screen_.expired.connect(&score_expired.emit);
+        }
+
+        /**
+         * Update the game GUI.
+         * 
+         * Params:  time_left = Time left in the game, in game time.
+         *          player_1  = First player of the game.
+         *          player_2  = Second player of the game.
+         */
+        void update(real time_left, Player player_1, Player player_2)
+        {
+            hud_.update(time_left, player_1, player_2);
+            if(score_screen_ !is null){score_screen_.update();}
+        }
+
+        ///Destroy the game GUI.
+        void die()
+        {
+            hud_.die();
+            hud_ = null;
+            if(score_screen_ !is null)
+            {
+                score_screen_.die();
+                score_screen_ = null;
+            }
+            parent_ = null;
         }
 }
 
@@ -1272,9 +1366,8 @@ class Game
         real time_limit_;
         Timer game_timer_;
 
-        ScoreScreen score_screen_;
-
-        HUD hud_;
+        ///GUI of the game, e.g. HUD, score screen
+        GameGUI gui_;
 
         //true while the players are playing the game
         bool playing_;
@@ -1288,9 +1381,6 @@ class Game
             real time = actor_manager_.game_time;
             if(playing_)
             {
-                real time_left = time_limit_ - game_timer_.age(time);
-                hud_.update(time_left, player_1_, player_2_);
-
                 //update player state
                 player_1_.update(this);
                 player_2_.update(this);
@@ -1306,7 +1396,11 @@ class Game
                 }
             }
 
-            if(score_screen_ !is null){score_screen_.update();}
+            if(continue_)
+            {
+                real time_left = time_limit_ - game_timer_.age(time);
+                gui_.update(time_left, player_1_, player_2_);
+            }
 
             if(!started_ && intro_timer_.expired(time)){start_game(time);}
 
@@ -1378,10 +1472,13 @@ class Game
         void draw(){actor_manager_.draw();}
 
     private:
-        this(ActorManager actor_manager)
+        this(ActorManager actor_manager, GameGUI gui, uint score_limit, real time_limit)
         {
             singleton_ctor();
+            gui_ = gui;
             actor_manager_ = actor_manager;
+            score_limit_ = score_limit;
+            time_limit_ = time_limit;
         }
 
         void die(){singleton_dtor();}
@@ -1402,8 +1499,6 @@ class Game
             }
 
             //should be set from options and INI when that is implemented.
-            score_limit_ = 10;
-            time_limit_ = 300;
             started_ = playing_ = true;
 
             wall_left_.velocity = Vector2f(0.0, 0.0);
@@ -1425,7 +1520,7 @@ class Game
             goal_up_.ball_hit.connect(&destroy_ball);
             goal_down_.ball_hit.connect(&destroy_ball);
 
-            hud_ = new HUD(GUIRoot.get.root, time_limit_);
+            gui_.show_hud();
 
             game_timer_ = Timer(time_limit_, start_time);
         }
@@ -1467,9 +1562,9 @@ class Game
         void game_won()
         {
             //show the score screen and end the game after it expires
-            score_screen_ = new ScoreScreen(GUIRoot.get.root, player_1_, player_2_,
-                                            game_timer_.age(actor_manager_.game_time));
-            score_screen_.expired.connect(&end_game);
+            gui_.show_scores(game_timer_.age(actor_manager_.game_time), 
+                             player_1_, player_2_);
+            gui_.score_expired.connect(&end_game);
             actor_manager_.time_speed = 0.0;
 
             playing_ = false;
@@ -1477,17 +1572,7 @@ class Game
 
         void end_game()
         {
-            if(started_)
-            {
-                hud_.die();
-                hud_ = null;
-                if(score_screen_ !is null)
-                {
-                    score_screen_.die();
-                    score_screen_ = null;
-                }
-                actor_manager_.time_speed = 1.0;
-            }
+            if(started_){actor_manager_.time_speed = 1.0;}
 
             actor_manager_.clear();
             player_1_.die();
@@ -1529,6 +1614,8 @@ class GameContainer
         PhysicsEngine physics_engine_;
         //Actor manager used by the game.
         ActorManager actor_manager_;
+        //GUI of the game.
+        GameGUI gui_;
         //Game itself.
         Game game_;
         //Monitor monitoring game subsystems.
@@ -1540,7 +1627,7 @@ class GameContainer
          *
          * Params:  monitor = Monitor to monitor game subsystems.
          */
-        Game produce(Monitor monitor)
+        Game produce(Monitor monitor, GUIElement root)
         in
         {
             assert(physics_engine_ is null && 
@@ -1554,7 +1641,8 @@ class GameContainer
             physics_engine_ = new PhysicsEngine;
             monitor_.add_monitorable("Physics", physics_engine_);
             actor_manager_ = new ActorManager(physics_engine_);
-            game_ = new Game(actor_manager_);
+            gui_ = new GameGUI(root, 300.0);
+            game_ = new Game(actor_manager_, gui_, 2, 300.0);
             return game_;
         }
 
@@ -1562,6 +1650,7 @@ class GameContainer
         void destroy()
         {
             game_.die();
+            gui_.die();
             writefln("ActorManager statistics:\n", actor_manager_.statistics, "\n");
             actor_manager_.die();
             monitor_.remove_monitorable(physics_engine_);
@@ -1793,7 +1882,7 @@ class Pong
             run_pong_ = true;
             menu_container_.hide();
             Platform.get.key.disconnect(&key_handler);
-            game_ = game_container_.produce(monitor_);
+            game_ = game_container_.produce(monitor_, GUIRoot.get.root);
             game_.intro();
         }
 
