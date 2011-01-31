@@ -32,8 +32,6 @@ final class ActorManager : ActorContainer
     private:
         //Physics engine managing physics bodies of the actors.
         PhysicsEngine physics_engine_;
-        //Video driver used to draw the actors.
-        VideoDriver video_driver_;
 
         //Actors managed by the ActorManager.
         Actor[] actors_;
@@ -61,12 +59,10 @@ final class ActorManager : ActorContainer
          * Construct the ActorManager; set up update frequency.
          *
          * Params:  physics_engine = Physics engine for the actor manager to use.
-         *          video_driver   = VideoDriver to draw the actors.
          */
-        this(PhysicsEngine physics_engine, VideoDriver video_driver)
+        this(PhysicsEngine physics_engine)
         {
             physics_engine_ = physics_engine;
-            video_driver_ = video_driver;
             update_counter_ = new EventCounter(1.0);
             update_counter_.update.connect(&ups_update);
             game_time_ = 0.0;
@@ -116,10 +112,14 @@ final class ActorManager : ActorContainer
             }
         }
 
-        ///Draw all actors.
-        void draw()
+        /**
+         * Draw all actors.
+         *
+         * Params:  driver = Video driver to draw with.
+         */
+        void draw(VideoDriver driver)
         {
-            foreach(actor; actors_){actor.draw_actor(video_driver_);}
+            foreach(actor; actors_){actor.draw_actor(driver);}
         }
 
         ///Remove all actors.

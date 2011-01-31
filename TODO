@@ -1,6 +1,3 @@
-ActorManager:
-Shouldn't own a ref to VideoDriver, just pass it when drawing
-
 remove VideoDriver.get:
 Font
 

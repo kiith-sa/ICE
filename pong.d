@@ -1467,7 +1467,12 @@ class Game
             return output;
         }
 
-        void draw(){actor_manager_.draw();}
+        /**
+         * Draw the game.
+         *
+         * Params:  driver = VideoDriver to draw with.
+         */
+        void draw(VideoDriver driver){actor_manager_.draw(driver);}
 
     private:
         this(ActorManager actor_manager, GameGUI gui, uint score_limit, real time_limit)
@@ -1625,9 +1630,8 @@ class GameContainer
          *
          * Params:  monitor      = Monitor to monitor game subsystems.
          *          gui_parent   = Parent for all GUI elements used by the game.
-         *          video_driver = VideoDriver used to draw the game.
          */
-        Game produce(Monitor monitor, GUIElement gui_parent, VideoDriver video_driver)
+        Game produce(Monitor monitor, GUIElement gui_parent)
         in
         {
             assert(physics_engine_ is null && 
@@ -1640,7 +1644,7 @@ class GameContainer
             monitor_ = monitor;
             physics_engine_ = new PhysicsEngine;
             monitor_.add_monitorable("Physics", physics_engine_);
-            actor_manager_ = new ActorManager(physics_engine_, video_driver);
+            actor_manager_ = new ActorManager(physics_engine_);
             gui_ = new GameGUI(gui_parent, 300.0);
             game_ = new Game(actor_manager_, gui_, 2, 300.0);
             return game_;
@@ -1941,7 +1945,7 @@ class Pong
 
                 VideoDriver.get.start_frame();
 
-                if(run_pong_){game_.draw();}
+                if(run_pong_){game_.draw(VideoDriver.get);}
 
                 gui_root_.draw(VideoDriver.get);
                 VideoDriver.get.end_frame();
@@ -1964,8 +1968,7 @@ class Pong
             run_pong_ = true;
             gui_.menu_hide();
             Platform.get.key.disconnect(&key_handler);
-            game_ = game_container_.produce(gui_.monitor, gui_root_.root,
-                                            VideoDriver.get);
+            game_ = game_container_.produce(gui_.monitor, gui_root_.root);
             game_.intro();
         }
 
