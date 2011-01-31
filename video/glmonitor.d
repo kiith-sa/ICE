@@ -3,7 +3,6 @@ module video.glmonitor;
 
 import std.string;
 
-import video.videodriver;
 import video.glvideodriver;
 import video.gltexturepage;
 import gui.guielement;
@@ -70,12 +69,10 @@ final package class PagesMonitor : SubMonitor
                 if(!visible_){return;}
                 super.draw();
 
-                GLVideoDriver driver = cast(GLVideoDriver)VideoDriver.get;
-
                 //no page to draw
-                if(driver.pages.length == 0){return;}
+                if(driver_.pages.length == 0){return;}
                 //current page was deleted, change to another one
-                while(driver.pages[current_page_] == null){next();}
+                while(driver_.pages[current_page_] == null){next();}
 
                 //draw the page view
                 //texture area to draw, rectanglef quad to map the texture area on
@@ -84,7 +81,7 @@ final package class PagesMonitor : SubMonitor
                 //quad to map the texture area on
                 Rectanglef quad = Rectanglef(to!(float)(bounds_.min) + Vector2f(1, 1),
                                              to!(float)(bounds_.max) - Vector2f(1, 1));
-                driver.draw_page(current_page_, area, quad);
+                driver_.draw_page(current_page_, area, quad);
             }
 
             void reset_view()
@@ -101,6 +98,9 @@ final package class PagesMonitor : SubMonitor
             void zoom_in(){zoom_ *= zoom_mult_;}
             void zoom_out(){zoom_ /= zoom_mult_;}
         }
+
+        //GLVideoDriver we're monitoring.
+        GLVideoDriver driver_;
         
         PageView view_;
 
@@ -117,6 +117,7 @@ final package class PagesMonitor : SubMonitor
         {
             super();
 
+            driver_ = driver;
             init_view();
             init_menu();
             init_text();
@@ -177,11 +178,10 @@ final package class PagesMonitor : SubMonitor
 
         void next()
         {
-            GLVideoDriver driver = cast(GLVideoDriver)VideoDriver.get;
-            if(current_page_ >= driver.pages.length - 1){current_page_ = 0;}
+            if(current_page_ >= driver_.pages.length - 1){current_page_ = 0;}
             else{++current_page_;}
-            if(driver.pages.length == 0){return;}
-            if(driver.pages[current_page_] == null)
+            if(driver_.pages.length == 0){return;}
+            if(driver_.pages[current_page_] == null)
             {
                 next();
                 return;
@@ -192,11 +192,10 @@ final package class PagesMonitor : SubMonitor
 
         void prev()
         {
-            GLVideoDriver driver = cast(GLVideoDriver)VideoDriver.get;
-            if(current_page_ == 0){current_page_ = driver.pages.length - 1;}
+            if(current_page_ == 0){current_page_ = driver_.pages.length - 1;}
             else{--current_page_;}
-            if(driver.pages.length == 0){return;}
-            if(driver.pages[current_page_] is null)
+            if(driver_.pages.length == 0){return;}
+            if(driver_.pages[current_page_] is null)
             {
                 prev();
                 return;
@@ -207,16 +206,15 @@ final package class PagesMonitor : SubMonitor
 
         void update_text()
         {
-            GLVideoDriver driver = cast(GLVideoDriver)VideoDriver.get;
-            if(driver.pages.length == 0)
+            if(driver_.pages.length == 0)
             {
                 info_text_.text = "No pages";
                 return;
             }
-            while(driver.pages[current_page_] == null){next();}
+            while(driver_.pages[current_page_] == null){next();}
 
             string text = "page index: " ~ to_string(current_page_) ~ "\n" ~
-                          driver.pages[current_page_].info;
+                          driver_.pages[current_page_].info;
 
             if(info_text_.text != text){info_text_.text = text;}
         }
