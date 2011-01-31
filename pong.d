@@ -1147,6 +1147,9 @@ class HUD
     private:
         alias std.string.toString to_string;  
      
+        //Parent of all the elements in the HUD.
+        GUIElement parent_;
+
         //Displays players' scores.
         GUIStaticText score_text_1_, score_text_2_;
         //Displays time left.
@@ -1159,10 +1162,12 @@ class HUD
         /**
          * Constructs HUD with specified parameters.
          *
-         * Params:    time_limit = Maximum time the game will take.
+         * Params:  parent     = Parent GUI element for all the elements in the HUD.  
+         *          time_limit = Maximum time the game will take.
          */
-        this(real time_limit)
+        this(GUIElement parent, real time_limit)
         {
+            parent_ = parent;
             time_limit_ = time_limit;
 
             with(new GUIStaticTextFactory)
@@ -1184,9 +1189,9 @@ class HUD
                 time_text_ = produce();
             }
 
-            GUIRoot.get.add_child(score_text_1_);
-            GUIRoot.get.add_child(score_text_2_);
-            GUIRoot.get.add_child(time_text_);
+            parent_.add_child(score_text_1_);
+            parent_.add_child(score_text_2_);
+            parent_.add_child(time_text_);
         }
 
         /**
@@ -1224,15 +1229,15 @@ class HUD
         ///Destroy the HUD.
         void die()
         {
-            GUIRoot.get.remove_child(score_text_1_);
+            parent_.remove_child(score_text_1_);
             score_text_1_.die();
             score_text_1_ = null;
 
-            GUIRoot.get.remove_child(score_text_2_);
+            parent_.remove_child(score_text_2_);
             score_text_2_.die();
             score_text_2_ = null;
 
-            GUIRoot.get.remove_child(time_text_);
+            parent_.remove_child(time_text_);
             time_text_.die();
             time_text_ = null;
         }
@@ -1420,7 +1425,7 @@ class Game
             goal_up_.ball_hit.connect(&destroy_ball);
             goal_down_.ball_hit.connect(&destroy_ball);
 
-            hud_ = new HUD(time_limit_);
+            hud_ = new HUD(GUIRoot.get.root, time_limit_);
 
             game_timer_ = Timer(time_limit_, start_time);
         }
