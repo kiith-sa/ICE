@@ -70,11 +70,11 @@ class Wall : Actor
             box_ = box;
         }
 
-        override void draw()
+        override void draw(VideoDriver driver)
         {
             static c = Color(240, 255, 240);
             Vector2f position = physics_body_.position;
-            VideoDriver.get.draw_rectangle(position + box_.min, position + box_.max);
+            driver.draw_rectangle(position + box_.min, position + box_.max);
         }
 
         override void update(real time_step, real game_time)
@@ -487,10 +487,9 @@ class Ball : Actor
             }
         }
 
-        override void draw()
+        override void draw(VideoDriver driver)
         {
             if(!draw_ball_){return;}
-            auto driver = VideoDriver.get;
             Vector2f position = physics_body_.position;
             driver.line_aa = true;
             driver.line_width = 3;
@@ -1015,10 +1014,10 @@ class BallSpawner : Actor
             light_ += light_speed_ * time_step;
         }
 
-        void draw()
+        void draw(VideoDriver driver)
         {
-            VideoDriver.get.line_aa = true;
-            scope(exit){VideoDriver.get.line_aa = false;} 
+            driver.line_aa = true;
+            scope(exit){driver.line_aa = false;} 
 
             Vector2f center = physics_body_.position;
             //base color of the rays
@@ -1033,15 +1032,15 @@ class BallSpawner : Actor
             {
                 //draw the light
                 direction.angle = light_ + light_width_;
-                VideoDriver.get.draw_line(center, center + direction * ray_length, 
-                                          light_color, light_color_end);
+                driver.draw_line(center, center + direction * ray_length, 
+                                 light_color, light_color_end);
                 direction.angle = light_ - light_width_;
-                VideoDriver.get.draw_line(center, center + direction * ray_length, 
-                                          light_color, light_color_end);
+                driver.draw_line(center, center + direction * ray_length, 
+                                 light_color, light_color_end);
             }
 
-            VideoDriver.get.line_width = 2;
-            scope(exit){VideoDriver.get.line_width = 1;} 
+            driver.line_width = 2;
+            scope(exit){driver.line_width = 1;} 
             
             //draw the rays in range of the light
             foreach(d; directions_)
@@ -1053,8 +1052,7 @@ class BallSpawner : Actor
                 color.a *= 1.0 - distance / light_width_;
 
                 direction.angle = d;
-                VideoDriver.get.draw_line(center, center + direction * ray_length, 
-                                          color, color);
+                driver.draw_line(center, center + direction * ray_length, color, color);
             }
         }
 
@@ -1625,9 +1623,11 @@ class GameContainer
         /**
          * Produce a Game and return a reference to it.
          *
-         * Params:  monitor = Monitor to monitor game subsystems.
+         * Params:  monitor      = Monitor to monitor game subsystems.
+         *          gui_parent   = Parent for all GUI elements used by the game.
+         *          video_driver = VideoDriver used to draw the game.
          */
-        Game produce(Monitor monitor, GUIElement root)
+        Game produce(Monitor monitor, GUIElement gui_parent, VideoDriver video_driver)
         in
         {
             assert(physics_engine_ is null && 
@@ -1640,8 +1640,8 @@ class GameContainer
             monitor_ = monitor;
             physics_engine_ = new PhysicsEngine;
             monitor_.add_monitorable("Physics", physics_engine_);
-            actor_manager_ = new ActorManager(physics_engine_);
-            gui_ = new GameGUI(root, 300.0);
+            actor_manager_ = new ActorManager(physics_engine_, video_driver);
+            gui_ = new GameGUI(gui_parent, 300.0);
             game_ = new Game(actor_manager_, gui_, 2, 300.0);
             return game_;
         }
@@ -1967,7 +1967,8 @@ class Pong
             run_pong_ = true;
             gui_.menu_hide();
             Platform.get.key.disconnect(&key_handler);
-            game_ = game_container_.produce(gui_.monitor, gui_root_.root);
+            game_ = game_container_.produce(gui_.monitor, gui_root_.root,
+                                            VideoDriver.get);
             game_.intro();
         }
 

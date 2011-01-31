@@ -7,6 +7,7 @@ import std.stdio;
 import actor.actor;
 import actor.actorcontainer;
 import physics.physicsengine;
+import video.videodriver;
 import math.vector2;
 import time.time;
 import time.timer;
@@ -31,9 +32,11 @@ final class ActorManager : ActorContainer
     private:
         //Physics engine managing physics bodies of the actors.
         PhysicsEngine physics_engine_;
+        //Video driver used to draw the actors.
+        VideoDriver video_driver_;
 
+        //Actors managed by the ActorManager.
         Actor[] actors_;
-
         //Actors to be added at the beginning of the next frame
         Actor[] actors_to_add_;
         //Actors to be removed at the beginning of the next frame
@@ -58,10 +61,12 @@ final class ActorManager : ActorContainer
          * Construct the ActorManager; set up update frequency.
          *
          * Params:  physics_engine = Physics engine for the actor manager to use.
+         *          video_driver   = VideoDriver to draw the actors.
          */
-        this(PhysicsEngine physics_engine)
+        this(PhysicsEngine physics_engine, VideoDriver video_driver)
         {
             physics_engine_ = physics_engine;
+            video_driver_ = video_driver;
             update_counter_ = new EventCounter(1.0);
             update_counter_.update.connect(&ups_update);
             game_time_ = 0.0;
@@ -114,7 +119,7 @@ final class ActorManager : ActorContainer
         ///Draw all actors.
         void draw()
         {
-            foreach(actor; actors_){actor.draw_actor();}
+            foreach(actor; actors_){actor.draw_actor(video_driver_);}
         }
 
         ///Remove all actors.

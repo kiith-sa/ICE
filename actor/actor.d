@@ -6,6 +6,7 @@ import std.stdio;
 
 import actor.actorcontainer;
 import physics.physicsbody;
+import video.videodriver;
 import math.vector2;
 import math.rectangle;
 import factory;
@@ -91,7 +92,7 @@ abstract class Actor
         void update(real time_step, real game_time);
 
         //Draw this actor.
-        void draw();
+        void draw(VideoDriver driver);
 
     package:
         /*
@@ -106,7 +107,7 @@ abstract class Actor
         }
 
         //Interface to draw the actor by ActorManager.
-        final void draw_actor(){draw();}
+        final void draw_actor(VideoDriver driver){draw(driver);}
 }
 unittest
 {
@@ -125,7 +126,7 @@ unittest
     {    
         public:
             override void update(real time_step, real game_time){}
-            override void draw(){}
+            override void draw(VideoDriver driver){}
             this(ActorContainer container)
             {
                 auto zero = Vector2f(0.0f, 0.0f);

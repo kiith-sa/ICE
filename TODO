@@ -1,3 +1,9 @@
+Pass VideoDriver to
+GUIRoot
+Font
+then where it's left in pong.d
+
+
 17:
     Desingletonify VideoDriver, FontManager and manage them in
     a VideoDriverContainer.
@@ -93,8 +99,6 @@
     main menu could have an ai-ai game playing in the background
 18:
     cdc should have help
-18:
-    Maybe try to even remove .get from singletons (hybrid has done it somehow)
 19:
     Use the same doc format throughout. Either Doxygen or DDoc.
     DDoc would probably be better.
@@ -216,7 +220,7 @@
     Maybe create the dreaded util package.
 23:
     Profiling:
-    Valgrind, Massif, Callgrind, Cachegrind, Sysprof, CodeAnalyst(OProfile GUI),
+    Valgrind, Massif, Callgrind, Cachegrind, Sysprof, CodeAnalyst,
     manual time measurement - at least get total time and VideoDriver methods' time
     Don't forget to do this with an optimized build.
 24:

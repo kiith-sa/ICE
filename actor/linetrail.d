@@ -74,7 +74,7 @@ final class LineTrail : LineEmitter
         }
         
         ///Draw the particle system.
-        override void draw()
+        override void draw(VideoDriver driver)
         {
             if(Particles.length >= 2)
             {
@@ -87,8 +87,8 @@ final class LineTrail : LineEmitter
                 //end color of the current line
                 Color c2;
 
-                VideoDriver.get.line_aa = true;
-                VideoDriver.get.line_width = line_width_;
+                driver.line_aa = true;
+                driver.line_width = line_width_;
 
                 //using for instead of foreach purely for performance reasons
                 for(uint p = 1; p < Particles.length; p++)
@@ -96,12 +96,12 @@ final class LineTrail : LineEmitter
                     v2 = Particles[p].position;
                     c2 = end_color_.interpolated(start_color_, 
                          Particles[p].timer.age_relative(game_time_));
-                    VideoDriver.get.draw_line(v1, v2, c1, c2);
+                    driver.draw_line(v1, v2, c1, c2);
                     v1 = v2;
                     c1 = c2;
                 }
-                VideoDriver.get.line_width = 1;
-                VideoDriver.get.line_aa = false;
+                driver.line_width = 1;
+                driver.line_aa = false;
             }
         }
 }      

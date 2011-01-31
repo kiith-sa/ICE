@@ -80,9 +80,8 @@ class LineEmitter : ParticleEmitter
                   emit_frequency, emit_velocity, angle_variation);
         }
 
-        override void draw()
+        override void draw(VideoDriver driver)
         {
-            auto driver = VideoDriver.get;
             driver.line_aa = true;
             driver.line_width = line_width_;
             Color color;
