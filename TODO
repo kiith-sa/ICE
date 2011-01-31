@@ -1,6 +1,4 @@
 17:
-    Desingletonify GUIRoot
-17:
     Desingletonify VideoDriver, FontManager and manage them in
     a VideoDriverContainer.
     If possible, we could have a single instance of FontManager used

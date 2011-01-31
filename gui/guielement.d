@@ -12,7 +12,7 @@ import monitor.monitor;
 import color;
 import arrayutil;
 import factory;
-import singleton;
+import weaksingleton;
 
 
 //In future, this should be rewritten to support background and border(?) textures,
@@ -273,7 +273,7 @@ class GUIElement
 ///GUI root container. Contains drawing and input handling methods.
 final class GUIRoot
 {
-    mixin Singleton;
+    mixin WeakSingleton;
     private:
         //The actual GUI root element.
         GUIElement root_;
@@ -333,7 +333,11 @@ final class GUIRoot
         void remove_child(GUIElement child){root_.remove_child(child);}
 
         ///Destroy this GUIRoot.
-        void die(){root_.die();}
+        void die()
+        {
+            root_.die();
+            singleton_dtor();
+        }
 }
 
 /**

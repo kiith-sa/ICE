@@ -1886,7 +1886,10 @@ class Pong
         GameContainer game_container_;
         Game game_;
 
-        //GUI.
+        //Root of the GUI.
+        GUIRoot gui_root_;
+
+        //Pong GUI.
         PongGUI gui_;
 
     public:
@@ -1896,14 +1899,15 @@ class Pong
             singleton_ctor();
 
             VideoDriver.get.set_video_mode(800, 600, ColorFormat.RGBA_8, false);
-            GUIRoot.initialize!(GUIRoot);
+            gui_root_ = new GUIRoot;
+
             game_container_ = new GameContainer();
 
             //Update FPS every second.
             fps_counter_ = new EventCounter(1.0);
             fps_counter_.update.connect(&fps_update);
 
-            gui_ = new PongGUI(GUIRoot.get.root);
+            gui_ = new PongGUI(gui_root_.root);
             gui_.credits_start.connect(&credits_start);
             gui_.credits_end.connect(&credits_end);
             gui_.game_start.connect(&pong_start);
@@ -1915,7 +1919,7 @@ class Pong
         {
             fps_counter_.update.disconnect(&fps_update);
             gui_.die();
-            GUIRoot.get.die();
+            gui_root_.die();
             VideoDriver.get.die();
             Platform.get.die();
             singleton_dtor();
@@ -1933,14 +1937,14 @@ class Pong
                 if(run_pong_ && !game_.run()){pong_end();}
 
                 //update game state
-                GUIRoot.get.update();
+                gui_root_.update();
 
                 VideoDriver.get.start_frame();
 
                 if(run_pong_){game_.draw();}
                 else{draw();}
 
-                GUIRoot.get.draw();
+                gui_root_.draw();
                 VideoDriver.get.end_frame();
             }
             writefln("FPS statistics:\n", fps_counter_.statistics, "\n");
@@ -1963,7 +1967,7 @@ class Pong
             run_pong_ = true;
             gui_.menu_hide();
             Platform.get.key.disconnect(&key_handler);
-            game_ = game_container_.produce(gui_.monitor, GUIRoot.get.root);
+            game_ = game_container_.produce(gui_.monitor, gui_root_.root);
             game_.intro();
         }
 
