@@ -1259,7 +1259,7 @@ class HUD
         }
 }
 
-///Class holding all GUI used by Game.
+///Class holding all GUI used by Game (HUD, etc.).
 class GameGUI
 {
     private:
@@ -1306,7 +1306,7 @@ class GameGUI
         body
         {
             hud_.hide();
-            score_screen_ = new ScoreScreen(root_, player_1, player_2, time_total);
+            score_screen_ = new ScoreScreen(parent_, player_1, player_2, time_total);
             score_screen_.expired.connect(&score_expired.emit);
         }
 
@@ -1749,33 +1749,40 @@ class Credits
         }
 }
 
-class Pong
+///Class holding all GUI used by Pong (main menu, etc.).
+class PongGUI
 {
-    mixin WeakSingleton;
     private:
-        EventCounter fps_counter_;
-        bool run_pong_ = false;
-        bool continue_ = true;
+        //Parent of all Pong GUI elements.
+        GUIElement parent_;
 
-        GameContainer game_container_;
-
+        //Monitor used for debugging, profiling, etc.
+        Monitor monitor_;
+        //Container of the main menu,
         GUIElement menu_container_;
+        //Main menu.
         GUIMenu menu_;
-        Game game_;
-
+        //Credits screen (null unless shown)
         Credits credits_;
 
-        //Monitor used for debugging, statistics about game subsystems.
-        Monitor monitor_;
-
     public:
-        ///Initialize Pong.
-        this()
-        {
-            singleton_ctor();
+        ///Emitted when the player hits the button to start the game.
+        mixin Signal!() game_start;
+        ///Emitted when the credits screen is opened.
+        mixin Signal!() credits_start;
+        ///Emitted when the credits screen is closed.
+        mixin Signal!() credits_end;
+        ///Emitted when the player hits the button to quit..
+        mixin Signal!() quit;
 
-            VideoDriver.get.set_video_mode(800, 600, ColorFormat.RGBA_8, false);
-            GUIRoot.initialize!(GUIRoot);
+        /**
+         * Construct PongGUI with specified parameters.
+         *
+         * Params:  parent = GUI element to use as parent for all pong GUI elements.
+         */
+        this(GUIElement parent)
+        {
+            parent_ = parent;
 
             //Construct the monitor.
             with(new MonitorFactory)
@@ -1787,18 +1794,9 @@ class Pong
                 add_monitorable("Video", VideoDriver.get);
                 monitor_ = produce();
             }
-            GUIRoot.get.add_child(monitor_);
+            parent_.add_child(monitor_);
             //We don't want to see the monitor unless the user requests it.
             monitor_.hide();
-
-            game_container_ = new GameContainer();
-
-            //Update FPS every second.
-            fps_counter_ = new EventCounter(1.0);
-            fps_counter_.update.connect(&fps_update);
-
-            uint width = VideoDriver.get.screen_width;
-            uint height = VideoDriver.get.screen_height;
 
             with(new GUIElementFactory)
             {
@@ -1808,8 +1806,7 @@ class Pong
                 height = "p_bottom - 32";
                 menu_container_ = produce();
             }
-
-            GUIRoot.get.add_child(menu_container_);
+            parent_.add_child(menu_container_);
 
             with(new GUIMenuVerticalFactory)
             {
@@ -1818,22 +1815,106 @@ class Pong
                 item_width = "144";
                 item_height = "24";
                 item_spacing = "8";
-                add_item("Player vs AI", &pong_start);
-                add_item("Credits", &credits_start);
-                add_item("Quit", &exit);
+                add_item("Player vs AI", &game_start.emit);
+                add_item("Credits", &credits_show);
+                add_item("Quit", &quit.emit);
                 menu_ = produce();
             }
-
             menu_container_.add_child(menu_);
+        }
+
+        ///Destroy the PongGUI.
+        void die()
+        {
+            parent_.remove_child(monitor_);
+            parent_.remove_child(menu_container_);
+            if(credits_ !is null)
+            {
+                credits_.die();
+                credits_ = null;
+            }
+            monitor_.die();                   
+            menu_container_.die();
+            monitor_ = null;
+            menu_container_ = null;
+        }
+
+        ///Get the monitor widget.
+        Monitor monitor(){return monitor_;}
+
+        ///Toggle monitor display.
+        void monitor_toggle()
+        {
+            if(monitor_.visible){monitor_.hide();}
+            else{monitor_.show();}
+        }
+
+        ///Show main menu.
+        void menu_show(){menu_container_.show();};
+
+        ///Hide main menu.
+        void menu_hide(){menu_container_.hide();};
+
+    private:
+        ///Show credits screen (and hide main menu).
+        void credits_show()
+        {
+            menu_hide();
+            credits_ = new Credits(parent_);
+            credits_.closed.connect(&credits_hide);
+            credits_start.emit();
+        }
+
+        ///Hide credits screen (and show main menu).
+        void credits_hide()
+        {
+            credits_.die();
+            credits_ = null;
+            menu_show();
+            credits_end.emit();
+        }
+}
+
+class Pong
+{
+    mixin WeakSingleton;
+    private:
+        EventCounter fps_counter_;
+        bool run_pong_ = false;
+        bool continue_ = true;
+
+        GameContainer game_container_;
+        Game game_;
+
+        //GUI.
+        PongGUI gui_;
+
+    public:
+        ///Initialize Pong.
+        this()
+        {
+            singleton_ctor();
+
+            VideoDriver.get.set_video_mode(800, 600, ColorFormat.RGBA_8, false);
+            GUIRoot.initialize!(GUIRoot);
+            game_container_ = new GameContainer();
+
+            //Update FPS every second.
+            fps_counter_ = new EventCounter(1.0);
+            fps_counter_.update.connect(&fps_update);
+
+            gui_ = new PongGUI(GUIRoot.get.root);
+            gui_.credits_start.connect(&credits_start);
+            gui_.credits_end.connect(&credits_end);
+            gui_.game_start.connect(&pong_start);
+            gui_.quit.connect(&exit);
         }
 
         ///Destroy all subsystems.
         void die()
         {
             fps_counter_.update.disconnect(&fps_update);
-
-            GUIRoot.get.remove_child(monitor_);
-            monitor_.die();
+            gui_.die();
             GUIRoot.get.die();
             VideoDriver.get.die();
             Platform.get.die();
@@ -1873,35 +1954,22 @@ class Pong
             game_container_.destroy();
             game_ = null;
             Platform.get.key.connect(&key_handler);
-            menu_container_.show();
+            gui_.menu_show();
             run_pong_ = false;
         }
 
         void pong_start()
         {
             run_pong_ = true;
-            menu_container_.hide();
+            gui_.menu_hide();
             Platform.get.key.disconnect(&key_handler);
-            game_ = game_container_.produce(monitor_, GUIRoot.get.root);
+            game_ = game_container_.produce(gui_.monitor, GUIRoot.get.root);
             game_.intro();
         }
 
-        void credits_start()
-        {
-            menu_container_.hide();
-            Platform.get.key.disconnect(&key_handler);
+        void credits_start(){Platform.get.key.disconnect(&key_handler);}
 
-            credits_ = new Credits(GUIRoot.get.root);
-            credits_.closed.connect(&credits_end);
-        }
-
-        void credits_end()
-        {
-            credits_.die();
-            credits_ = null;
-            Platform.get.key.connect(&key_handler);
-            menu_container_.show();
-        }
+        void credits_end(){Platform.get.key.connect(&key_handler);}
 
         void exit(){continue_ = false;}
 
@@ -1930,7 +1998,7 @@ class Pong
                 switch(key)
                 {
                     case Key.F10:
-                        monitor_toggle();
+                        gui_.monitor_toggle();
                         break;
                     default:
                         break;
@@ -1941,13 +2009,6 @@ class Pong
         void fps_update(real fps)
         {
             Platform.get.window_caption = "FPS: " ~ std.string.toString(fps);
-        }
-
-        ///Toggle monitor display.
-        void monitor_toggle()
-        {
-            if(monitor_.visible){monitor_.hide();}
-            else{monitor_.show();}
         }
 }
 

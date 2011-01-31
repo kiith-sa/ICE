@@ -1,6 +1,4 @@
 17:
-    PongGUI.
-17:
     Desingletonify GUIRoot
 17:
     Desingletonify VideoDriver, FontManager and manage them in
