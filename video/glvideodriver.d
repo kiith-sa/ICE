@@ -299,7 +299,9 @@ abstract class GLVideoDriver : VideoDriver
                 ++statistics_.characters;
                 statistics_.vertices += 4;
 
+                if(!renderer.has_glyph(c)){renderer.load_glyph(this, c);}
                 texture = renderer.glyph(c, offset);
+
                 gl_texture = textures_[texture.index];
                 page_index = gl_texture.page_index;
 
@@ -335,7 +337,13 @@ abstract class GLVideoDriver : VideoDriver
         
         final override Vector2u text_size(string text)
         {
-            return FontManager.get.text_size(text);
+            auto renderer = FontManager.get.renderer();
+            //load any glyphs that aren't loaded yet
+            foreach(dchar c; text)
+            {
+                if(!renderer.has_glyph(c)){renderer.load_glyph(this, c);}
+            }
+            return renderer.text_size(text);
         }
 
         final override void line_aa(bool aa){line_aa_ = aa;}

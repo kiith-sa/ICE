@@ -32,11 +32,11 @@ package align(4) struct Glyph
 }
 
 ///Stores one font with one size (e.g. Inconsolata size 16 and 18 will be two Font objects).
-package struct Font
+package class Font
 {
     private:
         //Default glyph to use when there is no glyph for a character.
-        Glyph default_glyph_;
+        Glyph* default_glyph_ = null;
         //Array storing fast glyphs. These are first fast_glyph_count_ unicode characters.
         Glyph*[] fast_glyphs_;
         //Associative array storing other, "non-fast", glyphs.
@@ -58,12 +58,50 @@ package struct Font
         File file_;
 
     public:
-        ///Fake constructor. Loads font with specified name, size and number of glyphs.
-        static Font opCall(string name, uint size, uint fast_glyphs)
+        /**
+         * Load font with specified name, size and number of fast glyphs.
+         *
+         * Params:  name        = Name of the font (file name in the fonts/ directory)
+         *          size        = Size of the font in points.
+         *          fast_glyphs = Number of glyphs to store in faster accessible data,
+         *                        from glyph 0. E.g. 128 means 0-127, i.e. ASCII.
+         *
+         * Throws:  Exception if the font could not be loaded.
+         */
+        this(string name, uint size, uint fast_glyphs)
         {
-            Font font;
-            font.ctor(name, size, fast_glyphs);
-            return font;
+            fast_glyphs_ = new Glyph*[fast_glyphs];
+            fast_glyph_count_ = fast_glyphs;
+            name_ = name;
+
+            file_ = open_file("fonts/" ~ name, FileMode.Read);
+            ubyte[] font_data = cast(ubyte[])file_.data;
+            scope(failure){close_file(file_);}
+
+            FT_Open_Args args;
+            args.memory_base = font_data.ptr;
+            args.memory_size = font_data.length;
+            args.flags = FT_OPEN_MEMORY;
+            args.driver = null;
+            //we only support face 0 right now, so no bold, italic, etc. 
+            //unless it is in a separate font file.
+            int face = 0;
+            
+            //load face from memory buffer (font_data)
+            if(FT_Open_Face(FontManager.freetype, &args, face, &font_face_) != 0) 
+            {
+                throw new Exception("Couldn't load font face from font " ~ file_.path);
+            }
+            
+            //set font size in pixels
+            //could use a better approach, but worked for all fonts so far.
+            if(FT_Set_Pixel_Sizes(font_face_, 0, size) != 0)
+            {
+                throw new Exception("Couldn't set pixel size with font " ~ file_.path);
+            }
+
+            height_ = size;
+            kerning_ = cast(bool)FT_HAS_KERNING(font_face_);
         }
 
         ///Returns size of the font in pixels.
@@ -119,7 +157,8 @@ package struct Font
                 if(glyph !is null)
                 {
                     //some glyphs might share texture with default glyph
-                    if(glyph.texture != default_glyph_.texture)
+                    if(default_glyph_ !is null && 
+                       glyph.texture != default_glyph_.texture)
                     {
                         VideoDriver.get.delete_texture(glyph.texture);
                     }
@@ -127,97 +166,108 @@ package struct Font
                     glyph = null;
                 }
             }
+            if(default_glyph_ !is null)
+            {
+                VideoDriver.get.delete_texture(default_glyph_.texture);
+                free(default_glyph_);
+                default_glyph_ = null;
+            }
             foreach(glyph; glyphs_)
             {
+                if(default_glyph_ !is null && 
+                   glyph.texture != default_glyph_.texture)
+                {
+                    VideoDriver.get.delete_texture(glyph.texture);
+                }
                 VideoDriver.get.delete_texture(glyph.texture);
             }
 
-            VideoDriver.get.delete_texture(default_glyph_.texture);
             FT_Done_Face(font_face_);
             close_file(file_);
+            glyphs_ = null;
         }
 
     package:
-        ///Access glyph for specified (UTF-32) character.
+        //not asserting here as it'd result in too much slowdown
+        /** 
+         * Access glyph for specified (UTF-32) character.
+         * 
+         * The glyph has to be loaded, otherwise a call to get_glyph
+         * will result in undefined behavior.
+         *
+         * Params:  c = Character to get glyph for.
+         *
+         * Returns: Glyph corresponding to the character. 
+         */
         Glyph* get_glyph(dchar c)
         {
-            //if c has a fast glyph (first fast_glyph_count_ characters)
+            return c < fast_glyph_count_ ?  fast_glyphs_[c] : c in glyphs_;
+        }
+
+        /**
+         * Determines if glyph for the specified character is loaded.
+         *
+         * Params:  c = Character to check for.
+         *
+         * Returns: True if the glyph is loaded, false otherwise.
+         */
+        bool has_glyph(dchar c)
+        {
+            return c < fast_glyph_count_ ? fast_glyphs_[c] !is null 
+                                         : (c in glyphs_) !is null;
+        }
+
+        /**
+         * Load glyph for specified character.
+         *
+         * Will render the glyph and create a texture for it.
+         * 
+         * Params:  driver = Video driver to use for texture creation.
+         *          c      = Character to load glyph for.
+         */
+        void load_glyph(VideoDriver driver, dchar c)
+        {
             if(c < fast_glyph_count_)
             {
-                //if this glyph doesn't exist yet, render and add it
-                if(fast_glyphs_[c] is null)
-                {
-                    fast_glyphs_[c] = alloc!(Glyph)();
-                    *fast_glyphs_[c] = render_glyph(c);
-                }
-                return fast_glyphs_[c];
+                fast_glyphs_[c] = alloc!(Glyph)();
+                *fast_glyphs_[c] = render_glyph(driver, c);
+                return;
             }
-
-            //if c does not have a fast glyph, get if from the associative array
-            Glyph* glyph = c in glyphs_;
-            //if this glyph doesn't exist yet, render and add it
-            if(glyph is null)
-            {
-                glyphs_[c] = render_glyph(c);
-                return c in glyphs_;
-            }
-            return glyph;
+            glyphs_[c] = render_glyph(driver, c);
         }
 
     private:
-        //Load font with specified name, size and number of fast glyphs.
-        void ctor(string name, uint size, uint fast_glyphs)
+        /**
+         * Get default glyph, initialize it if it does not exist.
+         *
+         * If the default glyph does not exist, this will render it and
+         * create a texture for it.
+         *
+         * Params:  driver = Video driver to use for texture creation.
+         */
+        Glyph get_default_glyph(VideoDriver driver)
         {
-            fast_glyphs_ = new Glyph*[fast_glyphs];
-            fast_glyph_count_ = fast_glyphs;
-            name_ = name;
-
-            file_ = open_file("fonts/" ~ name, FileMode.Read);
-            ubyte[] font_data = cast(ubyte[])file_.data;
-            scope(failure){close_file(file_);}
-
-            FT_Open_Args args;
-            args.memory_base = font_data.ptr;
-            args.memory_size = font_data.length;
-            args.flags = FT_OPEN_MEMORY;
-            args.driver = null;
-            //we only support face 0 right now, so no bold, italic, etc. 
-            //unless it is in a separate font file.
-            int face = 0;
-            
-            //load face from memory buffer (font_data)
-            if(FT_Open_Face(FontManager.freetype, &args, face, &font_face_) != 0) 
+            if(default_glyph_ is null)
             {
-                throw new Exception("Couldn't load font face from font " ~ file_.path);
+                scope Image image = new Image(height_ / 2, height_, ColorFormat.GRAY_8);
+                default_glyph_ = alloc!(Glyph)();
+                default_glyph_.texture = driver.create_texture(image);
+                default_glyph_.offset = Vector2b(0, -height_);
+                default_glyph_.advance = height_ / 2;
+                default_glyph_.freetype_index = 0;
             }
-            
-            //set font size in pixels
-            //could use a better approach, but worked for all fonts so far.
-            if(FT_Set_Pixel_Sizes(font_face_, 0, size) != 0)
-            {
-                throw new Exception("Couldn't set pixel size with font " ~ file_.path);
-            }
-
-            height_ = size;
-            kerning_ = cast(bool)FT_HAS_KERNING(font_face_);
-            init_default_glyph();
+            return *default_glyph_;
         }
 
-        ///Initialize default (placeholder) glyph.
-        void init_default_glyph()
-        {
-            scope Image image = new Image(height_ / 2, height_, ColorFormat.GRAY_8);
-            with(default_glyph_)
-            {
-                texture = VideoDriver.get.create_texture(image);
-                offset = Vector2b(0, -height_);
-                advance = height_ / 2;
-                freetype_index = 0;
-            }
-        }
-
-        ///Render a glyph for specified character and return it.
-        Glyph render_glyph(dchar c)
+        /**
+         * Render a glyph for specified character and return it.
+         *
+         * Will create a texture for the glyph.
+         *
+         * Params:  driver = Video driver to use in texture creation.
+         *          c      = Character to render glyph for.
+         */
+        Glyph render_glyph(VideoDriver driver, dchar c)
         {
             Glyph glyph;
             glyph.freetype_index = FT_Get_Char_Index(font_face_, c);
@@ -226,7 +276,7 @@ package struct Font
             uint load_flags = FT_LOAD_TARGET_(render_mode()) | FT_LOAD_NO_BITMAP;
             if(FT_Load_Glyph(font_face_, glyph.freetype_index, load_flags) != 0) 
             { 
-                return default_glyph_;
+                return get_default_glyph(driver);
             }
 			FT_GlyphSlot slot = font_face_.glyph;
 
@@ -244,7 +294,7 @@ package struct Font
                 //we don't want to crash or cause bugs in optimized builds
                 if(size.x >= 128 || size.y >= 128 || size.x == 0 || size.y == 0)
                 {
-                    glyph.texture = default_glyph_.texture;
+                    glyph.texture = get_default_glyph(driver).texture;
                     return glyph;
                 }
 
@@ -276,10 +326,10 @@ package struct Font
                     }
                 }
 
-                glyph.texture = VideoDriver.get.create_texture(image);
+                glyph.texture = driver.create_texture(image);
                 return glyph;
             }
-            else{return default_glyph_;}
+            else{return get_default_glyph(driver);}
         }
         
         ///Get freetype render mode (antialiased or bitmap)

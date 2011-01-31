@@ -138,9 +138,14 @@ final class Monitor : GUIElement
         ///Generate the main menu, callbacks from monitorables.
         void regenerate()
         {
+            bool visible = true;
+
             //If we already have a main menu, get rid of it.
             if(main_menu_ !is null)
             {
+                //Save the visibility of the main menu, so it doesn't suddenly get
+                //shown when we're already showing another menu.
+                visible = main_menu_.visible;
                 remove_child(main_menu_);
                 main_menu_.die();
             }
@@ -169,6 +174,7 @@ final class Monitor : GUIElement
 
                 main_menu_ = produce();
             }
+            if(!visible){main_menu_.hide();}
             add_child(main_menu_);
         }
 

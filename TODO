@@ -1,5 +1,6 @@
 remove VideoDriver.get:
-Font
+font.die (when font reloading works, font.die should call font.unload
+          to unload all textures. font_load would load them.)
 
 where it's left in pong.d
 

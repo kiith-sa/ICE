@@ -7,6 +7,7 @@ import derelict.freetype.ft;
 import derelict.util.loader;
 import derelict.util.exception;
 
+import video.videodriver;
 import video.font;
 import video.texture;
 import math.math;
@@ -44,6 +45,25 @@ package align(1) struct FontRenderer
             previous_index_ = PenX = 0;
         }
 
+        /**
+         * Determines if glyph for the specified character is loaded.
+         *
+         * Params:  c = Character to check for.
+         *
+         * Returns: True if the glyph is loaded, false otherwise.
+         */
+        bool has_glyph(dchar c){return draw_font_.has_glyph(c);}
+
+        /**
+         * Load glyph for specified character.
+         *
+         * Will render the glyph and create a texture for it.
+         * 
+         * Params:  driver = Video driver to use for texture creation.
+         *          c      = Character to load glyph for.
+         */
+        void load_glyph(VideoDriver driver, dchar c){draw_font_.load_glyph(driver, c);}
+
         ///Get texture, offset (relative to string start) to draw a character at.
         Texture* glyph(dchar c, out Vector2u offset)
         {
@@ -67,6 +87,21 @@ package align(1) struct FontRenderer
             PenX += glyph.advance;
             return &glyph.texture;
         }
+
+        /**
+         * Get size of text as it would be drawn in pixels.
+         *
+         * Params:  text = Text to get size of.
+         *
+         * Returns: Size of the text in X and Y. Y might be slightly imprecise.
+         */
+        Vector2u text_size(string text)
+        {
+            //Y size could be determined more precisely by getting
+            //minimum and maximum extents of the text.
+            return Vector2u(draw_font_.text_width(text), draw_font_.size);
+        }
+
 }
 
 ///Handles all font resources. 
@@ -82,7 +117,7 @@ package final class FontManager
         uint default_font_size_ = 12;
 
         //Currently set font.
-        Font current_font;
+        Font current_font_;
 
         //Currently set font name and size
         string font_name_;
@@ -92,7 +127,7 @@ package final class FontManager
         //Glyphs up to this unicode index will be stored in a normal 
         //instead of associative array, speeding up their retrieval.
         //512 covers latin with most important extensions.
-        uint fast_glyphs = 512;
+        uint fast_glyphs_ = 512;
 
         //Is font antialiasing enabled?
         bool antialiasing_ = true;
@@ -121,8 +156,8 @@ package final class FontManager
                 try
                 {
                     //load default font.
-                    fonts_ ~= Font(default_font_name_, default_font_size_, fast_glyphs);
-                    current_font = fonts_[$ - 1];
+                    fonts_ ~= new Font(default_font_name_, default_font_size_, fast_glyphs_);
+                    current_font_ = fonts_[$ - 1];
                     font_name_ = default_font_name_;
                     font_size_ = default_font_size_;
                 }
@@ -167,21 +202,25 @@ package final class FontManager
             if(force_load){load_font();}
         }
 
-        ///Get size of text as it would be drawn in pixels.
-        Vector2u text_size(string text)
-        {
-            load_font();
-            return Vector2u(current_font.text_width(text), current_font.size);
-        }
-
         ///Return renderer to draw text with.
         FontRenderer renderer()
         {
             load_font();
-            return FontRenderer(current_font);
+            return FontRenderer(current_font_);
         }
 
-        ///Try to set font according to font_name_ and font_size.
+        ///Return bool specifying whether or not font antialiasing is enabled.
+        bool antialiasing(){return antialiasing_;}
+      
+        ///Return bool specifying whether or not kerning is enabled.
+        bool kerning(){return kerning_;}
+
+    package:
+        ///Return handle to FreeType library used by the manager.
+        static FT_Library freetype(){return freetype_lib_;}
+
+    private:
+        ///Try to set font according to font_name_ and font_size_.
         /**
          * Will load the font if needed, and if it can't load, will
          * try to fall back to default font with font_size_. If that can't
@@ -190,7 +229,7 @@ package final class FontManager
         void load_font()
         {
             //Font is already set
-            if(current_font.name == font_name_ && current_font.size == font_size_)
+            if(current_font_.name == font_name_ && current_font_.size == font_size_)
             {
                 return;
             }
@@ -204,7 +243,7 @@ package final class FontManager
             //Font is already loaded, set it
             if(index >= 0)
             {
-                current_font = fonts_[index];
+                current_font_ = fonts_[index];
                 return;
             }
 
@@ -212,10 +251,10 @@ package final class FontManager
             Font new_font;
             try
             {
-                new_font = Font(font_name_, font_size_, fast_glyphs);
+                new_font = new Font(font_name_, font_size_, fast_glyphs_);
                 //Font was succesfully loaded, set it
                 fonts_ ~= new_font;
-                current_font = fonts_[$ - 1];
+                current_font_ = fonts_[$ - 1];
             }
             catch
             {
@@ -223,7 +262,7 @@ package final class FontManager
                 //try font 0 (default with default size)
                 if(font_name_ == default_font_name_)
                 {
-                    current_font = fonts_[0];
+                    current_font_ = fonts_[0];
                     return;
                 }
                 //Couldn't load the font, try default with our size
@@ -231,13 +270,4 @@ package final class FontManager
                 load_font();
             }
         }
-    
-        ///Return handle to FreeType library used by the manager.
-        static FT_Library freetype(){return freetype_lib_;}
-
-        ///Return bool specifying whether or not font antialiasing is enabled.
-        bool antialiasing(){return antialiasing_;}
-      
-        ///Return bool specifying whether or not font antialiasing is enabled.
-        bool kerning(){return kerning_;}
 }
