@@ -1,11 +1,7 @@
-Desingletonify FontManager:
 
-VideoDriverContainer, font unloading/reloading
-Testing it
+Test button to reset video driver.
 
-
-
-
+Make die(), set_video_mode() only accessible through package methods.
 
 17:
     Desingletonify VideoDriver, FontManager and manage them in

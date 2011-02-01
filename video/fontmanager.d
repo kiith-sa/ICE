@@ -174,13 +174,35 @@ package final class FontManager
         }
 
         /**
+         * Delete all glyph textures from the video driver.
+         *
+         * Params:  driver = VideoDriver to unload textures from.
+         */
+        void unload_textures(VideoDriver driver)
+        {
+            foreach(ref font; fonts_){font.unload_textures(driver);}
+        }
+
+        /**
+         * Load glyph textures back to the video driver.
+         *
+         * Params:  driver = VideoDriver to load textures to.
+         */
+        void reload_textures(VideoDriver driver)
+        {
+            foreach(ref font; fonts_){font.reload_textures(driver);}
+        }
+
+        /**
          * Destroy the FontManager. 
+         *
+         * To destroy all FontManager resources, unload_textures must be called first.
          *
          * Params:  driver = Video driver used to delete glyph textures.
          */
-        void die(VideoDriver driver)
+        void die()
         {
-            foreach(ref font; fonts_){font.die(driver);}
+            foreach(ref font; fonts_){font.die();}
             fonts_ = [];
             FT_Done_FreeType(freetype_lib_);
             DerelictFT.unload(); 

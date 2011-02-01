@@ -28,22 +28,18 @@ abstract class VideoDriver : Monitorable
 
     public:
         ///Construct a VideoDriver.
-        this()
+        this(FontManager font_manager)
         {
             singleton_ctor();
             //Force font manager to load if not yet loaded. 
             //Placed here because font manager ctor needs working videodriver
             //and a call to font manager ctor from videodriver ctor would
             //result in infinite recursion.
-            font_manager_ = new FontManager;
+            font_manager_ = font_manager;
         }
 
-        ///Destroy the VideoDriver. Should only be called at shutdown.
-        void die()
-        {
-            font_manager_.die(this);
-            singleton_dtor();
-        }
+        ///Destroy the VideoDriver.
+        void die(){singleton_dtor();}
 
         /**
          * Sets video mode.

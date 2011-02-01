@@ -127,20 +127,13 @@ package class Font
 
         /**
          * Destroy the font and free its resources.
-         *
-         * Params:  driver = Video driver used to delete glyph textures.
+         * To free all used resources, delete_textures must be called before this.
          */
-        void die(VideoDriver driver)
+        void die()
         {    
-            delete_textures(driver);
             foreach(glyph; fast_glyphs_)
             {
                 if(glyph !is null){free(glyph);}
-            }
-            if(default_glyph_ !is null)
-            {
-                free(default_glyph_);
-                default_glyph_ = null;
             }
             FT_Done_Face(font_face_);
             close_file(file_);
@@ -156,7 +149,7 @@ package class Font
          *
          * Params:  driver = Video driver used to delete the textures.
          */
-        void delete_textures(VideoDriver driver)
+        void unload_textures(VideoDriver driver)
         {
             foreach(glyph; fast_glyphs_)
             {
@@ -176,7 +169,28 @@ package class Font
                     driver.delete_texture(glyph.texture);
                 }
             }
-            if(default_glyph_ !is null){driver.delete_texture(default_glyph_.texture);}
+            if(default_glyph_ !is null)
+            {
+                driver.delete_texture(default_glyph_.texture);
+                free(default_glyph_);
+                default_glyph_ = null;
+            }
+        }
+
+        /**
+         * Load glyph textures back to video driver.
+         *
+         * Can only be used after textures were unloaded.
+         *
+         * Params:  driver = Video driver used to delete the textures.
+         */
+        void reload_textures(VideoDriver driver)
+        {
+            foreach(c, glyph; fast_glyphs_)
+            {
+                if(glyph !is null){load_glyph(driver, c);}
+            }
+            foreach(c, glyph; glyphs_){load_glyph(driver, c);}
         }
 
     package:

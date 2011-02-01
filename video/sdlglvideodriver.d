@@ -4,6 +4,7 @@ module video.sdlglvideodriver;
 import derelict.sdl.sdl;
 
 import video.glvideodriver;
+import video.fontmanager;
 import color;
 
 
@@ -11,7 +12,7 @@ import color;
 final class SDLGLVideoDriver : GLVideoDriver
 {
     public:
-        this(){super();}
+        this(FontManager font_manager){super(font_manager);}
 
         override void set_video_mode(uint width, uint height, 
                                      ColorFormat format, bool fullscreen)

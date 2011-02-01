@@ -69,9 +69,9 @@ abstract class GLVideoDriver : VideoDriver
         mixin Signal!(Statistics) send_statistics;
         
     public:
-        this()
+        this(FontManager font_manager)
         {
-            super();
+            super(font_manager);
             DerelictGL.load();
             view_zoom_ = 1.0;
         }
