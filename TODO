@@ -1,3 +1,20 @@
+Desingletonify FontManager:
+
+first:
+FontManager
+then:
+Font
+then:
+GLVideoDriver
+
+
+After that:
+VideoDriverContainer, font unloading/reloading
+
+
+
+
+
 17:
     Desingletonify VideoDriver, FontManager and manage them in
     a VideoDriverContainer.

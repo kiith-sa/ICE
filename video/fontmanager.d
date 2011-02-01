@@ -24,10 +24,10 @@ package align(1) struct FontRenderer
     private:
         //Font we're drawing with.
         Font draw_font_;
-        //FreeType font face of the font.
-        FT_Face font_face_;
         //Does this font use kerning?
         bool kerning_;
+        //FreeType font face of the font.
+        FT_Face font_face_;
         //Freetype index of the previously drawn glyph (0 at first glyph).
         uint previous_index_;
         //Current x position of the pen.
@@ -41,7 +41,7 @@ package align(1) struct FontRenderer
         void start()
         {
             font_face_ = draw_font_.font_face;
-            kerning_ = draw_font_.kerning && FontManager.get.kerning;
+            kerning_ = draw_font_.kerning && kerning_;
             previous_index_ = PenX = 0;
         }
 
@@ -210,7 +210,7 @@ package final class FontManager
         FontRenderer renderer()
         {
             load_font();
-            return FontRenderer(current_font_);
+            return FontRenderer(current_font_, kerning_);
         }
 
         ///Return bool specifying whether or not font antialiasing is enabled.
