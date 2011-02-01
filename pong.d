@@ -1795,7 +1795,6 @@ class PongGUI
                 y = "16";
                 width ="192 + w_right / 4";
                 height ="168 + w_bottom / 6";
-                add_monitorable("Video", VideoDriver.get);
                 monitor_ = produce();
             }
             parent_.add_child(monitor_);
@@ -1890,6 +1889,9 @@ class Pong
         GameContainer game_container_;
         Game game_;
 
+        //Video driver.
+        VideoDriver video_driver_;
+
         //Root of the GUI.
         GUIRoot gui_root_;
 
@@ -1902,7 +1904,9 @@ class Pong
         {
             singleton_ctor();
 
-            VideoDriver.get.set_video_mode(800, 600, ColorFormat.RGBA_8, false);
+            VideoDriver.initialize!(SDLGLVideoDriver);
+            video_driver_ = VideoDriver.get;
+            video_driver_.set_video_mode(800, 600, ColorFormat.RGBA_8, false);
             gui_root_ = new GUIRoot();
 
             game_container_ = new GameContainer();
@@ -1916,15 +1920,18 @@ class Pong
             gui_.credits_end.connect(&credits_end);
             gui_.game_start.connect(&pong_start);
             gui_.quit.connect(&exit);
+
+            gui_.monitor.add_monitorable("Video", video_driver_);
         }
 
         ///Destroy all subsystems.
         void die()
         {
             fps_counter_.update.disconnect(&fps_update);
+            gui_.monitor.remove_monitorable(video_driver_);
             gui_.die();
             gui_root_.die();
-            VideoDriver.get.die();
+            video_driver_.die();
             Platform.get.die();
             singleton_dtor();
         }
@@ -1943,12 +1950,12 @@ class Pong
                 //update game state
                 gui_root_.update();
 
-                VideoDriver.get.start_frame();
+                video_driver_.start_frame();
 
-                if(run_pong_){game_.draw(VideoDriver.get);}
+                if(run_pong_){game_.draw(video_driver_);}
 
-                gui_root_.draw(VideoDriver.get);
-                VideoDriver.get.end_frame();
+                gui_root_.draw(video_driver_);
+                video_driver_.end_frame();
             }
             writefln("FPS statistics:\n", fps_counter_.statistics, "\n");
         }
@@ -2020,7 +2027,6 @@ class Pong
 void main()
 {
     Platform.initialize!(SDLPlatform);
-    VideoDriver.initialize!(SDLGLVideoDriver);
 
     try
     {

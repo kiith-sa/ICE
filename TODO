@@ -1,6 +1,3 @@
-remove VideoDriver.get:
-where it's left in pong.d
-
 17:
     Desingletonify VideoDriver, FontManager and manage them in
     a VideoDriverContainer.
@@ -137,6 +134,8 @@ where it's left in pong.d
     and signals that are fired at the beginning of the next frame.
     However, that might require globally accessible singletons (no testability) 
     -only do stuff that needs no singletons
+20:
+    Check for a newer version of (D1) Derelict, if any, just in case.
 20: 
     Get rid of immediate mode:
     support VAs and maybe VBOs (not that necessary right now) -
