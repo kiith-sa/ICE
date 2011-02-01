@@ -1,15 +1,8 @@
 Desingletonify FontManager:
 
-first:
-FontManager
-then:
-Font
-then:
-GLVideoDriver
-
-
-After that:
+WeakSingleton
 VideoDriverContainer, font unloading/reloading
+Testing it
 
 
 

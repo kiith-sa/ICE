@@ -14,6 +14,7 @@ import math.line2;
 import math.rectangle;
 import video.videodriver;
 import video.sdlglvideodriver;
+import video.videodrivercontainer;
 import actor.actor;
 import actor.actormanager;
 import actor.actorcontainer;
@@ -1889,6 +1890,8 @@ class Pong
         GameContainer game_container_;
         Game game_;
 
+        //Container managing video driver and its dependencies.
+        VideoDriverContainer video_driver_container_;
         //Video driver.
         VideoDriver video_driver_;
 
@@ -1904,7 +1907,8 @@ class Pong
         {
             singleton_ctor();
 
-            video_driver_ = new SDLGLVideoDriver;
+            video_driver_container_ = new VideoDriverContainer;
+            video_driver_ = video_driver_container_.produce!(SDLGLVideoDriver)();
             video_driver_.set_video_mode(800, 600, ColorFormat.RGBA_8, false);
             gui_root_ = new GUIRoot();
 
@@ -1930,7 +1934,8 @@ class Pong
             gui_.monitor.remove_monitorable(video_driver_);
             gui_.die();
             gui_root_.die();
-            video_driver_.die();
+            video_driver_container_.destroy();
+            video_driver_container_.die();
             Platform.get.die();
             singleton_dtor();
         }

@@ -4,6 +4,7 @@ module video.videodriver;
 import std.math;
 
 import video.texture;
+import video.fontmanager;
 import math.math;
 import math.vector2;
 import math.line2;
@@ -21,9 +22,29 @@ import image;
 abstract class VideoDriver : Monitorable
 {
     mixin WeakSingleton;
+    protected:
+        ///FontManager used to work with fonts.
+        FontManager font_manager_;
+
     public:
+        ///Construct a VideoDriver.
+        this()
+        {
+            singleton_ctor();
+            //Force font manager to load if not yet loaded. 
+            //Placed here because font manager ctor needs working videodriver
+            //and a call to font manager ctor from videodriver ctor would
+            //result in infinite recursion.
+            FontManager.initialize!(FontManager);
+            font_manager_ = FontManager.get;
+        }
+
         ///Destroy the VideoDriver. Should only be called at shutdown.
-        void die();
+        void die()
+        {
+            font_manager_.die(this);
+            singleton_dtor();
+        }
 
         /**
          * Sets video mode.

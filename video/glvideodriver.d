@@ -71,18 +71,18 @@ abstract class GLVideoDriver : VideoDriver
     public:
         this()
         {
-            singleton_ctor();
+            super();
             DerelictGL.load();
             view_zoom_ = 1.0;
         }
 
         override void die()
         {
+            super.die();
+
             delete_shader(line_shader_);
             delete_shader(texture_shader_);
             delete_shader(font_shader_);
-
-            FontManager.get.die(this);
 
             //delete any remaining texture pages
             foreach(ref page; pages_)
@@ -119,8 +119,6 @@ abstract class GLVideoDriver : VideoDriver
             textures_ = [];
             shaders_ = [];
             DerelictGL.unload();
-
-            singleton_dtor();
         }
 
         override void set_video_mode(uint width, uint height, 
@@ -271,7 +269,7 @@ abstract class GLVideoDriver : VideoDriver
             //to convert grayscale to alpha
             set_shader(font_shader_);
 
-            FontRenderer renderer = FontManager.get.renderer();
+            FontRenderer renderer = font_manager_.renderer();
             renderer.start();
 
             //offset of the current character relative to position
@@ -337,7 +335,7 @@ abstract class GLVideoDriver : VideoDriver
         
         final override Vector2u text_size(string text)
         {
-            auto renderer = FontManager.get.renderer();
+            auto renderer = font_manager_.renderer();
             //load any glyphs that aren't loaded yet
             foreach(dchar c; text)
             {
@@ -350,9 +348,9 @@ abstract class GLVideoDriver : VideoDriver
         
         final override void line_width(float width){line_width_ = width;}
 
-        final override void font(string font_name){FontManager.get.font = font_name;}
+        final override void font(string font_name){font_manager_.font = font_name;}
 
-        final override void font_size(uint size){FontManager.get.font_size = size;}
+        final override void font_size(uint size){font_manager_.font_size = size;}
         
         final override void zoom(real zoom)
         in
@@ -538,11 +536,6 @@ abstract class GLVideoDriver : VideoDriver
         //Initialize OpenGL context.
         final void init_gl()
         {
-            //Force font manager to load if not yet loaded. 
-            //Placed here because font manager ctor needs working videodriver
-            //and a call to font manager ctor from videodriver ctor would
-            //result in infinite recursion.
-            FontManager.initialize!(FontManager);
             try
             {
                 //Loads the newest available OpenGL version
