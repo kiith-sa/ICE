@@ -50,6 +50,8 @@ package class Font
         uint height_;
         //Does this font support kerning?
         bool kerning_;
+        //Should the font be rendered with antialiasing?
+        bool antialiasing_;
 
         //Number of glyphs accessible through normal instead of associative array.
         uint fast_glyph_count_;
@@ -61,18 +63,22 @@ package class Font
         /**
          * Load font with specified name, size and number of fast glyphs.
          *
-         * Params:  name        = Name of the font (file name in the fonts/ directory)
-         *          size        = Size of the font in points.
-         *          fast_glyphs = Number of glyphs to store in faster accessible data,
-         *                        from glyph 0. E.g. 128 means 0-127, i.e. ASCII.
+         * Params:  freetype_lib = Handle to freetype library used to work with fonts.
+         *          name         = Name of the font (file name in the fonts/ directory)
+         *          size         = Size of the font in points.
+         *          fast_glyphs  = Number of glyphs to store in faster accessible data,
+         *                         from glyph 0. E.g. 128 means 0-127, i.e. ASCII.
+         *          antialiasing = Should the font be antialiased?
          *
          * Throws:  Exception if the font could not be loaded.
          */
-        this(string name, uint size, uint fast_glyphs)
+        this(FT_Library freetype_lib, string name, uint size, uint fast_glyphs, 
+             bool antialiasing)
         {
             fast_glyphs_ = new Glyph*[fast_glyphs];
             fast_glyph_count_ = fast_glyphs;
             name_ = name;
+            antialiasing_ = antialiasing;
 
             file_ = open_file("fonts/" ~ name, FileMode.Read);
             ubyte[] font_data = cast(ubyte[])file_.data;
@@ -88,7 +94,7 @@ package class Font
             int face = 0;
             
             //load face from memory buffer (font_data)
-            if(FT_Open_Face(FontManager.freetype, &args, face, &font_face_) != 0) 
+            if(FT_Open_Face(freetype_lib, &args, face, &font_face_) != 0) 
             {
                 throw new Exception("Couldn't load font face from font " ~ file_.path);
             }
@@ -118,36 +124,6 @@ package class Font
 
         ///Returns FreeType font face of the font.
         FT_Face font_face(){return font_face_;}
-
-        ///Returns width of text as it would be drawn.
-        uint text_width(string str)
-        {
-            //previous glyph index, for kerning
-			uint previous_index = 0;
-			uint pen_x = 0;
-            //current glyph index
-            uint glyph_index;
-            bool use_kerning = kerning_ && FontManager.get.kerning;
-            FT_Vector kerning;
-            Glyph * glyph;
-			
-			foreach(dchar chr; str) 
-            {
-                glyph = get_glyph(chr);
-				glyph_index = glyph.freetype_index;
-				
-				if(use_kerning && previous_index != 0 && glyph_index != 0) 
-                {
-					//adjust the pen for kerning
-					FT_Get_Kerning(font_face_, previous_index, glyph_index, 
-                                   FT_Kerning_Mode.FT_KERNING_DEFAULT, &kerning);
-					pen_x += kerning.x / 64;
-				}
-
-                pen_x += glyph.advance;
-			}
-            return pen_x;
-        }
 
         /**
          * Destroy the font and free its resources.
@@ -204,6 +180,49 @@ package class Font
         }
 
     package:
+        /**
+         * Returns width of text as it would be drawn.
+         * 
+         * Params:  str         = Text to measure.
+         *          use_kerning = Should kerning be used? 
+         *                        Should only be true if the font supports kerning.
+         *
+         * Returns: Width of the text in pixels.
+         */
+        uint text_width(string str, bool use_kerning)
+        in
+        {
+            assert(kerning_ ? true : !use_kerning, 
+                   "Trying to use kerning with a font where it's unsupported.");
+        }
+        body
+        {
+            //previous glyph index, for kerning
+			uint previous_index = 0;
+			uint pen_x = 0;
+            //current glyph index
+            uint glyph_index;
+            FT_Vector kerning;
+            Glyph * glyph;
+			
+			foreach(dchar chr; str) 
+            {
+                glyph = get_glyph(chr);
+				glyph_index = glyph.freetype_index;
+				
+				if(use_kerning && previous_index != 0 && glyph_index != 0) 
+                {
+					//adjust the pen for kerning
+					FT_Get_Kerning(font_face_, previous_index, glyph_index, 
+                                   FT_Kerning_Mode.FT_KERNING_DEFAULT, &kerning);
+					pen_x += kerning.x / 64;
+				}
+
+                pen_x += glyph.advance;
+			}
+            return pen_x;
+        }
+
         //not asserting here as it'd result in too much slowdown
         /** 
          * Access glyph for specified (UTF-32) character.
@@ -325,7 +344,7 @@ package class Font
 				}
 
                 //copy freetype bitmap to our image
-                if(FontManager.get.antialiasing)
+                if(antialiasing_)
                 {
                     memcpy(image.data.ptr, bitmap.buffer, size.x * size.y);
                     //antialiasing makes the glyph appear darker
@@ -351,10 +370,7 @@ package class Font
         ///Get freetype render mode (antialiased or bitmap)
 		FT_Render_Mode render_mode() 
         {
-			if(FontManager.get.antialiasing)
-            {
-                return FT_Render_Mode.FT_RENDER_MODE_NORMAL;
-            }
-            else{return FT_Render_Mode.FT_RENDER_MODE_MONO;}
+            return antialiasing_ ? FT_Render_Mode.FT_RENDER_MODE_NORMAL 
+                                 : FT_Render_Mode.FT_RENDER_MODE_MONO;
 		}
 }

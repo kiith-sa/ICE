@@ -99,7 +99,7 @@ package align(1) struct FontRenderer
         {
             //Y size could be determined more precisely by getting
             //minimum and maximum extents of the text.
-            return Vector2u(draw_font_.text_width(text), draw_font_.size);
+            return Vector2u(draw_font_.text_width(text, kerning_), draw_font_.size);
         }
 
 }
@@ -109,7 +109,7 @@ package final class FontManager
 {
     mixin Singleton;
     private:
-        static FT_Library freetype_lib_;
+        FT_Library freetype_lib_;
         Font[] fonts_;
         
         //Fallback font: fonts_[0] will be loaded with these parameters.
@@ -156,7 +156,8 @@ package final class FontManager
                 try
                 {
                     //load default font.
-                    fonts_ ~= new Font(default_font_name_, default_font_size_, fast_glyphs_);
+                    fonts_ ~= new Font(freetype_lib_, default_font_name_, default_font_size_, 
+                                       fast_glyphs_, antialiasing_);
                     current_font_ = fonts_[$ - 1];
                     font_name_ = default_font_name_;
                     font_size_ = default_font_size_;
@@ -219,10 +220,6 @@ package final class FontManager
         ///Return bool specifying whether or not kerning is enabled.
         bool kerning(){return kerning_;}
 
-    package:
-        ///Return handle to FreeType library used by the manager.
-        static FT_Library freetype(){return freetype_lib_;}
-
     private:
         ///Try to set font according to font_name_ and font_size_.
         /**
@@ -255,7 +252,8 @@ package final class FontManager
             Font new_font;
             try
             {
-                new_font = new Font(font_name_, font_size_, fast_glyphs_);
+                new_font = new Font(freetype_lib_, font_name_, font_size_, 
+                                    fast_glyphs_, antialiasing_);
                 //Font was succesfully loaded, set it
                 fonts_ ~= new_font;
                 current_font_ = fonts_[$ - 1];
