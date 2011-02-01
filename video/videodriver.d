@@ -35,8 +35,7 @@ abstract class VideoDriver : Monitorable
             //Placed here because font manager ctor needs working videodriver
             //and a call to font manager ctor from videodriver ctor would
             //result in infinite recursion.
-            FontManager.initialize!(FontManager);
-            font_manager_ = FontManager.get;
+            font_manager_ = new FontManager;
         }
 
         ///Destroy the VideoDriver. Should only be called at shutdown.

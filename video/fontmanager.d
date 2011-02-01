@@ -12,7 +12,7 @@ import video.font;
 import video.texture;
 import math.math;
 import math.vector2;
-import singleton;
+import weaksingleton;
 import color;
 import arrayutil;
 import allocator;
@@ -107,7 +107,7 @@ package align(1) struct FontRenderer
 ///Handles all font resources. 
 package final class FontManager
 {
-    mixin Singleton;
+    mixin WeakSingleton;
     private:
         FT_Library freetype_lib_;
         Font[] fonts_;
@@ -184,6 +184,7 @@ package final class FontManager
             fonts_ = [];
             FT_Done_FreeType(freetype_lib_);
             DerelictFT.unload(); 
+            singleton_dtor();
         }
 
         ///Set font to use. force_load will set font (load if needed) immediately.

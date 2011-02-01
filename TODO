@@ -1,6 +1,5 @@
 Desingletonify FontManager:
 
-WeakSingleton
 VideoDriverContainer, font unloading/reloading
 Testing it
 
