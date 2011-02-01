@@ -16,7 +16,7 @@ class SDLPlatform : Platform
         //Constructor - initializes SDL and throws Exception on failure.
         this()
         {
-            singleton_ctor();
+            super();
             DerelictSDL.load();
 			if(SDL_Init(SDL_INIT_VIDEO) < 0)
             {
@@ -30,6 +30,7 @@ class SDLPlatform : Platform
         {
 			SDL_Quit();
             DerelictSDL.unload();
+            super.die();
         }
         
         override bool run()

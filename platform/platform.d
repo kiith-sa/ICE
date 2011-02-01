@@ -5,14 +5,14 @@ import std.string;
 
 public import platform.key;
 import math.vector2;
-import singleton;
+import weaksingleton;
 import signal;
 
 
 ///Handles platform specific functionality like input/output.
 abstract class Platform
 {
-    mixin Singleton;
+    mixin WeakSingleton;
     protected:
         bool[Key.max] keys_pressed_;
 
@@ -28,7 +28,11 @@ abstract class Platform
         ///Emitted when mouse is moved. Passes mouse position and position change.
         mixin Signal!(Vector2u, Vector2i) mouse_motion;
 
-        void die();
+        ///Construct Platform.
+        this(){singleton_ctor();}
+
+        ///Destroy the Platform.
+        void die(){singleton_dtor();}
         
         ///Collect input and determine if the game should continue running.
         bool run(){return run_;}

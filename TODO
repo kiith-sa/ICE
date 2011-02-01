@@ -1,17 +1,3 @@
-Remove Platform.get:
-
-Pong
-elsewhere, if anywhere, in pong.d
-
-give up on resetting platform, not needed.
-
-
-17:
-    Desingletonify Platform, if at all possible.
-    Also test destroying/reconstructing platform.
-    Of course, platform destruction will require VideoDriver
-    destruction, so they probably should be managed by the same container
-    (PlatformContainer manages VideoDriverContainer?)
 17:
     Unittests where obviously easy.
 17:

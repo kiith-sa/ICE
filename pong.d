@@ -1903,8 +1903,8 @@ class Pong
         bool run_pong_ = false;
         bool continue_ = true;
 
-        GameContainer game_container_;
-        Game game_;
+        //Platform used for user input.
+        Platform platform_;
 
         //Container managing video driver and its dependencies.
         VideoDriverContainer video_driver_container_;
@@ -1917,16 +1917,21 @@ class Pong
         //Pong GUI.
         PongGUI gui_;
 
+        GameContainer game_container_;
+        Game game_;
+
     public:
         ///Initialize Pong.
         this()
         {
             singleton_ctor();
 
+            platform_ = new SDLPlatform;
+
             video_driver_container_ = new VideoDriverContainer;
             video_driver_ = video_driver_container_.produce!(SDLGLVideoDriver)
                             (800, 600, ColorFormat.RGBA_8, false);
-            gui_root_ = new GUIRoot(Platform.get);
+            gui_root_ = new GUIRoot(platform_);
 
             game_container_ = new GameContainer();
 
@@ -1953,15 +1958,15 @@ class Pong
             gui_root_.die();
             video_driver_container_.destroy();
             video_driver_container_.die();
-            Platform.get.die();
+            platform_.die();
             singleton_dtor();
         }
 
         void run()
         {                           
-            Platform.get.key.connect(&key_handler_global);
-            Platform.get.key.connect(&key_handler);
-            while(Platform.get.run() && continue_)
+            platform_.key.connect(&key_handler_global);
+            platform_.key.connect(&key_handler);
+            while(platform_.run() && continue_)
             {
                 //Count this frame
                 fps_counter_.event();
@@ -1986,7 +1991,7 @@ class Pong
         {
             game_container_.destroy();
             game_ = null;
-            Platform.get.key.connect(&key_handler);
+            platform_.key.connect(&key_handler);
             gui_.menu_show();
             run_pong_ = false;
         }
@@ -1995,14 +2000,14 @@ class Pong
         {
             run_pong_ = true;
             gui_.menu_hide();
-            Platform.get.key.disconnect(&key_handler);
-            game_ = game_container_.produce(Platform.get, gui_.monitor, gui_root_.root);
+            platform_.key.disconnect(&key_handler);
+            game_ = game_container_.produce(platform_, gui_.monitor, gui_root_.root);
             game_.intro();
         }
 
-        void credits_start(){Platform.get.key.disconnect(&key_handler);}
+        void credits_start(){platform_.key.disconnect(&key_handler);}
 
-        void credits_end(){Platform.get.key.connect(&key_handler);}
+        void credits_end(){platform_.key.connect(&key_handler);}
 
         void exit(){continue_ = false;}
 
@@ -2041,7 +2046,7 @@ class Pong
 
         void fps_update(real fps)
         {
-            Platform.get.window_caption = "FPS: " ~ std.string.toString(fps);
+            platform_.window_caption = "FPS: " ~ std.string.toString(fps);
         }
 
         void reset_video_driver()
@@ -2056,8 +2061,6 @@ class Pong
 
 void main()
 {
-    Platform.initialize!(SDLPlatform);
-
     try
     {
         Pong pong = new Pong;
