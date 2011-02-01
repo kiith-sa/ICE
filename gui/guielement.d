@@ -279,7 +279,7 @@ final class GUIRoot
 
     public:
         ///Construct the GUI root with size equal to screen size.
-        this()
+        this(Platform platform)
         {
             singleton_ctor();
 
@@ -294,9 +294,9 @@ final class GUIRoot
 
             root_.draw_border_ = false;
 
-            Platform.get.key.connect(&root_.key);
-            Platform.get.mouse_motion.connect(&root_.mouse_move);
-            Platform.get.mouse_key.connect(&root_.mouse_key);
+            platform.key.connect(&root_.key);
+            platform.mouse_motion.connect(&root_.mouse_move);
+            platform.mouse_key.connect(&root_.mouse_key);
         }
 
         ///Draw the GUI.

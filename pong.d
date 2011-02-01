@@ -1913,7 +1913,7 @@ class Pong
             video_driver_container_ = new VideoDriverContainer;
             video_driver_ = video_driver_container_.produce!(SDLGLVideoDriver)
                             (800, 600, ColorFormat.RGBA_8, false);
-            gui_root_ = new GUIRoot();
+            gui_root_ = new GUIRoot(Platform.get);
 
             game_container_ = new GameContainer();
 

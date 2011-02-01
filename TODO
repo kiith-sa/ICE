@@ -1,3 +1,7 @@
+Remove Platform.get:
+pong.d
+
+
 17:
     Desingletonify Platform, if at all possible.
     Also test destroying/reconstructing platform.
