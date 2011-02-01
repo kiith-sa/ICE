@@ -1904,8 +1904,7 @@ class Pong
         {
             singleton_ctor();
 
-            VideoDriver.initialize!(SDLGLVideoDriver);
-            video_driver_ = VideoDriver.get;
+            video_driver_ = new SDLGLVideoDriver;
             video_driver_.set_video_mode(800, 600, ColorFormat.RGBA_8, false);
             gui_root_ = new GUIRoot();
 

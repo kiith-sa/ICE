@@ -30,8 +30,6 @@ import signal;
 ///Handles all drawing functionality.
 abstract class GLVideoDriver : VideoDriver
 {
-    invariant{assert(view_zoom_ > 0.0);}
-
     protected:
         uint screen_width_ = 0;
         uint screen_height_ = 0;
@@ -121,6 +119,8 @@ abstract class GLVideoDriver : VideoDriver
             textures_ = [];
             shaders_ = [];
             DerelictGL.unload();
+
+            singleton_dtor();
         }
 
         override void set_video_mode(uint width, uint height, 

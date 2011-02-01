@@ -12,7 +12,7 @@ import platform.platform;
 import gui.guielement;
 import monitor.monitormenu;
 import monitor.monitorable;
-import singleton;
+import weaksingleton;
 import color;
 import image;
 
@@ -20,7 +20,7 @@ import image;
 ///Handles all drawing functionality.
 abstract class VideoDriver : Monitorable
 {
-    mixin Singleton;
+    mixin WeakSingleton;
     public:
         ///Destroy the VideoDriver. Should only be called at shutdown.
         void die();

@@ -11,7 +11,7 @@ import color;
 final class SDLGLVideoDriver : GLVideoDriver
 {
     public:
-        this(){singleton_ctor();}
+        this(){super();}
 
         override void set_video_mode(uint width, uint height, 
                                      ColorFormat format, bool fullscreen)
