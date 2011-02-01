@@ -149,42 +149,58 @@ package class Font
             return pen_x;
         }
 
-        ///Destroy the font and free its resources.
-        void die()
+        /**
+         * Destroy the font and free its resources.
+         *
+         * Params:  driver = Video driver used to delete glyph textures.
+         */
+        void die(VideoDriver driver)
+        {    
+            delete_textures(driver);
+            foreach(glyph; fast_glyphs_)
+            {
+                if(glyph !is null){free(glyph);}
+            }
+            if(default_glyph_ !is null)
+            {
+                free(default_glyph_);
+                default_glyph_ = null;
+            }
+            FT_Done_Face(font_face_);
+            close_file(file_);
+            fast_glyphs_ = [];
+            glyphs_ = null;
+        }
+
+        /**
+         * Delete glyph textures.
+         *
+         * Textures have to be reloaded before any further
+         * glyph rendering with the font.
+         *
+         * Params:  driver = Video driver used to delete the textures.
+         */
+        void delete_textures(VideoDriver driver)
         {
             foreach(glyph; fast_glyphs_)
             {
                 if(glyph !is null)
                 {
                     //some glyphs might share texture with default glyph
-                    if(default_glyph_ !is null && 
-                       glyph.texture != default_glyph_.texture)
+                    if(default_glyph_ !is null && glyph.texture != default_glyph_.texture)
                     {
-                        VideoDriver.get.delete_texture(glyph.texture);
+                        driver.delete_texture(glyph.texture);
                     }
-                    free(glyph);
-                    glyph = null;
                 }
-            }
-            if(default_glyph_ !is null)
-            {
-                VideoDriver.get.delete_texture(default_glyph_.texture);
-                free(default_glyph_);
-                default_glyph_ = null;
             }
             foreach(glyph; glyphs_)
             {
-                if(default_glyph_ !is null && 
-                   glyph.texture != default_glyph_.texture)
+                if(default_glyph_ !is null && glyph.texture != default_glyph_.texture)
                 {
-                    VideoDriver.get.delete_texture(glyph.texture);
+                    driver.delete_texture(glyph.texture);
                 }
-                VideoDriver.get.delete_texture(glyph.texture);
             }
-
-            FT_Done_Face(font_face_);
-            close_file(file_);
-            glyphs_ = null;
+            if(default_glyph_ !is null){driver.delete_texture(default_glyph_.texture);}
         }
 
     package:

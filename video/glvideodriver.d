@@ -84,7 +84,7 @@ abstract class GLVideoDriver : VideoDriver
             delete_shader(texture_shader_);
             delete_shader(font_shader_);
 
-            FontManager.get.die();
+            FontManager.get.die(this);
 
             //delete any remaining texture pages
             foreach(ref page; pages_)

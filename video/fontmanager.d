@@ -172,10 +172,14 @@ package final class FontManager
             }
         }
 
-        ///Destroy the FontManager. Should only be called at shutdown.
-        void die()
+        /**
+         * Destroy the FontManager. 
+         *
+         * Params:  driver = Video driver used to delete glyph textures.
+         */
+        void die(VideoDriver driver)
         {
-            foreach(ref font; fonts_){font.die();}
+            foreach(ref font; fonts_){font.die(driver);}
             fonts_ = [];
             FT_Done_FreeType(freetype_lib_);
             DerelictFT.unload(); 
