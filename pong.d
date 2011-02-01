@@ -1647,7 +1647,7 @@ class GameContainer
             monitor_.add_monitorable("Physics", physics_engine_);
             actor_manager_ = new ActorManager(physics_engine_);
             gui_ = new GameGUI(gui_parent, 300.0);
-            game_ = new Game(actor_manager_, gui_, 2, 300.0);
+            game_ = new Game(actor_manager_, gui_, 10, 300.0);
             return game_;
         }
 
@@ -1771,14 +1771,16 @@ class PongGUI
         Credits credits_;
 
     public:
-        ///Emitted when the player hits the button to start the game.
+        ///Emitted when the player clicks the button to start the game.
         mixin Signal!() game_start;
         ///Emitted when the credits screen is opened.
         mixin Signal!() credits_start;
         ///Emitted when the credits screen is closed.
         mixin Signal!() credits_end;
-        ///Emitted when the player hits the button to quit..
+        ///Emitted when the player clicks the button to quit..
         mixin Signal!() quit;
+        ///Emitted when the player clicks the button to reset video mode.
+        mixin Signal!() reset_video;
 
         /**
          * Construct PongGUI with specified parameters.
@@ -1822,6 +1824,7 @@ class PongGUI
                 add_item("Player vs AI", &game_start.emit);
                 add_item("Credits", &credits_show);
                 add_item("Quit", &quit.emit);
+                add_item("(DEBUG) Reset video", &reset_video.emit);
                 menu_ = produce();
             }
             menu_container_.add_child(menu_);
@@ -1923,6 +1926,7 @@ class Pong
             gui_.credits_end.connect(&credits_end);
             gui_.game_start.connect(&pong_start);
             gui_.quit.connect(&exit);
+            gui_.reset_video.connect(&reset_video_driver);
 
             gui_.monitor.add_monitorable("Video", video_driver_);
         }
@@ -2025,6 +2029,15 @@ class Pong
         void fps_update(real fps)
         {
             Platform.get.window_caption = "FPS: " ~ std.string.toString(fps);
+        }
+
+        void reset_video_driver()
+        {
+            gui_.monitor.remove_monitorable(video_driver_);
+            video_driver_container_.destroy();
+            video_driver_ = video_driver_container_.produce!(SDLGLVideoDriver)
+                            (800, 600, ColorFormat.RGBA_8, false);
+            gui_.monitor.add_monitorable("Video", video_driver_);
         }
 }
 

@@ -1,31 +1,3 @@
-
-Test button to reset video driver.
-
-Make die(), set_video_mode() only accessible through package methods.
-
-17:
-    Desingletonify VideoDriver, FontManager and manage them in
-    a VideoDriverContainer.
-    If possible, we could have a single instance of FontManager used
-    even if VideoDriver is replaced. However, as FontManager
-    loads fonts as textures to VideoDriver, it should have
-    a method to reload these textures to videodriver again.
-    Implement this, the code for loading fontmanager textures again,
-    and a unittest to prove it works (slow unittest due to file I/O,
-    but, after all, unittests can be disabled in release build)
-
-    Also, we might have a debug button to test reconstruction of VideoDriver,
-    to see if e.g. the GUI stays the same.
-    Actually, we can do that with a "change video mode" setting
-    in an Options screen.
-    Of course, we want to do stuff like changing video mode
-    without replacing video driver later, but now, it's an excellent way of testing
-    this.
-
-
-    Note that a reset of VideoDriver will also require to change
-    the VideoDriver of Monitor,
-    so we'll need methods for that.
 17:
     Desingletonify Platform, if at all possible.
     Also test destroying/reconstructing platform.
