@@ -1347,6 +1347,9 @@ class Game
 {
     mixin WeakSingleton;
     private:
+        //Platform used for input.
+        Platform platform_;
+
         ActorManager actor_manager_;
         
         Ball ball_;
@@ -1462,9 +1465,9 @@ class Game
             }
             
             player_1_ = new AIPlayer("AI", paddle_1_, 0.15);
-            player_2_ = new HumanPlayer(Platform.get, "Human", paddle_2_);
+            player_2_ = new HumanPlayer(platform_, "Human", paddle_2_);
 
-            Platform.get.key.connect(&key_handler);
+            platform_.key.connect(&key_handler);
         }
 
         ///Returns an array of balls currently used in the game.
@@ -1483,10 +1486,12 @@ class Game
         void draw(VideoDriver driver){actor_manager_.draw(driver);}
 
     private:
-        this(ActorManager actor_manager, GameGUI gui, uint score_limit, real time_limit)
+        this(Platform platform, ActorManager actor_manager, GameGUI gui, 
+             uint score_limit, real time_limit)
         {
             singleton_ctor();
             gui_ = gui;
+            platform_ = platform;
             actor_manager_ = actor_manager;
             score_limit_ = score_limit;
             time_limit_ = time_limit;
@@ -1591,7 +1596,7 @@ class Game
 
             playing_ = continue_ = false;
 
-            Platform.get.key.disconnect(&key_handler);
+            platform_.key.disconnect(&key_handler);
         }
 
         void key_handler(KeyState state, Key key, dchar unicode)
@@ -1636,10 +1641,11 @@ class GameContainer
         /**
          * Produce a Game and return a reference to it.
          *
-         * Params:  monitor      = Monitor to monitor game subsystems.
-         *          gui_parent   = Parent for all GUI elements used by the game.
+         * Params:  platform   = Platform to use for user input.
+         *          monitor    = Monitor to monitor game subsystems.
+         *          gui_parent = Parent for all GUI elements used by the game.
          */
-        Game produce(Monitor monitor, GUIElement gui_parent)
+        Game produce(Platform platform, Monitor monitor, GUIElement gui_parent)
         in
         {
             assert(physics_engine_ is null && 
@@ -1654,7 +1660,7 @@ class GameContainer
             monitor_.add_monitorable("Physics", physics_engine_);
             actor_manager_ = new ActorManager(physics_engine_);
             gui_ = new GameGUI(gui_parent, 300.0);
-            game_ = new Game(actor_manager_, gui_, 10, 300.0);
+            game_ = new Game(platform, actor_manager_, gui_, 10, 300.0);
             return game_;
         }
 
@@ -1990,7 +1996,7 @@ class Pong
             run_pong_ = true;
             gui_.menu_hide();
             Platform.get.key.disconnect(&key_handler);
-            game_ = game_container_.produce(gui_.monitor, gui_root_.root);
+            game_ = game_container_.produce(Platform.get, gui_.monitor, gui_root_.root);
             game_.intro();
         }
 
