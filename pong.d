@@ -641,7 +641,7 @@ abstract class Player
 }
 
 //AI player
-class AIPlayer : Player
+final class AIPlayer : Player
 {
     protected:
         //Timer determining when to update the AI
@@ -729,21 +729,28 @@ class AIPlayer : Player
 }
 
 //Human player controlling the game through user input.
-class HumanPlayer : Player
+final class HumanPlayer : Player
 {
+    private:
+        Platform platform_;
+
     public:
-        ///Construct a human player controlling specified paddle.
-        this(string name, Paddle paddle)
+        /**
+         * Construct a human player controlling specified paddle.
+         *
+         * Params:  platform = Platform used for user input.
+         *          name     = Name of the player.
+         *          paddle   = Paddle controlled by the player.
+         */
+        this(Platform platform, string name, Paddle paddle)
         {
             super(name, paddle);
-            Platform.get.key.connect(&key_handler);
+            platform_ = platform;
+            platform_.key.connect(&key_handler);
         }
         
         ///Destroy this HumanPlayer.
-        ~this()
-        {
-            Platform.get.key.disconnect(&key_handler);
-        }
+        ~this(){platform_.key.disconnect(&key_handler);}
 
         ///Handle input
         void key_handler(KeyState state, Key key, dchar unicode)
@@ -765,7 +772,7 @@ class HumanPlayer : Player
             {
                 if(key == Key.Right)
                 {
-                    if(Platform.get.is_key_pressed(Key.Left))
+                    if(platform_.is_key_pressed(Key.Left))
                     {
                         paddle_.move_left();
                         return;
@@ -775,7 +782,7 @@ class HumanPlayer : Player
                 }
                 else if(key == Key.Left)
                 {
-                    if(Platform.get.is_key_pressed(Key.Right))
+                    if(platform_.is_key_pressed(Key.Right))
                     {
                         paddle_.move_right();
                         return;
@@ -1455,7 +1462,7 @@ class Game
             }
             
             player_1_ = new AIPlayer("AI", paddle_1_, 0.15);
-            player_2_ = new HumanPlayer("Human", paddle_2_);
+            player_2_ = new HumanPlayer(Platform.get, "Human", paddle_2_);
 
             Platform.get.key.connect(&key_handler);
         }
