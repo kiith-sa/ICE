@@ -78,8 +78,8 @@ abstract class GraphMonitor : SubMonitor
             {
                 x = "p_left + 52";
                 y = "p_top + 2";
-                width = "p_right - p_left - 54";
-                height = "p_bottom - p_top - 26";
+                width = "p_width - 54";
+                height = "p_height - 26";
                 data = graph_data;
                 graph_ = produce();
             }

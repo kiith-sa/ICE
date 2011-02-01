@@ -62,7 +62,7 @@ final package class PagesMonitor : SubMonitor
             this()
             {
                 super("p_left + 28", "p_top + 2", 
-                      "p_right - p_left - 106", "p_bottom - p_top - 4");
+                      "p_width - 106", "p_height - 4");
             }
 
             override void draw(VideoDriver driver)
@@ -168,7 +168,7 @@ final package class PagesMonitor : SubMonitor
                 x = "p_right - 74";
                 y = "p_top + 2";
                 width = "72";
-                height = "p_bottom - p_top - 4";
+                height = "p_height - 4";
                 font_size = Monitor.font_size;
                 align_x = AlignX.Right;
                 info_text_ = produce();

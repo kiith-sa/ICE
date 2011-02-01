@@ -78,8 +78,8 @@ class GUIButton : GUIElement
             {
                 x = "p_left";
                 y = "p_top";
-                width = "p_right - p_left";
-                height = "p_bottom - p_top";
+                width = "p_width";
+                height = "p_height";
                 align_x = AlignX.Center;
                 align_y = AlignY.Center;
                 this.text_ = produce();

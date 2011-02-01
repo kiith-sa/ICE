@@ -8,10 +8,6 @@ import gui.guielement;
 abstract class SubMonitor : GUIElement
 {
     public:
-        this()
-        {
-            super("p_left + 4", "p_top + 22", 
-                  "p_right - p_left - 8", "p_bottom - p_top - 26");
-        }
+        this(){super("p_left + 4", "p_top + 22", "p_width - 8", "p_height - 26");}
 }
 

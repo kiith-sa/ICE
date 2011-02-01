@@ -863,7 +863,7 @@ class ScoreScreen
 
                 x = "p_left";
                 y = "p_top + 16";
-                width = "p_right - p_left";
+                width = "p_width";
                 height = "32";
                 font_size = 24;
                 text_color = Color(192, 192, 255, 128);
@@ -1738,15 +1738,15 @@ class Credits
             {
                 x = "p_left + 16";
                 y = "p_top + 16";
-                width = "p_right - p_left - 32";
-                height = "p_bottom - p_top - 56";
+                width = "p_width - 32";
+                height = "p_height - 56";
                 text = credits_;
                 this.text_ = produce();
             }
 
             with(new GUIButtonFactory)
             {
-                x = "p_left + (p_right - p_left) / 2 - 72";
+                x = "p_left + p_width / 2 - 72";
                 y = "p_bottom - 32";
                 width = "144";
                 height = "24";

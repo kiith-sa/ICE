@@ -1,6 +1,4 @@
 17:
-    Unittests where obviously easy.
-17:
     Coarse collision detection (SpatialManager)
     Maybe make SpatialManager general enough so we can use the same class
     (not same instance, probably) for both coarse collision detection and culling
@@ -34,9 +32,6 @@
 
     alternatively: just return a reference per each array of nearby objects (content of each quadtree node)
     - without copying the array itself
-17:
-    GUI substitutions: parent width and height, and rewrite math expressions with these
-    substitutions
 17:
     Profile:
     a) VERY (~30 mins) long run with a GUIGraph, note memory usage over time, FPS,

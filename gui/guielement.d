@@ -246,6 +246,8 @@ class GUIElement
             substitutions["p_right"] = parent_ is null ? 0 : parent_.bounds_.max.x;
             substitutions["p_top"] = parent_ is null ? 0 : parent_.bounds_.min.y;
             substitutions["p_bottom"] = parent_ is null ? 0 : parent_.bounds_.max.y;
+            substitutions["p_width"] = parent_ is null ? 0 : parent_.bounds_.width;
+            substitutions["p_height"] = parent_ is null ? 0 : parent_.bounds_.height;
 
             bounds_.min = Vector2i(parse_math(x_string_, substitutions), 
                                    parse_math(y_string_, substitutions));
