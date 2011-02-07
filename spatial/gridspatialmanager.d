@@ -5,6 +5,8 @@ import spatial.spatialmanager;
 import spatial.volume;
 import spatial.volumeaabbox;
 import spatial.volumecircle;
+//used by unittest
+import physics.physicsbody;
 import math.math;
 import math.vector2;
 import math.rectangle;
@@ -12,9 +14,6 @@ import iterator;
 import allocator;
 import arrayutil;
 
-
-//TODO UNITTESTS, CONTRACTS, DOCS, BUT FIRST, OUTSIDE OF HERE,
-//     DEPENDENCY INJECTION AND PHYSICSBODY.ADD_TO_SPATIAL_MANAGER
 
 ///Implementation of spatial manager storing objects in a simple square grid.
 class GridSpatialManager(T) : SpatialManager!(T)
@@ -230,6 +229,20 @@ class GridSpatialManager(T) : SpatialManager!(T)
                 }
             }
             return result;
+        }
+        unittest
+        {
+            auto zero = Vector2f(0.0f, 0.0f);
+            auto manager = new GridSpatialManager!(PhysicsBody)(zero, 16.0f, 4);
+
+            auto rectangle = Rectanglef(-15.0, -17.0, 15.0, 15.0);
+            Cell*[] result = manager.cells_rectangle(zero, rectangle);
+            assert(result.length == 6);
+            
+            rectangle = Rectanglef(-15.0, -15.0, 15.0, 33.0);
+            result = manager.cells_rectangle(zero, rectangle);
+            assert(result.length == 7);
+            assert(result.contains(&manager.outer_, true));
         }
 }
 

@@ -29,13 +29,18 @@ abstract class SpatialManager(T)
          *
          * Object must not be moved after adding or last update,
          * otherwise a call to this method can result in undefined behavior.
+         * Also, volume of the object is expected to be immutable (or, at least,
+         * not changed since object was last updated/added)
          *
-         * Params:  object = Object to add.
+         * Params:  object = Object to remove.
          */
         void remove_object(T object);
 
         /**
          * Update an object in the manager.
+         *
+         * Volume of the object is expected to be immutable (or, at least,
+         * not changed since object was last updated/added)
          *
          * Params:  object       = Object to update.
          *          old_position = Position of the object when it was last updated or added.

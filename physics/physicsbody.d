@@ -144,7 +144,7 @@ class PhysicsBody
          *
          * Params:  manager = Spatial manager to add to.
          */
-        void add_to_spatial(SpatialManager manager)
+        void add_to_spatial(SpatialManager!(PhysicsBody) manager)
         {
             position_old_ = position_;
             manager.add_object(this);
@@ -155,5 +155,8 @@ class PhysicsBody
          *
          * Params:  manager = Spatial manager to remove from.
          */
-        void remove_from_spatial(SpatialManager manager){manager.remove_object(this);}
+        void remove_from_spatial(SpatialManager!(PhysicsBody) manager)
+        {
+            manager.remove_object(this);
+        }
 }

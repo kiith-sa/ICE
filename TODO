@@ -1,23 +1,16 @@
-document that for spatialmanager to work, physics body volumes
-must be immutable. As drawing volumes could need to change (particle systems),
-so we might have a special function supplying old volume at update/remove.
-
-unittest for gridspatialmanager cells_rectangle that will make sure a given body will 
-end up in correct cells, particularly outer is important 
-(esp. if stuff that shouldn't go there is there)
-
-then: contracts, tests, docs, cleanup
-
-
 Then, write code required for usage in culling, and use in culling.
 
+As drawing volumes could need to change (particle systems),
+so we might have a special function supplying old volume at update/remove.
+Write that as a future TODO. 
 
 17:
     2D, fixed size array class used by gridspatialmanager.
     Random access with single [x,y] operator, [x][y] wouldn't work
 
-    Look at D collections project as well as D2 std.collections
-    for ideas.
+    Look at D collections project as well as D2 std.collections and Tango
+    for ideas, maybe even Java, Boost, Python classes and/or Koders, Irrlicht,
+    HUMUS, etc.
 
     Also, same thing for GraphData (dynamic 1D array or linked list or something)
 
