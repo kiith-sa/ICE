@@ -13,6 +13,8 @@ import math.rectangle;
 import iterator;
 import allocator;
 import arrayutil;
+import array2d;
+import vector;
 
 
 ///Implementation of spatial manager storing objects in a simple square grid.
@@ -41,11 +43,9 @@ class GridSpatialManager(T) : SpatialManager!(T)
 
         ///Cell representing the area outside the grid.
         Cell outer_;
-        //Can't get this work with manually allocated ptrs for unknown reason.
-        //If we absolutely need manually allocated, create a class for static-size
-        //2D array and use that.
+
         //Cells of the grid.
-        Cell[][] grid_;
+        Array2D!(Cell) grid_;
 
     public:
         /**
@@ -63,16 +63,10 @@ class GridSpatialManager(T) : SpatialManager!(T)
             float half_size_ = cell_size_ * grid_size_ * 0.5;
             origin_ = center - Vector2f(half_size_, half_size_);
 
-            //Create the grid.
-            for(uint col = 0; col < grid_size_; col++)
-            {
-                Cell[] c;
-                for(uint row = 0; row < grid_size_; row++){c ~= Cell();}
-                grid_ ~= c;
-            }
+            grid_ = Array2D!(Cell)(grid_size_, grid_size_);
         }
 
-        void die(){}
+        void die(){grid_.die();}
 
         void add_object(T object)
         in
@@ -224,7 +218,7 @@ class GridSpatialManager(T) : SpatialManager!(T)
             {
                 for(uint y = cell_y_min; y <= cell_y_max; y++)
                 {
-                    result ~= &(grid_[x][y]);
+                    result ~= grid_.ptr(x,y);
                 }
             }
             return result;
@@ -282,7 +276,7 @@ class ObjectIterator(T) : Iterator!(T[])
                 return manager_.outer_.objects;
             }
 
-            T[] output = manager_.grid_[cell_x_][cell_y_].objects;
+            T[] output = manager_.grid_[cell_x_, cell_y_].objects;
 
             //Next cell.
             cell_y_++;

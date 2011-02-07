@@ -1,18 +1,24 @@
+Fix Array2D manual storage in gridspatialmanager
+
+
 17:
-    2D, fixed size array class used by gridspatialmanager.
-    Random access with single [x,y] operator, [x][y] wouldn't work
+    Foreach instead of iterator with opApply in SpatialManager and Vector.
+    Or, better, make the Iterator class use opApply.
+17:
 
-    Look at D collections project as well as D2 std.collections and Tango
-    for ideas, maybe even Java, Boost, Python classes and/or Koders, Irrlicht,
-    HUMUS, etc.
-
-    Also, same thing for GraphData (dynamic 1D array or linked list or something)
+    Manual storage for GraphData (dynamic 1D array or linked list or something)
 
     And, look for any other classes that might be taking a lot of memory and
     use manual allocation there. This can help measurability
 17:
     When changing video mode, realign GUI, also change zoom for the 800x600
     game area to fit.
+17:
+    Rename arrayutil.remove to arrayutil.remove_first
+    and get rid of the assertion that specified element must be present.
+
+    alternatively, make it remove all items (maybe by calling the generic 
+    delegate-taking remove)
 17:
     Profile:
     a) VERY (~30 mins) long run with a GUIGraph, note memory usage over time, FPS,

@@ -4,6 +4,8 @@ module array2d;
 import allocator;
 
 
+//try to get allocation to work properly
+
 ///Fixed size 2D array struct with manually managed memory.
 struct Array2D(T)
 {
@@ -29,7 +31,15 @@ struct Array2D(T)
             Array2D!(T) result;
             result.x_ = x;
             result.y_ = y;
-            result.data_ = alloc!(T)(x * y);
+            //result.data_ = alloc!(T)(x * y);
+            result.data_.length = x * y;
+            return result;
+        }
+
+        ///Destroy the array.
+        void die()
+        {
+            //free(data_);
         }
 
         /**
@@ -42,7 +52,19 @@ struct Array2D(T)
          */
         T opIndex(uint x, uint y)
         in{assert(x < x_ && y < y_, "2D array access out of bounds");}
-        body{return data[y * x_ + x];}
+        body{return data_[y * x_ + x];}
+
+        /**
+         * Get a pointer to an element of the array.
+         * 
+         * Params:  x = X coordinate of the element to get pointer to.
+         *          y = Y coordinate of the element to get pointer to.
+         *
+         * Returns: Element at the specified coordinates.
+         */
+        T* ptr(uint x, uint y)
+        in{assert(x < x_ && y < y_, "2D array access out of bounds");}
+        body{return &(data_[y * x_ + x]);}
 
         /**
          * Set an element of the array.
@@ -52,14 +74,19 @@ struct Array2D(T)
          */
         void opIndexAssign(T value, uint x, uint y)
         in{assert(x < x_ && y < y_, "2D array access out of bounds");}
-        body{data[y * x_ + x] = value;}
-
-        ///Destroy the array.
-        void die(){free(data);}
+        body{data_[y * x_ + x] = value;}
 
         ///Get width of the array.
         uint x(){return x_;}
 
         ///Get height of the array.
         uint y(){return y_;}
+}
+unittest
+{
+    auto array = Array2D!(uint)(4,4);
+    assert(array[0,0] == 0);
+    array[1,1] = 1;
+    assert(array[1,1] == 1);
+    assert(*array.ptr(1,1) == 1);
 }

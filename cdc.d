@@ -162,7 +162,7 @@ int main(char[][] args)
 
                      "allocator.d", "arrayutil.d", "color.d", "image.d", "pong.d",
                      "signal.d", "singleton.d", "factory.d", "stringctfe.d", 
-                     "graphdata.d", "iterator.d", "array2d.d"
+                     "graphdata.d", "iterator.d", "array2d.d", "vector.d"
                      ],
                      arguments ~ extra_args);
     }
