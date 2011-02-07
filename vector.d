@@ -49,6 +49,9 @@ struct Vector(T)
             used_++;
         }
 
+        ///Access vector contents as an array.
+        T[] array(){return data_[0 .. used_];}
+
         /**
          * Remove element from the vector.
          *

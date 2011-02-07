@@ -31,7 +31,18 @@ class GridSpatialManager(T) : SpatialManager!(T)
         align(1) static struct Cell
         {
             //Objects in the cell.
-            T[] objects;
+            Vector!(T) objects;
+
+            //Construct a cell.
+            static Cell opCall()
+            {
+                Cell cell;
+                cell.objects = Vector!(T)();
+                return cell;
+            }
+
+            //Destroy the cell.
+            void die(){objects.die();}
         }
 
         //Origin of the grid (top-left corner).
@@ -64,9 +75,17 @@ class GridSpatialManager(T) : SpatialManager!(T)
             origin_ = center - Vector2f(half_size_, half_size_);
 
             grid_ = Array2D!(Cell)(grid_size_, grid_size_);
+
+            foreach(ref cell; grid_){cell = Cell();}
+            outer_ = Cell();
         }
 
-        void die(){grid_.die();}
+        void die()
+        {
+            foreach(ref cell; grid_){cell.die();}
+            outer_.die();
+            grid_.die();
+        }
 
         void add_object(T object)
         in
@@ -236,6 +255,8 @@ class GridSpatialManager(T) : SpatialManager!(T)
             result = manager.cells_rectangle(zero, rectangle);
             assert(result.length == 7);
             assert(result.contains(&manager.outer_, true));
+
+            manager.die();
         }
 }
 
@@ -273,10 +294,10 @@ class ObjectIterator(T) : Iterator!(T[])
             {
                 //we set cell_y_ to grid size signifying end of the iteration.
                 cell_y_ = manager_.grid_size_;
-                return manager_.outer_.objects;
+                return manager_.outer_.objects.array;
             }
 
-            T[] output = manager_.grid_[cell_x_, cell_y_].objects;
+            T[] output = manager_.grid_[cell_x_, cell_y_].objects.array;
 
             //Next cell.
             cell_y_++;

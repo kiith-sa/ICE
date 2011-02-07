@@ -1,11 +1,7 @@
-Fix Array2D manual storage in gridspatialmanager
-
-
 17:
     Foreach instead of iterator with opApply in SpatialManager and Vector.
     Or, better, make the Iterator class use opApply.
 17:
-
     Manual storage for GraphData (dynamic 1D array or linked list or something)
 
     And, look for any other classes that might be taking a lot of memory and

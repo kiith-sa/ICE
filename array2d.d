@@ -4,8 +4,6 @@ module array2d;
 import allocator;
 
 
-//try to get allocation to work properly
-
 ///Fixed size 2D array struct with manually managed memory.
 struct Array2D(T)
 {
@@ -31,7 +29,7 @@ struct Array2D(T)
             Array2D!(T) result;
             result.x_ = x;
             result.y_ = y;
-            //result.data_ = alloc!(T)(x * y);
+            result.data_ = alloc!(T)(x * y);
             result.data_.length = x * y;
             return result;
         }
@@ -39,7 +37,19 @@ struct Array2D(T)
         ///Destroy the array.
         void die()
         {
-            //free(data_);
+            free(data_);
+        }
+
+        ///Used by foreach.
+        int opApply(int delegate(ref T) dg)
+        {
+            int result = 0;
+            for(uint i = 0; i < data_.length; i++)
+            {
+                result = dg(data_[i]);
+                if(result){break;}
+            }
+            return result;
         }
 
         /**
@@ -89,4 +99,5 @@ unittest
     array[1,1] = 1;
     assert(array[1,1] == 1);
     assert(*array.ptr(1,1) == 1);
+    array.die();
 }
