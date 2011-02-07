@@ -1,15 +1,15 @@
-module physics.collisionaabbox;
+module spatial.volumeaabbox;
 
 
-import physics.collisionvolume;
+import spatial.volume;
 import math.vector2;
 import math.rectangle;
 
 
 ///2D axis aligned bounding box (aka rectangle).
-final class CollisionAABBox : CollisionVolume
+final class VolumeAABBox : Volume
 {
-    package:
+    public:
         //Bounding box rectangle in object space.
         Rectanglef rectangle;
 

@@ -158,11 +158,11 @@ int main(char[][] args)
                      "dependencies/", 
                      
                      "physics/", "actor/", "file/", "formats/", "gui/", "math/", 
-                     "monitor/", "platform/", "time/", "video/", 
+                     "monitor/", "platform/", "time/", "video/", "spatial/", 
 
                      "allocator.d", "arrayutil.d", "color.d", "image.d", "pong.d",
                      "signal.d", "singleton.d", "factory.d", "stringctfe.d", 
-                     "graphdata.d"
+                     "graphdata.d", "iterator.d"
                      ],
                      arguments ~ extra_args);
     }

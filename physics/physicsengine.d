@@ -5,6 +5,8 @@ import physics.physicsbody;
 import physics.contact;
 import physics.contactdetect;
 import physics.physicsmonitor;
+import spatial.spatialmanager;
+import spatial.gridspatialmanager;
 import gui.guielement;
 import monitor.monitormenu;
 import monitor.monitorable;
@@ -12,6 +14,7 @@ import math.vector2;
 import signal;
 import weaksingleton;
 import arrayutil;
+import iterator;
 
 
 /**
@@ -35,6 +38,9 @@ final class PhysicsEngine : Monitorable
     }
 
     private:
+        //Spatial manager used for coarse collision detection.
+        SpatialManager!(PhysicsBody) spatial_manager_;
+
         //Are we updating (running the simulation) right now?
         bool updating_;
 
@@ -72,8 +78,16 @@ final class PhysicsEngine : Monitorable
         mixin Signal!(Statistics) send_statistics;
 
     public:
-        //Construct the PhysicsEngine.
-        this(){singleton_ctor();}
+        /**
+         * Construct the PhysicsEngine.
+         *
+         * Params:  spatial_manager = Spatial manager to use for coarse collision detection.
+         */
+        this(SpatialManager!(PhysicsBody) spatial_manager)
+        {
+            singleton_ctor();
+            spatial_manager_ = spatial_manager;
+        }
 
         ///Destroy this PhysicsEngine.
         void die()
@@ -89,7 +103,10 @@ final class PhysicsEngine : Monitorable
             updating_ = true;
 
             //update all bodies' states
-            foreach(physics_body; bodies_){physics_body.update(time_step);}
+            foreach(physics_body; bodies_)
+            {
+                physics_body.update(time_step, spatial_manager_);
+            }
 
             //handle collisions
             detect_contacts();
@@ -119,7 +136,11 @@ final class PhysicsEngine : Monitorable
         body
         {
             statistics_.bodies++;
-            if(physics_body.volume is null){statistics_.col_bodies++;}
+            if(physics_body.volume !is null)
+            {
+                statistics_.col_bodies++;
+                spatial_manager_.add_object(physics_body);
+            }
 
             bodies_ ~= physics_body;
         }
@@ -138,7 +159,11 @@ final class PhysicsEngine : Monitorable
             alias arrayutil.remove remove;
 
             statistics_.bodies--;
-            if(physics_body.volume is null){statistics_.col_bodies--;}
+            if(physics_body.volume !is null)
+            {
+                statistics_.col_bodies--;
+                spatial_manager_.remove_object(physics_body);
+            }
 
             bodies_.remove(physics_body, true);
         }
@@ -147,17 +172,23 @@ final class PhysicsEngine : Monitorable
         //Detect collisions between bodies.
         void detect_contacts()
         {
+            auto iterator = spatial_manager_.iterator;
             Contact current_contact;
-            foreach(uint a, body_a; bodies_)
+            //going over each group of potentially colliding objects
+            while(iterator.has_next())
             {
-                //we only need to check a subrange of bodies_
-                //since we'd get the same pairs of objects checked anyway
-                for(uint b = a + 1; b < bodies_.length; b++)
+                PhysicsBody[] bodies = iterator.next();
+                foreach(uint a, body_a; bodies)
                 {
-                    statistics_.tests++;
-                    if(detect_contact(body_a, bodies_[b], current_contact))
+                    //we only need to check a subrange of bodies_
+                    //since we'd get the same pairs of objects checked anyway
+                    for(uint b = a + 1; b < bodies.length; b++)
                     {
-                        contacts_ ~= current_contact;
+                        statistics_.tests++;
+                        if(detect_contact(body_a, bodies[b], current_contact))
+                        {
+                            contacts_ ~= current_contact;
+                        }
                     }
                 }
             }

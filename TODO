@@ -1,37 +1,40 @@
+
+note for docs, and try to make this less of a problem:
+position_old_ of a body is saved at construction,
+and it is added by physicsengine to spatialmanager which means,
+if we change position in between, next update, spatial manager won't
+find the body.
+
+either document this, or, to prevent this, create a method for body to
+add itself to spatialmanager which will save position_old_, and 
+be called by physicsengine.
+
+also, document that for spatialmanager to work, physics body volumes
+must be immutable
+
+unittest for gridspatialmanager cells_rectangle that will make sure a given body will 
+end up in correct cells, particularly outer is important 
+(esp. if stuff that shouldn't go there is there)
+
+then: contracts, tests, docs, cleanup
+
+
+Then, write code required for usage in culling, and use in culling.
+
+
 17:
-    Coarse collision detection (SpatialManager)
-    Maybe make SpatialManager general enough so we can use the same class
-    (not same instance, probably) for both coarse collision detection and culling
+    2D, fixed size array class used by gridspatialmanager.
+    Random access with single [x,y] operator, [x][y] wouldn't work
 
-    For now, just implement a grid, not quadtree. Might be enough in the end.
-    Also profile how many object-object comparisons there are for contact detection.
+    Look at D collections project as well as D2 std.collections
+    for ideas.
 
-    the manager interface allows iteration over groups (groups
-    of objects that might collide) - same object can be in multiple groups.
+    Also, same thing for GraphData (dynamic 1D array or linked list or something)
 
-    This manager would probably need to contain actors, not bodies,
-    to be usable to draw only visible actors, or a separate one for bodies and actors.
-
-    Start with code using the API, then write the API itself,
-    or, just write a dummy API that does no management, has just bare
-    working methods and returns a group of all objects for coldetection,
-    write user code both for coldetection and graphics,
-    and fix the API based on results.
-
-    The manager should contain actor, but for coarse coldetection,
-    should have a mathod to return groups of bodies taken from the actors.
-
-    Thoughts:
-
-    narrow collision testing can better be done by
-    passing through the spatialmanager (e.g. quadtree),
-    and for each e.g. node, get all its pairs and detect contacts
-
-    We could do this using delegates, i.e. the spatialmanager could have a method that
-    takes a delegate that is applied on every group of nearby objects.
-
-    alternatively: just return a reference per each array of nearby objects (content of each quadtree node)
-    - without copying the array itself
+    And, look for any other classes that might be taking a lot of memory and
+    use manual allocation there. This can help measurability
+17:
+    When changing video mode, realign GUI
 17:
     Profile:
     a) VERY (~30 mins) long run with a GUIGraph, note memory usage over time, FPS,
@@ -41,6 +44,9 @@
        If it's drawing, wait until glvideodriver overhaul.
 17: 
     SpatialManager GUI monitor
+17:
+    Monitor of total size of manually allocated memory, nothing more for now.
+    Advanmced stuff after monitor overhaul.
 17:
     Look at allocator code and try to make it more new/delete like
     by alloc, or its specific version,
@@ -158,6 +164,11 @@
 
     Also manual memory management for GraphData.
     That will allow us to at least monitor its usage, and be a bit faster.
+24:
+    Advanced monitor: per-type usage graphs, 
+    number of allocations per  e.g. second (graph),
+    also a graph showing each allocation as a box
+    with size depending on size of allocated memory (advanced, but could help)
 24:
     Alongside mouse_move and mouse_key, consider more advanced
     mouse_click (triggered by quick succeeding press and release),

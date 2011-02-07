@@ -1,16 +1,16 @@
-module physics.collisioncircle;
+module spatial.volumecircle;
 
 
-import physics.collisionvolume;
+import spatial.volume;
 import math.vector2;
 
 
 ///Bounding circle.
-final class CollisionCircle : CollisionVolume
+final class VolumeCircle : Volume
 {
     invariant{assert(radius > 0.0f, "Collision circle radius must be positive");}
 
-    package:
+    public:
         //Position of circle center in object space.
         Vector2f offset;
         //Radius of the circle.

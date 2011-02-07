@@ -1,9 +1,10 @@
 module physics.physicsbody;
 
 
-import physics.collisionvolume;
+import spatial.volume;
 import physics.contact;
 import physics.physicsengine;
+import spatial.spatialmanager;
 import actor.actormanager;
 import math.vector2;
 import math.math;
@@ -13,11 +14,12 @@ import arrayutil;
 ///Object in physics simulation. Currently a (very) simple rigid body.
 class PhysicsBody
 {
-    package:
-        //Collision volume of this body. If null, this body can't collide
-        CollisionVolume volume;
-
     protected:
+        //Should be immutable or const in D2:
+        //Collision volume of this body. If null, this body can't collide.
+        Volume volume_;
+        //Position this body had last frame, in world space.
+        Vector2f position_old_;
         //Position of this body in world space.
         Vector2f position_;
         //Velocity of this body in world space.
@@ -32,16 +34,16 @@ class PhysicsBody
          * Construct a PhysicsBody with specified parameters.
          *
          * Params:    volume   = Collision volume to use for collision detection.
-         *                                 If null, this body cannot collide with anything.
-         *            position =           Position of the body in world space.
-         *            velocity =           Velocity of the body.
-         *            mass     =           Mass of the body. Can be infinite (immovable objects)
-         *                                 Can't be zero or negative.
+         *                       If null, this body cannot collide with anything.
+         *            position = Position of the body in world space.
+         *            velocity = Velocity of the body.
+         *            mass     = Mass of the body. Can be infinite (immovable objects)
+         *                       Can't be zero or negative.
          */
-        this(CollisionVolume volume, Vector2f position, Vector2f velocity, real mass)
+        this(Volume volume, Vector2f position, Vector2f velocity, real mass)
         {
-            this.volume = volume;
-            position_ = position;
+            this.volume_ = volume;
+            position_old_ = position_ = position;
             velocity_ = velocity;
             this.mass = mass;
         }
@@ -93,7 +95,7 @@ class PhysicsBody
         final real inverse_mass(){return inverse_mass_;}
 
         ///Return collision volume of this body.
-        final CollisionVolume collision_volume(){return volume;}
+        final Volume volume(){return volume_;}
 
         ///Return an array of bodies this body has collided with during last physics update.
         PhysicsBody[] colliders(){return colliders_;} 
@@ -105,11 +107,18 @@ class PhysicsBody
          * Update physics state of this body to the next frame.
          *
          * Params:  time_step = Time length of the frame in seconds.
+         *          manager   = Spatial manager managing the body.
          */
-        void update(real time_step)
+        void update(real time_step, SpatialManager!(PhysicsBody) manager)
         {
             position_ += velocity_ * time_step;
             colliders_.length = 0; 
+            //spatial manager does not manage bodies without volumes.
+            if(position_ != position_old_ && volume_ !is null)
+            {
+                manager.update_object(this, position_old_);
+            }
+            position_old_ = position_;
         }
 
     package:

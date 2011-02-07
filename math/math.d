@@ -153,11 +153,30 @@ body
 ///Round a float value to a signed 32-bit int.
 int round32(T) (T f){return cast(int)round(f);}
 
-///Convert a float value to an unsigned 8-bit int (truncating fraction part).
-ubyte float_to_u8(float f)
+///Floor a float value to an unsigned 8-bit int
+ubyte floor_u8(float f)
 {
     f += 256.0f;
-    return ((*cast(int*)&f)&0x7fffff)>>15;
+    return ((*cast(uint*)&f)&0x7fffff)>>15;
+}
+unittest
+{
+    assert(floor_u8(8.001) == 8);
+    assert(floor_u8(7.999) == 7);
+}
+
+///Floor a float value to a signed 32-bit int
+uint floor_s32(double f)
+{
+    //2 ^ 36 * 1.5,  (52 - 16 == 36) uses limited precisicion to floor
+    f += 68719476736.0*1.5; 
+    return (*cast(int*)&f) >> 16;
+}
+unittest
+{
+    assert(floor_s32(8.00001) == 8);
+    assert(floor_s32(7.99999) == 7);
+    assert(floor_s32(-0.00001) == -1);
 }
 
 ///Return a random real between given numbers

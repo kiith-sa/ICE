@@ -23,9 +23,11 @@ import actor.lineemitter;
 import actor.linetrail;
 import physics.physicsengine;
 import physics.physicsbody;
-import physics.collisionaabbox;
-import physics.collisioncircle;
 import physics.contact;
+import spatial.spatialmanager;
+import spatial.gridspatialmanager;
+import spatial.volumeaabbox;
+import spatial.volumecircle;
 import gui.guielement;
 import gui.guimenu;
 import gui.guibutton;
@@ -104,7 +106,7 @@ abstract class WallFactoryBase(T) : ActorFactory!(T)
                            "Vector2f $ box_max $ Vector2f(1.0f, 1.0f)"));
     private:
         //Get a collision aabbox based on factory parameters. Used in produce().
-        CollisionAABBox bbox(){return new CollisionAABBox(box_min_, box_max_ - box_min_);}
+        VolumeAABBox bbox(){return new VolumeAABBox(box_min_, box_max_ - box_min_);}
         //Get a bounds rectangle based on factory parameters. Used in produce().
         Rectanglef rectangle(){return Rectanglef(box_min_, box_max_);}
 }
@@ -185,7 +187,7 @@ class PaddleBody : PhysicsBody
             return velocity * ball.velocity.length;
         }
 
-        override void update(real time_step)
+        override void update(real time_step, SpatialManager!(PhysicsBody) manager)
         {
             //keep the paddle within the limits
             Rectanglef box = aabbox;
@@ -193,7 +195,7 @@ class PaddleBody : PhysicsBody
                                                     limits_.max - box.max);
             position = position_limits.clamp(position);
 
-            super.update(time_step);
+            super.update(time_step, manager);
         }
 
         ///Return limits of movement of this paddle body.
@@ -209,7 +211,7 @@ class PaddleBody : PhysicsBody
          *          mass     = Mass of the body.
          *          limits   = Limits of body's movement
          */
-        this(CollisionAABBox aabbox,Vector2f position, Vector2f velocity, 
+        this(VolumeAABBox aabbox,Vector2f position, Vector2f velocity, 
              real mass, ref Rectanglef limits)
         {
             super(aabbox, position, velocity, mass);
@@ -222,10 +224,10 @@ class PaddleBody : PhysicsBody
         in
         {
             //checking here because invariant can't call public function members
-            assert(collision_volume.classinfo == CollisionAABBox.classinfo,
+            assert(volume.classinfo == VolumeAABBox.classinfo,
                    "Collision volume of a paddle must be an axis aligned bounding box");
         }
-        body{return(cast(CollisionAABBox)collision_volume).bounding_box;}
+        body{return(cast(VolumeAABBox)volume).bounding_box;}
 }
 
 ///A paddle controlled by a player or AI.
@@ -379,7 +381,7 @@ class BallBody : PhysicsBody
          *          radius   = Radius of a circle representing bounding circle
          *                     of this body (centered at body's position).
          */
-        this(CollisionCircle circle, Vector2f position, Vector2f velocity, 
+        this(VolumeCircle circle, Vector2f position, Vector2f velocity, 
              real mass, float radius)
         {
             radius_ = radius;
@@ -420,12 +422,11 @@ class DummyBallBody : BallBody
          *          radius   = Radius of a circle representing bounding circle
          *                     of this body (centered at body's position).
          */
-        this(CollisionCircle circle, Vector2f position, Vector2f velocity, 
+        this(VolumeCircle circle, Vector2f position, Vector2f velocity, 
              real mass, float radius)
         {
             super(circle, position, velocity, mass, radius);
         }
-
 }
 
 ///A ball that can bounce off other objects.
@@ -558,9 +559,9 @@ class BallFactory : ActorFactory!(Ball)
 
     protected:
         //Construct collision circle with factory parameters.
-        final CollisionCircle circle()
+        final VolumeCircle circle()
         {
-            return new CollisionCircle(Vector2f(0.0f, 0.0f), radius_);
+            return new VolumeCircle(Vector2f(0.0f, 0.0f), radius_);
         }
 
         //Construct ball body with factory parameters.
@@ -1360,7 +1361,7 @@ class Game
         real spawn_spread_ = 0.28;
 
         Ball[] dummies_;
-        uint dummy_count_ = 55;
+        uint dummy_count_ = 20;
 
         Wall wall_right_, wall_left_; 
         Wall goal_up_, goal_down_; 
@@ -1626,6 +1627,8 @@ class Game
 class GameContainer
 {
     private:
+        //Spatial manager used by the physics engine for coarse collision detection.
+        SpatialManager!(PhysicsBody) spatial_physics_;
         //Physics engine used by the actor manager.
         PhysicsEngine physics_engine_;
         //Actor manager used by the game.
@@ -1648,15 +1651,18 @@ class GameContainer
         Game produce(Platform platform, Monitor monitor, GUIElement gui_parent)
         in
         {
-            assert(physics_engine_ is null && 
-                   actor_manager_ is null && 
+            assert(spatial_physics_ is null &&
+                   physics_engine_ is null && 
+                   actor_manager_ is null &&
                    game_ is null,
                    "Can't produce two games at once with GameContainer");
         }
         body
         {
             monitor_ = monitor;
-            physics_engine_ = new PhysicsEngine;
+            spatial_physics_ = new GridSpatialManager!(PhysicsBody)
+                                   (Vector2f(400.0f, 300.0f), 25.0f, 32);
+            physics_engine_ = new PhysicsEngine(spatial_physics_);
             monitor_.add_monitorable("Physics", physics_engine_);
             actor_manager_ = new ActorManager(physics_engine_);
             gui_ = new GameGUI(gui_parent, 300.0);
@@ -1673,9 +1679,11 @@ class GameContainer
             actor_manager_.die();
             monitor_.remove_monitorable(physics_engine_);
             physics_engine_.die();
+            spatial_physics_.die();
             game_ = null;
             actor_manager_ = null;
             physics_engine_ = null;
+            spatial_physics_ = null;
             monitor_ = null;
         }
 }

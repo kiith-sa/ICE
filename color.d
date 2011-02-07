@@ -154,11 +154,11 @@ align(1) struct Color
     body
     {
         float inv = 1.0 - d;
-        //this truncates the fraction part and hence is imprecise, but is fast.
-        return Color(float_to_u8(r * d + c.r * inv), 
-                     float_to_u8(g * d + c.g * inv),
-                     float_to_u8(b * d + c.b * inv), 
-                     float_to_u8(a * d + c.a * inv));
+        //this truncates the fraction part and hence is imprecise, but fast.
+        return Color(floor_u8(r * d + c.r * inv), 
+                     floor_u8(g * d + c.g * inv),
+                     floor_u8(b * d + c.b * inv), 
+                     floor_u8(a * d + c.a * inv));
     }
 
     ///Set grayscale color.

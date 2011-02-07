@@ -7,6 +7,7 @@ import std.stdio;
 import actor.actor;
 import actor.actorcontainer;
 import physics.physicsengine;
+import spatial.spatialmanager;
 import video.videodriver;
 import math.vector2;
 import time.time;
@@ -195,6 +196,7 @@ final class ActorManager : ActorContainer
 
             actors_to_add_ = [];
             actors_to_remove_ = [];
+            update_counter_.event();
 
             //Update actors' states
             foreach(actor; actors_)

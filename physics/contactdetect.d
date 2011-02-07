@@ -4,10 +4,10 @@ module physics.contactdetect;
 import std.math;
 
 import physics.physicsbody;
-import physics.collisionvolume;
-import physics.collisionaabbox;
-import physics.collisioncircle;
 import physics.contact;
+import spatial.volume;
+import spatial.volumeaabbox;
+import spatial.volumecircle;
 import math.vector2;
 import math.rectangle;
 import arrayutil;
@@ -63,19 +63,19 @@ private:
  */
 bool intersection(Vector2f position1,
                   Vector2f position2,
-                  CollisionVolume volume1, 
-                  CollisionVolume volume2, 
+                  Volume volume1, 
+                  Volume volume2, 
                   ref Contact contact)
 in
 {
     auto class_a = volume1.classinfo;
     auto class_b = volume2.classinfo;
 
-    static aabbox = CollisionAABBox.classinfo;
-    static circle = CollisionCircle.classinfo;
+    static aabbox = VolumeAABBox.classinfo;
+    static circle = VolumeCircle.classinfo;
 
-    assert(class_a == aabbox || class_a == circle, "Unsupported collision volume type");
-    assert(class_b == aabbox || class_b == circle, "Unsupported collision volume type");
+    assert(class_a is aabbox || class_a is circle, "Unsupported collision volume type");
+    assert(class_b is aabbox || class_b is circle, "Unsupported collision volume type");
 
     assert(volume1 !is volume2, "Can't test intersection of a collision volume with itself");
 }
@@ -84,44 +84,44 @@ body
     auto class_a = volume1.classinfo;
     auto class_b = volume2.classinfo;
 
-    static aabbox = CollisionAABBox.classinfo;
-    static circle = CollisionCircle.classinfo;
+    static const aabbox = VolumeAABBox.classinfo;
+    static const circle = VolumeCircle.classinfo;
 
-    if(class_a == aabbox)
+    if(class_a is aabbox)
     {
-        if(class_b == aabbox)
+        if(class_b is aabbox)
         {
             return aabbox_aabbox(position1, position2, 
-                                 cast(CollisionAABBox)volume1, 
-                                 cast(CollisionAABBox)volume2,
+                                 cast(VolumeAABBox)volume1, 
+                                 cast(VolumeAABBox)volume2,
                                  contact);
         }
-        else if(class_b == circle)
+        else if(class_b is circle)
         {
             return aabbox_circle(position1, position2, 
-                                 cast(CollisionAABBox)volume1, 
-                                 cast(CollisionCircle)volume2,
+                                 cast(VolumeAABBox)volume1, 
+                                 cast(VolumeCircle)volume2,
                                  contact);
         }
         assert(false, "Unsupported collision volume");
     }
-    else if(class_a == circle)
+    else if(class_a is circle)
     {
-        if(class_b == aabbox)
+        if(class_b is aabbox)
         {
             //swapping volumes for test, then swapping them back in the contact
             bool result = aabbox_circle(position1, position2, 
-                                        cast(CollisionAABBox)volume2,
-                                        cast(CollisionCircle)volume1, 
+                                        cast(VolumeAABBox)volume2,
+                                        cast(VolumeCircle)volume1, 
                                         contact);
             contact.swap_bodies();
             return result;
         }
-        else if(class_b == circle)
+        else if(class_b is circle)
         {
             return circle_circle(position1, position2, 
-                                 cast(CollisionCircle)volume1, 
-                                 cast(CollisionCircle)volume2,
+                                 cast(VolumeCircle)volume1, 
+                                 cast(VolumeCircle)volume2,
                                  contact);
         }
         assert(false, "Unsupported collision volume");
@@ -142,8 +142,8 @@ body
  */
 bool aabbox_aabbox(Vector2f box1_position,
                    Vector2f box2_position,
-                   CollisionAABBox box1, 
-                   CollisionAABBox box2, 
+                   VolumeAABBox box1, 
+                   VolumeAABBox box2, 
                    ref Contact contact)
 {
     //combined half-widths/half-heights of the rectangles.
@@ -184,9 +184,9 @@ unittest
     //default initialized to zero vector
     Vector2f zero;
 
-    auto box1 = new CollisionAABBox(zero, Vector2f(4.0f, 3.0f));
-    auto box2 = new CollisionAABBox(Vector2f(3.0f, 1.0f), Vector2f(3.0f, 1.0f));
-    auto box3 = new CollisionAABBox(Vector2f(4.1f, 1.0f), Vector2f(3.0f, 1.0f));
+    auto box1 = new VolumeAABBox(zero, Vector2f(4.0f, 3.0f));
+    auto box2 = new VolumeAABBox(Vector2f(3.0f, 1.0f), Vector2f(3.0f, 1.0f));
+    auto box3 = new VolumeAABBox(Vector2f(4.1f, 1.0f), Vector2f(3.0f, 1.0f));
 
     Contact contact;
     assert(aabbox_aabbox(zero, zero, box1, box2, contact) == true);
@@ -209,8 +209,8 @@ unittest
  */
 bool circle_circle(Vector2f circle1_position,
                    Vector2f circle2_position,
-                   CollisionCircle circle1, 
-                   CollisionCircle circle2, 
+                   VolumeCircle circle1, 
+                   VolumeCircle circle2, 
                    ref Contact contact)
 {
     //difference of circle positions in world space
@@ -239,9 +239,9 @@ unittest
     //default initialized to zero vector
     Vector2f zero;
 
-    auto circle1 = new CollisionCircle(zero, 4.0f);
-    auto circle2 = new CollisionCircle(Vector2f(0.0f, 6.7f), 3.0f);
-    auto circle3 = new CollisionCircle(Vector2f(0.1f, 7.0f), 3.0f);
+    auto circle1 = new VolumeCircle(zero, 4.0f);
+    auto circle2 = new VolumeCircle(Vector2f(0.0f, 6.7f), 3.0f);
+    auto circle3 = new VolumeCircle(Vector2f(0.1f, 7.0f), 3.0f);
 
     Contact contact;
     assert(circle_circle(zero, zero, circle1, circle2, contact) == true);
@@ -264,8 +264,8 @@ unittest
  */
 bool aabbox_circle(Vector2f box_position,
                    Vector2f circle_position,
-                   CollisionAABBox box, 
-                   CollisionCircle circle, 
+                   VolumeAABBox box, 
+                   VolumeCircle circle, 
                    ref Contact contact)
 {
     //convert to box space
@@ -296,10 +296,10 @@ unittest
     //default initialized to zero vector
     Vector2f zero;
 
-    auto circle1 = new CollisionCircle(zero, 4.0f);
-    auto circle2 = new CollisionCircle(Vector2f(0.0f, 6.5f), 3.0f);
-    auto box1 = new CollisionAABBox(zero, Vector2f(4.0f, 3.0f));
-    auto box2 = new CollisionAABBox(Vector2f(-2.0f, -6.9f), Vector2f(4.0f, 3.0f));
+    auto circle1 = new VolumeCircle(zero, 4.0f);
+    auto circle2 = new VolumeCircle(Vector2f(0.0f, 6.5f), 3.0f);
+    auto box1 = new VolumeAABBox(zero, Vector2f(4.0f, 3.0f));
+    auto box2 = new VolumeAABBox(Vector2f(-2.0f, -6.9f), Vector2f(4.0f, 3.0f));
 
     Contact contact;
     assert(aabbox_circle(zero, zero, box2, circle1, contact) == true);
