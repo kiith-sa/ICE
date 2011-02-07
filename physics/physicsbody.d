@@ -18,7 +18,7 @@ class PhysicsBody
         //Should be immutable or const in D2:
         //Collision volume of this body. If null, this body can't collide.
         Volume volume_;
-        //Position this body had last frame, in world space.
+        //Position this body had last frame, in world space, used for spatial management.
         Vector2f position_old_;
         //Position of this body in world space.
         Vector2f position_;
@@ -138,4 +138,22 @@ class PhysicsBody
             if(!colliders_.contains(other, true)){colliders_ ~= other;}
             collision_response(contact);
         }
+
+        /*
+         * Add this body to a spatial manager (and save old position).
+         *
+         * Params:  manager = Spatial manager to add to.
+         */
+        void add_to_spatial(SpatialManager manager)
+        {
+            position_old_ = position_;
+            manager.add_object(this);
+        }
+
+        /*
+         * Add this body from a spatial manager.
+         *
+         * Params:  manager = Spatial manager to remove from.
+         */
+        void remove_from_spatial(SpatialManager manager){manager.remove_object(this);}
 }

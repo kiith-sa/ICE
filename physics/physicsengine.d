@@ -139,7 +139,7 @@ final class PhysicsEngine : Monitorable
             if(physics_body.volume !is null)
             {
                 statistics_.col_bodies++;
-                spatial_manager_.add_object(physics_body);
+                physics_body.add_to_spatial(spatial_manager_);
             }
 
             bodies_ ~= physics_body;
@@ -162,7 +162,7 @@ final class PhysicsEngine : Monitorable
             if(physics_body.volume !is null)
             {
                 statistics_.col_bodies--;
-                spatial_manager_.remove_object(physics_body);
+                physics_body.remove_from_spatial(spatial_manager_);
             }
 
             bodies_.remove(physics_body, true);

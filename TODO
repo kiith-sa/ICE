@@ -1,16 +1,6 @@
-
-note for docs, and try to make this less of a problem:
-position_old_ of a body is saved at construction,
-and it is added by physicsengine to spatialmanager which means,
-if we change position in between, next update, spatial manager won't
-find the body.
-
-either document this, or, to prevent this, create a method for body to
-add itself to spatialmanager which will save position_old_, and 
-be called by physicsengine.
-
-also, document that for spatialmanager to work, physics body volumes
-must be immutable
+document that for spatialmanager to work, physics body volumes
+must be immutable. As drawing volumes could need to change (particle systems),
+so we might have a special function supplying old volume at update/remove.
 
 unittest for gridspatialmanager cells_rectangle that will make sure a given body will 
 end up in correct cells, particularly outer is important 
