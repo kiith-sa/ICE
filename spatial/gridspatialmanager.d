@@ -26,7 +26,7 @@ class GridSpatialManager(T) : SpatialManager!(T)
 
     private:
         //Grid cell struct.
-        static struct Cell
+        align(1) static struct Cell
         {
             //Objects in the cell.
             T[] objects;
@@ -113,7 +113,6 @@ class GridSpatialManager(T) : SpatialManager!(T)
         }
         body
         {
-            
             foreach(cell; cells(old_position, object.volume))
             {
                 assert(cell.objects.contains(object, true),

@@ -1,9 +1,3 @@
-Then, write code required for usage in culling, and use in culling.
-
-As drawing volumes could need to change (particle systems),
-so we might have a special function supplying old volume at update/remove.
-Write that as a future TODO. 
-
 17:
     2D, fixed size array class used by gridspatialmanager.
     Random access with single [x,y] operator, [x][y] wouldn't work
@@ -17,7 +11,8 @@ Write that as a future TODO.
     And, look for any other classes that might be taking a lot of memory and
     use manual allocation there. This can help measurability
 17:
-    When changing video mode, realign GUI
+    When changing video mode, realign GUI, also change zoom for the 800x600
+    game area to fit.
 17:
     Profile:
     a) VERY (~30 mins) long run with a GUIGraph, note memory usage over time, FPS,
@@ -26,7 +21,8 @@ Write that as a future TODO.
        GraphMonitor.Graph.data_points(), optimize it with binary search.
        If it's drawing, wait until glvideodriver overhaul.
 17: 
-    SpatialManager GUI monitor
+    GridSpatialManager GUI monitor showing cells with colors based
+    on number of objects inside.
 17:
     Monitor of total size of manually allocated memory, nothing more for now.
     Advanmced stuff after monitor overhaul.
@@ -221,6 +217,13 @@ Write that as a future TODO.
     Sounds
 17:
     Multiplayer, with single PC and over a network (test with two computers)
+14:
+    SpatialManager:
+    Write code required for usage in culling (special iterator), and use in culling.
+
+    As drawing volumes could need to change (particle systems),
+    so we might have a special function supplying old volume at update/remove.
+    Write that as a future TODO. 
 14:
     AI difficulty settings;
 14:
