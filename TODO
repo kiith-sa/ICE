@@ -1,10 +1,19 @@
+GraphMonitor.Graph.data_points(): optimize it with binary search.
+
+Also, instead of getting a data point array - get an iterator
+that will generate data points during iteration.
+
+And, again, try to make graphs a completely private member of graphdata.
+That needs a method to get all graphs' names, and also data point iterator
+with specified params for graph with specified name.
+Also struct Graph should be private to GraphData.
+
+full graph manin menu FPS: 104 +- 4
+20 mins:                   ~65 FPS
 17:
-    Profile:
-    a) VERY (~30 mins) long run with a GUIGraph, note memory usage over time, FPS,
-       and, code analyst stats.
-       If it turns out to be that a lot of time is spent iterating in
-       GraphMonitor.Graph.data_points(), optimize it with binary search.
-       If it's drawing, wait until glvideodriver overhaul.
+    Another profile, this time of normally running game.
+17:
+    Get rid of all dmd warnings
 17: 
     GridSpatialManager GUI monitor showing cells with colors based
     on number of objects inside.

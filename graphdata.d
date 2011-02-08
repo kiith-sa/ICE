@@ -55,7 +55,6 @@ final class GraphData
                 //added over period specified by the time resolution.
                 Value current_value_;
                 //Values recorded, sorted from earliest to latest.
-                //Value[] values_;
                 Vector!(Value) values_;
 
                 /*

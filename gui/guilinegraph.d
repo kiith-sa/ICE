@@ -12,7 +12,8 @@ import graphdata;
 import time.time;
 import time.timer;
 import color;
-import factory;
+import factory;     
+import vector;
 
 /**
  * Line graph widget, showing multiple changing values, 
@@ -36,7 +37,13 @@ final class GUILineGraph : GUIElement
             //Color of the graph.
             Color color = Color.grey;
             //Vertices of the line strip used to display the graph, in screen space.
-            Vector2f[] line_strip;
+            Vector!(Vector2f) line_strip;
+
+            //Construct a GraphDisplay.
+            this(){line_strip = Vector!(Vector2f)();}
+
+            //Destroy this GraphDisplay.
+            void die(){line_strip.die();}
         }
 
         //Horizontal line on the graph.
@@ -141,6 +148,13 @@ final class GUILineGraph : GUIElement
 
         ///Set font size of this graph.
         void font_size(uint size){font_size_ = size;}
+
+        ///Destroy this GUILineGraph.
+        void die()
+        {
+            foreach(display; graphics_.values){display.die();}
+            super.die();
+        }
 
     protected:
         /**
@@ -337,7 +351,7 @@ final class GUILineGraph : GUIElement
             driver.line_aa = true;
             driver.line_width = 0.7;
 
-            driver.draw_line_strip(graphics.line_strip, graphics.color);
+            driver.draw_line_strip(graphics.line_strip.array, graphics.color);
 
             driver.line_width = 1;                  
             driver.line_aa = false;

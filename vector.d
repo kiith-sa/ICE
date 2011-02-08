@@ -140,6 +140,20 @@ struct Vector(T)
 
         ///Get number of elements in the vector.
         uint length(){return used_;}
+
+        /**
+         * Change length of the vector.
+         * 
+         * If the length will be lower than current length, trailing elements will
+         * be erased. If higher, the vector will be expanded.
+         *
+         * Params:  length = length to set.
+         */
+        void length(uint length)
+        {
+            if(length > data_.length){data_ = realloc(data_, length);}
+            used_ = length;
+        }
 }
 unittest
 {

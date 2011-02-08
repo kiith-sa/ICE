@@ -132,7 +132,7 @@ int main(char[][] args)
 
     bool no_sse = false;
 
-    string[] extra_args;
+    string[] extra_args = ["-w", "-wi"];
 
     if(args.length > 1)
     {
