@@ -980,22 +980,23 @@ class BallSpawner : Actor
         /*
          * Constructs a BallSpawner with specified parameters.
          * 
-         * Params:    container  = Container to manage this actor.
-         *            timer      = Ball will be spawned when this timer (game time) expires.
-         *                         70% of the time will be taken by the rays effect.
-         *            spread     = "Randomness" of the spawn directions.
-         *                         Zero will result in only one definite direction,
-         *                         1 will result in completely random direction
-         *                         (except for horizontal directions that are 
-         *                         disallowed to prevent ball from getting stuck)
-         *            ball_speed = Speed to spawn the ball at.
+         * Params:    container    = Container to manage this actor.
+         *            physics_body = Physics body of the spawner.
+         *            timer        = Ball will be spawned when this timer (game time) expires.
+         *                           70% of the time will be taken by the rays effect.
+         *            spread       = "Randomness" of the spawn directions.
+         *                           Zero will result in only one definite direction,
+         *                           1 will result in completely random direction
+         *                           (except for horizontal directions that are 
+         *                           disallowed to prevent ball from getting stuck)
+         *            ball_speed   = Speed to spawn the ball at.
          */
-        this(ActorContainer container, Timer timer, real spread, real ball_speed)
+        this(ActorContainer container, PhysicsBody physics_body, Timer timer, 
+             real spread, real ball_speed)
         in{assert(spread >= 0.0, "Negative ball spawning spread");}
         body
         {                
-            super(container, new PhysicsBody(null, Vector2f(400.0f, 300.0f), 
-                                             Vector2f(0.0f, 0.0f), real.infinity));
+            super(container, physics_body);
 
             ball_speed_ = ball_speed;
             timer_ = timer;
@@ -1142,8 +1143,10 @@ final class BallSpawnerFactory : ActorFactory!(BallSpawner)
         this(real start_time){start_time_ = start_time;}
 
         override BallSpawner produce(ActorContainer container)
-        {
-            return new BallSpawner(container, Timer(time_, start_time_), spread_, ball_speed_);
+        {                          
+            auto physics_body = new PhysicsBody(null, position_, velocity_, real.infinity);
+            return new BallSpawner(container, physics_body, Timer(time_, start_time_),
+                                   spread_, ball_speed_);
         }
 }
 
@@ -1352,6 +1355,9 @@ class Game
         Platform platform_;
 
         ActorManager actor_manager_;
+
+        //Area of the game in world space.
+        static Rectanglef game_area_ = Rectanglef(0.0f, 0.0f, 800.0f, 600.0f);
         
         Ball ball_;
         real ball_radius_ = 6.0;
@@ -1486,6 +1492,9 @@ class Game
          */
         void draw(VideoDriver driver){actor_manager_.draw(driver);}
 
+        ///Get area of the game.
+        static Rectanglef game_area(){return game_area_;}
+
     private:
         this(Platform platform, ActorManager actor_manager, GameGUI gui, 
              uint score_limit, real time_limit)
@@ -1509,7 +1518,7 @@ class Game
 
                 for(uint dummy = 0; dummy < dummy_count_; dummy++)
                 {
-                    position = random_position!(float)(Vector2f(400.0f, 300.0f), 12.0f);
+                    position = random_position!(float)(game_area_.center, 12.0f);
                     velocity = 2.5 * ball_speed_ * random_direction!(float)(); 
                     dummies_ ~= produce(actor_manager_);
                 }
@@ -1528,6 +1537,7 @@ class Game
                 time = spawn_time_;
                 spread = spawn_spread_;
                 ball_speed = ball_speed_;
+                position = game_area_.center;
                 auto spawner = produce(actor_manager_);
                 spawner.spawn_ball.connect(&spawn_ball);
             }
@@ -1559,6 +1569,7 @@ class Game
                 time = spawn_time_;
                 spread = spawn_spread_;
                 ball_speed = ball_speed_;
+                position = game_area_.center;
                 auto spawner = produce(actor_manager_);
                 spawner.spawn_ball.connect(&spawn_ball);
             }
@@ -1568,7 +1579,7 @@ class Game
         {
             with(new BallFactory)
             {
-                position = Vector2f(400.0, 300.0);
+                position = game_area_.center;
                 velocity = direction * speed;
                 radius = ball_radius_;
                 ball_ = produce(actor_manager_);
@@ -2069,24 +2080,23 @@ class Pong
          */
         void reset_video_driver(uint width, uint height, ColorFormat format)
         {
-            //Size of the game area
-            const real game_width = 800.0;
-            const real game_height = 600.0;
+            //Area of the game.
+            Rectanglef area = game_.game_area;
 
             gui_.monitor.remove_monitorable(video_driver_);
             video_driver_container_.destroy();
             video_driver_ = video_driver_container_.produce!(SDLGLVideoDriver)
                             (width, height, format, false);
 
-            //zoom according to the new video mode
-            real w_mult = width / game_width;
-            real h_mult = height / game_height;
+            //Zoom according to the new video mode.
+            real w_mult = width / area.width;
+            real h_mult = height / area.height;
             real zoom = min(w_mult, h_mult);
 
-            //center game area on screen
+            //Center game area on screen.
             Vector2d offset;
-            offset.x = (w_mult / zoom - 1.0) * 0.5 * game_width * -1.0; 
-            offset.y = (h_mult / zoom - 1.0) * 0.5 * game_height * -1.0;
+            offset.x = area.min.x + (w_mult / zoom - 1.0) * 0.5 * area.width * -1.0; 
+            offset.y = area.min.y + (h_mult / zoom - 1.0) * 0.5 * area.height * -1.0;
 
             video_driver_.zoom(zoom);
             video_driver_.view_offset(offset);

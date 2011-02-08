@@ -1,7 +1,4 @@
 17:
-    Find all mentions of game area size and its center (800,600), (400,300)
-    and write them down somewhere to some constant.
-17:
     Profile:
     a) VERY (~30 mins) long run with a GUIGraph, note memory usage over time, FPS,
        and, code analyst stats.
