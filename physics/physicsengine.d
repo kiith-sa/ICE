@@ -172,12 +172,9 @@ final class PhysicsEngine : Monitorable
         //Detect collisions between bodies.
         void detect_contacts()
         {
-            auto iterator = spatial_manager_.iterator;
             Contact current_contact;
-            //going over each group of potentially colliding objects
-            while(iterator.has_next())
+            foreach(bodies; spatial_manager_.iterator)
             {
-                PhysicsBody[] bodies = iterator.next();
                 foreach(uint a, body_a; bodies)
                 {
                     //we only need to check a subrange of bodies_

@@ -270,13 +270,6 @@ class ObjectIterator(T) : Iterator!(T[])
         //Manager to iterate over objects from.
         GridSpatialManager!(T) manager_;
 
-        //We iterate over all the cells, outer, and end the iteration.
-
-        //X coordinate of the next cell in the grid.
-        uint cell_x_ = 0;
-        //Y coordinate of the next cell in the grid.
-        uint cell_y_ = 0;
-
         /*
          * Construct an ObjectIterator.
          *
@@ -285,37 +278,20 @@ class ObjectIterator(T) : Iterator!(T[])
         this(GridSpatialManager!(T) manager){manager_ = manager;}
 
     public:
-        override T[] next()
-        in{assert(has_next(), "Trying to iterate out of bounds");}
-        body
+        int opApply(int delegate(ref T[]) dg)
         {
-            //We've finished the last column, i.e. only outer is left.
-            if(cell_x_ == manager_.grid_size_)
+            int result = 0;
+
+            T[] array;
+            foreach(ref cell; manager_.grid_)
             {
-                //we set cell_y_ to grid size signifying end of the iteration.
-                cell_y_ = manager_.grid_size_;
-                return manager_.outer_.objects.array;
+                array = cell.objects.array;
+                result = dg(array);
+                if(result){break;}
             }
+            array = manager_.outer_.objects.array;
+            result = dg(array);
 
-            T[] output = manager_.grid_[cell_x_, cell_y_].objects.array;
-
-            //Next cell.
-            cell_y_++;
-
-            //We've finished a column, start next column.
-            if(cell_y_ == manager_.grid_size_)
-            {
-                cell_y_ = 0;
-                cell_x_++;
-            }
-
-            return output;
-        }
-
-        override bool has_next()
-        {
-            //if both cell coords are grid_size_ (outside of grid), we've finished iterating.
-            return !(cell_x_ == manager_.grid_size_ && 
-                     cell_y_ == manager_.grid_size_);
+            return result;
         }
 }

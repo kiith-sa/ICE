@@ -1,12 +1,12 @@
 module iterator;
 
 
-///Base class for Java-style iterators.
+/**
+ * Not really an iterator in C++ or Java sense, rather just a base 
+ * for classes that allow iterating over something with foreach.
+ */
 abstract class Iterator(T)
 {
     public:
-        ///Get next element.
-        T next();
-        ///Do we have another element?
-        bool has_next();
+        int opApply(int delegate(ref T) dg);
 }
