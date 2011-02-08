@@ -5,6 +5,7 @@ import math.math;
 import time.time;
 import time.timer;
 import arrayutil;
+import vector;
 
 ///Graph modes.
 enum GraphMode
@@ -54,7 +55,8 @@ final class GraphData
                 //added over period specified by the time resolution.
                 Value current_value_;
                 //Values recorded, sorted from earliest to latest.
-                Value[] values_;
+                //Value[] values_;
+                Vector!(Value) values_;
 
                 /*
                  * Construct the graph with specified starting time.
@@ -63,8 +65,12 @@ final class GraphData
                  */
                 this(real time)
                 {
+                    values_ = Vector!(Value)();
                     current_value_.time = time + time_resolution * 0.5; 
                 }
+
+                ///Destroy this graph.
+                void die(){values_.die();}
 
                 /*
                  * Update the graph and finish accumulating a value.
@@ -184,6 +190,12 @@ final class GraphData
             foreach(name; graph_names){graphs_[name] = new Graph(start_time_);}
 
             update_timer_ = Timer(time_resolution_, start_time_);
+        }
+
+        ///Destroy this GraphData.
+        void die()
+        {
+            foreach(graph; graphs_.values){graph.die();}
         }
 
         ///Set graph mode, i.e. should data points be sums or averages?

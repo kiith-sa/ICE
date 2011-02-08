@@ -49,6 +49,19 @@ struct Vector(T)
             used_++;
         }
 
+        /**
+         * Get element at the specified index.
+         *
+         * Index must not be out of bounds.
+         *
+         * Params:  index = Index of the element to get.
+         *
+         * Returns: Element at the specified index.
+         */
+        T opIndex(uint index)
+        in{assert(index < used_, "Vector index out of bounds");}
+        body{return data_[index];}
+
         ///Access vector contents as an array.
         T[] array(){return data_[0 .. used_];}
 

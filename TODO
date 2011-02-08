@@ -1,6 +1,4 @@
 17:
-    Manual storage for GraphData (dynamic 1D array or linked list or something)
-
     And, look for any other classes that might be taking a lot of memory and
     use manual allocation there. This can help measurability
 17:

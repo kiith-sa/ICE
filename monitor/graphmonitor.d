@@ -26,7 +26,7 @@ import color;
 abstract class GraphMonitor : SubMonitor
 {
     protected:
-        //Measured graph data.
+        //Measured graph da0ta.
         GraphData data_;
     private:
         alias std.string.toString to_string;  
@@ -58,6 +58,14 @@ abstract class GraphMonitor : SubMonitor
 
         //Is the left mouse button pressed? Used to detect mouse dragging for scrolling.
         bool left_pressed_;
+
+    public:
+        //Destroy this graph monitor.
+        void die()
+        {
+            data_.die();
+            super.die();
+        }
 
     protected:
         /*
