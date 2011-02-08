@@ -13,6 +13,7 @@ import math.vector2;
 import time.timer;
 import arrayutil;
 import factory;
+import vector;
 
 
 ///Single particle of the particle system
@@ -48,7 +49,8 @@ abstract class ParticleEmitter : ParticleSystem
         real emit_frequency_ = 10.0;
 
     protected:
-        Particle [] Particles;
+        //Particles in the system.
+        Vector!(Particle) particles_;
 
         //Velocity to emit particles at.
         Vector2f emit_velocity_ = Vector2f(1.0, 0.0);
@@ -74,6 +76,12 @@ abstract class ParticleEmitter : ParticleSystem
         ///Set angle variation of particles emitted in radians.
         final void angle_variation(real variation){angle_variation_ = variation;}
 
+        override void die()
+        {
+            particles_.die();
+            super.die();
+        }
+
     protected:
         /*
          * Construct a ParticleEmitter with specified parameters.
@@ -98,6 +106,8 @@ abstract class ParticleEmitter : ParticleSystem
             emit_frequency_ = emit_frequency;
             angle_variation_ = angle_variation;
             emit_velocity_ = emit_velocity;
+            particles_ = Vector!(Particle)();
+
             super(container, physics_body, owner, life_time);
         }
 
@@ -114,13 +124,13 @@ abstract class ParticleEmitter : ParticleSystem
 
             //remove expired particles
             bool expired(ref Particle particle){return particle.timer.expired(game_time);}
-            Particles.remove(&expired);
+            particles_.remove(&expired);
 
             //emit new particles
             emit(time_step);
 
             //update particles
-            foreach(ref particle; Particles){particle.update(time_step);}
+            foreach(ref particle; particles_){particle.update(time_step);}
 
             super.update(time_step, game_time);
         }
@@ -145,7 +155,7 @@ abstract class ParticleEmitter : ParticleSystem
                 particle.velocity = emit_velocity_;
                 particle.velocity.angle = particle.velocity.angle + angle_delta;
 
-                Particles ~= particle;
+                particles_ ~= particle;
 
                 time_accumulated_ -= emit_period;
             }

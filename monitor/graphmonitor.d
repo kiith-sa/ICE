@@ -60,8 +60,7 @@ abstract class GraphMonitor : SubMonitor
         bool left_pressed_;
 
     public:
-        //Destroy this graph monitor.
-        void die()
+        override void die()
         {
             data_.die();
             super.die();

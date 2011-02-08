@@ -67,7 +67,7 @@ final class LineTrail : LineEmitter
                 trail.position = owner_ is null ? physics_body_.position 
                                                 : owner_.position;
                 trail.timer = Timer(particle_life, game_time_);
-                Particles ~= trail;
+                particles_ ~= trail;
 
                 update_timer_ = Timer(1.0 / super.emit_frequency, game_time_);
             }
@@ -76,10 +76,10 @@ final class LineTrail : LineEmitter
         ///Draw the particle system.
         override void draw(VideoDriver driver)
         {
-            if(Particles.length >= 2)
+            if(particles_.length >= 2)
             {
                 //start of the current line
-                Vector2f v1 = Particles[0].position;
+                Vector2f v1 = particles_[0].position;
                 //end of the current line
                 Vector2f v2;
                 //start color of the current line
@@ -91,11 +91,11 @@ final class LineTrail : LineEmitter
                 driver.line_width = line_width_;
 
                 //using for instead of foreach purely for performance reasons
-                for(uint p = 1; p < Particles.length; p++)
+                for(uint p = 1; p < particles_.length; p++)
                 {
-                    v2 = Particles[p].position;
+                    v2 = particles_[p].position;
                     c2 = end_color_.interpolated(start_color_, 
-                         Particles[p].timer.age_relative(game_time_));
+                         particles_[p].timer.age_relative(game_time_));
                     driver.draw_line(v1, v2, c1, c2);
                     v1 = v2;
                     c1 = c2;

@@ -37,6 +37,7 @@ struct Array2D(T)
         ///Destroy the array.
         void die()
         {
+            x_ = y_ = 0;
             free(data_);
         }
 

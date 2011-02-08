@@ -86,7 +86,7 @@ class LineEmitter : ParticleEmitter
             driver.line_width = line_width_;
             Color color;
             //draw particles
-            foreach(ref p; Particles)
+            foreach(ref p; particles_)
             {
                 color = end_color_.interpolated(start_color_, 
                                                 p.timer.age_relative(game_time_));

@@ -27,6 +27,13 @@ struct Vector(T)
             return result;
         }
 
+        ///Destroy the vector.
+        void die()
+        {
+            used_ = 0;
+            free(data_);
+        }
+
         ///Used by foreach.
         int opApply(int delegate(ref T) dg)
         {
@@ -76,14 +83,25 @@ struct Vector(T)
          */
         void remove(T element, bool ident = false)
         {
-            for(uint i = 0; i < used_; i++)
+            for(int i = used_ - 1; i >= 0; i--)
             {
                 if(ident ? data_[i] is element : data_[i] == element)
                 {
                     remove_at_index(i);
-                    //need to go back as all elements after this index were moved back by one index
-                    i--;
                 }
+            }
+        }
+
+        ///Remove elements from vector according to a function.
+        /**
+         * Params:  deleg = Function determining whether to remove an element.
+         *                  Any element for which deleg returns true is removed.
+         */
+        void remove(bool delegate(ref T) deleg)
+        {
+            for(int i = used_ - 1; i >= 0; i--)
+            {
+                if(deleg(data_[i])){remove_at_index(i);}
             }
         }
 
@@ -119,9 +137,6 @@ struct Vector(T)
 
         ///Get number of elements in the vector.
         uint length(){return used_;}
-
-        ///Destroy the vector.
-        void die(){free(data_);}
 }
 unittest
 {
