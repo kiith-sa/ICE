@@ -3,6 +3,7 @@ module signal;
 
 import arrayutil;
 
+
 ///Signal template mixin for the signals/slot system.
 template Signal(Args ...)	
 {
@@ -41,7 +42,7 @@ template Signal(Args ...)
         }
         body
         {
-            alias arrayutil.remove remove;
-            slots_.remove(deleg, true);
+            alias arrayutil.remove_first remove_first;
+            slots_.remove_first(deleg, true);
         }
 }

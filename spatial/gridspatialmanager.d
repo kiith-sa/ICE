@@ -97,6 +97,9 @@ class GridSpatialManager(T) : SpatialManager!(T)
         {
             foreach(cell; cells(object.position, object.volume))
             {
+                assert(!cell.objects.contains(object, true),
+                       "Trying to add an object to a cell where it already is in"
+                       " grid spatial manager.");
                 cell.objects ~= object;
             }
         }

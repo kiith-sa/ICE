@@ -131,6 +131,7 @@ final class ActorManager : ActorContainer
             {
                 alias arrayutil.remove remove;
                 actors_.remove(actor, true);
+                physics_engine_.remove_body(actor.physics_body);
             }
 
             //kill all actors still alive

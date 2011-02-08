@@ -126,6 +126,8 @@ struct Vector(T)
          * Params:  element = Element to look for.
          *          ident   = Look exactly for specified element (i.e. is element)
          *                    instead of just anything equal to element (== element).
+         *
+         * Returns: True if the vector contains the element, false otherwise.
          */
         bool contains(T element, bool ident = false)
         {
@@ -133,6 +135,7 @@ struct Vector(T)
             {
                 if(ident ? data_[i] is element : data_[i] == element){return true;}
             }
+            return false;
         }
 
         ///Get number of elements in the vector.

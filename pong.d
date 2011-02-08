@@ -2058,7 +2058,7 @@ class Pong
         }
 
         ///Reset video mode
-        void reset_video(){reset_video_driver(800, 600 ColorFormat.RGBA_8);}
+        void reset_video(){reset_video_driver(800, 600, ColorFormat.RGBA_8);}
 
         /**
          * Reset video driver with specified video mode.

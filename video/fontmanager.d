@@ -101,7 +101,6 @@ package align(1) struct FontRenderer
             //minimum and maximum extents of the text.
             return Vector2u(draw_font_.text_width(text, kerning_), draw_font_.size);
         }
-
 }
 
 ///Handles all font resources. 

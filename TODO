@@ -1,10 +1,4 @@
 17:
-    Rename arrayutil.remove to arrayutil.remove_first
-    and get rid of the assertion that specified element must be present.
-
-    alternatively, make it remove all items (maybe by calling the generic 
-    delegate-taking remove)
-17:
     Find all mentions of game area size and its center (800,600), (400,300)
     and write them down somewhere to some constant.
 17:

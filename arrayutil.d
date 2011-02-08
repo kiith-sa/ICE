@@ -4,14 +4,13 @@ module arrayutil;
 import std.math;
 
 
-///Remove element from the array.
+///Remove first occurence of an element from the array.
 /**
-  * Only the first occurence of elem will be removed.
   * @param array Array to remove from.
   * @param elem Element to remove.
   * @param ident Remove exactly elem (i.e. is elem) instead of anything equal to elem (== elem).
   */
-void remove(T)(ref T[] array, T element, bool ident = false)
+void remove_first(T)(ref T[] array, T element, bool ident = false)
 {
     foreach(index, array_element; array)
     {
@@ -26,9 +25,22 @@ void remove(T)(ref T[] array, T element, bool ident = false)
             return;
         }
     }
-    assert(false, "Trying to remove an element not present in the array");
 }
 
+/**
+ * Remove element from the array.
+ * 
+ * All matching elements will be removed. 
+ *
+ * Params: array = Array to remove from.
+ *         elem  = Element to remove.
+ *         ident = Remove exactly elem (i.e. is elem) instead of anything equal to elem (== elem).
+ */
+void remove(T)(ref T[] array, T element, bool ident = false)
+{
+    remove(array, ident ? (ref T elem){return cast(bool)(elem == element);} 
+                        : (ref T elem){return elem is element;});
+}
 
 ///Remove elements from an array according to a function.
 /**

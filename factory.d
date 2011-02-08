@@ -1,7 +1,6 @@
 module factory;
 
 
-import arrayutil;
 import stringctfe;
 
 
