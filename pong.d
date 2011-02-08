@@ -1952,7 +1952,7 @@ class Pong
             gui_.credits_end.connect(&credits_end);
             gui_.game_start.connect(&pong_start);
             gui_.quit.connect(&exit);
-            gui_.reset_video.connect(&reset_video_driver);
+            gui_.reset_video.connect(&reset_video);
 
             gui_.monitor.add_monitorable("Video", video_driver_);
         }
@@ -2057,12 +2057,40 @@ class Pong
             platform_.window_caption = "FPS: " ~ std.string.toString(fps);
         }
 
-        void reset_video_driver()
+        ///Reset video mode
+        void reset_video(){reset_video_driver(800, 600 ColorFormat.RGBA_8);}
+
+        /**
+         * Reset video driver with specified video mode.
+         *
+         * Params:  width  = Window/screen width to use.
+         *          height = Window/screen height to use.
+         *          format = Color format of video mode.
+         */
+        void reset_video_driver(uint width, uint height, ColorFormat format)
         {
+            //Size of the game area
+            const real game_width = 800.0;
+            const real game_height = 600.0;
+
             gui_.monitor.remove_monitorable(video_driver_);
             video_driver_container_.destroy();
             video_driver_ = video_driver_container_.produce!(SDLGLVideoDriver)
-                            (800, 600, ColorFormat.RGBA_8, false);
+                            (width, height, format, false);
+
+            //zoom according to the new video mode
+            real w_mult = width / game_width;
+            real h_mult = height / game_height;
+            real zoom = min(w_mult, h_mult);
+
+            //center game area on screen
+            Vector2d offset;
+            offset.x = (w_mult / zoom - 1.0) * 0.5 * game_width * -1.0; 
+            offset.y = (h_mult / zoom - 1.0) * 0.5 * game_height * -1.0;
+
+            video_driver_.zoom(zoom);
+            video_driver_.view_offset(offset);
+            gui_root_.realign(video_driver_);
             gui_.monitor.add_monitorable("Video", video_driver_);
         }
 }

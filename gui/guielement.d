@@ -338,6 +338,9 @@ final class GUIRoot
             root_.die();
             singleton_dtor();
         }
+
+        ///Realign the GUI.
+        void realign(VideoDriver driver){root_.realign(driver);}
 }
 
 /**

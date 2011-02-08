@@ -1,15 +1,12 @@
 17:
-    And, look for any other classes that might be taking a lot of memory and
-    use manual allocation there. This can help measurability
-17:
-    When changing video mode, realign GUI, also change zoom for the 800x600
-    game area to fit.
-17:
     Rename arrayutil.remove to arrayutil.remove_first
     and get rid of the assertion that specified element must be present.
 
     alternatively, make it remove all items (maybe by calling the generic 
     delegate-taking remove)
+17:
+    Find all mentions of game area size and its center (800,600), (400,300)
+    and write them down somewhere to some constant.
 17:
     Profile:
     a) VERY (~30 mins) long run with a GUIGraph, note memory usage over time, FPS,
@@ -60,19 +57,11 @@
     Look at other games/demos for graphics effect ideas...
     or maybe we have enough effects by now...
 20:
-    Resolution change in-game.
-    Yeah, probably need to get all texture pages out of GPU memory and back and save other GL state.
-    Only do this after end_frame, before start_frame.
-    Also will need changes in Platform code.
-    Better now than never (since when VBOs are done they'll need saving as well)
-    Test just with a button for now, options will be added later.
-    to get texture page from GPU, use glGetTexImage.
-20:
     Multiple (two, and maybe option to generate) color schemes
 20:
     draw_border GUI element parameter should be set in factory.
 20:
-    Screenshot. Probable glReadPixels from framebuffer. Also need PNG output 
+    Screenshot. Probably glReadPixels from framebuffer. Also need PNG output 
 24:
     Weak singleton class handling time, updating actormanager and perhaps other
     stuff. Pass this class when updating actors, instead of time_step, game_time.
@@ -84,6 +73,10 @@
     -only do stuff that needs no singletons
 20:
     Check for a newer version of (D1) Derelict, if any, just in case.
+14:
+    Look for D files in main directory that can be put into packages.
+    Maybe create the dreaded util package.
+    Might add collections and util packages.
 20: 
     Get rid of immediate mode:
     support VAs and maybe VBOs (not that necessary right now) -
@@ -112,8 +105,6 @@
 
     use gDebugger to profile OGL performance
 24:
-    Window resizing
-24:
     1:
     Move FPS counter out of game code, UPS out of ActorManager. Get rid of
     statistics method/s, maybe eventcounter if can't find a use for it. 
@@ -141,7 +132,7 @@
     Also manual memory management for GraphData.
     That will allow us to at least monitor its usage, and be a bit faster.
 24:
-    Advanced monitor: per-type usage graphs, 
+    Advanced memory monitor: per-type usage graphs, 
     number of allocations per  e.g. second (graph),
     also a graph showing each allocation as a box
     with size depending on size of allocated memory (advanced, but could help)
@@ -171,9 +162,6 @@
     Optional(user options) smarter AI that takes note of ray hints from BallSpawner
     (only if those rays intersect with the goal - ignore if they're intersecting
      the walls to prevent extra stupidity)
-14:
-    Look for D files in main directory that can be put into packages.
-    Maybe create the dreaded util package.
 23:
     Profiling:
     Valgrind, Massif, Callgrind, Cachegrind, Sysprof, CodeAnalyst,
@@ -225,26 +213,15 @@
     AI difficulty settings;
 14:
     Unittests for actors, bodies etc.
-    We can make actors and bodies more testable by 
-    removing self-registration/self-deletion from
-    body, actor ctors/die()/dtors
+
     Then we can test them with simple dummy manager classes,
     or, if needed, subclassed real managers with most methods as dummies
 
-    also try to unittests subsystems, maybe using subclassed semi-dummy
+    also try to unittest subsystems, maybe using subclassed semi-dummy
     implementations - can't do this for platform/videodriver,
     others should work.
 
-    If not possible, subsystem tests (separate app/s - tests for physicsengine, videodriver,
-                     GUI, actormanager/scenemanager, actors)
-    first test managers, then data managed by them
     Also look for where we can put unittests
-    Still, try initializing singletons in unittest blocks first 
-    (and deleting them on the end of unit tests)
-    maybe create specific implementations of singletons for testing
-    -based on actually used implementations.
-    If needed- try to modify the code to make it more testable
-    (i.e. decouple subsystems and classes they manage)
 15:
     Consider tree-based math parser. Advantage is:
     GUI elements can keep the tree and just change the vaues of substitution,

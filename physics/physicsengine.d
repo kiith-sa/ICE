@@ -48,8 +48,6 @@ final class PhysicsEngine : Monitorable
         PhysicsBody[] bodies_;
 
         //Stores all contacts detected during current frame.
-        //Might be replaced by a binary tree sorted by penetration depth or desired
-        //delta velocity. (or both?)
         Contact[] contacts_;
 
         //How many times the number of contacts to iterate penetration resolution?
