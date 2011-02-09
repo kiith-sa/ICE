@@ -42,7 +42,7 @@ final class GraphData
         //Time when this guigraph was created
         real start_time_;
         //Shortest time period to accumulate values for.
-        real time_resolution_ = 0.03125;
+        real time_resolution_ = 0.0625;
         //Timer used to time graph updates.
         Timer update_timer_;
 
@@ -56,7 +56,83 @@ final class GraphData
                 Value current_value_;
                 //Values recorded, sorted from earliest to latest.
                 Vector!(Value) values_;
+                //Vector holding memory for arrays returned by data_points.
+                Vector!(real) data_points_;
 
+            public:
+                /*
+                 * Accumulate recorded values to data points, one point per
+                 * period specified, each data point being an sum or average of values
+                 * over that period, depending on graph mode. 
+                 * Return data points between times specified by start and end.
+                 * 
+                 * Params:  start  = Start time to take data points from.
+                 *          end    = End time to take data points until.
+                 *          period = Time period to represent by single data point.
+                 * 
+                 * Returns: Resulting array of data points.
+                 */
+                real[] data_points(real start, real end, real period)
+                in
+                {
+                    assert(start < end, "Can't retrieve data points for a time window"
+                                        " that ends before it starts");
+                }
+                body
+                {
+                    data_points_.length = cast(uint)((end - start) / period); 
+                    foreach(ref point; data_points_){point = 0.0;}
+                    if(empty){return data_points_.array;}
+
+                    //guess the first value in our time window.
+                    real age = start - start_time;
+                    uint value_index = clamp(cast(int)(age / time_resolution_)
+                                             ,0 , cast(int)values_.length - 1);
+                    //if we guessed too far, move back (if too near, foreach will
+                    //simply iterate to the first valid value)
+                    while(cast(int)((values_[value_index].time - start) / period) >= 0 
+                          && value_index > 0)
+                    {
+                        value_index--;
+                    }
+
+                    foreach(ref value; values_.array[value_index .. $])
+                    {
+                        int index = cast(int)((value.time - start) / period);
+                        if(index < 0){continue;}
+                        if(index >= data_points_.length){break;}
+                        if(mode_ == GraphMode.Average)
+                        {
+                            data_points_[index] = value.value / value.value_count;
+                        }
+                        else if(mode_ == GraphMode.Sum)
+                        {
+                            data_points_[index] = value.value;
+                        }
+                        else{assert(false, "Unsupported graph mode");}
+                    }
+
+                    return data_points_.array;
+                }
+
+                /*
+                 * Is this graph empty, i.e. there are no values stored?
+                 *
+                 * Note that if the graph is empty until the first accumulate
+                 * value is added, which depends on time resolution.
+                 */
+                bool empty(){return values_.length == 0;}
+
+                /*
+                 * Return start time of the graph, i.e. time of the first value in the graph.
+                 *
+                 * Note that this only makes sense if the graph is not empty.
+                 */
+                real start_time()
+                in{assert(!empty(), "Can't get start time of an empty graph");}
+                body{return values_[0].time;}
+
+            private:
                 /*
                  * Construct the graph with specified starting time.
                  *
@@ -65,11 +141,16 @@ final class GraphData
                 this(real time)
                 {
                     values_ = Vector!(Value)();
+                    data_points_ = Vector!(real)();
                     current_value_.time = time + time_resolution * 0.5; 
                 }
 
                 ///Destroy this graph.
-                void die(){values_.die();}
+                void die()
+                {
+                    values_.die();
+                    data_points_.die();
+                }
 
                 /*
                  * Update the graph and finish accumulating a value.
@@ -95,74 +176,6 @@ final class GraphData
                     current_value_.value += value;
                     current_value_.value_count++;
                 }
-
-            public:
-                /*
-                 * Accumulate recorded values to data points, one point per
-                 * period specified, each data point being an sum or average of values
-                 * over that period, depending on graph mode. 
-                 * Return data points between times specified by start and end.
-                 * 
-                 * Params:  start  = Start time to take data points from.
-                 *          end    = End time to take data points until.
-                 *          period = Time period to represent by single data point.
-                 * 
-                 * Returns: Resulting array of data points.
-                 */
-                real[] data_points(real start, real end, real period)
-                in
-                {
-                    assert(start < end, "Can't retrieve data points for a time window"
-                                        " that ends before it starts");
-                }
-                body
-                {
-                    real[] data_points;
-                    uint[] value_counts;
-
-                    value_counts.length = data_points.length = cast(uint)((end - start) / period);
-                    for(uint point; point < data_points.length; point++)
-                    {
-                        data_points[point] = 0.0;
-                        value_counts[point] = 0;
-                    }
-
-                    foreach(ref value; values_)
-                    {
-                        int index = cast(int)((value.time - start) / period);
-                        if(index < 0){continue;}
-                        if(index >= data_points.length){break;}
-                        data_points[index] += value.value;
-                        value_counts[index] += value.value_count;
-                    }
-
-                    if(mode_ == GraphMode.Average)
-                    {
-                        for(uint point; point < data_points.length; point++)
-                        {
-                            data_points[point] /= value_counts[point];
-                        } 
-                    }
-
-                    return data_points;
-                }
-
-                /*
-                 * Is this graph empty, i.e. there are no values stored?
-                 *
-                 * Note that if the graph is empty until the first accumulate
-                 * value is added, which depends on time resolution.
-                 */
-                bool empty(){return values_.length == 0;}
-
-                /*
-                 * Return start time of the graph, i.e. time of the first value in the graph.
-                 *
-                 * Note that this only makes sense if the graph is not empty.
-                 */
-                real start_time()
-                in{assert(!empty(), "Can't get start time of an empty graph");}
-                body{return values_[0].time;}
         }
 
         /**
