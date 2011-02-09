@@ -271,6 +271,7 @@ class GridSpatialManager(T) : SpatialManager!(T)
         {
             auto zero = Vector2f(0.0f, 0.0f);
             auto manager = new GridSpatialManager!(PhysicsBody)(zero, 16.0f, 4);
+            scope(exit){manager.die();}
 
             auto rectangle = Rectanglef(-15.0, -17.0, 15.0, 15.0);
             Cell*[] result = manager.cells_rectangle(zero, rectangle);
@@ -280,7 +281,5 @@ class GridSpatialManager(T) : SpatialManager!(T)
             result = manager.cells_rectangle(zero, rectangle);
             assert(result.length == 7);
             assert(result.contains(&manager.outer_, true));
-
-            manager.die();
         }
 }

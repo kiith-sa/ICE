@@ -96,9 +96,9 @@ struct Array2D(T)
 unittest
 {
     auto array = Array2D!(uint)(4,4);
+    scope(exit){array.die();}
     assert(array[0,0] == 0);
     array[1,1] = 1;
     assert(array[1,1] == 1);
     assert(*array.ptr(1,1) == 1);
-    array.die();
 }

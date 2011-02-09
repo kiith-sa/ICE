@@ -72,7 +72,7 @@ final class GraphData
                 body
                 {
                     data_points_.length = cast(uint)((end - start) / period); 
-                    foreach(ref point; data_points_){point = 0.0;}
+                    data_points_.array[] = 0.0;
                     if(empty){return data_points_.array;}
 
                     if(mode_ == GraphMode.Sum)

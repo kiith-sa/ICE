@@ -2110,8 +2110,8 @@ void main()
     try
     {
         Pong pong = new Pong;
+        scope(exit){pong.die();}
         pong.run();
-        pong.die();
     }
     catch(Exception e)
     {

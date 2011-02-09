@@ -183,6 +183,7 @@ struct Vector(T)
 unittest
 {
     auto vector = Vector!(uint)();
+    scope(exit){vector.die();}
     vector ~= 1;
     vector ~= 2;
     vector ~= 3;
@@ -216,5 +217,4 @@ unittest
         i++;
     }
     assert(vector.length == 2);
-    vector.die();
 }

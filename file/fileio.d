@@ -196,6 +196,7 @@ private:
 
         //create a file object with allocated data_ buffer
         File file = File(name, path, mode, size, 0);
+        scope(failure){file.die();}
         
         //don't need to read if the file is empty
         if(size == 0){return file;}
@@ -207,7 +208,6 @@ private:
 
         if(blocks_read == 0)
         {
-            file.die();
             throw new Exception("Could open but could not read file: " ~ path ~
                                 " File might be corrupted or you might not have "
                                 "sufficient rights to read from it.");
