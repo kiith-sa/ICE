@@ -22,7 +22,6 @@ package void gl_color_format(ColorFormat format, out GLenum gl_format,
     {
         case ColorFormat.RGB_565:
             assert(false, "Unsupported texture format: RGB_565");
-            break;
         case ColorFormat.RGBA_8:
             internal_format = GL_RGBA8;
             gl_format = GL_RGBA;
@@ -35,7 +34,6 @@ package void gl_color_format(ColorFormat format, out GLenum gl_format,
             break;
         default:
             assert(false, "Unsupported texture format");
-            break;
     }
 }
 

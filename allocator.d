@@ -68,7 +68,7 @@ private:
     //Allocate one object.
     T* allocate(T)()
     {
-        ulong bytes = T.sizeof;
+        uint bytes = T.sizeof;
         T* ptr = cast(T*)malloc(bytes);
         total_allocated_ += bytes;
 
@@ -89,11 +89,14 @@ private:
     {
         assert(result.length == elems, "Failed to allocate space for "
                                        "specified number of elements");
+        assert(T.sizeof * elems <= ulong.max && elems <= ulong.max,
+               "Memory allocation over 4 GiB or for over 2^32 objects not supported yet");
     }
     body
     {
         ulong bytes = T.sizeof * elems;
-        T[] array = (cast(T*)malloc(bytes))[0 .. elems];
+        //only 4G elems supported for now
+        T[] array = (cast(T*)malloc(cast(uint)bytes))[0 .. cast(uint)elems];
         total_allocated_ += bytes;
 
         debug_allocate(array.ptr, elems); //Debug

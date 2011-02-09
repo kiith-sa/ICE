@@ -24,18 +24,18 @@ align(1) struct Vector2(T)
     bool opEquals(Vector2!(T) v){return equals(x, v.x) && equals(y, v.y);}
 
     ///Addition with a vector.
-    Vector2!(T) opAdd(Vector2!(T) v){return Vector2!(T)(x + v.x, y + v.y);}
+    Vector2!(T) opAdd(Vector2!(T) v){return Vector2!(T)(cast(T)(x + v.x), cast(T)(y + v.y));}
 
     ///Subtraction with a vector.
-    Vector2!(T) opSub(Vector2!(T) v){return Vector2!(T)(x - v.x, y - v.y);}
+    Vector2!(T) opSub(Vector2!(T) v){return Vector2!(T)(cast(T)(x - v.x), cast(T)(y - v.y));}
 
     ///Multiplication with a vector.
-    Vector2!(T) opMul(T m){return Vector2!(T)(x * m, y * m);}
+    Vector2!(T) opMul(T m){return Vector2!(T)(cast(T)(x * m), cast(T)(y * m));}
 
     ///Division by a scalar. 
     Vector2!(T) opDiv(T d)
     in{assert(d != 0.0, "Vector can not be divided by zero");}
-    body{return Vector2!(T)(x / d, y / d);}
+    body{return Vector2!(T)(cast(T)(x / d), cast(T)(y / d));}
 
     ///Division by a vector. 
     Vector2!(T) opDiv(Vector2!(T) v)
@@ -44,7 +44,7 @@ align(1) struct Vector2(T)
         assert(v.x != 0.0 && v.y != 0.0, 
                "Vector can not be divided by a vector with a zero component");
     }
-    body{return Vector2!(T)(x / v.x, y / v.y);}
+    body{return Vector2!(T)(cast(T)(x / v.x), cast(T)(y / v.y));}
 
     ///Addition-assignment with a vector.
     void opAddAssign(Vector2!(T) v)

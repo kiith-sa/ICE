@@ -27,6 +27,28 @@ class GridSpatialManager(T) : SpatialManager!(T)
     }
 
     private:
+        //Iterator used to iterate over groups of spatially close objects in the grid spatial manager.
+        class ObjectIterator(T) : Iterator!(T[])
+        {
+            public:
+                int opApply(int delegate(ref T[]) dg)
+                {
+                    int result = 0;
+
+                    T[] array;
+                    foreach(ref cell; grid_)
+                    {
+                        array = cell.objects.array;
+                        result = dg(array);
+                        if(result){break;}
+                    }
+                    array = outer_.objects.array;
+                    result = dg(array);
+
+                    return result;
+                }
+        }
+
         //Grid cell struct.
         align(1) static struct Cell
         {
@@ -139,7 +161,7 @@ class GridSpatialManager(T) : SpatialManager!(T)
             add_object(object);
         }
 
-        Iterator!(T[]) iterator(){return new ObjectIterator!(T)(this);}
+        Iterator!(T[]) iterator(){return new ObjectIterator!(T);}
 
     private:
         /*
@@ -260,41 +282,5 @@ class GridSpatialManager(T) : SpatialManager!(T)
             assert(result.contains(&manager.outer_, true));
 
             manager.die();
-        }
-}
-
-
-private:
-
-//Iterator used to iterate over groups of spatially close objects in the grid spatial manager.
-class ObjectIterator(T) : Iterator!(T[])
-{
-    private:
-        //Manager to iterate over objects from.
-        GridSpatialManager!(T) manager_;
-
-        /*
-         * Construct an ObjectIterator.
-         *
-         * Params:  manager = Manager to iterate over objects from.
-         */
-        this(GridSpatialManager!(T) manager){manager_ = manager;}
-
-    public:
-        int opApply(int delegate(ref T[]) dg)
-        {
-            int result = 0;
-
-            T[] array;
-            foreach(ref cell; manager_.grid_)
-            {
-                array = cell.objects.array;
-                result = dg(array);
-                if(result){break;}
-            }
-            array = manager_.outer_.objects.array;
-            result = dg(array);
-
-            return result;
         }
 }

@@ -228,7 +228,6 @@ class GUIStaticText : GUIElement
             lines_ ~= line;
             //strip leading space so the next line doesn't start with space
             return stripl(text);
-            return text;
         }
         
         //Align lines verically.

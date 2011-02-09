@@ -18,6 +18,10 @@ enum FileMode
 ///Used to access files, either to read their contents or to write to them.
 struct File
 {
+    invariant
+    {
+        assert(write_used_ <= uint.max, "Writing over 4GiB files not yet supported");
+    }
     package:
         //In-engine file name, such as fonts/font.ttf or mod::fonts/font.ttf .
         string name_;
@@ -36,12 +40,13 @@ struct File
         //Fake constructor. Returns file with given in-engine name, mode
         //and space allocated to read data from a file or space reserved for writing,
         //depending on mode.
-        static File opCall(string name, string path, FileMode mode, uint read_size, 
+        static File opCall(string name, string path, FileMode mode, ulong read_size, 
                            uint write_reserve)
         in
         {
             if(read_size)
             {
+                assert(read_size <= uint.max, "Reading over 4GiB files not yet supported");
                 assert(mode == FileMode.Read, 
                        "Can't open a file for writing/appending with read buffer");
             }
@@ -98,6 +103,7 @@ struct File
         {
             ubyte[] data_bytes = cast(ubyte[])data;
             ulong needed = write_used_ + data_bytes.length;
+            assert(needed <= uint.max, "Writing over 4GiB files not yet supported");
             ulong allocated = write_data_.length;
 
             //reallocate if not enough space
@@ -106,7 +112,7 @@ struct File
                 write_data_ = realloc(write_data_, max(needed, allocated * 2));
             }
 
-            write_data_[write_used_ .. needed] = data_bytes[];
+            write_data_[cast(uint)write_used_ .. cast(uint)needed] = data_bytes[];
             write_used_ = needed;
         }
 }

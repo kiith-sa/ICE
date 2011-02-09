@@ -157,7 +157,7 @@ int round32(T) (T f){return cast(int)round(f);}
 ubyte floor_u8(float f)
 {
     f += 256.0f;
-    return ((*cast(uint*)&f)&0x7fffff)>>15;
+    return cast(ubyte)(((*cast(uint*)&f)&0x7fffff)>>15);
 }
 unittest
 {

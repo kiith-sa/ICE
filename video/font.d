@@ -300,8 +300,8 @@ package class Font
                 scope Image image = new Image(height_ / 2, height_, ColorFormat.GRAY_8);
                 default_glyph_ = alloc!(Glyph)();
                 default_glyph_.texture = driver.create_texture(image);
-                default_glyph_.offset = Vector2b(0, -height_);
-                default_glyph_.advance = height_ / 2;
+                default_glyph_.offset = Vector2b(0, cast(byte)-height_);
+                default_glyph_.advance = cast(byte)(height_ / 2);
                 default_glyph_.freetype_index = 0;
             }
             return *default_glyph_;
@@ -331,9 +331,9 @@ package class Font
             //convert the font_face_.glyph to image
 			if(FT_Render_Glyph(slot, render_mode()) == 0) 
             {
-                glyph.advance = font_face_.glyph.advance.x / 64;
-                glyph.offset.x = slot.bitmap_left;
-                glyph.offset.y = -slot.bitmap_top;
+                glyph.advance = cast(byte)(font_face_.glyph.advance.x / 64);
+                glyph.offset.x = cast(byte)slot.bitmap_left;
+                glyph.offset.y = cast(byte)-slot.bitmap_top;
 
                 FT_Bitmap bitmap = slot.bitmap;
                 Vector2u size = Vector2u(bitmap.width, bitmap.rows);
@@ -353,7 +353,7 @@ package class Font
 				ubyte bitmap_color(uint x, uint y) 
                 {
                     ubyte b = bitmap.buffer[y * bitmap.pitch + (x / 8)];
-					return (b & (0b10000000 >> (x % 8))) ? 255 : 0;
+					return cast(ubyte)((b & (0b10000000 >> (x % 8))) ? 255 : 0);
 				}
 
                 //copy freetype bitmap to our image

@@ -1,8 +1,4 @@
 17:
-    Make ObjectIterator a non-static nested class of GridSpatialManager.
-17:
-    Get rid of all dmd warnings
-17:
     Even if we don't use RAII until D2, use scope guards for die() where possible:
     grep for die() to see where we can do this
 17:

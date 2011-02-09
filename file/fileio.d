@@ -58,7 +58,6 @@ public:
                 }
                 //load file into memory
                 return load_file(name, path, mode);
-                break;
             case FileMode.Write, FileMode.Append:
                 if(name.find("::") < 0)
                 {
@@ -66,7 +65,8 @@ public:
                                         "must be specified explicitly");
                 }
                 return File(name, path, mode, 0, write_reserve_);
-                break;
+            default:
+                assert(false, "Unsupported file mode");
         }
     }
 
@@ -81,13 +81,14 @@ public:
         {
             case FileMode.Read:
                 return;
-                break;
             case FileMode.Write:
                 handle = fopen(toStringz(file.path_), "wb");
                 break;
             case FileMode.Append:
                 handle = fopen(toStringz(file.path_), "ab");
                 break;
+            default:
+                assert(false, "Unsupported file mode");
         }
 
         //close the file at exit
@@ -95,7 +96,11 @@ public:
         //nothing to write
         if(file.write_used_ == 0){return;}
 
-        int blocks_written = fwrite(file.write_data_.ptr, file.write_used_, 1, handle);
+        assert(file.write_used_ <= uint.max, 
+               "Writing over 4GiB files is not yet supported.");
+
+        int blocks_written = fwrite(file.write_data_.ptr, 
+                                    cast(uint)file.write_used_, 1, handle);
         if(blocks_written == 0)
         {
             throw new Exception("Couldn't write to file " ~ file.path_ ~ 
@@ -187,6 +192,7 @@ private:
     body
     {
         ulong size = getSize(path);
+        assert(size <= uint.max, "Reading over 4GiB files not yet supported");
 
         //create a file object with allocated data_ buffer
         File file = File(name, path, mode, size, 0);
@@ -196,7 +202,7 @@ private:
 
         FILE* handle = fopen(toStringz(path), "rb");
         //read to file
-        size_t blocks_read = fread(file.data_.ptr, size, 1, handle);
+        size_t blocks_read = fread(file.data_.ptr, cast(uint)size, 1, handle);
         fclose(handle);
 
         if(blocks_read == 0)

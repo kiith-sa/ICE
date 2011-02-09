@@ -110,6 +110,8 @@ class SDLPlatform : Platform
                 case(SDL_BUTTON_WHEELDOWN):
                     key = MouseKey.WheelDown;
                     break;
+                default:
+                    break;
             }
 
             Vector2u position = Vector2u(event.x, event.y);

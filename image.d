@@ -109,6 +109,8 @@ final class Image
                             case ColorFormat.GRAY_8:
                                 set_pixel(x, y, 255);
                                 break;
+                            default:
+                                assert(false, "Unsupported color format");
                         }
                     }
                 }
@@ -138,6 +140,8 @@ final class Image
                             case ColorFormat.GRAY_8:
                                 set_pixel(x, y, 255);
                                 break;
+                            default:
+                                assert(false, "Unsupported color format");
                         }
                     }
                 }

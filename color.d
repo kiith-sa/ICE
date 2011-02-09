@@ -21,16 +21,12 @@ uint bytes_per_pixel(ColorFormat format)
     {
         case ColorFormat.RGB_565:
             return 2;
-            break;
         case ColorFormat.RGBA_8:
             return 4;
-            break;
         case ColorFormat.GRAY_8:
             return 1;
-            break;
         default:
             assert(false, "Unsupported image color format!");
-            break;
     }
 }
 
@@ -42,16 +38,12 @@ string to_string(ColorFormat format, bool short_format = false)
     {
         case ColorFormat.RGB_565:
             return short_format ? "RGB_565" : "ColorFormat.RGB_565";
-            break;
         case ColorFormat.RGBA_8:
             return short_format ? "RGBA_8" : "ColorFormat.RGBA_8";
-            break;
         case ColorFormat.GRAY_8:
             return short_format ? "GRAY_8" : "ColorFormat.GRAY_8";
-            break;
         default:
             assert(false, "Unsupported image color format!");
-            break;
     }
 }
 
@@ -97,7 +89,7 @@ align(1) struct Color
     ubyte average()
     {
         real average = (cast(real)r + cast(real)g + cast(real) b) / 3.0;
-        return round32(average);
+        return cast(ubyte)round32(average);
     }
     unittest
     {
@@ -117,7 +109,7 @@ align(1) struct Color
     ubyte lightness()
     {
         uint d = max(r, g, b) + min(r, g, b);
-        return round32(0.5f * d); 
+        return cast(ubyte)round32(0.5f * d); 
     }
     unittest
     {
@@ -126,13 +118,15 @@ align(1) struct Color
     }
 
     ///Returns luminance of the color.
-    ubyte luminance(){return round32(0.3 * r + 0.59 * g + 0.11 * b);}
+    ubyte luminance(){return cast(ubyte)round32(0.3 * r + 0.59 * g + 0.11 * b);}
     
     ///Adds two colors (values are clamped to range 0 .. 255).
     Color opAdd(Color c)
     {
-        return Color(min(255, r + c.r), min(255, g + c.g),
-                     min(255, b + c.b), min(255, a + c.a));
+        return Color(cast(ubyte)min(255, r + c.r), 
+                     cast(ubyte)min(255, g + c.g),
+                     cast(ubyte)min(255, b + c.b), 
+                     cast(ubyte)min(255, a + c.a));
     }
     unittest
     {
