@@ -6,7 +6,7 @@ import std.string;
 import math.math;
 import math.vector2;
 import math.rectangle;
-import allocator;
+import memory.memory;
 
 
 ///Binary tree based texture packer. Handles allocation of texture page space.

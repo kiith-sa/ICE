@@ -1,11 +1,9 @@
 17:
-    Another profile, this time of normally running game.
+    Monitor of total size of manually allocated memory, nothing more for now.
+    More advanced stuff only after monitor overhaul.
 17: 
     GridSpatialManager GUI monitor showing cells with colors based
     on number of objects inside.
-17:
-    Monitor of total size of manually allocated memory, nothing more for now.
-    Advanmced stuff after monitor overhaul.
 17:
     Look at allocator code and try to make it more new/delete like
     by alloc, or its specific version,
@@ -13,22 +11,18 @@
     -of course, after moving to D2, this would call the usual ctor/dtor.
     Maybe an allocator GUI monitor.
 17:
-    Consider writing mixin + asm based D equivalent to C xmmintrin.h
-    and using that instead of direct asm in vector operations
+    Rename ActorManager to SceneManager and its directory to scene/
 17:
     Effect at ball-paddle collision
-17:
-    Rename ActorManager to SceneManager and its directory to scene/
+18:
+    cdc should have help
 17: 
     Effects:
-    When buttons etc. working:
     when changing the gui, (e.g. moving from menu to pong, or between dialogs), 
     draw an animation with gui leaving the screen                    
     to the left. we can do this with a guioffset member in gui root
 
     main menu could have an ai-ai game playing in the background
-18:
-    cdc should have help
 19:
     Use the same doc format throughout. Either Doxygen or DDoc.
     DDoc would probably be better.
@@ -40,12 +34,12 @@
 
     Also add some coding examples to e.g. GUI DDoc, maybe VideoDriver
 20:
+    draw_border GUI element parameter should be set in factory.
+20:
     Look at other games/demos for graphics effect ideas...
     or maybe we have enough effects by now...
 20:
     Multiple (two, and maybe option to generate) color schemes
-20:
-    draw_border GUI element parameter should be set in factory.
 20:
     Screenshot. Probably glReadPixels from framebuffer. Also need PNG output 
 24:
@@ -142,12 +136,12 @@
     and to tes it with various zooms/offsets
 25:
     Stop printing UPS to stdout, maybe move to monitor or get rid of it altogether.
-25:
-    Show current time of day in the HUD
 26:
     Optional(user options) smarter AI that takes note of ray hints from BallSpawner
     (only if those rays intersect with the goal - ignore if they're intersecting
      the walls to prevent extra stupidity)
+25:
+    Show current time of day in the HUD
 23:
     Profiling:
     Valgrind, Massif, Callgrind, Cachegrind, Sysprof, CodeAnalyst,
@@ -184,19 +178,12 @@
     Screen size change (in an Options dialog in menu, not during Game run)
 25:
     User configurable key bindings - stored in HumanPlayer
+14:
+    AI difficulty settings;
 26: 
     Sounds
 17:
     Multiplayer, with single PC and over a network (test with two computers)
-14:
-    SpatialManager:
-    Write code required for usage in culling (special iterator), and use in culling.
-
-    As drawing volumes could need to change (particle systems),
-    so we might have a special function supplying old volume at update/remove.
-    Write that as a future TODO. 
-14:
-    AI difficulty settings;
 14:
     Unittests for actors, bodies etc.
 
@@ -208,6 +195,17 @@
     others should work.
 
     Also look for where we can put unittests
+14:
+    SpatialManager:
+    Write code required for usage in culling (special iterator), and use in culling.
+
+    As drawing volumes could need to change (particle systems),
+    so we might have a special function supplying old volume at update/remove.
+    Write that as a future TODO. 
+15:
+    Maybe show an AI/AI game on the background of the credits screen.
+    (i.e. just start the game with two AI players in credits_start
+     and call pong_end from credits_end)
 15:
     Consider tree-based math parser. Advantage is:
     GUI elements can keep the tree and just change the vaues of substitution,
@@ -215,10 +213,6 @@
     optimization TODOs
     This parser would use the current code to convert to postfix notation and generate
     the tree from that.
-15:
-    Maybe show an AI/AI game on the background of the credits screen.
-    (i.e. just start the game with two AI players in credits_start
-     and call pong_end from credits_end)
 16:
     Ensure everything is documented in DDoc and push, for the first time
     to gitorious or github. Not necessarily announcing it.

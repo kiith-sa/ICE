@@ -11,7 +11,7 @@ import math.math;
 import math.vector2;
 import math.rectangle;
 import iterator;
-import allocator;
+import memory.memory;
 import arrayutil;
 import array2d;
 import vector;

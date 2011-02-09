@@ -1,7 +1,7 @@
 module vector;
 
 
-import allocator;
+import memory.memory;
 
 
 /**

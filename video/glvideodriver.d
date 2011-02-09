@@ -23,7 +23,7 @@ import gui.guielement;
 import monitor.monitormenu;
 import color;
 import image;
-import allocator;
+import memory.memory;
 import signal;
 
 

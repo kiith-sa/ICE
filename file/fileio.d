@@ -6,7 +6,7 @@ import std.c.stdio;
 import std.string;
 
 public import file.file;
-import allocator;
+import memory.memory;
 
 
 public:

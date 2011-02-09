@@ -11,7 +11,7 @@ import math.vector2;
 import math.rectangle;
 import color;
 import image;
-import allocator;
+import memory.memory;
 
 
 ///Convert a ColorFormat to OpenGL color format parameters.

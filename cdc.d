@@ -158,9 +158,10 @@ int main(char[][] args)
                      "dependencies/", 
                      
                      "physics/", "actor/", "file/", "formats/", "gui/", "math/", 
-                     "monitor/", "platform/", "time/", "video/", "spatial/", 
+                     "memory/", "monitor/", "platform/", "spatial/", "time/", 
+                     "video/", 
 
-                     "allocator.d", "arrayutil.d", "color.d", "image.d", "pong.d",
+                     "arrayutil.d", "color.d", "image.d", "pong.d",
                      "signal.d", "singleton.d", "factory.d", "stringctfe.d", 
                      "graphdata.d", "iterator.d", "array2d.d", "vector.d"
                      ],

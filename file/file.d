@@ -3,7 +3,7 @@ module file.file;
 
 import std.file;
 
-import allocator;
+import memory.memory;
 import math.math;
 
 

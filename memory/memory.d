@@ -1,4 +1,4 @@
-module allocator;
+module memory.memory;
 
 
 import std.c.stdlib;

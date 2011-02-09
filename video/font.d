@@ -13,7 +13,7 @@ import math.math;
 import color;
 import file.fileio;
 import image;
-import allocator;
+import memory.memory;
 
 
 //use of bytes here limits font size to about 128 pixels,

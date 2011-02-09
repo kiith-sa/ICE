@@ -1,7 +1,7 @@
 module array2d;
 
 
-import allocator;
+import memory.memory;
 
 
 ///Fixed size 2D array struct with manually managed memory.

@@ -3,7 +3,7 @@ module image;
 
 import math.vector2;
 import color;
-import allocator;
+import memory.memory;
 
 ///Image object capable of storing images in various color formats.
 final class Image

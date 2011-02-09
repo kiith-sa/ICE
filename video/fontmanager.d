@@ -15,7 +15,7 @@ import math.vector2;
 import weaksingleton;
 import color;
 import arrayutil;
-import allocator;
+import memory.memory;
 
 
 ///Used by VideoDriver implementations to draw a string.
