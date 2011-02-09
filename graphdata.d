@@ -164,27 +164,28 @@ final class GraphData
                  */
                 uint first_value_index(real start, real period)
                 {
+                    //ugly, but optimized
+
                     //guess the first value based on time resolution.
                     real age = start - start_time;
                     uint value = clamp(floor_s32(age / time_resolution_) ,0 , 
                                        cast(int)values_.length - 1);
 
-                    //index of data point to add this value to.
-                    int point = floor_s32((values_[value].time - start) / period);
+                    Value* values_ptr = values_.array.ptr;
+                    Value* value_ptr = values_ptr + value;
+                    Value* values_end = values_ptr + values_.length;
 
                     //move linearly to the desired value
-                    while(point >= 0 && value > 0)
+                    while(value_ptr.time >= start && value_ptr > values_ptr)
                     {
-                        point = floor_s32((values_[value].time - start) / period);
-                        value--;
+                        value_ptr--;
                     }
-                    while(point < 0 && value < values_.length - 1)
+                    while(value_ptr.time < start && value_ptr < values_end)
                     {
-                        point = floor_s32((values_[value].time - start) / period);
-                        value++;
+                        value_ptr++;
                     }
 
-                    return value;
+                    return cast(uint)(value_ptr - values_ptr);
                 }
 
                 /**
@@ -205,11 +206,14 @@ final class GraphData
                     Value* values_ptr = values_.array.ptr;
                     Value* values_end = values_ptr + values_.length;
 
+                    //index of data point to add current value to.
+                    int index;
+
                     //iterate over values and aggregate data points
                     for(Value* value = values_ptr + first_value_index(start, period); 
                         value < values_end; value++)
                     {
-                        int index = floor_s32((value.time - start) / period);
+                        index = floor_s32((value.time - start) / period);
                         if(index >= num_points){return;}
                         *(points_ptr + index) += value.value;
                     }
@@ -240,11 +244,14 @@ final class GraphData
                     Value* values_ptr = values_.array.ptr;
                     Value* values_end = values_ptr + values_.length;
 
+                    //index of data point to add current value to.
+                    int index;
+
                     //iterate over values and aggregate data points, value counts
                     for(Value* value = values_ptr + first_value_index(start, period);
                         value < values_end; value++)
                     {
-                        int index = floor_s32((value.time - start) / period);
+                        index = floor_s32((value.time - start) / period);
                         if(index >= num_points){break;}
                         *(points_ptr + index) += value.value;
                         *(value_counts_ptr + index) += value.value_count;

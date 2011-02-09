@@ -134,17 +134,14 @@ abstract class GraphMonitor : SubMonitor
                     graph_.auto_scale = false;
                     zoom(0.8f);
                     break;
-                //middle (wheel) click returns to autoscaling
-                case MouseKey.Middle:
+                //right click returns to autoscrolling and autoscaling
+                case MouseKey.Right:
                     if(state == KeyState.Pressed)
                     {
                         graph_.scale_x = scale_x_default_;
                         graph_.auto_scale = true;
+                        graph_.auto_scroll = true;
                     }
-                    break;
-                //right click returns to autoscrolling
-                case MouseKey.Right:
-                    if(state == KeyState.Pressed){graph_.auto_scroll = true;}
                     break;
                 //detect when left is pressed so we can detect mouse dragging
                 case MouseKey.Left:

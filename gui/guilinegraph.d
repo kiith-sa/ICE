@@ -65,7 +65,7 @@ final class GUILineGraph : GUIElement
         //at the left end of graph display is showing.
         float time_offset_ = 0.0;
         //Distance between two data points on X axis
-        float scale_x_ = 1.0;
+        float scale_x_ = 2.0;
         //Distance between values differing by 1, e.g. 1.0 and 0.0 on Y axis.
         //Doesn't apply when auto_scale_ is true.
         float scale_y_ = 0.1;
@@ -132,7 +132,7 @@ final class GUILineGraph : GUIElement
         }
 
         ///Set X scale of the graph. Used for manual zooming.
-        void scale_x(float scale_x){aligned_ = false; scale_x_ = clamp(scale_x, 0.005f, 100.0f);}
+        void scale_x(float scale_x){aligned_ = false; scale_x_ = clamp(scale_x, 0.01f, 200.0f);}
 
         ///Set Y scale of the graph. Used for manual zooming.
         void scale_y(float scale_y){aligned_ = false; scale_y_ = clamp(scale_y, 0.0005f, 10.0f);}
