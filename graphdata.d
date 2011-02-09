@@ -21,7 +21,7 @@ enum GraphMode
  */
 final class GraphData
 {
-    protected:
+    private:
         ///Stores values accumulated over a time period set by GUIGraph's time_resolution.
         static align(1) struct Value
         {
@@ -31,22 +31,8 @@ final class GraphData
             real value = 0.0;
             //Number of values accumulated.
             uint value_count = 0;
-        }
+        }                 
 
-        ///Graphs of values measured, indexed by values' names.
-        Graph[string] graphs_;
-
-        //Graph mode, i.e. are data points sums or averages over time?
-        GraphMode mode_ = GraphMode.Average;
-
-        //Time when this guigraph was created
-        real start_time_;
-        //Shortest time period to accumulate values for.
-        real time_resolution_ = 0.0625;
-        //Timer used to time graph updates.
-        Timer update_timer_;
-
-    public:
         ///Graph data related to measurement of single value over time.
         class Graph
         {
@@ -58,6 +44,11 @@ final class GraphData
                 Vector!(Value) values_;
                 //Vector holding memory for arrays returned by data_points.
                 Vector!(real) data_points_;
+                /*
+                 * Vector holding memory for temporary value ounts arrays used to 
+                 * compute data points in average mode.
+                 */
+                Vector!(uint) value_counts_;
 
             public:
                 /*
@@ -84,44 +75,13 @@ final class GraphData
                     foreach(ref point; data_points_){point = 0.0;}
                     if(empty){return data_points_.array;}
 
-                    //guess the first value in our time window.
-                    real age = start - start_time;
-                    uint value_index = clamp(cast(int)(age / time_resolution_)
-                                             ,0 , cast(int)values_.length - 1);
-                    //if we guessed too far, move back (if too near, foreach will
-                    //simply iterate to the first valid value)
-                    while(cast(int)((values_[value_index].time - start) / period) >= 0 
-                          && value_index > 0)
-                    {
-                        value_index--;
-                    }
-
-                    //ugly, but optimized
-                    Value* value;
-                    uint length = values_.length;
-                    uint num_points = data_points_.length;
-
                     if(mode_ == GraphMode.Sum)
                     {
-                        for(uint i = value_index; i < length; i++)
-                        {
-                            value = values_.ptr(i);
-                            int index = floor_s32((value.time - start) / period);
-                            if(index < 0){continue;}
-                            if(index >= num_points){break;}
-                            data_points_[index] = value.value;
-                        }
+                        data_points_sum(start, period);
                     }
                     else if(mode_ == GraphMode.Average)
                     {
-                        for(uint i = value_index; i < length; i++)
-                        {
-                            value = values_.ptr(i);
-                            int index = floor_s32((value.time - start) / period);
-                            if(index < 0){continue;}
-                            if(index >= num_points){break;}
-                            data_points_[index] = value.value / value.value_count;
-                        }
+                        data_points_average(start, period);
                     }
                     else{assert(false, "Unsupported graph mode");}
 
@@ -131,7 +91,7 @@ final class GraphData
                 /*
                  * Is this graph empty, i.e. there are no values stored?
                  *
-                 * Note that if the graph is empty until the first accumulate
+                 * Note that the graph is empty until the first accumulated
                  * value is added, which depends on time resolution.
                  */
                 bool empty(){return values_.length == 0;}
@@ -155,6 +115,7 @@ final class GraphData
                 {
                     values_ = Vector!(Value)();
                     data_points_ = Vector!(real)();
+                    value_counts_ = Vector!(uint)();
                     current_value_.time = time + time_resolution * 0.5; 
                 }
 
@@ -163,12 +124,13 @@ final class GraphData
                 {
                     values_.die();
                     data_points_.die();
+                    value_counts_.die();
                 }
 
                 /*
                  * Update the graph and finish accumulating a value.
                  *
-                 * Params:  time =            End time of the accumulated value.
+                 * Params:  time = End time of the accumulated value.
                  */
                 void update(real time)
                 {
@@ -189,8 +151,131 @@ final class GraphData
                     current_value_.value += value;
                     current_value_.value_count++;
                 }
-        }
 
+            private:
+                /**
+                 * Get the index of the first value to be aggregated to data points
+                 * with specified start time and period.
+                 *
+                 * Params:  start  = Start time to get data points from.
+                 *          period = Length of time to represent single data point.
+                 *
+                 * Returns: Index of the first value to aggregate.
+                 */
+                uint first_value_index(real start, real period)
+                {
+                    //guess the first value based on time resolution.
+                    real age = start - start_time;
+                    uint value = clamp(floor_s32(age / time_resolution_) ,0 , 
+                                       cast(int)values_.length - 1);
+
+                    //index of data point to add this value to.
+                    int point = floor_s32((values_[value].time - start) / period);
+
+                    //move linearly to the desired value
+                    while(point >= 0 && value > 0)
+                    {
+                        point = floor_s32((values_[value].time - start) / period);
+                        value--;
+                    }
+                    while(point < 0 && value < values_.length - 1)
+                    {
+                        point = floor_s32((values_[value].time - start) / period);
+                        value++;
+                    }
+
+                    return value;
+                }
+
+                /**
+                 * Aggregate data points in sum mode.
+                 *
+                 * This depends on code in data_points() and can only be called from there.
+                 *
+                 * Params:  start  = Start time to take data points from.
+                 *          period = Time period to represent by single data point.
+                 */
+                void data_points_sum(real start, real period)
+                {
+                    //ugly, but optimized
+                    uint num_points = data_points_.length;
+                    real* points_ptr = data_points_.array.ptr;
+
+
+                    Value* values_ptr = values_.array.ptr;
+                    Value* values_end = values_ptr + values_.length;
+
+                    //iterate over values and aggregate data points
+                    for(Value* value = values_ptr + first_value_index(start, period); 
+                        value < values_end; value++)
+                    {
+                        int index = floor_s32((value.time - start) / period);
+                        if(index >= num_points){return;}
+                        *(points_ptr + index) += value.value;
+                    }
+                }
+
+                /**
+                 * Aggregate data points in average mode.
+                 *
+                 * This depends on code in data_points() and can only be called from there.
+                 *
+                 * Params:  start  = Start time to take data points from.
+                 *          period = Time period to represent by single data point.
+                 */
+                void data_points_average(real start, real period)
+                {
+                    //ugly, but optimized
+                    uint num_points = data_points_.length;
+                    real* points_ptr = data_points_.array.ptr;
+
+                    value_counts_.length = num_points;
+                    uint* value_counts_ptr = value_counts_.array.ptr;
+                    uint* value_counts_end = value_counts_ptr + num_points;
+                     
+                    //zero all value counts. memset could make this even faster, but want to avoid cstdlib if I can
+                    for(uint* count = value_counts_ptr; count < value_counts_end; count++)
+                    {*count = 0;}
+
+                    Value* values_ptr = values_.array.ptr;
+                    Value* values_end = values_ptr + values_.length;
+
+                    //iterate over values and aggregate data points, value counts
+                    for(Value* value = values_ptr + first_value_index(start, period);
+                        value < values_end; value++)
+                    {
+                        int index = floor_s32((value.time - start) / period);
+                        if(index >= num_points){break;}
+                        *(points_ptr + index) += value.value;
+                        *(value_counts_ptr + index) += value.value_count;
+                    }
+
+                    //divide data points by value counts to get averages.
+                    real* point = points_ptr;
+                    for(uint* count = value_counts_ptr; 
+                        count < value_counts_end; count++, point++)
+                    {
+                        if(*count == 0){continue;}
+                        *point /= *count;
+                    }
+                }
+        }
+                  
+
+        ///Graphs of values measured, indexed by values' names.
+        Graph[string] graphs_;
+
+        //Graph mode, i.e. are data points sums or averages over time?
+        GraphMode mode_ = GraphMode.Average;
+
+        //Time when this guigraph was created
+        real start_time_;
+        //Shortest time period to accumulate values for.
+        real time_resolution_ = 0.0625;
+        //Timer used to time graph updates.
+        Timer update_timer_;
+
+    public:
         /**
          * Construct graph data with specified names of measured values.
          *
@@ -232,13 +317,52 @@ final class GraphData
         ///Get time when this graph started to exist.
         final real start_time(){return start_time_;}
 
-        ///Get graphs of values measured, indexed by values' names.
-        final Graph[string] graphs(){return graphs_;}
+        ///Get names of values measured.
+        final string[] graph_names(){return graphs_.keys;}
 
         ///Add a value to the graph for value with specified name.
         final void update_value(string name, real value)
         in{assert(graphs_.keys.contains(name), "Adding unknown value to graph");}
         body{graphs_[name].add_value(value);}
+
+        /**
+         * Accumulate recorded values to data points, one point per
+         * period specified, each data point being an sum or average of values
+         * over that period, depending on graph mode. 
+         * Return data points between times specified by start and end.
+         * 
+         * Params:  name   = Name of the value to get data points for.
+         *          start  = Start time to take data points from.
+         *          end    = End time to take data points until.
+         *          period = Time period to represent by single data point.
+         * 
+         * Returns: Resulting array of data points.
+         */
+        real[] data_points(string name, real start, real end, real period)
+        {
+            return graphs_[name].data_points(start, end, period);
+        }
+
+        /**
+         * Determine if graph of value with specified name is empty.
+         *
+         * Note that the graph is empty for a while until first value accumulates
+         * value is added, which depends on time resolution.
+         *
+         * Params:  name = Name of the value to check.
+         *
+         * Returns: true if the graph is empty, false otherwise.
+         */
+        bool empty(string name){return graphs_[name].empty;}
+
+        /**
+         * Get delay of graph of value with specified name relative to this GraphData.
+         *
+         * Params:  name = Name of the value to check.
+         *
+         * Returns: Delay of the graph relative to this GraphData in seconds.
+         */
+        real delay(string name){return graphs_[name].start_time - start_time_;}
 
         ///Update graph data memory representation.
         void update()

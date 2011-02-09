@@ -201,7 +201,7 @@ final class GUILineGraph : GUIElement
 
             super.draw(driver);
 
-            foreach(graph; data_.graphs.keys){draw_graph(driver, graph);}
+            foreach(graph; data_.graph_names){draw_graph(driver, graph);}
             draw_info(driver);
         }
 
@@ -242,19 +242,16 @@ final class GUILineGraph : GUIElement
 
             update_lines();
 
-            auto graphs = data_.graphs;
-
             //generate line strips
-            foreach(name; graphs.keys)
+            foreach(name; data_.graph_names)
             {
                 real[] points = data_points[name];
-                auto graph = graphs[name];
                 auto graphics = graphics_[name];
                 graphics.line_strip.length = 0;
-                if(graph.empty){continue;}
+                if(data_.empty(name)){continue;}
 
                 float x = bounds_.max.x - scale_x_ * (points.length - 1);
-                x += (graph.start_time - data_.start_time) * scale_x_;
+                x += data_.delay(name) * scale_x_;
                 float y = bounds_.max.y;
 
                 foreach(real point; points)
@@ -290,12 +287,10 @@ final class GUILineGraph : GUIElement
             maximum = 0.0;
             real[][string] data_points;
 
-            auto graphs = data_.graphs;
-
             //getting all data points and the maximum
-            foreach(name; graphs.keys)
+            foreach(name; data_.graph_names)
             {
-                real[] points = graphs[name].data_points(start_time, end_time, data_point_time_);
+                real[] points = data_.data_points(name, start_time, end_time, data_point_time_);
 
                 data_points[name] = points;
                 if(points.length <= 1){continue;}
@@ -349,7 +344,7 @@ final class GUILineGraph : GUIElement
             //Use scissor test to only draw within bounds of the graph.
             driver.scissor(bounds_);
             driver.line_aa = true;
-            driver.line_width = 0.7;
+            driver.line_width = 0.65;
 
             driver.draw_line_strip(graphics.line_strip.array, graphics.color);
 

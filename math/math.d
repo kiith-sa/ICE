@@ -166,7 +166,7 @@ unittest
 }
 
 ///Floor a float value to a signed 32-bit int
-uint floor_s32(double f)
+int floor_s32(double f)
 {
     //2 ^ 36 * 1.5,  (52 - 16 == 36) uses limited precisicion to floor
     f += 68719476736.0*1.5; 

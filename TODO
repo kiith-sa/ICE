@@ -1,20 +1,12 @@
-Again, try to make graphs a completely private member of graphdata.
-That needs a method to get all graphs' names, and also data point iterator
-with specified params for graph with specified name.
-Also struct Graph should be private to GraphData.
-
 17:
     Make ObjectIterator a non-static nested class of GridSpatialManager.
-17:
-    Another profile, this time of normally running game.
 17:
     Get rid of all dmd warnings
 17:
     Even if we don't use RAII until D2, use scope guards for die() where possible:
     grep for die() to see where we can do this
 17:
-    Make array,iterator versions of math.math.max , math.math.min
-    use arrayutil functions 
+    Another profile, this time of normally running game.
 17: 
     GridSpatialManager GUI monitor showing cells with colors based
     on number of objects inside.
