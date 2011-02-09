@@ -96,21 +96,34 @@ final class GraphData
                         value_index--;
                     }
 
-                    foreach(ref value; values_.array[value_index .. $])
+                    //ugly, but optimized
+                    Value* value;
+                    uint length = values_.length;
+                    uint num_points = data_points_.length;
+
+                    if(mode_ == GraphMode.Sum)
                     {
-                        int index = cast(int)((value.time - start) / period);
-                        if(index < 0){continue;}
-                        if(index >= data_points_.length){break;}
-                        if(mode_ == GraphMode.Average)
+                        for(uint i = value_index; i < length; i++)
                         {
-                            data_points_[index] = value.value / value.value_count;
-                        }
-                        else if(mode_ == GraphMode.Sum)
-                        {
+                            value = values_.ptr(i);
+                            int index = floor_s32((value.time - start) / period);
+                            if(index < 0){continue;}
+                            if(index >= num_points){break;}
                             data_points_[index] = value.value;
                         }
-                        else{assert(false, "Unsupported graph mode");}
                     }
+                    else if(mode_ == GraphMode.Average)
+                    {
+                        for(uint i = value_index; i < length; i++)
+                        {
+                            value = values_.ptr(i);
+                            int index = floor_s32((value.time - start) / period);
+                            if(index < 0){continue;}
+                            if(index >= num_points){break;}
+                            data_points_[index] = value.value / value.value_count;
+                        }
+                    }
+                    else{assert(false, "Unsupported graph mode");}
 
                     return data_points_.array;
                 }

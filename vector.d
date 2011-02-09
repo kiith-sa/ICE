@@ -80,6 +80,19 @@ struct Vector(T)
         in{assert(index < used_, "Vector index out of bounds");}
         body{data_[index] = value;}
 
+        /**
+         * Get a pointer to element at the specified index.
+         *
+         * Index must not be out of bounds.
+         *
+         * Params:  index = Index of the element to get.
+         *
+         * Returns: Pointer to the element at the specified index.
+         */
+        T* ptr(uint index)
+        in{assert(index < used_, "Vector index out of bounds");}
+        body{return &data_[index];}
+
         //In D2, this should return const
         ///Access vector contents as an array.
         T[] array(){return data_[0 .. used_];}
