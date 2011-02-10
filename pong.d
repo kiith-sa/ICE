@@ -1674,6 +1674,7 @@ class GameContainer
             monitor_ = monitor;
             spatial_physics_ = new GridSpatialManager!(PhysicsBody)
                                    (Vector2f(400.0f, 300.0f), 25.0f, 32);
+            monitor_.add_monitorable("Spatial(P)", spatial_physics_);
             physics_engine_ = new PhysicsEngine(spatial_physics_);
             monitor_.add_monitorable("Physics", physics_engine_);
             actor_manager_ = new SceneManager(physics_engine_);
@@ -1691,6 +1692,7 @@ class GameContainer
             actor_manager_.die();
             monitor_.remove_monitorable(physics_engine_);
             physics_engine_.die();
+            monitor_.remove_monitorable(spatial_physics_);
             spatial_physics_.die();
             game_ = null;
             actor_manager_ = null;

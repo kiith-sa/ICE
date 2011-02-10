@@ -1,6 +1,3 @@
-17:
-    VideoDriver: draw_rectangle(min, max, color)
-    needed for GridSpatialManager GUI monitor
 17: 
     GridSpatialManager GUI monitor showing cells with colors based
     on number of objects inside.
@@ -377,17 +374,6 @@
     (0 is fully transparent and should be RGBA 0,0,0,0).
 39:
     Custom exception class/es, should add the message to the log.
-39:
-    Allocator should record its memory usage e.g. every second.
-    This could be a good experiment for threading (make sure the other
-    thread doesn't eat whole core - it must sleep if not near timer 
-    expiration)
-
-    Alternatively, we don't need threaded timer: Record memory usage
-    every X allocations. Even every single allocation might work
-    (we just need to add an uint to an array)
-    Better, we could record memory usage and time of allocation.
-    Maybe also index of type of object allocated (not the whole string)
 36: 
     Console        
 15:
@@ -513,7 +499,7 @@ Maybe:
 1:
     Paddle acceleration
 3:
-    Graphics: Filled rectangles/circles
+    Graphics: Filled polygons/circles
 4:
     Consider writing a tool like 3DtoSprite seen at 
     http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?t=25397

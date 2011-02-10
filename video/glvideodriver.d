@@ -513,7 +513,7 @@ abstract class GLVideoDriver : VideoDriver
             }
         }
 
-        MonitorMenu monitor_menu(){return new GLVideoDriverMonitor(this);}
+        override MonitorMenu monitor_menu(){return new GLVideoDriverMonitor(this);}
 
     package:
         //Debugging: draw specified area of a page on the specified quad.

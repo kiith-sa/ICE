@@ -5,8 +5,10 @@ import spatial.spatialmanager;
 import spatial.volume;
 import spatial.volumeaabbox;
 import spatial.volumecircle;
+import spatial.gridmonitor;
 //used by unittest
 import physics.physicsbody;
+import monitor.monitormenu;
 import math.math;
 import math.vector2;
 import math.rectangle;
@@ -162,6 +164,11 @@ class GridSpatialManager(T) : SpatialManager!(T)
         }
 
         Iterator!(T[]) iterator(){return new ObjectIterator!(T);}
+
+        final override MonitorMenu monitor_menu()
+        {
+            return new GridSpatialManagerMonitor!(T)(this);
+        }
 
     private:
         /*

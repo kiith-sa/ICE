@@ -218,6 +218,7 @@ abstract class VideoDriver : Monitorable
             //This exists due to what appears to be a linker bug - linker
             //doesn't work if this is not implemented even for abstract class
             //(even though it's overriden by child)
+            assert(false);
             return null;
         }
 }

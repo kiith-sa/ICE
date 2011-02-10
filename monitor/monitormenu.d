@@ -6,6 +6,7 @@ import monitor.submonitor;
 import gui.guielement;
 import gui.guimenu;
 import util.signal;
+import stringctfe;
 
 
 ///Base class for monitor menus.
@@ -53,6 +54,10 @@ abstract class MonitorMenu
 /**
  * Generate a MonitorMenu implementation class providing access to specified monitors.
  *
+ * If the monitored class is templated, syntax "Monitored$T$U"
+ * can be used to support templates. In that case, both the monitor menu
+ * and monitors accessed will be templated with specified template types.
+ *
  * Note: To use this as a mixin, you have to import gui.guimenu .
  *
  * Used as a string mixin.
@@ -89,11 +94,29 @@ in
 }
 body
 {
-    string header = "final package class " ~ name ~ "Monitor : MonitorMenu\n"
-                    "{\n";
-    string monitored = "    private " ~ name ~ " monitored_;\n" ;
+    string[] types = name.split('$');
+    string monitored_type = types[0];
 
-    string ctor_start = "    public this(" ~ name ~ " monitored)\n"
+    //if the monitored class is templated, its template types will be here
+    //in "!(T,U)" format. Otherwise, this will be empty.
+    string templates;
+    if(types.length > 1)
+    {
+        templates = "!(" ~ types[1];
+        foreach(template_type; types[2 .. $]){templates ~= ", " ~ template_type;}
+        templates ~= ")";
+    }
+
+    //monitored type with templates, if any
+    string monitored_full = monitored_type ~ templates;
+
+    string header = "final package class " ~ monitored_type ~ "Monitor" ~ 
+                    (templates == "" ? "" : templates[1 .. $]) ~ " : MonitorMenu\n"
+                    
+                    "{\n";
+    string monitored = "    private " ~ monitored_full ~ " monitored_;\n" ;
+
+    string ctor_start = "    public this(" ~ monitored_full ~ " monitored)\n"
                         "    {\n"
                         "        auto factory = new GUIMenuHorizontalFactory;\n";
     string ctor_items = "        factory.add_item(\"Back\", &back_to_parent);\n";
@@ -107,8 +130,8 @@ body
     string setters = "    private:\n";
     for(uint monitor; monitor < monitor_names.length; monitor++)
     {
-        setters ~= "        void " ~ monitor_names[monitor] ~ "()"
-                  "{set_monitor.emit(new " ~ monitor_classes[monitor] ~ "(monitored_));}\n"; 
+        setters ~= "        void " ~ monitor_names[monitor] ~ templates ~ "()"
+                  "{set_monitor.emit(new " ~ monitor_classes[monitor] ~ templates ~ "(monitored_));}\n"; 
     }
     string footer = "}\n";
 

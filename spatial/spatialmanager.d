@@ -2,13 +2,15 @@ module spatial.spatialmanager;
 
 
 import physics.physicsbody;
+import monitor.monitorable;
+import monitor.monitormenu;
 import math.vector2;
 import math.rectangle;
 import util.iterator;
 
 
 ///Base class for spatial managers used e.g. for culling, coarse collision detecton
-abstract class SpatialManager(T)
+abstract class SpatialManager(T) : Monitorable
 {
     public:
         ///Destroy the spatial manager.
@@ -49,5 +51,11 @@ abstract class SpatialManager(T)
         ///Return an iterator iterating over groups of spatially close objects.
         Iterator!(T[]) iterator();
 
+        MonitorMenu monitor_menu()
+        {
+            //This must be implemented due to what's apparently a compiler bug
+            assert(false);
+            return null;
+        }
         //Iterator!(T[]) iterator(Rectanglef limits);
 }
