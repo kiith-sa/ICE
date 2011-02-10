@@ -129,20 +129,18 @@ int main(char[][] args)
 	*/
 
     string build = "debug";
-
     bool no_sse = false;
 
     string[] extra_args = ["-w", "-wi"];
 
-    if(args.length > 1)
+    args = args[1 .. $];
+    foreach(arg; args)
     {
-        build = args[1];
-        foreach(arg; args[2 .. $])
-        {
-            if(arg == "no-sse"){no_sse = true;}
-            else{extra_args ~= arg;}
-        }
+        if(arg == "--no-sse"){no_sse = true;}
+        else if(arg == "--help" || arg == "-h"){help(); return 0;}
+        else if(arg[0] == '-'){extra_args ~= arg;}
     }
+    if(args.length > 0 && args[$ - 1][0] != '-'){build = args[$ - 1];}
 
     string sse3 = " -version=sse3 -version=sse2 -version=sse1";
     if(!no_sse){extra_args ~= sse3;}
@@ -191,6 +189,39 @@ int main(char[][] args)
     }
 
 	return 0;
+}
+
+///Print help information.
+void help()
+{
+    string help =
+        "Pong build script\n"
+        "Changes Copyright (C) 2010-2011 Ferdinand Majerech\n"
+        "Based on CDC script Copyright (C) 2009-2010 Eric Poggel\n"
+        "Usage: cdc [OPTION ...] [EXTRA COMPILER OPTION ...] [TARGET]\n"
+        "This script uses the compiler it was built with to compile the project.\n"
+        "\n"
+        "Any options starting with '-' not parsed by the script will be\n"
+        "passed to the compiler used.\n"
+        "\n"
+        "Optionally, build target can be specified, 'debug' is default.\n"
+        "Available build targets:\n"
+        "    debug           Debug information, unittests, contracts built in.\n"
+        "                    No optimizations. Target binary name: 'pong-debug'\n"
+        "    no-contracts    Debug information, no unittests, contracts, optimizations.\n"
+        "                    Target binary name: 'pong-no-contracts'\n"
+        "    release         Debug information, no unittests, contracts.\n"
+        "                    Optimizations, inlining enabled.\n"
+        "                    Target binary name: 'pong-release'\n"
+        "    all             All of the above.\n"
+        "\n"
+        "Available options:\n"
+        " -h --help          Show this help information.\n"
+        "    --no-sse        Don't use hand-coded SSE optimizations.\n"
+        "                    By default, custom SSE code requiring SSE 3 is included.\n"
+        "                    This is needed on old X86 or non-X86 platforms.\n"
+        ;
+    writefln(help);
 }
 
 /*

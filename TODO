@@ -1,3 +1,7 @@
+20:
+    draw_border GUI element parameter should be set in factory.
+17:
+    Rename ActorManager to SceneManager and its directory to scene/
 17: 
     GridSpatialManager GUI monitor showing cells with colors based
     on number of objects inside.
@@ -7,12 +11,12 @@
     calling fake ctor, if any exists, and free calling die()
     -of course, after moving to D2, this would call the usual ctor/dtor.
     Maybe an allocator GUI monitor.
-17:
-    Rename ActorManager to SceneManager and its directory to scene/
+14:
+    Look for D files in main directory that can be put into packages.
+    Maybe create the dreaded util package.
+    Might add collections and util packages.
 17:
     Effect at ball-paddle collision
-18:
-    cdc should have help
 17: 
     Effects:
     when changing the gui, (e.g. moving from menu to pong, or between dialogs), 
@@ -31,12 +35,8 @@
 
     Also add some coding examples to e.g. GUI DDoc, maybe VideoDriver
 20:
-    draw_border GUI element parameter should be set in factory.
-20:
     Look at other games/demos for graphics effect ideas...
     or maybe we have enough effects by now...
-20:
-    Multiple (two, and maybe option to generate) color schemes
 20:
     Screenshot. Probably glReadPixels from framebuffer. Also need PNG output 
 24:
@@ -50,10 +50,6 @@
     -only do stuff that needs no singletons
 20:
     Check for a newer version of (D1) Derelict, if any, just in case.
-14:
-    Look for D files in main directory that can be put into packages.
-    Maybe create the dreaded util package.
-    Might add collections and util packages.
 20: 
     Get rid of immediate mode:
     support VAs and maybe VBOs (not that necessary right now) -
@@ -113,6 +109,9 @@
     number of allocations per  e.g. second (graph),
     also a graph showing each allocation as a box
     with size depending on size of allocated memory (advanced, but could help)
+20:
+    Multiple (two, and maybe option to generate) color schemes
+    (game, not GUI, colors)
 24:
     Alongside mouse_move and mouse_key, consider more advanced
     mouse_click (triggered by quick succeeding press and release),
@@ -166,6 +165,8 @@
     There should be default set of values (in INI), e.g. for buttons in general,
     and every button could be customized with INI code that only mentions
     differences.
+
+    Both GUI layout files and GUI skins/themes (just border widths/colors for now)
 
     FontManager settings like FontAA and FastGlyphs should be set through INI
     (also the default font?, etc.)
