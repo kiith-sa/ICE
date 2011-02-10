@@ -45,8 +45,11 @@ abstract class GLVideoDriver : VideoDriver
         bool line_aa_ = false;
         float line_width_ = 1.0;
 
-        Shader line_shader_;
+        //Shader used to draw lines and rectangles without textures.
+        Shader plain_shader;
+        //Shader used to draw textured surfaces.
         Shader texture_shader_;
+        //Shader used to draw fonts.
         Shader font_shader_;
 
         GLShader* [] shaders_;
@@ -80,7 +83,7 @@ abstract class GLVideoDriver : VideoDriver
         {
             super.die();
 
-            delete_shader(line_shader_);
+            delete_shader(plain_shader);
             delete_shader(texture_shader_);
             delete_shader(font_shader_);
 
@@ -151,7 +154,7 @@ abstract class GLVideoDriver : VideoDriver
             if(v1 == v2){return;}
             ++statistics_.lines;
 
-            set_shader(line_shader_);
+            set_shader(plain_shader);
             //The line is drawn as a rectangle with width slightly lower than
             //line_width_ to prevent artifacts.
             //equivalent to (v2 - v1).normal;
@@ -219,6 +222,22 @@ abstract class GLVideoDriver : VideoDriver
                 glVertex2fv(cast(float*)&r4);
                 glEnd();
             }
+        }
+
+        final override void draw_filled_rectangle(Vector2f min, Vector2f max, Color color)
+        {
+            statistics_.rectangles += 1;
+            statistics_.vertices += 4;
+
+            set_shader(plain_shader);
+
+            glColor4ubv(cast(ubyte*)&color);
+            glBegin(GL_TRIANGLE_STRIP);
+            glVertex2f(min.x, min.y);
+            glVertex2f(min.x, max.y);
+            glVertex2f(max.x, min.y);
+            glVertex2f(max.x, max.y);
+            glEnd();
         }
 
         final override void draw_texture(Vector2i position, ref Texture texture)
@@ -559,7 +578,7 @@ abstract class GLVideoDriver : VideoDriver
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-            line_shader_ = create_shader("line");
+            plain_shader = create_shader("line");
             texture_shader_ = create_shader("texture");
             font_shader_ = create_shader("font");
         }

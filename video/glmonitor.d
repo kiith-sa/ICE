@@ -26,7 +26,7 @@ import util.signal;
 package struct Statistics
 {
     //Draw calls.
-    uint lines, textures, texts;
+    uint lines, textures, texts, rectangles;
     //Drawing primitives.
     uint vertices, characters;
     //State changes.
@@ -35,7 +35,8 @@ package struct Statistics
     //Reset the statistics gathered for the next frame.
     void zero()
     {    
-        lines = textures = texts = vertices = characters = shader = page = 0;
+        lines = textures = texts = rectangles 
+              = vertices = characters = shader = page = 0;
     }
 }
 
@@ -229,12 +230,12 @@ final package class DrawsMonitor : GraphMonitor
         ///Construct a DrawsMonitor, set value names and colors.
         this(GLVideoDriver monitored)
         {
-            mixin(generate_graph_monitor_ctor("lines", "textures", "texts"));
+            mixin(generate_graph_monitor_ctor("lines", "textures", "texts", "rectangles"));
         }
 
     private:
         //Callback called by GLVideoDriver once per frame to update monitored statistics.
-        mixin(generate_graph_fetch_statistics("lines", "textures", "texts"));
+        mixin(generate_graph_fetch_statistics("lines", "textures", "texts", "rectangles"));
 }
   
 ///Displays info about graphics primitives drawn

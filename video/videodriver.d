@@ -160,6 +160,10 @@ abstract class VideoDriver : Monitorable
             draw_line(min_max, max, color, color);
         }
 
+        ///Draw a filled rectangle with specified extents and color.
+        void draw_filled_rectangle(Vector2f min, Vector2f max, 
+                                   Color color = Color(255, 255, 255, 255));
+
         ///Draw a texture at given position.
         void draw_texture(Vector2i position, ref Texture texture);
         
@@ -175,7 +179,6 @@ abstract class VideoDriver : Monitorable
         
         ///Set line width.
         void line_width(float width);
-
         
         ///Set font to draw text with. If font_name is "default", default font will be used.
         void font(string font_name);
