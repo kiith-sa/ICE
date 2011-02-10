@@ -24,7 +24,7 @@ import monitor.monitormenu;
 import color;
 import image;
 import memory.memory;
-import signal;
+import util.signal;
 
 
 ///Handles all drawing functionality.

@@ -5,8 +5,8 @@ import memory.memory;
 import monitor.monitormenu;
 import monitor.monitorable;
 import memory.memorymonitor;
-import weaksingleton;
-import signal;
+import util.weaksingleton;
+import util.signal;
 
 
 //Ugly, but must be here due to circular dependencies.

@@ -4,7 +4,7 @@ module spatial.spatialmanager;
 import physics.physicsbody;
 import math.vector2;
 import math.rectangle;
-import iterator;
+import util.iterator;
 
 
 ///Base class for spatial managers used e.g. for culling, coarse collision detecton

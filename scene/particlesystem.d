@@ -5,7 +5,7 @@ import scene.actor;
 import scene.actorcontainer;
 import physics.physicsbody;
 import math.vector2;
-import factory;
+import util.factory;
 
 
 ///Base class for particle systems.

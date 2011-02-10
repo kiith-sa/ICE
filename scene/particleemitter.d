@@ -12,7 +12,7 @@ import math.math;
 import math.vector2;
 import time.timer;
 import containers.array;
-import factory;
+import util.factory;
 import containers.vector;
 
 

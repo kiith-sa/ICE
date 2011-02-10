@@ -13,7 +13,7 @@ import platform.platform;
 import gui.guielement;
 import monitor.monitormenu;
 import monitor.monitorable;
-import weaksingleton;
+import util.weaksingleton;
 import color;
 import image;
 

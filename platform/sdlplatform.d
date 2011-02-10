@@ -8,7 +8,7 @@ import derelict.sdl.sdl;
 import platform.key;
 import platform.platform;
 import math.vector2;
-import singleton;
+
 
 class SDLPlatform : Platform
 {

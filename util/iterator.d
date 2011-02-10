@@ -1,4 +1,4 @@
-module iterator;
+module util.iterator;
 
 
 /**

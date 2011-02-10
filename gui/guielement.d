@@ -11,8 +11,8 @@ import formats.mathparser;
 import monitor.monitor;
 import color;
 import containers.array;
-import factory;
-import weaksingleton;
+import util.factory;
+import util.weaksingleton;
 
 
 //In future, this should be rewritten to support background and border(?) textures,

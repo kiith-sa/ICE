@@ -12,7 +12,7 @@ import video.font;
 import video.texture;
 import math.math;
 import math.vector2;
-import weaksingleton;
+import util.weaksingleton;
 import color;
 import containers.array;
 import memory.memory;

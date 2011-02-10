@@ -5,8 +5,8 @@ import std.string;
 
 public import platform.key;
 import math.vector2;
-import weaksingleton;
-import signal;
+import util.weaksingleton;
+import util.signal;
 
 
 ///Handles platform specific functionality like input/output.

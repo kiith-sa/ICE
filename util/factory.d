@@ -1,4 +1,4 @@
-module factory;
+module util.factory;
 
 
 import stringctfe;

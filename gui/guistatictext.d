@@ -9,7 +9,7 @@ import math.math;
 import math.vector2;
 import math.rectangle;
 import color;
-import factory;
+import util.factory;
 
 
 ///Horizontal alignments.

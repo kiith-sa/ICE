@@ -5,7 +5,7 @@ import std.string;
 
 import time.time;
 import time.timer;
-import signal;
+import util.signal;
 
 
 ///Generalization of an FPS counter - i.e. counts how frequently an event happens

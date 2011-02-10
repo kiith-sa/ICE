@@ -10,10 +10,10 @@ import spatial.gridspatialmanager;
 import monitor.monitormenu;
 import monitor.monitorable;
 import math.vector2;
-import signal;
-import weaksingleton;
+import util.signal;
+import util.weaksingleton;
 import containers.array;
-import iterator;
+import util.iterator;
 
 
 /**

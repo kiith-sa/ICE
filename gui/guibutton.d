@@ -7,8 +7,8 @@ import video.videodriver;
 import math.vector2;
 import platform.platform;
 import color;
-import signal;
-import factory;
+import util.signal;
+import util.factory;
 
 
 ///Enumerates states a button can be in.

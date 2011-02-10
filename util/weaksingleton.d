@@ -1,4 +1,4 @@
-module weaksingleton;
+module util.weaksingleton;
 
 /**
  * Singleton template mixin with support for polymorphism, without global access.

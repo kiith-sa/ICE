@@ -5,7 +5,7 @@ import monitor.monitor;
 import monitor.submonitor;
 import gui.guielement;
 import gui.guimenu;
-import signal;
+import util.signal;
 
 
 ///Base class for monitor menus.

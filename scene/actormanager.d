@@ -13,7 +13,7 @@ import math.vector2;
 import time.time;
 import time.timer;
 import time.eventcounter;
-import weaksingleton;
+import util.weaksingleton;
 import containers.array;
 
 

@@ -1,4 +1,4 @@
-module signal;
+module util.signal;
 
 
 import containers.array;

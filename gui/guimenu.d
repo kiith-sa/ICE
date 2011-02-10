@@ -7,7 +7,7 @@ import gui.guielement;
 import gui.guibutton;
 import gui.guistatictext;
 import video.videodriver;
-import factory;
+import util.factory;
 
 abstract class GUIMenu : GUIElement
 {

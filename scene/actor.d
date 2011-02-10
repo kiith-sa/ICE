@@ -9,7 +9,7 @@ import physics.physicsbody;
 import video.videodriver;
 import math.vector2;
 import math.rectangle;
-import factory;
+import util.factory;
 
 
 /** 

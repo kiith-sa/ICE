@@ -12,7 +12,7 @@ import graphdata;
 import time.time;
 import time.timer;
 import color;
-import factory;     
+import util.factory;     
 import containers.vector;
 
 /**

@@ -1,7 +1,3 @@
-14:
-    Look for D files in main directory that can be put into packages.
-    Maybe create the dreaded util package.
-    Might add collections and util packages.
 17:
     VideoDriver: draw_rectangle(min, max, color)
     needed for GridSpatialManager GUI monitor
@@ -120,6 +116,8 @@
     and display them somehow. Could measure times of non-videodriver code as well.
 4:
     FPS graph
+14:
+    Look for D files in main directory that can be put into packages.
 20:
     Multiple (two, and maybe option to generate) color schemes
     (game, not GUI, colors)

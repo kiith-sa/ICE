@@ -39,10 +39,10 @@ import memory.memorymonitorable;
 import time.time;
 import time.timer;
 import time.eventcounter;
-import signal;
-import weaksingleton;
+import util.signal;
+import util.weaksingleton;
 import color;
-import factory;
+import util.factory;
 
 
 ///A rectangular wall in the game area.

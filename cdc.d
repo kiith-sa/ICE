@@ -157,12 +157,9 @@ int main(char[][] args)
                      
                      "physics/", "scene/", "file/", "formats/", "gui/", "math/", 
                      "memory/", "monitor/", "platform/", "spatial/", "time/", 
-                     "video/", "containers/",
+                     "video/", "containers/", "util/",
 
-                     "color.d", "image.d", "pong.d",
-                     "signal.d", "singleton.d", "weaksingleton.d", 
-                     "factory.d", "stringctfe.d", 
-                     "graphdata.d", "iterator.d"
+                     "color.d", "graphdata.d", "image.d", "pong.d", "stringctfe.d"
                      ],
                      arguments ~ extra_args);
     }

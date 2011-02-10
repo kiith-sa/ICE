@@ -10,7 +10,7 @@ import physics.physicsbody;
 import video.videodriver;
 import math.vector2;
 import color;
-import factory;
+import util.factory;
 
 
 ///Particle emitter that emits lines.

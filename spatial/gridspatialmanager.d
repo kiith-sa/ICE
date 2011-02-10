@@ -10,7 +10,7 @@ import physics.physicsbody;
 import math.math;
 import math.vector2;
 import math.rectangle;
-import iterator;
+import util.iterator;
 import memory.memory;
 import containers.array;
 import containers.array2d;
