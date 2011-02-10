@@ -1,4 +1,4 @@
-module vector;
+module containers.vector;
 
 
 import memory.memory;

@@ -14,7 +14,7 @@ import time.time;
 import time.timer;
 import time.eventcounter;
 import weaksingleton;
-import arrayutil;
+import containers.array;
 
 
 ///Stores and manages all Actors.
@@ -129,7 +129,7 @@ final class SceneManager : ActorContainer
             //these actors are already dead, so remove them first
             foreach(actor; actors_to_remove_)
             {
-                alias arrayutil.remove remove;
+                alias containers.array.remove remove;
                 actors_.remove(actor, true);
                 physics_engine_.remove_body(actor.physics_body);
             }
@@ -184,7 +184,7 @@ final class SceneManager : ActorContainer
             //Add or remove any actors requested
             foreach(actor; actors_to_remove_)
             {
-                alias arrayutil.remove remove;
+                alias containers.array.remove remove;
                 actors_.remove(actor, true);
                 physics_engine_.remove_body(actor.physics_body);
             }

@@ -4,8 +4,8 @@ module graphdata;
 import math.math;
 import time.time;
 import time.timer;
-import arrayutil;
-import vector;
+import containers.array;
+import containers.vector;
 
 ///Graph modes.
 enum GraphMode

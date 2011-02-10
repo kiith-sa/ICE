@@ -12,7 +12,7 @@ import monitor.monitorable;
 import math.vector2;
 import signal;
 import weaksingleton;
-import arrayutil;
+import containers.array;
 import iterator;
 
 
@@ -153,7 +153,7 @@ final class PhysicsEngine : Monitorable
         }
         body
         {
-            alias arrayutil.remove remove;
+            alias containers.array.remove remove;
 
             statistics_.bodies--;
             if(physics_body.volume !is null)

@@ -1,4 +1,4 @@
-module arrayutil;
+module containers.array;
 
 
 import std.math;

@@ -12,9 +12,9 @@ import math.vector2;
 import math.rectangle;
 import iterator;
 import memory.memory;
-import arrayutil;
-import array2d;
-import vector;
+import containers.array;
+import containers.array2d;
+import containers.vector;
 
 
 ///Implementation of spatial manager storing objects in a simple square grid.

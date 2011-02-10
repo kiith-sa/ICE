@@ -11,9 +11,9 @@ import physics.physicsbody;
 import math.math;
 import math.vector2;
 import time.timer;
-import arrayutil;
+import containers.array;
 import factory;
-import vector;
+import containers.vector;
 
 
 ///Single particle of the particle system

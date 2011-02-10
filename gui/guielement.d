@@ -10,7 +10,7 @@ import platform.platform;
 import formats.mathparser;
 import monitor.monitor;
 import color;
-import arrayutil;
+import containers.array;
 import factory;
 import weaksingleton;
 

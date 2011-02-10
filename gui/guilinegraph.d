@@ -13,7 +13,7 @@ import time.time;
 import time.timer;
 import color;
 import factory;     
-import vector;
+import containers.vector;
 
 /**
  * Line graph widget, showing multiple changing values, 

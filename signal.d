@@ -1,7 +1,7 @@
 module signal;
 
 
-import arrayutil;
+import containers.array;
 
 
 ///Signal template mixin for the signals/slot system.
@@ -36,13 +36,13 @@ template Signal(Args ...)
         void disconnect(void delegate(Args) deleg)
         in
         {
-            alias arrayutil.contains contains;
+            alias containers.array.contains contains;
             assert(slots_.contains(deleg, true), 
                    "Can't disconnect a slot that is not connected");
         }
         body
         {
-            alias arrayutil.remove_first remove_first;
+            alias containers.array.remove_first remove_first;
             slots_.remove_first(deleg, true);
         }
 }

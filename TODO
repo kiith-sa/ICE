@@ -1,3 +1,10 @@
+14:
+    Look for D files in main directory that can be put into packages.
+    Maybe create the dreaded util package.
+    Might add collections and util packages.
+17:
+    VideoDriver: draw_rectangle(min, max, color)
+    needed for GridSpatialManager GUI monitor
 17: 
     GridSpatialManager GUI monitor showing cells with colors based
     on number of objects inside.
@@ -7,10 +14,6 @@
     calling fake ctor, if any exists, and free calling die()
     -of course, after moving to D2, this would call the usual ctor/dtor.
     Maybe an allocator GUI monitor.
-14:
-    Look for D files in main directory that can be put into packages.
-    Maybe create the dreaded util package.
-    Might add collections and util packages.
 17:
     Effect at ball-paddle collision
 17: 
@@ -31,11 +34,19 @@
 
     Also add some coding examples to e.g. GUI DDoc, maybe VideoDriver
 20:
-    Look at other games/demos for graphics effect ideas...
-    or maybe we have enough effects by now...
-20:
     Screenshot. Probably glReadPixels from framebuffer. Also need PNG output 
     (must be with a function that still exists in GL3!)
+20:
+    Look at other games/demos for graphics effect ideas...
+    or maybe we have enough effects by now...
+2!:
+    (Only if still true)
+    Right now, when the same font is loaded with different font sizes,
+    it is loaded to memory twice. Share that buffer between all font
+    instances with same font name to prevent duplication of memory
+    (Resource manager might help here)
+20:
+    Check for a newer version of (D1) Derelict, if any, just in case.
 24:
     Weak singleton class handling time, updating actormanager and perhaps other
     stuff. Pass this class when updating actors, instead of time_step, game_time.
@@ -45,14 +56,6 @@
     and signals that are fired at the beginning of the next frame.
     However, that might require globally accessible singletons (no testability) 
     -only do stuff that needs no singletons
-2!:
-    (Only if still true)
-    Right now, when the same font is loaded with different font sizes,
-    it is loaded to memory twice. Share that buffer between all font
-    instances with same font name to prevent duplication of memory
-    (Resource manager might help here)
-20:
-    Check for a newer version of (D1) Derelict, if any, just in case.
 20: 
     Get rid of immediate mode:
     support VAs and maybe VBOs (not that necessary right now) -

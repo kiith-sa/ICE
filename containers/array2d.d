@@ -1,4 +1,4 @@
-module array2d;
+module containers.array2d;
 
 
 import memory.memory;

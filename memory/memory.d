@@ -6,7 +6,7 @@ import std.c.stdlib;
 import std.stdio;
 import std.string;
 
-import arrayutil;
+import containers.array;
 
 public:
     ///Allocate an object.
@@ -266,7 +266,7 @@ private:
         if(new_ptr != old_ptr)
         {
             //remove the old pointer from array of allocated pointers
-            alias arrayutil.remove remove;
+            alias containers.array.remove remove;
             alloc_pointers_.remove(cast(void*)old_ptr);
             //add the new pointer to array of allocated pointers
             alloc_pointers_ ~= cast(void*)new_ptr;
@@ -290,7 +290,7 @@ private:
             stats.objects += objects;
         }
         //remove the pointer from array of allocated pointers
-        alias arrayutil.remove remove;
+        alias containers.array.remove remove;
         alloc_pointers_.remove(cast(void*)ptr);
     }
     //\Debug

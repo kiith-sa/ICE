@@ -4,7 +4,7 @@ module formats.mathparser;
 import std.string;
 import std.conv;
 
-import arrayutil;
+import containers.array;
 
 
 ///Parse given string as a math expression.
@@ -65,7 +65,7 @@ private:
     ///Convert an infix math expression to postfix (reverse polish) notation. 
     string to_postfix(string input)
     {
-        alias arrayutil.contains contains;
+        alias containers.array.contains contains;
         dchar[] stack;
 
         string output = "";

@@ -7,7 +7,7 @@ import physics.physicsengine;
 import spatial.spatialmanager;
 import math.vector2;
 import math.math;
-import arrayutil;
+import containers.array;
 
 
 ///Object in physics simulation. Currently a (very) simple rigid body.
