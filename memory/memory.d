@@ -6,8 +6,41 @@ import std.c.stdlib;
 import std.stdio;
 import std.string;
 
+import memory.memorymonitor;
+import monitor.monitormenu;
+import monitor.monitorable;
+import weaksingleton;
 import arrayutil;
+import signal;
 
+
+///Currently used only for monitoring manually allocated memory.
+final class Memory : Monitorable
+{
+    mixin WeakSingleton;
+    private:
+        //Statistics data for monitoring.
+        Statistics statistics_;
+    package:
+        //Used to send statistics data to memory monitors.
+        mixin Signal!(Statistics) send_statistics;
+    public:
+        ///Construct Memory.
+        this(){singleton_ctor();}
+
+        ///Destroy this Memory.
+        void die(){singleton_dtor();}
+
+        ///Update and send monitoring data to monitor.
+        void update()
+        {
+            statistics_.manual_MiB = currently_allocated_ / (1024.0 * 1024.0);
+            send_statistics.emit(statistics_);
+            writefln(currently_allocated_);
+        }
+
+        MonitorMenu monitor_menu(){return new MemoryMonitor(this);}
+}
 
 public:
     ///Allocate an object.
@@ -34,6 +67,8 @@ private:
     ulong total_allocated_ = 0;
     //Total memory manually freed over run of the program, in bytes.
     ulong total_freed_ = 0;
+    //Currently allocated memory, in bytes.
+    ulong currently_allocated_ = 0;
 
     //Debug
     //Struct holding allocation data for one object type.
@@ -71,6 +106,7 @@ private:
         uint bytes = T.sizeof;
         T* ptr = cast(T*)malloc(bytes);
         total_allocated_ += bytes;
+        currently_allocated_ += bytes;
 
         debug_allocate(ptr, 1); //Debug
 
@@ -98,6 +134,7 @@ private:
         //only 4G elems supported for now
         T[] array = (cast(T*)malloc(cast(uint)bytes))[0 .. cast(uint)elems];
         total_allocated_ += bytes;
+        currently_allocated_ += bytes;
 
         debug_allocate(array.ptr, elems); //Debug
 
@@ -124,7 +161,10 @@ private:
         T* old_ptr = array.ptr;
         ulong old_length = array.length;
         array = (cast(T*)std.c.stdlib.realloc(array.ptr, new_bytes))[0 .. elems];
-        total_allocated_ += new_bytes - old_bytes;
+
+        long diff = new_bytes - old_bytes;
+        total_allocated_ += diff;
+        currently_allocated_ += diff;
 
         debug_reallocate(array.ptr, array.length, old_ptr, old_length); //Debug
 
@@ -150,6 +190,7 @@ private:
     body
     {
         total_freed_ += T.sizeof;
+        currently_allocated_ -= T.sizeof;
 
         debug_free(ptr, 1); //Debug
 
@@ -166,7 +207,9 @@ private:
     }
     body
     {
-        total_freed_ += T.sizeof * array.length;
+        ulong bytes = T.sizeof * array.length;
+        total_freed_ += bytes;
+        currently_allocated_ -= bytes;
 
         debug_free(array.ptr, array.length); //Debug
 

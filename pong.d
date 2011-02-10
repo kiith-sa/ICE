@@ -35,6 +35,7 @@ import gui.guistatictext;
 import platform.platform;
 import platform.sdlplatform;
 import monitor.monitor;
+import memory.memory;
 import time.time;
 import time.timer;
 import time.eventcounter;
@@ -1936,6 +1937,9 @@ class Pong
         //Pong GUI.
         PongGUI gui_;
 
+        //Memory object used for memory monitoring.
+        Memory memory_;
+
         GameContainer game_container_;
         Game game_;
 
@@ -1944,6 +1948,8 @@ class Pong
         this()
         {
             singleton_ctor();
+
+            memory_ = new Memory;
 
             platform_ = new SDLPlatform;
 
@@ -1965,6 +1971,7 @@ class Pong
             gui_.quit.connect(&exit);
             gui_.reset_video.connect(&reset_video);
 
+            gui_.monitor.add_monitorable("Memory", memory_);
             gui_.monitor.add_monitorable("Video", video_driver_);
         }
 
@@ -1973,11 +1980,13 @@ class Pong
         {
             fps_counter_.update.disconnect(&fps_update);
             gui_.monitor.remove_monitorable(video_driver_);
+            gui_.monitor.remove_monitorable(memory_);
             gui_.die();
             gui_root_.die();
             video_driver_container_.destroy();
             video_driver_container_.die();
             platform_.die();
+            memory_.die();
             singleton_dtor();
         }
 
@@ -2001,6 +2010,7 @@ class Pong
 
                 gui_root_.draw(video_driver_);
                 video_driver_.end_frame();
+                memory_.update();
             }
             writefln("FPS statistics:\n", fps_counter_.statistics, "\n");
         }

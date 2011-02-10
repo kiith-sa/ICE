@@ -7,7 +7,6 @@ import physics.contactdetect;
 import physics.physicsmonitor;
 import spatial.spatialmanager;
 import spatial.gridspatialmanager;
-import gui.guielement;
 import monitor.monitormenu;
 import monitor.monitorable;
 import math.vector2;

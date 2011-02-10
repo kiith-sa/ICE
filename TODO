@@ -1,6 +1,3 @@
-17:
-    Monitor of total size of manually allocated memory, nothing more for now.
-    More advanced stuff only after monitor overhaul.
 17: 
     GridSpatialManager GUI monitor showing cells with colors based
     on number of objects inside.
