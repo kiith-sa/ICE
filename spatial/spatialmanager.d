@@ -2,7 +2,6 @@ module spatial.spatialmanager;
 
 
 import physics.physicsbody;
-import actor.actor;
 import math.vector2;
 import math.rectangle;
 import iterator;

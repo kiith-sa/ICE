@@ -1,11 +1,11 @@
 module memory.memorymonitor;
 
 
-import memory.memory;
-import gui.guilinegraph;
-import gui.guimenu;
-import monitor.graphmonitor;
+import memory.memorymonitorable;
 import monitor.monitormenu;
+import monitor.graphmonitor;
+import gui.guimenu;
+import gui.guilinegraph;
 import graphdata;
 import color;
 
@@ -22,7 +22,7 @@ final package class UsageMonitor : GraphMonitor
 {
     public:
         //Construct a UsageMonitor.
-        this(Memory monitored)
+        this(MemoryMonitorable monitored)
         {
             mixin(generate_graph_monitor_ctor("manual_MiB"));
         }
@@ -33,6 +33,6 @@ final package class UsageMonitor : GraphMonitor
 }
 
 //MemoryMonitor class - a MonitorMenu implementation is generated here.
-mixin(generate_monitor_menu("Memory", 
+mixin(generate_monitor_menu("MemoryMonitorable", 
                             ["Usage"], 
                             ["UsageMonitor"]));

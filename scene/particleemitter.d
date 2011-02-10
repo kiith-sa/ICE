@@ -1,12 +1,12 @@
-module actor.particleemitter;
+module scene.particleemitter;
 
 
 import std.random;
 import std.math;
 
-import actor.actor;
-import actor.actorcontainer;
-import actor.particlesystem;
+import scene.actor;
+import scene.actorcontainer;
+import scene.particlesystem;
 import physics.physicsbody;
 import math.math;
 import math.vector2;

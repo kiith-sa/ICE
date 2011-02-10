@@ -5,7 +5,6 @@ import spatial.volume;
 import physics.contact;
 import physics.physicsengine;
 import spatial.spatialmanager;
-import actor.actormanager;
 import math.vector2;
 import math.math;
 import arrayutil;

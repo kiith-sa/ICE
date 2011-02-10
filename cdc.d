@@ -155,7 +155,7 @@ int main(char[][] args)
         CDC.compile([
                      "dependencies/", 
                      
-                     "physics/", "actor/", "file/", "formats/", "gui/", "math/", 
+                     "physics/", "scene/", "file/", "formats/", "gui/", "math/", 
                      "memory/", "monitor/", "platform/", "spatial/", "time/", 
                      "video/", 
 

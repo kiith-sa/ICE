@@ -1,10 +1,10 @@
-module actor.actor;
+module scene.actor;
 
 
 import std.string;
 import std.stdio;
 
-import actor.actorcontainer;
+import scene.actorcontainer;
 import physics.physicsbody;
 import video.videodriver;
 import math.vector2;
@@ -23,7 +23,7 @@ abstract class Actor
         /*
          * Container owning this actor, with ability to add more actors.
          *
-         * (most likely ActorManager)
+         * (most likely SceneManager)
          */
         ActorContainer container_;
 
@@ -96,7 +96,7 @@ abstract class Actor
 
     package:
         /*
-         * Interface to update the actor by ActorManager.
+         * Interface to update the actor by SceneManager.
          *
          * Params:  time_step = Time step in seconds.
          *          game_time = Current game time.
@@ -106,7 +106,7 @@ abstract class Actor
             update(game_time, time_step);
         }
 
-        //Interface to draw the actor by ActorManager.
+        //Interface to draw the actor by SceneManager.
         final void draw_actor(VideoDriver driver){draw(driver);}
 }
 unittest
@@ -138,7 +138,7 @@ unittest
     auto test = new ActorTest(container);
     test.die();
 
-    assert(container.ok, "Error in actor registration with ActorManager");
+    assert(container.ok, "Error in actor registration with SceneManager");
 }
 
 /**
@@ -156,7 +156,7 @@ abstract class ActorFactory(T)
      * Return a new instance of the actor type produced by the factory with specified parameters.
      *
      * Params:  container = Container to manage the actor and any actors it creates. 
-     *                      Should probably be the ActorManager.
+     *                      Should probably be the SceneManager.
      */
     public T produce(ActorContainer container);
 }

@@ -1,12 +1,12 @@
-module actor.linetrail;
+module scene.linetrail;
 
 
 import std.math;
 
-import actor.actor;
-import actor.actorcontainer;
-import actor.particleemitter;
-import actor.lineemitter;
+import scene.actor;
+import scene.actorcontainer;
+import scene.particleemitter;
+import scene.lineemitter;
 import physics.physicsbody;
 import video.videodriver;
 import math.math;

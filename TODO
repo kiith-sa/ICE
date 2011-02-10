@@ -1,5 +1,3 @@
-17:
-    Rename ActorManager to SceneManager and its directory to scene/
 17: 
     GridSpatialManager GUI monitor showing cells with colors based
     on number of objects inside.

@@ -6,40 +6,7 @@ import std.c.stdlib;
 import std.stdio;
 import std.string;
 
-import memory.memorymonitor;
-import monitor.monitormenu;
-import monitor.monitorable;
-import weaksingleton;
 import arrayutil;
-import signal;
-
-
-///Currently used only for monitoring manually allocated memory.
-final class Memory : Monitorable
-{
-    mixin WeakSingleton;
-    private:
-        //Statistics data for monitoring.
-        Statistics statistics_;
-    package:
-        //Used to send statistics data to memory monitors.
-        mixin Signal!(Statistics) send_statistics;
-    public:
-        ///Construct Memory.
-        this(){singleton_ctor();}
-
-        ///Destroy this Memory.
-        void die(){singleton_dtor();}
-
-        ///Update and send monitoring data to monitor.
-        void update()
-        {
-            statistics_.manual_MiB = currently_allocated_ / (1024.0 * 1024.0);
-            send_statistics.emit(statistics_);
-        }
-
-        MonitorMenu monitor_menu(){return new MemoryMonitor(this);}
-}
 
 public:
     ///Allocate an object.
@@ -60,6 +27,10 @@ public:
 
     ///Free an array of objects allocated by alloc(). Will call die() methods if defined.
     void free(T)(T[] array){deallocate(array);}
+
+package:
+    //Get currently allocated memory in bytes.
+    ulong currently_allocated(){return currently_allocated_;}
 
 private:
     //Total memory manually allocated over run of the program, in bytes.

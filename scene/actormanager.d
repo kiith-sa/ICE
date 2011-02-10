@@ -1,11 +1,11 @@
-module actor.actormanager;
+module scene.scenemanager;
 
 
 import std.string;
 import std.stdio;
 
-import actor.actor;
-import actor.actorcontainer;
+import scene.actor;
+import scene.actorcontainer;
 import physics.physicsengine;
 import spatial.spatialmanager;
 import video.videodriver;
@@ -18,7 +18,7 @@ import arrayutil;
 
 
 ///Stores and manages all Actors.
-final class ActorManager : ActorContainer
+final class SceneManager : ActorContainer
 {
     mixin WeakSingleton;
 
@@ -34,7 +34,7 @@ final class ActorManager : ActorContainer
         //Physics engine managing physics bodies of the actors.
         PhysicsEngine physics_engine_;
 
-        //Actors managed by the ActorManager.
+        //Actors managed by the SceneManager.
         Actor[] actors_;
         //Actors to be added at the beginning of the next frame
         Actor[] actors_to_add_;
@@ -57,7 +57,7 @@ final class ActorManager : ActorContainer
 
     public:
         /**
-         * Construct the ActorManager; set up update frequency.
+         * Construct the SceneManager; set up update frequency.
          *
          * Params:  physics_engine = Physics engine for the actor manager to use.
          */
@@ -71,7 +71,7 @@ final class ActorManager : ActorContainer
             singleton_ctor();
         }
 
-        ///Destroy the ActorManager.
+        ///Destroy the SceneManager.
         void die()
         {
             clear();
@@ -141,7 +141,7 @@ final class ActorManager : ActorContainer
             actors_to_remove_ = [];
         }
 
-        ///Return a string with statistics about ActorManager run.
+        ///Return a string with statistics about SceneManager run.
         string statistics(){return "UPS statistics:\n" ~ update_counter_.statistics();}
 
         /**
@@ -149,7 +149,7 @@ final class ActorManager : ActorContainer
          * 
          * Note: this should only be used by actor constructor.
          *
-         * Params:  actor = Actor to add. Must not already be in the ActorManager.
+         * Params:  actor = Actor to add. Must not already be in the SceneManager.
          */
         void add_actor(Actor actor)
         in
@@ -165,13 +165,13 @@ final class ActorManager : ActorContainer
          * 
          * Note: this should only be used by actor die() or destructor.
          *
-         * Params:  actor = Actor to remove. Must be in the ActorManager.
+         * Params:  actor = Actor to remove. Must be in the SceneManager.
          */
         void remove_actor(Actor actor)
         in
         {
             assert(actors_.contains(actor, true), 
-                   "Can't remove an actor that is not in the ActorManager");
+                   "Can't remove an actor that is not in the SceneManager");
         }
         body{actors_to_remove_ ~= actor;}
 

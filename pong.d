@@ -15,12 +15,12 @@ import math.rectangle;
 import video.videodriver;
 import video.sdlglvideodriver;
 import video.videodrivercontainer;
-import actor.actor;
-import actor.actormanager;
-import actor.actorcontainer;
-import actor.particleemitter;
-import actor.lineemitter;
-import actor.linetrail;
+import scene.actor;
+import scene.scenemanager;
+import scene.actorcontainer;
+import scene.particleemitter;
+import scene.lineemitter;
+import scene.linetrail;
 import physics.physicsengine;
 import physics.physicsbody;
 import physics.contact;
@@ -35,7 +35,7 @@ import gui.guistatictext;
 import platform.platform;
 import platform.sdlplatform;
 import monitor.monitor;
-import memory.memory;
+import memory.memorymonitorable;
 import time.time;
 import time.timer;
 import time.eventcounter;
@@ -1355,7 +1355,7 @@ class Game
         //Platform used for input.
         Platform platform_;
 
-        ActorManager actor_manager_;
+        SceneManager actor_manager_;
 
         //Area of the game in world space.
         static Rectanglef game_area_ = Rectanglef(0.0f, 0.0f, 800.0f, 600.0f);
@@ -1497,7 +1497,7 @@ class Game
         static Rectanglef game_area(){return game_area_;}
 
     private:
-        this(Platform platform, ActorManager actor_manager, GameGUI gui, 
+        this(Platform platform, SceneManager actor_manager, GameGUI gui, 
              uint score_limit, real time_limit)
         {
             singleton_ctor();
@@ -1644,7 +1644,7 @@ class GameContainer
         //Physics engine used by the actor manager.
         PhysicsEngine physics_engine_;
         //Actor manager used by the game.
-        ActorManager actor_manager_;
+        SceneManager actor_manager_;
         //GUI of the game.
         GameGUI gui_;
         //Game itself.
@@ -1676,7 +1676,7 @@ class GameContainer
                                    (Vector2f(400.0f, 300.0f), 25.0f, 32);
             physics_engine_ = new PhysicsEngine(spatial_physics_);
             monitor_.add_monitorable("Physics", physics_engine_);
-            actor_manager_ = new ActorManager(physics_engine_);
+            actor_manager_ = new SceneManager(physics_engine_);
             gui_ = new GameGUI(gui_parent, 300.0);
             game_ = new Game(platform, actor_manager_, gui_, 10, 300.0);
             return game_;
@@ -1687,7 +1687,7 @@ class GameContainer
         {
             game_.die();
             gui_.die();
-            writefln("ActorManager statistics:\n", actor_manager_.statistics, "\n");
+            writefln("SceneManager statistics:\n", actor_manager_.statistics, "\n");
             actor_manager_.die();
             monitor_.remove_monitorable(physics_engine_);
             physics_engine_.die();
@@ -1937,8 +1937,8 @@ class Pong
         //Pong GUI.
         PongGUI gui_;
 
-        //Memory object used for memory monitoring.
-        Memory memory_;
+        //Used for memory monitoring.
+        MemoryMonitorable memory_;
 
         GameContainer game_container_;
         Game game_;
@@ -1949,7 +1949,7 @@ class Pong
         {
             singleton_ctor();
 
-            memory_ = new Memory;
+            memory_ = new MemoryMonitorable;
 
             platform_ = new SDLPlatform;
 

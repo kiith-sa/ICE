@@ -1,11 +1,11 @@
-module actor.lineemitter;
+module scene.lineemitter;
 
 
 import std.math;
 
-import actor.actor;
-import actor.actorcontainer;
-import actor.particleemitter;
+import scene.actor;
+import scene.actorcontainer;
+import scene.particleemitter;
 import physics.physicsbody;
 import video.videodriver;
 import math.vector2;

@@ -1,8 +1,8 @@
-module actor.particlesystem;
+module scene.particlesystem;
 
 
-import actor.actor;
-import actor.actorcontainer;
+import scene.actor;
+import scene.actorcontainer;
 import physics.physicsbody;
 import math.vector2;
 import factory;
