@@ -36,7 +36,6 @@ final class Memory : Monitorable
         {
             statistics_.manual_MiB = currently_allocated_ / (1024.0 * 1024.0);
             send_statistics.emit(statistics_);
-            writefln(currently_allocated_);
         }
 
         MonitorMenu monitor_menu(){return new MemoryMonitor(this);}

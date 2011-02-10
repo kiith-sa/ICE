@@ -109,14 +109,10 @@ final class Monitor : GUIElement
          * 
          * See_Also: GUIElement.this
          *
-         * Params:  x            = X position math expression.
-         *          y            = Y position math expression. 
-         *          width        = Width math expression. 
-         *          height       = Height math expression. 
+         * Params:  params = Parameters for GUIElement constructor.
          *          monitorables = Interfaces to classes to monitor, with names to use.
          */
-        this(string x, string y, string width, string height, 
-             MonitorableData[] monitorables)
+        this(GUIElementParams params, MonitorableData[] monitorables)
         in
         {
             foreach(monitorable; monitorables)
@@ -126,7 +122,7 @@ final class Monitor : GUIElement
         }
         body
         {
-            super(x, y, width, height);
+            super(params);
 
             monitorables_ = monitorables;
             regenerate();
@@ -257,7 +253,7 @@ final class MonitorFactory : GUIElementFactoryBase!(Monitor)
             monitorables_ ~= MonitorableData(name, monitorable);
         }
 
-        Monitor produce(){return new Monitor(x_, y_, width_, height_, monitorables_);}
+        Monitor produce(){return new Monitor(gui_element_params, monitorables_);}
 }
 
 private:

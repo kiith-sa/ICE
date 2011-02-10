@@ -1,5 +1,3 @@
-20:
-    draw_border GUI element parameter should be set in factory.
 17:
     Rename ActorManager to SceneManager and its directory to scene/
 17: 
@@ -39,6 +37,7 @@
     or maybe we have enough effects by now...
 20:
     Screenshot. Probably glReadPixels from framebuffer. Also need PNG output 
+    (must be with a function that still exists in GL3!)
 24:
     Weak singleton class handling time, updating actormanager and perhaps other
     stuff. Pass this class when updating actors, instead of time_step, game_time.
@@ -48,6 +47,12 @@
     and signals that are fired at the beginning of the next frame.
     However, that might require globally accessible singletons (no testability) 
     -only do stuff that needs no singletons
+2!:
+    (Only if still true)
+    Right now, when the same font is loaded with different font sizes,
+    it is loaded to memory twice. Share that buffer between all font
+    instances with same font name to prevent duplication of memory
+    (Resource manager might help here)
 20:
     Check for a newer version of (D1) Derelict, if any, just in case.
 20: 
@@ -109,6 +114,11 @@
     number of allocations per  e.g. second (graph),
     also a graph showing each allocation as a box
     with size depending on size of allocated memory (advanced, but could help)
+1:
+    Measurements and graphs of how much time per frame does e.g. line drawing take,
+    and display them somehow. Could measure times of non-videodriver code as well.
+4:
+    FPS graph
 20:
     Multiple (two, and maybe option to generate) color schemes
     (game, not GUI, colors)
@@ -241,18 +251,15 @@
     or physics, or maybe OpenMP style (or just 2-4 threads)
     for collision detection (not penetration resolution or response,
     at least for now)
+10:
+    Test mod directories with a simple Pong "mod" that replaces shaders
+    and/or fonts (say, with negative or black/white colors or something)
 6:
     Consider mipmapping using 
     glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE)
     -automatically regenerates mipmaps at SubImage calls
     - maximum mipmap level might be preferrable to not mess up very distant zooms,
     e.g. texparameter GL_TEXTURE_MAX_LEVEL (at 2, 3 or 4)
-7:
-    GUI substitutes:
-    p_width
-    p_height
-    width  (width of this) - would require realign() to compute width first
-    height  (height of this) - would require realign() to compute width first
 8:
     timer calling a given function at expiration,
     and some kind of singleton or module to update these timers to
@@ -260,7 +267,6 @@
     pong, not game. maybe later it could be updated from separate thread, but probably
     not.
     Would be used like e.g. time.delayed_call(function(args), delay);
-    
 8:
     Subset of HTML tags for text drawing (just support <br> for now),
     will need a parser (fast!) and e.g. StaticText will need to use
@@ -273,15 +279,12 @@
     lightweight markup language would be good for source readability,
     html e.g. for tables (although those might work in a lml too -
     especially if we do them our own way
-10:
-    Test mod directories with a simple Pong "mod" that replaces shaders
-    and/or fonts (say, with negative or black/white colors or something)
 11:
     A debug (ini, console and/or debug GUI controlled) option to draw wireframe.
     Also might want pure white wireframe option (with a custom shader)
     Would be a good feature for GLMonitor.
 12:
-    Consider a hierarchical ActorManager. Physics objects would also
+    Consider (or not) a hierarchical ActorManager. Physics objects would also
     need some hierarchy (or not - will see)
 14:
     Could also look at the source of the Diamond memory debugger and
@@ -307,10 +310,6 @@
     Arrows are used to select elements, maybe later tabs could
     select groups (would be more complicated) - if selected,
     Enter and/or some other keys could be used to control the element.
-27:
-    Consider moving FPSCounter to VideoDriver, Platform or somewhere else
-    outside game specific code. Also need to move the code that writes
-    out stats of these counters somewhere.
 30?:
     Rotation (of 2D actors) - Velocity should then be in object space,
     not world space. Immediate use would be rotating balls.
@@ -320,6 +319,9 @@
     implementation and stable interface so we can replace internals
     with matrices, quaternions, euler angles or whatever (of course, 2D
     rotation doesn't need this- just use a float for that)
+35:
+    Logging messages (e.g. initializing GL, etc.)- not necessarily a logging
+    system yet
 33?:
     Might be left for later (e.g. before map editor):
     GUI: more advanced, moving/resizing (can be enabled/disabled),
@@ -343,11 +345,6 @@
 
     First just support lines, then add sprites, and _maybe_ add 3d
     stuff later.
-35:
-    Logging messages (e.g. initializing GL, etc.)- not necessarily a logging
-    system yet
-35:
-    Screenshots (read from color buffer, but check for GL3 corecompliance)
 35:
     Translatable text, and a simple string format with 
     bold/italic/underlined and text colors.
@@ -380,7 +377,7 @@
     and G 1-255 (255 values) as its alpha colors 
     (0 is fully transparent and should be RGBA 0,0,0,0).
 39:
-    Custom exception class, should add the message to the log.
+    Custom exception class/es, should add the message to the log.
 39:
     Allocator should record its memory usage e.g. every second.
     This could be a good experiment for threading (make sure the other
@@ -394,10 +391,6 @@
     Maybe also index of type of object allocated (not the whole string)
 36: 
     Console        
-37:
-    Platform and VideoDriver should have a static initialize(string impl_name)
-    method, that will initialize the singleton with implementation
-    with given name. (those names will be loaded from INI)
 15:
     FormattedText class/struct that could contain various
     formatting options like line width, line spacing, 
@@ -445,25 +438,18 @@ see freetype.org
 
 Monitor:
 1:
-    Allocator monitor. Memory usage graphs (and per-type graphs?)
-2:
-    Measurements and graphs of how much time per frame does e.g. line drawing take,
-    and display them somehow. Could measure times of non-videodriver code as well.
-3:
     TexturePages info: show free/used space with slight red/blue tints,
     show borders of the texture, and borders of nodes.
     Also might be useful to have buttons to show only node borders/
     texture page/free-used
     Show whether the texture is resident, too.
-4:
-    FPS graph
-5:
+2:
     Show stats about overhead of all textures in the driver,
     each page and its packer
-6:  
+3:  
     Pages: use glGetTexLevelParameteriv with some argument to get
     size the page takes up in the video memory.
-7:
+4:
     PhysicsMonitor ideas:
     1:need listbox: snapshot of all collisions in a certain frame
     2:need listbox: detailed look on an object, i.e. select object and see all its parameters
@@ -474,38 +460,25 @@ Optimizations:
     Allocator alloc/dealloc recording could be done using
     an associative array with typeid as index instead of a string.
     Typeid would be converted to string when writing to output.
-2!:
-    Right now, when the same font is loaded with different font sizes,
-    it is loaded to memory twice. Share that buffer between all font
-    instances with same font name to prevent duplication of memory
-    (Resource manager might help here)
-3!:
-    Store particles in particle systems in something else than arrays,
-    or use arrays with preallocated space (like C++ vectors), or use
-    manual arrays. Array appending in particle systems takes 30 %
-    of execution time right now.
-4?:
-    If particle memory usage is a problem, try to turn Timer into a template class 
-    taking float, double or real to specify precision.
-5?:
+2?:
     Textures could be made smaller by using Vector2s for size
     instead of Vector2u. This has proven to speed up font drawing
     by ~15%. However, would probably result in a bit uglier code
     and need for asserts for too large textures/pages.)
     (would require to pass textures/glyphs by value in font drawing code)
-6?: 
+3?: 
     Alpha testing could be used in combination with blending. I.e.
     a fragment with 0 alpha would automatically be discarded.
     This would break our remap plans, though.
     However, if we culd do this in shader (need to learn how to discard
     a fragment in shader), everything would work right.
-7?:
+4?:
     If color interpolation is a problem, we can create a ColorInterpolator class,
     which is basically a lookup table constructed with color a, color b, 
     and an integer specifying number of colors in the table. Any call to interpolate()
     method of that class would then return the closest table value for
     float given as ann interpolation value.
-8?
+5?
     fast sqrt in math.math using a lookup table
     like, if the input is between 0-1, look it up in table #1 with 100 (float)
     results for 0.00, ... 0.99
@@ -516,6 +489,10 @@ Optimizations:
     alternatively: look at how opensource 3D engines do sqrt and google for other 
     methods, maybe try using carmacks' reciprocal sqrt 
     (1/sqrt, so 1/reciprocal is sqrt)
+6?:
+    If drawing text is too slow, we can cache glyph offsets for strings
+    somewhere in videodriver (or a member class/struct of videodriver)
+    We can search for cached strings quickly using simple bucket sort/search.
 GUI:
 1:
     Progress bars should be simple animation with frame depending
@@ -524,7 +501,6 @@ GUI:
 2:
     once loading GUI from files, CSS-like style code (subset),
     and look at YAGE GUI
-
 
 GL1:
 1:
@@ -555,7 +531,7 @@ Maybe:
     could be used as well. In future, even normals used for 3D lighting could be drawn
     (with a specific shader).
 13:
-    (Arkanoid) High scores - all stuff made of lines
+    (Arkanoid) High scores
 14:
     This might not be needed if we draw stuff in the right order:
     A draw order/layer argument passed to videodriver draw method/s, 
@@ -571,10 +547,6 @@ Maybe:
     Might be enough to just modify GLTexture, not use a separate struct.
     A special createtexture method would be needed too.
     (taking multiple images).
-17:
-    If drawing text is too slow, we can cache glyph offsets for strings
-    somewhere in videodriver (or a member class/struct of videodriver)
-    We can search for cached strings quickly using simple bucket sort/search.
 15:
     (Arkanoid)Save games (ini?)
 16:

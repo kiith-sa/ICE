@@ -160,18 +160,13 @@ final class GUILineGraph : GUIElement
         /**
          * Construct a GUILineGraph with specified parameters.
          *
-         * See_Also: GUIElement.this 
-         *
-         * Params:  x      = X position math expression.
-         *          y      = Y position math expression. 
-         *          width  = Width math expression. 
-         *          height = Height math expression. 
+         * Params:  params = Parameters for GUIElement constructor.
          *          colors = Colors of graphs of measured values.
          *          data   = GraphData to display.
          */
-        this(string x, string y, string width, string height, Color[string] colors, GraphData data)
+        this(GUIElementParams params, Color[string] colors, GraphData data)
         {
-            super(x, y, width, height);
+            super(params);
 
             data_ = data;
             reset_timer(get_time());
@@ -411,5 +406,5 @@ final class GUILineGraphFactory : GUIElementFactoryBase!(GUILineGraph)
         ///Produce a GUILineGraph with parameters of the factory.
         GUILineGraph produce()
         in{assert(data_ !is null, "GUI line graph needs to be linked to graph data");}
-        body{return new GUILineGraph(x_, y_, width_, height_, graphs_, data_);}
+        body{return new GUILineGraph(gui_element_params, graphs_, data_);}
 }

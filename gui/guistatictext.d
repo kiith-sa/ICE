@@ -82,12 +82,7 @@ class GUIStaticText : GUIElement
         /*
          * Construct a static text with specified parameters.
          *
-         * See_Also: GUIElement.this 
-         *
-         * Params:  x           = X position math expression.
-         *          y           = Y position math expression. 
-         *          width       = Width math expression. 
-         *          height      = Height math expression. 
+         * Params:  params      = Parameters for GUIElement constructor.
          *          text_color  = Color of the text.
          *          text        = Text to display.
          *          align_x     = Horizontal alignment of the text.
@@ -96,14 +91,13 @@ class GUIStaticText : GUIElement
          *          font_size   = Size of text font.
          *          font        = Name of the font to use.
          */
-        this(string x, string y, string width, string height, 
-             Color text_color, string text, 
+        this(GUIElementParams params,
+             Color text_color, string text,
              AlignX align_x, AlignY align_y, uint line_gap,
              uint font_size, string font)
         {
-            super(x, y, width, height);
+            super(params);
 
-            draw_border_ = false;
             font_color_ = text_color;
             text_ = expandtabs(text);
             align_x_ = align_x;
@@ -248,7 +242,9 @@ class GUIStaticText : GUIElement
  *
  * See_Also: GUIElementFactoryBase
  *
- * Params:  text_color  = Color of the text.
+ * Params:  draw_border = Draw border of the element?
+ *                        Default: false
+ *          text_color  = Color of the text.
  *                        Default: Color.white
  *          text        = Text to display.
  *                        Default: ""
@@ -271,9 +267,13 @@ final class GUIStaticTextFactory : GUIElementFactoryBase!(GUIStaticText)
                            "uint $ line_gap $ 0",
                            "uint $ font_size $ GUIStaticText.default_font_size()",
                            "string $ font $ \"default\""));
+
+    this(){draw_border_ = false;}
+
     public override GUIStaticText produce()
     {
-        return new GUIStaticText(x_, y_, width_, height_, text_color_, text_, 
-                                 align_x_, align_y_, line_gap_, font_size_, font_);
+        return new GUIStaticText(gui_element_params,
+                                 text_color_, text_, align_x_, align_y_, line_gap_,
+                                 font_size_, font_);
     }
 }

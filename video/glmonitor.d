@@ -61,8 +61,9 @@ final package class PagesMonitor : SubMonitor
 
             this()
             {
-                super("p_left + 28", "p_top + 2", 
-                      "p_width - 106", "p_height - 4");
+                super(GUIElementParams("p_left + 28", "p_top + 2", 
+                                       "p_width - 106", "p_height - 4", 
+                                       true));
             }
 
             override void draw(VideoDriver driver)

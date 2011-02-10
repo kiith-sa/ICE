@@ -30,24 +30,18 @@ abstract class GUIMenu : GUIElement
         /*
          * Construct a menu with specified parameters.
          *
-         * See_Also: GUIElement.this 
-         *
-         * Params:  x              = X position math expression.
-         *          y              = Y position math expression. 
-         *          width          = Width math expression. 
-         *          height         = Height math expression. 
+         * Params:  params         = Parameters for GUIElement constructor.
          *          item_width     = Menu item width math expression.
          *          item_height    = Menu item height math expression.
          *          item_spacing   = Math expression used to calculate spacing between menu items.
          *          item_font_size = Font size of menu items.
          *          items          = Names and callback functions of menu items.
          */
-        this(string x, string y, string width, string height, 
+        this(GUIElementParams params,
              string item_width, string item_height, string item_spacing, 
              uint item_font_size, MenuItemData[] items)
         {
-            super(x, y, width, height);
-            draw_border_ = false;
+            super(params);
             //parentheses prevent unwanted operator precedence, simplify realigning code
             item_width_ = "(" ~ item_width ~ ")";
             item_height_ = "(" ~ item_height ~ ")";
@@ -100,24 +94,18 @@ class GUIMenuHorizontal : GUIMenu
         /*
          * Construct a horizontal menu with specified parameters.
          *
-         * See_Also: GUIElement.this 
-         *
-         * Params:  x              = X position math expression.
-         *          y              = Y position math expression. 
-         *          width          = Width math expression. 
-         *          height         = Height math expression. 
+         * Params:  params         = Parameters for GUIElement constructor.
          *          item_width     = Menu item width math expression.
          *          item_height    = Menu item height math expression.
          *          item_spacing   = Math expression used to calculate spacing between menu items.
          *          item_font_size = Font size of menu items.
          *          items          = Names and callback functions of menu items.
          */
-        this(string x, string y, string width, string height, 
+        this(GUIElementParams params,
              string item_width, string item_height, string item_spacing, 
              uint item_font_size, MenuItemData[] items)
         {
-            super(x, y, width, height, item_width, item_height, item_spacing,
-                  item_font_size, items);
+            super(params, item_width, item_height, item_spacing, item_font_size, items);
         }
 
         override void realign(VideoDriver driver)
@@ -143,24 +131,18 @@ class GUIMenuVertical : GUIMenu
         /*
          * Construct a vertical menu with specified parameters.
          *
-         * See_Also: GUIElement.this 
-         *
-         * Params:  x              = X position math expression.
-         *          y              = Y position math expression. 
-         *          width          = Width math expression. 
-         *          height         = Height math expression. 
+         * Params:  params         = Parameters for GUIElement constructor.
          *          item_width     = Menu item width math expression.
          *          item_height    = Menu item height math expression.
          *          item_spacing   = Math expression used to calculate spacing between menu items.
          *          item_font_size = Font size of menu items.
          *          items          = Names and callback functions of menu items.
          */
-        this(string x, string y, string width, string height, 
+        this(GUIElementParams params,
              string item_width, string item_height, string item_spacing, 
              uint item_font_size, MenuItemData[] items)
         {
-            super(x, y, width, height, item_width, item_height, item_spacing,
-                  item_font_size, items);
+            super(params, item_width, item_height, item_spacing, item_font_size, items);
         }
 
         override void realign(VideoDriver driver)
@@ -189,7 +171,9 @@ class GUIMenuVertical : GUIMenu
  *
  * See_Also: GUIElementFactoryBase
  *
- * Params:  item_width     = Menu item width math expression.
+ * Params:  draw_border    = Draw border of this menu? 
+ *                           Default: false
+ *          item_width     = Menu item width math expression.
  *                           Default: 128
  *          item_height    = Menu item height math expression.
  *                           Default: 24
@@ -209,11 +193,13 @@ class GUIMenuFactory(T) : GUIElementFactoryBase!(T)
         //Text and callback for each menu item.
         MenuItemData[] items_;
     public:
+        this(){draw_border_ = false;}
+
         void add_item(string text, void delegate() deleg){items_ ~= MenuItemData(text, deleg);}
 
         override T produce()
         {
-            return new T(x_, y_, width_, height_, item_width_, 
+            return new T(gui_element_params, item_width_, 
                          item_height_, item_spacing_, item_font_size_, items_);
         }
 }

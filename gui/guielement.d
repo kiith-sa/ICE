@@ -35,7 +35,7 @@ class GUIElement
         //Is this element visible?
         bool visible_ = true;
         //Draw border of this element?
-        bool draw_border_ = true;
+        bool draw_border_;
         //Are the contents of this element aligned based on its current dimensions?
         bool aligned_ = false;
 
@@ -142,36 +142,21 @@ class GUIElement
         }
 
     protected:
-        /*
-         * Construct a GUI element with specified parameters.
+        /**
+         * Construct a GUIElement with specified parameters.
          *
-         * Position and size of GUI elements are specified with
-         * strings containing simple math expressions which
-         * are evaluated to determine the actual coordinates.
-         *
-         * Supported operators are + +,-,*,/ as well as parentheses.
-         *
-         * Furthermore, there are builtin macros representing window and parent
-         * coordinates. These are:
-         *
-         * w_right  : Window right end (left end is always 0, so this is window width)
-         * w_bottom : Window bottom end (top end is always 0, so this is window height)
-         * p_left   : Parent left end
-         * p_right  : Parent right end
-         * p_top    : Parent top end
-         * p_bottom : Parent bottom end
-         *
-         * Params:  x      = X position math expression.
-         *          y      = Y position math expression. 
-         *          width  = Width math expression. 
-         *          height = Height math expression. 
+         * Params:  params = Parameters for construction of GUIElement.
          */
-        this(string x, string y, string width, string height)
+        this(GUIElementParams params)
         {
-            x_string_ = x;
-            y_string_ = y;
-            width_string_ = width;
-            height_string_ = height;
+            with(params)
+            {
+                x_string_ = x;
+                y_string_ = y;
+                width_string_ = width;
+                height_string_ = height;
+                draw_border_ = draw_border;
+            }
             aligned_ = false;
         }
 
@@ -350,7 +335,10 @@ final class GUIRoot
  */
 final class GUIElementFactory : GUIElementFactoryBase!(GUIElement)
 {
-    public GUIElement produce(){return new GUIElement(x_, y_, width_, height_);}
+    public GUIElement produce()
+    {
+        return new GUIElement(gui_element_params);
+    }
 }
 
 /**
@@ -373,21 +361,39 @@ final class GUIElementFactory : GUIElementFactoryBase!(GUIElement)
  * p_top    : Parent top end
  * p_bottom : Parent bottom end
  *
- * Params:  x      = X position math expression.
- *                   Default: "p_left"
- *          y      = Y position math expression. 
- *                   Default: "p_top"
- *          width  = Width math expression. 
- *                   Default: "64"
- *          height = Height math expression. 
- *                   Default: "64"
+ * Params:  x           = X position math expression.
+ *                        Default: "p_left"
+ *          y           = Y position math expression. 
+ *                        Default: "p_top"
+ *          width       = Width math expression. 
+ *                        Default: "64"
+ *          height      = Height math expression. 
+ *                        Default: "64"
+ *          draw_border = Draw border of the element?
+ *                        Default: true
  */
 abstract class GUIElementFactoryBase(T)
 {
     mixin(generate_factory("string $ x $ \"p_left\"", 
                            "string $ y $ \"p_top\"", 
                            "string $ width $ \"64\"", 
-                           "string $ height $ \"64\""));
+                           "string $ height $ \"64\"",
+                           "bool $ draw_border $ true"));
+
+    ///Return a struct containing factory parameters packaged for GUIElement ctor
+    protected final GUIElementParams gui_element_params()
+    {
+        return GUIElementParams(x_, y_, width_, height_, draw_border_);
+    }
+
     ///Return a new instance of the class produced by the factory with parameters of the factory.
     public T produce();
+
+}
+
+///GUI element constructor parameters
+align(1) struct GUIElementParams
+{
+    string x, y, width, height;
+    bool draw_border;
 }

@@ -57,20 +57,15 @@ class GUIButton : GUIElement
         /*
          * Construct a button with specified parameters.
          *
-         * See_Also: GUIElement.this 
-         *
-         * Params:  x         = X position math expression.
-         *          y         = Y position math expression. 
-         *          width     = Width math expression. 
-         *          height    = Height math expression. 
+         * Params:  params    = Parameters for GUIElement constructor.
          *          text      = Button text.
          *          font_size = Font size of the button text.
          *          states    = Color data for each button state.
          */
-        this(string x, string y, string width, string height, string text, 
+        this(GUIElementParams params, string text, 
              uint font_size, State[ButtonState.max + 1] states)
         {
-            super(x, y, width, height);
+            super(params);
 
             auto factory = new GUIStaticTextFactory;
             factory.font_size = font_size;
@@ -193,6 +188,6 @@ final class GUIButtonFactory : GUIElementFactoryBase!(GUIButton)
         ///Produce a GUIButton with parameters of the factory.
         override GUIButton produce()
         {
-            return new GUIButton(x_, y_, width_, height_, text_, font_size_, states_);
+            return new GUIButton(gui_element_params, text_, font_size_, states_);
         }
 }
