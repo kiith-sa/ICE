@@ -55,7 +55,6 @@ abstract class SpatialManager(T) : Monitorable
         {
             //This must be implemented due to what's apparently a compiler bug
             assert(false);
-            return null;
         }
         //Iterator!(T[]) iterator(Rectanglef limits);
 }

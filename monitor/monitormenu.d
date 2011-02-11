@@ -130,7 +130,7 @@ body
     string setters = "    private:\n";
     for(uint monitor; monitor < monitor_names.length; monitor++)
     {
-        setters ~= "        void " ~ monitor_names[monitor] ~ templates ~ "()"
+        setters ~= "        void " ~ monitor_names[monitor] ~ "()"
                   "{set_monitor.emit(new " ~ monitor_classes[monitor] ~ templates ~ "(monitored_));}\n"; 
     }
     string footer = "}\n";

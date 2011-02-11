@@ -219,6 +219,5 @@ abstract class VideoDriver : Monitorable
             //doesn't work if this is not implemented even for abstract class
             //(even though it's overriden by child)
             assert(false);
-            return null;
         }
 }

@@ -28,6 +28,31 @@ class GridSpatialManager(T) : SpatialManager!(T)
         assert(grid_size_ > 0, "Grid spatial manager grid size must be greater than zero.");
     }
 
+    package:
+        //Grid cell struct.
+        align(1) static struct Cell
+        {
+            //Objects in the cell.
+            Vector!(T) objects;
+
+            //Construct a cell.
+            static Cell opCall()
+            {
+                Cell cell;
+                cell.objects = Vector!(T)();
+                return cell;
+            }
+
+            //Destroy the cell.
+            void die(){objects.die();}
+        }
+
+        //Cells of the grid.
+        Array2D!(Cell) grid_;
+
+        ///Cell representing the area outside the grid.
+        Cell outer_;
+
     private:
         //Iterator used to iterate over groups of spatially close objects in the grid spatial manager.
         class ObjectIterator(T) : Iterator!(T[])
@@ -51,36 +76,12 @@ class GridSpatialManager(T) : SpatialManager!(T)
                 }
         }
 
-        //Grid cell struct.
-        align(1) static struct Cell
-        {
-            //Objects in the cell.
-            Vector!(T) objects;
-
-            //Construct a cell.
-            static Cell opCall()
-            {
-                Cell cell;
-                cell.objects = Vector!(T)();
-                return cell;
-            }
-
-            //Destroy the cell.
-            void die(){objects.die();}
-        }
-
         //Origin of the grid (top-left corner).
         Vector2f origin_;
         //Size of a single cell (both x and y).
         float cell_size_;
         //Size of the grid in cells (both x and y).
         uint grid_size_;
-
-        ///Cell representing the area outside the grid.
-        Cell outer_;
-
-        //Cells of the grid.
-        Array2D!(Cell) grid_;
 
     public:
         /**
@@ -169,6 +170,9 @@ class GridSpatialManager(T) : SpatialManager!(T)
         {
             return new GridSpatialManagerMonitor!(T)(this);
         }
+
+        ///Get grid size (both X and Y) in cells.
+        uint grid_size(){return grid_size_;}
 
     private:
         /*
