@@ -1,9 +1,12 @@
 module spatial.gridmonitor;
 
 
+import std.math;
+
 import spatial.gridspatialmanager;
 import gui.guielement;
 import gui.guimenu;
+import gui.guimousecontrollable;
 import monitor.monitormenu;
 import monitor.submonitor;
 import video.videodriver;
@@ -25,10 +28,22 @@ final package class GridMonitor(T) : SubMonitor
         //GUI element used to view the grid.
         class GridView : GUIElement
         {
+            invariant
+            {
+                assert(zoom_mult_ >= 1.0, "GridView zoom multiplier must be greater than 1");
+                assert(zoom_ >= 0.0, "GridView zoom must be greater than 0");
+            }
+
             private:
+                //Current view offset,
                 Vector2f offset_;
-                real zoom_mult_ = 1.2;
+                //Zoom multiplier corresponding to one zoom level.
+                real zoom_mult_ = 1.1;
+                //Current zoom. 
                 real zoom_ = 1.0;
+
+                //Provides zooming/panning detection.
+                GUIMouseControllable mouse_control_;
 
             public:
                 this()
@@ -36,8 +51,16 @@ final package class GridMonitor(T) : SubMonitor
                     super(GUIElementParams("p_left + 2", "p_top + 2", 
                                            "p_width - 4", "p_height - 4", 
                                            true));
+
+                    mouse_control_ = new GUIMouseControllable;
+                    mouse_control_.zoom.connect(&zoom);
+                    mouse_control_.pan.connect(&pan);
+                    mouse_control_.default_view.connect(&default_view);
+
+                    add_child(mouse_control_);
                 }
 
+            protected:
                 override void draw(VideoDriver driver)
                 {
                     if(!visible_){return;}
@@ -90,6 +113,20 @@ final package class GridMonitor(T) : SubMonitor
                     }
 
                     driver.disable_scissor();
+                }
+
+            private:
+                //Zoom by specified number of levels.
+                void zoom(float relative){zoom_ = zoom_ * pow(zoom_mult_, relative);}
+
+                //Pan view with specified offset.
+                void pan(Vector2f relative){offset_ += relative;}
+
+                //Restore default view.
+                void default_view()
+                {
+                    zoom_ = 1.0f;
+                    offset_ = Vector2f(0.0f, 0.0f);
                 }
         }
 

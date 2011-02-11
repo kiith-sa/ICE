@@ -1,12 +1,5 @@
-zooming/panning and try to make it generic
+Use GUIMouseControllable in PageView, GraphMonitor.
 
-17: 
-    GridSpatialManager GUI monitor showing cells with colors based
-    on number of objects inside.
-17:
-    PagesView should be zoomable/pannable with mouse, and
-    maybe a parent class or shared composited class for PagesView and GridView
-    If composited, it could also be used by GraphMonitor.
 17: 
     Profile GridSpatialManagerMonitor.
 17:

@@ -19,7 +19,6 @@ import math.vector2;
 import math.rectangle;
 import math.math;
 import color;
-import util.signal;
 
 
 ///Used to gather statistics data to be sent by GLVideoDriver to GL monitors.

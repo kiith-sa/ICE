@@ -110,7 +110,6 @@ abstract class GraphMonitor : SubMonitor
         override void mouse_key(KeyState state, MouseKey key, Vector2u position)
         {
             if(!visible_){return;}
-
             super.mouse_key(state, key, position);
 
             //ignore if mouse is outside of the graph widget
@@ -145,8 +144,7 @@ abstract class GraphMonitor : SubMonitor
                     break;
                 //detect when left is pressed so we can detect mouse dragging
                 case MouseKey.Left:
-                    if(state == KeyState.Pressed){left_pressed_ = true;}
-                    else{left_pressed_ = false;}
+                    left_pressed_ = state == KeyState.Pressed ? true : false;
                     break;
                 default:
                     break;
@@ -156,7 +154,6 @@ abstract class GraphMonitor : SubMonitor
         override void mouse_move(Vector2u position, Vector2i relative)
         {
             if(!visible_){return;}
-
             super.mouse_move(position, relative);
 
             //ignore if mouse is outside of the graph widget
