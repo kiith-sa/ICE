@@ -1,19 +1,21 @@
 module monitor.graphmonitor;
 
 
-import stringctfe;
+import std.math;
 
 import graphdata;
 import gui.guilinegraph;
 import gui.guielement;
 import gui.guibutton;
 import gui.guimenu;
+import gui.guimousecontrollable;
 import math.vector2;
 import math.rectangle;
 import platform.platform;
 import monitor.monitor;
 import monitor.submonitor;
 import color;
+import stringctfe;
 
 
 /**
@@ -56,8 +58,8 @@ abstract class GraphMonitor : SubMonitor
         //Default graph X scale to return to after zooming.
         float scale_x_default_;
 
-        //Is the left mouse button pressed? Used to detect mouse dragging for scrolling.
-        bool left_pressed_;
+        //Zoom multiplier corresponding to one zoom level.
+        float zoom_mult_ = 1.1;
 
     public:
         override void die()
@@ -91,6 +93,14 @@ abstract class GraphMonitor : SubMonitor
                 graph_ = produce();
             }
 
+            //provides zooming/panning functionality
+            auto mouse_control = new GUIMouseControllable;
+            mouse_control.zoom.connect(&zoom);
+            mouse_control.pan.connect(&pan);
+            mouse_control.reset_view.connect(&reset_view);
+
+            graph_.add_child(mouse_control);
+
             add_child(graph_);
 
             scale_x_default_ = graph_.scale_x;
@@ -106,66 +116,6 @@ abstract class GraphMonitor : SubMonitor
 
         ///Set graph mode.
         final void mode(GraphMode graph_mode){data_.mode(graph_mode);}
-
-        override void mouse_key(KeyState state, MouseKey key, Vector2u position)
-        {
-            if(!visible_){return;}
-            super.mouse_key(state, key, position);
-
-            //ignore if mouse is outside of the graph widget
-            if(!graph_.bounds_global.intersect(Vector2i(position.x, position.y))){return;}
-
-            //zoom the graph by specified multiplier.
-            void zoom(float zoom)
-            {
-                graph_.scale_x = graph_.scale_x * zoom;
-                graph_.scale_y = graph_.scale_y * zoom;
-            }
-
-            switch(key)
-            {
-                //mouse wheel handles zooming
-                case MouseKey.WheelUp:
-                    graph_.auto_scale = false;
-                    zoom(1.25f);
-                    break;
-                case MouseKey.WheelDown:
-                    graph_.auto_scale = false;
-                    zoom(0.8f);
-                    break;
-                //right click returns to autoscrolling and autoscaling
-                case MouseKey.Right:
-                    if(state == KeyState.Pressed)
-                    {
-                        graph_.scale_x = scale_x_default_;
-                        graph_.auto_scale = true;
-                        graph_.auto_scroll = true;
-                    }
-                    break;
-                //detect when left is pressed so we can detect mouse dragging
-                case MouseKey.Left:
-                    left_pressed_ = state == KeyState.Pressed ? true : false;
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        override void mouse_move(Vector2u position, Vector2i relative)
-        {
-            if(!visible_){return;}
-            super.mouse_move(position, relative);
-
-            //ignore if mouse is outside of the graph widget
-            if(!graph_.bounds_global.intersect(Vector2i(position.x, position.y)))
-            {
-                left_pressed_ = false;
-                return;
-            }
-
-            //dragging over the graph
-            if(left_pressed_){graph_.scroll(-relative.x);}
-        }
 
         /*
          * Add a value display toggling button for a value.
@@ -237,6 +187,25 @@ abstract class GraphMonitor : SubMonitor
 
         //Set average graph mode - used by average button
         void average(){data_.mode = GraphMode.Average;}
+
+        //Zoom by specified number of levels.
+        void zoom(float relative)
+        {
+            graph_.auto_scale = false;
+            graph_.scale_x = graph_.scale_x * pow(zoom_mult_, relative);
+            graph_.scale_y = graph_.scale_y * pow(zoom_mult_, relative); 
+        }
+
+        //Pan view with specified offset.
+        void pan(Vector2f relative){graph_.scroll(-relative.x);}
+
+        //Restore default view.
+        void reset_view()
+        {
+            graph_.scale_x = scale_x_default_;
+            graph_.auto_scale = true;
+            graph_.auto_scroll = true;
+        }
 }
 
 /**

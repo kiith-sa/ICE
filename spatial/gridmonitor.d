@@ -42,9 +42,6 @@ final package class GridMonitor(T) : SubMonitor
                 //Current zoom. 
                 real zoom_ = 1.0;
 
-                //Provides zooming/panning detection.
-                GUIMouseControllable mouse_control_;
-
             public:
                 this()
                 {
@@ -52,12 +49,13 @@ final package class GridMonitor(T) : SubMonitor
                                            "p_width - 4", "p_height - 4", 
                                            false));
 
-                    mouse_control_ = new GUIMouseControllable;
-                    mouse_control_.zoom.connect(&zoom);
-                    mouse_control_.pan.connect(&pan);
-                    mouse_control_.reset_view.connect(&reset_view);
+                    //provides zooming/panning functionality
+                    auto mouse_control = new GUIMouseControllable;
+                    mouse_control.zoom.connect(&zoom);
+                    mouse_control.pan.connect(&pan);
+                    mouse_control.reset_view.connect(&reset_view);
 
-                    add_child(mouse_control_);
+                    add_child(mouse_control);
                 }
 
             protected:
