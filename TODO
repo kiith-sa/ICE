@@ -8,14 +8,9 @@
     Maybe CandyDoc can do that?
 
     Also add some coding examples to e.g. GUI DDoc, maybe VideoDriver
-19:
-    LICENSE.txt and licensing headers (Boost?)
 20:
     Screenshot. Probably glReadPixels from framebuffer. Also need PNG output 
     (must be with a function that still exists in GL3!)
-20:
-    Look at other games/demos for graphics effect ideas...
-    or maybe we have enough effects by now...
 2!:
     (Only if still true)
     Right now, when the same font is loaded with different font sizes,
@@ -31,15 +26,6 @@
     when changing the gui, (e.g. moving from menu to pong, or between dialogs), 
     draw an animation with gui leaving the screen                    
     to the left. we can do this with a guioffset member in gui root
-24:
-    Weak singleton class handling time, updating actormanager and perhaps other
-    stuff. Pass this class when updating actors, instead of time_step, game_time.
-    This class will also allow timed delegates,
-    both delayed in real time and in game time. Use this in BallSpawner, ScoreScreen.
-    Might allow timers, which, when expired, call a delegate, as well as timed signals,
-    and signals that are fired at the beginning of the next frame.
-    However, that might require globally accessible singletons (no testability) 
-    -only do stuff that needs no singletons
 20: 
     Get rid of immediate mode:
     support VAs and maybe VBOs (not that necessary right now) -
@@ -68,6 +54,15 @@
 
     use gDebugger to profile OGL performance
 24:
+    Weak singleton class handling time, updating actormanager and perhaps other
+    stuff. Pass this class when updating actors, instead of time_step, game_time.
+    This class will also allow timed delegates,
+    both delayed in real time and in game time. Use this in BallSpawner, ScoreScreen.
+    Might allow timers, which, when expired, call a delegate, as well as timed signals,
+    and signals that are fired at the beginning of the next frame.
+    However, that might require globally accessible singletons (no testability) 
+    -only do stuff that needs no singletons
+24:
     1:
     Move FPS counter out of game code, UPS out of ActorManager. Get rid of
     statistics method/s, maybe eventcounter if can't find a use for it. 
@@ -94,21 +89,13 @@
 
     Also manual memory management for GraphData.
     That will allow us to at least monitor its usage, and be a bit faster.
-24:
-    Advanced memory monitor: per-type usage graphs, 
-    number of allocations per  e.g. second (graph),
-    also a graph showing each allocation as a box
-    with size depending on size of allocated memory (advanced, but could help)
-1:
-    Measurements and graphs of how much time per frame does e.g. line drawing take,
-    and display them somehow. Could measure times of non-videodriver code as well.
 4:
     FPS graph
+20:
+    Look at other games/demos for graphics effect ideas...
+    or maybe we have enough effects by now...
 14:
     Look for D files in main directory that can be put into packages.
-20:
-    Multiple (two, and maybe option to generate) color schemes
-    (game, not GUI, colors)
 24:
     Alongside mouse_move and mouse_key, consider more advanced
     mouse_click (triggered by quick succeeding press and release),
@@ -129,12 +116,13 @@
     and to tes it with various zooms/offsets
 25:
     Stop printing UPS to stdout, maybe move to monitor or get rid of it altogether.
+20:
+    Multiple (two, and maybe option to generate) color schemes
+    (game, not GUI, colors)
 26:
     Optional(user options) smarter AI that takes note of ray hints from BallSpawner
     (only if those rays intersect with the goal - ignore if they're intersecting
      the walls to prevent extra stupidity)
-25:
-    Show current time of day in the HUD
 25: 
     Background colors for GUI elements 
     (nothing more, though, for now - just rects with the color)
@@ -178,6 +166,9 @@
     User configurable key bindings - stored in HumanPlayer
 14:
     AI difficulty settings;
+1:
+    Measurements and graphs of how much time per frame does e.g. line drawing take,
+    and display them somehow. Could measure times of non-videodriver code as well.
 26: 
     Sounds
 17:
@@ -217,6 +208,11 @@
 --AFTER PONG    
 4:
     Consider D2 (at this point it might be mature enough :p)
+24:
+    Advanced memory monitor: per-type usage graphs, 
+    number of allocations per  e.g. second (graph),
+    also a graph showing each allocation as a box
+    with size depending on size of allocated memory (advanced, but could help)
 4:
     Get the thing to compile on Windows (if it doesn't work already)
     - will need windows specific high-resolution clock
