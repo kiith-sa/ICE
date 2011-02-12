@@ -9,23 +9,65 @@ import std.string;
 import containers.array;
 
 public:
-    ///Allocate an object.
+    ///Allocate an object of basic type, or a struct/class with default values.
     T* alloc(T)(){return allocate!(T)();}
 
-    ///Allocate an array of objects. Arrays allocated with alloc must NOT be resized.
-    T[] alloc(T)(ulong elems){return allocate!(T)(elems);}
-
-    ///Reallocate an array allocated by alloc() .
-    /**
-     * Contents of the array are preserved but array itself might be moved in memory,
-     * invalidating any pointers pointing to it.
-     */
-    T[] realloc(T)(T[] array, ulong elems){return reallocate!(T)(array, elems);}
+    ///Allocate a struct with specified parameters to structs' initializer.
+    template alloc_struct(T)
+    {
+        T* alloc_struct(CtorArgs...)(CtorArgs args)
+        {
+            return allocate_struct!(T, CtorArgs)(args);
+        }
+    }
 
     ///Free an object allocated by alloc(). Will call die() method if defined.
     void free(T)(T* ptr){deallocate(ptr);}
 
-    ///Free an array of objects allocated by alloc(). Will call die() methods if defined.
+    unittest
+    {
+        struct Test
+        {
+            static bool dead = false;
+            int a, b;
+
+            static Test opCall(int a, int b)
+            {
+                Test t;
+                t.a = a;
+                t.b = b;
+                return t;
+            }
+
+            void die(){dead = true;}
+        }
+
+        Test* test = alloc_struct!(Test)(12, 13);
+        assert(*test == Test(12,13));
+        free(test);
+        assert(Test.dead == true);
+    }
+
+    ///Allocate an array of objects. Arrays allocated with alloc must NOT be resized.
+    T[] alloc(T)(ulong elems){return allocate!(T)(elems);}
+
+    /**
+     * Reallocate an array allocated by alloc() .
+     *
+     * Contents of the array are preserved but array itself might be moved in memory,
+     * invalidating any pointers pointing to it.
+     *
+     * If the array is shrunk, any extra elements defining a die() method that
+     * are not pointers or reference types (classes) will have that method called.
+     */
+    T[] realloc(T)(T[] array, ulong elems){return reallocate!(T)(array, elems);}
+
+    /**
+     * Free an array of objects allocated by alloc(). 
+     *
+     * If the type defines a die() method and is not a pointer or reference type
+     * (e.g. class), that method will be called for all elements of the array.
+     */
     void free(T)(T[] array){deallocate(array);}
 
 package:
@@ -69,6 +111,21 @@ private:
     //\Debug
 
 
+    //Allocate a struct with specified parameters for the structs' initializer.
+    T* allocate_struct(T, CtorArgs...)(CtorArgs args)
+    {
+        uint bytes = T.sizeof;
+        T* ptr = cast(T*)malloc(bytes);
+        total_allocated_ += bytes;
+        currently_allocated_ += bytes;
+
+        debug_allocate(ptr, 1); //Debug
+
+        //initialize the object.
+        *ptr = T(args);
+
+        return ptr;
+    }
 
     //Allocate one object.
     T* allocate(T)()
@@ -130,6 +187,16 @@ private:
         long new_bytes = T.sizeof * elems;
         T* old_ptr = array.ptr;
         ulong old_length = array.length;
+
+        //if we're shrinking, destroy extra elements unless this is an awway of pointers or reference types.
+        static if (is(typeof(T.die)) && !is(typeof(cast(T*)T))) 
+        {
+            if(old_length > elems)
+            {
+                foreach(ref T elem; array[elems .. $]){elem.die();}
+            }
+        }
+
         array = (cast(T*)std.c.stdlib.realloc(array.ptr, new_bytes))[0 .. elems];
 
         long diff = new_bytes - old_bytes;
@@ -162,6 +229,11 @@ private:
         total_freed_ += T.sizeof;
         currently_allocated_ -= T.sizeof;
 
+        static if (is(typeof(T.die))) 
+        {
+            ptr.die();
+        }
+
         debug_free(ptr, 1); //Debug
 
         std.c.stdlib.free(ptr);
@@ -180,6 +252,12 @@ private:
         ulong bytes = T.sizeof * array.length;
         total_freed_ += bytes;
         currently_allocated_ -= bytes;
+
+        //destroy the elements unless this is an awway of pointers or reference types.
+        static if (is(typeof(T.die)) && !is(typeof(cast(T*)(T))))
+        {
+            foreach(ref T elem; array){elem.die();}
+        }
 
         debug_free(array.ptr, array.length); //Debug
 

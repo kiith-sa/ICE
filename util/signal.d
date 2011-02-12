@@ -15,7 +15,7 @@ template Signal(Args ...)
         ///Emit the signal (call all slots with given arguments).
         void emit(Args args)
         {
-            foreach (deleg; slots_){deleg(args);}
+            foreach(deleg; slots_){deleg(args);}
         }
 
         /**

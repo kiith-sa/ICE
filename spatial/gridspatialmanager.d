@@ -107,7 +107,6 @@ class GridSpatialManager(T) : SpatialManager!(T)
 
         void die()
         {
-            foreach(ref cell; grid_){cell.die();}
             outer_.die();
             grid_.die();
         }

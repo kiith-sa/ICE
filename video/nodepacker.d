@@ -28,6 +28,14 @@ package align(1) struct NodePacker
                 bool full_ = false;
 
             public:
+                ///Construct a Node with specified rectangle.
+                static Node opCall(ref Rectangleu rectangle)
+                {
+                    Node result;
+                    result.rectangle = rectangle;
+                    return result;
+                }
+
                 ///Try to insert a texture with given size to this node.
                 /**
                  * @param size Size of the space needed.
@@ -63,12 +71,11 @@ package align(1) struct NodePacker
                         full_ = true;
                         return this;
                     }
-                    child_a_ = alloc!(Node)();
-                    child_b_ = alloc!(Node)();
+                    child_a_ = alloc_struct!(Node)(rectangle);
+                    child_b_ = alloc_struct!(Node)(rectangle);
 
                     //decide which way to split
                     Vector2u free_space = rect_size - size;
-                    child_b_.rectangle = child_a_.rectangle = rectangle;
                     //split with a vertical cut if more free space on the right
                     if(free_space.x > free_space.y)
                     {
@@ -120,13 +127,11 @@ package align(1) struct NodePacker
                 {
                     if(child_a_ !is null)
                     {
-                        child_a_.die();
                         free(child_a_);
                         child_a_ = null;
                     }
                     if(child_b_ !is null)
                     {
-                        child_b_.die();
                         free(child_b_);
                         child_b_ = null;
                     }
@@ -149,11 +154,7 @@ package align(1) struct NodePacker
         }
 
         ///Destroy this NodePacker and its nodes.
-        void die()
-        {
-            root_.die();
-            free(root_);
-        }
+        void die(){free(root_);}
 
         ///Try to allocate space for a texture with given size.
         /**
@@ -231,8 +232,7 @@ package align(1) struct NodePacker
         void ctor(Vector2u size)
         {
             size_ = size;
-            root_ = alloc!(Node)();
-            *root_ = Node(Rectangleu(Vector2u(0, 0), size), null, null, false);
+            root_ = alloc_struct!(Node)(Rectangleu(Vector2u(0, 0), size));
         }
 }   
 

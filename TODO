@@ -1,11 +1,3 @@
-17: 
-    Profile GridSpatialManagerMonitor.
-17:
-    Look at allocator code and try to make it more new/delete like
-    by alloc, or its specific version,
-    calling fake ctor, if any exists, and free calling die()
-    -of course, after moving to D2, this would call the usual ctor/dtor.
-    Maybe an allocator GUI monitor.
 17:
     Effect at ball-paddle collision
 17: 
@@ -25,6 +17,8 @@
     Maybe CandyDoc can do that?
 
     Also add some coding examples to e.g. GUI DDoc, maybe VideoDriver
+19:
+    LICENSE.txt and licensing headers (Boost?)
 20:
     Screenshot. Probably glReadPixels from framebuffer. Also need PNG output 
     (must be with a function that still exists in GL3!)

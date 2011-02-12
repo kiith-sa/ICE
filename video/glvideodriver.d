@@ -92,7 +92,6 @@ abstract class GLVideoDriver : VideoDriver
             {
                 if(page !is null)
                 {
-                    page.die();
                     free(page);
                     page = null;
                 }
@@ -442,11 +441,7 @@ abstract class GLVideoDriver : VideoDriver
             //create new GLTexture with specified parameters.
             void new_texture(uint page_index)
             {
-                GLTexture* texture = alloc!(GLTexture)();
-                texture.texcoords = texcoords;
-                texture.offset = offset;
-                texture.page_index = page_index;
-                textures_ ~= texture;
+                textures_ ~= alloc_struct!(GLTexture)(texcoords, offset, page_index);
             }
 
             //if the texture needs its own page
@@ -500,7 +495,6 @@ abstract class GLVideoDriver : VideoDriver
             }
             if(pages_[page_index].empty())
             {
-                pages_[page_index].die();
                 free(pages_[page_index]);
                 pages_[page_index] = null;
 
@@ -588,9 +582,7 @@ abstract class GLVideoDriver : VideoDriver
         //Load shader with specified name.
         final Shader create_shader(string name)
         {
-            GLShader* gl_shader = alloc!(GLShader)();
-            *gl_shader = GLShader(name);
-            shaders_ ~= gl_shader;
+            shaders_ ~= alloc_struct!(GLShader)(name);
             return Shader(shaders_.length - 1);
         }
 
@@ -683,14 +675,12 @@ abstract class GLVideoDriver : VideoDriver
                 if(page is null)
                 {
                     page_size(index);
-                    page = alloc!(TexturePage)();
-                    *page = TexturePage(size, format);
+                    page = alloc_struct!(TexturePage)(size, format);
                     return;
                 }
             }
             page_size(pages_.length);
-            pages_ ~= alloc!(TexturePage)();
-            *pages_[$ - 1] = TexturePage(size, format);
+            pages_ ~= alloc_struct!(TexturePage)(size, format);
         }
 
         //Set up OpenGL viewport.
