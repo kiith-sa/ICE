@@ -1,12 +1,3 @@
-17:
-    Effect at ball-paddle collision
-17: 
-    Effects:
-    when changing the gui, (e.g. moving from menu to pong, or between dialogs), 
-    draw an animation with gui leaving the screen                    
-    to the left. we can do this with a guioffset member in gui root
-
-    main menu could have an ai-ai game playing in the background
 19:
     Use the same doc format throughout. Either Doxygen or DDoc.
     DDoc would probably be better.
@@ -33,6 +24,13 @@
     (Resource manager might help here)
 20:
     Check for a newer version of (D1) Derelict, if any, just in case.
+18:
+    main menu could have an ai-ai game playing in the background
+17: 
+    Effects:
+    when changing the gui, (e.g. moving from menu to pong, or between dialogs), 
+    draw an animation with gui leaving the screen                    
+    to the left. we can do this with a guioffset member in gui root
 24:
     Weak singleton class handling time, updating actormanager and perhaps other
     stuff. Pass this class when updating actors, instead of time_step, game_time.

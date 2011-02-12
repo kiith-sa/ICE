@@ -49,6 +49,15 @@ import util.factory;
 class Wall : Actor
 {
     protected:
+
+        //Default color of the wall.
+        Color default_color_ = Color(0, 0, 0, 0);
+        //Current color of the wall.
+        Color color_;
+        //Default color of the wall border.
+        Color default_color_border_ = Color(224, 224, 255, 224);
+        //Current color of the wall border.                 
+        Color color_border_;
         //Area taken up by the wall
         Rectanglef box_;
 
@@ -72,13 +81,15 @@ class Wall : Actor
         {
             super(container, physics_body);
             box_ = box;
+            color_ = default_color_;
+            color_border_ = default_color_border_;
         }
 
         override void draw(VideoDriver driver)
         {
-            static c = Color(240, 255, 240);
             Vector2f position = physics_body_.position;
-            driver.draw_rectangle(position + box_.min, position + box_.max);
+            driver.draw_rectangle(position + box_.min, position + box_.max, color_border_);
+            driver.draw_filled_rectangle(position + box_.min, position + box_.max, color_);
         }
 
         override void update(real time_step, real game_time)
@@ -247,14 +258,28 @@ class Paddle : Wall
                "Paddle not symmetric on the Y axis");
         assert(physics_body_.classinfo == PaddleBody.classinfo,
                "Physics body of a paddle must be a PaddleBody");
+        assert(energy_ >= 0.0, "Energy of a paddle must not be negative");
+        assert(energy_mult_ > 0.0, "Energy multiplier of a paddle must be positive");
+        assert(dissipate_rate_ >= 0.0, "Dissipate rate of a paddle must not be negative");
     }
 
     private:
-        //Speed of this paddle
+        //Default speed of this paddle.
+        real default_speed_;
+        //Current speed of this paddle.
         real speed_;
-
         //Particle emitter of the paddle
         ParticleEmitter emitter_;
+        //Default emit frequency of the emitter.
+        real default_emit_frequency_;
+        //"Energy" from collisions, affects speed and graphics.
+        real energy_ = 0.0;
+        //Multiplier applied to energy related effects.
+        real energy_mult_ = 0.00001;
+        //How much energy "dissipates" per second.
+        real dissipate_rate_ = 12000.0;
+        //Color to interpolate to based on energy levels.
+        Color energy_color_ = Color(224, 224, 255, 192);
 
     public:
         ///Return limits of movement of this paddle.
@@ -291,10 +316,32 @@ class Paddle : Wall
         this(ActorContainer container, PaddleBody physics_body, ref Rectanglef box,
              real speed, ParticleEmitter emitter)
         {
+            default_color_ = Color(0, 0, 255, 32);
             super(container, physics_body, box);
-            speed_ = speed;
+            speed_ = default_speed_ = speed;
             emitter_ = emitter;
+            default_emit_frequency_ = emitter_.emit_frequency;
             emitter.attach(this);
+        }
+
+        override void update(real time_step, real game_time)
+        {
+            energy_ = max(0.0L, energy_ - time_step * dissipate_rate_);
+            foreach(collider; physics_body_.colliders)
+            {
+                if(!equals(collider.inverse_mass, 0.0L))
+                {
+                    energy_ += collider.velocity.length / collider.inverse_mass;
+                }
+            }
+
+            real energy_ratio = energy_ * energy_mult_;
+
+            color_ = energy_color_.interpolated(default_color_, min(energy_ratio, 1.0L));
+            speed_ = default_speed_ * (1.0 + 1.5 * energy_ratio);
+            emitter_.emit_frequency = default_emit_frequency_ * (1.0 + 10.0 * energy_ratio);
+
+            super.update(time_step, game_time);
         }
 }
 
@@ -584,7 +631,7 @@ class DummyBallFactory : BallFactory
     protected:
         override BallBody ball_body()
         {
-            return new DummyBallBody(circle, position_, velocity_, 2.0, radius_);
+            return new DummyBallBody(circle, position_, velocity_, 4.0, radius_);
         }
 
         override void adjust_factories()
