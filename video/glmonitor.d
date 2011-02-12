@@ -2,6 +2,7 @@ module video.glmonitor;
 
 
 import std.string;
+import std.math;
 
 import video.videodriver;
 import video.glvideodriver;
@@ -10,6 +11,7 @@ import gui.guielement;
 import gui.guimenu;
 import gui.guistatictext;
 import gui.guilinegraph;
+import gui.guimousecontrollable;
 import graphdata;
 import monitor.monitor;
 import monitor.graphmonitor;
@@ -48,57 +50,73 @@ final package class PagesMonitor : SubMonitor
         ///GUI element used to view a texture page.
         class PageView : GUIElement
         {
-            invariant{assert(zoom_ != 0.0, "Texture page display zoom must be nonzero");}
-
-            //Movement step in screen pixels, used when navigating the page.
-            real step_ = 64.0;
-            //Current offset of the view on the page, in texture pixels.
-            Vector2f offset_ = Vector2f(0, 0);
-            //Zoom multiplier used when zooming in/out.
-            real zoom_mult_ = 1.2;
-            //Current zoom.
-            real zoom_ = 1.0;
-
-            this()
+            invariant
             {
-                super(GUIElementParams("p_left + 28", "p_top + 2", 
-                                       "p_width - 106", "p_height - 4", 
-                                       true));
+                assert(zoom_mult_ >= 1.0, "Page view zoom multiplier must be greater than 1");
+                assert(zoom_ >= 0.0, "Page view display zoom must be greater than zero");
             }
 
-            override void draw(VideoDriver driver)
-            {
-                if(!visible_){return;}
-                super.draw(driver);
+            private:
+                //Movement step in screen pixels, used when navigating the page.
+                real step_ = 64.0;
+                //Current offset of the view on the page, in texture pixels.
+                Vector2f offset_ = Vector2f(0, 0);
+                //Zoom multiplier used when zooming in/out.
+                real zoom_mult_ = 1.2;
+                //Current zoom.
+                real zoom_ = 1.0;
 
-                //no page to draw
-                if(driver_.pages.length == 0){return;}
-                //current page was deleted, change to another one
-                while(driver_.pages[current_page_] == null){next();}
+                //Provides zooming/panning detection.
+                GUIMouseControllable mouse_control_;
 
-                //draw the page view
-                //texture area to draw, rectanglef quad to map the texture area on
-                Rectanglef area = Rectanglef(0, 0, (size.x) / zoom_, 
-                                             (size.y) / zoom_) + offset_; 
-                //quad to map the texture area on
-                Rectanglef quad = Rectanglef(to!(float)(bounds_.min) + Vector2f(1, 1),
-                                             to!(float)(bounds_.max) - Vector2f(1, 1));
-                driver_.draw_page(current_page_, area, quad);
-            }
+            public:
+                this()
+                {
+                    super(GUIElementParams("p_left + 28", "p_top + 2", 
+                                           "p_width - 106", "p_height - 4", 
+                                           true));
 
-            void reset_view()
-            {
-                zoom_ = 1.0;
-                offset_ = Vector2f(0, 0);
-            }
+                    mouse_control_ = new GUIMouseControllable;
+                    mouse_control_.zoom.connect(&zoom);
+                    mouse_control_.pan.connect(&pan);
+                    mouse_control_.reset_view.connect(&reset_view);
 
-            void left(){offset_.x -= step_ / zoom_;}
-            void right(){offset_.x += step_ / zoom_;}
-            void up(){offset_.y -= step_ / zoom_;}
-            void down(){offset_.y += step_ / zoom_;}
+                    add_child(mouse_control_);
+                }
 
-            void zoom_in(){zoom_ *= zoom_mult_;}
-            void zoom_out(){zoom_ /= zoom_mult_;}
+                override void draw(VideoDriver driver)
+                {
+                    if(!visible_){return;}
+                    super.draw(driver);
+
+                    //no page to draw
+                    if(driver_.pages.length == 0){return;}
+                    //current page was deleted, change to another one
+                    while(driver_.pages[current_page_] == null){next();}
+
+                    //draw the page view
+                    //texture area to draw
+                    Rectanglef area = Rectanglef(0, 0, size.x / zoom_, 
+                                                 size.y / zoom_) - offset_; 
+                    //quad to map the texture area on
+                    Rectanglef quad = Rectanglef(to!(float)(bounds_.min) + Vector2f(1, 1),
+                                                 to!(float)(bounds_.max) - Vector2f(1, 1));
+                    driver_.draw_page(current_page_, area, quad);
+                }
+
+            private:
+                //Zoom by specified number of levels.
+                void zoom(float relative){zoom_ = zoom_ * pow(zoom_mult_, relative);}
+
+                //Pan view with specified offset.
+                void pan(Vector2f relative){offset_ += relative / zoom_;}
+
+                //Reset view back to default.
+                void reset_view()
+                {
+                    zoom_ = 1.0;
+                    offset_ = Vector2f(0.0f, 0.0f);
+                }
         }
 
         //GLVideoDriver we're monitoring.
@@ -151,12 +169,6 @@ final package class PagesMonitor : SubMonitor
                 item_font_size = Monitor.font_size;
                 add_item("Next", &next);
                 add_item("Prev", &prev);
-                add_item("Left", &view_.left);
-                add_item("Right", &view_.right);
-                add_item("Up", &view_.up);
-                add_item("Down", &view_.down);
-                add_item("+", &view_.zoom_in);
-                add_item("-", &view_.zoom_out);
                 menu_ = produce();
             }
             add_child(menu_);

@@ -50,12 +50,12 @@ final package class GridMonitor(T) : SubMonitor
                 {
                     super(GUIElementParams("p_left + 2", "p_top + 2", 
                                            "p_width - 4", "p_height - 4", 
-                                           true));
+                                           false));
 
                     mouse_control_ = new GUIMouseControllable;
                     mouse_control_.zoom.connect(&zoom);
                     mouse_control_.pan.connect(&pan);
-                    mouse_control_.default_view.connect(&default_view);
+                    mouse_control_.reset_view.connect(&reset_view);
 
                     add_child(mouse_control_);
                 }
@@ -123,9 +123,9 @@ final package class GridMonitor(T) : SubMonitor
                 void pan(Vector2f relative){offset_ += relative;}
 
                 //Restore default view.
-                void default_view()
+                void reset_view()
                 {
-                    zoom_ = 1.0f;
+                    zoom_ = 1.0;
                     offset_ = Vector2f(0.0f, 0.0f);
                 }
         }

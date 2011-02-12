@@ -1,4 +1,4 @@
-Use GUIMouseControllable in PageView, GraphMonitor.
+Use GUIMouseControllable in GraphMonitor.
 
 17: 
     Profile GridSpatialManagerMonitor.
@@ -145,6 +145,9 @@ Use GUIMouseControllable in PageView, GraphMonitor.
      the walls to prevent extra stupidity)
 25:
     Show current time of day in the HUD
+25: 
+    Background colors for GUI elements 
+    (nothing more, though, for now - just rects with the color)
 23:
     Profiling:
     Valgrind, Massif, Callgrind, Cachegrind, Sysprof, CodeAnalyst,

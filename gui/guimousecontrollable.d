@@ -23,7 +23,7 @@ final class GUIMouseControllable : GUIElement
         //Is the key ussed for panning pressed?
         bool pan_key_pressed_;
         //Mouse key used to return to default view.
-        MouseKey default_view_key_;
+        MouseKey reset_view_key_;
 
     public:
         /**
@@ -36,14 +36,14 @@ final class GUIMouseControllable : GUIElement
         mixin Signal!(Vector2f) pan;
 
         ///Emitted user presses a button to return to default view.
-        mixin Signal!() default_view;
+        mixin Signal!() reset_view;
 
         this(MouseKey pan_key = MouseKey.Left, 
-             MouseKey default_view_key = MouseKey.Right)
+             MouseKey reset_view_key = MouseKey.Right)
         {
             super(GUIElementParams("p_left", "p_top", "p_width", "p_height", false));
             pan_key_ = pan_key;
-            default_view_key_ = default_view_key;
+            reset_view_key_ = reset_view_key;
         }
 
     protected:
@@ -69,7 +69,7 @@ final class GUIMouseControllable : GUIElement
                 //can be either pressed or released
                 pan_key_pressed_ = state == KeyState.Pressed ? true : false;
             }
-            if(key == default_view_key_ && state == KeyState.Pressed){default_view.emit();}
+            if(key == reset_view_key_ && state == KeyState.Pressed){reset_view.emit();}
         }
 
         override void mouse_move(Vector2u position, Vector2i relative)
