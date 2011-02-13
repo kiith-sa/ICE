@@ -1,3 +1,35 @@
+OK, so, since CanDyDoc seems to be quite useless:
+Write a D2 or Python3 script/program,
+that detects all DDoc produced files in a directory,
+removes all dependencies* files (actually, removes all files specified as ignored),
+creates:
+first:
+Index file with link to every doc file
+second:
+A menu that gets added to every doc file
+third:
+packages and subpackages, not just files
+fourth:
+CSS
+and fifth:
+some basic stuff in index, such as author, project name
+Might also add sixth: hide protected, private and/or package
+
+
+
+Sure, linking between files won't work, but at least basic stuff will.
+Even linking might be fixed eventually.
+
+Make it in a project-independent way (i.e. don't call cdc and such),
+but build a simple script on top of it that will generate docs in one command.
+the script will have to call ./cdc doc , 
+remove all the useless directories created, dependencies files,
+and then put our tool to work.
+
+Actually, this script could be called by ./cdc doc !
+
+
+
 19:
     Use the same doc format throughout. Either Doxygen or DDoc.
     DDoc would probably be better.

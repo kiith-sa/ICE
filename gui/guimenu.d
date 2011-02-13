@@ -15,6 +15,7 @@ import gui.guistatictext;
 import video.videodriver;
 import util.factory;
 
+///Base class for menu GUI elements. 
 abstract class GUIMenu : GUIElement
 {
     alias std.string.toString to_string;
@@ -58,10 +59,10 @@ abstract class GUIMenu : GUIElement
             foreach(ref item; items){add_item(item.text, item.deleg);}
         }
 
-        ///Get math expression for X position of a new item.
+        //Get math expression for X position of a new item.
         string new_item_x();
 
-        ///Get math expression for Y position of a new item.
+        //Get math expression for Y position of a new item.
         string new_item_y();
 
     private:
@@ -94,6 +95,7 @@ abstract class GUIMenu : GUIElement
         }
 }
 
+///Horizontal menu.
 class GUIMenuHorizontal : GUIMenu
 {
     protected:
@@ -131,6 +133,7 @@ class GUIMenuHorizontal : GUIMenu
         override string new_item_y(){return "p_top + " ~ item_spacing_;}
 }
 
+///Vertical menu.
 class GUIMenuVertical : GUIMenu
 {
     protected:
@@ -178,13 +181,13 @@ class GUIMenuVertical : GUIMenu
  * See_Also: GUIElementFactoryBase
  *
  * Params:  draw_border    = Draw border of this menu? 
- *                           Default: false
+ *                           Default;  false
  *          item_width     = Menu item width math expression.
- *                           Default: 128
+ *                           Default;  128
  *          item_height    = Menu item height math expression.
- *                           Default: 24
+ *                           Default;  24
  *          item_spacing   = Math expression used to calculate spacing between menu items.
- *                           Default: 4
+ *                           Default;  4
  *          item_font_size = Font size of menu items.
  *          add_item       = Add a menu item with specified text and callback to 
  *                           be called when the item is clicked.
@@ -210,7 +213,9 @@ class GUIMenuFactory(T) : GUIElementFactoryBase!(T)
         }
 }
 
+///Factory used for horizontal menus.
 alias GUIMenuFactory!(GUIMenuHorizontal) GUIMenuHorizontalFactory;
+///Factory used for vertical menus.
 alias GUIMenuFactory!(GUIMenuVertical) GUIMenuVerticalFactory;
 
 private:
