@@ -1,21 +1,5 @@
-So, Dil works.
-
-so:
-Improve the gen_doc.sh script:
-PDF output
-CHM output
-CSS
-
-Macros for project name and such
-
-Also make it remove any already existing docs when generating.
-
 Then:
-Reqrite all docs comments to /// and /** format :
-and add support for docs with and without private stuff.
-
-
-
+Rewrite all docs comments to /// and /** format
 
 19:
     Use the same doc format throughout. Either Doxygen or DDoc.
@@ -135,6 +119,8 @@ and add support for docs with and without private stuff.
     and to tes it with various zooms/offsets
 25:
     Stop printing UPS to stdout, maybe move to monitor or get rid of it altogether.
+25:
+    Logo, and use it as background in docs in a non-intrusive, MiniINI-like way.
 20:
     Multiple (two, and maybe option to generate) color schemes
     (game, not GUI, colors)

@@ -1,8 +1,14 @@
 @charset "utf-8";
-/* Author: Aziz Köksal */
+/* Author: Aziz Köksal
+   Modified by: Ferdinand Majerech*/
 a { color: DarkBlue; }
 a:visited { color: DarkSlateBlue; }
-body { margin: 0; }
+body 
+{
+    margin: 0; 
+
+  background-color: #D4D4E8;
+}
 body.progress { cursor: progress; }
 
 
@@ -12,7 +18,7 @@ body.progress { cursor: progress; }
   left:0;
   height:100%;
   overflow: hidden;
-  background-color:#CCDDCC;
+  background-color:#CCCCDD;
   box-shadow: 7px 0px 10px rgba(0,0,0,0.4);
 }
 
@@ -26,11 +32,11 @@ body.progress { cursor: progress; }
 }
 
 .splitbar {
-  width: 4px;
+  width: 2px;
   height: 100%;
   position: fixed;
   top: 0;
-  background-color: #308430;
+  background-color: #303084;
 }
 
 .splitbar, body.moving_splitbar {
@@ -39,7 +45,7 @@ body.progress { cursor: progress; }
 }
 
 .splitbar > .handle {
-  border: 1px dotted #00DD00;
+  border: 1px dotted #0000DD;
   height: 15%;
   position: absolute;
   top: 42.5%;
@@ -48,12 +54,12 @@ body.progress { cursor: progress; }
 }
 
 .splitbar:hover, .splitbar.moving {
-  background-color: #60A460;
+  background-color: #6060A4;
 }
 
 #panels {
-  font-size: 0.95em;
-  padding: 2px;
+  font-size: 0.90em;
+  padding: 1px;
 }
 
 #panels > div {
@@ -63,9 +69,10 @@ body.progress { cursor: progress; }
 div.scroll { /* The panel that should display scroll bars. */
   margin-top: 1px;
   overflow: auto;
-  border: 1px inset DarkGreen;
-  border-radius: 2px;
-  background-color: white;
+  border: 1px inset DarkBlue;
+  border-radius: 3px;
+  background-color: #505054;
+  color: White;
 }
 
 div.offsetTop {
@@ -73,22 +80,22 @@ div.offsetTop {
 }
 
 #navtabs {
-  padding: 0.5em 0em 0em 0em;
+  padding: 0.35em 0em 0em 0em;
   text-align: center;
-  border-bottom: 2px inset DarkGreen;
+  border-bottom: 2px inset DarkBlue;
 }
 
 #navtabs span {
   margin: 0.1em;
   padding: 0.2em;
   padding-bottom: 0;
-  border: 1px outset #586;
+  border: 1px outset #135;
   border-bottom: none;
-  color: #586;
-  background-color: #C0D9AF;
+  color: #135;
+  background-color: #B0BFD9;
   white-space: nowrap;
   cursor: pointer;
-  border-radius: 4px 4px 0 0;
+  border-radius: 3px 3px 0 0;
   text-shadow: 0 -1px 2px rgba(0,0,0,0.1);
   box-shadow: 1px 0px 2px rgba(0,0,0,0.4);
 }
@@ -99,15 +106,15 @@ div.offsetTop {
 #navtabs span.current, #navtabs span:hover {
   padding-bottom: 2px;
   color: White;
-  background-color: #526F35;
+  background-color: #35356F;
   text-shadow: 0 -1px 2px rgba(0,0,0,0.8);
 }
 
 /* The filter box. */
 .filter_elem {
-  border: 1px inset DarkGreen;
-  border-radius: 6px 2px 2px 6px;
-  background-color:white;
+  border: 1px inset DarkBlue;
+  border-radius: 3px 3px 3px 3px;
+  background-color: #B0B0C0;
 }
 
 .filter_elem > table {
@@ -128,7 +135,7 @@ div.offsetTop {
   padding: 0;
   border: none;
   width: 100%;
-  color: black;
+  color: DimGray;
 }
 
 /* Treeview */
@@ -181,7 +188,7 @@ ul.tview {
   display: none;
 }
 .tview .selected > label {
-  background-color: YellowGreen;
+  background-color: #6060D0;
 }
 .tview, .tview ul {
   margin-left: 16px;
@@ -190,10 +197,10 @@ ul.tview {
 }
 .tview a {
   text-decoration: none;
-  color: Black;
+  color: White;
 }
 .tview .root > ul { /* Less indentation for the first list. */
-  margin-left: 8px;
+  margin-left: 6px;
 }
 
 /* Quick search */
@@ -210,7 +217,7 @@ ul.tview {
   display: block; /* Make matches visible */
 }
 .filtered li.match > label, .filtered li.match > label a {
-  color: Black;
+  color: White;
 }
 .filtered li.no_match_msg {
   display: block;
@@ -221,8 +228,8 @@ ul.tview {
 
 .tooltip {
   padding: 0.3em;
-  background-color: LightGoldenRodYellow;
-  border: 1px solid PaleGoldenRod;
+  background-color: #B0B0D0;
+  border: 1px solid #808088;
   border-radius: 2px;
   box-shadow: 3px 3px 5px rgba(0,0,0,0.4);
 }
@@ -241,8 +248,8 @@ ul.tview {
 }
 
 .decl:target { /* Highlight targetted decls */
-  background-color: yellowgreen;
-  border-bottom: 1px solid darkgreen;
+  background-color: LightBlue;
+  border-bottom: 1px solid DarkBlue;
 }
 
 .ddef {
@@ -279,7 +286,7 @@ h1.module:hover .srclink {
 }
 
 .symbol, .symbol:visited {
-  color: ForestGreen;
+  color: NavyBlue;
   text-decoration: none;
   font-weight: bold;
   text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.1);
@@ -287,7 +294,7 @@ h1.module:hover .srclink {
 
 .decl:hover > .symbol,
 .symbol:target {
-  border-bottom: 1px solid ForestGreen;
+  border-bottom: 1px solid NavyBlue;
 }
 
 .summary {
@@ -296,13 +303,14 @@ h1.module:hover .srclink {
 
 .params em, .tparams em {
   font-family: monospace;
-  font-weight: normal;
-  color: OliveDrab;
+  font-size: 0.8em;
+  font-weight: bold;
+  color: Red;
 }
 
 .attrs {
   font-size: 0.8em;
-  color: #555;
+  color: #444;
 }
 
 table.params td {
@@ -333,6 +341,7 @@ table.params td:first-child {
   margin: 0.5em 0em;
   border: 1px dotted Gray;
   border-collapse: collapse;
+  background-color: #484854;
 }
 .d_code pre {
   margin: 0.1em 0.2em;
@@ -347,9 +356,8 @@ table.params td:first-child {
 
 .d_codelines {
   border-right: 1px dotted Gray;
-  background-color: #F5F5F5;
+  background-color: #707078;
   text-align: right;
-  color: Gray;
 }
 
 .loaded_code .d_code {
@@ -362,10 +370,11 @@ table.params td:first-child {
   border: 1px dotted Gray;
   max-height: 300px;
   overflow: auto;
+  color: White;
 }
 
 .d_codelines a {
-  color: DimGray;
+  color: #D0D0FF;
   text-decoration: none;
   display: inline-block;
   width: 100%;
@@ -380,31 +389,31 @@ table.params td:first-child {
 }
 
 /* Number */
-/*.d_code*/ .n { color: teal; }
+/*.d_code*/ .n { color: #FF80FF; }
 /* Keyword */
-/*.d_code*/ .k, .kw { color: darkblue; font-weight: bold; }
+/*.d_code*/ .k, .kw { color: #000020; font-weight: bold; }
 /* Line, block and nested comments */
-.d_code .lc, .d_code .bc, .d_code .nc { color: gray; }
+.d_code .lc, .d_code .bc, .d_code .nc { color: #E0E0FF; }
 /* Identifier */
-/*.d_code*/ .i { color: black; }
+/*.d_code*/ .i { color: white; }
 /* String literal */
-/*.d_code*/ .sl { color: firebrick; }
+/*.d_code*/ .sl { color: yellow; }
 /* Character literal */
 /*.d_code*/ .cl { color: purple; }
 /* Special tokens */
-/*.d_code*/ .st { color: green; font-weight: bold; }
+/*.d_code*/ .st { color: lightgreen; font-weight: bold; }
 /* #line, hash line */
-.d_code .hl { color: green; }
+.d_code .hl { color: #80A080; }
 /* filespec (e.g. #line number [filespec]) */
 .d_code .fs { color: purple;}
 /* The first line that starts with "#!" is called a "shebang" */
-.d_code .shebang { color: gray; }
+.d_code .shebang { color: red; }
 /* Escape sequences. */
-.d_code .es { color: teal; }
+.d_code .es { color: #10A0E0; }
 
-.d_code .d.Module .i, .d_code .d.Import .i { color: blue; }
-.d_code .t.Identifier .i, .d_code .TemplateTypeParameter .i { color: DarkRed; }
-.d_code .t .k { color: DarkRed; font-weight: normal; }
+.d_code .d.Module .i, .d_code .d.Import .i { color: #200020; }
+.d_code .t.Identifier .i, .d_code .TemplateTypeParameter .i { color: #F0A040; }
+.d_code .t .k { color: #F0A040; font-weight: normal; }
 
-.d_code .d > .i { color: ForestGreen; }
-.d_code .o.Parameter > .i { color: OliveDrab; font-style: italic; }
+.d_code .d > .i { color: #80FF80; }
+.d_code .o.Parameter > .i { color: #60D020; font-style: italic; }

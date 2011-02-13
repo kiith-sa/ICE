@@ -17,31 +17,37 @@
 <div class="module">
   <h1 class="module" id="m-pong"><a href="htmlsrc/pong.html" class="symbol">pong</a></h1>
 
+<div class="summary"><div class="cmnt"><big>Pong engine 0.1.0 API documentation</big></div></div>
+<p class="sec_header">Introduction:</p><div class="cmnt">This is the complete API documentation for Pong engine. It describes
+ all classes, structs, interfaces, functions, etc. .
+ This API documentation is intended to serve for developers who want to
+ improve the Pong engine, as well as those who want to modify it for
+ their own needs.</div>
 <dl>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="Wall" href="htmlsrc/pong.html#L55">Wall</a> : <span class="bclass">Actor</span> <a href="pong.html#Wall" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="Wall" href="htmlsrc/pong.html#L66">Wall</a> : <span class="bclass">Actor</span> <a href="pong.html#Wall" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">A rectangular wall in the game area.</div></div>
 <dl>
-<dt class="decl">Color <a class="symbol _variable" name="Wall.default_color_" href="htmlsrc/pong.html#L60">default_color_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Wall.default_color_" class="plink">¶</a></dt>
+<dt class="decl">Color <a class="symbol _variable" name="Wall.default_color_" href="htmlsrc/pong.html#L71">default_color_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Wall.default_color_" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Color <a class="symbol _variable" name="Wall.color_" href="htmlsrc/pong.html#L62">color_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Wall.color_" class="plink">¶</a></dt>
+<dt class="decl">Color <a class="symbol _variable" name="Wall.color_" href="htmlsrc/pong.html#L73">color_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Wall.color_" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Color <a class="symbol _variable" name="Wall.default_color_border_" href="htmlsrc/pong.html#L64">default_color_border_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Wall.default_color_border_" class="plink">¶</a></dt>
+<dt class="decl">Color <a class="symbol _variable" name="Wall.default_color_border_" href="htmlsrc/pong.html#L75">default_color_border_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Wall.default_color_border_" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Color <a class="symbol _variable" name="Wall.color_border_" href="htmlsrc/pong.html#L66">color_border_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Wall.color_border_" class="plink">¶</a></dt>
+<dt class="decl">Color <a class="symbol _variable" name="Wall.color_border_" href="htmlsrc/pong.html#L77">color_border_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Wall.color_border_" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Rectanglef <a class="symbol _variable" name="Wall.box_" href="htmlsrc/pong.html#L68">box_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Wall.box_" class="plink">¶</a></dt>
+<dt class="decl">Rectanglef <a class="symbol _variable" name="Wall.box_" href="htmlsrc/pong.html#L79">box_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Wall.box_" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Wall.velocity" href="htmlsrc/pong.html#L75">velocity</a><span class="params">(Vector2f <em>v</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Wall.velocity" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Wall.velocity" href="htmlsrc/pong.html#L86">velocity</a><span class="params">(Vector2f <em>v</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Wall.velocity" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Set wall velocity.</div></div></dd>
-<dt class="decl"><a class="symbol _ctor" name="Wall.this" href="htmlsrc/pong.html#L86">this</a><span class="params">(ActorContainer <em>container</em>, PhysicsBody <em>physics_body</em>,  <span class="k">ref</span> Rectanglef <em>box</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Wall.this" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _ctor" name="Wall.this" href="htmlsrc/pong.html#L97">this</a><span class="params">(ActorContainer <em>container</em>, PhysicsBody <em>physics_body</em>,  <span class="k">ref</span> Rectanglef <em>box</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Wall.this" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Wall.draw" href="htmlsrc/pong.html#L94">draw</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#Wall.draw" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Wall.draw" href="htmlsrc/pong.html#L105">draw</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#Wall.draw" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Wall.update" href="htmlsrc/pong.html#L101">update</a><span class="params">(real <em>time_step</em>, real <em>game_time</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#Wall.update" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Wall.update" href="htmlsrc/pong.html#L112">update</a><span class="params">(real <em>time_step</em>, real <em>game_time</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#Wall.update" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="WallFactoryBase" href="htmlsrc/pong.html#L121">WallFactoryBase</a><span class="tparams">(<em>T</em>)</span> : <span class="bclass">ActorFactory!(T)</span> <span class="attrs">[<span class="stc">abstract</span>]</span> <a href="pong.html#WallFactoryBase" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="WallFactoryBase" href="htmlsrc/pong.html#L132">WallFactoryBase</a><span class="tparams">(<em>T</em>)</span> : <span class="bclass">ActorFactory!(T)</span> <span class="attrs">[<span class="stc">abstract</span>]</span> <a href="pong.html#WallFactoryBase" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Base class for factories constructing Wall and derived classes.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -50,19 +56,27 @@
 <p class="sec_header">Default:</p><div class="cmnt">Vector2f(0.0f, 0.0f)
           box_max = Maximum extent of the wall relative to its position.</div>
 <p class="sec_header">Default:</p><div class="cmnt">Vector2f(1.0f, 1.0f)</div>
-</dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="WallFactory" href="htmlsrc/pong.html#L133">WallFactory</a> : <span class="bclass">WallFactoryBase!(Wall)</span> <a href="pong.html#WallFactory" class="plink">¶</a></dt>
+<dl>
+<dt class="decl"><span class="rettyp">VolumeAABBox</span> <a class="symbol _function" name="WallFactoryBase.bbox" href="htmlsrc/pong.html#L138">bbox</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#WallFactoryBase.bbox" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">Rectanglef</span> <a class="symbol _function" name="WallFactoryBase.rectangle" href="htmlsrc/pong.html#L140">rectangle</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#WallFactoryBase.rectangle" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="WallFactory" href="htmlsrc/pong.html#L144">WallFactory</a> : <span class="bclass">WallFactoryBase!(Wall)</span> <a href="pong.html#WallFactory" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Factory used to construct walls.</div></div>
 <dl>
-<dt class="decl"><span class="rettyp">Wall</span> <a class="symbol _function" name="WallFactory.produce" href="htmlsrc/pong.html#L135">produce</a><span class="params">(ActorContainer <em>container</em>)</span> <span class="attrs">[<span class="prot">public</span>, <span class="stc">override</span>]</span> <a href="pong.html#WallFactory.produce" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Wall</span> <a class="symbol _function" name="WallFactory.produce" href="htmlsrc/pong.html#L146">produce</a><span class="params">(ActorContainer <em>container</em>)</span> <span class="attrs">[<span class="prot">public</span>, <span class="stc">override</span>]</span> <a href="pong.html#WallFactory.produce" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="PaddleBody" href="htmlsrc/pong.html#L148">PaddleBody</a> : <span class="bclass">PhysicsBody</span> <a href="pong.html#PaddleBody" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="PaddleBody" href="htmlsrc/pong.html#L159">PaddleBody</a> : <span class="bclass">PhysicsBody</span> <a href="pong.html#PaddleBody" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Physics body of a paddle.</div></div>
 <div class="cmnt">Contains functionality to make Arkanoid style ball reflection possible.</div>
 <dl>
-<dt class="decl"><span class="rettyp">Vector2f</span> <a class="symbol _function" name="PaddleBody.reflected_ball_velocity" href="htmlsrc/pong.html#L170">reflected_ball_velocity</a><span class="params">(BallBody <em>ball</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#PaddleBody.reflected_ball_velocity" class="plink">¶</a></dt>
+<dt class="decl">real <a class="symbol _variable" name="PaddleBody.max_xy_ratio_" href="htmlsrc/pong.html#L166">max_xy_ratio_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#PaddleBody.max_xy_ratio_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Rectanglef <a class="symbol _variable" name="PaddleBody.limits_" href="htmlsrc/pong.html#L169">limits_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#PaddleBody.limits_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">Vector2f</span> <a class="symbol _function" name="PaddleBody.reflected_ball_velocity" href="htmlsrc/pong.html#L181">reflected_ball_velocity</a><span class="params">(BallBody <em>ball</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#PaddleBody.reflected_ball_velocity" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Return velocity to reflect given BallBody at.</div></div>
 <div class="cmnt">Used by BallBody collision response.</div>
@@ -70,39 +84,58 @@
 <table class="params">
 <tr><td><em>ball</em></td><td>BallBody to reflect.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">Velocity the BallBody should be reflected at.</div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PaddleBody.update" href="htmlsrc/pong.html#L208">update</a><span class="params">(real <em>time_step</em>, SpatialManager!(PhysicsBody) <em>manager</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#PaddleBody.update" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PaddleBody.update" href="htmlsrc/pong.html#L219">update</a><span class="params">(real <em>time_step</em>, SpatialManager!(PhysicsBody) <em>manager</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#PaddleBody.update" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">Rectanglef</span> <a class="symbol _function" name="PaddleBody.limits" href="htmlsrc/pong.html#L220">limits</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#PaddleBody.limits" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Rectanglef</span> <a class="symbol _function" name="PaddleBody.limits" href="htmlsrc/pong.html#L231">limits</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#PaddleBody.limits" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Return limits of movement of this paddle body.</div></div></dd>
-<dt class="decl"><a class="symbol _ctor" name="PaddleBody.this" href="htmlsrc/pong.html#L232">this</a><span class="params">(VolumeAABBox <em>aabbox</em>, Vector2f <em>position</em>, Vector2f <em>velocity</em>, real <em>mass</em>,  <span class="k">ref</span> Rectanglef <em>limits</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#PaddleBody.this" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="Paddle" href="htmlsrc/pong.html#L252">Paddle</a> : <span class="bclass">Wall</span> <a href="pong.html#Paddle" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _ctor" name="PaddleBody.this" href="htmlsrc/pong.html#L243">this</a><span class="params">(VolumeAABBox <em>aabbox</em>, Vector2f <em>position</em>, Vector2f <em>velocity</em>, real <em>mass</em>,  <span class="k">ref</span> Rectanglef <em>limits</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#PaddleBody.this" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">Rectanglef</span> <a class="symbol _function" name="PaddleBody.aabbox" href="htmlsrc/pong.html#L252">aabbox</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#PaddleBody.aabbox" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Return rectangle representing bounding box of this body in world space.</div></div></dd></dl></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="Paddle" href="htmlsrc/pong.html#L263">Paddle</a> : <span class="bclass">Wall</span> <a href="pong.html#Paddle" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">A paddle controlled by a player or AI.</div></div>
 <dl>
-<dt class="decl"><a class="symbol _invariant" name="Paddle.invariant" href="htmlsrc/pong.html#L254">invariant</a> <a href="pong.html#Paddle.invariant" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _invariant" name="Paddle.invariant" href="htmlsrc/pong.html#L265">invariant</a> <a href="pong.html#Paddle.invariant" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">Rectanglef</span> <a class="symbol _function" name="Paddle.limits" href="htmlsrc/pong.html#L292">limits</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Paddle.limits" class="plink">¶</a></dt>
+<dt class="decl">real <a class="symbol _variable" name="Paddle.default_speed_" href="htmlsrc/pong.html#L285">default_speed_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Paddle.default_speed_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">real <a class="symbol _variable" name="Paddle.speed_" href="htmlsrc/pong.html#L287">speed_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Paddle.speed_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">ParticleEmitter <a class="symbol _variable" name="Paddle.emitter_" href="htmlsrc/pong.html#L289">emitter_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Paddle.emitter_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">real <a class="symbol _variable" name="Paddle.default_emit_frequency_" href="htmlsrc/pong.html#L291">default_emit_frequency_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Paddle.default_emit_frequency_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">real <a class="symbol _variable" name="Paddle.energy_" href="htmlsrc/pong.html#L293">energy_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Paddle.energy_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">real <a class="symbol _variable" name="Paddle.energy_mult_" href="htmlsrc/pong.html#L295">energy_mult_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Paddle.energy_mult_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">real <a class="symbol _variable" name="Paddle.dissipate_rate_" href="htmlsrc/pong.html#L297">dissipate_rate_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Paddle.dissipate_rate_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Color <a class="symbol _variable" name="Paddle.energy_color_" href="htmlsrc/pong.html#L299">energy_color_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Paddle.energy_color_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">Rectanglef</span> <a class="symbol _function" name="Paddle.limits" href="htmlsrc/pong.html#L303">limits</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Paddle.limits" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Return limits of movement of this paddle.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Paddle.move_right" href="htmlsrc/pong.html#L295">move_right</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Paddle.move_right" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Paddle.move_right" href="htmlsrc/pong.html#L306">move_right</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Paddle.move_right" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Control the paddle to move right (used by player or AI).</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Paddle.move_left" href="htmlsrc/pong.html#L298">move_left</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Paddle.move_left" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Paddle.move_left" href="htmlsrc/pong.html#L309">move_left</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Paddle.move_left" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Control the paddle to move left (used by player or AI).</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Paddle.stop" href="htmlsrc/pong.html#L301">stop</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Paddle.stop" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Paddle.stop" href="htmlsrc/pong.html#L312">stop</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Paddle.stop" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Control the paddle to stop (used by player or AI).</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Paddle.die" href="htmlsrc/pong.html#L304">die</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#Paddle.die" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Paddle.die" href="htmlsrc/pong.html#L315">die</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#Paddle.die" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Destroy the paddle.</div></div></dd>
-<dt class="decl"><a class="symbol _ctor" name="Paddle.this" href="htmlsrc/pong.html#L322">this</a><span class="params">(ActorContainer <em>container</em>, PaddleBody <em>physics_body</em>,  <span class="k">ref</span> Rectanglef <em>box</em>, real <em>speed</em>, ParticleEmitter <em>emitter</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Paddle.this" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _ctor" name="Paddle.this" href="htmlsrc/pong.html#L333">this</a><span class="params">(ActorContainer <em>container</em>, PaddleBody <em>physics_body</em>,  <span class="k">ref</span> Rectanglef <em>box</em>, real <em>speed</em>, ParticleEmitter <em>emitter</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Paddle.this" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Paddle.update" href="htmlsrc/pong.html#L333">update</a><span class="params">(real <em>time_step</em>, real <em>game_time</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#Paddle.update" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Paddle.update" href="htmlsrc/pong.html#L344">update</a><span class="params">(real <em>time_step</em>, real <em>game_time</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#Paddle.update" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="PaddleFactory" href="htmlsrc/pong.html#L364">PaddleFactory</a> : <span class="bclass">WallFactoryBase!(Paddle)</span> <a href="pong.html#PaddleFactory" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="PaddleFactory" href="htmlsrc/pong.html#L375">PaddleFactory</a> : <span class="bclass">WallFactoryBase!(Paddle)</span> <a href="pong.html#PaddleFactory" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Factory used to construct paddles.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -114,21 +147,23 @@
           speed      = Speed of paddle movement.</div>
 <p class="sec_header">Default:</p><div class="cmnt">135.0</div>
 <dl>
-<dt class="decl"><span class="rettyp">Paddle</span> <a class="symbol _function" name="PaddleFactory.produce" href="htmlsrc/pong.html#L370">produce</a><span class="params">(ActorContainer <em>container</em>)</span> <span class="attrs">[<span class="prot">public</span>, <span class="stc">override</span>]</span> <a href="pong.html#PaddleFactory.produce" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Paddle</span> <a class="symbol _function" name="PaddleFactory.produce" href="htmlsrc/pong.html#L381">produce</a><span class="params">(ActorContainer <em>container</em>)</span> <span class="attrs">[<span class="prot">public</span>, <span class="stc">override</span>]</span> <a href="pong.html#PaddleFactory.produce" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="BallBody" href="htmlsrc/pong.html#L401">BallBody</a> : <span class="bclass">PhysicsBody</span> <a href="pong.html#BallBody" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="BallBody" href="htmlsrc/pong.html#L412">BallBody</a> : <span class="bclass">PhysicsBody</span> <a href="pong.html#BallBody" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Physics body of a ball.</div></div>
 <div class="cmnt">Overrides default collision response to get Arkanoid style ball behavior.</div>
 <dl>
-<dt class="decl"><a class="symbol _invariant" name="BallBody.invariant" href="htmlsrc/pong.html#L403">invariant</a> <a href="pong.html#BallBody.invariant" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _invariant" name="BallBody.invariant" href="htmlsrc/pong.html#L414">invariant</a> <a href="pong.html#BallBody.invariant" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="BallBody.collision_response" href="htmlsrc/pong.html#L408">collision_response</a><span class="params">(<span class="k">ref</span> Contact <em>contact</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#BallBody.collision_response" class="plink">¶</a></dt>
+<dt class="decl">float <a class="symbol _variable" name="BallBody.radius_" href="htmlsrc/pong.html#L416">radius_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#BallBody.radius_" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">float</span> <a class="symbol _function" name="BallBody.radius" href="htmlsrc/pong.html#L425">radius</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#BallBody.radius" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="BallBody.collision_response" href="htmlsrc/pong.html#L419">collision_response</a><span class="params">(<span class="k">ref</span> Contact <em>contact</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#BallBody.collision_response" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">float</span> <a class="symbol _function" name="BallBody.radius" href="htmlsrc/pong.html#L436">radius</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#BallBody.radius" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Returns radius of this ball body for drawing.</div></div></dd>
-<dt class="decl"><a class="symbol _ctor" name="BallBody.this" href="htmlsrc/pong.html#L438">this</a><span class="params">(VolumeCircle <em>circle</em>, Vector2f <em>position</em>, Vector2f <em>velocity</em>, real <em>mass</em>, float <em>radius</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#BallBody.this" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _ctor" name="BallBody.this" href="htmlsrc/pong.html#L449">this</a><span class="params">(VolumeCircle <em>circle</em>, Vector2f <em>position</em>, Vector2f <em>velocity</em>, real <em>mass</em>, float <em>radius</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#BallBody.this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct a ball body with specified parameters.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -139,16 +174,16 @@
 <tr><td><em>mass</em></td><td>Mass of the body.</td></tr>
 <tr><td><em>radius</em></td><td>Radius of a circle representing bounding circle
                      of this body (centered at body's position).</td></tr></table></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="DummyBallBody" href="htmlsrc/pong.html#L453">DummyBallBody</a> : <span class="bclass">BallBody</span> <a href="pong.html#DummyBallBody" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="DummyBallBody" href="htmlsrc/pong.html#L464">DummyBallBody</a> : <span class="bclass">BallBody</span> <a href="pong.html#DummyBallBody" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Physics body of a dummy ball.</div></div>
 <div class="cmnt">Limits dummy ball speed to prevent it being thrown out of the gameplay
  area after collision with a ball. (normal ball has no limits- it's speed
  can change, slightly, by collisions with dummy balls)</div>
 <dl>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="DummyBallBody.collision_response" href="htmlsrc/pong.html#L456">collision_response</a><span class="params">(<span class="k">ref</span> Contact <em>contact</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#DummyBallBody.collision_response" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="DummyBallBody.collision_response" href="htmlsrc/pong.html#L467">collision_response</a><span class="params">(<span class="k">ref</span> Contact <em>contact</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#DummyBallBody.collision_response" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><a class="symbol _ctor" name="DummyBallBody.this" href="htmlsrc/pong.html#L479">this</a><span class="params">(VolumeCircle <em>circle</em>, Vector2f <em>position</em>, Vector2f <em>velocity</em>, real <em>mass</em>, float <em>radius</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#DummyBallBody.this" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _ctor" name="DummyBallBody.this" href="htmlsrc/pong.html#L490">this</a><span class="params">(VolumeCircle <em>circle</em>, Vector2f <em>position</em>, Vector2f <em>velocity</em>, real <em>mass</em>, float <em>radius</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#DummyBallBody.this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct a dummy ball body with specified parameters.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -159,23 +194,31 @@
 <tr><td><em>mass</em></td><td>Mass of the body.</td></tr>
 <tr><td><em>radius</em></td><td>Radius of a circle representing bounding circle
                      of this body (centered at body's position).</td></tr></table></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="Ball" href="htmlsrc/pong.html#L487">Ball</a> : <span class="bclass">Actor</span> <a href="pong.html#Ball" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="Ball" href="htmlsrc/pong.html#L498">Ball</a> : <span class="bclass">Actor</span> <a href="pong.html#Ball" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">A ball that can bounce off other objects.</div></div>
 <dl>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Ball.die" href="htmlsrc/pong.html#L501">die</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#Ball.die" class="plink">¶</a></dt>
+<dt class="decl">ParticleEmitter <a class="symbol _variable" name="Ball.emitter_" href="htmlsrc/pong.html#L502">emitter_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Ball.emitter_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">float <a class="symbol _variable" name="Ball.particle_speed_" href="htmlsrc/pong.html#L504">particle_speed_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Ball.particle_speed_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">LineTrail <a class="symbol _variable" name="Ball.trail_" href="htmlsrc/pong.html#L506">trail_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Ball.trail_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">bool <a class="symbol _variable" name="Ball.draw_ball_" href="htmlsrc/pong.html#L508">draw_ball_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Ball.draw_ball_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Ball.die" href="htmlsrc/pong.html#L512">die</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#Ball.die" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Destroy this ball.</div></div></dd>
-<dt class="decl"><span class="rettyp">float</span> <a class="symbol _function" name="Ball.radius" href="htmlsrc/pong.html#L512">radius</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Ball.radius" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">float</span> <a class="symbol _function" name="Ball.radius" href="htmlsrc/pong.html#L523">radius</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Ball.radius" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Return the radius of this ball.</div></div></dd>
-<dt class="decl"><a class="symbol _ctor" name="Ball.this" href="htmlsrc/pong.html#L525">this</a><span class="params">(ActorContainer <em>container</em>, BallBody <em>physics_body</em>, LineTrail <em>trail</em>, ParticleEmitter <em>emitter</em>, float <em>particle_speed</em>, bool <em>draw_ball</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Ball.this" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _ctor" name="Ball.this" href="htmlsrc/pong.html#L536">this</a><span class="params">(ActorContainer <em>container</em>, BallBody <em>physics_body</em>, LineTrail <em>trail</em>, ParticleEmitter <em>emitter</em>, float <em>particle_speed</em>, bool <em>draw_ball</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Ball.this" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Ball.update" href="htmlsrc/pong.html#L537">update</a><span class="params">(real <em>time_step</em>, real <em>game_time</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#Ball.update" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Ball.update" href="htmlsrc/pong.html#L548">update</a><span class="params">(real <em>time_step</em>, real <em>game_time</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#Ball.update" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Ball.draw" href="htmlsrc/pong.html#L546">draw</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#Ball.draw" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Ball.draw" href="htmlsrc/pong.html#L557">draw</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#Ball.draw" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="BallFactory" href="htmlsrc/pong.html#L568">BallFactory</a> : <span class="bclass">ActorFactory!(Ball)</span> <a href="pong.html#BallFactory" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="BallFactory" href="htmlsrc/pong.html#L579">BallFactory</a> : <span class="bclass">ActorFactory!(Ball)</span> <a href="pong.html#BallFactory" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Factory used to produce balls.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -185,80 +228,86 @@
           particle_speed = Speed of particles in the ball's particle trail.</div>
 <p class="sec_header">Default:</p><div class="cmnt">Vector2f(-2.0f, -2.0f)</div>
 <dl>
-<dt class="decl"><a class="symbol _ctor" name="BallFactory.this" href="htmlsrc/pong.html#L580">this</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#BallFactory.this" class="plink">¶</a></dt>
+<dt class="decl">LineTrailFactory <a class="symbol _variable" name="BallFactory.trail_factory_" href="htmlsrc/pong.html#L585">trail_factory_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#BallFactory.trail_factory_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">LineEmitterFactory <a class="symbol _variable" name="BallFactory.emitter_factory_" href="htmlsrc/pong.html#L587">emitter_factory_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#BallFactory.emitter_factory_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _ctor" name="BallFactory.this" href="htmlsrc/pong.html#L591">this</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#BallFactory.this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct a BallFactory, initializing factory data.</div></div></dd>
-<dt class="decl"><span class="rettyp">Ball</span> <a class="symbol _function" name="BallFactory.produce" href="htmlsrc/pong.html#L586">produce</a><span class="params">(ActorContainer <em>container</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#BallFactory.produce" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Ball</span> <a class="symbol _function" name="BallFactory.produce" href="htmlsrc/pong.html#L597">produce</a><span class="params">(ActorContainer <em>container</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#BallFactory.produce" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">VolumeCircle</span> <a class="symbol _function" name="BallFactory.circle" href="htmlsrc/pong.html#L616">circle</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="pong.html#BallFactory.circle" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">VolumeCircle</span> <a class="symbol _function" name="BallFactory.circle" href="htmlsrc/pong.html#L627">circle</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="pong.html#BallFactory.circle" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">BallBody</span> <a class="symbol _function" name="BallFactory.ball_body" href="htmlsrc/pong.html#L622">ball_body</a><span class="params">()</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#BallFactory.ball_body" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">BallBody</span> <a class="symbol _function" name="BallFactory.ball_body" href="htmlsrc/pong.html#L633">ball_body</a><span class="params">()</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#BallFactory.ball_body" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="BallFactory.adjust_factories" href="htmlsrc/pong.html#L628">adjust_factories</a><span class="params">()</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#BallFactory.adjust_factories" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="BallFactory.adjust_factories" href="htmlsrc/pong.html#L639">adjust_factories</a><span class="params">()</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#BallFactory.adjust_factories" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="BallFactory.draw_ball" href="htmlsrc/pong.html#L631">draw_ball</a><span class="params">()</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#BallFactory.draw_ball" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="BallFactory.draw_ball" href="htmlsrc/pong.html#L642">draw_ball</a><span class="params">()</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#BallFactory.draw_ball" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="DummyBallFactory" href="htmlsrc/pong.html#L635">DummyBallFactory</a> : <span class="bclass">BallFactory</span> <a href="pong.html#DummyBallFactory" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="DummyBallFactory" href="htmlsrc/pong.html#L646">DummyBallFactory</a> : <span class="bclass">BallFactory</span> <a href="pong.html#DummyBallFactory" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Factory used to produce dummy balls.</div></div>
 <dl>
-<dt class="decl"><span class="rettyp">BallBody</span> <a class="symbol _function" name="DummyBallFactory.ball_body" href="htmlsrc/pong.html#L638">ball_body</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#DummyBallFactory.ball_body" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">BallBody</span> <a class="symbol _function" name="DummyBallFactory.ball_body" href="htmlsrc/pong.html#L649">ball_body</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#DummyBallFactory.ball_body" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="DummyBallFactory.adjust_factories" href="htmlsrc/pong.html#L643">adjust_factories</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#DummyBallFactory.adjust_factories" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="DummyBallFactory.adjust_factories" href="htmlsrc/pong.html#L654">adjust_factories</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#DummyBallFactory.adjust_factories" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="DummyBallFactory.draw_ball" href="htmlsrc/pong.html#L654">draw_ball</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#DummyBallFactory.draw_ball" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="DummyBallFactory.draw_ball" href="htmlsrc/pong.html#L665">draw_ball</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#DummyBallFactory.draw_ball" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="Player" href="htmlsrc/pong.html#L658">Player</a> <span class="attrs">[<span class="stc">abstract</span>]</span> <a href="pong.html#Player" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="Player" href="htmlsrc/pong.html#L669">Player</a> <span class="attrs">[<span class="stc">abstract</span>]</span> <a href="pong.html#Player" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Player controlling a paddle.</div></div>
 <dl>
-<dt class="decl">string <a class="symbol _variable" name="Player.name_" href="htmlsrc/pong.html#L662">name_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Player.name_" class="plink">¶</a></dt>
+<dt class="decl">string <a class="symbol _variable" name="Player.name_" href="htmlsrc/pong.html#L673">name_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Player.name_" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">uint <a class="symbol _variable" name="Player.score_" href="htmlsrc/pong.html#L664">score_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Player.score_" class="plink">¶</a></dt>
+<dt class="decl">uint <a class="symbol _variable" name="Player.score_" href="htmlsrc/pong.html#L675">score_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Player.score_" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Paddle <a class="symbol _variable" name="Player.paddle_" href="htmlsrc/pong.html#L667">paddle_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Player.paddle_" class="plink">¶</a></dt>
+<dt class="decl">Paddle <a class="symbol _variable" name="Player.paddle_" href="htmlsrc/pong.html#L678">paddle_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Player.paddle_" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Player.score" href="htmlsrc/pong.html#L671">score</a><span class="params">(BallBody <em>ball_body</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Player.score" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Player.score" href="htmlsrc/pong.html#L682">score</a><span class="params">(BallBody <em>ball_body</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Player.score" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Increase score of this player.</div></div></dd>
-<dt class="decl"><span class="rettyp">int</span> <a class="symbol _function" name="Player.score:2" href="htmlsrc/pong.html#L674">score</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Player.score:2" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">int</span> <a class="symbol _function" name="Player.score:2" href="htmlsrc/pong.html#L685">score</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Player.score:2" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Get score of this player.</div></div></dd>
-<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="Player.name" href="htmlsrc/pong.html#L677">name</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Player.name" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="Player.name" href="htmlsrc/pong.html#L688">name</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Player.name" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Get name of this player.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Player.update" href="htmlsrc/pong.html#L684">update</a><span class="params">(Game <em>game</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Player.update" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Player.update" href="htmlsrc/pong.html#L695">update</a><span class="params">(Game <em>game</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Player.update" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Update the player state.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>game</em></td><td>Reference to the game that updates the player.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Player.die" href="htmlsrc/pong.html#L687">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Player.die" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Player.die" href="htmlsrc/pong.html#L698">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Player.die" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Destroy this player</div></div></dd>
-<dt class="decl"><a class="symbol _ctor" name="Player.this" href="htmlsrc/pong.html#L691">this</a><span class="params">(string <em>name</em>, Paddle <em>paddle</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Player.this" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _ctor" name="Player.this" href="htmlsrc/pong.html#L702">this</a><span class="params">(string <em>name</em>, Paddle <em>paddle</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#Player.this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct a player with given name.</div></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="AIPlayer" href="htmlsrc/pong.html#L699">AIPlayer</a> : <span class="bclass">Player</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="pong.html#AIPlayer" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="AIPlayer" href="htmlsrc/pong.html#L710">AIPlayer</a> : <span class="bclass">Player</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="pong.html#AIPlayer" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div>
 <dl>
-<dt class="decl">Timer <a class="symbol _variable" name="AIPlayer.update_timer_" href="htmlsrc/pong.html#L703">update_timer_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#AIPlayer.update_timer_" class="plink">¶</a></dt>
+<dt class="decl">Timer <a class="symbol _variable" name="AIPlayer.update_timer_" href="htmlsrc/pong.html#L714">update_timer_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#AIPlayer.update_timer_" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Vector2f <a class="symbol _variable" name="AIPlayer.ball_last_" href="htmlsrc/pong.html#L705">ball_last_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#AIPlayer.ball_last_" class="plink">¶</a></dt>
+<dt class="decl">Vector2f <a class="symbol _variable" name="AIPlayer.ball_last_" href="htmlsrc/pong.html#L716">ball_last_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#AIPlayer.ball_last_" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><a class="symbol _ctor" name="AIPlayer.this" href="htmlsrc/pong.html#L709">this</a><span class="params">(string <em>name</em>, Paddle <em>paddle</em>, real <em>update_time</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#AIPlayer.this" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _ctor" name="AIPlayer.this" href="htmlsrc/pong.html#L720">this</a><span class="params">(string <em>name</em>, Paddle <em>paddle</em>, real <em>update_time</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#AIPlayer.this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct an AI controlling specified paddle</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="AIPlayer.update" href="htmlsrc/pong.html#L715">update</a><span class="params">(Game <em>game</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#AIPlayer.update" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="AIPlayer.update" href="htmlsrc/pong.html#L726">update</a><span class="params">(Game <em>game</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#AIPlayer.update" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="AIPlayer.ball_closing" href="htmlsrc/pong.html#L749">ball_closing</a><span class="params">(Ball <em>ball</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#AIPlayer.ball_closing" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="AIPlayer.ball_closing" href="htmlsrc/pong.html#L760">ball_closing</a><span class="params">(Ball <em>ball</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#AIPlayer.ball_closing" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="AIPlayer.move_to_center" href="htmlsrc/pong.html#L767">move_to_center</a><span class="params">()</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#AIPlayer.move_to_center" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="AIPlayer.move_to_center" href="htmlsrc/pong.html#L778">move_to_center</a><span class="params">()</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#AIPlayer.move_to_center" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="HumanPlayer" href="htmlsrc/pong.html#L787">HumanPlayer</a> : <span class="bclass">Player</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="pong.html#HumanPlayer" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="HumanPlayer" href="htmlsrc/pong.html#L798">HumanPlayer</a> : <span class="bclass">Player</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="pong.html#HumanPlayer" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div>
 <dl>
-<dt class="decl"><a class="symbol _ctor" name="HumanPlayer.this" href="htmlsrc/pong.html#L800">this</a><span class="params">(Platform <em>platform</em>, string <em>name</em>, Paddle <em>paddle</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#HumanPlayer.this" class="plink">¶</a></dt>
+<dt class="decl">Platform <a class="symbol _variable" name="HumanPlayer.platform_" href="htmlsrc/pong.html#L801">platform_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#HumanPlayer.platform_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _ctor" name="HumanPlayer.this" href="htmlsrc/pong.html#L811">this</a><span class="params">(Platform <em>platform</em>, string <em>name</em>, Paddle <em>paddle</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#HumanPlayer.this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct a human player controlling specified paddle.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -266,17 +315,33 @@
 <tr><td><em>platform</em></td><td>Platform used for user input.</td></tr>
 <tr><td><em>name</em></td><td>Name of the player.</td></tr>
 <tr><td><em>paddle</em></td><td>Paddle controlled by the player.</td></tr></table></dd>
-<dt class="decl"><a class="symbol _dtor" name="HumanPlayer.~this" href="htmlsrc/pong.html#L808">~this</a>() <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#HumanPlayer.~this" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _dtor" name="HumanPlayer.~this" href="htmlsrc/pong.html#L819">~this</a>() <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#HumanPlayer.~this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Destroy this HumanPlayer.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="HumanPlayer.key_handler" href="htmlsrc/pong.html#L811">key_handler</a><span class="params">(KeyState <em>state</em>, Key <em>key</em>, dchar <em>unicode</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#HumanPlayer.key_handler" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="HumanPlayer.key_handler" href="htmlsrc/pong.html#L822">key_handler</a><span class="params">(KeyState <em>state</em>, Key <em>key</em>, dchar <em>unicode</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#HumanPlayer.key_handler" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Handle input</div></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="ScoreScreen" href="htmlsrc/pong.html#L853">ScoreScreen</a> <a href="pong.html#ScoreScreen" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="ScoreScreen" href="htmlsrc/pong.html#L864">ScoreScreen</a> <a href="pong.html#ScoreScreen" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Displays score screen at the end of game.</div></div>
 <dl>
-<dt class="decl"><a class="symbol _ctor" name="ScoreScreen.this" href="htmlsrc/pong.html#L883">this</a><span class="params">(GUIElement <em>parent</em>, Player <em>player_1</em>, Player <em>player_2</em>, real <em>time</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#ScoreScreen.this" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">alias</span> std.string.toString <a class="symbol _alias" name="ScoreScreen.to_string" href="htmlsrc/pong.html#L867">to_string</a> <a href="pong.html#ScoreScreen.to_string" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Timer <a class="symbol _variable" name="ScoreScreen.timer_" href="htmlsrc/pong.html#L870">timer_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#ScoreScreen.timer_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GUIElement <a class="symbol _variable" name="ScoreScreen.parent_" href="htmlsrc/pong.html#L873">parent_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#ScoreScreen.parent_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GUIElement <a class="symbol _variable" name="ScoreScreen.container_" href="htmlsrc/pong.html#L876">container_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#ScoreScreen.container_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GUIStaticText <a class="symbol _variable" name="ScoreScreen.winner_text_" href="htmlsrc/pong.html#L878">winner_text_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#ScoreScreen.winner_text_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GUIStaticText <a class="symbol _variable" name="ScoreScreen.names_text_" href="htmlsrc/pong.html#L879">names_text_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#ScoreScreen.names_text_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GUIStaticText <a class="symbol _variable" name="ScoreScreen.scores_text_" href="htmlsrc/pong.html#L880">scores_text_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#ScoreScreen.scores_text_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GUIStaticText <a class="symbol _variable" name="ScoreScreen.time_text_" href="htmlsrc/pong.html#L881">time_text_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#ScoreScreen.time_text_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _ctor" name="ScoreScreen.this" href="htmlsrc/pong.html#L894">this</a><span class="params">(GUIElement <em>parent</em>, Player <em>player_1</em>, Player <em>player_2</em>, real <em>time</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#ScoreScreen.this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct a score screen.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -285,11 +350,13 @@
 <tr><td><em>player_1</em></td><td>First player of the game.</td></tr>
 <tr><td><em>player_2</em></td><td>Second player of the game.</td></tr>
 <tr><td><em>time</em></td><td>Time the game took in seconds.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="ScoreScreen.update" href="htmlsrc/pong.html#L940">update</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#ScoreScreen.update" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="ScoreScreen.update" href="htmlsrc/pong.html#L951">update</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#ScoreScreen.update" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="ScoreScreen.die" href="htmlsrc/pong.html#L945">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#ScoreScreen.die" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="ScoreScreen.die" href="htmlsrc/pong.html#L956">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#ScoreScreen.die" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="ScoreScreen.init_scores" href="htmlsrc/pong.html#L964">init_scores</a><span class="params">(Player <em>player_1</em>, Player <em>player_2</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#ScoreScreen.init_scores" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="BallSpawner" href="htmlsrc/pong.html#L990">BallSpawner</a> : <span class="bclass">Actor</span> <a href="pong.html#BallSpawner" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="BallSpawner" href="htmlsrc/pong.html#L1001">BallSpawner</a> : <span class="bclass">Actor</span> <a href="pong.html#BallSpawner" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Handles ball respawning and related effects.</div></div>
 <div class="cmnt">When the spawner is created, it generates a set of directions the ball
@@ -298,15 +365,43 @@
  (as rays), gives the player a bit of time and spawns the ball with one
  of generated directions.</div>
 <dl>
-<dt class="decl"><a class="symbol _invariant" name="BallSpawner.invariant" href="htmlsrc/pong.html#L992">invariant</a> <a href="pong.html#BallSpawner.invariant" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _invariant" name="BallSpawner.invariant" href="htmlsrc/pong.html#L1003">invariant</a> <a href="pong.html#BallSpawner.invariant" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><a class="symbol _ctor" name="BallSpawner.this" href="htmlsrc/pong.html#L1048">this</a><span class="params">(ActorContainer <em>container</em>, PhysicsBody <em>physics_body</em>, Timer <em>timer</em>, real <em>spread</em>, real <em>ball_speed</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#BallSpawner.this" class="plink">¶</a></dt>
+<dt class="decl">Timer <a class="symbol _variable" name="BallSpawner.timer_" href="htmlsrc/pong.html#L1017">timer_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#BallSpawner.timer_" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="BallSpawner.update" href="htmlsrc/pong.html#L1064">update</a><span class="params">(real <em>time_step</em>, real <em>game_time</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#BallSpawner.update" class="plink">¶</a></dt>
+<dt class="decl">real <a class="symbol _variable" name="BallSpawner.ball_speed_" href="htmlsrc/pong.html#L1020">ball_speed_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#BallSpawner.ball_speed_" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="BallSpawner.draw" href="htmlsrc/pong.html#L1081">draw</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#BallSpawner.draw" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="BallSpawnerFactory" href="htmlsrc/pong.html#L1181">BallSpawnerFactory</a> : <span class="bclass">ActorFactory!(BallSpawner)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="pong.html#BallSpawnerFactory" class="plink">¶</a></dt>
+<dt class="decl">real <a class="symbol _variable" name="BallSpawner.min_angle_" href="htmlsrc/pong.html#L1024">min_angle_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#BallSpawner.min_angle_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">uint <a class="symbol _variable" name="BallSpawner.direction_count_" href="htmlsrc/pong.html#L1027">direction_count_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#BallSpawner.direction_count_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">real[] <a class="symbol _variable" name="BallSpawner.directions_" href="htmlsrc/pong.html#L1029">directions_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#BallSpawner.directions_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">real <a class="symbol _variable" name="BallSpawner.light_" href="htmlsrc/pong.html#L1033">light_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#BallSpawner.light_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">real <a class="symbol _variable" name="BallSpawner.light_speed_" href="htmlsrc/pong.html#L1035">light_speed_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#BallSpawner.light_speed_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">real <a class="symbol _variable" name="BallSpawner.light_width_" href="htmlsrc/pong.html#L1037">light_width_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#BallSpawner.light_width_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">bool <a class="symbol _variable" name="BallSpawner.light_expired" href="htmlsrc/pong.html#L1039">light_expired</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#BallSpawner.light_expired" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _ctor" name="BallSpawner.this" href="htmlsrc/pong.html#L1059">this</a><span class="params">(ActorContainer <em>container</em>, PhysicsBody <em>physics_body</em>, Timer <em>timer</em>, real <em>spread</em>, real <em>ball_speed</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#BallSpawner.this" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="BallSpawner.update" href="htmlsrc/pong.html#L1075">update</a><span class="params">(real <em>time_step</em>, real <em>game_time</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#BallSpawner.update" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="BallSpawner.draw" href="htmlsrc/pong.html#L1092">draw</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.html#BallSpawner.draw" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="BallSpawner.generate_directions" href="htmlsrc/pong.html#L1144">generate_directions</a><span class="params">(real <em>spread</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#BallSpawner.generate_directions" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Generate the directions ball might be spawned with.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>spread</em></td><td>"Randomness" of the spawn directions.
+                     Zero will result in only one definite direction,
+                     1 will result in completely random direction
+                     (except for horizontal directions that are 
+                     disallowed to prevent ball from getting stuck)</td></tr></table></dd></dl></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="BallSpawnerFactory" href="htmlsrc/pong.html#L1192">BallSpawnerFactory</a> : <span class="bclass">ActorFactory!(BallSpawner)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="pong.html#BallSpawnerFactory" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Factory used to construct ball spawners.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -322,7 +417,9 @@
           ball_speed = Speed of the spawned ball.</div>
 <p class="sec_header">Default:</p><div class="cmnt">200</div>
 <dl>
-<dt class="decl"><a class="symbol _ctor" name="BallSpawnerFactory.this" href="htmlsrc/pong.html#L1197">this</a><span class="params">(real <em>start_time</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#BallSpawnerFactory.this" class="plink">¶</a></dt>
+<dt class="decl">real <a class="symbol _variable" name="BallSpawnerFactory.start_time_" href="htmlsrc/pong.html#L1199">start_time_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#BallSpawnerFactory.start_time_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _ctor" name="BallSpawnerFactory.this" href="htmlsrc/pong.html#L1208">this</a><span class="params">(real <em>start_time</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#BallSpawnerFactory.this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct a BallSpawnerFactory with specified start time.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -330,20 +427,31 @@
 <tr><td><em>start_time</em></td><td>Start time of the produced spawner.
                       The time when the ball will be spawned
                       is relative to this time.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">BallSpawner</span> <a class="symbol _function" name="BallSpawnerFactory.produce" href="htmlsrc/pong.html#L1199">produce</a><span class="params">(ActorContainer <em>container</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#BallSpawnerFactory.produce" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">BallSpawner</span> <a class="symbol _function" name="BallSpawnerFactory.produce" href="htmlsrc/pong.html#L1210">produce</a><span class="params">(ActorContainer <em>container</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.html#BallSpawnerFactory.produce" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="HUD" href="htmlsrc/pong.html#L1209">HUD</a> <a href="pong.html#HUD" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="HUD" href="htmlsrc/pong.html#L1220">HUD</a> <a href="pong.html#HUD" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">In game HUD.</div></div>
 <dl>
-<dt class="decl"><a class="symbol _ctor" name="HUD.this" href="htmlsrc/pong.html#L1232">this</a><span class="params">(GUIElement <em>parent</em>, real <em>time_limit</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#HUD.this" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">alias</span> std.string.toString <a class="symbol _alias" name="HUD.to_string" href="htmlsrc/pong.html#L1223">to_string</a> <a href="pong.html#HUD.to_string" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GUIElement <a class="symbol _variable" name="HUD.parent_" href="htmlsrc/pong.html#L1226">parent_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#HUD.parent_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GUIStaticText <a class="symbol _variable" name="HUD.score_text_1_" href="htmlsrc/pong.html#L1229">score_text_1_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#HUD.score_text_1_" class="plink">¶</a></dt>
+<dt class="decl">GUIStaticText <a class="symbol _variable" name="HUD.score_text_2_" href="htmlsrc/pong.html#L1229">score_text_2_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#HUD.score_text_2_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GUIStaticText <a class="symbol _variable" name="HUD.time_text_" href="htmlsrc/pong.html#L1231">time_text_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#HUD.time_text_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">real <a class="symbol _variable" name="HUD.time_limit_" href="htmlsrc/pong.html#L1234">time_limit_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#HUD.time_limit_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _ctor" name="HUD.this" href="htmlsrc/pong.html#L1243">this</a><span class="params">(GUIElement <em>parent</em>, real <em>time_limit</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#HUD.this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Constructs HUD with specified parameters.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>parent</em></td><td>Parent GUI element for all the elements in the HUD.</td></tr>
 <tr><td><em>time_limit</em></td><td>Maximum time the game will take.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="HUD.update" href="htmlsrc/pong.html#L1268">update</a><span class="params">(real <em>time_left</em>, Player <em>player_1</em>, Player <em>player_2</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#HUD.update" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="HUD.update" href="htmlsrc/pong.html#L1279">update</a><span class="params">(real <em>time_left</em>, Player <em>player_1</em>, Player <em>player_2</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#HUD.update" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Update the HUD.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -351,30 +459,36 @@
 <tr><td><em>time_left</em></td><td>Time left until time limit runs out.</td></tr>
 <tr><td><em>player_1</em></td><td>First player of the game.</td></tr>
 <tr><td><em>player_2</em></td><td>Second player of the game.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="HUD.hide" href="htmlsrc/pong.html#L1294">hide</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#HUD.hide" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="HUD.hide" href="htmlsrc/pong.html#L1305">hide</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#HUD.hide" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Hide the HUD.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="HUD.show" href="htmlsrc/pong.html#L1302">show</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#HUD.show" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="HUD.show" href="htmlsrc/pong.html#L1313">show</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#HUD.show" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Show the HUD.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="HUD.die" href="htmlsrc/pong.html#L1310">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#HUD.die" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="HUD.die" href="htmlsrc/pong.html#L1321">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#HUD.die" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Destroy the HUD.</div></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GameGUI" href="htmlsrc/pong.html#L1327">GameGUI</a> <a href="pong.html#GameGUI" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GameGUI" href="htmlsrc/pong.html#L1338">GameGUI</a> <a href="pong.html#GameGUI" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Class holding all GUI used by Game (HUD, etc.).</div></div>
 <dl>
-<dt class="decl"><a class="symbol _ctor" name="GameGUI.this" href="htmlsrc/pong.html#L1347">this</a><span class="params">(GUIElement <em>parent</em>, real <em>time_limit</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#GameGUI.this" class="plink">¶</a></dt>
+<dt class="decl">GUIElement <a class="symbol _variable" name="GameGUI.parent_" href="htmlsrc/pong.html#L1342">parent_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#GameGUI.parent_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">HUD <a class="symbol _variable" name="GameGUI.hud_" href="htmlsrc/pong.html#L1344">hud_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#GameGUI.hud_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">ScoreScreen <a class="symbol _variable" name="GameGUI.score_screen_" href="htmlsrc/pong.html#L1346">score_screen_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#GameGUI.score_screen_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _ctor" name="GameGUI.this" href="htmlsrc/pong.html#L1358">this</a><span class="params">(GUIElement <em>parent</em>, real <em>time_limit</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#GameGUI.this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct a GameGUI with specified parameters.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>parent</em></td><td>GUI element to attach all game GUI elements to.</td></tr>
 <tr><td><em>time_limit</em></td><td>Time limit of the game.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GameGUI.show_hud" href="htmlsrc/pong.html#L1355">show_hud</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#GameGUI.show_hud" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GameGUI.show_hud" href="htmlsrc/pong.html#L1366">show_hud</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#GameGUI.show_hud" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Show the HUD.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GameGUI.show_scores" href="htmlsrc/pong.html#L1368">show_scores</a><span class="params">(real <em>time_total</em>, Player <em>player_1</em>, Player <em>player_2</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#GameGUI.show_scores" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GameGUI.show_scores" href="htmlsrc/pong.html#L1379">show_scores</a><span class="params">(real <em>time_total</em>, Player <em>player_1</em>, Player <em>player_2</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#GameGUI.show_scores" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Show score screen.</div></div>
 <div class="cmnt">Should only be called at the end of game.
@@ -385,7 +499,7 @@
 <tr><td><em>time_total</em></td><td>Total time the game took, in game time.</td></tr>
 <tr><td><em>player_1</em></td><td>First player of the game.</td></tr>
 <tr><td><em>player_2</em></td><td>Second player of the game.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GameGUI.update" href="htmlsrc/pong.html#L1384">update</a><span class="params">(real <em>time_left</em>, Player <em>player_1</em>, Player <em>player_2</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#GameGUI.update" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GameGUI.update" href="htmlsrc/pong.html#L1395">update</a><span class="params">(real <em>time_left</em>, Player <em>player_1</em>, Player <em>player_2</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#GameGUI.update" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Update the game GUI.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -393,35 +507,111 @@
 <tr><td><em>time_left</em></td><td>Time left in the game, in game time.</td></tr>
 <tr><td><em>player_1</em></td><td>First player of the game.</td></tr>
 <tr><td><em>player_2</em></td><td>Second player of the game.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GameGUI.die" href="htmlsrc/pong.html#L1391">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#GameGUI.die" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GameGUI.die" href="htmlsrc/pong.html#L1402">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#GameGUI.die" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Destroy the game GUI.</div></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="Game" href="htmlsrc/pong.html#L1404">Game</a> <a href="pong.html#Game" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="Game" href="htmlsrc/pong.html#L1415">Game</a> <a href="pong.html#Game" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div>
 <dl>
-<dt class="decl">Rectanglef <a class="symbol _variable" name="Game.game_area_" href="htmlsrc/pong.html#L1414">game_area_</a> <span class="attrs">[<span class="stc">static</span>]</span> <a href="pong.html#Game.game_area_" class="plink">¶</a></dt>
+<dt class="decl">Platform <a class="symbol _variable" name="Game.platform_" href="htmlsrc/pong.html#L1420">platform_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.platform_" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="Game.run" href="htmlsrc/pong.html#L1449">run</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Game.run" class="plink">¶</a></dt>
+<dt class="decl">SceneManager <a class="symbol _variable" name="Game.actor_manager_" href="htmlsrc/pong.html#L1422">actor_manager_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.actor_manager_" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Game.intro" href="htmlsrc/pong.html#L1482">intro</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Game.intro" class="plink">¶</a></dt>
+<dt class="decl">Rectanglef <a class="symbol _variable" name="Game.game_area_" href="htmlsrc/pong.html#L1425">game_area_</a> <span class="attrs">[<span class="stc">static</span>]</span> <a href="pong.html#Game.game_area_" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">Ball[]</span> <a class="symbol _function" name="Game.balls" href="htmlsrc/pong.html#L1535">balls</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Game.balls" class="plink">¶</a></dt>
+<dt class="decl">Ball <a class="symbol _variable" name="Game.ball_" href="htmlsrc/pong.html#L1427">ball_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.ball_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">real <a class="symbol _variable" name="Game.ball_radius_" href="htmlsrc/pong.html#L1428">ball_radius_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.ball_radius_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">real <a class="symbol _variable" name="Game.ball_speed_" href="htmlsrc/pong.html#L1429">ball_speed_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.ball_speed_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">real <a class="symbol _variable" name="Game.spawn_time_" href="htmlsrc/pong.html#L1431">spawn_time_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.spawn_time_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">real <a class="symbol _variable" name="Game.spawn_spread_" href="htmlsrc/pong.html#L1432">spawn_spread_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.spawn_spread_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Ball[] <a class="symbol _variable" name="Game.dummies_" href="htmlsrc/pong.html#L1434">dummies_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.dummies_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">uint <a class="symbol _variable" name="Game.dummy_count_" href="htmlsrc/pong.html#L1435">dummy_count_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.dummy_count_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Wall <a class="symbol _variable" name="Game.wall_right_" href="htmlsrc/pong.html#L1437">wall_right_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.wall_right_" class="plink">¶</a></dt>
+<dt class="decl">Wall <a class="symbol _variable" name="Game.wall_left_" href="htmlsrc/pong.html#L1437">wall_left_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.wall_left_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Wall <a class="symbol _variable" name="Game.goal_up_" href="htmlsrc/pong.html#L1438">goal_up_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.goal_up_" class="plink">¶</a></dt>
+<dt class="decl">Wall <a class="symbol _variable" name="Game.goal_down_" href="htmlsrc/pong.html#L1438">goal_down_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.goal_down_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Paddle <a class="symbol _variable" name="Game.paddle_1_" href="htmlsrc/pong.html#L1439">paddle_1_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.paddle_1_" class="plink">¶</a></dt>
+<dt class="decl">Paddle <a class="symbol _variable" name="Game.paddle_2_" href="htmlsrc/pong.html#L1439">paddle_2_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.paddle_2_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Player <a class="symbol _variable" name="Game.player_1_" href="htmlsrc/pong.html#L1441">player_1_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.player_1_" class="plink">¶</a></dt>
+<dt class="decl">Player <a class="symbol _variable" name="Game.player_2_" href="htmlsrc/pong.html#L1441">player_2_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.player_2_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">bool <a class="symbol _variable" name="Game.continue_" href="htmlsrc/pong.html#L1444">continue_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.continue_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">uint <a class="symbol _variable" name="Game.score_limit_" href="htmlsrc/pong.html#L1446">score_limit_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.score_limit_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">real <a class="symbol _variable" name="Game.time_limit_" href="htmlsrc/pong.html#L1447">time_limit_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.time_limit_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Timer <a class="symbol _variable" name="Game.game_timer_" href="htmlsrc/pong.html#L1448">game_timer_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.game_timer_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GameGUI <a class="symbol _variable" name="Game.gui_" href="htmlsrc/pong.html#L1451">gui_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.gui_" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">GUI of the game, e.g. HUD, score screen</div></div></dd>
+<dt class="decl">bool <a class="symbol _variable" name="Game.playing_" href="htmlsrc/pong.html#L1454">playing_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.playing_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">bool <a class="symbol _variable" name="Game.started_" href="htmlsrc/pong.html#L1455">started_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.started_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Timer <a class="symbol _variable" name="Game.intro_timer_" href="htmlsrc/pong.html#L1457">intro_timer_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.intro_timer_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="Game.run" href="htmlsrc/pong.html#L1460">run</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Game.run" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Game.intro" href="htmlsrc/pong.html#L1493">intro</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Game.intro" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">Ball[]</span> <a class="symbol _function" name="Game.balls" href="htmlsrc/pong.html#L1546">balls</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Game.balls" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Returns an array of balls currently used in the game.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Game.draw" href="htmlsrc/pong.html#L1547">draw</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Game.draw" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Game.draw" href="htmlsrc/pong.html#L1558">draw</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Game.draw" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Draw the game.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>driver</em></td><td>VideoDriver to draw with.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">Rectanglef</span> <a class="symbol _function" name="Game.game_area" href="htmlsrc/pong.html#L1550">game_area</a><span class="params">()</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="pong.html#Game.game_area" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Rectanglef</span> <a class="symbol _function" name="Game.game_area" href="htmlsrc/pong.html#L1561">game_area</a><span class="params">()</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="pong.html#Game.game_area" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Get area of the game.</div></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GameContainer" href="htmlsrc/pong.html#L1692">GameContainer</a> <a href="pong.html#GameContainer" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Get area of the game.</div></div></dd>
+<dt class="decl"><a class="symbol _ctor" name="Game.this" href="htmlsrc/pong.html#L1564">this</a><span class="params">(Platform <em>platform</em>, SceneManager <em>actor_manager</em>, GameGUI <em>gui</em>, uint <em>score_limit</em>, real <em>time_limit</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.this" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Game.die" href="htmlsrc/pong.html#L1575">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.die" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Game.start_game" href="htmlsrc/pong.html#L1578">start_game</a><span class="params">(real <em>start_time</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.start_game" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Start the game, at specified game time</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Game.destroy_ball" href="htmlsrc/pong.html#L1620">destroy_ball</a><span class="params">(BallBody <em>ball_body</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.destroy_ball" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Game.spawn_ball" href="htmlsrc/pong.html#L1643">spawn_ball</a><span class="params">(Vector2f <em>direction</em>, real <em>speed</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.spawn_ball" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Game.game_won" href="htmlsrc/pong.html#L1655">game_won</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.game_won" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Game.end_game" href="htmlsrc/pong.html#L1666">end_game</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.end_game" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Game.key_handler" href="htmlsrc/pong.html#L1679">key_handler</a><span class="params">(KeyState <em>state</em>, Key <em>key</em>, dchar <em>unicode</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Game.key_handler" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GameContainer" href="htmlsrc/pong.html#L1703">GameContainer</a> <a href="pong.html#GameContainer" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Container managing dependencies and construction of Game.</div></div>
 <dl>
-<dt class="decl"><span class="rettyp">Game</span> <a class="symbol _function" name="GameContainer.produce" href="htmlsrc/pong.html#L1716">produce</a><span class="params">(Platform <em>platform</em>, Monitor <em>monitor</em>, GUIElement <em>gui_parent</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#GameContainer.produce" class="plink">¶</a></dt>
+<dt class="decl">SpatialManager!(PhysicsBody) <a class="symbol _variable" name="GameContainer.spatial_physics_" href="htmlsrc/pong.html#L1707">spatial_physics_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#GameContainer.spatial_physics_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">PhysicsEngine <a class="symbol _variable" name="GameContainer.physics_engine_" href="htmlsrc/pong.html#L1709">physics_engine_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#GameContainer.physics_engine_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">SceneManager <a class="symbol _variable" name="GameContainer.actor_manager_" href="htmlsrc/pong.html#L1711">actor_manager_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#GameContainer.actor_manager_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GameGUI <a class="symbol _variable" name="GameContainer.gui_" href="htmlsrc/pong.html#L1713">gui_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#GameContainer.gui_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Game <a class="symbol _variable" name="GameContainer.game_" href="htmlsrc/pong.html#L1715">game_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#GameContainer.game_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Monitor <a class="symbol _variable" name="GameContainer.monitor_" href="htmlsrc/pong.html#L1717">monitor_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#GameContainer.monitor_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">Game</span> <a class="symbol _function" name="GameContainer.produce" href="htmlsrc/pong.html#L1727">produce</a><span class="params">(Platform <em>platform</em>, Monitor <em>monitor</em>, GUIElement <em>gui_parent</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#GameContainer.produce" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Produce a Game and return a reference to it.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -429,66 +619,139 @@
 <tr><td><em>platform</em></td><td>Platform to use for user input.</td></tr>
 <tr><td><em>monitor</em></td><td>Monitor to monitor game subsystems.</td></tr>
 <tr><td><em>gui_parent</em></td><td>Parent for all GUI elements used by the game.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GameContainer.destroy" href="htmlsrc/pong.html#L1740">destroy</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#GameContainer.destroy" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GameContainer.destroy" href="htmlsrc/pong.html#L1751">destroy</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#GameContainer.destroy" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Destroy the contained Game.</div></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="Credits" href="htmlsrc/pong.html#L1759">Credits</a> <a href="pong.html#Credits" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="Credits" href="htmlsrc/pong.html#L1770">Credits</a> <a href="pong.html#Credits" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Credits screen.</div></div>
 <dl>
-<dt class="decl"><span class="kw">auto</span> <a class="symbol _variable" name="Credits.credits_" href="htmlsrc/pong.html#L1762">credits_</a> <span class="attrs">[<span class="stc">static</span>]</span> <a href="pong.html#Credits.credits_" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">auto</span> <a class="symbol _variable" name="Credits.credits_" href="htmlsrc/pong.html#L1773">credits_</a> <span class="attrs">[<span class="stc">static</span>]</span> <a href="pong.html#Credits.credits_" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><a class="symbol _ctor" name="Credits.this" href="htmlsrc/pong.html#L1798">this</a><span class="params">(GUIElement <em>parent</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Credits.this" class="plink">¶</a></dt>
+<dt class="decl">GUIElement <a class="symbol _variable" name="Credits.parent_" href="htmlsrc/pong.html#L1793">parent_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Credits.parent_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GUIElement <a class="symbol _variable" name="Credits.container_" href="htmlsrc/pong.html#L1796">container_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Credits.container_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GUIButton <a class="symbol _variable" name="Credits.close_button_" href="htmlsrc/pong.html#L1797">close_button_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Credits.close_button_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GUIStaticText <a class="symbol _variable" name="Credits.text_" href="htmlsrc/pong.html#L1798">text_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Credits.text_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _ctor" name="Credits.this" href="htmlsrc/pong.html#L1809">this</a><span class="params">(GUIElement <em>parent</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Credits.this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct a Credits screen.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>parent</em></td><td>GUI element to attach the credits screen to.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Credits.die" href="htmlsrc/pong.html#L1838">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Credits.die" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Credits.die" href="htmlsrc/pong.html#L1849">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Credits.die" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Destroy this credits screen.</div></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="PongGUI" href="htmlsrc/pong.html#L1846">PongGUI</a> <a href="pong.html#PongGUI" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="PongGUI" href="htmlsrc/pong.html#L1857">PongGUI</a> <a href="pong.html#PongGUI" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Class holding all GUI used by Pong (main menu, etc.).</div></div>
 <dl>
-<dt class="decl"><a class="symbol _ctor" name="PongGUI.this" href="htmlsrc/pong.html#L1878">this</a><span class="params">(GUIElement <em>parent</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#PongGUI.this" class="plink">¶</a></dt>
+<dt class="decl">GUIElement <a class="symbol _variable" name="PongGUI.parent_" href="htmlsrc/pong.html#L1861">parent_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#PongGUI.parent_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Monitor <a class="symbol _variable" name="PongGUI.monitor_" href="htmlsrc/pong.html#L1864">monitor_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#PongGUI.monitor_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GUIElement <a class="symbol _variable" name="PongGUI.menu_container_" href="htmlsrc/pong.html#L1866">menu_container_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#PongGUI.menu_container_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GUIMenu <a class="symbol _variable" name="PongGUI.menu_" href="htmlsrc/pong.html#L1868">menu_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#PongGUI.menu_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Credits <a class="symbol _variable" name="PongGUI.credits_" href="htmlsrc/pong.html#L1870">credits_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#PongGUI.credits_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _ctor" name="PongGUI.this" href="htmlsrc/pong.html#L1889">this</a><span class="params">(GUIElement <em>parent</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#PongGUI.this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct PongGUI with specified parameters.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>parent</em></td><td>GUI element to use as parent for all pong GUI elements.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PongGUI.die" href="htmlsrc/pong.html#L1922">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#PongGUI.die" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PongGUI.die" href="htmlsrc/pong.html#L1933">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#PongGUI.die" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Destroy the PongGUI.</div></div></dd>
-<dt class="decl"><span class="rettyp">Monitor</span> <a class="symbol _function" name="PongGUI.monitor" href="htmlsrc/pong.html#L1938">monitor</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#PongGUI.monitor" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Monitor</span> <a class="symbol _function" name="PongGUI.monitor" href="htmlsrc/pong.html#L1949">monitor</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#PongGUI.monitor" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Get the monitor widget.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PongGUI.monitor_toggle" href="htmlsrc/pong.html#L1941">monitor_toggle</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#PongGUI.monitor_toggle" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PongGUI.monitor_toggle" href="htmlsrc/pong.html#L1952">monitor_toggle</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#PongGUI.monitor_toggle" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Toggle monitor display.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PongGUI.menu_show" href="htmlsrc/pong.html#L1948">menu_show</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#PongGUI.menu_show" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PongGUI.menu_show" href="htmlsrc/pong.html#L1959">menu_show</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#PongGUI.menu_show" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Show main menu.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PongGUI.menu_hide" href="htmlsrc/pong.html#L1951">menu_hide</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#PongGUI.menu_hide" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PongGUI.menu_hide" href="htmlsrc/pong.html#L1962">menu_hide</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#PongGUI.menu_hide" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Hide main menu.</div></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="Pong" href="htmlsrc/pong.html#L1973">Pong</a> <a href="pong.html#Pong" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Hide main menu.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PongGUI.credits_show" href="htmlsrc/pong.html#L1966">credits_show</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#PongGUI.credits_show" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Show credits screen (and hide main menu).</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PongGUI.credits_hide" href="htmlsrc/pong.html#L1975">credits_hide</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#PongGUI.credits_hide" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Hide credits screen (and show main menu).</div></div></dd></dl></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="Pong" href="htmlsrc/pong.html#L1984">Pong</a> <a href="pong.html#Pong" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div>
 <dl>
-<dt class="decl"><a class="symbol _ctor" name="Pong.this" href="htmlsrc/pong.html#L2003">this</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Pong.this" class="plink">¶</a></dt>
+<dt class="decl">EventCounter <a class="symbol _variable" name="Pong.fps_counter_" href="htmlsrc/pong.html#L1988">fps_counter_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Pong.fps_counter_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">bool <a class="symbol _variable" name="Pong.run_pong_" href="htmlsrc/pong.html#L1989">run_pong_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Pong.run_pong_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">bool <a class="symbol _variable" name="Pong.continue_" href="htmlsrc/pong.html#L1990">continue_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Pong.continue_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Platform <a class="symbol _variable" name="Pong.platform_" href="htmlsrc/pong.html#L1993">platform_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Pong.platform_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">VideoDriverContainer <a class="symbol _variable" name="Pong.video_driver_container_" href="htmlsrc/pong.html#L1996">video_driver_container_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Pong.video_driver_container_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">VideoDriver <a class="symbol _variable" name="Pong.video_driver_" href="htmlsrc/pong.html#L1998">video_driver_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Pong.video_driver_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GUIRoot <a class="symbol _variable" name="Pong.gui_root_" href="htmlsrc/pong.html#L2001">gui_root_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Pong.gui_root_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">PongGUI <a class="symbol _variable" name="Pong.gui_" href="htmlsrc/pong.html#L2004">gui_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Pong.gui_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">MemoryMonitorable <a class="symbol _variable" name="Pong.memory_" href="htmlsrc/pong.html#L2007">memory_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Pong.memory_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GameContainer <a class="symbol _variable" name="Pong.game_container_" href="htmlsrc/pong.html#L2009">game_container_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Pong.game_container_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Game <a class="symbol _variable" name="Pong.game_" href="htmlsrc/pong.html#L2010">game_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Pong.game_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _ctor" name="Pong.this" href="htmlsrc/pong.html#L2014">this</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Pong.this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Initialize Pong.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Pong.die" href="htmlsrc/pong.html#L2034">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Pong.die" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Pong.die" href="htmlsrc/pong.html#L2045">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Pong.die" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Destroy all subsystems.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Pong.run" href="htmlsrc/pong.html#L2048">run</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Pong.run" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="main" href="htmlsrc/pong.html#L2173">main</a><span class="params">()</span> <a href="pong.html#main" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Pong.run" href="htmlsrc/pong.html#L2059">run</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.html#Pong.run" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Pong.pong_end" href="htmlsrc/pong.html#L2085">pong_end</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Pong.pong_end" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Pong.pong_start" href="htmlsrc/pong.html#L2094">pong_start</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Pong.pong_start" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Pong.credits_start" href="htmlsrc/pong.html#L2103">credits_start</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Pong.credits_start" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Pong.credits_end" href="htmlsrc/pong.html#L2105">credits_end</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Pong.credits_end" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Pong.exit" href="htmlsrc/pong.html#L2107">exit</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Pong.exit" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Pong.key_handler" href="htmlsrc/pong.html#L2109">key_handler</a><span class="params">(KeyState <em>state</em>, Key <em>key</em>, dchar <em>unicode</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Pong.key_handler" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Pong.key_handler_global" href="htmlsrc/pong.html#L2127">key_handler_global</a><span class="params">(KeyState <em>state</em>, Key <em>key</em>, dchar <em>unicode</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Pong.key_handler_global" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Pong.fps_update" href="htmlsrc/pong.html#L2142">fps_update</a><span class="params">(real <em>fps</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Pong.fps_update" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Pong.reset_video" href="htmlsrc/pong.html#L2148">reset_video</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Pong.reset_video" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Reset video mode</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Pong.reset_video_driver" href="htmlsrc/pong.html#L2157">reset_video_driver</a><span class="params">(uint <em>width</em>, uint <em>height</em>, ColorFormat <em>format</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="pong.html#Pong.reset_video_driver" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Reset video driver with specified video mode.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>width</em></td><td>Window/screen width to use.</td></tr>
+<tr><td><em>height</em></td><td>Window/screen height to use.</td></tr>
+<tr><td><em>format</em></td><td>Color format of video mode.</td></tr></table></dd></dl></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="main" href="htmlsrc/pong.html#L2184">main</a><span class="params">()</span> <a href="pong.html#main" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sun Feb 13 15:22:14 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sun Feb 13 23:44:22 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

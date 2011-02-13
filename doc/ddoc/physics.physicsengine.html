@@ -26,6 +26,24 @@
 <dl>
 <dt class="decl"><a class="symbol _invariant" name="PhysicsEngine.invariant" href="htmlsrc/physics.physicsengine.html#L35">invariant</a> <a href="physics.physicsengine.html#PhysicsEngine.invariant" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">SpatialManager!(PhysicsBody) <a class="symbol _variable" name="PhysicsEngine.spatial_manager_" href="htmlsrc/physics.physicsengine.html#L47">spatial_manager_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="physics.physicsengine.html#PhysicsEngine.spatial_manager_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">bool <a class="symbol _variable" name="PhysicsEngine.updating_" href="htmlsrc/physics.physicsengine.html#L50">updating_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="physics.physicsengine.html#PhysicsEngine.updating_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">PhysicsBody[] <a class="symbol _variable" name="PhysicsEngine.bodies_" href="htmlsrc/physics.physicsengine.html#L53">bodies_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="physics.physicsengine.html#PhysicsEngine.bodies_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Contact[] <a class="symbol _variable" name="PhysicsEngine.contacts_" href="htmlsrc/physics.physicsengine.html#L56">contacts_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="physics.physicsengine.html#PhysicsEngine.contacts_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">real <a class="symbol _variable" name="PhysicsEngine.penetration_iteration_multiplier_" href="htmlsrc/physics.physicsengine.html#L62">penetration_iteration_multiplier_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="physics.physicsengine.html#PhysicsEngine.penetration_iteration_multiplier_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">real <a class="symbol _variable" name="PhysicsEngine.response_iteration_multiplier_" href="htmlsrc/physics.physicsengine.html#L68">response_iteration_multiplier_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="physics.physicsengine.html#PhysicsEngine.response_iteration_multiplier_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">real <a class="symbol _variable" name="PhysicsEngine.acceptable_penetration" href="htmlsrc/physics.physicsengine.html#L71">acceptable_penetration</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="physics.physicsengine.html#PhysicsEngine.acceptable_penetration" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">real <a class="symbol _variable" name="PhysicsEngine.acceptable_velocity_error" href="htmlsrc/physics.physicsengine.html#L74">acceptable_velocity_error</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="physics.physicsengine.html#PhysicsEngine.acceptable_velocity_error" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Statistics <a class="symbol _variable" name="PhysicsEngine.statistics_" href="htmlsrc/physics.physicsengine.html#L77">statistics_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="physics.physicsengine.html#PhysicsEngine.statistics_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><a class="symbol _ctor" name="PhysicsEngine.this" href="htmlsrc/physics.physicsengine.html#L89">this</a><span class="params">(SpatialManager!(PhysicsBody) <em>spatial_manager</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="physics.physicsengine.html#PhysicsEngine.this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct the PhysicsEngine.</div></div>
@@ -43,11 +61,17 @@
 <dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PhysicsEngine.add_body" href="htmlsrc/physics.physicsengine.html#L132">add_body</a><span class="params">(PhysicsBody <em>physics_body</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="physics.physicsengine.html#PhysicsEngine.add_body" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PhysicsEngine.remove_body" href="htmlsrc/physics.physicsengine.html#L153">remove_body</a><span class="params">(PhysicsBody <em>physics_body</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="physics.physicsengine.html#PhysicsEngine.remove_body" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PhysicsEngine.detect_contacts" href="htmlsrc/physics.physicsengine.html#L176">detect_contacts</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="physics.physicsengine.html#PhysicsEngine.detect_contacts" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PhysicsEngine.resolve_penetrations" href="htmlsrc/physics.physicsengine.html#L198">resolve_penetrations</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="physics.physicsengine.html#PhysicsEngine.resolve_penetrations" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PhysicsEngine.collision_response" href="htmlsrc/physics.physicsengine.html#L260">collision_response</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="physics.physicsengine.html#PhysicsEngine.collision_response" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sun Feb 13 15:22:13 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sun Feb 13 23:44:21 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

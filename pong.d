@@ -4,6 +4,17 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+/**
+ * $(BIG Pong engine 0.1.0 API documentation)
+ *
+ * Introduction:
+ * 
+ * This is the complete API documentation for Pong engine. It describes
+ * all classes, structs, interfaces, functions, etc. .
+ * This API documentation is intended to serve for developers who want to
+ * improve the Pong engine, as well as those who want to modify it for
+ * their own needs.
+ */
 module pong;
 
 

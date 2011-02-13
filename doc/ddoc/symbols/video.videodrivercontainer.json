@@ -1,5 +1,7 @@
 ["videodrivercontainer",1,[],[1,59],[
 ["VideoDriverContainer",3,[],[17,58],[
+["font_manager_",11,[0],[21,21],[]],
+["video_driver_",11,[0],[23,23],[]],
 ["this",17,[3],[26,26],[]],
 ["produce",12,[3],[36,44],[]],
 ["destroy",12,[3],[47,51],[]],
