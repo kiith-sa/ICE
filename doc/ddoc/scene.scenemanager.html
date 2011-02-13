@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>scene.scenemanager</title>
+  <link href="css/style.css" rel="stylesheet" type="text/css"/>
+  <!-- no favicon -->
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/utilities.js"></script>
+  <script type="text/javascript" src="js/symbols.js"></script>
+  <script type="text/javascript" src="js/modules.js"></script>
+  <script type="text/javascript" src="js/quicksearch.js"></script>
+  <script type="text/javascript" src="js/navigation.js"></script>
+</head>
+<body id="scene.scenemanager">
+<div id="kandil-content">
+<div class="module">
+  <h1 class="module" id="m-scene.scenemanager"><a href="htmlsrc/scene.scenemanager.html" class="symbol">scene.scenemanager</a></h1>
+
+<dl>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="SceneManager" href="htmlsrc/scene.scenemanager.html#L27">SceneManager</a> : <span class="bclass">ActorContainer</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="scene.scenemanager.html#SceneManager" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Stores and manages all Actors.</div></div>
+<dl>
+<dt class="decl"><a class="symbol _invariant" name="SceneManager.invariant" href="htmlsrc/scene.scenemanager.html#L31">invariant</a> <a href="scene.scenemanager.html#SceneManager.invariant" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _ctor" name="SceneManager.this" href="htmlsrc/scene.scenemanager.html#L70">this</a><span class="params">(PhysicsEngine <em>physics_engine</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="scene.scenemanager.html#SceneManager.this" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Construct the SceneManager; set up update frequency.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>physics_engine</em></td><td>Physics engine for the actor manager to use.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="SceneManager.die" href="htmlsrc/scene.scenemanager.html#L81">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="scene.scenemanager.html#SceneManager.die" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Destroy the SceneManager.</div></div></dd>
+<dt class="decl"><span class="rettyp">real</span> <a class="symbol _function" name="SceneManager.time_step" href="htmlsrc/scene.scenemanager.html#L89">time_step</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="scene.scenemanager.html#SceneManager.time_step" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get frame length in seconds, i.e. update "frame" length, not graphics.</div></div></dd>
+<dt class="decl"><span class="rettyp">real</span> <a class="symbol _function" name="SceneManager.game_time" href="htmlsrc/scene.scenemanager.html#L92">game_time</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="scene.scenemanager.html#SceneManager.game_time" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get time when the current update started, in game time.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="SceneManager.time_speed" href="htmlsrc/scene.scenemanager.html#L95">time_speed</a><span class="params">(real <em>speed</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="scene.scenemanager.html#SceneManager.time_speed" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Set time speed multiplier (0 for pause, 1 for normal speed).</div></div></dd>
+<dt class="decl"><span class="rettyp">real</span> <a class="symbol _function" name="SceneManager.time_speed:2" href="htmlsrc/scene.scenemanager.html#L98">time_speed</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="scene.scenemanager.html#SceneManager.time_speed:2" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get time speed multiplier.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="SceneManager.update" href="htmlsrc/scene.scenemanager.html#L101">update</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="scene.scenemanager.html#SceneManager.update" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Update the actor manager.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="SceneManager.draw" href="htmlsrc/scene.scenemanager.html#L127">draw</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="scene.scenemanager.html#SceneManager.draw" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Draw all actors.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>driver</em></td><td>Video driver to draw with.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="SceneManager.clear" href="htmlsrc/scene.scenemanager.html#L133">clear</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="scene.scenemanager.html#SceneManager.clear" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Remove all actors.</div></div></dd>
+<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="SceneManager.statistics" href="htmlsrc/scene.scenemanager.html#L151">statistics</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="scene.scenemanager.html#SceneManager.statistics" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Return a string with statistics about SceneManager run.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="SceneManager.add_actor" href="htmlsrc/scene.scenemanager.html#L160">add_actor</a><span class="params">(Actor <em>actor</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="scene.scenemanager.html#SceneManager.add_actor" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Add a new actor. Will be added at the beginning of next frame.</div></div>
+<p class="sec_header">Note:</p><div class="cmnt">this should only be used by actor constructor.</div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>actor</em></td><td>Actor to add. Must not already be in the SceneManager.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="SceneManager.remove_actor" href="htmlsrc/scene.scenemanager.html#L176">remove_actor</a><span class="params">(Actor <em>actor</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="scene.scenemanager.html#SceneManager.remove_actor" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Remove an actor. Will be removed at the beginning of next frame.</div></div>
+<p class="sec_header">Note:</p><div class="cmnt">this should only be used by actor die() or destructor.</div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>actor</em></td><td>Actor to remove. Must be in the SceneManager.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="SceneManager.update_actors" href="htmlsrc/scene.scenemanager.html#L186">update_actors</a><span class="params">()</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="scene.scenemanager.html#SceneManager.update_actors" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="SceneManager.ups_update" href="htmlsrc/scene.scenemanager.html#L216">ups_update</a><span class="params">(real <em>ups</em>)</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="scene.scenemanager.html#SceneManager.ups_update" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd></dl>
+</div>
+<div id="kandil-footer">
+  <p></p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sun Feb 13 15:22:11 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+</div>
+</div>
+</body>
+</html>

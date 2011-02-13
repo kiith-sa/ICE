@@ -1,0 +1,79 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>scene.lineemitter</title>
+  <link href="css/style.css" rel="stylesheet" type="text/css"/>
+  <!-- no favicon -->
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/utilities.js"></script>
+  <script type="text/javascript" src="js/symbols.js"></script>
+  <script type="text/javascript" src="js/modules.js"></script>
+  <script type="text/javascript" src="js/quicksearch.js"></script>
+  <script type="text/javascript" src="js/navigation.js"></script>
+</head>
+<body id="scene.lineemitter">
+<div id="kandil-content">
+<div class="module">
+  <h1 class="module" id="m-scene.lineemitter"><a href="htmlsrc/scene.lineemitter.html" class="symbol">scene.lineemitter</a></h1>
+
+<dl>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="LineEmitter" href="htmlsrc/scene.lineemitter.html#L23">LineEmitter</a> : <span class="bclass">ParticleEmitter</span> <a href="scene.lineemitter.html#LineEmitter" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Particle emitter that emits lines.</div></div>
+<dl>
+<dt class="decl"><a class="symbol _invariant" name="LineEmitter.invariant" href="htmlsrc/scene.lineemitter.html#L25">invariant</a> <a href="scene.lineemitter.html#LineEmitter.invariant" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">float <a class="symbol _variable" name="LineEmitter.line_length_" href="htmlsrc/scene.lineemitter.html#L35">line_length_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="scene.lineemitter.html#LineEmitter.line_length_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">float <a class="symbol _variable" name="LineEmitter.line_width_" href="htmlsrc/scene.lineemitter.html#L37">line_width_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="scene.lineemitter.html#LineEmitter.line_width_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Color <a class="symbol _variable" name="LineEmitter.start_color_" href="htmlsrc/scene.lineemitter.html#L39">start_color_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="scene.lineemitter.html#LineEmitter.start_color_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Color <a class="symbol _variable" name="LineEmitter.end_color_" href="htmlsrc/scene.lineemitter.html#L41">end_color_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="scene.lineemitter.html#LineEmitter.end_color_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="LineEmitter.line_length" href="htmlsrc/scene.lineemitter.html#L45">line_length</a><span class="params">(float <em>length</em>)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="scene.lineemitter.html#LineEmitter.line_length" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Set length of the line particles drawn.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="LineEmitter.line_width" href="htmlsrc/scene.lineemitter.html#L48">line_width</a><span class="params">(float <em>width</em>)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="scene.lineemitter.html#LineEmitter.line_width" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Set width of the line particles drawn.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="LineEmitter.start_color" href="htmlsrc/scene.lineemitter.html#L51">start_color</a><span class="params">(Color <em>color</em>)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="scene.lineemitter.html#LineEmitter.start_color" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Set color the particles have at the beginning of their lifetimes.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="LineEmitter.end_color" href="htmlsrc/scene.lineemitter.html#L54">end_color</a><span class="params">(Color <em>color</em>)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="scene.lineemitter.html#LineEmitter.end_color" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Set color the particles have at the end of their lifetimes.</div></div></dd>
+<dt class="decl"><a class="symbol _ctor" name="LineEmitter.this" href="htmlsrc/scene.lineemitter.html#L76">this</a><span class="params">(ActorContainer <em>container</em>, PhysicsBody <em>physics_body</em>, Actor <em>owner</em>, real <em>life_time</em>, real <em>particle_life</em>, real <em>emit_frequency</em>, Vector2f <em>emit_velocity</em>, real <em>angle_variation</em>, float <em>line_length</em>, float <em>line_width</em>, Color <em>start_color</em>, Color <em>end_color</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="scene.lineemitter.html#LineEmitter.this" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="LineEmitter.draw" href="htmlsrc/scene.lineemitter.html#L89">draw</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="scene.lineemitter.html#LineEmitter.draw" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="LineEmitterFactoryBase" href="htmlsrc/scene.lineemitter.html#L118">LineEmitterFactoryBase</a><span class="tparams">(<em>T</em>)</span> : <span class="bclass">ParticleEmitterFactory!(T)</span> <span class="attrs">[<span class="stc">abstract</span>]</span> <a href="scene.lineemitter.html#LineEmitterFactoryBase" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Base class for all factories producing LineEmitter or derived classes.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>line_width</em></td><td>Width of lines emitted in pixels.</td></tr>
+<tr><td><em>start_color</em></td><td>Color at the beginning of particle lifetime.</td></tr>
+<tr><td><em>end_color</em></td><td>Color at the end of particle lifetime.</td></tr></table>
+<dl>
+<dt class="decl"><span class="rettyp">PhysicsBody</span> <a class="symbol _function" name="LineEmitterFactoryBase.physics_body" href="htmlsrc/scene.lineemitter.html#L124">physics_body</a><span class="params">()</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="scene.lineemitter.html#LineEmitterFactoryBase.physics_body" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="LineEmitterFactory" href="htmlsrc/scene.lineemitter.html#L136">LineEmitterFactory</a> : <span class="bclass">LineEmitterFactoryBase!(LineEmitter)</span> <a href="scene.lineemitter.html#LineEmitterFactory" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Factory producing line emitters.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>line_length</em></td><td>Length of the lines emitted in pixels.</td></tr></table>
+<p class="sec_header">Default:</p><div class="cmnt">5.0</div>
+<dl>
+<dt class="decl"><span class="rettyp">LineEmitter</span> <a class="symbol _function" name="LineEmitterFactory.produce" href="htmlsrc/scene.lineemitter.html#L140">produce</a><span class="params">(ActorContainer <em>container</em>)</span> <span class="attrs">[<span class="prot">public</span>, <span class="stc">override</span>]</span> <a href="scene.lineemitter.html#LineEmitterFactory.produce" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd></dl>
+</div>
+<div id="kandil-footer">
+  <p></p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sun Feb 13 15:22:11 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+</div>
+</div>
+</body>
+</html>

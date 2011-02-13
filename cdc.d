@@ -149,7 +149,6 @@ int main(char[][] args)
     string[] debug_args = ["-unittest", "-gc", "-ofpong-debug"];
     string[] no_contracts_args = ["-release", "-gc", "-ofpong-no-contracts"];
     string[] release_args = ["-O", "-inline", "-release", "-gc", "-ofpong-release"];
-    string[] doc_args = ["-D", "-Dddoc/ddoc"];
 
     void compile(string [] arguments, string [] extra_files = [])
     {
@@ -180,9 +179,6 @@ int main(char[][] args)
             compile(debug_args);
             compile(no_contracts_args);
             compile(release_args);
-            break;
-        case "doc":
-            compile(doc_args);
             break;
         default:
             writefln("unknown build target: ", build);
@@ -216,7 +212,6 @@ void help()
         "                    Optimizations, inlining enabled.\n"
         "                    Target binary name: 'pong-release'\n"
         "    all             All of the above.\n"
-        "    doc             Generate documentation.\n"
         "\n"
         "Available options:\n"
         " -h --help          Show this help information.\n"

@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>monitor.monitormenu</title>
+  <link href="css/style.css" rel="stylesheet" type="text/css"/>
+  <!-- no favicon -->
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/utilities.js"></script>
+  <script type="text/javascript" src="js/symbols.js"></script>
+  <script type="text/javascript" src="js/modules.js"></script>
+  <script type="text/javascript" src="js/quicksearch.js"></script>
+  <script type="text/javascript" src="js/navigation.js"></script>
+</head>
+<body id="monitor.monitormenu">
+<div id="kandil-content">
+<div class="module">
+  <h1 class="module" id="m-monitor.monitormenu"><a href="htmlsrc/monitor.monitormenu.html" class="symbol">monitor.monitormenu</a></h1>
+
+<dl>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="MonitorMenu" href="htmlsrc/monitor.monitormenu.html#L19">MonitorMenu</a> <span class="attrs">[<span class="stc">abstract</span>]</span> <a href="monitor.monitormenu.html#MonitorMenu" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Base class for monitor menus.</div></div>
+<dl>
+<dt class="decl"><span class="rettyp">GUIMenu</span> <a class="symbol _function" name="MonitorMenu.menu" href="htmlsrc/monitor.monitormenu.html#L32">menu</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="monitor.monitormenu.html#MonitorMenu.menu" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get the menu GUI element.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="MonitorMenu.die" href="htmlsrc/monitor.monitormenu.html#L35">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="monitor.monitormenu.html#MonitorMenu.die" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Destroy this MonitorMenu</div></div></dd>
+<dt class="decl"><a class="symbol _ctor" name="MonitorMenu.this" href="htmlsrc/monitor.monitormenu.html#L44">this</a><span class="params">(GUIMenuHorizontalFactory <em>factory</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="monitor.monitormenu.html#MonitorMenu.this" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="MonitorMenu.back_to_parent" href="htmlsrc/monitor.monitormenu.html#L57">back_to_parent</a><span class="params">()</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="monitor.monitormenu.html#MonitorMenu.back_to_parent" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="generate_monitor_menu" href="htmlsrc/monitor.monitormenu.html#L94">generate_monitor_menu</a><span class="params">(string <em>name</em>, string[] <em>monitor_names</em>, string[] <em>monitor_classes</em>)</span> <a href="monitor.monitormenu.html#generate_monitor_menu" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Generate a MonitorMenu implementation class providing access to specified monitors.</div></div>
+<div class="cmnt">If the monitored class is templated, syntax "Monitored$T$U"
+ can be used to support templates. In that case, both the monitor menu
+ and monitors accessed will be templated with specified template types.</div>
+<p class="sec_header">Note:</p><div class="cmnt">To use this as a mixin, you have to import gui.guimenu .
+<p class="bl"></p>
+ Used as a string mixin.
+ Output is a class like the following:
+<p class="bl"></p>
+ final package class ExampleMonitor : MonitoMenu
+ {</div>
+<p class="sec_header">private:</p><div class="cmnt">//monitored object
+         MonitoredClass monitored_;</div>
+<p class="sec_header">public:</p><div class="cmnt">this()
+         {
+             //usual ctor stuff
+             //add menu buttons for each monitor
+         }</div>
+<p class="sec_header">private:</p><div class="cmnt">//callback methods used by the menu buttons to send monitors to set_monitor signal.
+ }</div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>name</em></td><td>Name of the monitored class. 
+                            Generated class will be named name~Monitor.</td></tr>
+<tr><td><em>monitor_names</em></td><td>Button texts of menu items corresponding to respective monitors.</td></tr>
+<tr><td><em>monitor_classes</em></td><td>Names of monitor classes accessed through the menu.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Generated menu monitor implementation class.</div></dd>
+<dt class="decl"><a class="symbol _unittest" name="unittest" href="htmlsrc/monitor.monitormenu.html#L146">unittest</a> <a href="monitor.monitormenu.html#unittest" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl>
+</div>
+<div id="kandil-footer">
+  <p></p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sun Feb 13 15:22:14 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+</div>
+</div>
+</body>
+</html>

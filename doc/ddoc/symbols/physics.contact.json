@@ -1,0 +1,12 @@
+["contact",1,[],[1,115],[
+["Contact",5,[],[18,114],[
+["body_a",11,[3],[22,22],[]],
+["body_b",11,[3],[25,25],[]],
+["contact_normal",11,[3],[32,32],[]],
+["penetration",11,[3],[35,35],[]],
+["resolved",11,[3],[38,38],[]],
+["swap_bodies",12,[2],[42,48],[]],
+["resolve_penetration",12,[2],[59,84],[]],
+["collision_response",12,[2],[87,98],[]],
+["desired_delta_velocity",12,[2],[101,105],[]],
+["inverse_mass_total",12,[2],[108,108],[]]]]]]

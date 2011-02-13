@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>time.timer</title>
+  <link href="css/style.css" rel="stylesheet" type="text/css"/>
+  <!-- no favicon -->
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/utilities.js"></script>
+  <script type="text/javascript" src="js/symbols.js"></script>
+  <script type="text/javascript" src="js/modules.js"></script>
+  <script type="text/javascript" src="js/quicksearch.js"></script>
+  <script type="text/javascript" src="js/navigation.js"></script>
+</head>
+<body id="time.timer">
+<div id="kandil-content">
+<div class="module">
+  <h1 class="module" id="m-time.timer"><a href="htmlsrc/time.timer.html" class="symbol">time.timer</a></h1>
+
+<dl>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="Timer" href="htmlsrc/time.timer.html#L14">Timer</a> <a href="time.timer.html#Timer" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">A timer struct; handles timing of various delayed or periodic events.</div></div>
+<dl>
+<dt class="decl"><a class="symbol _invariant" name="Timer.invariant" href="htmlsrc/time.timer.html#L16">invariant</a> <a href="time.timer.html#Timer.invariant" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">Timer</span> <a class="symbol _function" name="Timer.opCall" href="htmlsrc/time.timer.html#L31">opCall</a><span class="params">(real <em>delay</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="time.timer.html#Timer.opCall" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Fake constructor. Returns a timer with given delay starting now.</div></div></dd>
+<dt class="decl"><span class="rettyp">Timer</span> <a class="symbol _function" name="Timer.opCall:2" href="htmlsrc/time.timer.html#L34">opCall</a><span class="params">(real <em>delay</em>, real <em>time</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="time.timer.html#Timer.opCall:2" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Fake constructor. Returns a timer with given delay starting at specified time.</div></div></dd>
+<dt class="decl"><span class="rettyp">real</span> <a class="symbol _function" name="Timer.start" href="htmlsrc/time.timer.html#L43">start</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="time.timer.html#Timer.start" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Returns time when the timer was started.</div></div></dd>
+<dt class="decl"><span class="rettyp">real</span> <a class="symbol _function" name="Timer.delay" href="htmlsrc/time.timer.html#L46">delay</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="time.timer.html#Timer.delay" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Returns delay of this timer.</div></div></dd>
+<dt class="decl"><span class="rettyp">real</span> <a class="symbol _function" name="Timer.age" href="htmlsrc/time.timer.html#L54">age</a><span class="params">(real <em>time</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="time.timer.html#Timer.age" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Returns time since start of the timer at given time.</div></div>
+<div class="cmnt">Used for events that have to be synchronized (e.g. every event
+ during a frame must have time equal to start of that frame)</div></dd>
+<dt class="decl"><span class="rettyp">real</span> <a class="symbol _function" name="Timer.age:2" href="htmlsrc/time.timer.html#L57">age</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="time.timer.html#Timer.age:2" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Returns time since start of the timer.</div></div></dd>
+<dt class="decl"><span class="rettyp">real</span> <a class="symbol _function" name="Timer.age_relative" href="htmlsrc/time.timer.html#L68">age_relative</a><span class="params">(real <em>time</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="time.timer.html#Timer.age_relative" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Returns time since start of the timer at given time, relative to the timer's delay.</div></div>
+<div class="cmnt">age_relative returns 0.0 at the start of the timer, and 1.0 at its
+ end, so it can be used to get percentage of timer's delay that has
+ elapsed.
+ Used for events that have to be synchronized (e.g. every event
+ during a frame must have time equal to start of that frame)</div></dd>
+<dt class="decl"><span class="rettyp">real</span> <a class="symbol _function" name="Timer.age_relative:2" href="htmlsrc/time.timer.html#L77">age_relative</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="time.timer.html#Timer.age_relative:2" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Returns time since start of the timer, relative to the timer's delay.</div></div>
+<div class="cmnt">age_relative returns 0.0 at the start of the timer, and 1.0 at its
+ end, so it can be used to get percentage of timer's delay that has
+ elapsed.</div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="Timer.expired" href="htmlsrc/time.timer.html#L85">expired</a><span class="params">(real <em>time</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="time.timer.html#Timer.expired" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Determines if the timer is expired at given time.</div></div>
+<div class="cmnt">Used for events that have to be synchronized (e.g. every event
+ during a frame must have time equal to start of that frame)</div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="Timer.expired:2" href="htmlsrc/time.timer.html#L88">expired</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="time.timer.html#Timer.expired:2" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Determines if the timer is expired.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Timer.reset" href="htmlsrc/time.timer.html#L96">reset</a><span class="params">(real <em>start</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="time.timer.html#Timer.reset" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Resets the timer with specified start time.</div></div>
+<div class="cmnt">Used for events that have to be synchronized (e.g. every event
+ during a frame must have time equal to start of that frame)</div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Timer.reset:2" href="htmlsrc/time.timer.html#L99">reset</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="time.timer.html#Timer.reset:2" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Resets the timer with specified start time.</div></div></dd></dl></dd></dl>
+</div>
+<div id="kandil-footer">
+  <p></p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sun Feb 13 15:22:12 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+</div>
+</div>
+</body>
+</html>

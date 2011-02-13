@@ -1,0 +1,86 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>video.nodepacker</title>
+  <link href="css/style.css" rel="stylesheet" type="text/css"/>
+  <!-- no favicon -->
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/utilities.js"></script>
+  <script type="text/javascript" src="js/symbols.js"></script>
+  <script type="text/javascript" src="js/modules.js"></script>
+  <script type="text/javascript" src="js/quicksearch.js"></script>
+  <script type="text/javascript" src="js/navigation.js"></script>
+</head>
+<body id="video.nodepacker">
+<div id="kandil-content">
+<div class="module">
+  <h1 class="module" id="m-video.nodepacker"><a href="htmlsrc/video.nodepacker.html" class="symbol">video.nodepacker</a></h1>
+
+<dl>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="NodePacker" href="htmlsrc/video.nodepacker.html#L19">NodePacker</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="video.nodepacker.html#NodePacker" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Binary tree based texture packer. Handles allocation of texture page space.</div></div>
+<dl>
+<dt class="decl"><span class="kw">alias</span> std.string.toString <a class="symbol _alias" name="NodePacker.to_string" href="htmlsrc/video.nodepacker.html#L21">to_string</a> <a href="video.nodepacker.html#NodePacker.to_string" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="NodePacker.Node" href="htmlsrc/video.nodepacker.html#L24">Node</a> <span class="attrs">[<span class="stc">static</span>]</span> <a href="video.nodepacker.html#NodePacker.Node" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div>
+<dl>
+<dt class="decl">Rectangleu <a class="symbol _variable" name="NodePacker.Node.rectangle" href="htmlsrc/video.nodepacker.html#L28">rectangle</a> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.Node.rectangle" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">Node</span> <a class="symbol _function" name="NodePacker.Node.opCall" href="htmlsrc/video.nodepacker.html#L38">opCall</a><span class="params">(<span class="k">ref</span> Rectangleu <em>rectangle</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="video.nodepacker.html#NodePacker.Node.opCall" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Construct a Node with specified rectangle.</div></div></dd>
+<dt class="decl"><span class="rettyp">Node*</span> <a class="symbol _function" name="NodePacker.Node.insert" href="htmlsrc/video.nodepacker.html#L52">insert</a><span class="params">(Vector2u <em>size</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.Node.insert" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Try to insert a texture with given size to this node.</div></div>
+<div class="cmnt">@param size Size of the space needed.
+<p class="bl"></p>
+ @return node with space for the texture on success.
+ @return null on failure.</div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="NodePacker.Node.remove" href="htmlsrc/video.nodepacker.html#L107">remove</a><span class="params">(<span class="k">ref</span> Rectangleu <em>rect</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.Node.remove" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Try to remove a texture with specified area.</div></div>
+<div class="cmnt">@return true on success.
+ @return false on failure.
+ @note could be optimized using simple rectanlge intersection
+ (probably not much gain, though).</div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="NodePacker.Node.empty" href="htmlsrc/video.nodepacker.html#L123">empty</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.Node.empty" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Determine if this node and all its subnodes are empty.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="NodePacker.Node.die" href="htmlsrc/video.nodepacker.html#L132">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.Node.die" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Destroy this node and its children.</div></div></dd></dl></dd>
+<dt class="decl"><span class="rettyp">NodePacker</span> <a class="symbol _function" name="NodePacker.opCall" href="htmlsrc/video.nodepacker.html#L155">opCall</a><span class="params">(Vector2u <em>size</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="video.nodepacker.html#NodePacker.opCall" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Fake constructor. Returns NodePacker with specified texture size.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="NodePacker.die" href="htmlsrc/video.nodepacker.html#L163">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.die" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Destroy this NodePacker and its nodes.</div></div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="NodePacker.allocate_space" href="htmlsrc/video.nodepacker.html#L174">allocate_space</a><span class="params">(Vector2u <em>size</em>,  <span class="k">out</span> Rectanglef <em>texcoords</em>,                             <span class="k">out</span> Vector2u <em>offset</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.allocate_space" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Try to allocate space for a texture with given size.</div></div>
+<div class="cmnt">@param size Size of the texture to allocate space for.
+ @param texcoords Texture coordinates of the texture will be output here.
+ @param offset Offset of the texture on the page will be output here.
+<p class="bl"></p>
+ @return true on success.
+ @return false on failure.</div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="NodePacker.free_space" href="htmlsrc/video.nodepacker.html#L190">free_space</a><span class="params">(<span class="k">ref</span> Rectangleu <em>rectangle</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.free_space" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Free space taken by a texture.</div></div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="NodePacker.empty" href="htmlsrc/video.nodepacker.html#L197">empty</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.empty" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Determine if this NodePacker is empty.</div></div></dd>
+<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="NodePacker.info" href="htmlsrc/video.nodepacker.html#L200">info</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.info" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Return a string containing information about this packer.</div></div></dd></dl></dd></dl>
+</div>
+<div id="kandil-footer">
+  <p></p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sun Feb 13 15:22:12 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+</div>
+</div>
+</body>
+</html>

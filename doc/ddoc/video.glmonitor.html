@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>video.glmonitor</title>
+  <link href="css/style.css" rel="stylesheet" type="text/css"/>
+  <!-- no favicon -->
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/utilities.js"></script>
+  <script type="text/javascript" src="js/symbols.js"></script>
+  <script type="text/javascript" src="js/modules.js"></script>
+  <script type="text/javascript" src="js/quicksearch.js"></script>
+  <script type="text/javascript" src="js/navigation.js"></script>
+</head>
+<body id="video.glmonitor">
+<div id="kandil-content">
+<div class="module">
+  <h1 class="module" id="m-video.glmonitor"><a href="htmlsrc/video.glmonitor.html" class="symbol">video.glmonitor</a></h1>
+
+<dl>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="Statistics" href="htmlsrc/video.glmonitor.html#L33">Statistics</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="video.glmonitor.html#Statistics" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Used to gather statistics data to be sent by GLVideoDriver to GL monitors.</div></div>
+<dl>
+<dt class="decl">uint <a class="symbol _variable" name="Statistics.lines" href="htmlsrc/video.glmonitor.html#L36">lines</a> <a href="video.glmonitor.html#Statistics.lines" class="plink">¶</a></dt>
+<dt class="decl">uint <a class="symbol _variable" name="Statistics.textures" href="htmlsrc/video.glmonitor.html#L36">textures</a> <a href="video.glmonitor.html#Statistics.textures" class="plink">¶</a></dt>
+<dt class="decl">uint <a class="symbol _variable" name="Statistics.texts" href="htmlsrc/video.glmonitor.html#L36">texts</a> <a href="video.glmonitor.html#Statistics.texts" class="plink">¶</a></dt>
+<dt class="decl">uint <a class="symbol _variable" name="Statistics.rectangles" href="htmlsrc/video.glmonitor.html#L36">rectangles</a> <a href="video.glmonitor.html#Statistics.rectangles" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">uint <a class="symbol _variable" name="Statistics.vertices" href="htmlsrc/video.glmonitor.html#L38">vertices</a> <a href="video.glmonitor.html#Statistics.vertices" class="plink">¶</a></dt>
+<dt class="decl">uint <a class="symbol _variable" name="Statistics.characters" href="htmlsrc/video.glmonitor.html#L38">characters</a> <a href="video.glmonitor.html#Statistics.characters" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">uint <a class="symbol _variable" name="Statistics.shader" href="htmlsrc/video.glmonitor.html#L40">shader</a> <a href="video.glmonitor.html#Statistics.shader" class="plink">¶</a></dt>
+<dt class="decl">uint <a class="symbol _variable" name="Statistics.page" href="htmlsrc/video.glmonitor.html#L40">page</a> <a href="video.glmonitor.html#Statistics.page" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Statistics.zero" href="htmlsrc/video.glmonitor.html#L43">zero</a><span class="params">()</span> <a href="video.glmonitor.html#Statistics.zero" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="PagesMonitor" href="htmlsrc/video.glmonitor.html#L51">PagesMonitor</a> : <span class="bclass">SubMonitor</span> <span class="attrs">[<span class="prot">package</span>, <span class="stc">final</span>]</span> <a href="video.glmonitor.html#PagesMonitor" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Displays info about texture pages.</div></div>
+<dl>
+<dt class="decl"><a class="symbol _ctor" name="PagesMonitor.this" href="htmlsrc/video.glmonitor.html#L140">this</a><span class="params">(GLVideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.glmonitor.html#PagesMonitor.this" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PagesMonitor.update" href="htmlsrc/video.glmonitor.html#L151">update</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="video.glmonitor.html#PagesMonitor.update" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="DrawsMonitor" href="htmlsrc/video.glmonitor.html#L242">DrawsMonitor</a> : <span class="bclass">GraphMonitor</span> <span class="attrs">[<span class="prot">package</span>, <span class="stc">final</span>]</span> <a href="video.glmonitor.html#DrawsMonitor" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Displays info about draw calls</div></div>
+<dl>
+<dt class="decl"><a class="symbol _ctor" name="DrawsMonitor.this" href="htmlsrc/video.glmonitor.html#L246">this</a><span class="params">(GLVideoDriver <em>monitored</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.glmonitor.html#DrawsMonitor.this" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Construct a DrawsMonitor, set value names and colors.</div></div></dd></dl></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="PrimitivesMonitor" href="htmlsrc/video.glmonitor.html#L257">PrimitivesMonitor</a> : <span class="bclass">GraphMonitor</span> <span class="attrs">[<span class="prot">package</span>, <span class="stc">final</span>]</span> <a href="video.glmonitor.html#PrimitivesMonitor" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Displays info about graphics primitives drawn</div></div>
+<dl>
+<dt class="decl"><a class="symbol _ctor" name="PrimitivesMonitor.this" href="htmlsrc/video.glmonitor.html#L261">this</a><span class="params">(GLVideoDriver <em>monitored</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.glmonitor.html#PrimitivesMonitor.this" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Construct a PrimitivesMonitor.</div></div></dd></dl></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="ChangesMonitor" href="htmlsrc/video.glmonitor.html#L272">ChangesMonitor</a> : <span class="bclass">GraphMonitor</span> <span class="attrs">[<span class="prot">package</span>, <span class="stc">final</span>]</span> <a href="video.glmonitor.html#ChangesMonitor" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Displays info about state changes during the frame</div></div>
+<dl>
+<dt class="decl"><a class="symbol _ctor" name="ChangesMonitor.this" href="htmlsrc/video.glmonitor.html#L276">this</a><span class="params">(GLVideoDriver <em>monitored</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.glmonitor.html#ChangesMonitor.this" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Construct a ChangesMonitor.</div></div></dd></dl></dd></dl>
+</div>
+<div id="kandil-footer">
+  <p></p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sun Feb 13 15:22:12 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+</div>
+</div>
+</body>
+</html>

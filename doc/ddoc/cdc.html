@@ -1,0 +1,316 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>cdc</title>
+  <link href="css/style.css" rel="stylesheet" type="text/css"/>
+  <!-- no favicon -->
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/utilities.js"></script>
+  <script type="text/javascript" src="js/symbols.js"></script>
+  <script type="text/javascript" src="js/modules.js"></script>
+  <script type="text/javascript" src="js/quicksearch.js"></script>
+  <script type="text/javascript" src="js/navigation.js"></script>
+</head>
+<body id="cdc">
+<div id="kandil-content">
+<div class="module">
+  <h1 class="module" id="m-cdc"><a href="htmlsrc/cdc.html" class="symbol">cdc</a></h1>
+
+<p class="sec_header">License:</p><div class="cmnt">Boost 1.0
+<p class="bl"></p>
+ Copyright (c) 2009-2010 Eric Poggel
+<p class="bl"></p>
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+<p class="bl"></p>
+ The above copyright notice and this permission notice shall be included in
+ all copies or substantial portions of the Software.
+<p class="bl"></p>
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ THE SOFTWARE.</div>
+<p class="sec_header">Description:</p><div class="cmnt">This is a D programming language build script (and library) that can be used
+ to compile D (version 1) source code.  Unlike Bud, DSSS/Rebuild, Jake, and
+ similar tools, CDC is contained within a single file that can easily be
+ distributed with projects.  This simplifies the build process since no other
+ tools are required.  The main() function can be utilized to turn
+ CDC into a custom build script for your project.
+<p class="bl"></p>
+ CDC's only requirement is a D compiler.  It is/will be supported on any 
+ operating system supported by the language.  It works with dmd, ldc (soon), 
+ and gdc, phobos or tango.
+<p class="bl"></p>
+ CDC can be used just like dmd, except for the following improvements.
+ <ul>
+   <li>CDC can accept paths as as well as individual source files for compilation.
+    Each path is recursively searched for source, library, object, and ddoc files.</li>
+   <li>CDC automatically creates a modules.ddoc file for use with CandyDoc and
+    similar documentation utilities.</li>
+   <li>CDC defaults to use the compiler that was used to build itself.  Compiler
+    flags are passed straight through to that compiler.</li>
+   <li>The -op flag is always used, to prevent name conflicts in object and doc files.</li>
+   <li>Documentation files are all placed in the same folder with their full package
+    names.  This makes relative links between documents easier.</li>
+ </ul>
+<p class="bl"></p>
+ These DMD/LDC options are automatically translated to the correct GDC
+ options, or handled manually:
+ <dl>
+ <dt>-c</dt>         <dd>do not link</dd>
+ <dt>-D</dt>         <dd>generate documentation</dd>
+ <dt>-Dddocdir</dt>  <dd>write fully-qualified documentation files to docdir directory</dd>
+ <dt>-Dfdocfile</dt> <dd>write fully-qualified documentation files to docfile file</dd>
+ <dt>-lib</dt>       <dd>Generate library rather than object files</dd>
+ <dt>-run</dt>       <dd>run resulting program, passing args</dd>
+ <dt>-Ipath</dt>     <dd>where to look for imports</dd>
+ <dt>-o-</dt>        <dd>do not write object file.</dd>
+ <dt>-offilename</dt><dd>name output file to filename</dd>
+ <dt>-odobjdir</dt>  <dd>write object &amp; library files to directory objdir</dd>
+ </dl>
+<p class="bl"></p>
+ In addition, these optional flags have been added.
+ <dl>
+ <dt>-dmd</dt>       <dd>Use dmd to compile</dd>
+ <dt>-gdc</dt>       <dd>Use gdc to compile</dd>
+ <dt>-ldc</dt>       <dd>Use ldc to compile</dd>
+ <dt>-verbose</dt>   <dd>Print all commands as they're executed.</dd>
+ <dt>-root</dt>      <dd>Set the root directory of all source files.
+                 This is useful if CDC is run from a path outside the source folder.</dd>
+ </dl></div>
+<p class="sec_header"><span class="red">Bugs:</span></p><div class="cmnt"><ul>
+ <li>Doesn't yet work with LDC.  See dsource.org/projects/ldc/ticket/323</li>
+ <li>Dmd writes out object files as foo/bar.o, while gdc writes foo.bar.o</li>
+ <li>Dmd fails to write object files when -od is an absolute path.</li>
+ </ul></div>
+<p class="sec_header">Test Matrix:</p><div class="cmnt"><ul>
+ <li>pass - DMD/phobos/Win32</li>
+ <li>pass - DMD/tango/Win32</li>
+ <li>pass - DMD/tango/Linux32</li>
+ <li>pass - GDC/phobos/Win32</li>
+ <li>pass - GDC/phobos/Linux32</li>
+ <li>fail - LDC/tango/Linux32</li>
+ <li>pass - GDC/phobos/OSX</li>
+ <li>? - DMD/OSX</li>
+ <li>? - BSD</li>
+ <li>? - DMD2</li>
+ </ul></div>
+<p class="sec_header">TODO:</p><div class="cmnt"><ul>
+ <li>Add support for a -script argument to accept another .d file that calls cdc's functions.</li>
+ <li>Print help or at least info on run.</li>
+ <li>-Df option</li>
+ <li>GDC - Remove dependancy on "ar" on windows? </li>
+ <li>LDC - Scanning a folder for files is broken. </li>
+ <li>Test with D2</li>
+ <li>Unittests</li>
+ <li>More testing on paths with spaces. </li>
+ </ul></div>
+<p class="sec_header">API:</p><div class="cmnt">Use any of these functions in your own build script.</div>
+<dl>
+<dt class="decl"><span class="rettyp">int</span> <a class="symbol _function" name="main" href="htmlsrc/cdc.html#L118">main</a><span class="params">(char[][] <em>args</em>)</span> <a href="cdc.html#main" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Use to implement your own custom build script, or pass args on to defaultBuild() 
+ to use this file as a generic build script like bud or rebuild.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="help" href="htmlsrc/cdc.html#L197">help</a><span class="params">()</span> <a href="cdc.html#help" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Print help information.</div></div></dd>
+<dt class="decl">char[][] <a class="symbol _variable" name="obj_ext" href="htmlsrc/cdc.html#L282">obj_ext</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="cdc.html#obj_ext" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">An array of valid object file extensions for the current.</div></div></dd>
+<dt class="decl">char[] <a class="symbol _variable" name="lib_ext" href="htmlsrc/cdc.html#L283">lib_ext</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="cdc.html#lib_ext" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Library extension for the current platform.</div></div></dd>
+<dt class="decl">char[] <a class="symbol _variable" name="bin_ext" href="htmlsrc/cdc.html#L284">bin_ext</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="cdc.html#bin_ext" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Executable file extension for the current platform.</div></div></dd>
+<dt class="decl"><span class="rettyp">int</span> <a class="symbol _function" name="defaultBuild" href="htmlsrc/cdc.html#L289">defaultBuild</a><span class="params">(char[][] <em>args</em>)</span> <a href="cdc.html#defaultBuild" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Program entry point.  Parse args and run the compiler.</div></div></dd>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="CDC" href="htmlsrc/cdc.html#L336">CDC</a> <a href="cdc.html#CDC" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">A library for compiling d code.</div></div>
+<p class="sec_header">Example:</p><div class="cmnt"><table class="d_code">
+  <tr><td class="d_codelines">
+<pre><a href="#L1_ex1" name="L1_ex1">1</a>
+<a href="#L2_ex1" name="L2_ex1">2</a>
+<a href="#L3_ex1" name="L3_ex1">3</a>
+</pre></td><td class="d_codetext"><pre>
+<span class="lc">// Compile all source files in src/core along with src/main.d, link with all library files in the libs folder,</span>
+<span class="lc">// generate documentation in the docs folder, and then run the resulting executable.</span>
+<span class="i">CDC</span>.<span class="i">compile</span>([<span class="sl">"src/core"</span>, <span class="sl">"src/main.d"</span>, <span class="sl">"libs"</span>], [<span class="sl">"-D"</span>, <span class="sl">"-Dddocs"</span>, <span class="sl">"-run"</span>]);</pre>
+</td></tr>
+</table></div>
+<dl>
+<dt class="decl"><span class="rettyp">char[][]</span> <a class="symbol _function" name="CDC.compile" href="htmlsrc/cdc.html#L349">compile</a><span class="params">(char[][] <em>paths</em>, char[][] <em>options</em> = <span class="defval"><span class="k">null</span></span>, char[][] <em>run_args</em> = <span class="defval"><span class="k">null</span></span>, char[] <em>root</em> = <span class="defval"><span class="k">null</span></span>, bool <em>verbose</em> = <span class="defval"><span class="k">false</span></span>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#CDC.compile" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Compile d code using the current compiler.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>paths</em></td><td>Array of source and library files and folders.  Folders are recursively searched.</td></tr>
+<tr><td><em>options</em></td><td>Compiler options.</td></tr>
+<tr><td><em>run_args</em></td><td>If -run is specified, pass these arguments to the generated executable.</td></tr>
+<tr><td><em>root</em></td><td>Use this folder as the root of all paths, instead of the current folder.  This can be relative or absolute.</td></tr>
+<tr><td><em>verbose</em></td><td>Print each command before it's executed.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Array of commands that were executed.</div>
+<p class="sec_header">TODO:</p><div class="cmnt">Add a dry run option to just return an array of commands to execute.</div></dd></dl></dd>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="System" href="htmlsrc/cdc.html#L668">System</a> <a href="cdc.html#System" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">This is a brief, tango/phobos neutral system library.</div></div>
+<dl>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="System.execute" href="htmlsrc/cdc.html#L677">execute</a><span class="params">(char[] <em>command</em>, char[][] <em>args</em> = <span class="defval"><span class="k">null</span></span>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#System.execute" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Execute execute an arbitrary command-line program and print its output</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>command</em></td><td>The command to execute, e.g. "dmd"</td></tr>
+<tr><td><em>args</em></td><td>Array of string arguments to pass to this command.</td></tr></table>
+<p class="sec_header">Throws:</p><div class="cmnt">ProcessException on failure or status code 1.</div>
+<p class="sec_header">TODO:</p><div class="cmnt">Return output (stdout/stderr) instead of directly printing it.</div></dd>
+<dt class="decl"><span class="rettyp">long</span> <a class="symbol _function" name="System.time" href="htmlsrc/cdc.html#L712">time</a><span class="params">()</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#System.time" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get the current number of milliseconds since Jan 1 1970.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="System.trace" href="htmlsrc/cdc.html#L720">trace</a><span class="tparams">(<em>T</em>...)</span><span class="params">(char[] <em>message</em>, T <em>args</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#System.trace" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Print output to the console.  Uses String.format internally and therefor accepts the same arguments.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="System.sleep" href="htmlsrc/cdc.html#L728">sleep</a><span class="params">(double <em>seconds</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#System.sleep" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Sleep for the given number of seconds.</div></div></dd></dl></dd>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="FS" href="htmlsrc/cdc.html#L741">FS</a> <a href="cdc.html#FS" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">This is a brief, tango/phobos neutral filesystem library.</div></div>
+<dl>
+<dt class="decl">char[] <a class="symbol _variable" name="FS.sep" href="htmlsrc/cdc.html#L747">sep</a> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#FS.sep" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">char[]</span> <a class="symbol _function" name="FS.abs" href="htmlsrc/cdc.html#L750">abs</a><span class="params">(char[] <em>rel_path</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#FS.abs" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Convert a relative path to an absolute path.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="FS.chDir" href="htmlsrc/cdc.html#L773">chDir</a><span class="params">(char[] <em>path</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#FS.chDir" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Set the current working directory.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="FS.copy" href="htmlsrc/cdc.html#L781">copy</a><span class="params">(char[] <em>source</em>, char[] <em>destination</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#FS.copy" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Copy a file from source to destination</div></div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="FS.exists" href="htmlsrc/cdc.html#L795">exists</a><span class="params">(char[] <em>path</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#FS.exists" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Does a file exist?</div></div></dd>
+<dt class="decl"><span class="rettyp">char[]</span> <a class="symbol _function" name="FS.getDir" href="htmlsrc/cdc.html#L802">getDir</a><span class="params">()</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#FS.getDir" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get the current working directory.</div></div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="FS.isDir" href="htmlsrc/cdc.html#L809">isDir</a><span class="params">(char[] <em>path</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#FS.isDir" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Is a path a directory?</div></div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="FS.isFile" href="htmlsrc/cdc.html#L816">isFile</a><span class="params">(char[] <em>path</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#FS.isFile" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Is a path a file?</div></div></dd>
+<dt class="decl"><span class="rettyp">char[][]</span> <a class="symbol _function" name="FS.listDir" href="htmlsrc/cdc.html#L824">listDir</a><span class="params">(char[] <em>path</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#FS.listDir" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get an array of all files/folders in a path.</div></div>
+<p class="sec_header">TODO:</p><div class="cmnt">Fix with LDC + Tango</div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="FS.mkDir" href="htmlsrc/cdc.html#L835">mkDir</a><span class="params">(char[] <em>path</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#FS.mkDir" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Create a directory.  Returns false if the directory already exists.</div></div></dd>
+<dt class="decl"><span class="kw">enum</span> <a class="symbol _enum" name="FS.ScanMode" href="htmlsrc/cdc.html#L847">ScanMode</a> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#FS.ScanMode" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Argument for FS.scan() function.</div></div>
+<dl>
+<dt class="decl"><a class="symbol _enummem" name="FS.ScanMode.FILES" href="htmlsrc/cdc.html#L848">FILES</a> <a href="cdc.html#FS.ScanMode.FILES" class="plink">¶</a></dt>
+<dd class="ddef"></dd>
+<dt class="decl"><a class="symbol _enummem" name="FS.ScanMode.FOLDERS" href="htmlsrc/cdc.html#L849">FOLDERS</a> <a href="cdc.html#FS.ScanMode.FOLDERS" class="plink">¶</a></dt>
+<dd class="ddef"></dd>
+<dt class="decl"><a class="symbol _enummem" name="FS.ScanMode.BOTH" href="htmlsrc/cdc.html#L850">BOTH</a> <a href="cdc.html#FS.ScanMode.BOTH" class="plink">¶</a></dt>
+<dd class="ddef"></dd></dl></dd>
+<dt class="decl"><span class="rettyp">char[][]</span> <a class="symbol _function" name="FS.scan" href="htmlsrc/cdc.html#L862">scan</a><span class="params">(char[] <em>folder</em>, char[][] <em>exts</em> = <span class="defval"><span class="k">null</span></span>, ScanMode <em>mode</em> = <span class="defval"><span class="i">FILES</span></span>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#FS.scan" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Recursively get all files in directory and subdirectories that have an extension in exts.
+ This may return files in a different order depending on whether Tango or Phobos is used.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>directory</em></td><td>Absolute or relative path to the current directory</td></tr>
+<tr><td><em>exts</em></td><td>Array of extensions to match</td></tr>
+<tr><td><em>mode</em></td><td>files, folders, or both</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">An array of paths (including filename) relative to directory.</div>
+<p class="sec_header"><span class="red">Bugs:</span></p><div class="cmnt">LDC fails to return any results.</div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="FS.remove" href="htmlsrc/cdc.html#L883">remove</a><span class="params">(char[] <em>path</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#FS.remove" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Remove a file or a folder along with all files/folders in it.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>path</em></td><td>Path to remove, can be a file or folder.</td></tr></table>
+<p class="sec_header">Return:</p><div class="cmnt">true on success, or false if the path didn't exist.</div></dd>
+<dt class="decl"><a class="symbol _unittest" name="FS.unittest" href="htmlsrc/cdc.html#L894">unittest</a> <a href="cdc.html#FS.unittest" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="FS.write" href="htmlsrc/cdc.html#L900">write</a><span class="tparams">(<em>T</em>)</span><span class="params">(char[] <em>filename</em>, T[] <em>data</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#FS.write" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Write a file to disk</div></div></dd>
+<dt class="decl"><a class="symbol _unittest" name="FS.unittest:2" href="htmlsrc/cdc.html#L909">unittest</a> <a href="cdc.html#FS.unittest:2" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="String" href="htmlsrc/cdc.html#L922">String</a> <a href="cdc.html#String" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">This is a brief, tango/phobos neutral string library.</div></div>
+<dl>
+<dt class="decl"><span class="rettyp">char[]</span> <a class="symbol _function" name="String.changeExt" href="htmlsrc/cdc.html#L924">changeExt</a><span class="params">(char[] <em>filename</em>, char[] <em>ext</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#String.changeExt" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _unittest" name="String.unittest" href="htmlsrc/cdc.html#L930">unittest</a> <a href="cdc.html#String.unittest" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="String.contains" href="htmlsrc/cdc.html#L936">contains</a><span class="tparams">(<em>T</em>)</span><span class="params">(T[] <em>haystack</em>, T <em>needle</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#String.contains" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Does haystack contain needle?</div></div></dd>
+<dt class="decl"><span class="rettyp">int</span> <a class="symbol _function" name="String.find" href="htmlsrc/cdc.html#L946">find</a><span class="tparams">(<em>T</em>)</span><span class="params">(T[] <em>haystack</em>, T[] <em>needle</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#String.find" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Find the first or last instance of needle in haystack, or -1 if not found.</div></div></dd>
+<dt class="decl"><span class="rettyp">int</span> <a class="symbol _function" name="String.rfind" href="htmlsrc/cdc.html#L954">rfind</a><span class="tparams">(<em>T</em>)</span><span class="params">(T[] <em>haystack</em>, T[] <em>needle</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#String.rfind" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _unittest" name="String.unittest:2" href="htmlsrc/cdc.html#L962">unittest</a> <a href="cdc.html#String.unittest:2" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">char[]</span> <a class="symbol _function" name="String.format" href="htmlsrc/cdc.html#L979">format</a><span class="tparams">(<em>T</em>...)</span><span class="params">(char[] <em>message</em>, T <em>args</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#String.format" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Format variables.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>message</em></td><td>String to apply formatting.  Use %s for variable replacement.</td></tr>
+<tr><td><em>args</em></td><td>Variable arguments to insert into message.</td></tr></table>
+<p class="sec_header">Example:</p><div class="cmnt"><table class="d_code">
+  <tr><td class="d_codelines">
+<pre><a href="#L1_ex2" name="L1_ex2">1</a>
+</pre></td><td class="d_codetext"><pre>
+<span class="i">String</span>.<span class="i">format</span>(<span class="sl">"%s World %s"</span>, <span class="sl">"Hello"</span>, <span class="n">23</span>); <span class="lc">// returns "Hello World 23"</span></pre>
+</td></tr>
+</table></div></dd>
+<dt class="decl"><a class="symbol _unittest" name="String.unittest:3" href="htmlsrc/cdc.html#L994">unittest</a> <a href="cdc.html#String.unittest:3" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">char[]</span> <a class="symbol _function" name="String.join" href="htmlsrc/cdc.html#L1000">join</a><span class="params">(char[][] <em>array</em>, char[] <em>glue</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#String.join" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Join an array of strings using glue.</div></div></dd>
+<dt class="decl"><span class="rettyp">char[]</span> <a class="symbol _function" name="String.replace" href="htmlsrc/cdc.html#L1005">replace</a><span class="params">(char[] <em>source</em>, char[] <em>find</em>, char[] <em>repl</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#String.replace" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">In source, repalce all instances of "find" with "repl".</div></div></dd>
+<dt class="decl"><span class="rettyp">char[][]</span> <a class="symbol _function" name="String.split" href="htmlsrc/cdc.html#L1012">split</a><span class="params">(char[] <em>source</em>, char[] <em>pattern</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#String.split" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Split an array by the regex pattern.</div></div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="String.starts" href="htmlsrc/cdc.html#L1019">starts</a><span class="params">(char[] <em>source</em>, char[] <em>beginning</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#String.starts" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Does "source" begin with "beginning" ?</div></div></dd>
+<dt class="decl"><span class="rettyp">char[]</span> <a class="symbol _function" name="String.toLower" href="htmlsrc/cdc.html#L1024">toLower</a><span class="params">(char[] <em>input</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#String.toLower" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get the ascii lower-case version of a string.</div></div></dd></dl></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="ProcessException" href="htmlsrc/cdc.html#L1035">ProcessException</a> : <span class="bclass">Exception</span> <a href="cdc.html#ProcessException" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div>
+<dl>
+<dt class="decl"><a class="symbol _ctor" name="ProcessException.this" href="htmlsrc/cdc.html#L1036">this</a><span class="params">(char[] <em>message</em>)</span> <a href="cdc.html#ProcessException.this" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd></dl>
+</div>
+<div id="kandil-footer">
+  <p></p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sun Feb 13 15:22:12 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+</div>
+</div>
+</body>
+</html>

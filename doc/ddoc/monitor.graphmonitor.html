@@ -1,0 +1,99 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>monitor.graphmonitor</title>
+  <link href="css/style.css" rel="stylesheet" type="text/css"/>
+  <!-- no favicon -->
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/utilities.js"></script>
+  <script type="text/javascript" src="js/symbols.js"></script>
+  <script type="text/javascript" src="js/modules.js"></script>
+  <script type="text/javascript" src="js/quicksearch.js"></script>
+  <script type="text/javascript" src="js/navigation.js"></script>
+</head>
+<body id="monitor.graphmonitor">
+<div id="kandil-content">
+<div class="module">
+  <h1 class="module" id="m-monitor.graphmonitor"><a href="htmlsrc/monitor.graphmonitor.html" class="symbol">monitor.graphmonitor</a></h1>
+
+<dl>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GraphMonitor" href="htmlsrc/monitor.graphmonitor.html#L34">GraphMonitor</a> : <span class="bclass">SubMonitor</span> <span class="attrs">[<span class="stc">abstract</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Base class for system monitor style graph monitoring widgets.</div></div>
+<div class="cmnt">User can zoom and scroll the graph with mouse,
+ change data point time, average or sum mode and toggle display of
+ monitored values.</div>
+<dl>
+<dt class="decl">GraphData <a class="symbol _variable" name="GraphMonitor.data_" href="htmlsrc/monitor.graphmonitor.html#L38">data_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.data_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphMonitor.die" href="htmlsrc/monitor.graphmonitor.html#L71">die</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.die" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _ctor" name="GraphMonitor.this" href="htmlsrc/monitor.graphmonitor.html#L86">this</a><span class="params">(GUILineGraphFactory <em>factory</em>, GraphData <em>graph_data</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.this" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphMonitor.update_value" href="htmlsrc/monitor.graphmonitor.html#L121">update_value</a><span class="params">(string <em>name</em>, real <em>value</em>)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.update_value" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Add a new measurement to value with specified name.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>name</em></td><td>Name of the value to add to.</td></tr>
+<tr><td><em>value</em></td><td>Measurement to add.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphMonitor.mode" href="htmlsrc/monitor.graphmonitor.html#L124">mode</a><span class="params">(GraphMode <em>graph_mode</em>)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.mode" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Set graph mode.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphMonitor.add_toggle" href="htmlsrc/monitor.graphmonitor.html#L132">add_toggle</a><span class="params">(string <em>name</em>, Color <em>color</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.add_toggle" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphMonitor.update" href="htmlsrc/monitor.graphmonitor.html#L154">update</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.update" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="generate_graph_monitor_ctor" href="htmlsrc/monitor.graphmonitor.html#L243">generate_graph_monitor_ctor</a><span class="params">(string[] <em>values</em>...)</span> <a href="monitor.graphmonitor.html#generate_graph_monitor_ctor" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Generate constructor code for a graph monitor implementation.</div></div>
+<p class="sec_header">Note:</p><div class="cmnt">To use this as a mixin, you have to import gui.guilinegraph .
+<p class="bl"></p>
+ Initializes graph monitor with specified values to monitor, 
+ automatically sets their colors, and connectss a callback
+ to fetch statistics from the monitored object. 
+ This code should be inserted to a graph monitor implementation constructor
+ with a string mixin.</div>
+<p class="sec_header">Note:</p><div class="cmnt">The constructor must have access to the monitored object through a variable
+ called "monitored", the monitored object must have a "send_statistics" signal
+ that passes a struct/class called "Statistics" to a method called 
+ "fetch_statistics" in the implementation, which should be generated by a string
+ mixin generating code with the generate_graph_fetch_statistics function.</div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>values</em></td><td>Names of the values monitored by the graph monitor that will
+                  use the generated code. Colors will be automatically assigned
+                  to the values from a limited palette, limiting number of values
+                  supported (8 right now). Parameters passed here must be the same
+                  as ones passed to corresponding generate_graph_fetch_statistics
+                  call.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Generated code, ready to be inserted into a graph monitor constructor.</div></dd>
+<dt class="decl"><a class="symbol _unittest" name="unittest" href="htmlsrc/monitor.graphmonitor.html#L266">unittest</a> <a href="monitor.graphmonitor.html#unittest" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="generate_graph_fetch_statistics" href="htmlsrc/monitor.graphmonitor.html#L294">generate_graph_fetch_statistics</a><span class="params">(string[] <em>values</em>...)</span> <a href="monitor.graphmonitor.html#generate_graph_fetch_statistics" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Generate a statistics fetching method for a graph monitor implementation.
+ Pases values of data members of a struct/class called Statistics to 
+ values of the same name in the graph monitor.
+ This code should be inserted to a graph monitor implementation as a method
+ with a string mixin.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>values</em></td><td>Names of the values monitored by the graph monitor that will
+                  use the generated code. These have to correspond with data members
+                  of the Statistics class/struct passed.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Generated code, ready to be inserted into a graph monitor implementation.</div></dd>
+<dt class="decl"><a class="symbol _unittest" name="unittest:2" href="htmlsrc/monitor.graphmonitor.html#L307">unittest</a> <a href="monitor.graphmonitor.html#unittest:2" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">string[] <a class="symbol _variable" name="palette" href="htmlsrc/monitor.graphmonitor.html#L322">palette</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="monitor.graphmonitor.html#palette" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Palette of colors used by graph monitor code generated with string mixins.</div></div></dd></dl>
+</div>
+<div id="kandil-footer">
+  <p></p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sun Feb 13 15:22:14 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+</div>
+</div>
+</body>
+</html>

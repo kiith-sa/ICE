@@ -1,0 +1,200 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>gui.guielement</title>
+  <link href="css/style.css" rel="stylesheet" type="text/css"/>
+  <!-- no favicon -->
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/utilities.js"></script>
+  <script type="text/javascript" src="js/symbols.js"></script>
+  <script type="text/javascript" src="js/modules.js"></script>
+  <script type="text/javascript" src="js/quicksearch.js"></script>
+  <script type="text/javascript" src="js/navigation.js"></script>
+</head>
+<body id="gui.guielement">
+<div id="kandil-content">
+<div class="module">
+  <h1 class="module" id="m-gui.guielement"><a href="htmlsrc/gui.guielement.html" class="symbol">gui.guielement</a></h1>
+
+<dl>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GUIElement" href="htmlsrc/gui.guielement.html#L28">GUIElement</a> <a href="gui.guielement.html#GUIElement" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Base class for all GUI elements. Can be used directly to draw empty elements.</div></div>
+<dl>
+<dt class="decl"><span class="kw">alias</span> std.string.toString <a class="symbol _alias" name="GUIElement.to_string" href="htmlsrc/gui.guielement.html#L31">to_string</a> <a href="gui.guielement.html#GUIElement.to_string" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GUIElement <a class="symbol _variable" name="GUIElement.parent_" href="htmlsrc/gui.guielement.html#L33">parent_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guielement.html#GUIElement.parent_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GUIElement[] <a class="symbol _variable" name="GUIElement.children_" href="htmlsrc/gui.guielement.html#L34">children_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guielement.html#GUIElement.children_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Color <a class="symbol _variable" name="GUIElement.border_color_" href="htmlsrc/gui.guielement.html#L37">border_color_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guielement.html#GUIElement.border_color_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Rectanglei <a class="symbol _variable" name="GUIElement.bounds_" href="htmlsrc/gui.guielement.html#L39">bounds_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guielement.html#GUIElement.bounds_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">bool <a class="symbol _variable" name="GUIElement.visible_" href="htmlsrc/gui.guielement.html#L42">visible_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guielement.html#GUIElement.visible_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">bool <a class="symbol _variable" name="GUIElement.draw_border_" href="htmlsrc/gui.guielement.html#L44">draw_border_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guielement.html#GUIElement.draw_border_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">bool <a class="symbol _variable" name="GUIElement.aligned_" href="htmlsrc/gui.guielement.html#L46">aligned_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guielement.html#GUIElement.aligned_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">string <a class="symbol _variable" name="GUIElement.x_string_" href="htmlsrc/gui.guielement.html#L49">x_string_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guielement.html#GUIElement.x_string_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">string <a class="symbol _variable" name="GUIElement.y_string_" href="htmlsrc/gui.guielement.html#L51">y_string_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guielement.html#GUIElement.y_string_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">string <a class="symbol _variable" name="GUIElement.width_string_" href="htmlsrc/gui.guielement.html#L53">width_string_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guielement.html#GUIElement.width_string_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">string <a class="symbol _variable" name="GUIElement.height_string_" href="htmlsrc/gui.guielement.html#L55">height_string_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guielement.html#GUIElement.height_string_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _dtor" name="GUIElement.~this" href="htmlsrc/gui.guielement.html#L58">~this</a>() <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guielement.html#GUIElement.~this" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIElement.die" href="htmlsrc/gui.guielement.html#L67">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guielement.html#GUIElement.die" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Destroy this element.</div></div></dd>
+<dt class="decl"><span class="rettyp">Vector2i</span> <a class="symbol _function" name="GUIElement.position_global" href="htmlsrc/gui.guielement.html#L79">position_global</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="gui.guielement.html#GUIElement.position_global" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get position in screen space.</div></div></dd>
+<dt class="decl"><span class="rettyp">Vector2i</span> <a class="symbol _function" name="GUIElement.position_local" href="htmlsrc/gui.guielement.html#L82">position_local</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="gui.guielement.html#GUIElement.position_local" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get position relative to parent element.</div></div></dd>
+<dt class="decl"><span class="rettyp">Vector2u</span> <a class="symbol _function" name="GUIElement.size" href="htmlsrc/gui.guielement.html#L85">size</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="gui.guielement.html#GUIElement.size" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Return size of this element in screen space.</div></div></dd>
+<dt class="decl"><span class="rettyp">Rectanglei</span> <a class="symbol _function" name="GUIElement.bounds_global" href="htmlsrc/gui.guielement.html#L88">bounds_global</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="gui.guielement.html#GUIElement.bounds_global" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Return bounding rectangle of this GUI element in screen space.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIElement.add_child" href="htmlsrc/gui.guielement.html#L91">add_child</a><span class="params">(GUIElement <em>child</em>)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="gui.guielement.html#GUIElement.add_child" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Add a child element.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIElement.remove_child" href="htmlsrc/gui.guielement.html#L104">remove_child</a><span class="params">(GUIElement <em>child</em>)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="gui.guielement.html#GUIElement.remove_child" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Remove a child element.</div></div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="GUIElement.visible" href="htmlsrc/gui.guielement.html#L117">visible</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="gui.guielement.html#GUIElement.visible" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Return true if this element is visible, false if hidden.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIElement.hide" href="htmlsrc/gui.guielement.html#L120">hide</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="gui.guielement.html#GUIElement.hide" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Hide this element and its children.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIElement.show" href="htmlsrc/gui.guielement.html#L123">show</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="gui.guielement.html#GUIElement.show" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Make this element and its children visible;</div></div></dd>
+<dt class="decl"><span class="rettyp">GUIElement</span> <a class="symbol _function" name="GUIElement.parent" href="htmlsrc/gui.guielement.html#L126">parent</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="gui.guielement.html#GUIElement.parent" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Return parent of this element.</div></div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="GUIElement.is_child" href="htmlsrc/gui.guielement.html#L129">is_child</a><span class="params">(GUIElement <em>element</em>)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="gui.guielement.html#GUIElement.is_child" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Determine if an element is a child of this element.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIElement.draw_children" href="htmlsrc/gui.guielement.html#L132">draw_children</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="gui.guielement.html#GUIElement.draw_children" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIElement.update_children" href="htmlsrc/gui.guielement.html#L141">update_children</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="gui.guielement.html#GUIElement.update_children" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _ctor" name="GUIElement.this" href="htmlsrc/gui.guielement.html#L156">this</a><span class="params">(GUIElementParams <em>params</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guielement.html#GUIElement.this" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Construct a GUIElement with specified parameters.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>params</em></td><td>Parameters for construction of GUIElement.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIElement.draw" href="htmlsrc/gui.guielement.html#L169">draw</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guielement.html#GUIElement.draw" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIElement.update" href="htmlsrc/gui.guielement.html#L185">update</a><span class="params">()</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guielement.html#GUIElement.update" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIElement.key" href="htmlsrc/gui.guielement.html#L188">key</a><span class="params">(KeyState <em>state</em>, Key <em>key</em>, dchar <em>unicode</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guielement.html#GUIElement.key" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIElement.mouse_key" href="htmlsrc/gui.guielement.html#L202">mouse_key</a><span class="params">(KeyState <em>state</em>, MouseKey <em>key</em>, Vector2u <em>position</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guielement.html#GUIElement.mouse_key" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIElement.mouse_move" href="htmlsrc/gui.guielement.html#L216">mouse_move</a><span class="params">(Vector2u <em>position</em>, Vector2i <em>relative</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guielement.html#GUIElement.mouse_move" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIElement.realign" href="htmlsrc/gui.guielement.html#L230">realign</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guielement.html#GUIElement.realign" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GUIRoot" href="htmlsrc/gui.guielement.html#L266">GUIRoot</a> <span class="attrs">[<span class="stc">final</span>]</span> <a href="gui.guielement.html#GUIRoot" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">GUI root container. Contains drawing and input handling methods.</div></div>
+<dl>
+<dt class="decl"><a class="symbol _ctor" name="GUIRoot.this" href="htmlsrc/gui.guielement.html#L275">this</a><span class="params">(Platform <em>platform</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guielement.html#GUIRoot.this" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Construct the GUI root with size equal to screen size.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIRoot.draw" href="htmlsrc/gui.guielement.html#L296">draw</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guielement.html#GUIRoot.draw" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Draw the GUI.</div></div></dd>
+<dt class="decl"><span class="rettyp">GUIElement</span> <a class="symbol _function" name="GUIRoot.root" href="htmlsrc/gui.guielement.html#L315">root</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guielement.html#GUIRoot.root" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get the actual root element of the GUI.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIRoot.update" href="htmlsrc/gui.guielement.html#L318">update</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guielement.html#GUIRoot.update" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Update the GUI.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIRoot.add_child" href="htmlsrc/gui.guielement.html#L321">add_child</a><span class="params">(GUIElement <em>child</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guielement.html#GUIRoot.add_child" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Add a child element.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIRoot.remove_child" href="htmlsrc/gui.guielement.html#L324">remove_child</a><span class="params">(GUIElement <em>child</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guielement.html#GUIRoot.remove_child" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Remove a child element.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIRoot.die" href="htmlsrc/gui.guielement.html#L327">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guielement.html#GUIRoot.die" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Destroy this GUIRoot.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIRoot.realign" href="htmlsrc/gui.guielement.html#L334">realign</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guielement.html#GUIRoot.realign" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Realign the GUI.</div></div></dd></dl></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GUIElementFactory" href="htmlsrc/gui.guielement.html#L342">GUIElementFactory</a> : <span class="bclass">GUIElementFactoryBase!(GUIElement)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="gui.guielement.html#GUIElementFactory" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Factory used for GUI element construction.</div></div>
+<p class="sec_header">See Also:</p><div class="cmnt">GUIElementFactoryBase</div>
+<dl>
+<dt class="decl"><span class="rettyp">GUIElement</span> <a class="symbol _function" name="GUIElementFactory.produce" href="htmlsrc/gui.guielement.html#L344">produce</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guielement.html#GUIElementFactory.produce" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GUIElementFactoryBase" href="htmlsrc/gui.guielement.html#L381">GUIElementFactoryBase</a><span class="tparams">(<em>T</em>)</span> <span class="attrs">[<span class="stc">abstract</span>]</span> <a href="gui.guielement.html#GUIElementFactoryBase" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Template base class for all GUI element factories, template input
+ specifies type of GUI element constructed by the factory.</div></div>
+<div class="cmnt">Position and size of GUI elements are specified with
+ strings containing simple math expressions which
+ are evaluated to determine the actual coordinates.
+<p class="bl"></p>
+ Supported operators are + +,-,*,/ as well as parentheses.
+<p class="bl"></p>
+ Furthermore, there are builtin macros representing window and parent
+ coordinates. These are:
+<p class="bl"></p>
+ w_right  : Window right end (left end is always 0, so this is window width)
+ w_bottom : Window bottom end (top end is always 0, so this is window height)
+ p_left   : Parent left end
+ p_right  : Parent right end
+ p_top    : Parent top end
+ p_bottom : Parent bottom end</div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>x</em></td><td>X position math expression.</td></tr></table>
+<p class="sec_header">Default:</p><div class="cmnt">"p_left"
+          y           = Y position math expression.</div>
+<p class="sec_header">Default:</p><div class="cmnt">"p_top"
+          width       = Width math expression.</div>
+<p class="sec_header">Default:</p><div class="cmnt">"64"
+          height      = Height math expression.</div>
+<p class="sec_header">Default:</p><div class="cmnt">"64"
+          draw_border = Draw border of the element?</div>
+<p class="sec_header">Default:</p><div class="cmnt">true</div>
+<dl>
+<dt class="decl"><span class="rettyp">GUIElementParams</span> <a class="symbol _function" name="GUIElementFactoryBase.gui_element_params" href="htmlsrc/gui.guielement.html#L390">gui_element_params</a><span class="params">()</span> <span class="attrs">[<span class="prot">protected</span>, <span class="stc">final</span>]</span> <a href="gui.guielement.html#GUIElementFactoryBase.gui_element_params" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Return a struct containing factory parameters packaged for GUIElement ctor</div></div></dd>
+<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="GUIElementFactoryBase.produce" href="htmlsrc/gui.guielement.html#L396">produce</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guielement.html#GUIElementFactoryBase.produce" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Return a new instance of the class produced by the factory with parameters of the factory.</div></div></dd></dl></dd>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="GUIElementParams" href="htmlsrc/gui.guielement.html#L401">GUIElementParams</a> <a href="gui.guielement.html#GUIElementParams" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">GUI element constructor parameters</div></div>
+<dl>
+<dt class="decl">string <a class="symbol _variable" name="GUIElementParams.x" href="htmlsrc/gui.guielement.html#L403">x</a> <a href="gui.guielement.html#GUIElementParams.x" class="plink">¶</a></dt>
+<dt class="decl">string <a class="symbol _variable" name="GUIElementParams.y" href="htmlsrc/gui.guielement.html#L403">y</a> <a href="gui.guielement.html#GUIElementParams.y" class="plink">¶</a></dt>
+<dt class="decl">string <a class="symbol _variable" name="GUIElementParams.width" href="htmlsrc/gui.guielement.html#L403">width</a> <a href="gui.guielement.html#GUIElementParams.width" class="plink">¶</a></dt>
+<dt class="decl">string <a class="symbol _variable" name="GUIElementParams.height" href="htmlsrc/gui.guielement.html#L403">height</a> <a href="gui.guielement.html#GUIElementParams.height" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">bool <a class="symbol _variable" name="GUIElementParams.draw_border" href="htmlsrc/gui.guielement.html#L404">draw_border</a> <a href="gui.guielement.html#GUIElementParams.draw_border" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd></dl>
+</div>
+<div id="kandil-footer">
+  <p></p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sun Feb 13 15:22:13 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+</div>
+</div>
+</body>
+</html>

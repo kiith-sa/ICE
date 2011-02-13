@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>math.ssevector4</title>
+  <style type="text/css">
+  .linescolumn > a { display: block; }
+  td { vertical-align: top; }
+  </style>
+  <link href="html.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<table><tr><td class="linescolumn"><a id="L1" href="#L1">1</a><a id="L2" href="#L2">2</a><a id="L3" href="#L3">3</a><a id="L4" href="#L4">4</a><a id="L5" href="#L5">5</a><a id="L6" href="#L6">6</a><a id="L7" href="#L7">7</a><a id="L8" href="#L8">8</a><a id="L9" href="#L9">9</a><a id="L10" href="#L10">10</a><a id="L11" href="#L11">11</a><a id="L12" href="#L12">12</a><a id="L13" href="#L13">13</a><a id="L14" href="#L14">14</a><a id="L15" href="#L15">15</a><a id="L16" href="#L16">16</a><a id="L17" href="#L17">17</a><a id="L18" href="#L18">18</a><a id="L19" href="#L19">19</a><a id="L20" href="#L20">20</a><a id="L21" href="#L21">21</a><a id="L22" href="#L22">22</a><a id="L23" href="#L23">23</a><a id="L24" href="#L24">24</a><a id="L25" href="#L25">25</a><a id="L26" href="#L26">26</a><a id="L27" href="#L27">27</a><a id="L28" href="#L28">28</a><a id="L29" href="#L29">29</a><a id="L30" href="#L30">30</a><a id="L31" href="#L31">31</a><a id="L32" href="#L32">32</a></td>
+<td><td><pre class="sourcecode">
+
+<span class="lc">//          Copyright Ferdinand Majerech 2010 - 2011.</span>
+<span class="lc">// Distributed under the Boost Software License, Version 1.0.</span>
+<span class="lc">//    (See accompanying file LICENSE_1_0.txt or copy at</span>
+<span class="lc">//          http://www.boost.org/LICENSE_1_0.txt)</span>
+
+<span class="d Compound"><span class="d Module"><span class="k">module</span> <span class="i">math</span>.<span class="i">ssevector4</span>;</span>
+
+
+<span class="d Import"><span class="k">import</span> <span class="i">math</span>.<span class="i">vector2</span>;</span>
+
+
+<span class="bc">/*
+ * An union used to prepare vector data for SSE usage.
+ * Can be used either as a 4D float vector or a pair of 2D float vectors.
+ */</span>
+<span class="d Align"><span class="k">align</span>(<span class="n">1</span>)</span> <span class="d Union"><span class="k">union</span> <span class="i">SSEVector4f</span>
+<span class="d Compound">{
+    <span class="d StorageClass"><span class="k">static</span></span> <span class="d Align"><span class="k">align</span>(<span class="n">1</span>)</span> <span class="d Struct"><span class="k">struct</span> <span class="i">Vector</span>
+    <span class="d Compound">{
+        <span class="lc">//disabling default initialization for maximum speed</span>
+        <span class="d Variables"><span class="t Integral"><span class="k">float</span></span> <span class="i">x</span> = <span class="e VoidInit"><span class="k">void</span></span>;</span>
+        <span class="d Variables"><span class="t Integral"><span class="k">float</span></span> <span class="i">y</span> = <span class="e VoidInit"><span class="k">void</span></span>;</span>
+        <span class="d Variables"><span class="t Integral"><span class="k">float</span></span> <span class="i">z</span> = <span class="e VoidInit"><span class="k">void</span></span>;</span>
+        <span class="d Variables"><span class="t Integral"><span class="k">float</span></span> <span class="i">w</span> = <span class="e VoidInit"><span class="k">void</span></span>;</span>
+    }</span></span>
+
+    <span class="d Variables"><span class="t Identifier"><span class="i">Vector</span></span> <span class="i">v</span>;</span>
+
+    <span class="d Variables"><span class="t Identifier"><span class="i">Vector2f</span></span><span class="t Array">[<span class="e Int"><span class="n">2</span></span>]</span> <span class="i">half</span>;</span>
+}</span></span></span>
+
+</pre></td>
+</tr></table>
+</body>
+</html>

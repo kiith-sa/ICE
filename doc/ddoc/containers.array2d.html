@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>containers.array2d</title>
+  <link href="css/style.css" rel="stylesheet" type="text/css"/>
+  <!-- no favicon -->
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/utilities.js"></script>
+  <script type="text/javascript" src="js/symbols.js"></script>
+  <script type="text/javascript" src="js/modules.js"></script>
+  <script type="text/javascript" src="js/quicksearch.js"></script>
+  <script type="text/javascript" src="js/navigation.js"></script>
+</head>
+<body id="containers.array2d">
+<div id="kandil-content">
+<div class="module">
+  <h1 class="module" id="m-containers.array2d"><a href="htmlsrc/containers.array2d.html" class="symbol">containers.array2d</a></h1>
+
+<dl>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="Array2D" href="htmlsrc/containers.array2d.html#L14">Array2D</a><span class="tparams">(<em>T</em>)</span> <a href="containers.array2d.html#Array2D" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Fixed size 2D array struct with manually managed memory.</div></div>
+<dl>
+<dt class="decl"><span class="rettyp">Array2D</span> <a class="symbol _function" name="Array2D.opCall" href="htmlsrc/containers.array2d.html#L33">opCall</a><span class="params">(uint <em>x</em>, uint <em>y</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="containers.array2d.html#Array2D.opCall" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Construct a 2D array.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>x</em></td><td>Width of the array.</td></tr>
+<tr><td><em>y</em></td><td>Height of the array.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">2D Array with specified dimensions.</div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Array2D.die" href="htmlsrc/containers.array2d.html#L44">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="containers.array2d.html#Array2D.die" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Destroy the array.</div></div></dd>
+<dt class="decl"><span class="rettyp">int</span> <a class="symbol _function" name="Array2D.opApply" href="htmlsrc/containers.array2d.html#L51">opApply</a><span class="params">(int delegate(ref T) <em>dg</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="containers.array2d.html#Array2D.opApply" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Used by foreach.</div></div></dd>
+<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="Array2D.opIndex" href="htmlsrc/containers.array2d.html#L70">opIndex</a><span class="params">(uint <em>x</em>, uint <em>y</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="containers.array2d.html#Array2D.opIndex" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get an element of the array.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>x</em></td><td>X coordinate of the element to get.</td></tr>
+<tr><td><em>y</em></td><td>Y coordinate of the element to get.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Element at the specified coordinates.</div></dd>
+<dt class="decl"><span class="rettyp">T*</span> <a class="symbol _function" name="Array2D.ptr" href="htmlsrc/containers.array2d.html#L82">ptr</a><span class="params">(uint <em>x</em>, uint <em>y</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="containers.array2d.html#Array2D.ptr" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get a pointer to an element of the array.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>x</em></td><td>X coordinate of the element to get pointer to.</td></tr>
+<tr><td><em>y</em></td><td>Y coordinate of the element to get pointer to.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Element at the specified coordinates.</div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Array2D.opIndexAssign" href="htmlsrc/containers.array2d.html#L92">opIndexAssign</a><span class="params">(T <em>value</em>, uint <em>x</em>, uint <em>y</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="containers.array2d.html#Array2D.opIndexAssign" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Set an element of the array.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>x</em></td><td>X coordinate of the element to set.</td></tr>
+<tr><td><em>y</em></td><td>Y coordinate of the element to set.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">uint</span> <a class="symbol _function" name="Array2D.x" href="htmlsrc/containers.array2d.html#L97">x</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="containers.array2d.html#Array2D.x" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get width of the array.</div></div></dd>
+<dt class="decl"><span class="rettyp">uint</span> <a class="symbol _function" name="Array2D.y" href="htmlsrc/containers.array2d.html#L100">y</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="containers.array2d.html#Array2D.y" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get height of the array.</div></div></dd></dl></dd>
+<dt class="decl"><a class="symbol _unittest" name="unittest" href="htmlsrc/containers.array2d.html#L102">unittest</a> <a href="containers.array2d.html#unittest" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl>
+</div>
+<div id="kandil-footer">
+  <p></p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sun Feb 13 15:22:13 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+</div>
+</div>
+</body>
+</html>

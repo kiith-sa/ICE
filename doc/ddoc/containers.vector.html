@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>containers.vector</title>
+  <link href="css/style.css" rel="stylesheet" type="text/css"/>
+  <!-- no favicon -->
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/utilities.js"></script>
+  <script type="text/javascript" src="js/symbols.js"></script>
+  <script type="text/javascript" src="js/modules.js"></script>
+  <script type="text/javascript" src="js/quicksearch.js"></script>
+  <script type="text/javascript" src="js/navigation.js"></script>
+</head>
+<body id="containers.vector">
+<div id="kandil-content">
+<div class="module">
+  <h1 class="module" id="m-containers.vector"><a href="htmlsrc/containers.vector.html" class="symbol">containers.vector</a></h1>
+
+<dl>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="Vector" href="htmlsrc/containers.vector.html#L18">Vector</a><span class="tparams">(<em>T</em>)</span> <a href="containers.vector.html#Vector" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Simple dynamic array with manually managed memory, similar to C++ vector.</div></div>
+<div class="cmnt">Only bare requirements are implemented. Can be improved if needed.</div>
+<dl>
+<dt class="decl"><span class="rettyp">Vector</span> <a class="symbol _function" name="Vector.opCall" href="htmlsrc/containers.vector.html#L29">opCall</a><span class="params">()</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="containers.vector.html#Vector.opCall" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Construct an empty vector.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Vector.die" href="htmlsrc/containers.vector.html#L37">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="containers.vector.html#Vector.die" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Destroy the vector.</div></div></dd>
+<dt class="decl"><span class="rettyp">int</span> <a class="symbol _function" name="Vector.opApply" href="htmlsrc/containers.vector.html#L44">opApply</a><span class="params">(int delegate(ref T) <em>dg</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="containers.vector.html#Vector.opApply" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Used by foreach.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Vector.opCatAssign" href="htmlsrc/containers.vector.html#L56">opCatAssign</a><span class="params">(T <em>element</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="containers.vector.html#Vector.opCatAssign" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Append an element to the vector.</div></div></dd>
+<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="Vector.opIndex" href="htmlsrc/containers.vector.html#L74">opIndex</a><span class="params">(uint <em>index</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="containers.vector.html#Vector.opIndex" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get element at the specified index.</div></div>
+<div class="cmnt">Index must not be out of bounds.</div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>index</em></td><td>Index of the element to get.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Element at the specified index.</div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Vector.opIndexAssign" href="htmlsrc/containers.vector.html#L85">opIndexAssign</a><span class="params">(T <em>value</em>, uint <em>index</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="containers.vector.html#Vector.opIndexAssign" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Set element at the specified index.</div></div>
+<div class="cmnt">Index must not be out of bounds.</div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>index</em></td><td>Index of the element to set.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">T*</span> <a class="symbol _function" name="Vector.ptr" href="htmlsrc/containers.vector.html#L98">ptr</a><span class="params">(uint <em>index</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="containers.vector.html#Vector.ptr" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get a pointer to element at the specified index.</div></div>
+<div class="cmnt">Index must not be out of bounds.</div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>index</em></td><td>Index of the element to get.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Pointer to the element at the specified index.</div></dd>
+<dt class="decl"><span class="rettyp">T[]</span> <a class="symbol _function" name="Vector.array" href="htmlsrc/containers.vector.html#L104">array</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="containers.vector.html#Vector.array" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Access vector contents as an array.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Vector.remove" href="htmlsrc/containers.vector.html#L115">remove</a><span class="params">(T <em>element</em>, bool <em>ident</em> = <span class="defval"><span class="k">false</span></span>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="containers.vector.html#Vector.remove" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Remove element from the vector.</div></div>
+<div class="cmnt">If more elements match specified element, all of them will be removed.</div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>element</em></td><td>Element to remove.</td></tr>
+<tr><td><em>ident</em></td><td>Remove exactly specified element (i.e. is element)
+                    instead of just anything equal to element (== element).</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Vector.remove:2" href="htmlsrc/containers.vector.html#L131">remove</a><span class="params">(bool delegate(ref T) <em>deleg</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="containers.vector.html#Vector.remove:2" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Remove elements from vector according to a function.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>deleg</em></td><td>Function determining whether to remove an element.
+                  Any element for which deleg returns true is removed.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Vector.remove_at_index" href="htmlsrc/containers.vector.html#L146">remove_at_index</a><span class="params">(uint <em>index</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="containers.vector.html#Vector.remove_at_index" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Remove element at specified index.</div></div>
+<div class="cmnt">Must be within bounds.</div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>index</em></td><td>Index to remove at.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="Vector.contains" href="htmlsrc/containers.vector.html#L163">contains</a><span class="params">(T <em>element</em>, bool <em>ident</em> = <span class="defval"><span class="k">false</span></span>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="containers.vector.html#Vector.contains" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Determine whether or not the vector contains specified element.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>element</em></td><td>Element to look for.</td></tr>
+<tr><td><em>ident</em></td><td>Look exactly for specified element (i.e. is element)
+                    instead of just anything equal to element (== element).</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">True if the vector contains the element, false otherwise.</div></dd>
+<dt class="decl"><span class="rettyp">uint</span> <a class="symbol _function" name="Vector.length" href="htmlsrc/containers.vector.html#L173">length</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="containers.vector.html#Vector.length" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get number of elements in the vector.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Vector.length:2" href="htmlsrc/containers.vector.html#L183">length</a><span class="params">(uint <em>length</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="containers.vector.html#Vector.length:2" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Change length of the vector.
+ 
+ If the length will be lower than current length, trailing elements will
+ be erased. If higher, the vector will be expanded.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>length</em></td><td>length to set.</td></tr></table></dd></dl></dd>
+<dt class="decl"><a class="symbol _unittest" name="unittest" href="htmlsrc/containers.vector.html#L189">unittest</a> <a href="containers.vector.html#unittest" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl>
+</div>
+<div id="kandil-footer">
+  <p></p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sun Feb 13 15:22:13 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+</div>
+</div>
+</body>
+</html>

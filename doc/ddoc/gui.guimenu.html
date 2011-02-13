@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>gui.guimenu</title>
+  <link href="css/style.css" rel="stylesheet" type="text/css"/>
+  <!-- no favicon -->
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/utilities.js"></script>
+  <script type="text/javascript" src="js/symbols.js"></script>
+  <script type="text/javascript" src="js/modules.js"></script>
+  <script type="text/javascript" src="js/quicksearch.js"></script>
+  <script type="text/javascript" src="js/navigation.js"></script>
+</head>
+<body id="gui.guimenu">
+<div id="kandil-content">
+<div class="module">
+  <h1 class="module" id="m-gui.guimenu"><a href="htmlsrc/gui.guimenu.html" class="symbol">gui.guimenu</a></h1>
+
+<dl>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GUIMenu" href="htmlsrc/gui.guimenu.html#L19">GUIMenu</a> : <span class="bclass">GUIElement</span> <span class="attrs">[<span class="stc">abstract</span>]</span> <a href="gui.guimenu.html#GUIMenu" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Base class for menu GUI elements.</div></div>
+<dl>
+<dt class="decl"><span class="kw">alias</span> std.string.toString <a class="symbol _alias" name="GUIMenu.to_string" href="htmlsrc/gui.guimenu.html#L21">to_string</a> <a href="gui.guimenu.html#GUIMenu.to_string" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GUIButton[] <a class="symbol _variable" name="GUIMenu.items_" href="htmlsrc/gui.guimenu.html#L23">items_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guimenu.html#GUIMenu.items_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">string <a class="symbol _variable" name="GUIMenu.item_width_" href="htmlsrc/gui.guimenu.html#L26">item_width_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guimenu.html#GUIMenu.item_width_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">string <a class="symbol _variable" name="GUIMenu.item_height_" href="htmlsrc/gui.guimenu.html#L28">item_height_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guimenu.html#GUIMenu.item_height_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">string <a class="symbol _variable" name="GUIMenu.item_spacing_" href="htmlsrc/gui.guimenu.html#L30">item_spacing_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guimenu.html#GUIMenu.item_spacing_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _ctor" name="GUIMenu.this" href="htmlsrc/gui.guimenu.html#L47">this</a><span class="params">(GUIElementParams <em>params</em>, string <em>item_width</em>, string <em>item_height</em>, string <em>item_spacing</em>, uint <em>item_font_size</em>, MenuItemData[] <em>items</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guimenu.html#GUIMenu.this" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="GUIMenu.new_item_x" href="htmlsrc/gui.guimenu.html#L63">new_item_x</a><span class="params">()</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guimenu.html#GUIMenu.new_item_x" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="GUIMenu.new_item_y" href="htmlsrc/gui.guimenu.html#L66">new_item_y</a><span class="params">()</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guimenu.html#GUIMenu.new_item_y" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GUIMenuHorizontal" href="htmlsrc/gui.guimenu.html#L99">GUIMenuHorizontal</a> : <span class="bclass">GUIMenu</span> <a href="gui.guimenu.html#GUIMenuHorizontal" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Horizontal menu.</div></div>
+<dl>
+<dt class="decl"><a class="symbol _ctor" name="GUIMenuHorizontal.this" href="htmlsrc/gui.guimenu.html#L112">this</a><span class="params">(GUIElementParams <em>params</em>, string <em>item_width</em>, string <em>item_height</em>, string <em>item_spacing</em>, uint <em>item_font_size</em>, MenuItemData[] <em>items</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guimenu.html#GUIMenuHorizontal.this" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIMenuHorizontal.realign" href="htmlsrc/gui.guimenu.html#L119">realign</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="gui.guimenu.html#GUIMenuHorizontal.realign" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="GUIMenuHorizontal.new_item_x" href="htmlsrc/gui.guimenu.html#L127">new_item_x</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="gui.guimenu.html#GUIMenuHorizontal.new_item_x" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="GUIMenuHorizontal.new_item_y" href="htmlsrc/gui.guimenu.html#L133">new_item_y</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="gui.guimenu.html#GUIMenuHorizontal.new_item_y" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GUIMenuVertical" href="htmlsrc/gui.guimenu.html#L137">GUIMenuVertical</a> : <span class="bclass">GUIMenu</span> <a href="gui.guimenu.html#GUIMenuVertical" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Vertical menu.</div></div>
+<dl>
+<dt class="decl"><a class="symbol _ctor" name="GUIMenuVertical.this" href="htmlsrc/gui.guimenu.html#L150">this</a><span class="params">(GUIElementParams <em>params</em>, string <em>item_width</em>, string <em>item_height</em>, string <em>item_spacing</em>, uint <em>item_font_size</em>, MenuItemData[] <em>items</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guimenu.html#GUIMenuVertical.this" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIMenuVertical.realign" href="htmlsrc/gui.guimenu.html#L157">realign</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="gui.guimenu.html#GUIMenuVertical.realign" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="GUIMenuVertical.new_item_x" href="htmlsrc/gui.guimenu.html#L165">new_item_x</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="gui.guimenu.html#GUIMenuVertical.new_item_x" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="GUIMenuVertical.new_item_y" href="htmlsrc/gui.guimenu.html#L167">new_item_y</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="gui.guimenu.html#GUIMenuVertical.new_item_y" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GUIMenuFactory" href="htmlsrc/gui.guimenu.html#L195">GUIMenuFactory</a><span class="tparams">(<em>T</em>)</span> : <span class="bclass">GUIElementFactoryBase!(T)</span> <a href="gui.guimenu.html#GUIMenuFactory" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Factory used for menu construction.</div></div>
+<div class="cmnt">GUIMenuHorizontalFactory and GUIMenuVerticalFactory are just aliases of this
+ class with GUIMenuHorizontal and GUIMenuVertical as the template parameter,
+ so documentation of this class applies to both of them.</div>
+<p class="sec_header">See Also:</p><div class="cmnt">GUIElementFactoryBase</div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>draw_border</em></td><td>Draw border of this menu? 
+                           Default;  false</td></tr>
+<tr><td><em>item_width</em></td><td>Menu item width math expression.
+                           Default;  128</td></tr>
+<tr><td><em>item_height</em></td><td>Menu item height math expression.
+                           Default;  24</td></tr>
+<tr><td><em>item_spacing</em></td><td>Math expression used to calculate spacing between menu items.
+                           Default;  4</td></tr>
+<tr><td><em>item_font_size</em></td><td>Font size of menu items.</td></tr>
+<tr><td><em>add_item</em></td><td>Add a menu item with specified text and callback to 
+                           be called when the item is clicked.</td></tr></table>
+<dl>
+<dt class="decl"><a class="symbol _ctor" name="GUIMenuFactory.this" href="htmlsrc/gui.guimenu.html#L205">this</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guimenu.html#GUIMenuFactory.this" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIMenuFactory.add_item" href="htmlsrc/gui.guimenu.html#L207">add_item</a><span class="params">(string <em>text</em>, void delegate() <em>deleg</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guimenu.html#GUIMenuFactory.add_item" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="GUIMenuFactory.produce" href="htmlsrc/gui.guimenu.html#L209">produce</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="gui.guimenu.html#GUIMenuFactory.produce" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl"><span class="kw">alias</span> GUIMenuFactory!(GUIMenuHorizontal) <a class="symbol _alias" name="GUIMenuHorizontalFactory" href="htmlsrc/gui.guimenu.html#L217">GUIMenuHorizontalFactory</a> <a href="gui.guimenu.html#GUIMenuHorizontalFactory" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Factory used for horizontal menus.</div></div></dd>
+<dt class="decl"><span class="kw">alias</span> GUIMenuFactory!(GUIMenuVertical) <a class="symbol _alias" name="GUIMenuVerticalFactory" href="htmlsrc/gui.guimenu.html#L219">GUIMenuVerticalFactory</a> <a href="gui.guimenu.html#GUIMenuVerticalFactory" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Factory used for vertical menus.</div></div></dd></dl>
+</div>
+<div id="kandil-footer">
+  <p></p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sun Feb 13 15:22:12 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+</div>
+</div>
+</body>
+</html>
