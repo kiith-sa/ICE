@@ -49,58 +49,11 @@
 <div class="cmnt">If the type defines a die() method and is not a pointer or reference type
  (e.g. class), that method will be called for all elements of the array.</div></dd>
 <dt class="decl"><span class="rettyp">ulong</span> <a class="symbol _function" name="currently_allocated" href="htmlsrc/memory.memory.html#L81">currently_allocated</a><span class="params">()</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="memory.memory.html#currently_allocated" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">ulong <a class="symbol _variable" name="total_allocated_" href="htmlsrc/memory.memory.html#L85">total_allocated_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="memory.memory.html#total_allocated_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">ulong <a class="symbol _variable" name="total_freed_" href="htmlsrc/memory.memory.html#L87">total_freed_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="memory.memory.html#total_freed_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">ulong <a class="symbol _variable" name="currently_allocated_" href="htmlsrc/memory.memory.html#L89">currently_allocated_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="memory.memory.html#currently_allocated_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="Stats" href="htmlsrc/memory.memory.html#L93">Stats</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="memory.memory.html#Stats" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div>
-<dl>
-<dt class="decl">ulong <a class="symbol _variable" name="Stats.bytes" href="htmlsrc/memory.memory.html#L96">bytes</a> <a href="memory.memory.html#Stats.bytes" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">uint <a class="symbol _variable" name="Stats.allocations" href="htmlsrc/memory.memory.html#L98">allocations</a> <a href="memory.memory.html#Stats.allocations" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">ulong <a class="symbol _variable" name="Stats.objects" href="htmlsrc/memory.memory.html#L100">objects</a> <a href="memory.memory.html#Stats.objects" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="Stats.statistics" href="htmlsrc/memory.memory.html#L103">statistics</a><span class="params">()</span> <a href="memory.memory.html#Stats.statistics" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl">Stats[string] <a class="symbol _variable" name="alloc_stats_" href="htmlsrc/memory.memory.html#L112">alloc_stats_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="memory.memory.html#alloc_stats_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Stats[string] <a class="symbol _variable" name="dealloc_stats_" href="htmlsrc/memory.memory.html#L114">dealloc_stats_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="memory.memory.html#dealloc_stats_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">void*[] <a class="symbol _variable" name="alloc_pointers_" href="htmlsrc/memory.memory.html#L116">alloc_pointers_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="memory.memory.html#alloc_pointers_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">T*</span> <a class="symbol _function" name="allocate_struct" href="htmlsrc/memory.memory.html#L121">allocate_struct</a><span class="tparams">(<em>T</em>, <em>CtorArgs</em>...)</span><span class="params">(CtorArgs <em>args</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="memory.memory.html#allocate_struct" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">T*</span> <a class="symbol _function" name="allocate" href="htmlsrc/memory.memory.html#L137">allocate</a><span class="tparams">(<em>T</em>)</span><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="memory.memory.html#allocate" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">T[]</span> <a class="symbol _function" name="allocate:2" href="htmlsrc/memory.memory.html#L156">allocate</a><span class="tparams">(<em>T</em>)</span><span class="params">(ulong <em>elems</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="memory.memory.html#allocate:2" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">T[]</span> <a class="symbol _function" name="reallocate" href="htmlsrc/memory.memory.html#L183">reallocate</a><span class="tparams">(<em>T</em>)</span><span class="params">(T[] <em>array</em>, ulong <em>elems</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="memory.memory.html#reallocate" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="deallocate" href="htmlsrc/memory.memory.html#L226">deallocate</a><span class="tparams">(<em>T</em>)</span><span class="params">(<span class="k">ref</span> T* <em>ptr</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="memory.memory.html#deallocate" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="deallocate:2" href="htmlsrc/memory.memory.html#L249">deallocate</a><span class="tparams">(<em>T</em>)</span><span class="params">(<span class="k">ref</span> T[] <em>array</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="memory.memory.html#deallocate:2" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="statistics" href="htmlsrc/memory.memory.html#L274">statistics</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="memory.memory.html#statistics" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><a class="symbol _unittest" name="unittest:2" href="htmlsrc/memory.memory.html#L300">unittest</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="memory.memory.html#unittest:2" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="kw">static</span> <a class="symbol _sdtor" name="~this" href="htmlsrc/memory.memory.html#L313">~this</a>() <span class="attrs">[<span class="prot">private</span>]</span> <a href="memory.memory.html#~this" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="debug_allocate" href="htmlsrc/memory.memory.html#L317">debug_allocate</a><span class="tparams">(<em>T</em>)</span><span class="params">(T* <em>ptr</em>, ulong <em>objects</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="memory.memory.html#debug_allocate" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="debug_reallocate" href="htmlsrc/memory.memory.html#L338">debug_reallocate</a><span class="tparams">(<em>T</em>)</span><span class="params">(T* <em>new_ptr</em>, ulong <em>new_objects</em>, T* <em>old_ptr</em>, ulong <em>old_objects</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="memory.memory.html#debug_reallocate" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="debug_free" href="htmlsrc/memory.memory.html#L361">debug_free</a><span class="tparams">(<em>T</em>)</span><span class="params">(T* <em>ptr</em>, ulong <em>objects</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="memory.memory.html#debug_free" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sun Feb 13 23:44:22 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Mon Feb 14 02:06:47 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

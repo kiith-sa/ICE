@@ -22,16 +22,6 @@
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Used by VideoDriver implementations to draw a string.</div></div>
 <dl>
-<dt class="decl">Font <a class="symbol _variable" name="FontRenderer.draw_font_" href="htmlsrc/video.fontmanager.html#L32">draw_font_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.fontmanager.html#FontRenderer.draw_font_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">bool <a class="symbol _variable" name="FontRenderer.kerning_" href="htmlsrc/video.fontmanager.html#L34">kerning_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.fontmanager.html#FontRenderer.kerning_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">FT_Face <a class="symbol _variable" name="FontRenderer.font_face_" href="htmlsrc/video.fontmanager.html#L36">font_face_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.fontmanager.html#FontRenderer.font_face_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">uint <a class="symbol _variable" name="FontRenderer.previous_index_" href="htmlsrc/video.fontmanager.html#L38">previous_index_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.fontmanager.html#FontRenderer.previous_index_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">uint <a class="symbol _variable" name="FontRenderer.PenX" href="htmlsrc/video.fontmanager.html#L40">PenX</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.fontmanager.html#FontRenderer.PenX" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><span class="rettyp">uint</span> <a class="symbol _function" name="FontRenderer.height" href="htmlsrc/video.fontmanager.html#L44">height</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontRenderer.height" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Return height of the font we're drawing.</div></div></dd>
@@ -67,26 +57,6 @@
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Handles all font resources.</div></div>
 <dl>
-<dt class="decl">FT_Library <a class="symbol _variable" name="FontManager.freetype_lib_" href="htmlsrc/video.fontmanager.html#L117">freetype_lib_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.fontmanager.html#FontManager.freetype_lib_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Font[] <a class="symbol _variable" name="FontManager.fonts_" href="htmlsrc/video.fontmanager.html#L118">fonts_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.fontmanager.html#FontManager.fonts_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">string <a class="symbol _variable" name="FontManager.default_font_name_" href="htmlsrc/video.fontmanager.html#L121">default_font_name_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.fontmanager.html#FontManager.default_font_name_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">uint <a class="symbol _variable" name="FontManager.default_font_size_" href="htmlsrc/video.fontmanager.html#L122">default_font_size_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.fontmanager.html#FontManager.default_font_size_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Font <a class="symbol _variable" name="FontManager.current_font_" href="htmlsrc/video.fontmanager.html#L125">current_font_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.fontmanager.html#FontManager.current_font_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">string <a class="symbol _variable" name="FontManager.font_name_" href="htmlsrc/video.fontmanager.html#L128">font_name_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.fontmanager.html#FontManager.font_name_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">uint <a class="symbol _variable" name="FontManager.font_size_" href="htmlsrc/video.fontmanager.html#L129">font_size_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.fontmanager.html#FontManager.font_size_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">uint <a class="symbol _variable" name="FontManager.fast_glyphs_" href="htmlsrc/video.fontmanager.html#L135">fast_glyphs_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.fontmanager.html#FontManager.fast_glyphs_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">bool <a class="symbol _variable" name="FontManager.antialiasing_" href="htmlsrc/video.fontmanager.html#L138">antialiasing_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.fontmanager.html#FontManager.antialiasing_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">bool <a class="symbol _variable" name="FontManager.kerning_" href="htmlsrc/video.fontmanager.html#L140">kerning_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.fontmanager.html#FontManager.kerning_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><a class="symbol _ctor" name="FontManager.this" href="htmlsrc/video.fontmanager.html#L144">this</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontManager.this" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="FontManager.unload_textures" href="htmlsrc/video.fontmanager.html#L186">unload_textures</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontManager.unload_textures" class="plink">¶</a></dt>
@@ -122,17 +92,11 @@
 <div class="summary"><div class="cmnt">Return bool specifying whether or not font antialiasing is enabled.</div></div></dd>
 <dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="FontManager.kerning" href="htmlsrc/video.fontmanager.html#L249">kerning</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontManager.kerning" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Return bool specifying whether or not kerning is enabled.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="FontManager.load_font" href="htmlsrc/video.fontmanager.html#L258">load_font</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.fontmanager.html#FontManager.load_font" class="plink">¶</a></dt>
-<dd class="ddef">
-<div class="summary"><div class="cmnt">Try to set font according to font_name_ and font_size_.</div></div>
-<div class="cmnt">Will load the font if needed, and if it can't load, will
- try to fall back to default font with font_size_. If that can't
- be done either, will set the default font loaded at startup.</div></dd></dl></dd></dl>
+<div class="summary"><div class="cmnt">Return bool specifying whether or not kerning is enabled.</div></div></dd></dl></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sun Feb 13 23:44:20 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Mon Feb 14 02:06:46 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

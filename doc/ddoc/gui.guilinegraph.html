@@ -48,28 +48,6 @@
 <dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl">float <a class="symbol _variable" name="GUILineGraph.Line.y" href="htmlsrc/gui.guilinegraph.html#L63">y</a> <a href="gui.guilinegraph.html#GUILineGraph.Line.y" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl">GraphData <a class="symbol _variable" name="GUILineGraph.data_" href="htmlsrc/gui.guilinegraph.html#L67">data_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guilinegraph.html#GUILineGraph.data_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">float <a class="symbol _variable" name="GUILineGraph.time_offset_" href="htmlsrc/gui.guilinegraph.html#L72">time_offset_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guilinegraph.html#GUILineGraph.time_offset_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">float <a class="symbol _variable" name="GUILineGraph.scale_x_" href="htmlsrc/gui.guilinegraph.html#L74">scale_x_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guilinegraph.html#GUILineGraph.scale_x_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">float <a class="symbol _variable" name="GUILineGraph.scale_y_" href="htmlsrc/gui.guilinegraph.html#L77">scale_y_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guilinegraph.html#GUILineGraph.scale_y_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">bool <a class="symbol _variable" name="GUILineGraph.auto_scroll_" href="htmlsrc/gui.guilinegraph.html#L79">auto_scroll_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guilinegraph.html#GUILineGraph.auto_scroll_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">bool <a class="symbol _variable" name="GUILineGraph.auto_scale_" href="htmlsrc/gui.guilinegraph.html#L82">auto_scale_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guilinegraph.html#GUILineGraph.auto_scale_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">GraphDisplay[string] <a class="symbol _variable" name="GUILineGraph.graphics_" href="htmlsrc/gui.guilinegraph.html#L85">graphics_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guilinegraph.html#GUILineGraph.graphics_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Line[] <a class="symbol _variable" name="GUILineGraph.lines_" href="htmlsrc/gui.guilinegraph.html#L87">lines_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guilinegraph.html#GUILineGraph.lines_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">uint <a class="symbol _variable" name="GUILineGraph.font_size_" href="htmlsrc/gui.guilinegraph.html#L89">font_size_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guilinegraph.html#GUILineGraph.font_size_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">real <a class="symbol _variable" name="GUILineGraph.data_point_time_" href="htmlsrc/gui.guilinegraph.html#L92">data_point_time_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guilinegraph.html#GUILineGraph.data_point_time_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Timer <a class="symbol _variable" name="GUILineGraph.display_timer_" href="htmlsrc/gui.guilinegraph.html#L94">display_timer_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guilinegraph.html#GUILineGraph.display_timer_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUILineGraph.data_point_time" href="htmlsrc/gui.guilinegraph.html#L98">data_point_time</a><span class="params">(real <em>time</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guilinegraph.html#GUILineGraph.data_point_time" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Set time between two graph data points.</div></div></dd>
@@ -125,31 +103,7 @@
 <dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUILineGraph.draw" href="htmlsrc/gui.guilinegraph.html#L199">draw</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="gui.guilinegraph.html#GUILineGraph.draw" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUILineGraph.realign" href="htmlsrc/gui.guilinegraph.html#L209">realign</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="gui.guilinegraph.html#GUILineGraph.realign" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUILineGraph.reset_timer" href="htmlsrc/gui.guilinegraph.html#L218">reset_timer</a><span class="params">(real <em>time</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guilinegraph.html#GUILineGraph.reset_timer" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">real</span> <a class="symbol _function" name="GUILineGraph.age" href="htmlsrc/gui.guilinegraph.html#L225">age</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guilinegraph.html#GUILineGraph.age" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUILineGraph.update_view" href="htmlsrc/gui.guilinegraph.html#L232">update_view</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guilinegraph.html#GUILineGraph.update_view" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">real[][string]</span> <a class="symbol _function" name="GUILineGraph.get_data_points_and_maximum" href="htmlsrc/gui.guilinegraph.html#L276">get_data_points_and_maximum</a><span class="params">(<span class="k">out</span> real <em>maximum</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guilinegraph.html#GUILineGraph.get_data_points_and_maximum" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUILineGraph.update_lines" href="htmlsrc/gui.guilinegraph.html#L307">update_lines</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guilinegraph.html#GUILineGraph.update_lines" class="plink">¶</a></dt>
-<dd class="ddef">
-<div class="summary"><div class="cmnt">Update the horizontal lines of the graph.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUILineGraph.draw_graph" href="htmlsrc/gui.guilinegraph.html#L339">draw_graph</a><span class="params">(VideoDriver <em>driver</em>, string <em>name</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guilinegraph.html#GUILineGraph.draw_graph" class="plink">¶</a></dt>
-<dd class="ddef">
-<div class="summary"><div class="cmnt">Draw specified graph.</div></div>
-<p class="sec_header">Parameters:</p>
-<table class="params">
-<tr><td><em>driver</em></td><td>Video driver to draw with.</td></tr>
-<tr><td><em>name</em></td><td>Name of the graph to draw.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUILineGraph.draw_info" href="htmlsrc/gui.guilinegraph.html#L362">draw_info</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guilinegraph.html#GUILineGraph.draw_info" class="plink">¶</a></dt>
-<dd class="ddef">
-<div class="summary"><div class="cmnt">Draw graph related information, e.g. the horizontal lines and data point time.</div></div>
-<p class="sec_header">Parameters:</p>
-<table class="params">
-<tr><td><em>driver</em></td><td>VideoDriver to draw with.</td></tr></table></dd></dl></dd>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
 <dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GUILineGraphFactory" href="htmlsrc/gui.guilinegraph.html#L403">GUILineGraphFactory</a> : <span class="bclass">GUIElementFactoryBase!(GUILineGraph)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="gui.guilinegraph.html#GUILineGraphFactory" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Factory used for line graph construction.</div></div>
@@ -159,8 +113,6 @@
 <tr><td><em>data</em></td><td>Graph data to display. Must be specified.</td></tr>
 <tr><td><em>graph_color</em></td><td>Set color for graph of measured value with specified name.</td></tr></table>
 <dl>
-<dt class="decl">Color[string] <a class="symbol _variable" name="GUILineGraphFactory.graphs_" href="htmlsrc/gui.guilinegraph.html#L408">graphs_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guilinegraph.html#GUILineGraphFactory.graphs_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUILineGraphFactory.graph_color" href="htmlsrc/gui.guilinegraph.html#L410">graph_color</a><span class="params">(string <em>name</em>, Color <em>color</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guilinegraph.html#GUILineGraphFactory.graph_color" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><span class="rettyp">GUILineGraph</span> <a class="symbol _function" name="GUILineGraphFactory.produce" href="htmlsrc/gui.guilinegraph.html#L413">produce</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guilinegraph.html#GUILineGraphFactory.produce" class="plink">¶</a></dt>
@@ -169,7 +121,7 @@
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sun Feb 13 23:44:21 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Mon Feb 14 02:06:46 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

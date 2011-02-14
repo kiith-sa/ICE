@@ -39,57 +39,9 @@
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Displays info about texture pages.</div></div>
 <dl>
-<dt class="decl"><span class="kw">alias</span> std.string.toString <a class="symbol _alias" name="PagesMonitor.to_string" href="htmlsrc/video.glmonitor.html#L54">to_string</a> <a href="video.glmonitor.html#PagesMonitor.to_string" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="PagesMonitor.PageView" href="htmlsrc/video.glmonitor.html#L57">PageView</a> : <span class="bclass">GUIElement</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.glmonitor.html#PagesMonitor.PageView" class="plink">¶</a></dt>
-<dd class="ddef">
-<div class="summary"><div class="cmnt">GUI element used to view a texture page.</div></div>
-<dl>
-<dt class="decl"><a class="symbol _invariant" name="PagesMonitor.PageView.invariant" href="htmlsrc/video.glmonitor.html#L59">invariant</a> <a href="video.glmonitor.html#PagesMonitor.PageView.invariant" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">real <a class="symbol _variable" name="PagesMonitor.PageView.step_" href="htmlsrc/video.glmonitor.html#L67">step_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.glmonitor.html#PagesMonitor.PageView.step_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Vector2f <a class="symbol _variable" name="PagesMonitor.PageView.offset_" href="htmlsrc/video.glmonitor.html#L69">offset_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.glmonitor.html#PagesMonitor.PageView.offset_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">real <a class="symbol _variable" name="PagesMonitor.PageView.zoom_mult_" href="htmlsrc/video.glmonitor.html#L71">zoom_mult_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.glmonitor.html#PagesMonitor.PageView.zoom_mult_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">real <a class="symbol _variable" name="PagesMonitor.PageView.zoom_" href="htmlsrc/video.glmonitor.html#L73">zoom_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.glmonitor.html#PagesMonitor.PageView.zoom_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><a class="symbol _ctor" name="PagesMonitor.PageView.this" href="htmlsrc/video.glmonitor.html#L76">this</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.glmonitor.html#PagesMonitor.PageView.this" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PagesMonitor.PageView.draw" href="htmlsrc/video.glmonitor.html#L91">draw</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="video.glmonitor.html#PagesMonitor.PageView.draw" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PagesMonitor.PageView.zoom" href="htmlsrc/video.glmonitor.html#L113">zoom</a><span class="params">(float <em>relative</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.glmonitor.html#PagesMonitor.PageView.zoom" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PagesMonitor.PageView.pan" href="htmlsrc/video.glmonitor.html#L116">pan</a><span class="params">(Vector2f <em>relative</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.glmonitor.html#PagesMonitor.PageView.pan" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PagesMonitor.PageView.reset_view" href="htmlsrc/video.glmonitor.html#L119">reset_view</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.glmonitor.html#PagesMonitor.PageView.reset_view" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl">GLVideoDriver <a class="symbol _variable" name="PagesMonitor.driver_" href="htmlsrc/video.glmonitor.html#L127">driver_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.glmonitor.html#PagesMonitor.driver_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">PageView <a class="symbol _variable" name="PagesMonitor.view_" href="htmlsrc/video.glmonitor.html#L129">view_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.glmonitor.html#PagesMonitor.view_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">GUIMenuVertical <a class="symbol _variable" name="PagesMonitor.menu_" href="htmlsrc/video.glmonitor.html#L131">menu_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.glmonitor.html#PagesMonitor.menu_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">GUIStaticText <a class="symbol _variable" name="PagesMonitor.info_text_" href="htmlsrc/video.glmonitor.html#L134">info_text_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.glmonitor.html#PagesMonitor.info_text_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">uint <a class="symbol _variable" name="PagesMonitor.current_page_" href="htmlsrc/video.glmonitor.html#L137">current_page_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.glmonitor.html#PagesMonitor.current_page_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><a class="symbol _ctor" name="PagesMonitor.this" href="htmlsrc/video.glmonitor.html#L140">this</a><span class="params">(GLVideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.glmonitor.html#PagesMonitor.this" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PagesMonitor.update" href="htmlsrc/video.glmonitor.html#L151">update</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="video.glmonitor.html#PagesMonitor.update" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PagesMonitor.init_view" href="htmlsrc/video.glmonitor.html#L158">init_view</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.glmonitor.html#PagesMonitor.init_view" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PagesMonitor.init_menu" href="htmlsrc/video.glmonitor.html#L164">init_menu</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.glmonitor.html#PagesMonitor.init_menu" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PagesMonitor.init_text" href="htmlsrc/video.glmonitor.html#L181">init_text</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.glmonitor.html#PagesMonitor.init_text" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PagesMonitor.next" href="htmlsrc/video.glmonitor.html#L197">next</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.glmonitor.html#PagesMonitor.next" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PagesMonitor.prev" href="htmlsrc/video.glmonitor.html#L211">prev</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.glmonitor.html#PagesMonitor.prev" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="PagesMonitor.update_text" href="htmlsrc/video.glmonitor.html#L225">update_text</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="video.glmonitor.html#PagesMonitor.update_text" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
 <dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="DrawsMonitor" href="htmlsrc/video.glmonitor.html#L242">DrawsMonitor</a> : <span class="bclass">GraphMonitor</span> <span class="attrs">[<span class="prot">package</span>, <span class="stc">final</span>]</span> <a href="video.glmonitor.html#DrawsMonitor" class="plink">¶</a></dt>
 <dd class="ddef">
@@ -115,7 +67,7 @@
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sun Feb 13 23:44:20 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Mon Feb 14 02:06:46 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

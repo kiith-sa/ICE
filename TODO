@@ -1,16 +1,9 @@
-Then:
+Now:
+
 Rewrite all docs comments to /// and /** format
+and write docs where not present.
+Also add code examples where needed/applicable.
 
-19:
-    Use the same doc format throughout. Either Doxygen or DDoc.
-    DDoc would probably be better.
-    Then generate the docs, use CandyDoc or something to make them
-    not look like shit.
-                                                                  
-    Find a way to generate DDoc for public only, or public+protected etc.
-    Maybe CandyDoc can do that?
-
-    Also add some coding examples to e.g. GUI DDoc, maybe VideoDriver
 20:
     Screenshot. Probably glReadPixels from framebuffer. Also need PNG output 
     (must be with a function that still exists in GL3!)

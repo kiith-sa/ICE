@@ -42,29 +42,6 @@
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Static text element. Text is broken down into lines to fit width.</div></div>
 <dl>
-<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="GUIStaticText.TextLine" href="htmlsrc/gui.guistatictext.html#L42">TextLine</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.TextLine" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div>
-<dl>
-<dt class="decl">Vector2i <a class="symbol _variable" name="GUIStaticText.TextLine.offset" href="htmlsrc/gui.guistatictext.html#L45">offset</a> <a href="gui.guistatictext.html#GUIStaticText.TextLine.offset" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">string <a class="symbol _variable" name="GUIStaticText.TextLine.text" href="htmlsrc/gui.guistatictext.html#L47">text</a> <a href="gui.guistatictext.html#GUIStaticText.TextLine.text" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl">string <a class="symbol _variable" name="GUIStaticText.text_" href="htmlsrc/gui.guistatictext.html#L51">text_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.text_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">AlignX <a class="symbol _variable" name="GUIStaticText.align_x_" href="htmlsrc/gui.guistatictext.html#L53">align_x_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.align_x_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">AlignY <a class="symbol _variable" name="GUIStaticText.align_y_" href="htmlsrc/gui.guistatictext.html#L54">align_y_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.align_y_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">TextLine[] <a class="symbol _variable" name="GUIStaticText.lines_" href="htmlsrc/gui.guistatictext.html#L57">lines_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.lines_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">string <a class="symbol _variable" name="GUIStaticText.font_" href="htmlsrc/gui.guistatictext.html#L60">font_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.font_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">uint <a class="symbol _variable" name="GUIStaticText.font_size_" href="htmlsrc/gui.guistatictext.html#L63">font_size_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.font_size_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Color <a class="symbol _variable" name="GUIStaticText.font_color_" href="htmlsrc/gui.guistatictext.html#L65">font_color_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.font_color_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">uint <a class="symbol _variable" name="GUIStaticText.line_gap_" href="htmlsrc/gui.guistatictext.html#L68">line_gap_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.line_gap_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIStaticText.text_color" href="htmlsrc/gui.guistatictext.html#L72">text_color</a><span class="params">(Color <em>color</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.text_color" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Set text color.</div></div></dd>
@@ -82,10 +59,6 @@
 <dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIStaticText.draw" href="htmlsrc/gui.guistatictext.html#L117">draw</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.draw" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIStaticText.realign" href="htmlsrc/gui.guistatictext.html#L133">realign</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.realign" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="GUIStaticText.add_line" href="htmlsrc/gui.guistatictext.html#L154">add_line</a><span class="params">(VideoDriver <em>driver</em>, string <em>text</em>, uint <em>y_offset_in</em>,  <span class="k">out</span> uint <em>y_offset_out</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.add_line" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIStaticText.align_vertical" href="htmlsrc/gui.guistatictext.html#L234">align_vertical</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.align_vertical" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
 <dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GUIStaticTextFactory" href="htmlsrc/gui.guistatictext.html#L267">GUIStaticTextFactory</a> : <span class="bclass">GUIElementFactoryBase!(GUIStaticText)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="gui.guistatictext.html#GUIStaticTextFactory" class="plink">¶</a></dt>
 <dd class="ddef">
@@ -116,7 +89,7 @@
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sun Feb 13 23:44:21 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Mon Feb 14 02:06:46 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>
