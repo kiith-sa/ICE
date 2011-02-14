@@ -248,7 +248,8 @@ class GUIElement
 
             if(height < 0 || width < 0)
             {
-                throw new Exception("Negative width and/or height of a GUI element!");
+                throw new Exception("Negative width and/or height of a GUI element! "
+                                    "Probably caused by incorrect GUI math expressions.");
             }
 
             bounds_.max = bounds_.min + Vector2i(width, height);

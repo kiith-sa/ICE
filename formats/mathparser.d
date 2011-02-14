@@ -13,26 +13,32 @@ import std.conv;
 import containers.array;
 
 
-///Parse given string as a math expression.
 /**
+ * Parse a string as a math expression.
+ *
  * An associative array of substitutions can be passed
  * to substitute strings in the expression for numbers.
  * Substitutions are not checked for operators or spaces, so it
  * is possible to e.g. substitute "abc * d" for 42 .
- * @return result of the expression.
+ *
+ * Params:  expression    = Math expression to parse.
+ *          substitutions = Substitutions to use.
+ *
+ * Returns: Result of the expression.
+ *
+ * Throws:  Exception if the expression is invalid 
+ *          (e.g. parentheses mismatch or redundant operator)
  */
-T parse_math(T)(string input, T[string] substitutions = null)
+T parse_math(T)(string expression, T[string] substitutions = null)
 {
-    if(input.length == 0)
+    if(expression.length == 0)
     {
         throw new Exception("Can't parse an empty string as a math expression");
     }
-    if(substitutions !is null)
-    {
-        return parse_postfix!(T)(to_postfix(substitute(input, substitutions)));
-    }
-    return parse_postfix!(T)(to_postfix(input));
+    if(substitutions !is null){expression = substitute(expression, substitutions);}
+    return parse_postfix!(T)(to_postfix(expression));
 }
+///Unittest for parse_math
 unittest
 {
     int[string] substitutions;
@@ -46,13 +52,20 @@ unittest
 
 
 private:
-    dchar [] formatting = ['(', ')'];
-    dchar [] associative = ['*', '+'];
-    dchar [] associative_left = ['-', '/'];
-    dchar [] arithmetic;
-    dchar [] operators;
+    ///Formatting operators (parentheses).
+    dchar[] formatting = ['(', ')'];
+    ///Associative operators.
+    dchar[] associative = ['*', '+'];
+    ///Left-associative operators.
+    dchar[] associative_left = ['-', '/'];
+    ///All arithmetic operators.
+    dchar[] arithmetic;
+    ///All operators.
+    dchar[] operators;
+    ///Operator precedences indexed by the operators (higher number - higher precedence)
     uint[dchar] precedence;
 
+    ///Static constructor. Set up operator arrays.
     static this()
     {
         arithmetic = associative ~ associative_left;
@@ -60,7 +73,14 @@ private:
         precedence = ['+':1, '-':1, '*':2, '/':2, '(':3, ')':3];
     }
 
-    ///Substitute strings for numbers based on a dictionary.
+    /**
+     * Substitute strings for numbers based on a dictionary.
+     *
+     * Params:  input         = String to apply substitutions to.
+     *          substitutions = Dictionary of substitutions to apply.
+     *
+     * Returns: Input string with substitutions applied.
+     */
     string substitute(T)(string input, T[string] substitutions)
     {
         alias std.string.toString to_string;
@@ -68,8 +88,17 @@ private:
         return input;
     }
 
-    ///Convert an infix math expression to postfix (reverse polish) notation. 
-    string to_postfix(string input)
+    /**
+     * Convert an infix math expression to postfix (reverse polish) notation. 
+     *
+     * Params:  expression = Infix expression to convert.
+     *
+     * Returns: Input expression converted to postfix notation.
+     *
+     * Throws:  Exception if the expression is invalid 
+     *          (e.g. parentheses mismatch or redundant operator)
+     */
+    string to_postfix(string expression)
     {
         alias containers.array.contains contains;
         dchar[] stack;
@@ -85,7 +114,7 @@ private:
                 return c;}
             return 0;}
 
-        foreach(dchar c; input)
+        foreach(dchar c; expression)
         {
             //ignore spaces
             if(iswhite(c)){continue;}
@@ -97,7 +126,7 @@ private:
                 //if there are two operators in a row, we have an error.
                 if(arithmetic.contains(prev_c) && arithmetic.contains(c))
                 {
-                    throw new Exception("Redunant operator in math expression " ~ input);
+                    throw new Exception("Redundant operator in math expression " ~ expression);
                 }
                 //parentheses
                 if(c == '('){stack ~= c;}//push to stack
@@ -109,7 +138,7 @@ private:
                         if(tok == 0)
                         {
                             throw new Exception("Parenthesis mismatch in math "
-                                                "expression " ~ input);
+                                                "expression " ~ expression);
                         }
                         output ~= " ";
                         output ~= tok;
@@ -149,7 +178,7 @@ private:
         {
             if(tok == '(')
             {
-                throw new Exception("Parenthesis mismatch in math expression " ~ input);
+                throw new Exception("Parenthesis mismatch in math expression " ~ expression);
             }
             tok = pop();
 
@@ -162,7 +191,15 @@ private:
         return output;
     }
 
-    ///Parse a postfix math expression and return its result.
+    /**
+     * Parse a postfix math expression and return its result.
+     *
+     * Params:  postfix = Postfix expression to parse.
+     *
+     * Returns: Result of the expression.
+     *
+     * Throws:  Exception if an invalid token is detected in the expression.
+     */
     T parse_postfix(T)(string postfix)
     {
         T[] stack;

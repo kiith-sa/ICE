@@ -163,6 +163,19 @@ Actually, only add code examples where really needed - too much work
     Screen size change (in an Options dialog in menu, not during Game run)
 25:
     User configurable key bindings - stored in HumanPlayer
+25:
+    Simple logging. (basically just a wrapper around std.stdio
+    with a few extra features maybe, but no console or in-game log display yet.
+    Look at Wesnoth, Xonotic, other FOSS games and how they handle logging.
+    Also articles on FlipCode, GameDev, DevMaster, GPWiki and such.
+    Remember to make it simple.)
+    When logging works:
+    Handle exceptions thrown by parse_math() in GUIElement.realign()
+    by using some fixed bounds for the GUI element and logging
+    an error.
+
+    Also, if GUI element width/height is negative, don't throw, just
+    clamp width/height to zero or some fixed value and log an error message.
 14:
     AI difficulty settings;
 1:
