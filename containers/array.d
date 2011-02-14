@@ -8,7 +8,6 @@ module containers.array;
 
 
 import std.math;
-import std.string;
 
 
 /**
@@ -27,7 +26,7 @@ import std.string;
  * --------------------
  * 
  * --------------------
- * //Assuming foo is a class defined somewhere prior with a constructor
+ * //Assuming Foo is a class defined somewhere prior with a constructor
  * //that always constructs identical instance when given identical parameters.
  *
  * Foo[] array = [new Foo(1), new Foo(2), new Foo(1), new Foo(2)];
@@ -54,13 +53,13 @@ void remove_first(T)(ref T[] array, T element, bool ident = false)
 }
 
 /**
- * Remove element from the array.
+ * Remove an element from the array.
  * 
  * All matching elements will be removed. 
  *
  * Params:  array = Array to remove from.
  *          elem  = Element to remove from the array.
- *          ident = If true, remove exactly elem (is elem) instead 
+*          ident = If true, remove exactly elem (is elem) instead 
  *                  of anything equal to elem (== elem).
  *                  Only makes sense for reference types.
  * Examples:
@@ -70,7 +69,7 @@ void remove_first(T)(ref T[] array, T element, bool ident = false)
  * --------------------
  * 
  * --------------------
- * //Assuming foo is a class defined somewhere prior with a constructor
+ * //Assuming Foo is a class defined somewhere prior with a constructor
  * //that always constructs identical instance when given identical parameters.
  *
  * Foo[] array = [new Foo(1), new Foo(2), new Foo(1), new Foo(2)];
@@ -123,14 +122,7 @@ unittest
         this(int a, int b){a_ = a; b_ = b;}
         bool opEquals(Element e){return a_ == e.a_ && b_ == e.b_;}
         //compares sums of both elements.
-        int opCmp(Element e)
-        {
-            int s1 = a_ + b_;
-            int s2 = e.a_ + e.b_;
-            return s1 - s2;
-        }
-        //used for debugging
-        string to_string(){return std.string.toString(a_) ~ "," ~ std.string.toString(b_);}
+        int opCmp(Element e){return a_ + b_ - (e.a_ + e.b_);}
     }
 
     Element[] default_array = [new Element(0, 1),
@@ -234,7 +226,7 @@ unittest
  * --------------------
  * 
  * --------------------
- * //Assuming foo is a class defined somewhere prior with a constructor
+ * //Assuming Foo is a class defined somewhere prior with a constructor
  * //that always constructs identical instance when given identical parameters.
  *
  * Foo[] array = [new Foo(1), new Foo(2), new Foo(1), new Foo(2)];
@@ -247,10 +239,7 @@ bool contains(T)(T[] array, T element, bool ident = false)
 {
     foreach(array_element; array)
     {
-        if(ident ? array_element is element : array_element == element)
-        {
-            return true;
-        }
+        if(ident ? array_element is element : array_element == element){return true;}
     }
     return false;
 }
@@ -262,16 +251,14 @@ unittest
         int a_, b_;
         this(int a, int b){a_ = a; b_ = b;}
         int opEquals(Element e){return a_ == e.a_ && b_ == e.b_;}
-        //used for debugging
-        string to_string(){return std.string.toString(a_) ~ "," ~ std.string.toString(b_);}
     }
-
 
     Element[] array = [new Element(0, 1),
                        new Element(1, 0),
                        new Element(1, 0),
                        new Element(0, 1),
                        new Element(0, 1)];
+
 
     assert(!array.contains(new Element(1, 1)));
     assert(!array.contains(new Element(0, 1), true));
@@ -280,28 +267,56 @@ unittest
 }
 
 /**
- * Returns minimum value from an array.
+ * Returns minimum value of an array.
  *
  * Uses the > operator (opCmp for structs and classes) to get the minimum.
+ * If more than one element in the array is the minimum, any one of them could
+ * be returned.
  *
  * Params:  array = Array to find the minimum in. Must not be empty.
  *
  * Returns: Minimum of the array.
+ *
+ * Examples:
+ * --------------------
+ * int[] array = [1, 2, 1, 3];
+ * int minimum = array.min(); //minimum is 1
+ * array = [];
+ * minimum = array.min();     //ERROR, can't get minimum of an empty array.
+ * --------------------
+ *
+ * --------------------
+ * //Assuming Foo is a class defined somewhere prior with a constructor
+ * //that always constructs identical instance when given identical parameters,
+ * //and has an opCmp operator result of which is integer comparison of parameters
+ * //passed to constructors of the instances.
+ *
+ * Foo[] array = [new Foo(1), new Foo(2), new Foo(1), new Foo(2)];
+ * Foo minimum = array.min(); //minimum is the first or third element of the array.
+ * --------------------
  */
 T min(T) (T array []){return min(array, (ref T a, ref T b){return a > b;});}
 
 /**
- * Returns minimum value from an array.
+ * Returns minimum value of an array using a function to compare elements.
  *
- * Uses a function delegate to compare elements and get the minimum.
+ * If more than one element in the array is the minimum, any one of them could
+ * be returned.
  *
  * Params:  array = Array to find the minimum in. Must not be empty.
- *          deleg = Function to use for comparison. Must take, by reference,
- *                  two parameters of the type stored in array and return a
- *                  bool value that is true when the first parameter is greater
- *                  than the second, false otherwise.
+ *          deleg = Comparison function. Takes two parameters of the type stored 
+ *                  in the array by reference and returns a bool that is true 
+ *                  when the first parameter is greater than second, false otherwise.
  *
  * Returns: Minimum of the array.
+ *
+ * Examples:
+ * --------------------
+ * int[] array = [1, 2, 1, 3];
+ * int minimum = array.min((ref int a, ref int b){return a < b;}); //minimum is 3
+ * array = [];
+ * minimum = array.min(); //ERROR, can't get minimum of an empty array.
+ * --------------------
  */
 T min(T) (T array [], bool delegate(ref T a, ref T b) deleg)
 in{assert(array.length > 0, "Can't get minimum of an empty array");}
@@ -315,36 +330,58 @@ body
     }
     return *minimum;
 }
-unittest
-{
-    int[5] ints = [2, 1, 4, 5, -5];
-    assert(min(ints) == -5);
-    assert(min(ints,(ref int a, ref int b){return abs(a) > abs(b);}) == 1);
-}
 
 /**
- * Returns maximum value from an array.
+ * Returns maximum value of an array.
  *
  * Uses the > operator (opCmp for structs and classes) to get the maximum.
+ * If more than one element in the array is the maximum, any one of them could
+ * be returned.
  *
  * Params:  array = Array to find the maximum in. Must not be empty.
  *
  * Returns: Maximum of the array.
+ *
+ * Examples:
+ * --------------------
+ * int[] array = [1, 2, 1, 3];
+ * int maximum = array.max; //maximum is 3
+ * array = [];
+ * maximum = array.max();   //ERROR, can't get maximum of an empty array.
+ * --------------------
+ *
+ * --------------------
+ * //Assuming Foo is a class defined somewhere prior with a constructor
+ * //that always constructs identical instance when given identical parameters,
+ * //and has an opCmp operator result of which is integer comparison of parameters
+ * //passed to constructors of the instances.
+ *
+ * Foo[] array = [new Foo(1), new Foo(2), new Foo(1), new Foo(2)];
+ * Foo maximum = array.max(); //maximum is the second or fourth element of the array.
+ * --------------------
  */
 T max(T) (T array []){return max(array, (ref T a, ref T b){return a > b;});}
 
 /**
- * Returns maximum value from an array.
+ * Returns maximum value of an array using a function to compare elements.
  *
- * Uses a function delegate to compare elements and get the maximum.
+ * If more than one element in the array is the maximum, any one of them could
+ * be returned.
  *
  * Params:  array = Array to find the maximum in. Must not be empty.
- *          deleg = Function to use for comparison. Must take, by reference,
- *                  two parameters of the type stored in array and return a
- *                  bool value that is true when the first parameter is greater
- *                  than the second, false otherwise.
+ *          deleg = Comparison function. Takes two parameters of the type stored 
+ *                  in the array by reference and returns a bool that is true 
+ *                  when the first parameter is greater than second, false otherwise.
  *
  * Returns: Maximum of the array.
+ *
+ * Examples:
+ * --------------------
+ * int[] array = [1, 2, 1, 3];
+ * int maximum = array.max((ref int a, ref int b){return a > b;}); //maximum is 3
+ * array = [];
+ * maximum = array.max(); //ERROR, can't get maximum of an empty array.
+ * --------------------
  */
 T max(T) (T array [], bool delegate(ref T a, ref T b) deleg)
 in{assert(array.length > 0, "Can't get maximum of an empty array");}
@@ -360,9 +397,32 @@ body
     }
     return *maximum;
 }
+///Unittest for all min() and max() functions.
 unittest
 {
-    int[5] ints = [-2, 1, -4, -5, -5];
-    assert(max(ints) == 1);
-    assert(max(ints,(ref int a, ref int b){return abs(a) > abs(b);}) == -5);
+    class Element
+    {
+        int a_, b_;
+        this(int a, int b){a_ = a; b_ = b;}
+        //compares sums of both elements.
+        int opCmp(Element e){return a_ + b_ - (e.a_ + e.b_);}
+    }
+
+    Element[] array = [new Element(5, 1),
+                       new Element(1, 6),
+                       new Element(3, -2),
+                       new Element(9, -1),
+                       new Element(5, 2)];
+
+    int[] array_ints = [2, 1, 4, 5, -5];
+    assert(array_ints.min() == -5);
+    assert(array.min() is array[2]);
+    assert(array_ints.min((ref int a, ref int b){return abs(a) > abs(b);}) == 1);
+    assert(array_ints.min((ref int a, ref int b){return a < b;}) == 5);
+
+    array_ints = [-2, 1, -4, -5, -5];
+    assert(array_ints.max() == 1);
+    assert(array.max() is array[3]);
+    assert(array_ints.max((ref int a, ref int b){return abs(a) > abs(b);}) == -5);
+    assert(array_ints.max((ref int a, ref int b){return a > b;}) == 1);
 }
