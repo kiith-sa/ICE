@@ -17,11 +17,14 @@ import util.signal;
 import util.factory;
 
 
-///Enumerates states a button can be in.
+///States a button can be in.
 enum ButtonState
 {
+    ///Normal (default) state.
     Normal,
+    ///Mouse is above the button.
     MouseOver,
+    ///Mouse is clicking or holding the button.
     Clicked
 }                   
 
@@ -29,38 +32,35 @@ enum ButtonState
 class GUIButton : GUIElement
 {
     private:
-        //Struct for properties that vary between button states.
+        ///Struct for properties that vary between button states.
         static align(1) struct State
         {
-            //Color of button border.
+            ///Color of button border.
             Color border_color;
-            //Color of button text.
+            ///Color of button text.
             Color text_color;
         }
 
-        //Properties for each button state.
+        ///Properties for each button state.
         State[ButtonState.max + 1] states_;
-
-        //Current button state.
+        ///Current button state.
         ButtonState state_ = ButtonState.Normal;
         
-        //Button text.
+        ///Button text.
         GUIStaticText text_;     
 
     public:
         ///Emitted when this button is pressed.
         mixin Signal!() pressed;
 
-        void die()
+        override void die()
         {
             super.die();
             text_ = null;
         }
 
-        final void text(string text){text_.text = text;}
-
     protected:    
-        /*
+        /**
          * Construct a button with specified parameters.
          *
          * Params:  params    = Parameters for GUIElement constructor.
@@ -73,8 +73,10 @@ class GUIButton : GUIElement
         {
             super(params);
 
+            //initialize button text
             auto factory = new GUIStaticTextFactory;
             factory.font_size = font_size;
+            factory.text = text;
             with(factory)
             {
                 x = "p_left";
@@ -85,12 +87,9 @@ class GUIButton : GUIElement
                 align_y = AlignY.Center;
                 this.text_ = produce();
             }
-            text_.text = text;
             add_child(text_); 
 
-            states_[ButtonState.Normal] = states[ButtonState.Normal];
-            states_[ButtonState.MouseOver] = states[ButtonState.MouseOver];
-            states_[ButtonState.Clicked] = states[ButtonState.Clicked];
+            states_[] = states[];
             set_state(ButtonState.Normal);
         }
 
@@ -107,30 +106,29 @@ class GUIButton : GUIElement
 
                     //If the mouse is pressed _and_ released over the button,
                     //emit the signal
-                    else if(state == KeyState.Released && 
-                            state_ == ButtonState.Clicked)
+                    else if(state == KeyState.Released && state_ == ButtonState.Clicked)
                     {
                         set_state(ButtonState.MouseOver);
                         pressed.emit();
                     }
                 }
-                return;
             }
-            set_state(ButtonState.Normal);
+            //set normal state if mouse is released (or pressed) outside the button.
+            else{set_state(ButtonState.Normal);}
         }
 
         override void mouse_move(Vector2u position, Vector2i relative)
         {
             super.mouse_move(position, relative);
 
-            //if clicked, keep that state so that we can drag mouse 
-            //after clicking a button.
+            //if clicked, keep that state so that we can drag mouse after clicking a button.
             if(state_ == ButtonState.Clicked){return;}
-            //if the mouse is above the element
+            //if the mouse is above the element and not clicked, set mouseover
             if(bounds_.intersect(Vector2i(position.x, position.y)))
             {
                 set_state(ButtonState.MouseOver);
             }
+            //if mouse is outside the element and not clicked, return to normal
             else{set_state(ButtonState.Normal);}
         }
 
@@ -142,16 +140,15 @@ class GUIButton : GUIElement
 
             if(draw_border_)
             {
-                Vector2f min = Vector2f(bounds_.min.x, bounds_.min.y);
-                Vector2f max = Vector2f(bounds_.max.x, bounds_.max.y);
-                driver.draw_rectangle(min, max, states_[state_].border_color);
+                driver.draw_rectangle(to!(float)(bounds_.min), to!(float)(bounds_.max), 
+                                      states_[state_].border_color);
             }
 
             draw_children(driver);
         }
 
     private:
-        //Change button state and update text element accordingly.
+        ///Change button state and update text element accordingly.
         final void set_state(ButtonState state)
         {
             state_ = state;
@@ -165,7 +162,7 @@ class GUIButton : GUIElement
  * See_Also: GUIElementFactoryBase
  *
  * Params:  text         = Button text.
- *                         Default: ""
+ *                         Default; ""
  *          font_size    = Font size of the button text.
  *          text_color   = Text color for specified button state.
  *          border_color = Border color for specified button state.
@@ -175,11 +172,13 @@ final class GUIButtonFactory : GUIElementFactoryBase!(GUIButton)
     mixin(generate_factory("string $ text $ \"\"", 
                            "uint $ font_size $ GUIStaticText.default_font_size()"));
     private:
-        //Properties for each button state.
+        ///Properties for each button state.
         GUIButton.State[ButtonState.max + 1] states_;
     public:
+        ///Construct a GUIButtonFactory.
         this()
         {
+            //Initialize default values for button colors.
             states_[ButtonState.Normal].border_color = Color(192, 192, 255, 96);
             states_[ButtonState.Normal].text_color = Color(160, 160, 255, 192);
             states_[ButtonState.MouseOver].border_color = Color(192, 192, 255, 160);
