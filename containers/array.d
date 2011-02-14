@@ -197,6 +197,8 @@ unittest
  * --------------------
  */
 int find(T)(ref T[] array, bool delegate(ref T) deleg)
+out(result){assert(result < cast(int)array.length, "Find result out of bounds");}
+body
 {
     foreach(index, ref element; array){if(deleg(element)){return index;}}
     return -1;

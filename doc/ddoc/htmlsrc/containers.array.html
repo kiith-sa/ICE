@@ -22,7 +22,6 @@
 
 
 <span class="d Import"><span class="k">import</span> <span class="i">std</span>.<span class="i">math</span>;</span>
-<span class="d Import"><span class="k">import</span> <span class="i">std</span>.<span class="i">string</span>;</span>
 
 
 <span class="bc">/**
@@ -212,7 +211,9 @@
  * --------------------
  */</span>
 <span class="d Template"><span class="d Compound"><span class="d Function"><span class="t Integral"><span class="k">int</span></span> <span class="i">find</span><span class="o TemplateParameters">(<span class="o TemplateTypeParameter"><span class="i">T</span></span>)</span><span class="o Parameters">(<span class="o Parameter"><span class="k">ref</span> <span class="t Identifier"><span class="i">T</span></span><span class="t Array">[]</span> <span class="i">array</span></span>, <span class="o Parameter"><span class="t Integral"><span class="k">bool</span></span> <span class="t Delegate"><span class="k">delegate</span><span class="o Parameters">(<span class="o Parameter"><span class="k">ref</span> <span class="t Identifier"><span class="i">T</span></span></span>)</span></span> <span class="i">deleg</span></span>)</span>
-<span class="s FuncBody"><span class="s Compound">{
+<span class="s FuncBody"><span class="k">out</span>(<span class="i">result</span>)<span class="s Compound">{<span class="s Expression"><span class="e Assert"><span class="k">assert</span>(<span class="e Rel"><span class="e Identifier"><span class="i">result</span></span> &lt; <span class="e Cast"><span class="k">cast</span>(<span class="t Integral"><span class="k">int</span></span>)<span class="e Identifier"><span class="i">array</span></span></span>.<span class="e Identifier"><span class="i">length</span></span></span>, <span class="e String"><span class="sl">"Find result out of bounds"</span></span>)</span>;</span>}</span>
+<span class="k">body</span>
+<span class="s Compound">{
     <span class="s Foreach"><span class="k">foreach</span>(<span class="o Parameters"><span class="o Parameter"><span class="i">index</span></span>, <span class="o Parameter"><span class="k">ref</span> <span class="i">element</span></span></span>; <span class="e Identifier"><span class="i">array</span></span>)<span class="s Scope"><span class="s Compound">{<span class="s If"><span class="k">if</span>(<span class="e Call"><span class="e Identifier"><span class="i">deleg</span></span>(<span class="i">element</span>)</span>)<span class="s Scope"><span class="s Compound">{<span class="s Return"><span class="k">return</span> <span class="e Identifier"><span class="i">index</span></span>;</span>}</span></span></span>}</span></span></span>
     <span class="s Return"><span class="k">return</span> <span class="e Sign">-<span class="e Int"><span class="n">1</span></span></span>;</span>
 }</span></span></span></span></span>
@@ -441,7 +442,6 @@
     <span class="s Expression"><span class="e Assert"><span class="k">assert</span>(<span class="e Equal"><span class="e Call"><span class="e Identifier"><span class="i">array_ints</span></span>.<span class="e Identifier"><span class="i">max</span></span>((<span class="k">ref</span> <span class="k">int</span> <span class="i">a</span>, <span class="k">ref</span> <span class="k">int</span> <span class="i">b</span>){<span class="k">return</span> <span class="i">abs</span>(<span class="i">a</span>) &gt; <span class="i">abs</span>(<span class="i">b</span>);})</span> == <span class="e Sign">-<span class="e Int"><span class="n">5</span></span></span></span>)</span>;</span>
     <span class="s Expression"><span class="e Assert"><span class="k">assert</span>(<span class="e Equal"><span class="e Call"><span class="e Identifier"><span class="i">array_ints</span></span>.<span class="e Identifier"><span class="i">max</span></span>((<span class="k">ref</span> <span class="k">int</span> <span class="i">a</span>, <span class="k">ref</span> <span class="k">int</span> <span class="i">b</span>){<span class="k">return</span> <span class="i">a</span> &gt; <span class="i">b</span>;})</span> == <span class="e Int"><span class="n">1</span></span></span>)</span>;</span>
 }</span></span></span></span>
-
 
 </pre></td>
 </tr></table>
