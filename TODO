@@ -3,6 +3,7 @@ Now:
 Rewrite all docs comments to /// and /** format
 and write docs where not present.
 Also add code examples where needed/applicable.
+Actually, only add code examples where really needed - too much work
 
 20:
     Screenshot. Probably glReadPixels from framebuffer. Also need PNG output 

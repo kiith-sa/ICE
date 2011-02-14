@@ -9,4 +9,5 @@
 ["resolve_penetration",12,[2],[59,84],[]],
 ["collision_response",12,[2],[87,98],[]],
 ["desired_delta_velocity",12,[2],[101,105],[]],
-["inverse_mass_total",12,[2],[108,108],[]]]]]]
+["inverse_mass_total",12,[2],[108,108],[]],
+["contact_velocity",12,[0],[113,113],[]]]]]]

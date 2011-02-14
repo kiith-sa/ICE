@@ -38,6 +38,17 @@
 <dt class="decl">Cell <a class="symbol _variable" name="GridSpatialManager.outer_" href="htmlsrc/spatial.gridspatialmanager.html#L60">outer_</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.outer_" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Cell representing the area outside the grid.</div></div></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GridSpatialManager.ObjectIterator" href="htmlsrc/spatial.gridspatialmanager.html#L64">ObjectIterator</a><span class="tparams">(<em>T</em>)</span> : <span class="bclass">Iterator!(T[])</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.ObjectIterator" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div>
+<dl>
+<dt class="decl"><span class="rettyp">int</span> <a class="symbol _function" name="GridSpatialManager.ObjectIterator.opApply" href="htmlsrc/spatial.gridspatialmanager.html#L67">opApply</a><span class="params">(int delegate(ref T[]) <em>dg</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.ObjectIterator.opApply" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl">Vector2f <a class="symbol _variable" name="GridSpatialManager.origin_" href="htmlsrc/spatial.gridspatialmanager.html#L86">origin_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.origin_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">float <a class="symbol _variable" name="GridSpatialManager.cell_size_" href="htmlsrc/spatial.gridspatialmanager.html#L88">cell_size_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.cell_size_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">uint <a class="symbol _variable" name="GridSpatialManager.grid_size_" href="htmlsrc/spatial.gridspatialmanager.html#L90">grid_size_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.grid_size_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><a class="symbol _ctor" name="GridSpatialManager.this" href="htmlsrc/spatial.gridspatialmanager.html#L100">this</a><span class="params">(Vector2f <em>center</em>, float <em>cell_size</em>, uint <em>grid_size</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct a grid spatial manager with specified parameters.</div></div>
@@ -60,11 +71,21 @@
 <dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><span class="rettyp">uint</span> <a class="symbol _function" name="GridSpatialManager.grid_size" href="htmlsrc/spatial.gridspatialmanager.html#L180">grid_size</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.grid_size" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Get grid size (both X and Y) in cells.</div></div></dd></dl></dd></dl>
+<div class="summary"><div class="cmnt">Get grid size (both X and Y) in cells.</div></div></dd>
+<dt class="decl"><span class="rettyp">Cell*[]</span> <a class="symbol _function" name="GridSpatialManager.cells" href="htmlsrc/spatial.gridspatialmanager.html#L194">cells</a><span class="params">(Vector2f <em>position</em>, Volume <em>volume</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.cells" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">Cell*[]</span> <a class="symbol _function" name="GridSpatialManager.cells_aabbox" href="htmlsrc/spatial.gridspatialmanager.html#L216">cells_aabbox</a><span class="params">(Vector2f <em>position</em>, VolumeAABBox <em>box</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.cells_aabbox" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">Cell*[]</span> <a class="symbol _function" name="GridSpatialManager.cells_circle" href="htmlsrc/spatial.gridspatialmanager.html#L229">cells_circle</a><span class="params">(Vector2f <em>position</em>, VolumeCircle <em>circle</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.cells_circle" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">Cell*[]</span> <a class="symbol _function" name="GridSpatialManager.cells_rectangle" href="htmlsrc/spatial.gridspatialmanager.html#L246">cells_rectangle</a><span class="params">(Vector2f <em>position</em>,  <span class="k">ref</span> Rectanglef <em>rect</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.cells_rectangle" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _unittest" name="GridSpatialManager.unittest" href="htmlsrc/spatial.gridspatialmanager.html#L286">unittest</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.unittest" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Mon Feb 14 17:10:48 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Mon Feb 14 20:24:20 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

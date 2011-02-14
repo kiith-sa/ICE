@@ -51,7 +51,7 @@
  */</span>
 <span class="d Template"><span class="d Compound"><span class="d Function"><span class="t Integral"><span class="k">void</span></span> <span class="i">remove_first</span><span class="o TemplateParameters">(<span class="o TemplateTypeParameter"><span class="i">T</span></span>)</span><span class="o Parameters">(<span class="o Parameter"><span class="k">ref</span> <span class="t Identifier"><span class="i">T</span></span><span class="t Array">[]</span> <span class="i">array</span></span>, <span class="o Parameter"><span class="t Identifier"><span class="i">T</span></span> <span class="i">element</span></span>, <span class="o Parameter"><span class="t Integral"><span class="k">bool</span></span> <span class="i">ident</span> = <span class="e Bool"><span class="k">false</span></span></span>)</span>
 <span class="s FuncBody"><span class="s Compound">{
-    <span class="s Foreach"><span class="k">foreach</span>(<span class="o Parameters"><span class="o Parameter"><span class="i">index</span></span>, <span class="o Parameter"><span class="i">array_element</span></span></span>; <span class="e Identifier"><span class="i">array</span></span>)
+    <span class="s Foreach"><span class="k">foreach</span>(<span class="o Parameters"><span class="o Parameter"><span class="i">index</span></span>, <span class="o Parameter"><span class="k">ref</span> <span class="i">array_element</span></span></span>; <span class="e Identifier"><span class="i">array</span></span>)
     <span class="s Scope"><span class="s Compound">{
         <span class="s If"><span class="k">if</span>(<span class="e Cond"><span class="e Identifier"><span class="i">ident</span></span> ? <span class="e Identity"><span class="e Identifier"><span class="i">array_element</span></span> <span class="k">is</span> <span class="e Identifier"><span class="i">element</span></span></span> : <span class="e Equal"><span class="e Identifier"><span class="i">array_element</span></span> == <span class="e Identifier"><span class="i">element</span></span></span></span>)
         <span class="s Scope"><span class="s Compound">{
@@ -73,7 +73,7 @@
  *
  * Params:  array = Array to remove from.
  *          elem  = Element to remove from the array.
-*          ident = If true, remove exactly elem (is elem) instead 
+ *          ident = If true, remove exactly elem (is elem) instead 
  *                  of anything equal to elem (== elem).
  *                  Only makes sense for reference types.
  * Examples:

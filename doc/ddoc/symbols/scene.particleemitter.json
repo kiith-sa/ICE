@@ -1,6 +1,15 @@
 ["particleemitter",1,[],[1,191],[
+["Particle",5,[0],[26,35],[
+["timer",11,[],[29,29],[]],
+["position",11,[],[30,30],[]],
+["velocity",11,[],[31,31],[]],
+["update",12,[],[34,34],[]]]],
 ["ParticleEmitter",3,[5],[38,169],[
 ["invariant",13,[],[40,45],[]],
+["particle_life_",11,[0],[49,49],[]],
+["time_accumulated_",11,[0],[51,51],[]],
+["angle_variation_",11,[0],[53,53],[]],
+["emit_frequency_",11,[0],[55,55],[]],
 ["particles_",11,[1],[59,59],[]],
 ["emit_velocity_",11,[1],[62,62],[]],
 ["game_time_",11,[1],[64,64],[]],

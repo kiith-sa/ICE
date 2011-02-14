@@ -34,15 +34,15 @@ import memory.memory;
  * uint a = array[1, 1]; 
  * --------------------
  */
-struct Array2D(T)
+align(1) struct Array2D(T)
 {
     private:
+        ///Manually allocated data storage.
+        T[] data_;
         ///Array height.
         uint x_;
         ///Array height.
         uint y_;
-        ///Manually allocated data storage.
-        T[] data_;
 
     public:
         /**
@@ -106,6 +106,7 @@ struct Array2D(T)
         in{assert(x < x_ && y < y_, "2D array access out of bounds");}
         body{return data_[y * x_ + x];}
 
+        //In D2, this should return const if possible
         /**
          * Get a pointer to an element of the array.
          * 

@@ -22,6 +22,39 @@
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Monitor displaying a graphical representation of the grid of GridSpatialManager.</div></div>
 <dl>
+<dt class="decl">GridSpatialManager!(T) <a class="symbol _variable" name="GridMonitor.monitored_" href="htmlsrc/spatial.gridmonitor.html#L32">monitored_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.monitored_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GridMonitor.GridView" href="htmlsrc/spatial.gridmonitor.html#L35">GridView</a> : <span class="bclass">GUIElement</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.GridView" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div>
+<dl>
+<dt class="decl"><a class="symbol _invariant" name="GridMonitor.GridView.invariant" href="htmlsrc/spatial.gridmonitor.html#L37">invariant</a> <a href="spatial.gridmonitor.html#GridMonitor.GridView.invariant" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Vector2f <a class="symbol _variable" name="GridMonitor.GridView.offset_" href="htmlsrc/spatial.gridmonitor.html#L45">offset_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.GridView.offset_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">real <a class="symbol _variable" name="GridMonitor.GridView.zoom_mult_" href="htmlsrc/spatial.gridmonitor.html#L47">zoom_mult_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.GridView.zoom_mult_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">real <a class="symbol _variable" name="GridMonitor.GridView.zoom_" href="htmlsrc/spatial.gridmonitor.html#L49">zoom_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.GridView.zoom_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _ctor" name="GridMonitor.GridView.this" href="htmlsrc/spatial.gridmonitor.html#L52">this</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.GridView.this" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GridMonitor.GridView.draw" href="htmlsrc/spatial.gridmonitor.html#L68">draw</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.GridView.draw" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GridMonitor.GridView.zoom" href="htmlsrc/spatial.gridmonitor.html#L124">zoom</a><span class="params">(float <em>relative</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.GridView.zoom" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GridMonitor.GridView.pan" href="htmlsrc/spatial.gridmonitor.html#L127">pan</a><span class="params">(Vector2f <em>relative</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.GridView.pan" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GridMonitor.GridView.reset_view" href="htmlsrc/spatial.gridmonitor.html#L130">reset_view</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.GridView.reset_view" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl">Array2D!(uint) <a class="symbol _variable" name="GridMonitor.object_counts_" href="htmlsrc/spatial.gridmonitor.html#L138">object_counts_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.object_counts_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">uint <a class="symbol _variable" name="GridMonitor.outer_object_count_" href="htmlsrc/spatial.gridmonitor.html#L140">outer_object_count_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.outer_object_count_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GridView <a class="symbol _variable" name="GridMonitor.view_" href="htmlsrc/spatial.gridmonitor.html#L143">view_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.view_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">Timer <a class="symbol _variable" name="GridMonitor.update_timer_" href="htmlsrc/spatial.gridmonitor.html#L145">update_timer_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.update_timer_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">uint <a class="symbol _variable" name="GridMonitor.grid_size_" href="htmlsrc/spatial.gridmonitor.html#L148">grid_size_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.grid_size_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><a class="symbol _ctor" name="GridMonitor.this" href="htmlsrc/spatial.gridmonitor.html#L156">this</a><span class="params">(GridSpatialManager!(T) <em>monitored</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct a GridMonitor.</div></div>
@@ -35,7 +68,7 @@
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Mon Feb 14 17:10:48 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Mon Feb 14 20:24:20 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

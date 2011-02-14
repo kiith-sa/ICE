@@ -27,6 +27,29 @@
 <dl>
 <dt class="decl">GraphData <a class="symbol _variable" name="GraphMonitor.data_" href="htmlsrc/monitor.graphmonitor.html#L38">data_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.data_" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="kw">alias</span> std.string.toString <a class="symbol _alias" name="GraphMonitor.to_string" href="htmlsrc/monitor.graphmonitor.html#L40">to_string</a> <a href="monitor.graphmonitor.html#GraphMonitor.to_string" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GUILineGraph <a class="symbol _variable" name="GraphMonitor.graph_" href="htmlsrc/monitor.graphmonitor.html#L42">graph_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.graph_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GUIButton[string] <a class="symbol _variable" name="GraphMonitor.value_buttons_" href="htmlsrc/monitor.graphmonitor.html#L45">value_buttons_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.value_buttons_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">GUIMenuHorizontal <a class="symbol _variable" name="GraphMonitor.menu_" href="htmlsrc/monitor.graphmonitor.html#L47">menu_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.menu_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GraphMonitor.Toggle" href="htmlsrc/monitor.graphmonitor.html#L51">Toggle</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.Toggle" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div>
+<dl>
+<dt class="decl">string <a class="symbol _variable" name="GraphMonitor.Toggle.name_" href="htmlsrc/monitor.graphmonitor.html#L54">name_</a> <a href="monitor.graphmonitor.html#GraphMonitor.Toggle.name_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _ctor" name="GraphMonitor.Toggle.this" href="htmlsrc/monitor.graphmonitor.html#L56">this</a><span class="params">(string <em>name</em>)</span> <a href="monitor.graphmonitor.html#GraphMonitor.Toggle.this" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphMonitor.Toggle.toggle" href="htmlsrc/monitor.graphmonitor.html#L58">toggle</a><span class="params">()</span> <a href="monitor.graphmonitor.html#GraphMonitor.Toggle.toggle" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl">Toggle[] <a class="symbol _variable" name="GraphMonitor.values_" href="htmlsrc/monitor.graphmonitor.html#L62">values_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.values_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">float <a class="symbol _variable" name="GraphMonitor.scale_x_default_" href="htmlsrc/monitor.graphmonitor.html#L65">scale_x_default_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.scale_x_default_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl">float <a class="symbol _variable" name="GraphMonitor.zoom_mult_" href="htmlsrc/monitor.graphmonitor.html#L68">zoom_mult_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.zoom_mult_" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphMonitor.die" href="htmlsrc/monitor.graphmonitor.html#L71">die</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.die" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><a class="symbol _ctor" name="GraphMonitor.this" href="htmlsrc/monitor.graphmonitor.html#L86">this</a><span class="params">(GUILineGraphFactory <em>factory</em>, GraphData <em>graph_data</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.this" class="plink">¶</a></dt>
@@ -44,6 +67,22 @@
 <dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphMonitor.add_toggle" href="htmlsrc/monitor.graphmonitor.html#L132">add_toggle</a><span class="params">(string <em>name</em>, Color <em>color</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.add_toggle" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphMonitor.update" href="htmlsrc/monitor.graphmonitor.html#L154">update</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.update" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphMonitor.init_menu" href="htmlsrc/monitor.graphmonitor.html#L166">init_menu</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.init_menu" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphMonitor.resolution_increase" href="htmlsrc/monitor.graphmonitor.html#L186">resolution_increase</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.resolution_increase" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphMonitor.resolution_decrease" href="htmlsrc/monitor.graphmonitor.html#L189">resolution_decrease</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.resolution_decrease" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphMonitor.sum" href="htmlsrc/monitor.graphmonitor.html#L192">sum</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.sum" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphMonitor.average" href="htmlsrc/monitor.graphmonitor.html#L195">average</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.average" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphMonitor.zoom" href="htmlsrc/monitor.graphmonitor.html#L198">zoom</a><span class="params">(float <em>relative</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.zoom" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphMonitor.pan" href="htmlsrc/monitor.graphmonitor.html#L206">pan</a><span class="params">(Vector2f <em>relative</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.pan" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphMonitor.reset_view" href="htmlsrc/monitor.graphmonitor.html#L209">reset_view</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="monitor.graphmonitor.html#GraphMonitor.reset_view" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
 <dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="generate_graph_monitor_ctor" href="htmlsrc/monitor.graphmonitor.html#L243">generate_graph_monitor_ctor</a><span class="params">(string[] <em>values</em>...)</span> <a href="monitor.graphmonitor.html#generate_graph_monitor_ctor" class="plink">¶</a></dt>
 <dd class="ddef">
@@ -92,7 +131,7 @@
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Mon Feb 14 17:10:48 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Mon Feb 14 20:24:19 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

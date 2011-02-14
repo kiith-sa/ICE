@@ -37,7 +37,7 @@ import std.math;
  */
 void remove_first(T)(ref T[] array, T element, bool ident = false)
 {
-    foreach(index, array_element; array)
+    foreach(index, ref array_element; array)
     {
         if(ident ? array_element is element : array_element == element)
         {
@@ -59,7 +59,7 @@ void remove_first(T)(ref T[] array, T element, bool ident = false)
  *
  * Params:  array = Array to remove from.
  *          elem  = Element to remove from the array.
-*          ident = If true, remove exactly elem (is elem) instead 
+ *          ident = If true, remove exactly elem (is elem) instead 
  *                  of anything equal to elem (== elem).
  *                  Only makes sense for reference types.
  * Examples:
