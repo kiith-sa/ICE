@@ -14,11 +14,11 @@ import std.string;
 /**
  * Remove first occurence of an element from the array.
  *
- * Params: array = Array to remove from.
- *         elem  = Element to remove from the array.
- *         ident = If true, remove exactly elem (i.e. is elem) instead 
- *                 of anything equal to elem (== elem).
- *                 Only makes sense for reference types.
+ * Params:  array = Array to remove from.
+ *          elem  = Element to remove from the array.
+ *          ident = If true, remove exactly elem (is elem) instead 
+ *                  of anything equal to elem (== elem).
+ *                  Only makes sense for reference types.
  *
  * Examples:
  * --------------------
@@ -58,10 +58,11 @@ void remove_first(T)(ref T[] array, T element, bool ident = false)
  * 
  * All matching elements will be removed. 
  *
- * Params: array = Array to remove from.
- *         elem  = Element to remove from the array.
- *         ident = Remove exactly elem (i.e. is elem) instead of anything equal to elem (== elem).
- *
+ * Params:  array = Array to remove from.
+ *          elem  = Element to remove from the array.
+ *          ident = If true, remove exactly elem (is elem) instead 
+ *                  of anything equal to elem (== elem).
+ *                  Only makes sense for reference types.
  * Examples:
  * --------------------
  * int[] array = [1, 2, 1, 3];
@@ -73,7 +74,7 @@ void remove_first(T)(ref T[] array, T element, bool ident = false)
  * //that always constructs identical instance when given identical parameters.
  *
  * Foo[] array = [new Foo(1), new Foo(2), new Foo(1), new Foo(2)];
- * array ~= array[3];                    //The last Foo is now in the array twice.
+ * array ~= array[3];              //The last Foo is now in the array twice.
  * array.remove(array[3], true);   //Removes the last two elements (indices 3 and 4)
  * array.remove(new Foo(1), true); //Removes nothing.
  * array.remove(new Foo(1));       //Removes the first and third element.
@@ -88,9 +89,9 @@ void remove(T)(ref T[] array, T element, bool ident = false)
 /**
  * Remove elements from an array with a function.
  *
- * Params: array = Array to remove from.
- *         deleg = Function determining whether to remove an element.
- *                 Any element for which this function returns true is removed.
+ * Params:  array = Array to remove from.
+ *          deleg = Function determining whether to remove an element.
+ *                  Any element for which this function returns true is removed.
  *
  * Examples:
  * --------------------
@@ -113,6 +114,7 @@ void remove(T)(ref T[] array, bool delegate(ref T) deleg)
         }
     }
 }
+///Unittest for remove_first() and both versions of remove()
 unittest
 {
     class Element
@@ -185,27 +187,62 @@ unittest
     assert(array == cast(Element[])[]);
 }
 
-///Find an element in an array using a function.
 /**
- * @param array Array to search in.
- * @param deleg Function determining if this is the element we're looking for.
- *              Element for which this function returns true will be found.
+ * Find an element in an array with a function.
  *
- * @return Index of element if found.
- * @return -1 if not found.
+ * Params:  array = Array to search in.
+ *          deleg = Function determining if this is the element we're looking for.
+ *                  Index of the first element for which this function returns true
+ *                  will be returned.
+ *
+ * Returns: Index of the element if found, -1 otherwise.
+ *
+ * Examples:
+ * --------------------
+ * int[] array = [1, 2, 1, 4, 3];
+ * int i = array.find((ref int i){return i >= 3;}); //i is 3 (fourth element).
+ * i = array.find((ref int i){return i > 4;});      //i is -1 (no element is greater than 4).
+ * --------------------
  */
 int find(T)(ref T[] array, bool delegate(ref T) deleg)
 {
     foreach(index, ref element; array){if(deleg(element)){return index;}}
     return -1;
 }
+///Unittest for find().
+unittest
+{
+    int[] array = [1, 2, 1, 4, 3];
+    assert(array.find((ref int i){return i >= 3;}) == 3);
+    assert(array.find((ref int i){return i > 4;}) == -1);
+}
 
-///Determine whether or not does an array contain an element.
 /**
-  * @param array Array to check.
-  * @param elem Element to look for.
-  * @param ident Look exactly for elem (i.e. is elem) instead of anything equal to elem (== elem).
-  */
+ * Determine whether or not does an array contain an element.
+ *
+ * Params:  array = Array to check.
+ *          elem  = Element to look for.
+ *          ident = If true, look exactly for elem (is elem) instead 
+ *                  of anything equal to elem (== elem).
+ *                  Only makes sense for reference types.
+ *
+ * Examples:
+ * --------------------
+ * int[] array = [1, 2, 1, 3];
+ * bool c = array.contains(1); //c is true.
+ * c = array.contains(5);      //c is false.
+ * --------------------
+ * 
+ * --------------------
+ * //Assuming foo is a class defined somewhere prior with a constructor
+ * //that always constructs identical instance when given identical parameters.
+ *
+ * Foo[] array = [new Foo(1), new Foo(2), new Foo(1), new Foo(2)];
+ * bool c = array.contains(array[3], true); //c is true.
+ * c = array.contains(new Foo(1), true);    //c is false.
+ * c = array.contains(new Foo(1));          //c is true.
+ * --------------------
+ */
 bool contains(T)(T[] array, T element, bool ident = false)
 {
     foreach(array_element; array)
@@ -216,6 +253,30 @@ bool contains(T)(T[] array, T element, bool ident = false)
         }
     }
     return false;
+}
+///Unittest for contains().
+unittest
+{
+    class Element
+    {
+        int a_, b_;
+        this(int a, int b){a_ = a; b_ = b;}
+        int opEquals(Element e){return a_ == e.a_ && b_ == e.b_;}
+        //used for debugging
+        string to_string(){return std.string.toString(a_) ~ "," ~ std.string.toString(b_);}
+    }
+
+
+    Element[] array = [new Element(0, 1),
+                       new Element(1, 0),
+                       new Element(1, 0),
+                       new Element(0, 1),
+                       new Element(0, 1)];
+
+    assert(!array.contains(new Element(1, 1)));
+    assert(!array.contains(new Element(0, 1), true));
+    assert(array.contains(array[3], true));
+    assert(array.contains(new Element(0, 1)));
 }
 
 /**
