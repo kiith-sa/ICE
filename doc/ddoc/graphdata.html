@@ -42,69 +42,6 @@
 <dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl">uint <a class="symbol _variable" name="GraphData.Value.value_count" href="htmlsrc/graphdata.html#L39">value_count</a> <a href="graphdata.html#GraphData.Value.value_count" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GraphData.Graph" href="htmlsrc/graphdata.html#L43">Graph</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="graphdata.html#GraphData.Graph" class="plink">¶</a></dt>
-<dd class="ddef">
-<div class="summary"><div class="cmnt">Graph data related to measurement of single value over time.</div></div>
-<dl>
-<dt class="decl">Value <a class="symbol _variable" name="GraphData.Graph.current_value_" href="htmlsrc/graphdata.html#L48">current_value_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="graphdata.html#GraphData.Graph.current_value_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Vector!(Value) <a class="symbol _variable" name="GraphData.Graph.values_" href="htmlsrc/graphdata.html#L50">values_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="graphdata.html#GraphData.Graph.values_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Vector!(real) <a class="symbol _variable" name="GraphData.Graph.data_points_" href="htmlsrc/graphdata.html#L52">data_points_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="graphdata.html#GraphData.Graph.data_points_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Vector!(uint) <a class="symbol _variable" name="GraphData.Graph.value_counts_" href="htmlsrc/graphdata.html#L57">value_counts_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="graphdata.html#GraphData.Graph.value_counts_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">real[]</span> <a class="symbol _function" name="GraphData.Graph.data_points" href="htmlsrc/graphdata.html#L72">data_points</a><span class="params">(real <em>start</em>, real <em>end</em>, real <em>period</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="graphdata.html#GraphData.Graph.data_points" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="GraphData.Graph.empty" href="htmlsrc/graphdata.html#L103">empty</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="graphdata.html#GraphData.Graph.empty" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">real</span> <a class="symbol _function" name="GraphData.Graph.start_time" href="htmlsrc/graphdata.html#L110">start_time</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="graphdata.html#GraphData.Graph.start_time" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><a class="symbol _ctor" name="GraphData.Graph.this" href="htmlsrc/graphdata.html#L120">this</a><span class="params">(real <em>time</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="graphdata.html#GraphData.Graph.this" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphData.Graph.die" href="htmlsrc/graphdata.html#L129">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="graphdata.html#GraphData.Graph.die" class="plink">¶</a></dt>
-<dd class="ddef">
-<div class="summary"><div class="cmnt">Destroy this graph.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphData.Graph.update" href="htmlsrc/graphdata.html#L141">update</a><span class="params">(real <em>time</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="graphdata.html#GraphData.Graph.update" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphData.Graph.add_value" href="htmlsrc/graphdata.html#L154">add_value</a><span class="params">(real <em>value</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="graphdata.html#GraphData.Graph.add_value" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">uint</span> <a class="symbol _function" name="GraphData.Graph.first_value_index" href="htmlsrc/graphdata.html#L171">first_value_index</a><span class="params">(real <em>start</em>, real <em>period</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="graphdata.html#GraphData.Graph.first_value_index" class="plink">¶</a></dt>
-<dd class="ddef">
-<div class="summary"><div class="cmnt">Get the index of the first value to be aggregated to data points
- with specified start time and period.</div></div>
-<p class="sec_header">Parameters:</p>
-<table class="params">
-<tr><td><em>start</em></td><td>Start time to get data points from.</td></tr>
-<tr><td><em>period</em></td><td>Length of time to represent single data point.</td></tr></table>
-<p class="sec_header">Returns:</p><div class="cmnt">Index of the first value to aggregate.</div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphData.Graph.data_points_sum" href="htmlsrc/graphdata.html#L205">data_points_sum</a><span class="params">(real <em>start</em>, real <em>period</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="graphdata.html#GraphData.Graph.data_points_sum" class="plink">¶</a></dt>
-<dd class="ddef">
-<div class="summary"><div class="cmnt">Aggregate data points in sum mode.</div></div>
-<div class="cmnt">This depends on code in data_points() and can only be called from there.</div>
-<p class="sec_header">Parameters:</p>
-<table class="params">
-<tr><td><em>start</em></td><td>Start time to take data points from.</td></tr>
-<tr><td><em>period</em></td><td>Time period to represent by single data point.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphData.Graph.data_points_average" href="htmlsrc/graphdata.html#L236">data_points_average</a><span class="params">(real <em>start</em>, real <em>period</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="graphdata.html#GraphData.Graph.data_points_average" class="plink">¶</a></dt>
-<dd class="ddef">
-<div class="summary"><div class="cmnt">Aggregate data points in average mode.</div></div>
-<div class="cmnt">This depends on code in data_points() and can only be called from there.</div>
-<p class="sec_header">Parameters:</p>
-<table class="params">
-<tr><td><em>start</em></td><td>Start time to take data points from.</td></tr>
-<tr><td><em>period</em></td><td>Time period to represent by single data point.</td></tr></table></dd></dl></dd>
-<dt class="decl">Graph[string] <a class="symbol _variable" name="GraphData.graphs_" href="htmlsrc/graphdata.html#L279">graphs_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="graphdata.html#GraphData.graphs_" class="plink">¶</a></dt>
-<dd class="ddef">
-<div class="summary"><div class="cmnt">Graphs of values measured, indexed by values' names.</div></div></dd>
-<dt class="decl">GraphMode <a class="symbol _variable" name="GraphData.mode_" href="htmlsrc/graphdata.html#L282">mode_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="graphdata.html#GraphData.mode_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">real <a class="symbol _variable" name="GraphData.start_time_" href="htmlsrc/graphdata.html#L285">start_time_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="graphdata.html#GraphData.start_time_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">real <a class="symbol _variable" name="GraphData.time_resolution_" href="htmlsrc/graphdata.html#L287">time_resolution_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="graphdata.html#GraphData.time_resolution_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Timer <a class="symbol _variable" name="GraphData.update_timer_" href="htmlsrc/graphdata.html#L289">update_timer_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="graphdata.html#GraphData.update_timer_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><a class="symbol _ctor" name="GraphData.this" href="htmlsrc/graphdata.html#L297">this</a><span class="params">(string[] <em>graph_names</em>...)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="graphdata.html#GraphData.this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct graph data with specified names of measured values.</div></div>
@@ -164,7 +101,7 @@
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Mon Feb 14 20:24:19 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Mon Feb 14 22:05:22 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

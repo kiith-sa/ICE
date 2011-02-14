@@ -160,49 +160,7 @@
 <tr><td><em>root</em></td><td>Use this folder as the root of all paths, instead of the current folder.  This can be relative or absolute.</td></tr>
 <tr><td><em>verbose</em></td><td>Print each command before it's executed.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">Array of commands that were executed.</div>
-<p class="sec_header">TODO:</p><div class="cmnt">Add a dry run option to just return an array of commands to execute.</div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="CDC.executeCompiler" href="htmlsrc/cdc.html#L505">executeCompiler</a><span class="params">(char[] <em>compiler</em>, char[][] <em>arguments</em>)</span> <span class="attrs">[<span class="prot">private</span>, <span class="stc">static</span>]</span> <a href="cdc.html#CDC.executeCompiler" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="CDC.CompileOptions" href="htmlsrc/cdc.html#L522">CompileOptions</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="cdc.html#CDC.CompileOptions" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div>
-<dl>
-<dt class="decl">bool <a class="symbol _variable" name="CDC.CompileOptions.c" href="htmlsrc/cdc.html#L524">c</a> <a href="cdc.html#CDC.CompileOptions.c" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">bool <a class="symbol _variable" name="CDC.CompileOptions.D" href="htmlsrc/cdc.html#L525">D</a> <a href="cdc.html#CDC.CompileOptions.D" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">char[] <a class="symbol _variable" name="CDC.CompileOptions.Dd" href="htmlsrc/cdc.html#L526">Dd</a> <a href="cdc.html#CDC.CompileOptions.Dd" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">char[] <a class="symbol _variable" name="CDC.CompileOptions.Df" href="htmlsrc/cdc.html#L527">Df</a> <a href="cdc.html#CDC.CompileOptions.Df" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">bool <a class="symbol _variable" name="CDC.CompileOptions.lib" href="htmlsrc/cdc.html#L528">lib</a> <a href="cdc.html#CDC.CompileOptions.lib" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">bool <a class="symbol _variable" name="CDC.CompileOptions.o" href="htmlsrc/cdc.html#L529">o</a> <a href="cdc.html#CDC.CompileOptions.o" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">char[] <a class="symbol _variable" name="CDC.CompileOptions.od" href="htmlsrc/cdc.html#L530">od</a> <a href="cdc.html#CDC.CompileOptions.od" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">char[] <a class="symbol _variable" name="CDC.CompileOptions.of" href="htmlsrc/cdc.html#L531">of</a> <a href="cdc.html#CDC.CompileOptions.of" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">bool <a class="symbol _variable" name="CDC.CompileOptions.run" href="htmlsrc/cdc.html#L532">run</a> <a href="cdc.html#CDC.CompileOptions.run" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">char[][] <a class="symbol _variable" name="CDC.CompileOptions.run_args" href="htmlsrc/cdc.html#L533">run_args</a> <a href="cdc.html#CDC.CompileOptions.run_args" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">char[][] <a class="symbol _variable" name="CDC.CompileOptions.options" href="htmlsrc/cdc.html#L535">options</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="cdc.html#CDC.CompileOptions.options" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">CompileOptions</span> <a class="symbol _function" name="CDC.CompileOptions.opCall" href="htmlsrc/cdc.html#L539">opCall</a><span class="params">(char[][] <em>options</em>, char[][] <em>sources</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#CDC.CompileOptions.opCall" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">char[][]</span> <a class="symbol _function" name="CDC.CompileOptions.getOptions" href="htmlsrc/cdc.html#L594">getOptions</a><span class="params">(char[] <em>compiler</em>)</span> <a href="cdc.html#CDC.CompileOptions.getOptions" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><a class="symbol _unittest" name="CDC.CompileOptions.unittest" href="htmlsrc/cdc.html#L640">unittest</a> <a href="cdc.html#CDC.CompileOptions.unittest" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd></dl></dd>
-<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="Log" href="htmlsrc/cdc.html#L650">Log</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="cdc.html#Log" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div>
-<dl>
-<dt class="decl">bool <a class="symbol _variable" name="Log.verbose" href="htmlsrc/cdc.html#L652">verbose</a> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#Log.verbose" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">char[][] <a class="symbol _variable" name="Log.operations" href="htmlsrc/cdc.html#L653">operations</a> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#Log.operations" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Log.add" href="htmlsrc/cdc.html#L655">add</a><span class="params">(char[] <em>operation</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#Log.add" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<p class="sec_header">TODO:</p><div class="cmnt">Add a dry run option to just return an array of commands to execute.</div></dd></dl></dd>
 <dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="System" href="htmlsrc/cdc.html#L663">System</a> <a href="cdc.html#System" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">This is a brief, tango/phobos neutral system library.</div></div>
@@ -351,7 +309,7 @@
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Mon Feb 14 20:24:18 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Mon Feb 14 22:05:21 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

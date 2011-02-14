@@ -32,22 +32,12 @@
 <dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl">string <a class="symbol _variable" name="GUIMenu.item_spacing_" href="htmlsrc/gui.guimenu.html#L30">item_spacing_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guimenu.html#GUIMenu.item_spacing_" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">uint <a class="symbol _variable" name="GUIMenu.font_size_" href="htmlsrc/gui.guimenu.html#L34">font_size_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guimenu.html#GUIMenu.font_size_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><a class="symbol _ctor" name="GUIMenu.this" href="htmlsrc/gui.guimenu.html#L47">this</a><span class="params">(GUIElementParams <em>params</em>, string <em>item_width</em>, string <em>item_height</em>, string <em>item_spacing</em>, uint <em>item_font_size</em>, MenuItemData[] <em>items</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guimenu.html#GUIMenu.this" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="GUIMenu.new_item_x" href="htmlsrc/gui.guimenu.html#L63">new_item_x</a><span class="params">()</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guimenu.html#GUIMenu.new_item_x" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="GUIMenu.new_item_y" href="htmlsrc/gui.guimenu.html#L66">new_item_y</a><span class="params">()</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guimenu.html#GUIMenu.new_item_y" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIMenu.add_item" href="htmlsrc/gui.guimenu.html#L77">add_item</a><span class="params">(string <em>text</em>, void delegate() <em>deleg</em>)</span> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guimenu.html#GUIMenu.add_item" class="plink">¶</a></dt>
-<dd class="ddef">
-<div class="summary"><div class="cmnt">Add a menu item to the menu.</div></div>
-<p class="sec_header">Note:</p><div class="cmnt">Should only be used by GUIMenu.this</div>
-<p class="sec_header">Parameters:</p>
-<table class="params">
-<tr><td><em>text</em></td><td>Text of the menu item.</td></tr>
-<tr><td><em>deleg</em></td><td>Function to call when the menu item is clicked.</td></tr></table></dd></dl></dd>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
 <dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GUIMenuHorizontal" href="htmlsrc/gui.guimenu.html#L99">GUIMenuHorizontal</a> : <span class="bclass">GUIMenu</span> <a href="gui.guimenu.html#GUIMenuHorizontal" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Horizontal menu.</div></div>
@@ -93,8 +83,6 @@
 <tr><td><em>add_item</em></td><td>Add a menu item with specified text and callback to 
                            be called when the item is clicked.</td></tr></table>
 <dl>
-<dt class="decl">MenuItemData[] <a class="symbol _variable" name="GUIMenuFactory.items_" href="htmlsrc/gui.guimenu.html#L203">items_</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guimenu.html#GUIMenuFactory.items_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><a class="symbol _ctor" name="GUIMenuFactory.this" href="htmlsrc/gui.guimenu.html#L205">this</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guimenu.html#GUIMenuFactory.this" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
 <dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIMenuFactory.add_item" href="htmlsrc/gui.guimenu.html#L207">add_item</a><span class="params">(string <em>text</em>, void delegate() <em>deleg</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guimenu.html#GUIMenuFactory.add_item" class="plink">¶</a></dt>
@@ -106,18 +94,11 @@
 <div class="summary"><div class="cmnt">Factory used for horizontal menus.</div></div></dd>
 <dt class="decl"><span class="kw">alias</span> GUIMenuFactory!(GUIMenuVertical) <a class="symbol _alias" name="GUIMenuVerticalFactory" href="htmlsrc/gui.guimenu.html#L219">GUIMenuVerticalFactory</a> <a href="gui.guimenu.html#GUIMenuVerticalFactory" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Factory used for vertical menus.</div></div></dd>
-<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="MenuItemData" href="htmlsrc/gui.guimenu.html#L223">MenuItemData</a> <span class="attrs">[<span class="prot">private</span>]</span> <a href="gui.guimenu.html#MenuItemData" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div>
-<dl>
-<dt class="decl">string <a class="symbol _variable" name="MenuItemData.text" href="htmlsrc/gui.guimenu.html#L226">text</a> <a href="gui.guimenu.html#MenuItemData.text" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">void delegate() <a class="symbol _variable" name="MenuItemData.deleg" href="htmlsrc/gui.guimenu.html#L228">deleg</a> <a href="gui.guimenu.html#MenuItemData.deleg" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd></dl>
+<div class="summary"><div class="cmnt">Factory used for vertical menus.</div></div></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Mon Feb 14 20:24:18 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Mon Feb 14 22:05:21 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

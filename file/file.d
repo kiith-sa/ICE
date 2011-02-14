@@ -13,39 +13,50 @@ import memory.memory;
 import math.math;
 
 
-///File open modes
+///File open modes.
 enum FileMode
 {
+    ///Reading
     Read,
+    ///Writing (overwriting if file exists)
     Write,
+    ///Appending
     Append
 }
 
-///Used to access files, either to read their contents or to write to them.
+/**
+ * Used to read from and write to files.
+ *
+ * Mostly manipulated by functions in the file package, not with its own methods.
+ */
 struct File
 {
-    invariant
-    {
-        assert(write_used_ <= uint.max, "Writing over 4GiB files not yet supported");
-    }
+    invariant{assert(write_used_ <= uint.max, "Writing over 4GiB files not yet supported");}
     package:
-        //In-engine file name, such as fonts/font.ttf or mod::fonts/font.ttf .
+        ///In-engine file name, such as fonts/font.ttf or mod::fonts/font.ttf .
         string name_;
-        //Actual file path in the real filesystem.
+        ///Actual file path in the real filesystem.
         string path_;
-        //Mode the file was opened with.
+        ///Mode the file was opened with.
         FileMode mode_;
-        //File contents loaded into memory (in read mode)- manually allocated.
+        ///File contents loaded into memory in read mode: manually allocated.
         ubyte[] data_;
 
-        //Number of used bytes in write_data_ .
+        ///Number of used bytes in write_data_ .
         ulong write_used_;
-        //Data to write to file- manually allocated, reallocated if not sufficient.
+        ///Data to write to file: manually allocated, reallocated if not sufficient.
         ubyte[] write_data_;
         
-        //Fake constructor. Returns file with given in-engine name, mode
-        //and space allocated to read data from a file or space reserved for writing,
-        //depending on mode.
+        /**
+         * Constructs a File with specified parameters.
+         *
+         * Params:  name          = In-engine name of the file.
+         *          path          = Actual path to the file.
+         *          mode          = Mode of the file.
+         *          read_size     = Read buffer size in bytes. Only applicable in read mode.
+         *          write_reserve = Starting write buffer size in bytes. 
+         *                          Only applicable in write/append mode.
+         */
         static File opCall(string name, string path, FileMode mode, ulong read_size, 
                            uint write_reserve)
         in
@@ -76,7 +87,7 @@ struct File
             return file;
         }
 
-        //Destroy the file object and deallocate its buffers.
+        ///Destroy the file object and deallocate its buffers.
         void die()
         {
             if(data_ !is null){free(data_);}
@@ -89,8 +100,7 @@ struct File
         void[] data()
         in
         {
-            assert(mode_ == FileMode.Read, 
-                   "Can only read data from a file opened for reading");
+            assert(mode_ == FileMode.Read, "Can only read data from a file opened for reading");
             assert(data_ !is null, "Trying to read from a closed file");
         }
         body{return cast(void[])data_;}
@@ -98,7 +108,12 @@ struct File
         ///Return OS filesystem path of the file.
         string path(){return path_;}
 
-        ///Write data to file (only applicable in Write, Append modes)
+        /**
+         * Write data to file (only applicable in Write, Append modes).
+         * 
+         * This does not necessarily write data out to the file,
+         * data might be buffered until the file is closed.
+         */
         void write(void[] data)
         in
         {

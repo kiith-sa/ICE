@@ -16,38 +16,77 @@ import memory.memory;
 
 
 public:
-    ///Add a mod directory (subdirectory of ./data/) to read data from. 
     /**
+     * Add a mod directory (subdirectory of ./data/) to read data from. 
+     *
      * Directories added later take precedence over directories
      * added before, e.g., if we add 3 directories, "main", "mod1" and "mod2",
      * file "file.txt" will be first searched for as "./data/mod2/file.txt",
      * then "./data/mod1/file.txt" and finally "./data/main/file.txt"
      *
-     * If the directory name is invalid or the directory doesn't exist, an Exception
-     * is thrown. Only lowercase letters, numbers and the '_' character are allowed
-     * in mod directory names.
+     * Only lowercase letters, numbers and the '_' character are legal in mod directory names.
+     *
+     * Params:  directory = Mod directory to add.
+     *
+     * Throws:  Exception on if the directory name is invalid or the directory does not exist.
      */
     void add_mod_directory(string directory)
     {
         if(!valid_directory(directory) || !exists(root_ ~ "/" ~ directory))
         {
             throw new Exception("Invalid data subdirectory: " ~ directory ~
-                                " Only lowercase ASCII alphanumeric characters and _"
+                                " Only lowercase ASCII alphanumeric characters and _ "
                                 "are allowed.");
         }
         mod_directories_ ~= directory;
     }
 
-    ///Open a file with given name and mode.
     /**
+     * Open a file with given name and mode.
+     *
      * Files are searched for in known ./data/ subdirectories, e.g. if "main" and "mod"
      * are known subdirectories, file "file.txt" is first searched for in "./data/mod"
      * and the "./data/main". Alternatively, subdirectory can be specified explicitly,
      * e.g. "mod::file.txt" will always open "./data/mod/file.txt" .
-     * In case of an error, an Exception will be thrown.
      * Reading a file that doesn't exist is an error.
-     * Also, file name for writing and appending must explicitly set mod directory
+     * For writing and appending, mod directory must be explicitly set.
      * (e.g. mod::file.txt).
+     *
+     * Params:  name = In-engine name of the file to open.
+     *          mode = File mode to open the file in.
+     *
+     * Returns: File opened.
+     *
+     * Throws:  Exception on failure.
+     *
+     * Examples:
+     * --------------------
+     * //Read fonts/Font42.ttf from any mod directory (depending on font directories' order).
+     * File file = open_file("fonts/Font42.ttf", FileMode.Read); 
+     * //don't forget to close the file
+     * scope(exit){close_file(file);}
+     * --------------------
+     *
+     * --------------------
+     * //Read fonts/Font42.ttf from "main" directory.
+     * File file = open_file("main::fonts/Font42.ttf", FileMode.Read); 
+     * //don't forget to close the file
+     * scope(exit){close_file(file);}
+     * --------------------
+     *
+     * --------------------
+     * //ERROR: must specify mod directory for writing.
+     * File file = open_file("fonts/Font42.ttf, FileMode.Write"); 
+     * //don't forget to close the file
+     * scope(exit){close_file(file);}
+     * --------------------
+     *
+     * --------------------
+     * //Open fonts/Font42.ttf from the "main" directory for writing.
+     * File file = open_file("main::fonts/Font42.ttf, FileMode.Write"); 
+     * //don't forget to close the file
+     * scope(exit){close_file(file);}
+     * --------------------
      */
     File open_file(string name, FileMode mode)
     {
@@ -63,7 +102,7 @@ public:
                                         ~ name ~ " path: " ~ path);
                 }
                 //load file into memory
-                return load_file(name, path, mode);
+                return load_file(name, path);
             case FileMode.Write, FileMode.Append:
                 if(name.find("::") < 0)
                 {
@@ -76,7 +115,13 @@ public:
         }
     }
 
-    ///Close a file. This will write out any changes and delete any buffers.
+    /**
+     * Close a file. This will write out any changes and delete any buffers.
+     * 
+     * Params:  file = File to close.
+     * 
+     * Throws:  Exception if the buffers couldn't be written out in append or write mode.
+     */
     void close_file(File file)
     {
         FILE* handle;
@@ -102,40 +147,49 @@ public:
         //nothing to write
         if(file.write_used_ == 0){return;}
 
-        assert(file.write_used_ <= uint.max, 
-               "Writing over 4GiB files is not yet supported.");
+        assert(file.write_used_ <= uint.max, "Writing over 4GiB files is not yet supported.");
 
         int blocks_written = fwrite(file.write_data_.ptr, 
                                     cast(uint)file.write_used_, 1, handle);
         if(blocks_written == 0)
         {
-            throw new Exception("Couldn't write to file " ~ file.path_ ~ 
-                                " Maybe you don't have sufficient rights to write "
-                                "to that file");
+            throw new Exception("Couldn't write to file " ~ file.path_ ~ " Maybe you " ~ 
+                                "don't have sufficient rights to write to that file");
         }
-    }
-
-    static this()
-    {
-        if(!exists(root_ ~ "/main"))
-        {
-            throw new Exception("Main data directory doesn't exist");
-        }
-        add_mod_directory("main");
     }
 
 private:
-    //Default amount of bytes to reserve for file writing buffers - to prevent
-    //frequent reallocations.
+    ///Default amount of bytes to reserve for file writing buffers - to prevent
+    ///frequent reallocations.
     const write_reserve_ = 4096;
 
-    //known (added) mod directories.
+    ///known (added) mod directories.
     string[] mod_directories_;
 
-    //directory mod directories are in.
+    ///directory mod directories are in.
     string root_ = "./data";
+
+    /**
+     * Static constructor. Adds the main data directory.
+     *
+     * Throws:  Exception if the main directory does not exist.
+     */
+    static this()
+    {
+        if(!exists(root_ ~ "/main")){throw new Exception("Main data directory doesn't exist");}
+        add_mod_directory("main");
+    }
     
-    //Convert an in-engine filename to real file path and determine if the file exists.
+    /**
+     * Convert an in-engine filename to real file path and determine if the file exists.
+     *
+     * Params:  file_name   = In-engine file name.
+     *          file_exists = If the file exists, true will be written here, false otherwise.
+     *
+     * Returns: Real filesystem path of the file.
+     *
+     * Throws:  Exception on failure.
+     */
     string get_path(string file_name, out bool file_exists)
     {
         string[] parts = file_name.split("::");
@@ -152,8 +206,7 @@ private:
             //does the mod directory exist?
             if(!exists(path))
             {
-                throw new Exception("File name with invalid mod directory: " 
-                                    ~ file_name);
+                throw new Exception("File name with invalid mod directory: " ~ file_name);
             }
             path ~= "/" ~ parts[1];
             file_exists = cast(bool)exists(path);
@@ -175,7 +228,13 @@ private:
         return path;
     }
 
-    //Validate a name of a mod directory.
+    /**
+     * Validate a name of a mod directory.
+     *
+     * Params:  directory = Directory name.
+     *
+     * Returns: True if the directory name is valid, false otherwise.
+     */
     bool valid_directory(string directory)
     {
         //only lowercase, digits and _ are allowed
@@ -189,19 +248,23 @@ private:
         return true;
     }
 
-    //Load a file with specified parameters from specified path.
-    File load_file(string name, string path, FileMode mode)
-    in
-    {
-        assert(mode == FileMode.Read, "Can't load a file with mode other than reading");
-    }
-    body
+    /**
+     * Load a file from specified path.
+     *
+     * Params:  name = In-engine name of the file.
+     *          path = Actual filesystem path of the file.
+     * 
+     * Returns: The loaded file.
+     *
+     * Throws:  Exception if the file could not be read.
+     */
+    File load_file(string name, string path)
     {
         ulong size = getSize(path);
         assert(size <= uint.max, "Reading over 4GiB files not yet supported");
 
         //create a file object with allocated data_ buffer
-        File file = File(name, path, mode, size, 0);
+        File file = File(name, path, FileMode.Read, size, 0);
         scope(failure){file.die();}
         
         //don't need to read if the file is empty

@@ -363,6 +363,8 @@ Actually, only add code examples where really needed - too much work
     (0 is fully transparent and should be RGBA 0,0,0,0).
 39:
     Custom exception class/es, should add the message to the log.
+    Better: Java-style descriptive exceptions, maybe derived from 
+    a parent class handling logging.
 36: 
     Console        
 15:

@@ -20,49 +20,72 @@
 <dl>
 <dt class="decl"><span class="kw">enum</span> <a class="symbol _enum" name="FileMode" href="htmlsrc/file.file.html#L17">FileMode</a> <a href="file.file.html#FileMode" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">File open modes</div></div>
+<div class="summary"><div class="cmnt">File open modes.</div></div>
 <dl>
-<dt class="decl"><a class="symbol _enummem" name="FileMode.Read" href="htmlsrc/file.file.html#L19">Read</a> <a href="file.file.html#FileMode.Read" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><a class="symbol _enummem" name="FileMode.Write" href="htmlsrc/file.file.html#L20">Write</a> <a href="file.file.html#FileMode.Write" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><a class="symbol _enummem" name="FileMode.Append" href="htmlsrc/file.file.html#L21">Append</a> <a href="file.file.html#FileMode.Append" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="File" href="htmlsrc/file.file.html#L25">File</a> <a href="file.file.html#File" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _enummem" name="FileMode.Read" href="htmlsrc/file.file.html#L20">Read</a> <a href="file.file.html#FileMode.Read" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Used to access files, either to read their contents or to write to them.</div></div>
+<div class="summary"><div class="cmnt">Reading</div></div></dd>
+<dt class="decl"><a class="symbol _enummem" name="FileMode.Write" href="htmlsrc/file.file.html#L22">Write</a> <a href="file.file.html#FileMode.Write" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Writing (overwriting if file exists)</div></div></dd>
+<dt class="decl"><a class="symbol _enummem" name="FileMode.Append" href="htmlsrc/file.file.html#L24">Append</a> <a href="file.file.html#FileMode.Append" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Appending</div></div></dd></dl></dd>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="File" href="htmlsrc/file.file.html#L32">File</a> <a href="file.file.html#File" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Used to read from and write to files.</div></div>
+<div class="cmnt">Mostly manipulated by functions in the file package, not with its own methods.</div>
 <dl>
-<dt class="decl"><a class="symbol _invariant" name="File.invariant" href="htmlsrc/file.file.html#L27">invariant</a> <a href="file.file.html#File.invariant" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _invariant" name="File.invariant" href="htmlsrc/file.file.html#L34">invariant</a> <a href="file.file.html#File.invariant" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">string <a class="symbol _variable" name="File.name_" href="htmlsrc/file.file.html#L33">name_</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="file.file.html#File.name_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">string <a class="symbol _variable" name="File.path_" href="htmlsrc/file.file.html#L35">path_</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="file.file.html#File.path_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">FileMode <a class="symbol _variable" name="File.mode_" href="htmlsrc/file.file.html#L37">mode_</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="file.file.html#File.mode_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">ubyte[] <a class="symbol _variable" name="File.data_" href="htmlsrc/file.file.html#L39">data_</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="file.file.html#File.data_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">ulong <a class="symbol _variable" name="File.write_used_" href="htmlsrc/file.file.html#L42">write_used_</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="file.file.html#File.write_used_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">ubyte[] <a class="symbol _variable" name="File.write_data_" href="htmlsrc/file.file.html#L44">write_data_</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="file.file.html#File.write_data_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">File</span> <a class="symbol _function" name="File.opCall" href="htmlsrc/file.file.html#L49">opCall</a><span class="params">(string <em>name</em>, string <em>path</em>, FileMode <em>mode</em>, ulong <em>read_size</em>, uint <em>write_reserve</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="file.file.html#File.opCall" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="File.die" href="htmlsrc/file.file.html#L80">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="file.file.html#File.die" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void[]</span> <a class="symbol _function" name="File.data" href="htmlsrc/file.file.html#L89">data</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="file.file.html#File.data" class="plink">¶</a></dt>
+<dt class="decl">string <a class="symbol _variable" name="File.name_" href="htmlsrc/file.file.html#L37">name_</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="file.file.html#File.name_" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">In-engine file name, such as fonts/font.ttf or mod::fonts/font.ttf .</div></div></dd>
+<dt class="decl">string <a class="symbol _variable" name="File.path_" href="htmlsrc/file.file.html#L39">path_</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="file.file.html#File.path_" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Actual file path in the real filesystem.</div></div></dd>
+<dt class="decl">FileMode <a class="symbol _variable" name="File.mode_" href="htmlsrc/file.file.html#L41">mode_</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="file.file.html#File.mode_" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Mode the file was opened with.</div></div></dd>
+<dt class="decl">ubyte[] <a class="symbol _variable" name="File.data_" href="htmlsrc/file.file.html#L43">data_</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="file.file.html#File.data_" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">File contents loaded into memory in read mode: manually allocated.</div></div></dd>
+<dt class="decl">ulong <a class="symbol _variable" name="File.write_used_" href="htmlsrc/file.file.html#L46">write_used_</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="file.file.html#File.write_used_" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Number of used bytes in write_data_ .</div></div></dd>
+<dt class="decl">ubyte[] <a class="symbol _variable" name="File.write_data_" href="htmlsrc/file.file.html#L48">write_data_</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="file.file.html#File.write_data_" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Data to write to file: manually allocated, reallocated if not sufficient.</div></div></dd>
+<dt class="decl"><span class="rettyp">File</span> <a class="symbol _function" name="File.opCall" href="htmlsrc/file.file.html#L60">opCall</a><span class="params">(string <em>name</em>, string <em>path</em>, FileMode <em>mode</em>, ulong <em>read_size</em>, uint <em>write_reserve</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="file.file.html#File.opCall" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Constructs a File with specified parameters.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>name</em></td><td>In-engine name of the file.</td></tr>
+<tr><td><em>path</em></td><td>Actual path to the file.</td></tr>
+<tr><td><em>mode</em></td><td>Mode of the file.</td></tr>
+<tr><td><em>read_size</em></td><td>Read buffer size in bytes. Only applicable in read mode.</td></tr>
+<tr><td><em>write_reserve</em></td><td>Starting write buffer size in bytes. 
+                          Only applicable in write/append mode.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="File.die" href="htmlsrc/file.file.html#L91">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="file.file.html#File.die" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Destroy the file object and deallocate its buffers.</div></div></dd>
+<dt class="decl"><span class="rettyp">void[]</span> <a class="symbol _function" name="File.data" href="htmlsrc/file.file.html#L100">data</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="file.file.html#File.data" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Access data of a loaded file (only applicable in Read mode).</div></div></dd>
-<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="File.path" href="htmlsrc/file.file.html#L99">path</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="file.file.html#File.path" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="File.path" href="htmlsrc/file.file.html#L109">path</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="file.file.html#File.path" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Return OS filesystem path of the file.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="File.write" href="htmlsrc/file.file.html#L102">write</a><span class="params">(void[] <em>data</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="file.file.html#File.write" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="File.write" href="htmlsrc/file.file.html#L117">write</a><span class="params">(void[] <em>data</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="file.file.html#File.write" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Write data to file (only applicable in Write, Append modes)</div></div></dd></dl></dd></dl>
+<div class="summary"><div class="cmnt">Write data to file (only applicable in Write, Append modes).
+ 
+ This does not necessarily write data out to the file,
+ data might be buffered until the file is closed.</div></div></dd></dl></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Mon Feb 14 20:24:17 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Mon Feb 14 22:05:20 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>
