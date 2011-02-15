@@ -22,8 +22,9 @@ import util.factory;
 import containers.vector;
 
 /**
- * Line graph widget, showing multiple changing values, 
- * each in its own graph system monitor style.
+ * Line graph widget, showing graphs for multiple changing values system monitor style.
+ *
+ * The graph data is managed by a GraphData instance, GUILineGraph only handles display.
  */
 final class GUILineGraph : GUIElement
 {
@@ -35,66 +36,64 @@ final class GUILineGraph : GUIElement
     }
 
     private:
-        ///Stores data used to display graph of one value (GuiGraph.Graph class)
+        ///Stores data used to display graph of one value.
         static class GraphDisplay
         {
-            //Is this graph visible?
+            ///Is this graph visible?.
             bool visible = true;
-            //Color of the graph.
+            ///Color of the graph.
             Color color = Color.grey;
-            //Vertices of the line strip used to display the graph, in screen space.
+            ///Vertices of the line strip used to display the graph, in screen space.
             Vector!(Vector2f) line_strip;
 
-            //Construct a GraphDisplay.
+            ///Construct a GraphDisplay.
             this(){line_strip = Vector!(Vector2f)();}
-
-            //Destroy this GraphDisplay.
+            ///Destroy this GraphDisplay.
             void die(){line_strip.die();}
         }
 
-        //Horizontal line on the graph.
+        ///Horizontal line on the graph, shown for visual comparison with graph values.
         static align(1) struct Line
         {
-            //Info text of the line (i.e. number represented by the line)
+            ///Info text of the line (i.e. number represented by the line).
             string text;
-            //Color of the line and its text.
+            ///Color of the line and its text.
             Color color;
-            //Y coordinate the line is at.
+            ///Y coordinate the line is at, in screen space.
             float y;
         }
 
-        //Graph data we're displaying.
+        ///Graph data we're displaying.
         GraphData data_;
-
-        //Time offset of the graph view (used for scrolling)
-        //Time offset is actually time since start of graph the data point
-        //at the left end of graph display is showing.
+        /**
+         * Time offset of the graph view, used for scrolling.
+         *
+         * This is time since start of graph to time of the leftmost data point of graph.
+         */
         float time_offset_ = 0.0;
-        //Distance between two data points on X axis
+        ///Distance between two data points on X axis.
         float scale_x_ = 2.0;
-        //Distance between values differing by 1, e.g. 1.0 and 0.0 on Y axis.
-        //Doesn't apply when auto_scale_ is true.
+        ///Distance between values differing by 1, e.g. 1.0 and 0.0 on Y axis.
         float scale_y_ = 0.1;
-        //Automatically scroll the graph view?
+        ///If true, the graph is automatically scrolled as new data is added.
         bool auto_scroll_ = true;
-        //If true, highest value is always at the top of graph display and height
-        //of the graph is scaled accordingly.
+        ///If true, graph is automatically scaled on Y axis according to the highest value.
         bool auto_scale_ = true;
 
-        //Display data for graph of every value.
+        ///Display data for graph of every value.
         GraphDisplay[string] graphics_;
-        //Horizontal lines on the graph.
+        ///Horizontal lines on the graph, shown for visual comparison with graph values.
         Line[] lines_;
-        //Font size used for numbers describing values represented by the lines.
+        ///Font size used for numbers describing values represented by the lines.
         uint font_size_ = 8;
 
-        //Time between two data points displayed on the graph.
+        ///Time difference between two data points displayed on the graph, in seconds,
         real data_point_time_ = 1.0;
-        //Timer used to time graph display updates.
+        ///Timer used to time graph display updates.
         Timer display_timer_;
 
     public:
-        ///Set time between two graph data points.
+        ///Set time difference between two graph data points.
         void data_point_time(real time)
         {
             aligned_ = false;
@@ -115,7 +114,7 @@ final class GUILineGraph : GUIElement
         ///If true, Y axis of the graph will be scaled automatically according to highest value.
         void auto_scale(bool scale){aligned_ = false; auto_scale_ = scale;}
 
-        ///If true, graph will automatically scroll to show newest data.
+        ///If true, the graph will automatically scroll to show newest data.
         void auto_scroll(bool scroll){aligned_ = false; auto_scroll_ = scroll;}
 
         ///Set time offset of the graph. Used for manual scrolling.
@@ -126,7 +125,13 @@ final class GUILineGraph : GUIElement
             time_offset_ = clamp(cast(real)offset, 0.0L, age());
         }
 
-        ///Manually scrolls the graph horizontally.
+        /**
+         * Manually scroll the graph horizontally.
+         *
+         * Disables automatic scrolling, if enabled.
+         *
+         * Params:  offset = Screen space offset relative the start of graph.
+         */
         void scroll(float offset)
         {
             auto_scroll = false;
@@ -137,22 +142,17 @@ final class GUILineGraph : GUIElement
             time_offset(space_offset * conv);
         }
 
+        ///Get X scale of the graph.
+        float scale_x(){return scale_x_;}
         ///Set X scale of the graph. Used for manual zooming.
         void scale_x(float scale_x){aligned_ = false; scale_x_ = clamp(scale_x, 0.01f, 200.0f);}
 
+        ///Get Y scale of the graph. 
+        float scale_y(){return scale_y_;}
         ///Set Y scale of the graph. Used for manual zooming.
         void scale_y(float scale_y){aligned_ = false; scale_y_ = clamp(scale_y, 0.0005f, 10.0f);}
 
-        ///Get time offset of the graph. 
-        float time_offset(){return time_offset_;}
-
-        ///Get X scale of the graph.
-        float scale_x(){return scale_x_;}
-
-        ///Get Y scale of the graph. 
-        float scale_y(){return scale_y_;}
-
-        ///Set font size of this graph.
+        ///Set font size of the graph.
         void font_size(uint size){font_size_ = size;}
 
         ///Destroy this GUILineGraph.
@@ -168,7 +168,8 @@ final class GUILineGraph : GUIElement
          *
          * Params:  params = Parameters for GUIElement constructor.
          *          colors = Colors of graphs of measured values.
-         *          data   = GraphData to display.
+         *          data   = Reference to GraphData to display.
+         *                   GUILineGraph just displays the GraphData, it doesn't manage it.
          */
         this(GUIElementParams params, Color[string] colors, GraphData data)
         {
@@ -209,26 +210,21 @@ final class GUILineGraph : GUIElement
         override void realign(VideoDriver driver)
         {
             super.realign(driver);
-
             update_view();
         }
 
     private:
-        //Resets update timer according to data point time, starting at specified time.
+        ///Resets update timer according to data point time, starting at specified time.
         void reset_timer(real time)
         {
             //limiting to prevent absurd values (and lag)
             display_timer_ = Timer(clamp(data_point_time_, 0.125L, 8.0L), time);
         }
 
-        //Returns age of this graph at last display timer reset.
+        ///Returns age of this graph at last display timer reset.
         real age(){return display_timer_.start - data_.start_time;}
 
-        //This is quite ineffective (associative array accesses),
-        //but shouldn't be changed unless it's a bottleneck or more readable
-        //code can be written.
-
-        //Update graph display data such as graph line strips.
+        ///Update graph display data such as graph line strips.
         void update_view()
         {
             if(auto_scroll_){time_offset_ = age();}
@@ -246,8 +242,10 @@ final class GUILineGraph : GUIElement
             //generate line strips
             foreach(name; data_.graph_names)
             {
-                real[] points = data_points[name];
+                auto points = data_points[name];
                 auto graphics = graphics_[name];
+
+                //clearn the strip
                 graphics.line_strip.length = 0;
                 if(data_.empty(name)){continue;}
 
@@ -264,20 +262,17 @@ final class GUILineGraph : GUIElement
         }
 
         /*
-         * Officially the worst named method in this entire project.
-         *
-         * Gets data points to draw from graph of each value, used by update_view.
-         * Also gets maximum of all data points, used for autoscaling.
+         * Gets data points to draw from graph of each value, and a maximum of all data points.
          * 
+         * Officially the worst named method in this entire project.
+         * Used by update_view.
+         *
          * Params:  maximum = Maximum of all data points will be written here.
          *
          * Returns: Data points of every graph in an associative array indexed by graph name.
          */
         real[][string] get_data_points_and_maximum(out real maximum)
         {
-            alias math.math.max max;
-            alias math.math.min min;
-
             //calculate the time window we want to get data points for
             //why +3 : get a few more points so the graph is always full if there's enough data
             real time_width = (bounds_.width / scale_x_ + 3) * data_point_time_;
@@ -404,7 +399,7 @@ final class GUILineGraphFactory : GUIElementFactoryBase!(GUILineGraph)
 {
     private:
         mixin(generate_factory("GraphData $ data $ null"));
-        //Name and color of graph for each value.
+        ///Name and color of graph for each value.
         Color[string] graphs_;
     public:
         void graph_color(string name, Color color){graphs_[name] = color;}
