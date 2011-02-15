@@ -6,8 +6,7 @@ a:visited { color: DarkSlateBlue; }
 body 
 {
     margin: 0; 
-
-  background-color: #D4D4E8;
+    background-color: #B8B8D0;
 }
 body.progress { cursor: progress; }
 
@@ -395,7 +394,7 @@ table.params td:first-child {
 /* Line, block and nested comments */
 .d_code .lc, .d_code .bc, .d_code .nc { color: #E0E0FF; }
 /* Identifier */
-/*.d_code*/ .i { color: white; }
+/*.d_code*/ .i { color: #40AF00; }
 /* String literal */
 /*.d_code*/ .sl { color: yellow; }
 /* Character literal */

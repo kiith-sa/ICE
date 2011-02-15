@@ -84,8 +84,8 @@ Actually, only add code examples where really needed - too much work
     Also consider making graph data time independent, supplying time
     to it through methods.
 
-    Also manual memory management for GraphData.
-    That will allow us to at least monitor its usage, and be a bit faster.
+    Monitors' presentation and functionality should be completely separate.
+    Consider Model-View-Controller style code. (maybe just M-VC instead of M-V-C)
 4:
     FPS graph
 20:
@@ -93,11 +93,6 @@ Actually, only add code examples where really needed - too much work
     or maybe we have enough effects by now...
 14:
     Look for D files in main directory that can be put into packages.
-24:
-    Alongside mouse_move and mouse_key, consider more advanced
-    mouse_click (triggered by quick succeeding press and release),
-    and mouse_drag
-    these would be detected by platfom and sent to e.g GUI
 25:
     Consider abstracting
     GLTexturePage to TexturePage and moving as much code as possile to VideoDriver,
@@ -206,6 +201,15 @@ Actually, only add code examples where really needed - too much work
 --AFTER PONG    
 4:
     Consider D2 (at this point it might be mature enough :p)
+24:
+    Alongside mouse_move and mouse_key, consider more advanced
+    mouse_click (triggered by quick succeeding press and release),
+    and mouse_drag
+    these would be detected by platfom and sent to e.g GUI
+
+    Alternatively, they could be detected by a custom class working
+    similarly to GUIMouseControllable and sent through signals
+    to whatever code needs them.
 14:
     SpatialManager:
     Write code required for usage in culling (special iterator), and use in culling.

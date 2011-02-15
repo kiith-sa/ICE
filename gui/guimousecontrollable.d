@@ -15,20 +15,25 @@ import util.signal;
 
 /**
  * Provides logic for recognizing mouse input used for zooming and panning,
- * using callbacks for actual implementations of zooming/panning.
+ * using signals for actual implementations of zooming/panning, so
+ * user only needs to implement what is needed.
  *
- * This is not a class to derive other GUI elements from.
- * Rather, this should be used as a child of GUI elements that need mouse 
- * zooming/panning logic.
+ * Mouse wheel is used for zooming, movement with a mouse key pressed (dragging) for panning.
+ * Also supports a mouse key used to return to default view when clicked.
+ *
+ * This is not a class to derive other GUI elements from. Rather, this should be used 
+ * as a child of GUI elements that need mouse  zooming/panning logic.
+ *
+ * Also, the name is ugly. Need a better one.
  */
 final class GUIMouseControllable : GUIElement
 {
     private:
-        //Mouse key used for panning (we're panning when dragging this key)
+        ///Mouse key used for panning (we're panning when dragging this key).
         MouseKey pan_key_;
-        //Is the key ussed for panning pressed?
+        ///Is the panning key pressed?
         bool pan_key_pressed_;
-        //Mouse key used to return to default view.
+        ///Mouse key used to return to default view.
         MouseKey reset_view_key_;
 
     public:
@@ -44,8 +49,13 @@ final class GUIMouseControllable : GUIElement
         ///Emitted user presses a button to return to default view.
         mixin Signal!() reset_view;
 
-        this(MouseKey pan_key = MouseKey.Left, 
-             MouseKey reset_view_key = MouseKey.Right)
+        /**
+         * Construct a GUIMouseControllable.
+         *
+         * Params:  pan_key        = Mouse key to use for panning when dragged.
+         *          reset_view_key = Mouse key to reset view when clicked.
+         */
+        this(MouseKey pan_key = MouseKey.Left, MouseKey reset_view_key = MouseKey.Right)
         {
             super(GUIElementParams("p_left", "p_top", "p_width", "p_height", false));
             pan_key_ = pan_key;
