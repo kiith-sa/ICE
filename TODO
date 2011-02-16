@@ -5,6 +5,8 @@ and write docs where not present.
 Also add code examples where needed/applicable.
 Actually, only add code examples where really needed - too much work
 
+19:
+    Fix ddoc.css contrast issues.
 20:
     Screenshot. Probably glReadPixels from framebuffer. Also need PNG output 
     (must be with a function that still exists in GL3!)
@@ -180,17 +182,6 @@ Actually, only add code examples where really needed - too much work
     Sounds
 17:
     Multiplayer, with single PC and over a network (test with two computers)
-14:
-    Unittests for actors, bodies etc.
-
-    Then we can test them with simple dummy manager classes,
-    or, if needed, subclassed real managers with most methods as dummies
-
-    also try to unittest subsystems, maybe using subclassed semi-dummy
-    implementations - can't do this for platform/videodriver,
-    others should work.
-
-    Also look for where we can put unittests
 15:
     Maybe show an AI/AI game on the background of the credits screen.
     (i.e. just start the game with two AI players in credits_start
@@ -201,6 +192,20 @@ Actually, only add code examples where really needed - too much work
 --AFTER PONG    
 4:
     Consider D2 (at this point it might be mature enough :p)
+14:
+    Unittest overhaul all over the code.
+    Look at where we can put unittests and do it.
+
+    Unittests for actors, bodies etc.
+
+    Then we can test them with simple dummy manager classes,
+    or, if needed, subclassed real managers with most methods as dummies
+
+    also try to unittest subsystems, maybe using subclassed semi-dummy
+    implementations - can't do this for platform/videodriver,
+    others should work.
+
+    Also look for where we can put unittests
 24:
     Alongside mouse_move and mouse_key, consider more advanced
     mouse_click (triggered by quick succeeding press and release),

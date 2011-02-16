@@ -18,54 +18,48 @@
   <h1 class="module" id="m-math.line2"><a href="htmlsrc/math.line2.html" class="symbol">math.line2</a></h1>
 
 <dl>
-<dt class="decl"><span class="kw">enum</span> <a class="symbol _enum" name="LineIntersection" href="htmlsrc/math.line2.html#L15">LineIntersection</a> <a href="math.line2.html#LineIntersection" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">enum</span> <a class="symbol _enum" name="LineIntersection" href="htmlsrc/math.line2.html#L16">LineIntersection</a> <a href="math.line2.html#LineIntersection" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Describes types of intersection between line segments.</div></div>
 <dl>
-<dt class="decl"><a class="symbol _enummem" name="LineIntersection.Intersection" href="htmlsrc/math.line2.html#L18">Intersection</a> <a href="math.line2.html#LineIntersection.Intersection" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _enummem" name="LineIntersection.Intersection" href="htmlsrc/math.line2.html#L19">Intersection</a> <a href="math.line2.html#LineIntersection.Intersection" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Segments intersect.</div></div></dd>
-<dt class="decl"><a class="symbol _enummem" name="LineIntersection.CoincidentIntersection" href="htmlsrc/math.line2.html#L20">CoincidentIntersection</a> <a href="math.line2.html#LineIntersection.CoincidentIntersection" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _enummem" name="LineIntersection.CoincidentIntersection" href="htmlsrc/math.line2.html#L21">CoincidentIntersection</a> <a href="math.line2.html#LineIntersection.CoincidentIntersection" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Segments intersect and their lines are coincident.</div></div></dd>
-<dt class="decl"><a class="symbol _enummem" name="LineIntersection.NoIntersection" href="htmlsrc/math.line2.html#L22">NoIntersection</a> <a href="math.line2.html#LineIntersection.NoIntersection" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _enummem" name="LineIntersection.NoIntersection" href="htmlsrc/math.line2.html#L23">NoIntersection</a> <a href="math.line2.html#LineIntersection.NoIntersection" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Segments don't intersect.</div></div></dd></dl></dd>
-<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="Line2" href="htmlsrc/math.line2.html#L26">Line2</a><span class="tparams">(<em>T</em>)</span> <a href="math.line2.html#Line2" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="Line2" href="htmlsrc/math.line2.html#L27">Line2</a><span class="tparams">(<em>T</em>)</span> <a href="math.line2.html#Line2" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">2D line segment between two points.</div></div>
 <dl>
-<dt class="decl">Vector2!(T) <a class="symbol _variable" name="Line2.start" href="htmlsrc/math.line2.html#L29">start</a> <a href="math.line2.html#Line2.start" class="plink">¶</a></dt>
+<dt class="decl">Vector2!(T) <a class="symbol _variable" name="Line2.start" href="htmlsrc/math.line2.html#L30">start</a> <a href="math.line2.html#Line2.start" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Start point of the line segment.</div></div></dd>
-<dt class="decl">Vector2!(T) <a class="symbol _variable" name="Line2.end" href="htmlsrc/math.line2.html#L31">end</a> <a href="math.line2.html#Line2.end" class="plink">¶</a></dt>
+<dt class="decl">Vector2!(T) <a class="symbol _variable" name="Line2.end" href="htmlsrc/math.line2.html#L32">end</a> <a href="math.line2.html#Line2.end" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">End point of the line segment.</div></div></dd>
-<dt class="decl"><span class="rettyp">Line2!(T)</span> <a class="symbol _function" name="Line2.opCall" href="htmlsrc/math.line2.html#L34">opCall</a><span class="params">(T <em>x1</em>, T <em>y1</em>, T <em>x2</em>, T <em>y2</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="math.line2.html#Line2.opCall" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Line2!(T)</span> <a class="symbol _function" name="Line2.opAdd" href="htmlsrc/math.line2.html#L35">opAdd</a><span class="params">(Vector2!(T) <em>s</em>)</span> <a href="math.line2.html#Line2.opAdd" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Fake constructor from 4 numbers</div></div></dd>
-<dt class="decl"><span class="rettyp">Line2!(T)</span> <a class="symbol _function" name="Line2.opCall:2" href="htmlsrc/math.line2.html#L40">opCall</a><span class="params">(Vector2!(T) <em>v1</em>, Vector2!(T) <em>v2</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="math.line2.html#Line2.opCall:2" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Addition with a vector - used in translation.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Line2.opAddAssign" href="htmlsrc/math.line2.html#L38">opAddAssign</a><span class="params">(Vector2!(T) <em>s</em>)</span> <a href="math.line2.html#Line2.opAddAssign" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Fake constructor from 2 vectors</div></div></dd>
-<dt class="decl"><span class="rettyp">Line2!(T)</span> <a class="symbol _function" name="Line2.opSub" href="htmlsrc/math.line2.html#L49">opSub</a><span class="params">(Vector2!(T) <em>s</em>)</span> <a href="math.line2.html#Line2.opSub" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Addition-assignment with a vector - used in translation.</div></div></dd>
+<dt class="decl"><span class="rettyp">Vector2!(T)</span> <a class="symbol _function" name="Line2.vector" href="htmlsrc/math.line2.html#L45">vector</a><span class="params">()</span> <a href="math.line2.html#Line2.vector" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Subtraction with a vector - used in translation.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Line2.opSubAssign" href="htmlsrc/math.line2.html#L52">opSubAssign</a><span class="params">(Vector2!(T) <em>s</em>)</span> <a href="math.line2.html#Line2.opSubAssign" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Get direction vector of the line segment.</div></div></dd>
+<dt class="decl"><span class="rettyp">Vector2!(T)</span> <a class="symbol _function" name="Line2.normal" href="htmlsrc/math.line2.html#L48">normal</a><span class="params">()</span> <a href="math.line2.html#Line2.normal" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Subtraction-assignment with a vector - used in translation.</div></div></dd>
-<dt class="decl"><span class="rettyp">Vector2!(T)</span> <a class="symbol _function" name="Line2.vector" href="htmlsrc/math.line2.html#L59">vector</a><span class="params">()</span> <a href="math.line2.html#Line2.vector" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Get normal vector of the line segment.</div></div></dd>
+<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="Line2.length" href="htmlsrc/math.line2.html#L51">length</a><span class="params">()</span> <a href="math.line2.html#Line2.length" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Returns direction vector of the line.</div></div></dd>
-<dt class="decl"><span class="rettyp">Vector2!(T)</span> <a class="symbol _function" name="Line2.normal" href="htmlsrc/math.line2.html#L62">normal</a><span class="params">()</span> <a href="math.line2.html#Line2.normal" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Get length of the line segment.</div></div></dd>
+<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="Line2.length_squared" href="htmlsrc/math.line2.html#L54">length_squared</a><span class="params">()</span> <a href="math.line2.html#Line2.length_squared" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Returns normal vector of the line.</div></div></dd>
-<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="Line2.length" href="htmlsrc/math.line2.html#L65">length</a><span class="params">()</span> <a href="math.line2.html#Line2.length" class="plink">¶</a></dt>
-<dd class="ddef">
-<div class="summary"><div class="cmnt">Returns length of the line segment.</div></div></dd>
-<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="Line2.length_squared" href="htmlsrc/math.line2.html#L68">length_squared</a><span class="params">()</span> <a href="math.line2.html#Line2.length_squared" class="plink">¶</a></dt>
-<dd class="ddef">
-<div class="summary"><div class="cmnt">Returns squared length of the line segment.</div></div></dd>
-<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="Line2.point_orientation" href="htmlsrc/math.line2.html#L79">point_orientation</a><span class="params">(Vector2!(T) <em>point</em>)</span> <a href="math.line2.html#Line2.point_orientation" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Get squared length of the line segment.</div></div></dd>
+<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="Line2.point_orientation" href="htmlsrc/math.line2.html#L65">point_orientation</a><span class="params">(Vector2!(T) <em>point</em>)</span> <a href="math.line2.html#Line2.point_orientation" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Determines if point is to the right, left or on the line.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -74,49 +68,45 @@
 <p class="sec_header">Returns:</p><div class="cmnt">Less than 0 if the point is to the left of line,
           more than 0 if the point is to the right of line,
           0 of the point is on the line.</div></dd>
-<dt class="decl"><span class="rettyp">Vector2!(T)</span> <a class="symbol _function" name="Line2.closest_point" href="htmlsrc/math.line2.html#L95">closest_point</a><span class="params">(Vector2!(T) <em>point</em>, bool <em>full_line</em> = <span class="defval"><span class="k">true</span></span>)</span> <a href="math.line2.html#Line2.closest_point" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Vector2!(T)</span> <a class="symbol _function" name="Line2.closest_point" href="htmlsrc/math.line2.html#L79">closest_point</a><span class="params">(Vector2!(T) <em>point</em>)</span> <a href="math.line2.html#Line2.closest_point" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Calculates closest _point on this line or line segment to given _point.</div></div>
+<div class="summary"><div class="cmnt">Calculates closest point on this line segment to given point.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
-<tr><td><em>point</em></td><td>Point to find the closest _point to.</td></tr>
-<tr><td><em>full_line</em></td><td>Find the closest _point of full line of this
-                        segment or just on the segment itself?</td></tr></table>
-<p class="sec_header">Returns:</p><div class="cmnt">Closest _point to point.</div></dd>
-<dt class="decl"><a class="symbol _unittest" name="Line2.unittest" href="htmlsrc/math.line2.html#L113">unittest</a> <a href="math.line2.html#Line2.unittest" class="plink">¶</a></dt>
+<tr><td><em>point</em></td><td>Point to find the closest point to.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Closest point on the line to the specified point.</div></dd>
+<dt class="decl"><a class="symbol _unittest" name="Line2.unittest" href="htmlsrc/math.line2.html#L91">unittest</a> <a href="math.line2.html#Line2.unittest" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="Line2.distance" href="htmlsrc/math.line2.html#L138">distance</a><span class="params">(Vector2!(T) <em>point</em>, bool <em>full_line</em> = <span class="defval"><span class="k">true</span></span>)</span> <a href="math.line2.html#Line2.distance" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="Line2.distance" href="htmlsrc/math.line2.html#L109">distance</a><span class="params">(Vector2!(T) <em>point</em>)</span> <a href="math.line2.html#Line2.distance" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Calculates distance from this line or line segment to given _point.</div></div>
+<div class="summary"><div class="cmnt">Calculates distance from the line segment to given point.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
-<tr><td><em>point</em></td><td>Point to calculate distance to.</td></tr>
-<tr><td><em>full_line</em></td><td>Calculate distance to full line of this segment 
-                        or just on the segment itself?</td></tr></table>
-<p class="sec_header">Returns:</p><div class="cmnt">Distance to point.</div></dd>
-<dt class="decl"><a class="symbol _unittest" name="Line2.unittest:2" href="htmlsrc/math.line2.html#L141">unittest</a> <a href="math.line2.html#Line2.unittest:2" class="plink">¶</a></dt>
+<tr><td><em>point</em></td><td>Point to calculate distance to.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Distance to the specified point.</div></dd>
+<dt class="decl"><a class="symbol _unittest" name="Line2.unittest:2" href="htmlsrc/math.line2.html#L111">unittest</a> <a href="math.line2.html#Line2.unittest:2" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">Vector2!(T)</span> <a class="symbol _function" name="Line2.symmetric_point" href="htmlsrc/math.line2.html#L159">symmetric_point</a><span class="params">(Vector2!(T) <em>point</em>)</span> <a href="math.line2.html#Line2.symmetric_point" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Vector2!(T)</span> <a class="symbol _function" name="Line2.symmetric_point" href="htmlsrc/math.line2.html#L124">symmetric_point</a><span class="params">(Vector2!(T) <em>point</em>)</span> <a href="math.line2.html#Line2.symmetric_point" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Returns the _point symmetric to given _point according to line defined by this segment.</div></div></dd>
-<dt class="decl"><a class="symbol _unittest" name="Line2.unittest:3" href="htmlsrc/math.line2.html#L165">unittest</a> <a href="math.line2.html#Line2.unittest:3" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Get the point symmetric to given point according to line of this segment.</div></div></dd>
+<dt class="decl"><a class="symbol _unittest" name="Line2.unittest:3" href="htmlsrc/math.line2.html#L131">unittest</a> <a href="math.line2.html#Line2.unittest:3" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">LineIntersection</span> <a class="symbol _function" name="Line2.intersect" href="htmlsrc/math.line2.html#L185">intersect</a><span class="params">(Line2!(T) <em>l</em>,  <span class="k">out</span> Vector2!(T) <em>i</em>)</span> <a href="math.line2.html#Line2.intersect" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">LineIntersection</span> <a class="symbol _function" name="Line2.intersect" href="htmlsrc/math.line2.html#L149">intersect</a><span class="params">(Line2!(T) <em>l</em>,  <span class="k">out</span> Vector2!(T) <em>i</em>)</span> <a href="math.line2.html#Line2.intersect" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Tests for intersection with another line segment.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
-<tr><td><em>l</em></td><td>Line segment to test intersection with.</td></tr>
+<tr><td><em>l</em></td><td>Line segment to test for intersection with.</td></tr>
 <tr><td><em>i</em></td><td>Vector to write intersection point to.</td></tr></table>
-<p class="sec_header">Returns:</p><div class="cmnt">true if line segments intersect, false otherwise.</div></dd>
-<dt class="decl"><a class="symbol _unittest" name="Line2.unittest:4" href="htmlsrc/math.line2.html#L277">unittest</a> <a href="math.line2.html#Line2.unittest:4" class="plink">¶</a></dt>
+<p class="sec_header">Returns:</p><div class="cmnt">Type of intersection.</div></dd>
+<dt class="decl"><a class="symbol _unittest" name="Line2.unittest:4" href="htmlsrc/math.line2.html#L217">unittest</a> <a href="math.line2.html#Line2.unittest:4" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl"><span class="kw">alias</span> Line2!(float) <a class="symbol _alias" name="Line2f" href="htmlsrc/math.line2.html#L293">Line2f</a> <a href="math.line2.html#Line2f" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">alias</span> Line2!(float) <a class="symbol _alias" name="Line2f" href="htmlsrc/math.line2.html#L233">Line2f</a> <a href="math.line2.html#Line2f" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Wed Feb 16 01:15:06 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Wed Feb 16 15:58:43 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>
