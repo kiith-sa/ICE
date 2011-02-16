@@ -21,51 +21,60 @@ import util.factory;
 ///Horizontal alignments.
 enum AlignX
 {
+    ///Align to right.
     Right,
+    ///Align to center.
     Center,
+    ///Align to left.
     Left
 }
 
 ///Vertical alignments.
 enum AlignY
 {
+    ///Align to top.
     Top,
+    ///Align to center.
     Center,
+    ///Align to bottom.
     Bottom
 }
 
-///Static text element. Text is broken down into lines to fit width.
+/**
+ * Static text element. 
+ *
+ * Text is broken down into lines to fit width, but no fancy formatting is supported yet.
+ */
 class GUIStaticText : GUIElement
 {
     private:
-        //Single line of text drawn on screen.
+        ///Single line of text drawn on screen.
         struct TextLine
         {
-            //position relative to element position.
+            ///Position relative to element position.
             Vector2i offset;
-            //text of the line.
+            ///Text of the line.
             string text;
         }
 
-        //Text of the element. This is broken into TextLines according to width.
+        ///Text string. This is broken into TextLines according to width.
         string text_ = "";
-
-        AlignX align_x_;
-        AlignY align_y_;
-        
-        //Lines of text to draw.
+        ///Text lines to draw.
         TextLine[] lines_;
 
-        //Name of the font used.
-        string font_;
-
-        //Size of the font in points.
-        uint font_size_;
-        
-        Color font_color_;
-
-        //Distance between lines, in pixels
+        ///Horizontal alignment of the text.
+        AlignX align_x_;
+        ///Vertical alignment of the text.
+        AlignY align_y_;
+        ///Distance between the lines in pixels.
         uint line_gap_;
+        
+        ///Name of the font used.
+        string font_;
+        ///Font size in points.
+        uint font_size_;
+        ///Font color.
+        Color font_color_;
 
     public:
         ///Set text color.
@@ -74,7 +83,7 @@ class GUIStaticText : GUIElement
         ///Return displayed text.
         string text(){return text_;}
 
-        ///Set displayed text.
+        ///Set text to display.
         void text(string text)
         {
             text_ = expandtabs(text);
@@ -85,32 +94,33 @@ class GUIStaticText : GUIElement
         static uint default_font_size(){return 12;}
 
     protected:
-        /*
+        /**
          * Construct a static text with specified parameters.
          *
          * Params:  params      = Parameters for GUIElement constructor.
-         *          text_color  = Color of the text.
+         *          text_color  = Text color.
          *          text        = Text to display.
          *          align_x     = Horizontal alignment of the text.
          *          align_y     = Vertical alignment of the text.
-         *          line_gap    = Spacing between lines of the text.
-         *          font_size   = Size of text font.
+         *          font_size   = Font size.
          *          font        = Name of the font to use.
          */
-        this(GUIElementParams params,
-             Color text_color, string text,
-             AlignX align_x, AlignY align_y, uint line_gap,
-             uint font_size, string font)
+        this(GUIElementParams params, Color text_color, string text, 
+             AlignX align_x, AlignY align_y, uint font_size, string font)
         {
             super(params);
 
-            font_color_ = text_color;
             text_ = expandtabs(text);
-            align_x_ = align_x;
-            align_y_ = align_y;
-            line_gap_ = line_gap;
+
+            font_color_ = text_color;
             font_size_ = font_size;
             font_ = font;
+
+            align_x_ = align_x;
+            align_y_ = align_y;
+            //pretty much arbitrary, something better might be needed in future
+            line_gap_ = max(2u, font_size_ / 6);
+
             aligned_ = false;
         }
 
@@ -129,14 +139,11 @@ class GUIStaticText : GUIElement
             }
         }
 
-        //Break text down to lines and realign it.
         override void realign(VideoDriver driver)
         {
             super.realign(driver);
 
-            line_gap_ = max(2u, font_size_ / 6);
-
-            string text = text_;
+            string text = text_.dup;
 
             //we need to set font to get information about drawn size of lines
             driver.font = font_;
@@ -150,9 +157,18 @@ class GUIStaticText : GUIElement
         }
 
     private:
-        //Add a TextLine from the text, and return rest of the text.
-        string add_line(VideoDriver driver, string text, 
-                        uint y_offset_in, out uint y_offset_out)
+        //This code is pretty horrible. Need a serious, even if not feature-rich layout engine.
+        /**
+         * Add a TextLine from the text, and return rest of the text.
+         *
+         * Params:  driver       = VideoDriver used for text size measurement.
+         *          text         = Text to get the line from.
+         *          y_offset_in  = Y offset to use for this line.
+         *          y_offset_out = Y offset to use for the next line will be written here.
+         *
+         * Returns: Remaining text that isn't part of the newly added line.
+         */
+        string add_line(VideoDriver driver, string text, uint y_offset_in, out uint y_offset_out)
         {
             //get leading space, if any, and following word from text
             //also, break the line if (unix) newline found
@@ -160,9 +176,11 @@ class GUIStaticText : GUIElement
             {
                 end_line = false;
                 uint end;
+                //get leading space
                 foreach(i, dchar c; text)
                 {
                     if(!iswhite(c)){break;}
+                    //break at newline
                     else if(c == '\n')
                     {
                         end_line = true;
@@ -170,9 +188,11 @@ class GUIStaticText : GUIElement
                     }
                     ++end;
                 }
+                //get the word
                 foreach(dchar c; text[end .. $])
                 {
                     if(iswhite(c)){break;}
+                    //break at newline
                     else if(c == '\n')
                     {
                         end_line = true;
@@ -230,7 +250,7 @@ class GUIStaticText : GUIElement
             return stripl(text);
         }
         
-        //Align lines verically.
+        ///Align lines verically.
         void align_vertical()
         {
             //if AlignY is Top, we're aligned as lines start at y == 0 by default
@@ -249,20 +269,18 @@ class GUIStaticText : GUIElement
  * See_Also: GUIElementFactoryBase
  *
  * Params:  draw_border = Draw border of the element?
- *                        Default: false
+ *                        Default; false
  *          text_color  = Color of the text.
- *                        Default: Color.white
+ *                        Default; Color.white
  *          text        = Text to display.
- *                        Default: ""
+ *                        Default; ""
  *          align_x     = Horizontal alignment of the text.
- *                        Default: AlignX.Left
+ *                        Default; AlignX.Left
  *          align_y     = Vertical alignment of the text.
- *                        Default: AlignY.Top
- *          line_gap    = Spacing between lines of the text.
- *                        Default: 0
+ *                        Default; AlignY.Top
  *          font_size   = Size of text font.
  *          font        = Name of the font to use.
- *                        Default: "default"
+ *                        Default; "default"
  */
 final class GUIStaticTextFactory : GUIElementFactoryBase!(GUIStaticText)
 {
@@ -270,16 +288,15 @@ final class GUIStaticTextFactory : GUIElementFactoryBase!(GUIStaticText)
                            "string $ text $ \"\"", 
                            "AlignX $ align_x $ AlignX.Left", 
                            "AlignY $ align_y $ AlignY.Top", 
-                           "uint $ line_gap $ 0",
                            "uint $ font_size $ GUIStaticText.default_font_size()",
                            "string $ font $ \"default\""));
 
+    ///Construct a GUIStaticTextFactory and initialize defaults.
     this(){draw_border_ = false;}
 
     public override GUIStaticText produce()
     {
-        return new GUIStaticText(gui_element_params,
-                                 text_color_, text_, align_x_, align_y_, line_gap_,
-                                 font_size_, font_);
+        return new GUIStaticText(gui_element_params, text_color_, text_, 
+                                 align_x_, align_y_, font_size_, font_);
     }
 }

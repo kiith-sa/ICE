@@ -234,6 +234,18 @@ Actually, only add code examples where really needed - too much work
 
     Most importantly would allow significant implementation changes
     on the background.
+8:
+    Subset of HTML tags for text drawing (just support <br> for now),
+    will need a parser (fast!) and e.g. StaticText will need to use
+    a class/module that will split the html text into lines.
+
+    Alternatively, something like txt2tags or markdown. Look for
+    info about both. E.g. in txt2tags two newlines in a row would
+    separate paragraphs, resulting in a gap between lines.
+
+    lightweight markup language would be good for source readability,
+    html e.g. for tables (although those might work in a lml too -
+    especially if we do them our own way
 24:
     Advanced memory monitor: per-type usage graphs, 
     number of allocations per  e.g. second (graph),
@@ -279,18 +291,6 @@ Actually, only add code examples where really needed - too much work
     pong, not game. maybe later it could be updated from separate thread, but probably
     not.
     Would be used like e.g. time.delayed_call(function(args), delay);
-8:
-    Subset of HTML tags for text drawing (just support <br> for now),
-    will need a parser (fast!) and e.g. StaticText will need to use
-    a class/module that will split the html text into lines.
-
-    Alternatively, something like txt2tags or markdown. Look for
-    info about both. E.g. in txt2tags two newlines in a row would
-    separate paragraphs, resulting in a gap between lines.
-
-    lightweight markup language would be good for source readability,
-    html e.g. for tables (although those might work in a lml too -
-    especially if we do them our own way
 11:
     A debug (ini, console and/or debug GUI controlled) option to draw wireframe.
     Also might want pure white wireframe option (with a custom shader)

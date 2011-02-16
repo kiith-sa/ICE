@@ -22,74 +22,90 @@
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Horizontal alignments.</div></div>
 <dl>
-<dt class="decl"><a class="symbol _enummem" name="AlignX.Right" href="htmlsrc/gui.guistatictext.html#L24">Right</a> <a href="gui.guistatictext.html#AlignX.Right" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><a class="symbol _enummem" name="AlignX.Center" href="htmlsrc/gui.guistatictext.html#L25">Center</a> <a href="gui.guistatictext.html#AlignX.Center" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><a class="symbol _enummem" name="AlignX.Left" href="htmlsrc/gui.guistatictext.html#L26">Left</a> <a href="gui.guistatictext.html#AlignX.Left" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl"><span class="kw">enum</span> <a class="symbol _enum" name="AlignY" href="htmlsrc/gui.guistatictext.html#L30">AlignY</a> <a href="gui.guistatictext.html#AlignY" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _enummem" name="AlignX.Right" href="htmlsrc/gui.guistatictext.html#L25">Right</a> <a href="gui.guistatictext.html#AlignX.Right" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Align to right.</div></div></dd>
+<dt class="decl"><a class="symbol _enummem" name="AlignX.Center" href="htmlsrc/gui.guistatictext.html#L27">Center</a> <a href="gui.guistatictext.html#AlignX.Center" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Align to center.</div></div></dd>
+<dt class="decl"><a class="symbol _enummem" name="AlignX.Left" href="htmlsrc/gui.guistatictext.html#L29">Left</a> <a href="gui.guistatictext.html#AlignX.Left" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Align to left.</div></div></dd></dl></dd>
+<dt class="decl"><span class="kw">enum</span> <a class="symbol _enum" name="AlignY" href="htmlsrc/gui.guistatictext.html#L33">AlignY</a> <a href="gui.guistatictext.html#AlignY" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Vertical alignments.</div></div>
 <dl>
-<dt class="decl"><a class="symbol _enummem" name="AlignY.Top" href="htmlsrc/gui.guistatictext.html#L32">Top</a> <a href="gui.guistatictext.html#AlignY.Top" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><a class="symbol _enummem" name="AlignY.Center" href="htmlsrc/gui.guistatictext.html#L33">Center</a> <a href="gui.guistatictext.html#AlignY.Center" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><a class="symbol _enummem" name="AlignY.Bottom" href="htmlsrc/gui.guistatictext.html#L34">Bottom</a> <a href="gui.guistatictext.html#AlignY.Bottom" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GUIStaticText" href="htmlsrc/gui.guistatictext.html#L38">GUIStaticText</a> : <span class="bclass">GUIElement</span> <a href="gui.guistatictext.html#GUIStaticText" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _enummem" name="AlignY.Top" href="htmlsrc/gui.guistatictext.html#L36">Top</a> <a href="gui.guistatictext.html#AlignY.Top" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Static text element. Text is broken down into lines to fit width.</div></div>
+<div class="summary"><div class="cmnt">Align to top.</div></div></dd>
+<dt class="decl"><a class="symbol _enummem" name="AlignY.Center" href="htmlsrc/gui.guistatictext.html#L38">Center</a> <a href="gui.guistatictext.html#AlignY.Center" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Align to center.</div></div></dd>
+<dt class="decl"><a class="symbol _enummem" name="AlignY.Bottom" href="htmlsrc/gui.guistatictext.html#L40">Bottom</a> <a href="gui.guistatictext.html#AlignY.Bottom" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Align to bottom.</div></div></dd></dl></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GUIStaticText" href="htmlsrc/gui.guistatictext.html#L48">GUIStaticText</a> : <span class="bclass">GUIElement</span> <a href="gui.guistatictext.html#GUIStaticText" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Static text element.</div></div>
+<div class="cmnt">Text is broken down into lines to fit width, but no fancy formatting is supported yet.</div>
 <dl>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIStaticText.text_color" href="htmlsrc/gui.guistatictext.html#L72">text_color</a><span class="params">(Color <em>color</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.text_color" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIStaticText.text_color" href="htmlsrc/gui.guistatictext.html#L81">text_color</a><span class="params">(Color <em>color</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.text_color" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Set text color.</div></div></dd>
-<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="GUIStaticText.text" href="htmlsrc/gui.guistatictext.html#L75">text</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.text" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="GUIStaticText.text" href="htmlsrc/gui.guistatictext.html#L84">text</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.text" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Return displayed text.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIStaticText.text:2" href="htmlsrc/gui.guistatictext.html#L78">text</a><span class="params">(string <em>text</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.text:2" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIStaticText.text:2" href="htmlsrc/gui.guistatictext.html#L87">text</a><span class="params">(string <em>text</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.text:2" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Set displayed text.</div></div></dd>
-<dt class="decl"><span class="rettyp">uint</span> <a class="symbol _function" name="GUIStaticText.default_font_size" href="htmlsrc/gui.guistatictext.html#L85">default_font_size</a><span class="params">()</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.default_font_size" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Set text to display.</div></div></dd>
+<dt class="decl"><span class="rettyp">uint</span> <a class="symbol _function" name="GUIStaticText.default_font_size" href="htmlsrc/gui.guistatictext.html#L94">default_font_size</a><span class="params">()</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.default_font_size" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Get default font size of GUIStaticText instances.</div></div></dd>
-<dt class="decl"><a class="symbol _ctor" name="GUIStaticText.this" href="htmlsrc/gui.guistatictext.html#L100">this</a><span class="params">(GUIElementParams <em>params</em>, Color <em>text_color</em>, string <em>text</em>, AlignX <em>align_x</em>, AlignY <em>align_y</em>, uint <em>line_gap</em>, uint <em>font_size</em>, string <em>font</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.this" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _ctor" name="GUIStaticText.this" href="htmlsrc/gui.guistatictext.html#L108">this</a><span class="params">(GUIElementParams <em>params</em>, Color <em>text_color</em>, string <em>text</em>, AlignX <em>align_x</em>, AlignY <em>align_y</em>, uint <em>font_size</em>, string <em>font</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.this" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Construct a static text with specified parameters.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>params</em></td><td>Parameters for GUIElement constructor.</td></tr>
+<tr><td><em>text_color</em></td><td>Text color.</td></tr>
+<tr><td><em>text</em></td><td>Text to display.</td></tr>
+<tr><td><em>align_x</em></td><td>Horizontal alignment of the text.</td></tr>
+<tr><td><em>align_y</em></td><td>Vertical alignment of the text.</td></tr>
+<tr><td><em>font_size</em></td><td>Font size.</td></tr>
+<tr><td><em>font</em></td><td>Name of the font to use.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIStaticText.draw" href="htmlsrc/gui.guistatictext.html#L127">draw</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.draw" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIStaticText.draw" href="htmlsrc/gui.guistatictext.html#L117">draw</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.draw" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIStaticText.realign" href="htmlsrc/gui.guistatictext.html#L133">realign</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.realign" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GUIStaticText.realign" href="htmlsrc/gui.guistatictext.html#L142">realign</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="gui.guistatictext.html#GUIStaticText.realign" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GUIStaticTextFactory" href="htmlsrc/gui.guistatictext.html#L267">GUIStaticTextFactory</a> : <span class="bclass">GUIElementFactoryBase!(GUIStaticText)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="gui.guistatictext.html#GUIStaticTextFactory" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GUIStaticTextFactory" href="htmlsrc/gui.guistatictext.html#L285">GUIStaticTextFactory</a> : <span class="bclass">GUIElementFactoryBase!(GUIStaticText)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="gui.guistatictext.html#GUIStaticTextFactory" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Factory used for static text construction.</div></div>
 <p class="sec_header">See Also:</p><div class="cmnt">GUIElementFactoryBase</div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
-<tr><td><em>draw_border</em></td><td>Draw border of the element?</td></tr></table>
-<p class="sec_header">Default:</p><div class="cmnt">false
-          text_color  = Color of the text.</div>
-<p class="sec_header">Default:</p><div class="cmnt">Color.white
-          text        = Text to display.</div>
-<p class="sec_header">Default:</p><div class="cmnt">""
-          align_x     = Horizontal alignment of the text.</div>
-<p class="sec_header">Default:</p><div class="cmnt">AlignX.Left
-          align_y     = Vertical alignment of the text.</div>
-<p class="sec_header">Default:</p><div class="cmnt">AlignY.Top
-          line_gap    = Spacing between lines of the text.</div>
-<p class="sec_header">Default:</p><div class="cmnt">0
-          font_size   = Size of text font.
-          font        = Name of the font to use.</div>
-<p class="sec_header">Default:</p><div class="cmnt">"default"</div>
+<tr><td><em>draw_border</em></td><td>Draw border of the element?
+                        Default; false</td></tr>
+<tr><td><em>text_color</em></td><td>Color of the text.
+                        Default; Color.white</td></tr>
+<tr><td><em>text</em></td><td>Text to display.
+                        Default; ""</td></tr>
+<tr><td><em>align_x</em></td><td>Horizontal alignment of the text.
+                        Default; AlignX.Left</td></tr>
+<tr><td><em>align_y</em></td><td>Vertical alignment of the text.
+                        Default; AlignY.Top</td></tr>
+<tr><td><em>font_size</em></td><td>Size of text font.</td></tr>
+<tr><td><em>font</em></td><td>Name of the font to use.
+                        Default; "default"</td></tr></table>
 <dl>
-<dt class="decl"><a class="symbol _ctor" name="GUIStaticTextFactory.this" href="htmlsrc/gui.guistatictext.html#L277">this</a><span class="params">()</span> <a href="gui.guistatictext.html#GUIStaticTextFactory.this" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">GUIStaticText</span> <a class="symbol _function" name="GUIStaticTextFactory.produce" href="htmlsrc/gui.guistatictext.html#L279">produce</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>, <span class="stc">override</span>]</span> <a href="gui.guistatictext.html#GUIStaticTextFactory.produce" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _ctor" name="GUIStaticTextFactory.this" href="htmlsrc/gui.guistatictext.html#L295">this</a><span class="params">()</span> <a href="gui.guistatictext.html#GUIStaticTextFactory.this" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Construct a GUIStaticTextFactory and initialize defaults.</div></div></dd>
+<dt class="decl"><span class="rettyp">GUIStaticText</span> <a class="symbol _function" name="GUIStaticTextFactory.produce" href="htmlsrc/gui.guistatictext.html#L297">produce</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>, <span class="stc">override</span>]</span> <a href="gui.guistatictext.html#GUIStaticTextFactory.produce" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Wed Feb 16 00:46:17 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Wed Feb 16 01:15:07 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>
