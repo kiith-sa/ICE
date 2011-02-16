@@ -10,13 +10,12 @@ module math.rectangle;
 import math.math;
 import math.vector2;
 
-///Rectangle defined by vectors of its limits.
+///Rectangle defined by its limit points.
 align(1) struct Rectangle(T)
 {
     invariant
     {
-        assert(min.x <= max.x && min.y <= max.y, 
-               "Min value/s of a Rectangle can not greater than max");
+        assert(min.x <= max.x && min.y <= max.y, "Min value/s of a Rectangle greater than max");
     }
 
     ///Upper-left corner of the rectangle.
@@ -24,17 +23,28 @@ align(1) struct Rectangle(T)
     ///Lower-right corner of the rectangle.
     Vector2!(T) max;
 
-    ///Fake constructor from 4 numbers
-    static Rectangle!(T) opCall(T x1, T y1, T x2, T y2)
+    /**
+     * Construct a rectangle from 4 bounds.
+     *
+     * Params:  min_x = Left bound of the rectangle.
+     *          min_y = Top bound of the rectangle.
+     *          max_x = Right bound of the rectangle.
+     *          max_y = Bottom bound of the rectangle.
+     *
+     * Returns: Rectangle with specified bounds.
+     */
+    static Rectangle!(T) opCall(T min_x, T min_y, T max_x, T max_y)
     {
-        return Rectangle!(T)(Vector2!(T)(x1, y1), Vector2!(T)(x2, y2));
+        return Rectangle!(T)(Vector2!(T)(min_x, min_y), Vector2!(T)(max_x, max_y));
     }
  
     /**
-     * Fake constructor from 2 vectors
+     * Construct a rectangle from 2 points.
      *
      * Params:  min = Upper-left corner of the rectangle.
      *          max = Lower-right corner of the rectangle.
+     *
+     * Returns: Rectangle with specified min and max coordinates.
      */
     static Rectangle!(T) opCall(Vector2!(T) min, Vector2!(T) max)
     {
@@ -50,12 +60,6 @@ align(1) struct Rectangle(T)
     ///Subtraction with a vector - used to move the rectangle. 
     Rectangle!(T) opSub(Vector2!(T) v){return Rectangle!(T)(min - v, max - v);}
 
-    ///Returns the lower-left corner of the rectangle.
-    Vector2!(T) min_max(){return Vector2!(T)(min.x, max.y);}
-
-    ///Returns the upper-right corner of the rectangle.
-    Vector2!(T) max_min(){return Vector2!(T)(max.x, min.y);}
-
     ///Addition-assignment with a vector - used to move the rectangle. 
     void opAddAssign(Vector2!(T) v)
     {
@@ -68,28 +72,8 @@ align(1) struct Rectangle(T)
     {
         min -= v;
         max -= v;
+ 
     }
-
-    ///Clamps point to be within the rectangle. (Returns the closest point in the rectangle)
-    Vector2!(T) clamp(Vector2!(T) point)
-    {
-        if(point.x < min.x) point.x = min.x;
-        else if(point.x > max.x) point.x = max.x;
-        if(point.y < min.y) point.y = min.y;
-        else if(point.y > max.y) point.y = max.y;
-        return point;
-    }
-
-    ///Returns distance from point to the rectangle.
-    T distance(Vector2!(T) point){return (point - clamp(point)).length;}
-
-    ///Determines if a point intersects with the rectangle.
-    bool intersect(Vector2!(T) point)
-    {
-        return point.x >= min.x && point.x <= max.x && 
-               point.y >= min.y && point.y <= max.y;
-    }
-
     ///Returns center of the rectangle.
     Vector2!(T) center(){return (min + max) / cast(T)2;}
     
@@ -103,11 +87,52 @@ align(1) struct Rectangle(T)
     Vector2!(T) size(){return max - min;}
 
     ///Returns area of the rectangle.
-    T area()
+    T area(){return size.x * size.y;}
+
+    ///Returns the lower-left corner of the rectangle.
+    Vector2!(T) min_max(){return Vector2!(T)(min.x, max.y);}
+
+    ///Returns the upper-right corner of the rectangle.
+    Vector2!(T) max_min(){return Vector2!(T)(max.x, min.y);}
+
+    /**
+     * Clamps point to be within the rectangle. (Returns the closest point in the rectangle)
+     *
+     * Params:  point = Point to clamp.
+     *
+     * Returns: Clamped point.
+     */
+    Vector2!(T) clamp(Vector2!(T) point)
     {
-        return size.x * size.y;
+        if(point.x < min.x) point.x = min.x;
+        else if(point.x > max.x) point.x = max.x;
+        if(point.y < min.y) point.y = min.y;
+        else if(point.y > max.y) point.y = max.y;
+        return point;
     }
-    
+
+    /**
+     * Get distance from the point to the rectangle.
+     *
+     * Params:  point = Point to get distance from.
+     *
+     * Returns: Distance from the point to the rectangle.
+     */
+    T distance(Vector2!(T) point){return (point - clamp(point)).length;}
+
+    /**
+     * Determines if a point intersects with the rectangle.
+     *
+     * Params:  point = Point to check intersection with.
+     *
+     * Returns: True in case of intersection, false otherwise.
+     */
+    bool intersect(Vector2!(T) point)
+    {
+        return point.x >= min.x && point.x <= max.x && 
+               point.y >= min.y && point.y <= max.y;
+    }
+
     ///If the point is not in this rectangle, grow the rectangle to include it.
     void add_internal_point(Vector2!(T) point)
     {
@@ -118,7 +143,11 @@ align(1) struct Rectangle(T)
     }
 }
 
+///Rectangle of floats.
 alias Rectangle!(float) Rectanglef;
+///Rectangle of doubles.
 alias Rectangle!(double) Rectangled;
+///Rectangle of ints.
 alias Rectangle!(int) Rectanglei;
+///Rectangle of uints.
 alias Rectangle!(uint) Rectangleu;

@@ -20,83 +20,107 @@
 <dl>
 <dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="Rectangle" href="htmlsrc/math.rectangle.html#L14">Rectangle</a><span class="tparams">(<em>T</em>)</span> <a href="math.rectangle.html#Rectangle" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Rectangle defined by vectors of its limits.</div></div>
+<div class="summary"><div class="cmnt">Rectangle defined by its limit points.</div></div>
 <dl>
 <dt class="decl"><a class="symbol _invariant" name="Rectangle.invariant" href="htmlsrc/math.rectangle.html#L16">invariant</a> <a href="math.rectangle.html#Rectangle.invariant" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Vector2!(T) <a class="symbol _variable" name="Rectangle.min" href="htmlsrc/math.rectangle.html#L23">min</a> <a href="math.rectangle.html#Rectangle.min" class="plink">¶</a></dt>
+<dt class="decl">Vector2!(T) <a class="symbol _variable" name="Rectangle.min" href="htmlsrc/math.rectangle.html#L22">min</a> <a href="math.rectangle.html#Rectangle.min" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Upper-left corner of the rectangle.</div></div></dd>
-<dt class="decl">Vector2!(T) <a class="symbol _variable" name="Rectangle.max" href="htmlsrc/math.rectangle.html#L25">max</a> <a href="math.rectangle.html#Rectangle.max" class="plink">¶</a></dt>
+<dt class="decl">Vector2!(T) <a class="symbol _variable" name="Rectangle.max" href="htmlsrc/math.rectangle.html#L24">max</a> <a href="math.rectangle.html#Rectangle.max" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Lower-right corner of the rectangle.</div></div></dd>
-<dt class="decl"><span class="rettyp">Rectangle!(T)</span> <a class="symbol _function" name="Rectangle.opCall" href="htmlsrc/math.rectangle.html#L28">opCall</a><span class="params">(T <em>x1</em>, T <em>y1</em>, T <em>x2</em>, T <em>y2</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="math.rectangle.html#Rectangle.opCall" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Rectangle!(T)</span> <a class="symbol _function" name="Rectangle.opCall" href="htmlsrc/math.rectangle.html#L36">opCall</a><span class="params">(T <em>min_x</em>, T <em>min_y</em>, T <em>max_x</em>, T <em>max_y</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="math.rectangle.html#Rectangle.opCall" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Fake constructor from 4 numbers</div></div></dd>
-<dt class="decl"><span class="rettyp">Rectangle!(T)</span> <a class="symbol _function" name="Rectangle.opCall:2" href="htmlsrc/math.rectangle.html#L39">opCall</a><span class="params">(Vector2!(T) <em>min</em>, Vector2!(T) <em>max</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="math.rectangle.html#Rectangle.opCall:2" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Construct a rectangle from 4 bounds.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>min_x</em></td><td>Left bound of the rectangle.</td></tr>
+<tr><td><em>min_y</em></td><td>Top bound of the rectangle.</td></tr>
+<tr><td><em>max_x</em></td><td>Right bound of the rectangle.</td></tr>
+<tr><td><em>max_y</em></td><td>Bottom bound of the rectangle.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Rectangle with specified bounds.</div></dd>
+<dt class="decl"><span class="rettyp">Rectangle!(T)</span> <a class="symbol _function" name="Rectangle.opCall:2" href="htmlsrc/math.rectangle.html#L49">opCall</a><span class="params">(Vector2!(T) <em>min</em>, Vector2!(T) <em>max</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="math.rectangle.html#Rectangle.opCall:2" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Fake constructor from 2 vectors</div></div>
+<div class="summary"><div class="cmnt">Construct a rectangle from 2 points.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>min</em></td><td>Upper-left corner of the rectangle.</td></tr>
-<tr><td><em>max</em></td><td>Lower-right corner of the rectangle.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">Rectangle!(T)</span> <a class="symbol _function" name="Rectangle.opAdd" href="htmlsrc/math.rectangle.html#L48">opAdd</a><span class="params">(Vector2!(T) <em>v</em>)</span> <a href="math.rectangle.html#Rectangle.opAdd" class="plink">¶</a></dt>
+<tr><td><em>max</em></td><td>Lower-right corner of the rectangle.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Rectangle with specified min and max coordinates.</div></dd>
+<dt class="decl"><span class="rettyp">Rectangle!(T)</span> <a class="symbol _function" name="Rectangle.opAdd" href="htmlsrc/math.rectangle.html#L58">opAdd</a><span class="params">(Vector2!(T) <em>v</em>)</span> <a href="math.rectangle.html#Rectangle.opAdd" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Addition with a vector - used to move the rectangle.</div></div></dd>
-<dt class="decl"><span class="rettyp">Rectangle!(T)</span> <a class="symbol _function" name="Rectangle.opSub" href="htmlsrc/math.rectangle.html#L51">opSub</a><span class="params">(Vector2!(T) <em>v</em>)</span> <a href="math.rectangle.html#Rectangle.opSub" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Rectangle!(T)</span> <a class="symbol _function" name="Rectangle.opSub" href="htmlsrc/math.rectangle.html#L61">opSub</a><span class="params">(Vector2!(T) <em>v</em>)</span> <a href="math.rectangle.html#Rectangle.opSub" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Subtraction with a vector - used to move the rectangle.</div></div></dd>
-<dt class="decl"><span class="rettyp">Vector2!(T)</span> <a class="symbol _function" name="Rectangle.min_max" href="htmlsrc/math.rectangle.html#L54">min_max</a><span class="params">()</span> <a href="math.rectangle.html#Rectangle.min_max" class="plink">¶</a></dt>
-<dd class="ddef">
-<div class="summary"><div class="cmnt">Returns the lower-left corner of the rectangle.</div></div></dd>
-<dt class="decl"><span class="rettyp">Vector2!(T)</span> <a class="symbol _function" name="Rectangle.max_min" href="htmlsrc/math.rectangle.html#L57">max_min</a><span class="params">()</span> <a href="math.rectangle.html#Rectangle.max_min" class="plink">¶</a></dt>
-<dd class="ddef">
-<div class="summary"><div class="cmnt">Returns the upper-right corner of the rectangle.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Rectangle.opAddAssign" href="htmlsrc/math.rectangle.html#L60">opAddAssign</a><span class="params">(Vector2!(T) <em>v</em>)</span> <a href="math.rectangle.html#Rectangle.opAddAssign" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Rectangle.opAddAssign" href="htmlsrc/math.rectangle.html#L64">opAddAssign</a><span class="params">(Vector2!(T) <em>v</em>)</span> <a href="math.rectangle.html#Rectangle.opAddAssign" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Addition-assignment with a vector - used to move the rectangle.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Rectangle.opSubAssign" href="htmlsrc/math.rectangle.html#L67">opSubAssign</a><span class="params">(Vector2!(T) <em>v</em>)</span> <a href="math.rectangle.html#Rectangle.opSubAssign" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Rectangle.opSubAssign" href="htmlsrc/math.rectangle.html#L71">opSubAssign</a><span class="params">(Vector2!(T) <em>v</em>)</span> <a href="math.rectangle.html#Rectangle.opSubAssign" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Subtraction-assignment with a vector - used to move the rectangle.</div></div></dd>
-<dt class="decl"><span class="rettyp">Vector2!(T)</span> <a class="symbol _function" name="Rectangle.clamp" href="htmlsrc/math.rectangle.html#L74">clamp</a><span class="params">(Vector2!(T) <em>point</em>)</span> <a href="math.rectangle.html#Rectangle.clamp" class="plink">¶</a></dt>
-<dd class="ddef">
-<div class="summary"><div class="cmnt">Clamps point to be within the rectangle. (Returns the closest point in the rectangle)</div></div></dd>
-<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="Rectangle.distance" href="htmlsrc/math.rectangle.html#L84">distance</a><span class="params">(Vector2!(T) <em>point</em>)</span> <a href="math.rectangle.html#Rectangle.distance" class="plink">¶</a></dt>
-<dd class="ddef">
-<div class="summary"><div class="cmnt">Returns distance from point to the rectangle.</div></div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="Rectangle.intersect" href="htmlsrc/math.rectangle.html#L87">intersect</a><span class="params">(Vector2!(T) <em>point</em>)</span> <a href="math.rectangle.html#Rectangle.intersect" class="plink">¶</a></dt>
-<dd class="ddef">
-<div class="summary"><div class="cmnt">Determines if a point intersects with the rectangle.</div></div></dd>
-<dt class="decl"><span class="rettyp">Vector2!(T)</span> <a class="symbol _function" name="Rectangle.center" href="htmlsrc/math.rectangle.html#L94">center</a><span class="params">()</span> <a href="math.rectangle.html#Rectangle.center" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Vector2!(T)</span> <a class="symbol _function" name="Rectangle.center" href="htmlsrc/math.rectangle.html#L78">center</a><span class="params">()</span> <a href="math.rectangle.html#Rectangle.center" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Returns center of the rectangle.</div></div></dd>
-<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="Rectangle.width" href="htmlsrc/math.rectangle.html#L97">width</a><span class="params">()</span> <a href="math.rectangle.html#Rectangle.width" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="Rectangle.width" href="htmlsrc/math.rectangle.html#L81">width</a><span class="params">()</span> <a href="math.rectangle.html#Rectangle.width" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Returns width of the rectangle.</div></div></dd>
-<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="Rectangle.height" href="htmlsrc/math.rectangle.html#L100">height</a><span class="params">()</span> <a href="math.rectangle.html#Rectangle.height" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="Rectangle.height" href="htmlsrc/math.rectangle.html#L84">height</a><span class="params">()</span> <a href="math.rectangle.html#Rectangle.height" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Returns height of the rectangle.</div></div></dd>
-<dt class="decl"><span class="rettyp">Vector2!(T)</span> <a class="symbol _function" name="Rectangle.size" href="htmlsrc/math.rectangle.html#L103">size</a><span class="params">()</span> <a href="math.rectangle.html#Rectangle.size" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Vector2!(T)</span> <a class="symbol _function" name="Rectangle.size" href="htmlsrc/math.rectangle.html#L87">size</a><span class="params">()</span> <a href="math.rectangle.html#Rectangle.size" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Returns size of the rectangle.</div></div></dd>
-<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="Rectangle.area" href="htmlsrc/math.rectangle.html#L106">area</a><span class="params">()</span> <a href="math.rectangle.html#Rectangle.area" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="Rectangle.area" href="htmlsrc/math.rectangle.html#L90">area</a><span class="params">()</span> <a href="math.rectangle.html#Rectangle.area" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Returns area of the rectangle.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Rectangle.add_internal_point" href="htmlsrc/math.rectangle.html#L112">add_internal_point</a><span class="params">(Vector2!(T) <em>point</em>)</span> <a href="math.rectangle.html#Rectangle.add_internal_point" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Vector2!(T)</span> <a class="symbol _function" name="Rectangle.min_max" href="htmlsrc/math.rectangle.html#L93">min_max</a><span class="params">()</span> <a href="math.rectangle.html#Rectangle.min_max" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Returns the lower-left corner of the rectangle.</div></div></dd>
+<dt class="decl"><span class="rettyp">Vector2!(T)</span> <a class="symbol _function" name="Rectangle.max_min" href="htmlsrc/math.rectangle.html#L96">max_min</a><span class="params">()</span> <a href="math.rectangle.html#Rectangle.max_min" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Returns the upper-right corner of the rectangle.</div></div></dd>
+<dt class="decl"><span class="rettyp">Vector2!(T)</span> <a class="symbol _function" name="Rectangle.clamp" href="htmlsrc/math.rectangle.html#L105">clamp</a><span class="params">(Vector2!(T) <em>point</em>)</span> <a href="math.rectangle.html#Rectangle.clamp" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Clamps point to be within the rectangle. (Returns the closest point in the rectangle)</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>point</em></td><td>Point to clamp.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Clamped point.</div></dd>
+<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="Rectangle.distance" href="htmlsrc/math.rectangle.html#L121">distance</a><span class="params">(Vector2!(T) <em>point</em>)</span> <a href="math.rectangle.html#Rectangle.distance" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get distance from the point to the rectangle.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>point</em></td><td>Point to get distance from.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Distance from the point to the rectangle.</div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="Rectangle.intersect" href="htmlsrc/math.rectangle.html#L130">intersect</a><span class="params">(Vector2!(T) <em>point</em>)</span> <a href="math.rectangle.html#Rectangle.intersect" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Determines if a point intersects with the rectangle.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>point</em></td><td>Point to check intersection with.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">True in case of intersection, false otherwise.</div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Rectangle.add_internal_point" href="htmlsrc/math.rectangle.html#L137">add_internal_point</a><span class="params">(Vector2!(T) <em>point</em>)</span> <a href="math.rectangle.html#Rectangle.add_internal_point" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">If the point is not in this rectangle, grow the rectangle to include it.</div></div></dd></dl></dd>
-<dt class="decl"><span class="kw">alias</span> Rectangle!(float) <a class="symbol _alias" name="Rectanglef" href="htmlsrc/math.rectangle.html#L121">Rectanglef</a> <a href="math.rectangle.html#Rectanglef" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="kw">alias</span> Rectangle!(double) <a class="symbol _alias" name="Rectangled" href="htmlsrc/math.rectangle.html#L122">Rectangled</a> <a href="math.rectangle.html#Rectangled" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="kw">alias</span> Rectangle!(int) <a class="symbol _alias" name="Rectanglei" href="htmlsrc/math.rectangle.html#L123">Rectanglei</a> <a href="math.rectangle.html#Rectanglei" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="kw">alias</span> Rectangle!(uint) <a class="symbol _alias" name="Rectangleu" href="htmlsrc/math.rectangle.html#L124">Rectangleu</a> <a href="math.rectangle.html#Rectangleu" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd></dl>
+<dt class="decl"><span class="kw">alias</span> Rectangle!(float) <a class="symbol _alias" name="Rectanglef" href="htmlsrc/math.rectangle.html#L147">Rectanglef</a> <a href="math.rectangle.html#Rectanglef" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Rectangle of floats.</div></div></dd>
+<dt class="decl"><span class="kw">alias</span> Rectangle!(double) <a class="symbol _alias" name="Rectangled" href="htmlsrc/math.rectangle.html#L149">Rectangled</a> <a href="math.rectangle.html#Rectangled" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Rectangle of doubles.</div></div></dd>
+<dt class="decl"><span class="kw">alias</span> Rectangle!(int) <a class="symbol _alias" name="Rectanglei" href="htmlsrc/math.rectangle.html#L151">Rectanglei</a> <a href="math.rectangle.html#Rectanglei" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Rectangle of ints.</div></div></dd>
+<dt class="decl"><span class="kw">alias</span> Rectangle!(uint) <a class="symbol _alias" name="Rectangleu" href="htmlsrc/math.rectangle.html#L153">Rectangleu</a> <a href="math.rectangle.html#Rectangleu" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Rectangle of uints.</div></div></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Wed Feb 16 22:43:49 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Feb 17 00:23:21 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

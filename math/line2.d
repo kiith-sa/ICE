@@ -230,4 +230,5 @@ align(1) struct Line2(T)
     }
 }
 
+///Line of floats.
 alias Line2!(float) Line2f;
