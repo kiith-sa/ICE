@@ -18,65 +18,137 @@
   <h1 class="module" id="m-math.math"><a href="htmlsrc/math.math.html" class="symbol">math.math</a></h1>
 
 <dl>
-<dt class="decl"><span class="kw">auto</span> <a class="symbol _variable" name="f32_epsilon" href="htmlsrc/math.math.html#L13">f32_epsilon</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="math.math.html#f32_epsilon" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="kw">auto</span> <a class="symbol _variable" name="f64_epsilon" href="htmlsrc/math.math.html#L14">f64_epsilon</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="math.math.html#f64_epsilon" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="kw">auto</span> <a class="symbol _variable" name="fmax_epsilon" href="htmlsrc/math.math.html#L15">fmax_epsilon</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="math.math.html#fmax_epsilon" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">uint <a class="symbol _variable" name="uint_epsilon" href="htmlsrc/math.math.html#L16">uint_epsilon</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="math.math.html#uint_epsilon" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">int <a class="symbol _variable" name="int_epsilon" href="htmlsrc/math.math.html#L17">int_epsilon</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="math.math.html#int_epsilon" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">ushort <a class="symbol _variable" name="ushort_epsilon" href="htmlsrc/math.math.html#L18">ushort_epsilon</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="math.math.html#ushort_epsilon" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">short <a class="symbol _variable" name="short_epsilon" href="htmlsrc/math.math.html#L19">short_epsilon</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="math.math.html#short_epsilon" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">ubyte <a class="symbol _variable" name="ubyte_epsilon" href="htmlsrc/math.math.html#L20">ubyte_epsilon</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="math.math.html#ubyte_epsilon" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">byte <a class="symbol _variable" name="byte_epsilon" href="htmlsrc/math.math.html#L21">byte_epsilon</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="math.math.html#byte_epsilon" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="equals" href="htmlsrc/math.math.html#L24">equals</a><span class="params">(float <em>f1</em>, float <em>f2</em>, float <em>tolerance</em> = <span class="defval"><span class="i">f32_epsilon</span></span>)</span> <a href="math.math.html#equals" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">auto</span> <a class="symbol _variable" name="f32_epsilon" href="htmlsrc/math.math.html#L15">f32_epsilon</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="math.math.html#f32_epsilon" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Fuzzy equality test for floats.</div></div></dd>
-<dt class="decl"><a class="symbol _unittest" name="unittest" href="htmlsrc/math.math.html#L28">unittest</a> <a href="math.math.html#unittest" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="equals:2" href="htmlsrc/math.math.html#L36">equals</a><span class="params">(double <em>f1</em>, double <em>f2</em>, double <em>tolerance</em> = <span class="defval"><span class="i">f64_epsilon</span></span>)</span> <a href="math.math.html#equals:2" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Epsilon (acceptable error in fuzzy comparison/rounding) for 32bit floats.</div></div></dd>
+<dt class="decl"><span class="kw">auto</span> <a class="symbol _variable" name="f64_epsilon" href="htmlsrc/math.math.html#L17">f64_epsilon</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="math.math.html#f64_epsilon" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Fuzzy equality test for doubles.</div></div></dd>
-<dt class="decl"><a class="symbol _unittest" name="unittest:2" href="htmlsrc/math.math.html#L40">unittest</a> <a href="math.math.html#unittest:2" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="equals:3" href="htmlsrc/math.math.html#L48">equals</a><span class="params">(real <em>f1</em>, real <em>f2</em>, real <em>tolerance</em> = <span class="defval"><span class="i">f64_epsilon</span></span>)</span> <a href="math.math.html#equals:3" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Epsilon (acceptable error in fuzzy comparison/rounding) for 64bit floats.</div></div></dd>
+<dt class="decl"><span class="kw">auto</span> <a class="symbol _variable" name="fmax_epsilon" href="htmlsrc/math.math.html#L19">fmax_epsilon</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="math.math.html#fmax_epsilon" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Fuzzy equality test for reals.</div></div></dd>
-<dt class="decl"><a class="symbol _unittest" name="unittest:3" href="htmlsrc/math.math.html#L52">unittest</a> <a href="math.math.html#unittest:3" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="equals:4" href="htmlsrc/math.math.html#L60">equals</a><span class="params">(uint <em>i1</em>, uint <em>i2</em>, uint <em>tolerance</em> = <span class="defval"><span class="i">uint_epsilon</span></span>)</span> <a href="math.math.html#equals:4" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Epsilon (acceptable error in fuzzy comparison/rounding) for widest floats (reals).</div></div></dd>
+<dt class="decl">uint <a class="symbol _variable" name="uint_epsilon" href="htmlsrc/math.math.html#L21">uint_epsilon</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="math.math.html#uint_epsilon" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Fuzzy equality test for uints.</div></div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="equals:5" href="htmlsrc/math.math.html#L66">equals</a><span class="params">(int <em>i1</em>, int <em>i2</em>, int <em>tolerance</em> = <span class="defval"><span class="i">int_epsilon</span></span>)</span> <a href="math.math.html#equals:5" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Epsilon (acceptable error in fuzzy comparison) for 32bit uints.</div></div></dd>
+<dt class="decl">int <a class="symbol _variable" name="int_epsilon" href="htmlsrc/math.math.html#L23">int_epsilon</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="math.math.html#int_epsilon" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Fuzzy equality test for ints.</div></div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="equals:6" href="htmlsrc/math.math.html#L72">equals</a><span class="params">(ushort <em>i1</em>, ushort <em>i2</em>, ushort <em>tolerance</em> = <span class="defval"><span class="i">ushort_epsilon</span></span>)</span> <a href="math.math.html#equals:6" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Epsilon (acceptable error in fuzzy comparison) for 32bit ints.</div></div></dd>
+<dt class="decl">ushort <a class="symbol _variable" name="ushort_epsilon" href="htmlsrc/math.math.html#L25">ushort_epsilon</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="math.math.html#ushort_epsilon" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Fuzzy equality test for ushorts.</div></div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="equals:7" href="htmlsrc/math.math.html#L78">equals</a><span class="params">(short <em>i1</em>, short <em>i2</em>, short <em>tolerance</em> = <span class="defval"><span class="i">short_epsilon</span></span>)</span> <a href="math.math.html#equals:7" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Epsilon (acceptable error in fuzzy comparison) for 16bit uints.</div></div></dd>
+<dt class="decl">short <a class="symbol _variable" name="short_epsilon" href="htmlsrc/math.math.html#L27">short_epsilon</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="math.math.html#short_epsilon" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Fuzzy equality test for ushorts.</div></div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="equals:8" href="htmlsrc/math.math.html#L84">equals</a><span class="params">(ubyte <em>i1</em>, ubyte <em>i2</em>, ubyte <em>tolerance</em> = <span class="defval"><span class="i">ubyte_epsilon</span></span>)</span> <a href="math.math.html#equals:8" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Epsilon (acceptable error in fuzzy comparison) for 16bit ints.</div></div></dd>
+<dt class="decl">ubyte <a class="symbol _variable" name="ubyte_epsilon" href="htmlsrc/math.math.html#L29">ubyte_epsilon</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="math.math.html#ubyte_epsilon" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Fuzzy equality test for ubytes.</div></div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="equals:9" href="htmlsrc/math.math.html#L90">equals</a><span class="params">(byte <em>i1</em>, byte <em>i2</em>, byte <em>tolerance</em> = <span class="defval"><span class="i">byte_epsilon</span></span>)</span> <a href="math.math.html#equals:9" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Epsilon (acceptable error in fuzzy comparison) for 8bit uints.</div></div></dd>
+<dt class="decl">byte <a class="symbol _variable" name="byte_epsilon" href="htmlsrc/math.math.html#L31">byte_epsilon</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="math.math.html#byte_epsilon" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Fuzzy equality test for bytes.</div></div></dd>
-<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="reduce" href="htmlsrc/math.math.html#L102">reduce</a><span class="tparams">(<span class="kw">alias</span> <em>fun</em>, <em>T</em>)</span><span class="params">(T <em>seed</em>, T[] <em>elems</em>)</span> <a href="math.math.html#reduce" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Epsilon (acceptable error in fuzzy comparison) for 8bit ints.</div></div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="equals" href="htmlsrc/math.math.html#L43">equals</a><span class="params">(float <em>f1</em>, float <em>f2</em>, float <em>tolerance</em> = <span class="defval"><span class="i">f32_epsilon</span></span>)</span> <a href="math.math.html#equals" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Fuzzy equality test for floats.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>f1</em></td><td>First float to test.</td></tr>
+<tr><td><em>f2</em></td><td>Second float to test.</td></tr>
+<tr><td><em>tolerance</em></td><td>Acceptable difference to consider f1 and f2 equal.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">True if f1 and f2 are equal, false otherwise.</div></dd>
+<dt class="decl"><a class="symbol _unittest" name="unittest" href="htmlsrc/math.math.html#L48">unittest</a> <a href="math.math.html#unittest" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Unittest for float equals() .</div></div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="equals:2" href="htmlsrc/math.math.html#L64">equals</a><span class="params">(double <em>f1</em>, double <em>f2</em>, double <em>tolerance</em> = <span class="defval"><span class="i">f64_epsilon</span></span>)</span> <a href="math.math.html#equals:2" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Fuzzy equality test for doubles.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>f1</em></td><td>First double to test.</td></tr>
+<tr><td><em>f2</em></td><td>Second double to test.</td></tr>
+<tr><td><em>tolerance</em></td><td>Acceptable difference to consider f1 and f2 equal.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">True if f1 and f2 are equal, false otherwise.</div></dd>
+<dt class="decl"><a class="symbol _unittest" name="unittest:2" href="htmlsrc/math.math.html#L69">unittest</a> <a href="math.math.html#unittest:2" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Unittest for double equals() .</div></div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="equals:3" href="htmlsrc/math.math.html#L85">equals</a><span class="params">(real <em>f1</em>, real <em>f2</em>, real <em>tolerance</em> = <span class="defval"><span class="i">f64_epsilon</span></span>)</span> <a href="math.math.html#equals:3" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Fuzzy equality test for reals.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>f1</em></td><td>First real to test.</td></tr>
+<tr><td><em>f2</em></td><td>Second real to test.</td></tr>
+<tr><td><em>tolerance</em></td><td>Acceptable difference to consider f1 and f2 equal.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">True if f1 and f2 are equal, false otherwise.</div></dd>
+<dt class="decl"><a class="symbol _unittest" name="unittest:3" href="htmlsrc/math.math.html#L90">unittest</a> <a href="math.math.html#unittest:3" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Unittest for real equals() .</div></div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="equals:4" href="htmlsrc/math.math.html#L106">equals</a><span class="params">(uint <em>i1</em>, uint <em>i2</em>, uint <em>tolerance</em> = <span class="defval"><span class="i">uint_epsilon</span></span>)</span> <a href="math.math.html#equals:4" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Fuzzy equality test for uints.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>i1</em></td><td>First uint to test.</td></tr>
+<tr><td><em>i2</em></td><td>Second uint to test.</td></tr>
+<tr><td><em>tolerance</em></td><td>Acceptable difference to consider i1 and i2 equal.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">True if i1 and i2 are equal, false otherwise.</div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="equals:5" href="htmlsrc/math.math.html#L120">equals</a><span class="params">(int <em>i1</em>, int <em>i2</em>, int <em>tolerance</em> = <span class="defval"><span class="i">int_epsilon</span></span>)</span> <a href="math.math.html#equals:5" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Fuzzy equality test for ints.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>i1</em></td><td>First int to test.</td></tr>
+<tr><td><em>i2</em></td><td>Second int to test.</td></tr>
+<tr><td><em>tolerance</em></td><td>Acceptable difference to consider i1 and i2 equal.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">True if i1 and i2 are equal, false otherwise.</div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="equals:6" href="htmlsrc/math.math.html#L134">equals</a><span class="params">(ushort <em>i1</em>, ushort <em>i2</em>, ushort <em>tolerance</em> = <span class="defval"><span class="i">ushort_epsilon</span></span>)</span> <a href="math.math.html#equals:6" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Fuzzy equality test for ushorts.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>i1</em></td><td>First ushort to test.</td></tr>
+<tr><td><em>i2</em></td><td>Second ushort to test.</td></tr>
+<tr><td><em>tolerance</em></td><td>Acceptable difference to consider i1 and i2 equal.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">True if i1 and i2 are equal, false otherwise.</div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="equals:7" href="htmlsrc/math.math.html#L148">equals</a><span class="params">(short <em>i1</em>, short <em>i2</em>, short <em>tolerance</em> = <span class="defval"><span class="i">short_epsilon</span></span>)</span> <a href="math.math.html#equals:7" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Fuzzy equality test for shorts.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>i1</em></td><td>First short to test.</td></tr>
+<tr><td><em>i2</em></td><td>Second short to test.</td></tr>
+<tr><td><em>tolerance</em></td><td>Acceptable difference to consider i1 and i2 equal.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">True if i1 and i2 are equal, false otherwise.</div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="equals:8" href="htmlsrc/math.math.html#L162">equals</a><span class="params">(ubyte <em>i1</em>, ubyte <em>i2</em>, ubyte <em>tolerance</em> = <span class="defval"><span class="i">ubyte_epsilon</span></span>)</span> <a href="math.math.html#equals:8" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Fuzzy equality test for ubytes.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>i1</em></td><td>First ubyte to test.</td></tr>
+<tr><td><em>i2</em></td><td>Second ubyte to test.</td></tr>
+<tr><td><em>tolerance</em></td><td>Acceptable difference to consider i1 and i2 equal.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">True if i1 and i2 are equal, false otherwise.</div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="equals:9" href="htmlsrc/math.math.html#L176">equals</a><span class="params">(byte <em>i1</em>, byte <em>i2</em>, byte <em>tolerance</em> = <span class="defval"><span class="i">byte_epsilon</span></span>)</span> <a href="math.math.html#equals:9" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Fuzzy equality test for bytes.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>i1</em></td><td>First byte to test.</td></tr>
+<tr><td><em>i2</em></td><td>Second byte to test.</td></tr>
+<tr><td><em>tolerance</em></td><td>Acceptable difference to consider i1 and i2 equal.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">True if i1 and i2 are equal, false otherwise.</div></dd>
+<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="reduce" href="htmlsrc/math.math.html#L195">reduce</a><span class="tparams">(<span class="kw">alias</span> <em>fun</em>, <em>T</em>)</span><span class="params">(T <em>seed</em>, T[] <em>elems</em>)</span> <a href="math.math.html#reduce" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Accumulating function.</div></div>
 <div class="cmnt">For each element in array elems, expression seed = fun(seed, element)
  is evaluated. The resulting value of seed is returned.
  This is useful for e.g. computing the minimum value of an array,
- sum, etc.</div></dd>
-<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="clamp" href="htmlsrc/math.math.html#L117">clamp</a><span class="tparams">(<em>T</em>)</span><span class="params">(T <em>v</em>, T <em>minimum</em>, T <em>maximum</em>)</span> <a href="math.math.html#clamp" class="plink">¶</a></dt>
+ sum, etc.</div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>fun</em></td><td>(template alias) Function to process elems with.</td></tr>
+<tr><td><em>seed</em></td><td>Starting value of seed.</td></tr>
+<tr><td><em>elems</em></td><td>Array to process.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Resulting value of seed.</div></dd>
+<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="clamp" href="htmlsrc/math.math.html#L210">clamp</a><span class="tparams">(<em>T</em>)</span><span class="params">(T <em>v</em>, T <em>minimum</em>, T <em>maximum</em>)</span> <a href="math.math.html#clamp" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Clamps a value to specified range.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -85,49 +157,101 @@
 <tr><td><em>minimum</em></td><td>Minimum of the range.</td></tr>
 <tr><td><em>maximum</em></td><td>Maximum of the range.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">Clamped value.</div></dd>
-<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="min" href="htmlsrc/math.math.html#L120">min</a><span class="tparams">(<em>T</em>)</span><span class="params">(T <em>a</em>, T <em>b</em>)</span> <a href="math.math.html#min" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _unittest" name="unittest:4" href="htmlsrc/math.math.html#L214">unittest</a> <a href="math.math.html#unittest:4" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Returns minimum of two values.</div></div></dd>
-<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="min:2" href="htmlsrc/math.math.html#L127">min</a><span class="tparams">(<em>T</em>)</span><span class="params">(T[] <em>elems</em>...)</span> <a href="math.math.html#min:2" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Unittest for clamp() .</div></div></dd>
+<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="min" href="htmlsrc/math.math.html#L229">min</a><span class="tparams">(<em>T</em>)</span><span class="params">(T <em>a</em>, T <em>b</em>)</span> <a href="math.math.html#min" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Returns minimum of three or more values.</div></div></dd>
-<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="max" href="htmlsrc/math.math.html#L140">max</a><span class="tparams">(<em>T</em>)</span><span class="params">(T <em>a</em>, T <em>b</em>)</span> <a href="math.math.html#max" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Returns minimum of two values.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>a</em></td><td>First value.</td></tr>
+<tr><td><em>b</em></td><td>Second value.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Smaller of the two values.</div></dd>
+<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="min:2" href="htmlsrc/math.math.html#L238">min</a><span class="tparams">(<em>T</em>)</span><span class="params">(T[] <em>elems</em>...)</span> <a href="math.math.html#min:2" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Returns maximum of two values.</div></div></dd>
-<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="max:2" href="htmlsrc/math.math.html#L147">max</a><span class="tparams">(<em>T</em>)</span><span class="params">(T[] <em>elems</em>...)</span> <a href="math.math.html#max:2" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Returns minimum of a variable number of values.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>elems</em></td><td>Values to get minimum from. Must not be empty.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Smallest of the values.</div></dd>
+<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="max" href="htmlsrc/math.math.html#L255">max</a><span class="tparams">(<em>T</em>)</span><span class="params">(T <em>a</em>, T <em>b</em>)</span> <a href="math.math.html#max" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Returns maximum of three or more values.</div></div></dd>
-<dt class="decl"><span class="rettyp">int</span> <a class="symbol _function" name="round32" href="htmlsrc/math.math.html#L160">round32</a><span class="tparams">(<em>T</em>)</span><span class="params">(T <em>f</em>)</span> <a href="math.math.html#round32" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Returns maximum of two values.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>a</em></td><td>First value.</td></tr>
+<tr><td><em>b</em></td><td>Second value.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Greater of the two values.</div></dd>
+<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="max:2" href="htmlsrc/math.math.html#L264">max</a><span class="tparams">(<em>T</em>)</span><span class="params">(T[] <em>elems</em>...)</span> <a href="math.math.html#max:2" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Round a float value to a signed 32-bit int.</div></div></dd>
-<dt class="decl"><span class="rettyp">ubyte</span> <a class="symbol _function" name="floor_u8" href="htmlsrc/math.math.html#L163">floor_u8</a><span class="params">(float <em>f</em>)</span> <a href="math.math.html#floor_u8" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Returns maximum of a variable number of values.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>elems</em></td><td>Values to get maximum from. Must not be empty.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Greatest of the values.</div></dd>
+<dt class="decl"><span class="rettyp">int</span> <a class="symbol _function" name="round_s32" href="htmlsrc/math.math.html#L280">round_s32</a><span class="tparams">(<em>T</em>)</span><span class="params">(T <em>f</em>)</span> <a href="math.math.html#round_s32" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Floor a float value to an unsigned 8-bit int</div></div></dd>
-<dt class="decl"><a class="symbol _unittest" name="unittest:4" href="htmlsrc/math.math.html#L168">unittest</a> <a href="math.math.html#unittest:4" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">int</span> <a class="symbol _function" name="floor_s32" href="htmlsrc/math.math.html#L175">floor_s32</a><span class="params">(double <em>f</em>)</span> <a href="math.math.html#floor_s32" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Round a float value to nearest signed 32-bit int.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>f</em></td><td>Float to round.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Nearest int to given value.</div></dd>
+<dt class="decl"><span class="rettyp">ubyte</span> <a class="symbol _function" name="floor_u8" href="htmlsrc/math.math.html#L289">floor_u8</a><span class="params">(float <em>f</em>)</span> <a href="math.math.html#floor_u8" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Floor a float value to a signed 32-bit int</div></div></dd>
-<dt class="decl"><a class="symbol _unittest" name="unittest:5" href="htmlsrc/math.math.html#L181">unittest</a> <a href="math.math.html#unittest:5" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">real</span> <a class="symbol _function" name="random" href="htmlsrc/math.math.html#L189">random</a><span class="params">(real <em>min</em>, real <em>max</em>)</span> <a href="math.math.html#random" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Floor a float value to an unsigned 8-bit int.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>f</em></td><td>Float to round. Must be less than 256 and greater or equal to 0.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Floor of given value as ubyte.</div></dd>
+<dt class="decl"><a class="symbol _unittest" name="unittest:5" href="htmlsrc/math.math.html#L295">unittest</a> <a href="math.math.html#unittest:5" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Return a random real between given numbers</div></div></dd>
-<dt class="decl">uint[32] <a class="symbol _variable" name="powers_of_two" href="htmlsrc/math.math.html#L195">powers_of_two</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="math.math.html#powers_of_two" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><a class="symbol _unittest" name="unittest:6" href="htmlsrc/math.math.html#L207">unittest</a> <a href="math.math.html#unittest:6" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">uint</span> <a class="symbol _function" name="pot_greater_equal" href="htmlsrc/math.math.html#L216">pot_greater_equal</a><span class="params">(uint <em>num</em>)</span> <a href="math.math.html#pot_greater_equal" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><a class="symbol _unittest" name="unittest:7" href="htmlsrc/math.math.html#L230">unittest</a> <a href="math.math.html#unittest:7" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="is_pot" href="htmlsrc/math.math.html#L239">is_pot</a><span class="params">(uint <em>num</em>)</span> <a href="math.math.html#is_pot" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Unittest for floor_u8.</div></div></dd>
+<dt class="decl"><span class="rettyp">int</span> <a class="symbol _function" name="floor_s32" href="htmlsrc/math.math.html#L309">floor_s32</a><span class="params">(double <em>f</em>)</span> <a href="math.math.html#floor_s32" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Determines if the given number is a power of two.</div></div></dd></dl>
+<div class="summary"><div class="cmnt">Floor a double value to a signed 32-bit int</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>f</em></td><td>Double to round. Must be less than 2^31 and greater or equal to -(2^31).</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Floor of given value as int.</div></dd>
+<dt class="decl"><a class="symbol _unittest" name="unittest:6" href="htmlsrc/math.math.html#L316">unittest</a> <a href="math.math.html#unittest:6" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Unittest for floor_s32.</div></div></dd>
+<dt class="decl"><span class="rettyp">real</span> <a class="symbol _function" name="random" href="htmlsrc/math.math.html#L331">random</a><span class="params">(real <em>min</em>, real <em>max</em>)</span> <a href="math.math.html#random" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Return a random real in specified range (minimum and maximum included).</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>min</em></td><td>Minimum of the range.</td></tr>
+<tr><td><em>max</em></td><td>Maximum of the range.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Random value in specified range.</div></dd>
+<dt class="decl">uint[] <a class="symbol _variable" name="powers_of_two" href="htmlsrc/math.math.html#L340">powers_of_two</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="math.math.html#powers_of_two" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Array of first 32 powers of 2.</div></div></dd>
+<dt class="decl"><a class="symbol _unittest" name="unittest:7" href="htmlsrc/math.math.html#L350">unittest</a> <a href="math.math.html#unittest:7" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Unittest for generate_pot().</div></div></dd>
+<dt class="decl"><span class="rettyp">uint</span> <a class="symbol _function" name="pot_ceil" href="htmlsrc/math.math.html#L365">pot_ceil</a><span class="params">(uint <em>num</em>)</span> <a href="math.math.html#pot_ceil" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get the smallest power of two greater or equal to given number.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>num</em></td><td>Number to get ceiling power of two to.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Smallest power of two greater or equal to given number.</div></dd>
+<dt class="decl"><a class="symbol _unittest" name="unittest:8" href="htmlsrc/math.math.html#L376">unittest</a> <a href="math.math.html#unittest:8" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Unittest for pot_ceil.</div></div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="is_pot" href="htmlsrc/math.math.html#L391">is_pot</a><span class="params">(uint <em>num</em>)</span> <a href="math.math.html#is_pot" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Determine if the given number is a power of two.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>num</em></td><td>Number to check.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">True if the number is a power of two, false otherwise.</div></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Wed Feb 16 15:58:43 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Wed Feb 16 22:43:49 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

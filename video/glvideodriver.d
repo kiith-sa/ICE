@@ -644,8 +644,8 @@ abstract class GLVideoDriver : VideoDriver
                                     "texture size for specified color format.");
             }
 
-            size_image.x = pot_greater_equal(size_image.x);
-            size_image.y = pot_greater_equal(size_image.y);
+            size_image.x = pot_ceil(size_image.x);
+            size_image.y = pot_ceil(size_image.y);
             if(size_image.x > supported || size_image.y > supported)
             {
                 throw new Exception("GL Video driver doesn't support requested "

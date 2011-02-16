@@ -41,7 +41,7 @@ in
 body
 {
     alias std.string.toString to_string;  
-    uint total_s = round32(time);
+    uint total_s = round_s32(time);
     uint s = total_s % 60;
     uint m = total_s / 60;
     string s_str = to_string(s);

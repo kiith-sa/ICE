@@ -109,7 +109,7 @@
     <span class="d Function"><span class="t Integral"><span class="k">ubyte</span></span> <span class="i">average</span><span class="o Parameters">()</span>
     <span class="s FuncBody"><span class="s Compound">{
         <span class="s Declaration"><span class="d Variables"><span class="t Integral"><span class="k">real</span></span> <span class="i">average</span> = <span class="e Div"><span class="e Paren">(<span class="e Plus"><span class="e Plus"><span class="e Cast"><span class="k">cast</span>(<span class="t Integral"><span class="k">real</span></span>)<span class="e Identifier"><span class="i">r</span></span></span> + <span class="e Cast"><span class="k">cast</span>(<span class="t Integral"><span class="k">real</span></span>)<span class="e Identifier"><span class="i">g</span></span></span></span> + <span class="e Cast"><span class="k">cast</span>(<span class="t Integral"><span class="k">real</span></span>) <span class="e Identifier"><span class="i">b</span></span></span></span>)</span> / <span class="e Float"><span class="n">3.0</span></span></span>;</span></span>
-        <span class="s Return"><span class="k">return</span> <span class="e Call"><span class="e Cast"><span class="k">cast</span>(<span class="t Integral"><span class="k">ubyte</span></span>)<span class="e Identifier"><span class="i">round32</span></span></span>(<span class="i">average</span>)</span>;</span>
+        <span class="s Return"><span class="k">return</span> <span class="e Call"><span class="e Cast"><span class="k">cast</span>(<span class="t Integral"><span class="k">ubyte</span></span>)<span class="e Identifier"><span class="i">round_s32</span></span></span>(<span class="i">average</span>)</span>;</span>
     }</span></span></span>
     <span class="d Unittest"><span class="k">unittest</span>
     <span class="s FuncBody"><span class="s Compound">{
@@ -129,7 +129,7 @@
     <span class="d Function"><span class="t Integral"><span class="k">ubyte</span></span> <span class="i">lightness</span><span class="o Parameters">()</span>
     <span class="s FuncBody"><span class="s Compound">{
         <span class="s Declaration"><span class="d Variables"><span class="t Integral"><span class="k">uint</span></span> <span class="i">d</span> = <span class="e Plus"><span class="e Call"><span class="e Identifier"><span class="i">max</span></span>(<span class="i">r</span>, <span class="i">g</span>, <span class="i">b</span>)</span> + <span class="e Call"><span class="e Identifier"><span class="i">min</span></span>(<span class="i">r</span>, <span class="i">g</span>, <span class="i">b</span>)</span></span>;</span></span>
-        <span class="s Return"><span class="k">return</span> <span class="e Call"><span class="e Cast"><span class="k">cast</span>(<span class="t Integral"><span class="k">ubyte</span></span>)<span class="e Identifier"><span class="i">round32</span></span></span>(<span class="n">0.5f</span> * <span class="i">d</span>)</span>;</span> 
+        <span class="s Return"><span class="k">return</span> <span class="e Call"><span class="e Cast"><span class="k">cast</span>(<span class="t Integral"><span class="k">ubyte</span></span>)<span class="e Identifier"><span class="i">round_s32</span></span></span>(<span class="n">0.5f</span> * <span class="i">d</span>)</span>;</span> 
     }</span></span></span>
     <span class="d Unittest"><span class="k">unittest</span>
     <span class="s FuncBody"><span class="s Compound">{
@@ -138,7 +138,7 @@
     }</span></span></span>
 
     <span class="lc">///Returns luminance of the color.</span>
-    <span class="d Function"><span class="t Integral"><span class="k">ubyte</span></span> <span class="i">luminance</span><span class="o Parameters">()</span><span class="s FuncBody"><span class="s Compound">{<span class="s Return"><span class="k">return</span> <span class="e Call"><span class="e Cast"><span class="k">cast</span>(<span class="t Integral"><span class="k">ubyte</span></span>)<span class="e Identifier"><span class="i">round32</span></span></span>(<span class="n">0.3</span> * <span class="i">r</span> + <span class="n">0.59</span> * <span class="i">g</span> + <span class="n">0.11</span> * <span class="i">b</span>)</span>;</span>}</span></span></span>
+    <span class="d Function"><span class="t Integral"><span class="k">ubyte</span></span> <span class="i">luminance</span><span class="o Parameters">()</span><span class="s FuncBody"><span class="s Compound">{<span class="s Return"><span class="k">return</span> <span class="e Call"><span class="e Cast"><span class="k">cast</span>(<span class="t Integral"><span class="k">ubyte</span></span>)<span class="e Identifier"><span class="i">round_s32</span></span></span>(<span class="n">0.3</span> * <span class="i">r</span> + <span class="n">0.59</span> * <span class="i">g</span> + <span class="n">0.11</span> * <span class="i">b</span>)</span>;</span>}</span></span></span>
     
     <span class="lc">///Adds two colors (values are clamped to range 0 .. 255).</span>
     <span class="d Function"><span class="t Identifier"><span class="i">Color</span></span> <span class="i">opAdd</span><span class="o Parameters">(<span class="o Parameter"><span class="t Identifier"><span class="i">Color</span></span> <span class="i">c</span></span>)</span>

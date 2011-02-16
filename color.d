@@ -95,7 +95,7 @@ align(1) struct Color
     ubyte average()
     {
         real average = (cast(real)r + cast(real)g + cast(real) b) / 3.0;
-        return cast(ubyte)round32(average);
+        return cast(ubyte)round_s32(average);
     }
     unittest
     {
@@ -115,7 +115,7 @@ align(1) struct Color
     ubyte lightness()
     {
         uint d = max(r, g, b) + min(r, g, b);
-        return cast(ubyte)round32(0.5f * d); 
+        return cast(ubyte)round_s32(0.5f * d); 
     }
     unittest
     {
@@ -124,7 +124,7 @@ align(1) struct Color
     }
 
     ///Returns luminance of the color.
-    ubyte luminance(){return cast(ubyte)round32(0.3 * r + 0.59 * g + 0.11 * b);}
+    ubyte luminance(){return cast(ubyte)round_s32(0.3 * r + 0.59 * g + 0.11 * b);}
     
     ///Adds two colors (values are clamped to range 0 .. 255).
     Color opAdd(Color c)
