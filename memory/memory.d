@@ -14,22 +14,26 @@ import std.string;
 
 import containers.array;
 
+
 public:
-    ///Allocate an object of basic type, or a struct/class with default values.
+    ///Allocate an object of a basic type, or a struct/class with default values.
     T* alloc(T)(){return allocate!(T)();}
 
-    ///Allocate a struct with specified parameters to structs' initializer.
     template alloc_struct(T)
     {
-        T* alloc_struct(CtorArgs...)(CtorArgs args)
-        {
-            return allocate_struct!(T, CtorArgs)(args);
-        }
+        /**
+         * Allocate a struct with specified parameters to structs' initializer.
+         *
+         * Params:  args = Arguments to structs' initializer.
+         *
+         * Returns: Pointer to allocated memory.
+         */
+        T* alloc_struct(Args...)(Args args){return allocate_struct!(T, Args)(args);}
     }
 
     ///Free an object allocated by alloc(). Will call die() method if defined.
     void free(T)(T* ptr){deallocate(ptr);}
-
+    ///Unittest for alloc_struct() and die().
     unittest
     {
         struct Test
@@ -54,7 +58,15 @@ public:
         assert(Test.dead == true);
     }
 
-    ///Allocate an array of objects. Arrays allocated with alloc must NOT be resized.
+    /**
+     * Allocate an array of objects. 
+     *
+     * Arrays allocated with alloc must NOT be resized.
+     *
+     * Params:  elems = Number of objects to allocate space for.
+     *
+     * Returns: Allocated array.
+     */
     T[] alloc(T)(ulong elems){return allocate!(T)(elems);}
 
     /**
@@ -65,6 +77,11 @@ public:
      *
      * If the array is shrunk, any extra elements defining a die() method that
      * are not pointers or reference types (classes) will have that method called.
+     *
+     * Params:  array = Array to reallocate.
+     *          elems = Number of objects for the reallocated array to hold.
+     *
+     * Returns: Reallocated array.
      */
     T[] realloc(T)(T[] array, ulong elems){return reallocate!(T)(array, elems);}
 
@@ -73,33 +90,46 @@ public:
      *
      * If the type defines a die() method and is not a pointer or reference type
      * (e.g. class), that method will be called for all elements of the array.
+     *
+     * Params: array = Array to free.
      */
     void free(T)(T[] array){deallocate(array);}
+    ///Unittest for alloc(), realloc() and free().
+    unittest
+    {
+        uint[] test = alloc!(uint)(5);
+        assert(test.length == 5 && test[3] == 0);
+        test[3] = 5;
+        test = realloc(test, 4);
+        assert(test.length == 4 && test[3] == 5);
+        test = realloc(test, 8);
+        assert(test.length == 8 && test[3] == 5 && test[7] == 0);
+        free(test);
+    }
 
 package:
-    //Get currently allocated memory in bytes.
+    ///Get currently allocated memory in bytes.
     ulong currently_allocated(){return currently_allocated_;}
 
 private:
-    //Total memory manually allocated over run of the program, in bytes.
+    ///Total memory manually allocated over the whole run of the program, in bytes.
     ulong total_allocated_ = 0;
-    //Total memory manually freed over run of the program, in bytes.
+    ///Total memory manually freed over the whole run of the program, in bytes.
     ulong total_freed_ = 0;
-    //Currently allocated memory, in bytes.
+    ///Currently allocated memory, in bytes.
     ulong currently_allocated_ = 0;
 
-    //Debug
-    //Struct holding allocation data for one object type.
+    ///Struct holding allocation data for one object type.
     struct Stats
     {
-        //Total bytes allocated/freed.
+        ///Total bytes allocated or freed.
         ulong bytes;
-        //Total allocations.
+        ///Total allocations or deallocations.
         uint allocations;
-        //Total objects allocated.
+        ///Total objects allocated.
         ulong objects;
 
-        //Return a string with allocation data stored.
+        ///Get allocation data in string format.
         string statistics()
         {
             alias std.string.toString to_string;
@@ -108,32 +138,15 @@ private:
         }                
     }                    
     
-    //Statistics about allocations of types.
+    ///Statistics about allocations of types.
     Stats[string] alloc_stats_;
-    //Statistics about deallocations of types.
+    ///Statistics about deallocations of types.
     Stats[string] dealloc_stats_;
-    //Pointers to currently allocated buffers.
+    ///Pointers to currently allocated buffers.
     void*[] alloc_pointers_;
-    //\Debug
 
 
-    //Allocate a struct with specified parameters for the structs' initializer.
-    T* allocate_struct(T, CtorArgs...)(CtorArgs args)
-    {
-        uint bytes = T.sizeof;
-        T* ptr = cast(T*)malloc(bytes);
-        total_allocated_ += bytes;
-        currently_allocated_ += bytes;
-
-        debug_allocate(ptr, 1); //Debug
-
-        //initialize the object.
-        *ptr = T(args);
-
-        return ptr;
-    }
-
-    //Allocate one object.
+    ///Allocate one object and default-initialize it.
     T* allocate(T)()
     {
         uint bytes = T.sizeof;
@@ -141,18 +154,44 @@ private:
         total_allocated_ += bytes;
         currently_allocated_ += bytes;
 
-        debug_allocate(ptr, 1); //Debug
+        debug_allocate(ptr, 1);
 
         //default-initialize the object.
-        static if (is(typeof(T.init))) 
-        {
-            *ptr = T.init;
-        }
+        static if (is(typeof(T.init))){*ptr = T.init;}
         return ptr;
     }
 
-    //Allocate an array of objects with given number of elements.
-    //Arrays returned by allocate() must NOT be resized.
+    /**
+     * Allocate a struct with specified parameters for the structs' initializer.
+     *
+     * Params:  args = Parameters for the structs' initializer.
+     *
+     * Returns: Pointer to the allocated struct.
+     */
+    T* allocate_struct(T, CtorArgs...)(CtorArgs args)
+    {
+        uint bytes = T.sizeof;
+        T* ptr = cast(T*)malloc(bytes);
+        total_allocated_ += bytes;
+        currently_allocated_ += bytes;
+
+        debug_allocate(ptr, 1); 
+
+        //initialize the object.
+        *ptr = T(args);
+
+        return ptr;
+    }
+
+    /**
+     * Allocate an array with given number of elements.
+     *
+     * Arrays returned by allocate() must NOT be resized.
+     *
+     * Params:  elems = Number of objects for the array to hold.
+     * 
+     * Returns: Allocated array.
+     */
     T[] allocate(T)(ulong elems)
     out(result)
     {
@@ -169,7 +208,7 @@ private:
         total_allocated_ += bytes;
         currently_allocated_ += bytes;
 
-        debug_allocate(array.ptr, elems); //Debug
+        debug_allocate(array.ptr, elems); 
 
         //default-initialize the array.
         static if (is(typeof(T.init))) 
@@ -179,11 +218,19 @@ private:
         return array;
     }
 
-    //Reallocate an array allocated with allocate() to hold given number of elements.
+    /**
+     * Reallocate an array allocated with allocate().
+     *
+     * Array data might move around the memory, invalidating any pointers to it.
+     *
+     * Params:  array = Array to reallocate.
+     *          elems = Number of elements for the reallocated array to hold.
+     *
+     * Returns: Reallocated array.
+     */
     T[] reallocate(T)(T[] array, ulong elems)
     in
     {
-        //Debug
         assert(alloc_pointers_.contains(cast(void*)array.ptr), 
                "Trying to reallocate a pointer that isn't allocated (or was freed)");
     }
@@ -194,7 +241,8 @@ private:
         T* old_ptr = array.ptr;
         ulong old_length = array.length;
 
-        //if we're shrinking, destroy extra elements unless this is an awway of pointers or reference types.
+        //if we're shrinking, destroy extra elements unless this is 
+        //an array of pointers or reference types.
         static if (is(typeof(T.die)) && !is(typeof(cast(T*)T))) 
         {
             if(old_length > elems)
@@ -209,7 +257,7 @@ private:
         total_allocated_ += diff;
         currently_allocated_ += diff;
 
-        debug_reallocate(array.ptr, array.length, old_ptr, old_length); //Debug
+        debug_reallocate(array.ptr, array.length, old_ptr, old_length); 
 
         //default-initialize new elements, if any
         static if (is(typeof(T.init))) 
@@ -221,12 +269,10 @@ private:
         }
         return array;
     }
-
-    //Free one object allocated by allocate().
+    ///Free an object allocated by allocate(). If a die() method is defined, it will be called.
     void deallocate(T)(ref T* ptr)
     in
     {
-        //Debug
         assert(alloc_pointers_.contains(cast(void*)ptr), 
                "Trying to free a pointer that isn't allocated (or is already freed?)");
     }
@@ -235,21 +281,24 @@ private:
         total_freed_ += T.sizeof;
         currently_allocated_ -= T.sizeof;
 
-        static if (is(typeof(T.die))) 
-        {
-            ptr.die();
-        }
+        static if (is(typeof(T.die))){ptr.die();}
 
-        debug_free(ptr, 1); //Debug
+        debug_free(ptr, 1); 
 
         std.c.stdlib.free(ptr);
     }
 
-    //Free an array allocated by allocate().
+    /**
+     * Free an array allocated by allocate().
+     *
+     * If a die() method is defined for the array's type and the array doesn't hold
+     * pointers or reference types, die() will be called for every object in the array.
+     *
+     * Params:  array = Array to deallocate.
+     */
     void deallocate(T)(ref T[] array)
     in
     {
-        //Debug
         assert(alloc_pointers_.contains(cast(void*)array.ptr), 
                "Trying to free a pointer that isn't allocated (or is already freed)");
     }
@@ -259,18 +308,18 @@ private:
         total_freed_ += bytes;
         currently_allocated_ -= bytes;
 
-        //destroy the elements unless this is an awway of pointers or reference types.
+        //destroy the elements unless this is an array of pointers or reference types.
         static if (is(typeof(T.die)) && !is(typeof(cast(T*)(T))))
         {
             foreach(ref T elem; array){elem.die();}
         }
 
-        debug_free(array.ptr, array.length); //Debug
+        debug_free(array.ptr, array.length); 
 
         std.c.stdlib.free(array.ptr);
     }
 
-    //Return a string containing statistics about allocated memory.
+    ///Return a string containing statistics about allocated memory.
     string statistics()
     {
         alias std.string.toString to_string;
@@ -278,7 +327,6 @@ private:
         stats ~= "\nTotal allocated (bytes): " ~ to_string(total_allocated_);
         stats ~= "\nTotal freed (bytes): " ~ to_string(total_freed_);
         
-        //Debug
         stats ~= "\nAllocated pointers that were not freed: " ~
                  to_string(alloc_pointers_.length);
 
@@ -292,37 +340,25 @@ private:
         {
             stats ~= type_name ~ " - " ~ stat.statistics ~ "\n";
         }
-        //\Debug
 
         return stats;
     }
 
-    unittest
-    {
-        uint[] test = alloc!(uint)(5);
-        assert(test.length == 5 && test[3] == 0);
-        test[3] = 5;
-        test = realloc(test, 4);
-        assert(test.length == 4 && test[3] == 5);
-        test = realloc(test, 8);
-        assert(test.length == 8 && test[3] == 5 && test[7] == 0);
-        free(test);
-    }
-
-    //Write out allocator statistics at program exit.
+    ///Write out allocator statistics at program exit.
     static ~this(){writefln(statistics());}
 
-    //Debug
-    //Record data about an allocation.
+    /**
+     * Record data about an allocation.
+     * 
+     * Params:  ptr     = Pointer to the allocated memory.
+     *          objects = Number of objects allocated.
+     */
     void debug_allocate(T)(T* ptr, ulong objects)
     {
         string type = typeid(T).toString;
         Stats* stats = type in alloc_stats_;
         //If this type was not yet allocated, add an entry
-        if(stats is null)
-        {
-            alloc_stats_[type] = Stats(objects * T.sizeof, 1, objects);
-        }
+        if(stats is null){alloc_stats_[type] = Stats(objects * T.sizeof, 1, objects);}
         else
         {
             stats.bytes += objects * T.sizeof;
@@ -333,8 +369,15 @@ private:
         alloc_pointers_ ~= cast(void*)ptr;
     }
 
-    //not the best solution to go about recording reallocs, but sufficient for now
-    //Record data about a reallocation. 
+    //not the best way to go about recording reallocs, but sufficient for now
+    /**
+     * Record data about a reallocation.
+     * 
+     * Params:  new_ptr     = Pointer to the reallocated memory.
+     *          new_objects = Number of objects in reallocated memory.
+     *          old_ptr     = Pointer to original memory.
+     *          old_objects = Number of objects in original memory.
+     */
     void debug_reallocate(T)(T* new_ptr, ulong new_objects,
                              T* old_ptr, ulong old_objects)
     {
@@ -357,16 +400,18 @@ private:
         }
     }
 
-    //Record data about a deallocation.
+    /**
+     * Record data about a deallocation.
+     * 
+     * Params:  ptr     = Pointer to deallocated memory.
+     *          objects = Number of objects deallocated.
+     */
     void debug_free(T)(T* ptr, ulong objects)
     {
         string type = typeid(T).toString;
         Stats* stats = type in dealloc_stats_;
         //If this type was not yet deallocated, add an entry
-        if(stats is null)
-        {
-            dealloc_stats_[type] = Stats(objects * T.sizeof, 1, objects);
-        }
+        if(stats is null){dealloc_stats_[type] = Stats(objects * T.sizeof, 1, objects);}
         else
         {
             stats.bytes += objects * T.sizeof;
@@ -377,4 +422,3 @@ private:
         alias containers.array.remove remove;
         alloc_pointers_.remove(cast(void*)ptr);
     }
-    //\Debug
