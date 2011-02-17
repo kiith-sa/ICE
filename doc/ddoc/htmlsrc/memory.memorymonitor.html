@@ -30,29 +30,29 @@
 <span class="d Import"><span class="k">import</span> <span class="i">color</span>;</span>
 
 
-<span class="lc">//Statistics passed by Memory to memory monitors.</span>
+<span class="lc">///Statistics passed by MemoryMonitorable to memory monitors.</span>
 <span class="d Protection"><span class="k">package</span></span> <span class="d Struct"><span class="k">struct</span> <span class="i">Statistics</span>
 <span class="d Compound">{
-    <span class="lc">//Total manually allocated memory at the moment, in MiB.</span>
+    <span class="lc">///Total manually allocated memory at the moment, in MiB.</span>
     <span class="d Variables"><span class="t Integral"><span class="k">real</span></span> <span class="i">manual_MiB</span>;</span>
 }</span></span>
 
-<span class="lc">//Graph showing statistics about memory usage.</span>
+<span class="lc">///Graph showing statistics about memory usage.</span>
 <span class="d StorageClass"><span class="k">final</span></span> <span class="d Protection"><span class="k">package</span></span> <span class="d Class"><span class="k">class</span> <span class="i">UsageMonitor</span> : <span class="t BaseClass"><span class="t Identifier"><span class="i">GraphMonitor</span></span></span>
 <span class="d Compound">{
     <span class="d Protection"><span class="k">public</span></span>:
-        <span class="lc">//Construct a UsageMonitor.</span>
+        <span class="lc">///Construct a UsageMonitor.</span>
         <span class="d Compound"><span class="d Constructor"><span class="k">this</span><span class="o Parameters">(<span class="o Parameter"><span class="t Identifier"><span class="i">MemoryMonitorable</span></span> <span class="i">monitored</span></span>)</span>
         <span class="s FuncBody"><span class="s Compound">{
             <span class="s Expression"><span class="e Mixin"><span class="k">mixin</span>(<span class="e Call"><span class="e Identifier"><span class="i">generate_graph_monitor_ctor</span></span>(<span class="sl">"manual_MiB"</span>)</span>)</span>;</span>
         }</span></span></span>
 
     <span class="d Protection"><span class="k">private</span></span>:
-        <span class="lc">//Callback called by Memory once per update to update monitored statistics.</span>
+        <span class="lc">///Callback called by Memory once per update to update monitored statistics.</span>
         <span class="d Compound"><span class="d Mixin"><span class="k">mixin</span>(<span class="e Call"><span class="e Identifier"><span class="i">generate_graph_fetch_statistics</span></span>(<span class="sl">"manual_MiB"</span>)</span>);</span></span></span>
 }</span></span>
 
-<span class="lc">//MemoryMonitor class - a MonitorMenu implementation is generated here.</span>
+<span class="lc">///MemoryMonitor class - a MonitorMenu implementation is generated here.</span>
 <span class="d Mixin"><span class="k">mixin</span>(<span class="e Call"><span class="e Identifier"><span class="i">generate_monitor_menu</span></span>(<span class="sl">"MemoryMonitorable"</span>, 
                             [<span class="sl">"Usage"</span>], 
                             [<span class="sl">"UsageMonitor"</span>])</span>);</span></span>

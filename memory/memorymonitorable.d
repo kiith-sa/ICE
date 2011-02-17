@@ -21,16 +21,18 @@ final class MemoryMonitorable : Monitorable
 {
     mixin WeakSingleton;
     private:
-        //Statistics data for monitoring.
+        ///Monitoring data.
         Statistics statistics_;
+
     package:
-        //Used to send statistics data to memory monitors.
+        ///Used to send statistics data to memory monitors.
         mixin Signal!(Statistics) send_statistics;
+
     public:
-        ///Construct Memory.
+        ///Construct a MemoryMonitorable.
         this(){singleton_ctor();}
 
-        ///Destroy this Memory.
+        ///Destroy this MemoryMonitorable.
         void die(){singleton_dtor();}
 
         ///Update and send monitoring data to monitor.
