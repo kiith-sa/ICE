@@ -2,10 +2,10 @@ var g_moduleList = [
   "scene.scenemanager", "scene.lineemitter", "scene.particlesystem",
   "scene.linetrail", "scene.actorcontainer", "scene.actor",
   "scene.particleemitter", "file.fileio", "file.file", "math.math",
-  "math.line2", "math.ssevector4", "math.vector2", "math.rectangle",
-  "video.videodriver", "video.nodepacker", "video.fontmanager",
-  "video.gltexture", "video.sdlglvideodriver", "video.glvideodriver",
-  "video.font", "video.gltexturepage", "video.glshader", "video.glmonitor",
+  "math.line2", "math.vector2", "math.rectangle", "video.videodriver",
+  "video.nodepacker", "video.fontmanager", "video.gltexture",
+  "video.sdlglvideodriver", "video.glvideodriver", "video.font",
+  "video.gltexturepage", "video.glshader", "video.glmonitor",
   "video.videodrivercontainer", "video.texture", "video.shader", "cdc",
   "time.time", "time.timer", "time.eventcounter", "gui.guimousecontrollable",
   "gui.guimenu", "gui.guilinegraph", "gui.guistatictext", "gui.guielement",
@@ -47,7 +47,6 @@ var g_packageTree = new PackageTree(P('', [
     M('math.line2'),
     M('math.math'),
     M('math.rectangle'),
-    M('math.ssevector4'),
     M('math.vector2'),
   ]),
   P('memory',[
@@ -127,4 +126,4 @@ var g_packageTree = new PackageTree(P('', [
 ])
 );
 
-var g_creationTime = 1297898603;
+var g_creationTime = 1297970075;

@@ -14,13 +14,13 @@ import std.random;
 import math.math;
 
 
-///2D vector struct.
+///2D vector or point.
 align(1) struct Vector2(T)
 {
     //initialized to null vector by default
-    ///X value of the vector.
+    ///X component of the vector.
     T x = 0;
-    ///Y value of the vector.
+    ///Y component of the vector.
     T y = 0;
 
     ///Negation.
@@ -40,16 +40,12 @@ align(1) struct Vector2(T)
 
     ///Division by a scalar. 
     Vector2!(T) opDiv(T d)
-    in{assert(d != 0.0, "Vector can not be divided by zero");}
+    in{assert(d != 0, "Vector can not be divided by zero");}
     body{return Vector2!(T)(cast(T)(x / d), cast(T)(y / d));}
 
     ///Division by a vector. 
     Vector2!(T) opDiv(Vector2!(T) v)
-    in
-    {
-        assert(v.x != 0.0 && v.y != 0.0, 
-               "Vector can not be divided by a vector with a zero component");
-    }
+    in{assert(v.x != 0 && v.y != 0, "Vector can not be divided by a vector with a zero component");}
     body{return Vector2!(T)(cast(T)(x / v.x), cast(T)(y / v.y));}
 
     ///Addition-assignment with a vector.
@@ -81,14 +77,8 @@ align(1) struct Vector2(T)
         x /= d;
         y /= d;
     }
-
-    ///String conversion for printing, serialization.
-    string opCast()
-    {
-        return "Vector2, " ~ std.string.toString(x) ~ ", " ~ std.string.toString(y);
-    }
     
-    ///Get angle of this vector.
+    ///Get angle of this vector in radians.
     real angle()
     {
         real angle = atan2(cast(double)x, cast(double)y);
@@ -96,7 +86,7 @@ align(1) struct Vector2(T)
         return angle;
     }
 
-    ///Set angle of this vector (preserving length)
+    ///Set angle of this vector in radians, preserving its length.
     void angle(real angle)
     {
         T length = length();
@@ -105,10 +95,10 @@ align(1) struct Vector2(T)
         *this *= length;
     }
 
-    ///Returns squared length of the vector.
+    ///Get squared length of the vector.
     T length_squared(){return x * x + y * y;}
     
-    ///Returns length of the vector.
+    ///Get length of the vector fast at cost of some precision.
     T length()
     {
         version(sse3)
@@ -137,18 +127,26 @@ align(1) struct Vector2(T)
         else{return length_safe();}
     }
 
-    T length_safe()
-    {
-        return cast(T)(sqrt(cast(real)length_squared));
-    }
+    ///Get length of the vector with better precision.
+    T length_safe(){return cast(T)(sqrt(cast(real)length_squared));}
 
-    ///Dot product with another vector.
+    /**
+     * Dot (scalar) product with another vector.
+     *
+     * Params:  v = Vector to get dot product with.
+     *
+     * Returns: Dot product of this and the other vector.
+     */
     T dot_product(Vector2!(T) v){return x * v.x + y * v.y;}
 
-    ///Returns normal of this vector (a pependicular vector).
+    ///Get normal of this vector (a pependicular vector).
     Vector2!(T) normal(){return Vector2!(T)(-y, x);}
 
-    ///Turns this into a unit vector. Result is undefined if this is a zero vector.
+    /**
+     * Turns this into a unit vector fast at cost of some precision. 
+     *
+     * Result is undefined if this is a zero vector.
+     */
     void normalize()
     {
         version(sse3)
@@ -197,7 +195,7 @@ align(1) struct Vector2(T)
         }
     }
 
-    ///Normalize this vector, or don't do anything if this is a zero vector.
+    ///Normalize with better precision, or don't do anything if this is a zero vector.
     void normalize_safe()
     {
         T len = length_safe();
@@ -207,7 +205,7 @@ align(1) struct Vector2(T)
         return;
     }
 
-    ///Returns unit vector of this vector. Result is undefined if this is a zero vector.
+    ///Get unit vector of this vector. Result is undefined if this is a zero vector.
     Vector2!(T) normalized()
     {
         Vector2!(T) normalized = *this;
@@ -215,11 +213,11 @@ align(1) struct Vector2(T)
         return normalized;
     }
 
-    ///Turns this vector into a zero vector.
+    ///Turn this vector into a zero vector.
     void zero(){x = y = cast(T)0;}
 }
 
-///Turns this vector into a random (unit) direction vector.
+///Get a unit vector with a random direction.
 Vector2!(T)random_direction(T)()
 {
     long x_int = std.random.rand();
@@ -242,20 +240,31 @@ Vector2!(T)random_position(T)(Vector2!(T) center, T radius)
     return center + random_direction!(T) * random(0, radius);
 }
 
-///Convert Vector2 of one type to other. 
 /**
- * Usage e.g. : VFloat=to!(float)VUint
- */
-Vector2!(T)to(T, U)(Vector2!(U)v)
-{
-    return Vector2!(T)(cast(T)v.x, cast(T)v.y);
-}
+ * Convert a Vector2 of one type to other. 
+ *
+ * Examples: 
+ * --------------------
+ * Vector2u v_uint = Vector2u(4, 2);
+ * //convert to Vector2f
+ * Vector2f V_float = to!(float)v_uint;
+ * --------------------
+ */                  
+Vector2!(T)to(T, U)(Vector2!(U)v){return Vector2!(T)(cast(T)v.x, cast(T)v.y);}
 
+///Vector2 of bytes.
 alias Vector2!(byte) Vector2b;
+///Vector2 of ubytes.
 alias Vector2!(ubyte) Vector2ub;
+///Vector2 of shorts.
 alias Vector2!(short) Vector2s;
+///Vector2 of ushorts.
 alias Vector2!(ushort) Vector2us;
+///Vector2 of ints.
 alias Vector2!(int) Vector2i;
+///Vector2 of uints.
 alias Vector2!(uint) Vector2u;
+///Vector2 of floats.
 alias Vector2!(float) Vector2f;
+///Vector2 of doubles.
 alias Vector2!(double) Vector2d;
