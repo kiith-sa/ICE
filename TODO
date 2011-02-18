@@ -192,6 +192,8 @@ Actually, only add code examples where really needed - too much work
 --AFTER PONG    
 4:
     Consider D2 (at this point it might be mature enough :p)
+5:
+    Move to 64bit (whether or not we're already at D2)
 14:
     Unittest overhaul all over the code.
     Look at where we can put unittests and do it.

@@ -27,59 +27,98 @@ import stringctfe;
 /**
  * Base class for system monitor style graph monitoring widgets.
  *
- * User can zoom and scroll the graph with mouse,
- * change data point time, average or sum mode and toggle display of
- * monitored values.
+ * User can zoom and scroll the graph with mouse, change data point time, 
+ * set average or sum mode and toggle display of monitored values.
+ *
+ * Functions generate_graph_monitor_ctor() and generate_graph_fetch_statistics()
+ * automatically generate much of code routinely needed by GraphMonitor implementations.
+ * However, they require certain conditions to be met, see their documentation below,
+ * and a bare example implementation here:
+ * 
+ * Example: 
+ * --------------------
+ * class ExampleMonitored
+ * {
+ *     mixin Signal!(Statistics) send_statistics;
+ *
+ *     void update()
+ *     {
+ *         send_statistics.emit(Statistics(1, 2.5));
+ *     }
+ * }
+ *
+ * struct Statistics
+ * {
+ *     uint a;
+ *     real b;
+ * }
+ *
+ * class ExampleMonitor : GraphMonitor
+ * { 
+ *     public:
+ *         this(ExampleMonitored monitored)
+ *         {
+ *             mixin(generate_graph_monitor_ctor("a", "b"));
+ *         }
+ *
+ *     private:
+ *         mixin(generate_graph_fetch_statistics("a", "b"));
+ * }              
+ * --------------------
  */
 abstract class GraphMonitor : SubMonitor
 {
+    invariant{assert(zoom_mult_ > 1.0, "GraphMonitor zoom multiplier must be greater than 1");}
+
     protected:
-        //Measured graph da0ta.
+        ///Measured graph data.
         GraphData data_;
+
     private:
         alias std.string.toString to_string;  
-        //Graph widget controlled by this monitor.
+        ///Graph widget controlled by this monitor.
         GUILineGraph graph_;
-        //Buttons used to toggle display of values on the graph.
-        //Not using menu since we need to control color of each button.
+        ///Buttons used to toggle display of values on the graph.
+        ///Not using menu since we need to control color of each button.
         GUIButton[string] value_buttons_;
-        //Menu of buttons controlling the graph.
+        ///Menu of buttons controlling the graph.
         GUIMenuHorizontal menu_;
 
         //note: in D2, this can be replaced with closures
-        //Function object used by buttons for graph method calls to toggle display of values.
+        ///Function object used by buttons to toggle display of values.
         class Toggle
         {
-            //Name of the value to toggle.
+            ///Name of the value to toggle.
             string name_;
-            //Constructor to save keystrokes.
+            ///Construct a Toggle for value with specified name.
             this(string name){name_ = name;}
-            //This is the actual method to connect to a button.
+            ///Toggle display of the value.
             void toggle(){graph_.toggle_value(name_);}
         }
 
-        //Function objects for every button to toggle display of its respective value.
-        Toggle[] values_;
+        ///Buttons' function objects to toggle display of values.
+        Toggle[] toggles_;
 
-        //Default graph X scale to return to after zooming.
+        ///Default graph X scale to return to after zooming.
         float scale_x_default_;
-
-        //Zoom multiplier corresponding to one zoom level.
+        ///Zoom multiplier corresponding to one zoom level.
         float zoom_mult_ = 1.1;
 
     public:
         override void die()
         {
             data_.die();
+            data_ = null;
+            toggles_ = [];
             super.die();
         }
 
     protected:
-        /*
-         * Construct a GraphMonitor monitoring values with specified names.
+        /**
+         * Construct a GraphMonitor working on specified graph data.
          *
          * Params:  factory    = Factory used to produce the graph widget.
-         *                       Derived class is responsible with adding value
+         *                       Derived class is responsible with adding values'
          *                       graphs to the factory.
          *          graph_data = Graph data to link the graph widget to.
          */
@@ -89,6 +128,7 @@ abstract class GraphMonitor : SubMonitor
             init_menu();
             data_ = graph_data;
 
+            //construct the graph widget
             with(factory)
             {
                 x = "p_left + 52";
@@ -104,7 +144,6 @@ abstract class GraphMonitor : SubMonitor
             mouse_control.zoom.connect(&zoom);
             mouse_control.pan.connect(&pan);
             mouse_control.reset_view.connect(&reset_view);
-
             graph_.add_child(mouse_control);
 
             add_child(graph_);
@@ -113,9 +152,9 @@ abstract class GraphMonitor : SubMonitor
         }
 
         /**
-         * Add a new measurement to value with specified name.
+         * Add a new measurement of value with specified name.
          *
-         * Params:  name  = Name of the value to add to.
+         * Params:  name  = Name of the value.
          *          value = Measurement to add.
          */
         final void update_value(string name, real value){data_.update_value(name,value);}
@@ -123,15 +162,15 @@ abstract class GraphMonitor : SubMonitor
         ///Set graph mode.
         final void mode(GraphMode graph_mode){data_.mode(graph_mode);}
 
-        /*
-         * Add a value display toggling button for a value.
+        /**
+         * Add a display toggling button for a value.
          *
-         * Params:  name  = Name of the graph toggled by the button.
+         * Params:  name  = Name of the value toggled by the button.
          *          color = Color of the button text.
          */  
         void add_toggle(string name, Color color)
         {
-            auto value = new Toggle(name);
+            auto toggle = new Toggle(name);
             with(new GUIButtonFactory)
             {
                 x = "p_left + 2";
@@ -144,11 +183,11 @@ abstract class GraphMonitor : SubMonitor
                 text = name;
 
                 auto button = produce();
-                button.pressed.connect(&(value.toggle));
+                button.pressed.connect(&(toggle.toggle));
                 value_buttons_[name] = button;
                 add_child(button);
             }
-            values_ ~= value;
+            toggles_ ~= toggle;
         }     
 
         override void update()
@@ -158,11 +197,7 @@ abstract class GraphMonitor : SubMonitor
         }
 
     private:
-        /*
-         * Initialize menu. 
-         *
-         * Params:  mode_buttons = Add buttons for changing graph mode?
-         */
+        ///Initialize menu. 
         void init_menu()
         {
             with(new GUIMenuHorizontalFactory)
@@ -182,19 +217,19 @@ abstract class GraphMonitor : SubMonitor
             add_child(menu_);
         }
 
-        //Decrease graph data point time - used by resolution + button.
+        ///Decrease graph data point time - used by resolution + button.
         void resolution_increase(){graph_.data_point_time = graph_.data_point_time * 0.5;}
 
-        //Increase graph data point time - used by resolution - button.
+        ///Increase graph data point time - used by resolution - button.
         void resolution_decrease(){graph_.data_point_time = graph_.data_point_time * 2.0;}
 
-        //Set sum graph mode - used by sum button
+        ///Set sum graph mode - used by sum button.
         void sum(){data_.mode = GraphMode.Sum;}
 
-        //Set average graph mode - used by average button
+        ///Set average graph mode - used by average button.
         void average(){data_.mode = GraphMode.Average;}
 
-        //Zoom by specified number of levels.
+        ///Zoom by specified number of levels.
         void zoom(float relative)
         {
             graph_.auto_scale = false;
@@ -202,10 +237,10 @@ abstract class GraphMonitor : SubMonitor
             graph_.scale_y = graph_.scale_y * pow(zoom_mult_, relative); 
         }
 
-        //Pan view with specified offset.
+        ///Pan view with specified offset.
         void pan(Vector2f relative){graph_.scroll(-relative.x);}
 
-        //Restore default view.
+        ///Restore default view.
         void reset_view()
         {
             graph_.scale_x = scale_x_default_;
@@ -217,28 +252,24 @@ abstract class GraphMonitor : SubMonitor
 /**
  * Generate constructor code for a graph monitor implementation.
  *
- * Note: To use this as a mixin, you have to import gui.guilinegraph .
- *
- * Initializes graph monitor with specified values to monitor, 
- * automatically sets their colors, and connectss a callback
- * to fetch statistics from the monitored object. 
+ * Initializes graph monitor with specified monitored values, automatically sets 
+ * their colors and connects to signal to fetch statistics from the monitored object. 
  * This code should be inserted to a graph monitor implementation constructor
  * with a string mixin.
  *
  * Note: The constructor must have access to the monitored object through a variable
- * called "monitored", the monitored object must have a "send_statistics" signal
- * that passes a struct/class called "Statistics" to a method called 
- * "fetch_statistics" in the implementation, which should be generated by a string
- * mixin generating code with the generate_graph_fetch_statistics function.
+ * called "monitored", the monitored object must have a "send_statistics" signal that 
+ * passes an object called "Statistics" to a method called "fetch_statistics" in the 
+ * implementation, generated by the generate_graph_fetch_statistics function.
  *
- * Params: values = Names of the values monitored by the graph monitor that will
- *                  use the generated code. Colors will be automatically assigned
- *                  to the values from a limited palette, limiting number of values
- *                  supported (8 right now). Parameters passed here must be the same
- *                  as ones passed to corresponding generate_graph_fetch_statistics
- *                  call.
+ * Note: To use this as a mixin, you have to import color, util.signal, gui.guilinegraph .
  *
- * Returns: Generated code, ready to be inserted into a graph monitor constructor.
+ * Params: values = Names of values monitored by the graph monitor. Graph colors will 
+ *                  be assigned from an internal palette, limiting number of values 
+ *                  (at most 16 right now). Parameters passed must be the ones passed 
+ *                  to corresponding generate_graph_fetch_statistics call.
+ *
+ * Returns: Code to be inserted into a graph monitor constructor.
  */
 string generate_graph_monitor_ctor(string[] values...)
 in
@@ -263,6 +294,7 @@ body
 
     return factory ~ values_str ~ data ~ super_call ~ connect;
 }
+///Unittest for generate_graph_monitor_ctor() .
 unittest
 {
     string expected =
@@ -279,15 +311,12 @@ unittest
 }
 
 /**
- * Generate a statistics fetching method for a graph monitor implementation.
- * Pases values of data members of a struct/class called Statistics to 
- * values of the same name in the graph monitor.
- * This code should be inserted to a graph monitor implementation as a method
- * with a string mixin.
+ * Generate a statistics fetching method for a graph monitor implementation. Passes 
+ * data members of a Statistics object to values with corresponding names in graph data
+ * This code should be inserted to the implementation as a method with a string mixin.
  *
- * Params: values = Names of the values monitored by the graph monitor that will
- *                  use the generated code. These have to correspond with data members
- *                  of the Statistics class/struct passed.
+ * Params: values = Names of values monitored by the graph monitor using the generated
+ *                  code. Must correspond with data members of the Statistics object.
  *
  * Returns: Generated code, ready to be inserted into a graph monitor implementation.
  */
@@ -304,6 +333,7 @@ body
     }
     return header ~ update_values ~ "}\n";
 }
+///Unittest for generate_graph_fetch_statistics() .
 unittest
 {
     string expected =
@@ -318,7 +348,7 @@ unittest
 
 private:
 
-///Palette of colors used by graph monitor code generated with string mixins.
+///Palette of colors used by generated graph monitor code.
 const string[] palette = ["Color.red",
                           "Color.green",
                           "Color.blue",
