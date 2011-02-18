@@ -20,39 +20,37 @@
 <dl>
 <dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="Monitor" href="htmlsrc/monitor.monitor.html#L22">Monitor</a> : <span class="bclass">GUIElement</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="monitor.monitor.html#Monitor" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Displays various debugging/profiling information about engine subsystems.</div></div>
+<div class="summary"><div class="cmnt">Displays information about engine subsystems in real time.</div></div>
 <dl>
-<dt class="decl"><span class="rettyp">uint</span> <a class="symbol _function" name="Monitor.font_size" href="htmlsrc/monitor.monitor.html#L60">font_size</a><span class="params">()</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="monitor.monitor.html#Monitor.font_size" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">uint</span> <a class="symbol _function" name="Monitor.font_size" href="htmlsrc/monitor.monitor.html#L57">font_size</a><span class="params">()</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="monitor.monitor.html#Monitor.font_size" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Return font size to be used by monitor widgets.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Monitor.add_monitorable" href="htmlsrc/monitor.monitor.html#L71">add_monitorable</a><span class="params">(string <em>name</em>, Monitorable <em>monitorable</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="monitor.monitor.html#Monitor.add_monitorable" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Return font size for monitor widgets.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Monitor.add_monitorable" href="htmlsrc/monitor.monitor.html#L67">add_monitorable</a><span class="params">(string <em>name</em>, Monitorable <em>monitorable</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="monitor.monitor.html#Monitor.add_monitorable" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Add a monitorable with specified name.</div></div>
-<div class="cmnt">A menu item for the monitorable will appear with specified name,
- providing access to monitor menu of the monitorable.</div>
+<div class="cmnt">A menu item for the monitorable will appear, providing access to its monitor menu.</div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
-<tr><td><em>name</em></td><td>String to use the name of the monitorable (as menu item text)</td></tr>
+<tr><td><em>name</em></td><td>Name of the monitorable (used as menu item text).</td></tr>
 <tr><td><em>monitorable</em></td><td>Monitorable to add.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Monitor.remove_monitorable" href="htmlsrc/monitor.monitor.html#L93">remove_monitorable</a><span class="params">(Monitorable <em>monitorable</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="monitor.monitor.html#Monitor.remove_monitorable" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Monitor.remove_monitorable" href="htmlsrc/monitor.monitor.html#L88">remove_monitorable</a><span class="params">(Monitorable <em>monitorable</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="monitor.monitor.html#Monitor.remove_monitorable" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Remove specified monitorable.</div></div>
-<div class="cmnt">Menu item for the monitorable wil be removed, and if its menu or any
+<div class="cmnt">Menu item of the monitorable will be removed, and if its menu or any
  of its monitors are active, they'll be disabled.</div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>monitorable</em></td><td>Monitorable to remove.</td></tr></table></dd>
-<dt class="decl"><a class="symbol _ctor" name="Monitor.this" href="htmlsrc/monitor.monitor.html#L121">this</a><span class="params">(GUIElementParams <em>params</em>, MonitorableData[] <em>monitorables</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="monitor.monitor.html#Monitor.this" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _ctor" name="Monitor.this" href="htmlsrc/monitor.monitor.html#L114">this</a><span class="params">(GUIElementParams <em>params</em>, MonitorableData[] <em>monitorables</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="monitor.monitor.html#Monitor.this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct a new monitor with specified parameters.</div></div>
-<p class="sec_header">See Also:</p><div class="cmnt">GUIElement.this</div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>params</em></td><td>Parameters for GUIElement constructor.</td></tr>
 <tr><td><em>monitorables</em></td><td>Interfaces to classes to monitor, with names to use.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Monitor.update" href="htmlsrc/monitor.monitor.html#L137">update</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="monitor.monitor.html#Monitor.update" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Monitor.update" href="htmlsrc/monitor.monitor.html#L130">update</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="monitor.monitor.html#Monitor.update" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="MonitorFactory" href="htmlsrc/monitor.monitor.html#L251">MonitorFactory</a> : <span class="bclass">GUIElementFactoryBase!(Monitor)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="monitor.monitor.html#MonitorFactory" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="MonitorFactory" href="htmlsrc/monitor.monitor.html#L243">MonitorFactory</a> : <span class="bclass">GUIElementFactoryBase!(Monitor)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="monitor.monitor.html#MonitorFactory" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Factory used for monitor construction.</div></div>
 <p class="sec_header">See Also:</p><div class="cmnt">GUIElementFactoryBase</div>
@@ -60,14 +58,14 @@
 <table class="params">
 <tr><td><em>add_monitorable</em></td><td>Add a class to be monitored, with specified name.</td></tr></table>
 <dl>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="MonitorFactory.add_monitorable" href="htmlsrc/monitor.monitor.html#L257">add_monitorable</a><span class="params">(string <em>name</em>, Monitorable <em>monitorable</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="monitor.monitor.html#MonitorFactory.add_monitorable" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="MonitorFactory.add_monitorable" href="htmlsrc/monitor.monitor.html#L250">add_monitorable</a><span class="params">(string <em>name</em>, Monitorable <em>monitorable</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="monitor.monitor.html#MonitorFactory.add_monitorable" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">Monitor</span> <a class="symbol _function" name="MonitorFactory.produce" href="htmlsrc/monitor.monitor.html#L262">produce</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="monitor.monitor.html#MonitorFactory.produce" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Monitor</span> <a class="symbol _function" name="MonitorFactory.produce" href="htmlsrc/monitor.monitor.html#L255">produce</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="monitor.monitor.html#MonitorFactory.produce" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Fri Feb 18 20:18:22 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sat Feb 19 00:03:30 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

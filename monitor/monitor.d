@@ -18,63 +18,58 @@ import monitor.monitorable;
 import containers.array;
 
 
-///Displays various debugging/profiling information about engine subsystems.
+///Displays information about engine subsystems in real time.
 final class Monitor : GUIElement
 {
     private:
-        /*
-         * Used to hold a callback to show a monitor menu of a monitorable.
-         *
-         * Should be replaced by a closure in D2.
-         */
+        //Should be replaced by a closure in D2.
+        ///Function object used to show a monitor menu of a monitorable.
         class MonitorableCallback
         {
-            private:
-                //The monitorable class.
-                Monitorable monitorable_;
-            public:
-                //Construct a callback for specified monitorable.
-                this(Monitorable monitorable){monitorable_ = monitorable;}
-
-                //Show monitor menu of the monitorable.
-                void show_menu(){menu(monitorable_);}
+            ///The monitorable object.
+            Monitorable monitorable_;
+            ///Construct a callback for specified monitorable.
+            this(Monitorable monitorable){monitorable_ = monitorable;}
+            ///Show monitor menu of the monitorable.
+            void show_menu(){menu(monitorable_);}
         }
 
-        //Main menu used to access menus of subsystems' monitors.
+        ///Main menu used to access menus of subsystems' monitors.
         GUIMenuHorizontal main_menu_;
-        //Currently shown submenu(if any).
+
+        ///Currently shown submenu (null if we're in the main menu).
         MonitorMenu current_menu_;
-        //Monitorable to which the current monitor menu belongs.
+        ///Monitorable owning the current monitor menu.
         Monitorable current_menu_monitorable_;
-        //Currently shown monitor.
+
+        ///Currently shown monitor (null if none).
         GUIElement current_monitor_;
-        //Monitorable to which the current monitor belongs.
+        ///Monitorable owning the current monitor.
         Monitorable current_monitor_monitorable_;
-        //Callbacks to show monitor menus.
+
+        ///Callbacks to show monitor menus.
         MonitorableCallback[] callbacks_;
-        //Data about monitorables used to regenerate the main menu.
+        ///Data about monitorables used to regenerate the main menu.
         MonitorableData[] monitorables_;
 
     public:
-        ///Return font size to be used by monitor widgets.
+        ///Return font size for monitor widgets.
         static uint font_size(){return 8;}
 
         /**
          * Add a monitorable with specified name.
          *
-         * A menu item for the monitorable will appear with specified name,
-         * providing access to monitor menu of the monitorable.
+         * A menu item for the monitorable will appear, providing access to its monitor menu.
          *
-         * Params:  name        = String to use the name of the monitorable (as menu item text)
+         * Params:  name        = Name of the monitorable (used as menu item text).
          *          monitorable = Monitorable to add.
          */
         void add_monitorable(string name, Monitorable monitorable)
         in
         {
-            assert(monitorables_.find(
-                   (ref MonitorableData c){return c.monitorable is monitorable;})
-                   == -1,
-                   "Trying to add a monitorable that is already monitored by the monitor.");
+            assert(monitorables_.find((ref MonitorableData c)
+                                      {return c.monitorable is monitorable;}) == -1,
+                   "Trying to add a monitorable that is already being monitored.");
         }
         body                                                     
         {
@@ -85,7 +80,7 @@ final class Monitor : GUIElement
         /**
          * Remove specified monitorable.
          *
-         * Menu item for the monitorable wil be removed, and if its menu or any
+         * Menu item of the monitorable will be removed, and if its menu or any
          * of its monitors are active, they'll be disabled.
          *
          * Params:  monitorable = Monitorable to remove.
@@ -93,13 +88,13 @@ final class Monitor : GUIElement
         void remove_monitorable(Monitorable monitorable)
         in
         {
-            assert(monitorables_.find(
-                   (ref MonitorableData c){return c.monitorable is monitorable;})
-                   != -1,
+            assert(monitorables_.find((ref MonitorableData c)
+                                      {return c.monitorable is monitorable;}) != -1,
                    "Trying to remove a monitorable that is not monitored by the monitor.");
         }
         body                                                     
         {
+            //remove the monitorable
             monitorables_.remove((ref MonitorableData c)
                                  {return c.monitorable is monitorable;});
 
@@ -113,9 +108,7 @@ final class Monitor : GUIElement
         /**
          * Construct a new monitor with specified parameters.
          * 
-         * See_Also: GUIElement.this
-         *
-         * Params:  params = Parameters for GUIElement constructor.
+         * Params:  params       = Parameters for GUIElement constructor.
          *          monitorables = Interfaces to classes to monitor, with names to use.
          */
         this(GUIElementParams params, MonitorableData[] monitorables)
@@ -137,7 +130,7 @@ final class Monitor : GUIElement
         override void update(){update_children();}
 
     private:
-        ///Generate the main menu, callbacks from monitorables.
+        ///Generate the main menu and callbacks from monitorables.
         void regenerate()
         {
             bool visible = true;
@@ -180,26 +173,25 @@ final class Monitor : GUIElement
             add_child(main_menu_);
         }
 
-        //Replace main menu with monitor menu of specified monitorable.
+        ///Replace main menu with monitor menu of specified monitorable.
         void menu(Monitorable monitorable)
-        in
-        {
-            assert(main_menu_.visible, "Trying to replace main menu but it's not visible");
-        }
+        in{assert(main_menu_.visible, "Trying to replace main menu but it's not visible");}
         body
         {
             main_menu_.hide();
 
+            //get and connect the monitor menu
             auto menu = monitorable.monitor_menu;
             menu.back.connect(&show_main_menu);
             menu.set_monitor.connect(&monitor);
 
+            //show the monitor menu
             current_menu_ = menu;
             current_menu_monitorable_ = monitorable;
             add_child(menu.menu);
         }
 
-        //Show main menu, removing currently shown submenu.
+        ///Show main menu, removing currently shown submenu.
         void show_main_menu()
         in
         {
@@ -215,7 +207,7 @@ final class Monitor : GUIElement
             main_menu_.show();
         }
 
-        //Show given monitor, replacing any monitor previously shown.
+        ///Show given monitor, replacing any monitor previously shown.
         void monitor(SubMonitor monitor)
         {
             if(current_monitor_ !is null)
@@ -230,7 +222,7 @@ final class Monitor : GUIElement
             add_child(current_monitor_);
         }
 
-        //Disable the current monitor.
+        ///Disable the current monitor.
         void disable_monitor()
         {
             if(current_monitor_ is null){return;}
@@ -251,6 +243,7 @@ final class Monitor : GUIElement
 final class MonitorFactory : GUIElementFactoryBase!(Monitor)
 {
     private:
+        ///Data for monitorables to be added during construction.
         MonitorableData[] monitorables_;
 
     public:
@@ -264,11 +257,11 @@ final class MonitorFactory : GUIElementFactoryBase!(Monitor)
 
 private:
 
-//Data needed to add a monitorable to the monitor.
+///Data describing a monitorable to the monitor.
 struct MonitorableData
 {
-    //Name to use to identify the monitorable.
+    ///Name to use to identify the monitorable.
     string name;
-    //Monitorable itself.
+    ///Monitorable itself.
     Monitorable monitorable;
 }                                          
