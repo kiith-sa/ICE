@@ -22,19 +22,25 @@ import util.factory;
 import containers.vector;
 
 
-///Single particle of the particle system
+///Single particle of a particle system.
 private struct Particle
 {
-    //Timer of the particle, determines its lifetime.
+    ///Timer determining life time of the particle.
     Timer timer;
+    ///Position of the particle in world space.
     Vector2f position;
+    ///Velocity of the particle in world space.
     Vector2f velocity;
     
-    //Update state of the particle.
+    /**
+     * Update the particle.
+     *
+     * Params:  time_step = Time step of the update.
+     */
     void update(real time_step){position += velocity * time_step;}
 }
 
-///Base class for particle emitting particle systems.
+///Base class for particle emitters.
 abstract class ParticleEmitter : ParticleSystem
 {
     invariant
@@ -45,35 +51,35 @@ abstract class ParticleEmitter : ParticleSystem
     }
 
     private:
-        //Lifetime of particles emitted.
+        ///Lifetime of particles emitted.
         real particle_life_ = 5.0;
-        //Time since last particle was emit.
+        ///Time since the last particle was emitted.
         real time_accumulated_ = 0.0;
-        //Variation of the angle of particles velocities (in radians).
+        ///Variation of angles of particles' velocities (in radians).
         real angle_variation_ = PI / 2;
-        //Emit frequency in particles per second.
+        ///Emit frequency in particles per second.
         real emit_frequency_ = 10.0;
 
     protected:
-        //Particles in the system.
+        ///Particles in the system.
         Vector!(Particle) particles_;
 
-        //Velocity to emit particles at.
+        ///Velocity to emit particles at.
         Vector2f emit_velocity_ = Vector2f(1.0, 0.0);
-        //Current game time.
+        ///Current game time.
         real game_time_;
 
     public:
         ///Set life time of particles emitted.
         final void particle_life(real life){particle_life_ = life;}
         
-        ///Return life time of particles emitted.
+        ///Get life time of particles emitted.
         final real particle_life(){return particle_life_;}
 
         ///Set number of particles to emit per second.
         void emit_frequency(real frequency){emit_frequency_ = frequency;}
         
-        ///Return number of particles emitted per second.
+        ///Get number of particles emitted per second.
         final real emit_frequency(){return emit_frequency_;}
 
         ///Set velocity to emit particles at.
@@ -89,20 +95,19 @@ abstract class ParticleEmitter : ParticleSystem
         }
 
     protected:
-        /*
+        /**
          * Construct a ParticleEmitter with specified parameters.
          *
-         * Params:  container       = Container to manage the emitter.
+         * Params:  container       = Actor container to manage the emitter.
          *          physics_body    = Physics body of the emitter.
-         *          owner           = Class to attach this emitter to. 
+         *          owner           = Class to attach the emitter to. 
          *                            If null, the emitter is independent.
          *          life_time       = Life time of the emitter. 
          *                            If negative, lifetime is indefinite.
          *          particle_life   = Life time of particles emitted.
-         *          emit_frequency  = Frequency at which to emit particles, 
-         *                            in particles per second.
+         *          emit_frequency  = Frequency to emit particles at in particles per second.
          *          emit_velocity   = Base velocity of particles emitted.
-         *          angle_variation = Variation of angle of emit velocity, in radians.
+         *          angle_variation = Variation of angle of emit velocity in radians.
          */                          
         this(ActorContainer container, PhysicsBody physics_body, Actor owner, 
              real life_time, real particle_life, real emit_frequency, 
@@ -119,12 +124,8 @@ abstract class ParticleEmitter : ParticleSystem
 
         override void update(real time_step, real game_time)
         {
-            //update position
-            if(owner_ !is null)
-            {
-                //get position from owner
-                physics_body_.position = owner_.position;
-            }
+            //if attached, get position from the owner.
+            if(owner_ !is null){physics_body_.position = owner_.position;}
 
             game_time_ = game_time;
 
@@ -141,7 +142,7 @@ abstract class ParticleEmitter : ParticleSystem
             super.update(time_step, game_time);
         }
 
-        /*
+        /**
          * Emit particles if any should be emitted this frame.
          * 
          * Params:  time_step = Time step in seconds.
@@ -153,14 +154,16 @@ abstract class ParticleEmitter : ParticleSystem
             real emit_period = 1.0 / emit_frequency_;
             while(time_accumulated_ >= emit_period)
             {
+                //add a new particle
                 Particle particle;
-
-                particle.timer = Timer(particle_life_, game_time_);
-                particle.position = physics_body_.position;
-                real angle_delta = random(-angle_variation_, angle_variation_);
-                particle.velocity = emit_velocity_;
-                particle.velocity.angle = particle.velocity.angle + angle_delta;
-
+                with(particle)
+                {
+                    timer = Timer(particle_life_, game_time_);
+                    position = physics_body_.position;
+                    velocity = emit_velocity_;
+                    velocity.angle = particle.velocity.angle + 
+                                     random(-angle_variation_, angle_variation_);
+                }
                 particles_ ~= particle;
 
                 time_accumulated_ -= emit_period;
@@ -168,18 +171,17 @@ abstract class ParticleEmitter : ParticleSystem
         }
 }
 
-/*
+/**
  * Base class for factories producing ParticleEmitter derived classes.
  *
  * Params:  particle_life   = Life time of particles emitted in seconds.
- *                            Default: 5.0
- *          emit_frequency  = Frequency at which to emit particles, 
- *                            in particles per second.
- *                            Default: 10.0
+ *                            Default; 5.0
+ *          emit_frequency  = Frequency to emit particles at in particles per second.
+ *                            Default; 10.0
  *          emit_velocity   = Base velocity of particles emitted.
- *                            Default: Vector2f(1.0f, 1.0f)
- *          angle_variation = Variation of angle of emit velocity, in radians.
- *                            Default: PI / 2
+ *                            Default; Vector2f(1.0f, 1.0f)
+ *          angle_variation = Variation of angle of emit velocity in radians.
+ *                            Default; PI / 2
  */                          
 abstract class ParticleEmitterFactory(T) : ParticleSystemFactory!(T)
 {
