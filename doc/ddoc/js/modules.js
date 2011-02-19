@@ -1,6 +1,6 @@
 var g_moduleList = [
-  "scene.scenemanager", "scene.lineemitter", "scene.particlesystem",
-  "scene.linetrail", "scene.actorcontainer", "scene.actor",
+  "scene.lineemitter", "scene.particlesystem", "scene.linetrail",
+  "scene.actorcontainer", "scene.actor", "scene.scenemanager",
   "scene.particleemitter", "file.fileio", "file.file", "math.math",
   "math.line2", "math.vector2", "math.rectangle", "video.videodriver",
   "video.nodepacker", "video.fontmanager", "video.gltexture",
@@ -126,4 +126,4 @@ var g_packageTree = new PackageTree(P('', [
 ])
 );
 
-var g_creationTime = 1298136768;
+var g_creationTime = 1298141526;

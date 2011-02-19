@@ -23,9 +23,9 @@ import util.iterator;
 
 
 /**
- * Handles collision detection and physics simulation.
+ * Handles physics simulation and collision detection.
  *
- * Physics is processed on PhysicsBodies which contain state like mass, velocity
+ * Physics objects are PhysicsBodies which contain state like mass, velocity
  * and collision volume.
  */
 final class PhysicsEngine : Monitorable
@@ -43,41 +43,44 @@ final class PhysicsEngine : Monitorable
     }
 
     private:
-        //Spatial manager used for coarse collision detection.
+        ///Spatial manager used for coarse collision detection.
         SpatialManager!(PhysicsBody) spatial_manager_;
 
-        //Are we updating (running the simulation) right now?
+        ///Are we updating (running the simulation) right now?
         bool updating_;
 
-        //Stores all bodies we're simulating. Will be replaced by a spatial manager.
+        ///Bodies we're simulating.
         PhysicsBody[] bodies_;
-
-        //Stores all contacts detected during current frame.
+        ///Contacts detected during current update.
         Contact[] contacts_;
 
-        //How many times the number of contacts to iterate penetration resolution?
-        //E.g. if we have 16 contacts and this is 2.0, we'll do (at most) 32 
-        //iterations, allowing us to resolve penetrations resulting from the first
-        //resolution.
+        /**
+         * How many times the number of contacts to iterate penetration resolution?
+         *
+         * E.g. if we have 16 contacts and this is 2.0, we'll do (at most) 32 
+         * iterations, allowing us to resolve secondary penetrations caused by the 
+         * first resolution.
+         */
         real penetration_iteration_multiplier_ = 2.0;
-
-        //How many times the number of contacts to iterate collision response?
-        //E.g. if we have 16 contacts and this is 2.0, we'll do (at most) 32 
-        //iterations, allowing us to resolve collision response problems resulting 
-        //from the first resolution.
+        /*
+         * How many times the number of contacts to iterate collision response?
+         *
+         * E.g. if we have 16 contacts and this is 2.0, we'll do (at most) 32 
+         * iterations, allowing us to resolve collision response problems caused by 
+         * the first resolution.
+         */
         real response_iteration_multiplier_ = 2.0;
 
-        //Don't bother resolving penetrations smaller than this.
+        ///Don't bother resolving penetrations smaller than this.
         real acceptable_penetration = 0.1;
-
-        //Don't bother resolving velocity errors smaller than this.
+        ///Don't bother resolving velocity errors smaller than this.
         real acceptable_velocity_error = 0.05;
 
-        //Statistics data for monitoring.
+        ///Statistics data for monitoring.
         Statistics statistics_;
 
     package:
-        //Used to send statistics data to physics monitors.
+        ///Used to send statistics data to physics monitors.
         mixin Signal!(Statistics) send_statistics;
 
     public:
@@ -92,24 +95,26 @@ final class PhysicsEngine : Monitorable
             spatial_manager_ = spatial_manager;
         }
 
-        ///Destroy this PhysicsEngine.
+        ///Destroy the PhysicsEngine.
         void die()
         {
+            //destroy any remaining bodies
             foreach(physics_body; bodies_){physics_body.die();}
             bodies_ = [];
             singleton_dtor();
         }
 
-        ///Run the physics simulation of a single frame.
+        /**
+         * Run the physics simulation of a single frame.
+         *
+         * Params:  time_step = Time length of the update in seconds.
+         */
         void update(real time_step)
         {
             updating_ = true;
 
             //update all bodies' states
-            foreach(physics_body; bodies_)
-            {
-                physics_body.update(time_step, spatial_manager_);
-            }
+            foreach(physics_body; bodies_){physics_body.update(time_step, spatial_manager_);}
 
             //handle collisions
             detect_contacts();
@@ -127,8 +132,13 @@ final class PhysicsEngine : Monitorable
 
         MonitorMenu monitor_menu(){return new PhysicsEngineMonitor(this);}
 
-        //Add a new physics body to the simulation
-        //Can't be called during an update.
+        /**
+         * Add a new physics body to the simulation.
+         *
+         * Must not be called during an update.
+         *
+         * Params:  physics_body = Body to add.
+         */
         void add_body(PhysicsBody physics_body)
         in
         {
@@ -148,8 +158,13 @@ final class PhysicsEngine : Monitorable
             bodies_ ~= physics_body;
         }
 
-        //Remove a physics body from the simulation
-        //Can't be called during an update.
+        /**
+         * Remove a physics body from the simulation
+         *
+         * Must not be called during an update.
+         *
+         * Params:  physics_body = Body to remove.
+         */
         void remove_body(PhysicsBody physics_body)
         in
         {
@@ -172,10 +187,11 @@ final class PhysicsEngine : Monitorable
         }
 
     private:
-        //Detect collisions between bodies.
+        ///Detect collisions between bodies.
         void detect_contacts()
         {
             Contact current_contact;
+            //use spatial manager for coarse collision detection
             foreach(bodies; spatial_manager_.iterator)
             {
                 foreach(uint a, body_a; bodies)
@@ -185,6 +201,7 @@ final class PhysicsEngine : Monitorable
                     for(uint b = a + 1; b < bodies.length; b++)
                     {
                         statistics_.tests++;
+                        //fine collision detection
                         if(detect_contact(body_a, bodies[b], current_contact))
                         {
                             contacts_ ~= current_contact;
@@ -194,17 +211,13 @@ final class PhysicsEngine : Monitorable
             }
         }
 
-        //Resolve interpenetrations between bodies.
+        ///Resolve interpenetrations between bodies.
         void resolve_penetrations()
         {
-            //number of iterations to process - penetration resolution
-            //might introduce more penetrations so we need to have more
-            //iterations than contacts
+            //number of iterations to process - penetration resolution might introduce
+            //more penetrations so we need to have more iterations than contacts
+
             uint iterations = cast(uint)(contacts_.length * penetration_iteration_multiplier_);
-            //this could be optimized by storing contacts
-            //in a binary tree sorted by penetration, and/or by only working
-            //with small groups of contacts (determined by coarse collision detection)
-            //at a time
 
             //contact we're currently resolving
             Contact contact;
@@ -218,9 +231,9 @@ final class PhysicsEngine : Monitorable
             for(uint iteration = 0; iteration < iterations; iteration++)
             {
                 statistics_.penetration++;
-                //note: this is probably slow, but readable, will be fixed only
-                //if slowdown is measurable
 
+                //note: this is probably slow, but readable, will be changed only
+                //if slowdown is measurable
                 //find greatest penetration
                 contact = contacts_.max((ref Contact a, ref Contact b)
                                         {return a.penetration > b.penetration;});
@@ -256,7 +269,7 @@ final class PhysicsEngine : Monitorable
             }
         }
 
-        //Process collision responses to the contacts.
+        ///Process collision responses.
         void collision_response()
         {
             //number of iterations to process - collision response
@@ -282,9 +295,8 @@ final class PhysicsEngine : Monitorable
 
                 contact.collision_response();
 
-                //don't need to adjust any parameters of contacts involving
-                //bodies from currently resolved contact as they are computed
-                //on demand
+                //don't need to adjust parameters of other contacts involving bodies from
+                //currently resolved contact as these parameters are computed on demand
             }
         }
 }
