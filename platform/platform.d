@@ -20,9 +20,11 @@ abstract class Platform
 {
     mixin WeakSingleton;
     protected:
+        ///Array of bools for each key specifying if the key is currently pressed.
         bool[Key.max] keys_pressed_;
 
     private:
+        ///Continue to run?
         bool run_ = true;
                  
     public:
@@ -40,7 +42,7 @@ abstract class Platform
         ///Destroy the Platform.
         void die(){singleton_dtor();}
         
-        ///Collect input and determine if the game should continue running.
+        ///Collect input and determine if the game should continue to run.
         bool run(){return run_;}
 
         ///Quit the platform, i.e. the game.

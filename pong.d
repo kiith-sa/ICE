@@ -1560,6 +1560,19 @@ class Game
         ///Get area of the game.
         static Rectanglef game_area(){return game_area_;}
 
+        void end_game()
+        {
+            if(started_){actor_manager_.time_speed = 1.0;}
+
+            actor_manager_.clear();
+            player_1_.die();
+            player_2_.die();
+
+            playing_ = continue_ = false;
+
+            platform_.key.disconnect(&key_handler);
+        }
+
     private:
         this(Platform platform, SceneManager actor_manager, GameGUI gui, 
              uint score_limit, real time_limit)
@@ -1661,19 +1674,6 @@ class Game
             actor_manager_.time_speed = 0.0;
 
             playing_ = false;
-        }
-
-        void end_game()
-        {
-            if(started_){actor_manager_.time_speed = 1.0;}
-
-            actor_manager_.clear();
-            player_1_.die();
-            player_2_.die();
-
-            playing_ = continue_ = false;
-
-            platform_.key.disconnect(&key_handler);
         }
 
         void key_handler(KeyState state, Key key, dchar unicode)
@@ -2044,6 +2044,14 @@ class Pong
         ///Destroy all subsystems.
         void die()
         {
+            //game might still be running if we're quitting
+            //because the platform stopped to run
+            if(game_ !is null)
+            {
+                game_.end_game();
+                game_container_.destroy();
+                game_ = null;
+            }
             fps_counter_.update.disconnect(&fps_update);
             gui_.monitor.remove_monitorable(video_driver_);
             gui_.monitor.remove_monitorable(memory_);
@@ -2060,6 +2068,7 @@ class Pong
         {                           
             platform_.key.connect(&key_handler_global);
             platform_.key.connect(&key_handler);
+
             while(platform_.run() && continue_)
             {
                 //Count this frame

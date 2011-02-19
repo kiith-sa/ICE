@@ -10,9 +10,12 @@ module platform.key;
 import derelict.sdl.sdl;
 
 
+///Possible key event states.
 enum KeyState
 {
+    ///Key is being pressed.
     Pressed,
+    ///Key is being released.
     Released
 }
 
@@ -195,6 +198,7 @@ enum Key
 	Local_94	 = 254,
 	Local_95	 = 255,
 
+    //numpad
 	NP_0	     = 256,
 	NP_1	     = 257,
 	NP_2	     = 258,
