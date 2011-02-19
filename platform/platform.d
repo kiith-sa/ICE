@@ -36,7 +36,11 @@ abstract class Platform
         ///Emitted when mouse is moved. Passes mouse position and position change.
         mixin Signal!(Vector2u, Vector2i) mouse_motion;
 
-        ///Construct Platform.
+        /**
+         * Construct Platform.
+         *
+         * Throws:  Exception on failure.
+         */
         this(){singleton_ctor();}
 
         ///Destroy the Platform.

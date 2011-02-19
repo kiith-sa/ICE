@@ -16,10 +16,17 @@ import platform.platform;
 import math.vector2;
 
 
+///Platform implementation based on SDL 1.2 .
 class SDLPlatform : Platform
 {
     public:
-        //Constructor - initializes SDL and throws Exception on failure.
+        /**
+         * Construct an SDLPlatform. 
+         *
+         * Initializes SDL.
+         *
+         * Throws:  Exception on failure.
+         */
         this()
         {
             super();
@@ -78,7 +85,7 @@ class SDLPlatform : Platform
         override void show_cursor(){SDL_ShowCursor(1);}
 
     package:
-        //Process a keyboard event.
+        ///Process a keyboard event.
         void process_key(SDL_KeyboardEvent event)
         {
             KeyState state = KeyState.Pressed;
@@ -88,16 +95,16 @@ class SDLPlatform : Platform
                 state = KeyState.Released;
                 keys_pressed_[event.keysym.sym] = false;
             }
-            key.emit(state, cast(Key)event.keysym.sym, 
-                           event.keysym.unicode);
+            key.emit(state, cast(Key)event.keysym.sym, event.keysym.unicode);
         }
         
-        //Process a mouse button event.
+        ///Process a mouse button event.
         void process_mouse_key(SDL_MouseButtonEvent event)
         {
             KeyState state = KeyState.Pressed;
             if(event.type == SDL_MOUSEBUTTONUP){state = KeyState.Released;}
 
+            //Convert SDL button to MouseKey enum.
             MouseKey key;
             switch(event.button)
             {
@@ -125,7 +132,7 @@ class SDLPlatform : Platform
             mouse_key.emit(state, key, position);
         }
         
-        //Process a mouse motion event.
+        ///Process a mouse motion event.
         void process_mouse_motion(SDL_MouseMotionEvent event)
         {
             Vector2u position = Vector2u(event.x, event.y);
