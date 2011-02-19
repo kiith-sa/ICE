@@ -21,33 +21,26 @@ import time.timer;
 import color;
 
 
+//This is a huge mess, but waiting for complete particle system overhaul to fix it.
 ///Line trail particle system (trail following moving objects). Needs an owner to work.
 final class LineTrail : LineEmitter
 {
     private:
-        //determines when it's time to update 
+        ///Determines when it's time to update.
         Timer update_timer_;
 
-    public:
-        override void emit_frequency(real frequency)
-        {
-            assert(frequency >= 0.0, "LineTrail emit frequency must be > 0");
-            super.emit_frequency(frequency);
-        } 
-
     protected:
-        /*
+        /**
          * Construct a LineTrail with specified parameters.
          *
-         * Params:  container       = Container to manage the trail.
+         * Params:  container       = Actor container to manage the trail.
          *          physics_body    = Physics body of the trail.
-         *          owner           = Class to attach this trail to. 
+         *          owner           = Class to attach the trail to. 
          *                            If null, the trail is independent.
-         *          life_time       = Life time of the trail. 
+         *          life_time       = Life time of the trail in seconds. 
          *                            If negative, lifetime is indefinite.
          *          particle_life   = Life time of particles emitted.
-         *          emit_frequency  = Frequency at which to emit particles, 
-         *                            in particles per second.
+         *          emit_frequency  = Frequency to emit particles at in particles per second.
          *          line_width      = Width of lines emitted in pixels.
          *          start_color     = Color at the beginning of particle lifetime.
          *          end_color       = Color at the end of particle lifetime.  
@@ -69,8 +62,7 @@ final class LineTrail : LineEmitter
             if(update_timer_.expired(game_time_))
             {
                 Particle trail;
-                trail.position = owner_ is null ? physics_body_.position 
-                                                : owner_.position;
+                trail.position = owner_ is null ? physics_body_.position : owner_.position;
                 trail.timer = Timer(particle_life, game_time_);
                 particles_ ~= trail;
 
@@ -78,9 +70,9 @@ final class LineTrail : LineEmitter
             }
         }
         
-        ///Draw the particle system.
         override void draw(VideoDriver driver)
         {
+            //trail with just one point makes no sense, need at least two
             if(particles_.length >= 2)
             {
                 //start of the current line
@@ -95,7 +87,7 @@ final class LineTrail : LineEmitter
                 driver.line_aa = true;
                 driver.line_width = line_width_;
 
-                //using for instead of foreach purely for performance reasons
+                //using for instead of foreach for performance reasons
                 for(uint p = 1; p < particles_.length; p++)
                 {
                     v2 = particles_[p].position;
