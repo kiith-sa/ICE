@@ -22,31 +22,50 @@
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Base class for particle systems.</div></div>
 <dl>
-<dt class="decl">Actor <a class="symbol _variable" name="ParticleSystem.owner_" href="htmlsrc/scene.particlesystem.html#L27">owner_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="scene.particlesystem.html#ParticleSystem.owner_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="ParticleSystem.life_time" href="htmlsrc/scene.particlesystem.html#L31">life_time</a><span class="params">(real <em>time</em>)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="scene.particlesystem.html#ParticleSystem.life_time" class="plink">¶</a></dt>
+<dt class="decl">Actor <a class="symbol _variable" name="ParticleSystem.owner_" href="htmlsrc/scene.particlesystem.html#L26">owner_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="scene.particlesystem.html#ParticleSystem.owner_" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Set time left for this LineTrail to live. Negative means infinite.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="ParticleSystem.attach" href="htmlsrc/scene.particlesystem.html#L38">attach</a><span class="params">(Actor <em>actor</em>)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="scene.particlesystem.html#ParticleSystem.attach" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Actor the particle system is attached to. If null, the system is independent.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="ParticleSystem.life_time" href="htmlsrc/scene.particlesystem.html#L30">life_time</a><span class="params">(real <em>time</em>)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="scene.particlesystem.html#ParticleSystem.life_time" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Attach this particle system to specified actor.</div></div>
+<div class="summary"><div class="cmnt">Set time left for the LineTrail to live. Negative means infinite.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="ParticleSystem.attach" href="htmlsrc/scene.particlesystem.html#L37">attach</a><span class="params">(Actor <em>actor</em>)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="scene.particlesystem.html#ParticleSystem.attach" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Attach the particle system to specified actor.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>actor</em></td><td>Actor to attach to.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="ParticleSystem.detach" href="htmlsrc/scene.particlesystem.html#L41">detach</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="scene.particlesystem.html#ParticleSystem.detach" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="ParticleSystem.detach" href="htmlsrc/scene.particlesystem.html#L40">detach</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="scene.particlesystem.html#ParticleSystem.detach" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Detach this particle system from any actor it's attached to.</div></div></dd>
-<dt class="decl"><a class="symbol _ctor" name="ParticleSystem.this" href="htmlsrc/scene.particlesystem.html#L54">this</a><span class="params">(ActorContainer <em>container</em>, PhysicsBody <em>physics_body</em>, Actor <em>owner</em>, real <em>life_time</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="scene.particlesystem.html#ParticleSystem.this" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="ParticleSystem.update" href="htmlsrc/scene.particlesystem.html#L62">update</a><span class="params">(real <em>time_step</em>, real <em>game_time</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="scene.particlesystem.html#ParticleSystem.update" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Detach the particle system from any actor it's attached to.</div></div></dd>
+<dt class="decl"><a class="symbol _ctor" name="ParticleSystem.this" href="htmlsrc/scene.particlesystem.html#L53">this</a><span class="params">(ActorContainer <em>container</em>, PhysicsBody <em>physics_body</em>, Actor <em>owner</em>, real <em>life_time</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="scene.particlesystem.html#ParticleSystem.this" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Construct a ParticleSystem with specified parameters.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>container</em></td><td>Actor container to manage the system.</td></tr>
+<tr><td><em>physics_body</em></td><td>Physics body of the system.</td></tr>
+<tr><td><em>owner</em></td><td>Class to attach the system to. 
+                            If null, the system is independent.</td></tr>
+<tr><td><em>life_time</em></td><td>Life time of the system. 
+                            If negative, lifetime is indefinite.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="ParticleSystem.update" href="htmlsrc/scene.particlesystem.html#L60">update</a><span class="params">(real <em>time_step</em>, real <em>game_time</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="scene.particlesystem.html#ParticleSystem.update" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="ParticleSystemFactory" href="htmlsrc/scene.particlesystem.html#L80">ParticleSystemFactory</a><span class="tparams">(<em>T</em>)</span> : <span class="bclass">ActorFactory!(T)</span> <span class="attrs">[<span class="stc">abstract</span>]</span> <a href="scene.particlesystem.html#ParticleSystemFactory" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="ParticleSystemFactory" href="htmlsrc/scene.particlesystem.html#L78">ParticleSystemFactory</a><span class="tparams">(<em>T</em>)</span> : <span class="bclass">ActorFactory!(T)</span> <span class="attrs">[<span class="stc">abstract</span>]</span> <a href="scene.particlesystem.html#ParticleSystemFactory" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Base class for particle system factories.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>owner</em></td><td>Actor to attach produced particle system to.
+                            If null, the particle system will be independent.
+                            Default; null</td></tr>
+<tr><td><em>life_time</em></td><td>Life time of the produced system. 
+                            If negative, lifetime is indefinite.
+                            Default; -1.0</td></tr></table>
 </dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sun Feb 20 00:23:57 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sun Feb 20 00:41:39 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>
