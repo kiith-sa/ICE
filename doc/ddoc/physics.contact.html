@@ -18,52 +18,52 @@
   <h1 class="module" id="m-physics.contact"><a href="htmlsrc/physics.contact.html" class="symbol">physics.contact</a></h1>
 
 <dl>
-<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="Contact" href="htmlsrc/physics.contact.html#L18">Contact</a> <a href="physics.contact.html#Contact" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="Contact" href="htmlsrc/physics.contact.html#L16">Contact</a> <a href="physics.contact.html#Contact" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Stores data about a contact between two physics bodies.</div></div>
 <dl>
-<dt class="decl">PhysicsBody <a class="symbol _variable" name="Contact.body_a" href="htmlsrc/physics.contact.html#L22">body_a</a> <span class="attrs">[<span class="prot">public</span>]</span> <a href="physics.contact.html#Contact.body_a" class="plink">¶</a></dt>
+<dt class="decl">PhysicsBody <a class="symbol _variable" name="Contact.body_a" href="htmlsrc/physics.contact.html#L20">body_a</a> <span class="attrs">[<span class="prot">public</span>]</span> <a href="physics.contact.html#Contact.body_a" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">First body involved in the contact.</div></div></dd>
-<dt class="decl">PhysicsBody <a class="symbol _variable" name="Contact.body_b" href="htmlsrc/physics.contact.html#L25">body_b</a> <span class="attrs">[<span class="prot">public</span>]</span> <a href="physics.contact.html#Contact.body_b" class="plink">¶</a></dt>
+<dt class="decl">PhysicsBody <a class="symbol _variable" name="Contact.body_b" href="htmlsrc/physics.contact.html#L22">body_b</a> <span class="attrs">[<span class="prot">public</span>]</span> <a href="physics.contact.html#Contact.body_b" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Second body involved in the contact.</div></div></dd>
-<dt class="decl">Vector2f <a class="symbol _variable" name="Contact.contact_normal" href="htmlsrc/physics.contact.html#L32">contact_normal</a> <span class="attrs">[<span class="prot">public</span>]</span> <a href="physics.contact.html#Contact.contact_normal" class="plink">¶</a></dt>
+<dt class="decl">Vector2f <a class="symbol _variable" name="Contact.contact_normal" href="htmlsrc/physics.contact.html#L29">contact_normal</a> <span class="attrs">[<span class="prot">public</span>]</span> <a href="physics.contact.html#Contact.contact_normal" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Normal of the contact.
  Contact normal is the direction we must move body_b (and opposite of the
  direction we must move body_a) to resolve the contact.</div></div></dd>
-<dt class="decl">float <a class="symbol _variable" name="Contact.penetration" href="htmlsrc/physics.contact.html#L35">penetration</a> <span class="attrs">[<span class="prot">public</span>]</span> <a href="physics.contact.html#Contact.penetration" class="plink">¶</a></dt>
+<dt class="decl">float <a class="symbol _variable" name="Contact.penetration" href="htmlsrc/physics.contact.html#L31">penetration</a> <span class="attrs">[<span class="prot">public</span>]</span> <a href="physics.contact.html#Contact.penetration" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Greatest depth of interpenetration between the bodies.</div></div></dd>
-<dt class="decl">bool <a class="symbol _variable" name="Contact.resolved" href="htmlsrc/physics.contact.html#L38">resolved</a> <span class="attrs">[<span class="prot">public</span>]</span> <a href="physics.contact.html#Contact.resolved" class="plink">¶</a></dt>
+<dt class="decl">bool <a class="symbol _variable" name="Contact.resolved" href="htmlsrc/physics.contact.html#L34">resolved</a> <span class="attrs">[<span class="prot">public</span>]</span> <a href="physics.contact.html#Contact.resolved" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">If true, this contact is already resolved - do not resolve it further.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Contact.swap_bodies" href="htmlsrc/physics.contact.html#L42">swap_bodies</a><span class="params">()</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="physics.contact.html#Contact.swap_bodies" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Contact.swap_bodies" href="htmlsrc/physics.contact.html#L38">swap_bodies</a><span class="params">()</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="physics.contact.html#Contact.swap_bodies" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Swap the bodies in the contact, and flip the direction of the contact normal.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Contact.resolve_penetration" href="htmlsrc/physics.contact.html#L59">resolve_penetration</a><span class="params">(<span class="k">out</span> Vector2f <em>change_a</em>,  <span class="k">out</span> Vector2f <em>change_b</em>)</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="physics.contact.html#Contact.resolve_penetration" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Contact.resolve_penetration" href="htmlsrc/physics.contact.html#L55">resolve_penetration</a><span class="params">(<span class="k">out</span> Vector2f <em>change_a</em>,  <span class="k">out</span> Vector2f <em>change_b</em>)</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="physics.contact.html#Contact.resolve_penetration" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Resolve penetration between the bodies by changing their positions.</div></div>
-<div class="cmnt">Currently, if both bodies have infinite weight, no resolution is done.
+<div class="cmnt">No resolution is done if both bodies have infinite mass.
  This might change if bugs arise.</div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
-<tr><td><em>change_b</em></td><td>change_a Vector to write position change of the first body to.
-          change_b Vector to write position change of the second body to.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Contact.collision_response" href="htmlsrc/physics.contact.html#L87">collision_response</a><span class="params">()</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="physics.contact.html#Contact.collision_response" class="plink">¶</a></dt>
+<tr><td><em>change_a</em></td><td>Vector to write position change of the first body to.</td></tr>
+<tr><td><em>change_b</em></td><td>Vector to write position change of the second body to.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Contact.collision_response" href="htmlsrc/physics.contact.html#L83">collision_response</a><span class="params">()</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="physics.contact.html#Contact.collision_response" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Handle collision response to the contact (e.g. bodies bouncing away).</div></div></dd>
-<dt class="decl"><span class="rettyp">float</span> <a class="symbol _function" name="Contact.desired_delta_velocity" href="htmlsrc/physics.contact.html#L101">desired_delta_velocity</a><span class="params">()</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="physics.contact.html#Contact.desired_delta_velocity" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">float</span> <a class="symbol _function" name="Contact.desired_delta_velocity" href="htmlsrc/physics.contact.html#L97">desired_delta_velocity</a><span class="params">()</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="physics.contact.html#Contact.desired_delta_velocity" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Return desired change of velocity of the contact (total of both bodies) for collision response.</div></div></dd>
-<dt class="decl"><span class="rettyp">real</span> <a class="symbol _function" name="Contact.inverse_mass_total" href="htmlsrc/physics.contact.html#L108">inverse_mass_total</a><span class="params">()</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="physics.contact.html#Contact.inverse_mass_total" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">real</span> <a class="symbol _function" name="Contact.inverse_mass_total" href="htmlsrc/physics.contact.html#L104">inverse_mass_total</a><span class="params">()</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="physics.contact.html#Contact.inverse_mass_total" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Return sum of inverse masses of bodies involved in this contact.</div></div></dd></dl></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sat Feb 19 13:11:07 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sat Feb 19 14:03:17 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

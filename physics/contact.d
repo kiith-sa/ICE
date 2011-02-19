@@ -12,15 +12,12 @@ import math.vector2;
 import math.math;
 
 
-/**
- * Stores data about a contact between two physics bodies.
- */
+///Stores data about a contact between two physics bodies.
 align(1) struct Contact
 {
     public:
         ///First body involved in the contact.
         PhysicsBody body_a;
-
         ///Second body involved in the contact.
         PhysicsBody body_b;
 
@@ -30,7 +27,6 @@ align(1) struct Contact
          * direction we must move body_a) to resolve the contact.
          */
         Vector2f contact_normal;
-
         ///Greatest depth of interpenetration between the bodies.
         float penetration;
 
@@ -50,11 +46,11 @@ align(1) struct Contact
         /**
          * Resolve penetration between the bodies by changing their positions.
          *
-         * Currently, if both bodies have infinite weight, no resolution is done.
+         * No resolution is done if both bodies have infinite mass.
          * This might change if bugs arise.
          *
-         * Params:  change_a Vector to write position change of the first body to.
-         *          change_b Vector to write position change of the second body to.
+         * Params:  change_a = Vector to write position change of the first body to.
+         *          change_b = Vector to write position change of the second body to.
          */
         void resolve_penetration(out Vector2f change_a, out Vector2f change_b)
         in
@@ -100,15 +96,17 @@ align(1) struct Contact
         ///Return desired change of velocity of the contact (total of both bodies) for collision response.
         float desired_delta_velocity()
         {
-            if(!resolved){return 2.0 * contact_normal.dot_product(contact_velocity);}
+            if(!resolved){return 2.0 * contact_velocity;}
             return 0.0f;
         }
 
         ///Return sum of inverse masses of bodies involved in this contact.
         real inverse_mass_total(){return body_a.inverse_mass + body_b.inverse_mass;}
 
-
     private:
-        //Return total velocity of the contact (both bodies) in the direction of contact normal
-        Vector2f contact_velocity(){return body_a.velocity - body_b.velocity;}
+        ///Return total velocity of the contact (both bodies) in the direction of contact normal.
+        float contact_velocity()
+        {
+            return contact_normal.dot_product(body_a.velocity - body_b.velocity);
+        }
 }        
