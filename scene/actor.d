@@ -21,43 +21,25 @@ import util.factory;
 /** 
  * Base class for all game objects.
  *
- * Actor with geometry that can collide with other actors and move.
+ * Actor with a physics body.
  */
 abstract class Actor
 {
     protected:
-        /*
-         * Container owning this actor, with ability to add more actors.
-         *
-         * (most likely SceneManager)
-         */
+        ///Container owning this actor, with ability to add more actors. (most likely SceneManager)
         ActorContainer container_;
 
+        ///Physics body of this actor.
         PhysicsBody physics_body_;
 
     public:
-        ///Return position of this actor.
-        final Vector2f position()
-        in
-        {
-            assert(physics_body_ !is null, 
-                   "Trying to get position of an actor with no physics body");
-        }
-        body
-        {
-            return physics_body_.position;
-        }
+        ///Get position of this actor.
+        final Vector2f position(){return physics_body_.position;}
 
-        ///Return velocity of this actor.
-        final Vector2f velocity()
-        in
-        {
-            assert(physics_body_ !is null, 
-                   "Trying to get velocity of an actor with no physics body");
-        }
-        body{return physics_body_.velocity;}
+        ///Get velocity of this actor.
+        final Vector2f velocity(){return physics_body_.velocity;}
 
-        ///Return a reference to physics body of this actor. Will return const after D2 move.
+        ///Get a reference to physics body of this actor. Will return const after D2 move.
         final PhysicsBody physics_body(){return physics_body_;}
 
         ///Destroy this actor.
@@ -69,8 +51,8 @@ abstract class Actor
         }
 
     protected:
-        /*
-         * Construct Actor with specified properties.
+        /**
+         * Construct an Actor.
          *
          * Params:  container    = Container to manage the actor and any actors it creates.
          *          physics_body = Physics body of the actor.
@@ -79,8 +61,7 @@ abstract class Actor
         in
         {
             assert(container !is null, "Actor must have a non-null container");
-            assert(physics_body !is null, 
-                   "Can't construct an actor without a physics body");
+            assert(physics_body !is null, "Can't construct an actor without a physics body");
         }
         body
         {
@@ -89,20 +70,20 @@ abstract class Actor
             container_ = container;
         };
 
-        /*
+        /**
          * Update this Actor.
          *
-         * Params:  time_step = Time step in seconds.
+         * Params:  time_step = Update time step in seconds.
          *          game_time = Current game time.
          */
         void update(real time_step, real game_time);
 
-        //Draw this actor.
+        ///Draw this actor.
         void draw(VideoDriver driver);
 
     package:
-        /*
-         * Interface to update the actor by SceneManager.
+        /**
+         * Interface used by SceneManager to update the actor.
          *
          * Params:  time_step = Time step in seconds.
          *          game_time = Current game time.
@@ -112,9 +93,10 @@ abstract class Actor
             update(game_time, time_step);
         }
 
-        //Interface to draw the actor by SceneManager.
+        ///Interface used by SceneManager to draw the actor.
         final void draw_actor(VideoDriver driver){draw(driver);}
 }
+///Unittest for Actor.
 unittest
 {
     class ActorContainerTest : ActorContainer
@@ -144,22 +126,24 @@ unittest
     auto test = new ActorTest(container);
     test.die();
 
-    assert(container.ok, "Error in actor registration with SceneManager");
+    assert(container.ok, "Error in actor registration with ActorContainer");
 }
 
 /**
- * Base class for all actor factories, template input specifies actor
- * type the factory constructs.
+ * Base class for actor factories, template type T specifies type the factory constructs.
  *
- * Params:  position = Starting position of the actor.
+ * Params:  position = Starting position of the actor. 
+ *                     Default; zero vector
  *          velocity = Starting velocity of the actor.
+ *                     Default; zero vector
  */
 abstract class ActorFactory(T)
 {
     mixin(generate_factory("Vector2f $ position $ Vector2f(0.0f, 0.0f)", 
                            "Vector2f $ velocity $ Vector2f(0.0f, 0.0f)"));
+
     /**
-     * Return a new instance of the actor type produced by the factory with specified parameters.
+     * Return a new instance of the actor type produced with factory parameters.
      *
      * Params:  container = Container to manage the actor and any actors it creates. 
      *                      Should probably be the SceneManager.

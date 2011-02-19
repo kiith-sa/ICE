@@ -21,48 +21,69 @@
 <dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="Actor" href="htmlsrc/scene.actor.html#L26">Actor</a> <span class="attrs">[<span class="stc">abstract</span>]</span> <a href="scene.actor.html#Actor" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Base class for all game objects.</div></div>
-<div class="cmnt">Actor with geometry that can collide with other actors and move.</div>
+<div class="cmnt">Actor with a physics body.</div>
 <dl>
-<dt class="decl">ActorContainer <a class="symbol _variable" name="Actor.container_" href="htmlsrc/scene.actor.html#L34">container_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="scene.actor.html#Actor.container_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">PhysicsBody <a class="symbol _variable" name="Actor.physics_body_" href="htmlsrc/scene.actor.html#L36">physics_body_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="scene.actor.html#Actor.physics_body_" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">Vector2f</span> <a class="symbol _function" name="Actor.position" href="htmlsrc/scene.actor.html#L40">position</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="scene.actor.html#Actor.position" class="plink">¶</a></dt>
+<dt class="decl">ActorContainer <a class="symbol _variable" name="Actor.container_" href="htmlsrc/scene.actor.html#L30">container_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="scene.actor.html#Actor.container_" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Return position of this actor.</div></div></dd>
-<dt class="decl"><span class="rettyp">Vector2f</span> <a class="symbol _function" name="Actor.velocity" href="htmlsrc/scene.actor.html#L52">velocity</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="scene.actor.html#Actor.velocity" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Container owning this actor, with ability to add more actors. (most likely SceneManager)</div></div></dd>
+<dt class="decl">PhysicsBody <a class="symbol _variable" name="Actor.physics_body_" href="htmlsrc/scene.actor.html#L33">physics_body_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="scene.actor.html#Actor.physics_body_" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Return velocity of this actor.</div></div></dd>
-<dt class="decl"><span class="rettyp">PhysicsBody</span> <a class="symbol _function" name="Actor.physics_body" href="htmlsrc/scene.actor.html#L61">physics_body</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="scene.actor.html#Actor.physics_body" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Physics body of this actor.</div></div></dd>
+<dt class="decl"><span class="rettyp">Vector2f</span> <a class="symbol _function" name="Actor.position" href="htmlsrc/scene.actor.html#L37">position</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="scene.actor.html#Actor.position" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Return a reference to physics body of this actor. Will return const after D2 move.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Actor.die" href="htmlsrc/scene.actor.html#L64">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="scene.actor.html#Actor.die" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Get position of this actor.</div></div></dd>
+<dt class="decl"><span class="rettyp">Vector2f</span> <a class="symbol _function" name="Actor.velocity" href="htmlsrc/scene.actor.html#L40">velocity</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="scene.actor.html#Actor.velocity" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get velocity of this actor.</div></div></dd>
+<dt class="decl"><span class="rettyp">PhysicsBody</span> <a class="symbol _function" name="Actor.physics_body" href="htmlsrc/scene.actor.html#L43">physics_body</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="scene.actor.html#Actor.physics_body" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get a reference to physics body of this actor. Will return const after D2 move.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Actor.die" href="htmlsrc/scene.actor.html#L46">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="scene.actor.html#Actor.die" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Destroy this actor.</div></div></dd>
-<dt class="decl"><a class="symbol _ctor" name="Actor.this" href="htmlsrc/scene.actor.html#L78">this</a><span class="params">(ActorContainer <em>container</em>, PhysicsBody <em>physics_body</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="scene.actor.html#Actor.this" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Actor.update" href="htmlsrc/scene.actor.html#L98">update</a><span class="params">(real <em>time_step</em>, real <em>game_time</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="scene.actor.html#Actor.update" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Actor.draw" href="htmlsrc/scene.actor.html#L101">draw</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="scene.actor.html#Actor.draw" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Actor.update_actor" href="htmlsrc/scene.actor.html#L110">update_actor</a><span class="params">(real <em>game_time</em>, real <em>time_step</em>)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="scene.actor.html#Actor.update_actor" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Actor.draw_actor" href="htmlsrc/scene.actor.html#L116">draw_actor</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="scene.actor.html#Actor.draw_actor" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
-<dt class="decl"><a class="symbol _unittest" name="unittest" href="htmlsrc/scene.actor.html#L118">unittest</a> <a href="scene.actor.html#unittest" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="ActorFactory" href="htmlsrc/scene.actor.html#L157">ActorFactory</a><span class="tparams">(<em>T</em>)</span> <span class="attrs">[<span class="stc">abstract</span>]</span> <a href="scene.actor.html#ActorFactory" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _ctor" name="Actor.this" href="htmlsrc/scene.actor.html#L60">this</a><span class="params">(ActorContainer <em>container</em>, PhysicsBody <em>physics_body</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="scene.actor.html#Actor.this" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Base class for all actor factories, template input specifies actor
- type the factory constructs.</div></div>
+<div class="summary"><div class="cmnt">Construct an Actor.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
-<tr><td><em>position</em></td><td>Starting position of the actor.</td></tr>
-<tr><td><em>velocity</em></td><td>Starting velocity of the actor.</td></tr></table>
-<dl>
-<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="ActorFactory.produce" href="htmlsrc/scene.actor.html#L167">produce</a><span class="params">(ActorContainer <em>container</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="scene.actor.html#ActorFactory.produce" class="plink">¶</a></dt>
+<tr><td><em>container</em></td><td>Container to manage the actor and any actors it creates.</td></tr>
+<tr><td><em>physics_body</em></td><td>Physics body of the actor.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Actor.update" href="htmlsrc/scene.actor.html#L79">update</a><span class="params">(real <em>time_step</em>, real <em>game_time</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="scene.actor.html#Actor.update" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Return a new instance of the actor type produced by the factory with specified parameters.</div></div>
+<div class="summary"><div class="cmnt">Update this Actor.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>time_step</em></td><td>Update time step in seconds.</td></tr>
+<tr><td><em>game_time</em></td><td>Current game time.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Actor.draw" href="htmlsrc/scene.actor.html#L82">draw</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="scene.actor.html#Actor.draw" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Draw this actor.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Actor.update_actor" href="htmlsrc/scene.actor.html#L91">update_actor</a><span class="params">(real <em>game_time</em>, real <em>time_step</em>)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="scene.actor.html#Actor.update_actor" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Interface used by SceneManager to update the actor.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>time_step</em></td><td>Time step in seconds.</td></tr>
+<tr><td><em>game_time</em></td><td>Current game time.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Actor.draw_actor" href="htmlsrc/scene.actor.html#L97">draw_actor</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="scene.actor.html#Actor.draw_actor" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Interface used by SceneManager to draw the actor.</div></div></dd></dl></dd>
+<dt class="decl"><a class="symbol _unittest" name="unittest" href="htmlsrc/scene.actor.html#L100">unittest</a> <a href="scene.actor.html#unittest" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Unittest for Actor.</div></div></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="ActorFactory" href="htmlsrc/scene.actor.html#L140">ActorFactory</a><span class="tparams">(<em>T</em>)</span> <span class="attrs">[<span class="stc">abstract</span>]</span> <a href="scene.actor.html#ActorFactory" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Base class for actor factories, template type T specifies type the factory constructs.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>position</em></td><td>Starting position of the actor. 
+                     Default; zero vector</td></tr>
+<tr><td><em>velocity</em></td><td>Starting velocity of the actor.
+                     Default; zero vector</td></tr></table>
+<dl>
+<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="ActorFactory.produce" href="htmlsrc/scene.actor.html#L151">produce</a><span class="params">(ActorContainer <em>container</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="scene.actor.html#ActorFactory.produce" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Return a new instance of the actor type produced with factory parameters.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>container</em></td><td>Container to manage the actor and any actors it creates. 
@@ -70,7 +91,7 @@
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sat Feb 19 22:26:37 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Sat Feb 19 23:06:04 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>
