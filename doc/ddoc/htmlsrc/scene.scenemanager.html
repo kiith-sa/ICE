@@ -51,33 +51,33 @@
     }</span></span></span>
 
     <span class="d Protection"><span class="k">private</span></span>:
-        <span class="lc">//Physics engine managing physics bodies of the actors.</span>
+        <span class="lc">///Physics engine managing physics bodies of the actors.</span>
         <span class="d Compound"><span class="d Variables"><span class="t Identifier"><span class="i">PhysicsEngine</span></span> <span class="i">physics_engine_</span>;</span>
 
-        <span class="lc">//Actors managed by the SceneManager.</span>
+        <span class="lc">///Actors managed by the SceneManager.</span>
         <span class="d Variables"><span class="t Identifier"><span class="i">Actor</span></span><span class="t Array">[]</span> <span class="i">actors_</span>;</span>
-        <span class="lc">//Actors to be added at the beginning of the next frame</span>
+        <span class="lc">///Actors to be added at the beginning of the next update.</span>
         <span class="d Variables"><span class="t Identifier"><span class="i">Actor</span></span><span class="t Array">[]</span> <span class="i">actors_to_add_</span>;</span>
-        <span class="lc">//Actors to be removed at the beginning of the next frame</span>
+        <span class="lc">///Actors to be removed at the beginning of the next update.</span>
         <span class="d Variables"><span class="t Identifier"><span class="i">Actor</span></span><span class="t Array">[]</span> <span class="i">actors_to_remove_</span>;</span>
 
-        <span class="lc">//Time taken by single game update.</span>
+        <span class="lc">///Time taken by single game update.</span>
         <span class="d Variables"><span class="t Integral"><span class="k">real</span></span> <span class="i">time_step_</span> = <span class="e Div"><span class="e Float"><span class="n">1.0</span></span> / <span class="e Float"><span class="n">120.0</span></span></span>;</span> 
-        <span class="lc">//Time this update started, in game time</span>
+        <span class="lc">///Time this update started, in game time.</span>
         <span class="d Variables"><span class="t Integral"><span class="k">real</span></span> <span class="i">game_time_</span>;</span>
-        <span class="lc">//Time this frame (which can have multiple updates) started, in absolute time</span>
+        <span class="lc">///Time this frame (which can have multiple updates) started, in absolute time.</span>
         <span class="d Variables"><span class="t Integral"><span class="k">real</span></span> <span class="i">frame_start_</span>;</span>
-        <span class="lc">//Time we're behind in updates.</span>
-        <span class="d Variables"><span class="t Integral"><span class="k">real</span></span> <span class="i">accumulated_time_</span> = <span class="e Int"><span class="n">0</span></span>;</span>
-        <span class="lc">//Time speed multiplier</span>
+        <span class="lc">///Time we're behind in updates.</span>
+        <span class="d Variables"><span class="t Integral"><span class="k">real</span></span> <span class="i">accumulated_time_</span> = <span class="e Float"><span class="n">0.0</span></span>;</span>
+        <span class="lc">///Time speed multiplier. Zero means pause (stopped time).</span>
         <span class="d Variables"><span class="t Integral"><span class="k">real</span></span> <span class="i">time_speed_</span> = <span class="e Float"><span class="n">1.0</span></span>;</span>
 
-        <span class="lc">//collects statistics about actor updates</span>
+        <span class="lc">///Collects statistics about actor updates.</span>
         <span class="d Variables"><span class="t Identifier"><span class="i">EventCounter</span></span> <span class="i">update_counter_</span>;</span>
 
     <span class="d Protection"><span class="k">public</span></span>:
         <span class="bc">/**
-         * Construct the SceneManager; set up update frequency.
+         * Construct the SceneManager.
          *
          * Params:  physics_engine = Physics engine for the actor manager to use.
          */</span>
@@ -99,7 +99,7 @@
             <span class="s Expression"><span class="e Call"><span class="e Identifier"><span class="i">singleton_dtor</span></span>()</span>;</span>
         }</span></span></span>
 
-        <span class="lc">///Get frame length in seconds, i.e. update "frame" length, not graphics.</span>
+        <span class="lc">///Get update length in seconds, i.e. "update frame" length, not graphics.</span>
         <span class="d Function"><span class="t Integral"><span class="k">real</span></span> <span class="i">time_step</span><span class="o Parameters">()</span><span class="s FuncBody"><span class="s Compound">{<span class="s Return"><span class="k">return</span> <span class="e Identifier"><span class="i">time_step_</span></span>;</span>}</span></span></span>
 
         <span class="lc">///Get time when the current update started, in game time.</span>
@@ -119,7 +119,7 @@
             <span class="s Declaration"><span class="d Variables"><span class="t Integral"><span class="k">real</span></span> <span class="i">frame_length</span> = <span class="e Call"><span class="e Identifier"><span class="i">math</span></span>.<span class="e Identifier"><span class="i">math</span></span>.<span class="e Identifier"><span class="i">max</span></span>(<span class="i">time</span> - <span class="i">frame_start_</span>, <span class="n">0.0L</span>)</span>;</span></span>
             <span class="s Expression"><span class="e Assign"><span class="e Identifier"><span class="i">frame_start_</span></span> = <span class="e Identifier"><span class="i">time</span></span></span>;</span>
 
-            <span class="lc">//preventing spiral of death</span>
+            <span class="lc">//preventing spiral of death - if we can't keep up updating, slow down the game</span>
             <span class="s Expression"><span class="e Assign"><span class="e Identifier"><span class="i">frame_length</span></span> = <span class="e Call"><span class="e Identifier"><span class="i">math</span></span>.<span class="e Identifier"><span class="i">math</span></span>.<span class="e Identifier"><span class="i">min</span></span>(<span class="i">frame_length</span> * <span class="i">time_speed_</span>, <span class="n">0.25L</span>)</span></span>;</span>
 
             <span class="s Expression"><span class="e PlusAssign"><span class="e Identifier"><span class="i">accumulated_time_</span></span> += <span class="e Identifier"><span class="i">frame_length</span></span></span>;</span>
@@ -161,13 +161,13 @@
             <span class="s Expression"><span class="e Assign"><span class="e Identifier"><span class="i">actors_to_remove_</span></span> = <span class="e ArrayLiteral">[]</span></span>;</span>
         }</span></span></span>
 
-        <span class="lc">///Return a string with statistics about SceneManager run.</span>
+        <span class="lc">///Return a string with statistics about the SceneManager run.</span>
         <span class="d Function"><span class="t Identifier"><span class="i">string</span></span> <span class="i">statistics</span><span class="o Parameters">()</span><span class="s FuncBody"><span class="s Compound">{<span class="s Return"><span class="k">return</span> <span class="e Cat"><span class="e String"><span class="sl">"UPS statistics:<span class="es">\n</span>"</span></span> ~ <span class="e Call"><span class="e Identifier"><span class="i">update_counter_</span></span>.<span class="e Identifier"><span class="i">statistics</span></span>()</span></span>;</span>}</span></span></span>
 
         <span class="bc">/**
-         * Add a new actor. Will be added at the beginning of next frame.
+         * Add a new actor. Will be added at the beginning of the next update.
          * 
-         * Note: this should only be used by actor constructor.
+         * Note: This should only be used by actor constructor.
          *
          * Params:  actor = Actor to add. Must not already be in the SceneManager.
          */</span>
@@ -183,7 +183,7 @@
         <span class="bc">/**
          * Remove an actor. Will be removed at the beginning of next frame.
          * 
-         * Note: this should only be used by actor die() or destructor.
+         * Note: This should only be used by actor die() or destructor.
          *
          * Params:  actor = Actor to remove. Must be in the SceneManager.
          */</span>
@@ -196,7 +196,7 @@
         <span class="k">body</span><span class="s Compound">{<span class="s Expression"><span class="e CatAssign"><span class="e Identifier"><span class="i">actors_to_remove_</span></span> ~= <span class="e Identifier"><span class="i">actor</span></span></span>;</span>}</span></span></span>
 
     <span class="d Protection"><span class="k">package</span></span>:
-        <span class="lc">//Update all actors</span>
+        <span class="lc">///Update all actors.</span>
         <span class="d Compound"><span class="d Function"><span class="t Integral"><span class="k">void</span></span> <span class="i">update_actors</span><span class="o Parameters">()</span>
         <span class="s FuncBody"><span class="s Compound">{
             <span class="s Expression"><span class="e Call"><span class="e Identifier"><span class="i">update_counter_</span></span>.<span class="e Identifier"><span class="i">event</span></span>()</span>;</span>
@@ -226,7 +226,7 @@
             }</span></span></span>
         }</span></span></span>
         
-        <span class="lc">//Update updates per second output</span>
+        <span class="lc">///Output updates per second.</span>
         <span class="d Function"><span class="t Integral"><span class="k">void</span></span> <span class="i">ups_update</span><span class="o Parameters">(<span class="o Parameter"><span class="t Integral"><span class="k">real</span></span> <span class="i">ups</span></span>)</span><span class="s FuncBody"><span class="s Compound">{<span class="s Expression"><span class="e Call"><span class="e Identifier"><span class="i">writefln</span></span>(<span class="sl">"UPS: "</span>, <span class="i">ups</span>)</span>;</span>}</span></span></span></span></span></span>
 }</span></span></span>
 

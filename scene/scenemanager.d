@@ -37,33 +37,33 @@ final class SceneManager : ActorContainer
     }
 
     private:
-        //Physics engine managing physics bodies of the actors.
+        ///Physics engine managing physics bodies of the actors.
         PhysicsEngine physics_engine_;
 
-        //Actors managed by the SceneManager.
+        ///Actors managed by the SceneManager.
         Actor[] actors_;
-        //Actors to be added at the beginning of the next frame
+        ///Actors to be added at the beginning of the next update.
         Actor[] actors_to_add_;
-        //Actors to be removed at the beginning of the next frame
+        ///Actors to be removed at the beginning of the next update.
         Actor[] actors_to_remove_;
 
-        //Time taken by single game update.
+        ///Time taken by single game update.
         real time_step_ = 1.0 / 120.0; 
-        //Time this update started, in game time
+        ///Time this update started, in game time.
         real game_time_;
-        //Time this frame (which can have multiple updates) started, in absolute time
+        ///Time this frame (which can have multiple updates) started, in absolute time.
         real frame_start_;
-        //Time we're behind in updates.
-        real accumulated_time_ = 0;
-        //Time speed multiplier
+        ///Time we're behind in updates.
+        real accumulated_time_ = 0.0;
+        ///Time speed multiplier. Zero means pause (stopped time).
         real time_speed_ = 1.0;
 
-        //collects statistics about actor updates
+        ///Collects statistics about actor updates.
         EventCounter update_counter_;
 
     public:
         /**
-         * Construct the SceneManager; set up update frequency.
+         * Construct the SceneManager.
          *
          * Params:  physics_engine = Physics engine for the actor manager to use.
          */
@@ -85,7 +85,7 @@ final class SceneManager : ActorContainer
             singleton_dtor();
         }
 
-        ///Get frame length in seconds, i.e. update "frame" length, not graphics.
+        ///Get update length in seconds, i.e. "update frame" length, not graphics.
         real time_step(){return time_step_;}
 
         ///Get time when the current update started, in game time.
@@ -105,7 +105,7 @@ final class SceneManager : ActorContainer
             real frame_length = math.math.max(time - frame_start_, 0.0L);
             frame_start_ = time;
 
-            //preventing spiral of death
+            //preventing spiral of death - if we can't keep up updating, slow down the game
             frame_length = math.math.min(frame_length * time_speed_, 0.25L);
 
             accumulated_time_ += frame_length;
@@ -147,13 +147,13 @@ final class SceneManager : ActorContainer
             actors_to_remove_ = [];
         }
 
-        ///Return a string with statistics about SceneManager run.
+        ///Return a string with statistics about the SceneManager run.
         string statistics(){return "UPS statistics:\n" ~ update_counter_.statistics();}
 
         /**
-         * Add a new actor. Will be added at the beginning of next frame.
+         * Add a new actor. Will be added at the beginning of the next update.
          * 
-         * Note: this should only be used by actor constructor.
+         * Note: This should only be used by actor constructor.
          *
          * Params:  actor = Actor to add. Must not already be in the SceneManager.
          */
@@ -169,7 +169,7 @@ final class SceneManager : ActorContainer
         /**
          * Remove an actor. Will be removed at the beginning of next frame.
          * 
-         * Note: this should only be used by actor die() or destructor.
+         * Note: This should only be used by actor die() or destructor.
          *
          * Params:  actor = Actor to remove. Must be in the SceneManager.
          */
@@ -182,7 +182,7 @@ final class SceneManager : ActorContainer
         body{actors_to_remove_ ~= actor;}
 
     package:
-        //Update all actors
+        ///Update all actors.
         void update_actors()
         {
             update_counter_.event();
@@ -212,6 +212,6 @@ final class SceneManager : ActorContainer
             }
         }
         
-        //Update updates per second output
+        ///Output updates per second.
         void ups_update(real ups){writefln("UPS: ", ups);}
 }
