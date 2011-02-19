@@ -10,7 +10,7 @@ module scene.actorcontainer;
 import scene.actor;
 
 
-///Interface for classes that contain, or manage actor. Currently implemented by SceneManager.
+///Interface for classes that contain, or manage actors. Currently implemented by SceneManager.
 interface ActorContainer
 {
     /**
