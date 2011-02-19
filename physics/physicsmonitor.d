@@ -6,6 +6,7 @@
 
 module physics.physicsmonitor;
 
+
 import physics.physicsengine;
 import gui.guielement;
 import gui.guimenu;
@@ -17,23 +18,23 @@ import monitor.graphmonitor;
 import color;
 
 
-///Used to gather statistics data to be sent by PhysicsEngine to physics monitors.
+///Statistics data sent by PhysicsEngine to physics monitors.
 package struct Statistics
 {
-    //Physics bodies at the moment.
+    ///Physics bodies at the moment.
     uint bodies = 0;
-    //Physics bodies with collision volumes at the moment.
+    ///Physics bodies with collision volumes at the moment.
     uint col_bodies = 0;
-    //Contract tests this frame.
+    ///Contact tests this frame.
     uint tests;
-    //Contacts detected this frame.
+    ///Contacts detected this frame.
     uint contacts;
-    //Penetration resolution iterations this frame.
+    ///Penetration resolution iterations this frame.
     uint penetration;
-    //Collision response iterations this frame.
+    ///Collision response iterations this frame.
     uint response;
 
-    //Reset the statistics gathered for the next frame.
+    ///Reset the statistics gathered for the next frame.
     void zero(){tests = contacts = penetration = response = 0;}
 }
 
@@ -48,7 +49,7 @@ final package class ContactMonitor : GraphMonitor
         }
 
     private:
-        //Callback called by PhysicsMonitor once per frame to update monitored statistics.
+        ///Called by PhysicsMonitor once per frame to update monitored statistics.
         mixin(generate_graph_fetch_statistics("contacts", "penetration", "response"));
 }
 
@@ -60,7 +61,7 @@ final package class CoarseContactMonitor : GraphMonitor
         this(PhysicsEngine monitored){mixin(generate_graph_monitor_ctor("tests"));}
 
     private:
-        //Callback called by PhysicsMonitor once per frame to update monitored statistics.
+        ///Called by PhysicsMonitor once per frame to update monitored statistics.
         mixin(generate_graph_fetch_statistics("tests"));
 }
 
@@ -75,7 +76,7 @@ final package class BodiesMonitor : GraphMonitor
         }
 
     private:
-        //Callback called by PhysicsMonitor once per frame to update monitored statistics.
+        ///Called by PhysicsMonitor once per frame to update monitored statistics.
         mixin(generate_graph_fetch_statistics("bodies", "col_bodies"));
 }
 
