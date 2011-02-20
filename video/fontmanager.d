@@ -28,19 +28,19 @@ import memory.memory;
 package align(1) struct FontRenderer
 {
     private:
-        //Font we're drawing with.
+        ///Font we're drawing with.
         Font draw_font_;
-        //Does this font use kerning?
+        ///Does this font use kerning?
         bool kerning_;
-        //FreeType font face of the font.
+        ///FreeType font face of the font.
         FT_Face font_face_;
-        //Freetype index of the previously drawn glyph (0 at first glyph).
+        ///Freetype index of the previously drawn glyph (0 at first glyph).
         uint previous_index_;
-        //Current x position of the pen.
+        ///Current x position of the pen.
         uint PenX;
 
     public:
-        ///Return height of the font we're drawing.
+        ///Get height of the font we're drawing.
         uint height(){return draw_font_.height;}
 
         ///Start drawing a string.
@@ -52,16 +52,16 @@ package align(1) struct FontRenderer
         }
 
         /**
-         * Determines if glyph for the specified character is loaded.
+         * Determine if the glyph of a character is loaded.
          *
-         * Params:  c = Character to check for.
+         * Params:  c = Character to check.
          *
          * Returns: True if the glyph is loaded, false otherwise.
          */
         bool has_glyph(dchar c){return draw_font_.has_glyph(c);}
 
         /**
-         * Load glyph for specified character.
+         * Load glyph for a character.
          *
          * Will render the glyph and create a texture for it.
          * 
@@ -70,7 +70,15 @@ package align(1) struct FontRenderer
          */
         void load_glyph(VideoDriver driver, dchar c){draw_font_.load_glyph(driver, c);}
 
-        ///Get texture, offset (relative to string start) to draw a character at.
+        /**
+         * Get glyph texture and offset to draw a glyph at.
+         *
+         * Params:  c      = Character we're drawing.
+         *          offset = Offset to draw the glyph at will be written here
+         *                   (relative to string start).
+         *
+         * Returns: Pointer to the texture of the glyph.
+         */
         Texture* glyph(dchar c, out Vector2u offset)
         {
             Glyph* glyph = draw_font_.get_glyph(c);
@@ -109,38 +117,48 @@ package align(1) struct FontRenderer
         }
 }
 
-///Handles all font resources. 
+///Manages all font resources. 
 package final class FontManager
 {
     mixin WeakSingleton;
     private:
+        ///FreeType library handle.
         FT_Library freetype_lib_;
+
+        ///All currently loaded fonts. fonts_[0] is the default font.
         Font[] fonts_;
         
-        //Fallback font: fonts_[0] will be loaded with these parameters.
+        ///Fallback font name.
         string default_font_name_ = "DejaVuSans.ttf";
+        ///Fallback font size.
         uint default_font_size_ = 12;
 
-        //Currently set font.
+        ///Currently set font.
         Font current_font_;
-
-        //Currently set font name and size
+        ///Currently set font name.
         string font_name_;
+        ///Currently set font size.
         uint font_size_;
 
-        //Default number of quickly accessible characters in fonts.
-        //Glyphs up to this unicode index will be stored in a normal 
-        //instead of associative array, speeding up their retrieval.
-        //512 covers latin with most important extensions.
+        /**
+         * Default number of quickly accessible characters in fonts.
+         * Glyphs up to this unicode index will be stored in a normal 
+         * instead of associative array, speeding up their retrieval.
+         * 512 covers latin with most important extensions.
+         */
         uint fast_glyphs_ = 512;
 
-        //Is font antialiasing enabled?
+        ///Is font antialiasing enabled?
         bool antialiasing_ = true;
-        //Is kerning enabled?
+        ///Is kerning enabled?
         bool kerning_ = true;
         
     public:
-        //Construct the font manager, load default font.
+        /**
+         * Construct the font manager, load default font.
+         *
+         * Throws:  Exception on failure.
+         */
         this()
         {
             singleton_ctor();
@@ -202,8 +220,6 @@ package final class FontManager
          * Destroy the FontManager. 
          *
          * To destroy all FontManager resources, unload_textures must be called first.
-         *
-         * Params:  driver = Video driver used to delete glyph textures.
          */
         void die()
         {
@@ -214,16 +230,28 @@ package final class FontManager
             singleton_dtor();
         }
 
-        ///Set font to use. force_load will set font (load if needed) immediately.
+        /**
+         * Set font to use.
+         *
+         * Params:  font_name  = Name of the font to set.
+         *          force_load = Force the font to be set right now and loaded 
+         *                       if it's not loaded yet.
+         */
         void font(string font_name, bool force_load = false)
         {
-            //use default font
+            //if "default", use default font
             if(font_name == "default"){font_name = default_font_name_;}
             font_name_ = font_name;
             if(force_load){load_font();}
         }
 
-        ///Set font size to use. force_load will set font (load if needed) immediately.
+        /**
+         * Set font size to use.
+         *
+         * Params:  size       = Font size to set.
+         *          force_load = Force the font size to be set right now and font loaded
+         *                       if it's not loaded yet.
+         */
         void font_size(uint size, bool force_load = false)
         in{assert(size < 128, "Font sizes greater than 127 are not supported");}
         body
@@ -235,25 +263,26 @@ package final class FontManager
             if(force_load){load_font();}
         }
 
-        ///Return renderer to draw text with.
+        ///Return a renderer to draw text with.
         FontRenderer renderer()
         {
             load_font();
             return FontRenderer(current_font_, kerning_);
         }
 
-        ///Return bool specifying whether or not font antialiasing is enabled.
+        ///Is font antialiasing enabled?
         bool antialiasing(){return antialiasing_;}
       
-        ///Return bool specifying whether or not kerning is enabled.
+        ///Is kerning enabled?
         bool kerning(){return kerning_;}
 
     private:
-        ///Try to set font according to font_name_ and font_size_.
         /**
+         * Try to set font according to font_name_ and font_size_.
+         *
          * Will load the font if needed, and if it can't load, will
          * try to fall back to default font with font_size_. If that can't
-         * be done either, will set the default font loaded at startup.
+         * be done either, will set the default font and font size loaded at startup.
          */
         void load_font()
         {

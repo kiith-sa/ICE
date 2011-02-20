@@ -27,12 +27,13 @@ import memory.memory;
 ///Immutable font glyph structure.
 package align(4) struct Glyph
 {
+    ///Texture handle of the glyph.
     Texture texture;
-    //freetype glyph index
+    ///Freetype glyph index.
     uint freetype_index;
-    //offset from pen to the bottom-left corner of glyph image
+    ///Offset from the pen to the bottom-left corner of glyph image.
     Vector2b offset;
-    //how much to advance the pen after drawing this glyph
+    ///Pixels to advance the pen after drawing this glyph.
     byte advance;
 }
 
@@ -40,38 +41,38 @@ package align(4) struct Glyph
 package class Font
 {
     private:
-        //Default glyph to use when there is no glyph for a character.
+        ///Default glyph to use when there is no glyph for a character.
         Glyph* default_glyph_ = null;
-        //Array storing fast glyphs. These are first fast_glyph_count_ unicode characters.
+        ///Number of fast glyphs.
+        uint fast_glyph_count_;
+        ///Array storing fast glyphs. These are the first fast_glyph_count_ unicode indices.
         Glyph*[] fast_glyphs_;
-        //Associative array storing other, "non-fast", glyphs.
+        ///Associative array storing other, "non-fast", glyphs.
         Glyph[dchar] glyphs_;
 
+        ///Name of the font (file name in the fonts/ directory) .
         string name_;
-        //FreeType font face.
+        ///FreeType font face.
         FT_Face font_face_;
 
-        //Height of the font in pixels.
+        ///Height of the font in pixels.
         uint height_;
-        //Does this font support kerning?
+        ///Does this font support kerning?
         bool kerning_;
-        //Should the font be rendered with antialiasing?
+        ///Should the font be rendered with antialiasing?
         bool antialiasing_;
 
-        //Number of glyphs accessible through normal instead of associative array.
-        uint fast_glyph_count_;
-
-        //File this font was loaded from. (stores loaded file data)
+        ///File this font was loaded from (stores loaded file data).
         File file_;
 
     public:
         /**
-         * Load font with specified name, size and number of fast glyphs.
+         * Construct (load) a font.
          *
-         * Params:  freetype_lib = Handle to freetype library used to work with fonts.
-         *          name         = Name of the font (file name in the fonts/ directory)
+         * Params:  freetype_lib = Handle to the freetype library used to work with fonts.
+         *          name         = Name of the font (file name in the fonts/ directory).
          *          size         = Size of the font in points.
-         *          fast_glyphs  = Number of glyphs to store in faster accessible data,
+         *          fast_glyphs  = Number of glyphs to store in fast access array,
          *                         from glyph 0. E.g. 128 means 0-127, i.e. ASCII.
          *          antialiasing = Should the font be antialiased?
          *
@@ -82,9 +83,11 @@ package class Font
         {
             fast_glyphs_ = new Glyph*[fast_glyphs];
             fast_glyph_count_ = fast_glyphs;
+
             name_ = name;
             antialiasing_ = antialiasing;
 
+            //load the file
             file_ = open_file("fonts/" ~ name, FileMode.Read);
             ubyte[] font_data = cast(ubyte[])file_.data;
             scope(failure){close_file(file_);}
@@ -115,24 +118,9 @@ package class Font
             kerning_ = cast(bool)FT_HAS_KERNING(font_face_);
         }
 
-        ///Returns size of the font in pixels.
-        uint size(){return height_;}
-
-        ///Returns height of the font in pixels. (currently the same as size)
-        uint height(){return height_;}
-
-        ///Returns name of the font.
-        string name(){return name_;}
-
-        ///Does the font support kerning?
-        bool kerning(){return kerning_;}
-
-        ///Returns FreeType font face of the font.
-        FT_Face font_face(){return font_face_;}
-
         /**
          * Destroy the font and free its resources.
-         * To free all used resources, delete_textures must be called before this.
+         * To free all used resources, unload_textures() must be called before this.
          */
         void die()
         {    
@@ -146,13 +134,28 @@ package class Font
             glyphs_ = null;
         }
 
+        ///Get size of the font in pixels.
+        uint size(){return height_;}
+
+        ///Get height of the font in pixels (currently the same as size).
+        uint height(){return height_;}
+
+        ///Get name of the font.
+        string name(){return name_;}
+
+        ///Does the font support kerning?
+        bool kerning(){return kerning_;}
+
+        ///Get FreeType font face of the font.
+        FT_Face font_face(){return font_face_;}
+
         /**
          * Delete glyph textures.
          *
          * Textures have to be reloaded before any further
          * glyph rendering with the font.
          *
-         * Params:  driver = Video driver used to delete the textures.
+         * Params:  driver = Video driver to delete textures from.
          */
         void unload_textures(VideoDriver driver)
         {
@@ -161,18 +164,21 @@ package class Font
                 if(glyph !is null)
                 {
                     //some glyphs might share texture with default glyph
-                    if(default_glyph_ !is null && glyph.texture != default_glyph_.texture)
+                    if(default_glyph_ !is null && glyph.texture == default_glyph_.texture)
                     {
-                        driver.delete_texture(glyph.texture);
+                        continue;
                     }
+                    driver.delete_texture(glyph.texture);
                 }
             }
             foreach(glyph; glyphs_)
             {
-                if(default_glyph_ !is null && glyph.texture != default_glyph_.texture)
+                //some glyphs might share texture with default glyph
+                if(default_glyph_ !is null && glyph.texture == default_glyph_.texture)
                 {
-                    driver.delete_texture(glyph.texture);
+                    continue;
                 }
+                driver.delete_texture(glyph.texture);
             }
             if(default_glyph_ !is null)
             {
@@ -187,7 +193,7 @@ package class Font
          *
          * Can only be used after textures were unloaded.
          *
-         * Params:  driver = Video driver used to delete the textures.
+         * Params:  driver = Video driver to load textures to.
          */
         void reload_textures(VideoDriver driver)
         {
@@ -244,22 +250,22 @@ package class Font
 
         //not asserting here as it'd result in too much slowdown
         /** 
-         * Access glyph for specified (UTF-32) character.
+         * Access glyph of a (UTF-32) character.
          * 
-         * The glyph has to be loaded, otherwise a call to get_glyph
+         * The glyph has to be loaded, otherwise a call to get_glyph()
          * will result in undefined behavior.
          *
          * Params:  c = Character to get glyph for.
          *
-         * Returns: Glyph corresponding to the character. 
+         * Returns: Pointer to glyph corresponding to the character. 
          */
         Glyph* get_glyph(dchar c)
         {
-            return c < fast_glyph_count_ ?  fast_glyphs_[c] : c in glyphs_;
+            return c < fast_glyph_count_ ? fast_glyphs_[c] : c in glyphs_;
         }
 
-        /**
-         * Determines if glyph for the specified character is loaded.
+        /**              
+         * Determines if the glyph of a character is loaded.
          *
          * Params:  c = Character to check for.
          *
@@ -267,15 +273,12 @@ package class Font
          */
         bool has_glyph(dchar c)
         {
-            return c < fast_glyph_count_ ? fast_glyphs_[c] !is null 
-                                         : (c in glyphs_) !is null;
+            return c < fast_glyph_count_ ? fast_glyphs_[c] !is null : (c in glyphs_) !is null;
         }
 
         /**
-         * Load glyph for specified character.
+         * Load glyph of a character.
          *
-         * Will render the glyph and create a texture for it.
-         * 
          * Params:  driver = Video driver to use for texture creation.
          *          c      = Character to load glyph for.
          */
@@ -303,6 +306,7 @@ package class Font
         {
             if(default_glyph_ is null)
             {
+                //empty image is transparent
                 scope Image image = new Image(height_ / 2, height_, ColorFormat.GRAY_8);
                 default_glyph_ = alloc!(Glyph)();
                 default_glyph_.texture = driver.create_texture(image);
@@ -314,9 +318,10 @@ package class Font
         }
 
         /**
-         * Render a glyph for specified character and return it.
+         * Render a glyph of a character and return it.
          *
-         * Will create a texture for the glyph.
+         * Will create a texture for the glyph, or use default glyph 
+         * if the character has no glyph.
          *
          * Params:  driver = Video driver to use in texture creation.
          *          c      = Character to render glyph for.
@@ -334,7 +339,7 @@ package class Font
             }
 			FT_GlyphSlot slot = font_face_.glyph;
 
-            //convert the font_face_.glyph to image
+            //convert font_face_.glyph to image
 			if(FT_Render_Glyph(slot, render_mode()) == 0) 
             {
                 glyph.advance = cast(byte)(font_face_.glyph.advance.x / 64);
@@ -366,7 +371,7 @@ package class Font
                 if(antialiasing_)
                 {
                     memcpy(image.data.ptr, bitmap.buffer, size.x * size.y);
-                    //antialiasing makes the glyph appear darker
+                    //antialiasing makes the glyph appear darker so we make it lighter
                     image.gamma_correct(1.2);
                 }
                 else
