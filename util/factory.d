@@ -13,15 +13,18 @@ import stringctfe;
 /**
  * Generates data members and setters used in factory classes.
  *
- * Each input string specifies a type, name and deault value of a parameter,
- * delimited by the '$' character. E.g.: 
+ * Each input string specifies a type, name and default value of a parameter,
+ * delimited by the '$' character. E.g.:           
+ * --------------------
  * "string $ width $ \"64\""
- * will result in generation of data member width_ (followed by an underscore)
+ * --------------------
+ * will result in generation of data member width_ (notice trailing underscore)
  * of type string with default value of "64", and a setter for it, like this:
- *
- * private string width_ = \"64\";
+ * --------------------
+ * protected string width_ = \"64\";
  * public void width(string width){width_ = width};
- *                               
+ * --------------------
+ *
  * Params:  parameter_strings = Array of strings representing factory members,
  *                              their types and default values.
  *
@@ -49,6 +52,7 @@ string generate_factory(string parameter_strings []...)
 
     return "protected:\n" ~ data ~ "public:\n" ~ setters;
 }
+///Unittest for generate_factory().
 unittest
 {
     string expected =
@@ -64,13 +68,13 @@ unittest
 
 private: 
 
-//Used in parameter string parsing, stores parameter data.
+///Used in parameter string parsing, stores parameter data.
 struct Parameter
 {
-    //Type of the parameter.
+    ///Type of the parameter.
     string type;
-    //Name of the parameter.
+    ///Name of the parameter.
     string name;
-    //Default value of the parameter.
+    ///Default value of the parameter.
     string def_value;
 }

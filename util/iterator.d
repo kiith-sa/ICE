@@ -14,5 +14,6 @@ module util.iterator;
 abstract class Iterator(T)
 {
     public:
+        ///Used by foreach.
         int opApply(int delegate(ref T) dg);
 }

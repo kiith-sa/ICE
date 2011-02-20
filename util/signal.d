@@ -10,15 +10,15 @@ module util.signal;
 import containers.array;
 
 
-///Signal template mixin for the signals/slot system.
+///Signal template mixin for Qt-like signals/slots.
 template Signal(Args ...)	
 {
     private:
-        //Slots of this signal
+        ///Slots of this signal.
         void delegate(Args)[] slots_;
 
     public:
-        ///Emit the signal (call all slots with given arguments).
+        ///Emit the signal (call all slots with specified arguments).
         void emit(Args args)
         {
             foreach(deleg; slots_){deleg(args);}
@@ -26,29 +26,34 @@ template Signal(Args ...)
 
         /**
          * Connect a slot to the signal. 
-         * The same slot can be connected more than once. 
-         * This will result in multiple calls to that slot when the signal is
-         * emitted.
+         *
+         * One slot can be connected more than once, resulting in multiple calls 
+         * to that slot when the signal is emitted.
+         *
+         * Params:  slot = Slot to connect.
          */
-        void connect(void delegate(Args) deleg)
-        in{assert(deleg !is null, "Can't connect a null function to a signal");}
-        body{slots_ ~= deleg;}
+        void connect(void delegate(Args) slot)
+        in{assert(slot !is null, "Can't connect a null function to a signal");}
+        body{slots_ ~= slot;}
 
         /**
          * Disconnect a slot from the signal. 
+         *
          * If a slot is connected more than once, it must be disconnected
          * corresponding number of times.
+         *
+         * Params:  slot = Slot to disconnect. Must already be connected.
          */
-        void disconnect(void delegate(Args) deleg)
+        void disconnect(void delegate(Args) slot)
         in
         {
             alias containers.array.contains contains;
-            assert(slots_.contains(deleg, true), 
+            assert(slots_.contains(slot, true), 
                    "Can't disconnect a slot that is not connected");
         }
         body
         {
             alias containers.array.remove_first remove_first;
-            slots_.remove_first(deleg, true);
+            slots_.remove_first(slot, true);
         }
 }

@@ -1,5 +1,5 @@
-["weaksingleton",1,[],[1,40],[
-["WeakSingleton",2,[],[15,38],[
-["_instance_",11,[13],[18,18],[]],
-["singleton_ctor",12,[3],[22,28],[]],
-["singleton_dtor",12,[3],[31,37],[]]]]]]
+["weaksingleton",1,[],[1,43],[
+["WeakSingleton",2,[],[17,41],[
+["_instance_",11,[13],[21,21],[]],
+["singleton_ctor",12,[3],[25,31],[]],
+["singleton_dtor",12,[3],[34,40],[]]]]]]
