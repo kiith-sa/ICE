@@ -16,7 +16,7 @@ else{import std.date;}
 ///Returns time since start of epoch in seconds.
 real get_time()
 {
-    //high-resolution linux clock - microsecond precision
+    //high-resolution posix clock - microsecond precision
     version(linux)
     {
         timeval tv;
@@ -27,11 +27,16 @@ real get_time()
     else{return getUTCtime() / cast(real)TicksPerSecond;}
 }
 
-///Converts a time value to a string in format mm:ss, or hh:mm:ss if hours is true.
+
 /**
+ * Converts a time value to a string in format mm:ss, or hh:mm:ss if hours is true.
+ *
  * Seconds are always represented by two digits, even if the first one is zero, e.g. 01
  * Minutes are shown without the leading zero if hours is false (default), otherwise
  * same as seconds. Hours are always shown without leading zeroes.
+ *
+ * Params:  time  = Time value to convert.
+ *          hours = Show hours (as opposed to only minutes, seconds).
  */
 string time_string(real time, bool hours = false)
 in

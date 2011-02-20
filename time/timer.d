@@ -20,36 +20,46 @@ align(1) struct Timer
     }
 
     private:
-        //start_ time of the timer
+        ///Start time of the timer.
         real start_ = 0.0;
 
-        //delay_ of the timer (i.e. how long after start does the timer expire)
+        ///Delay of the timer (i.e. how long after start does the timer expire).
         real delay_ = 0.0;
 
     public:
-        ///Fake constructor. Returns a timer with given delay starting now.
+        /**
+         * Constructs a timer starting now.
+         *
+         * Params:  delay = Delay of the timer.
+         */
         static Timer opCall(real delay){return Timer(delay, get_time());}
 
-        ///Fake constructor. Returns a timer with given delay starting at specified time.
-        static Timer opCall(real delay, real time)
+        /**
+         * Constructs a timer starting at specified time.
+         *
+         * Params:  delay = Delay of the timer.
+         *          time  = Start time of the timer.
+         */
+        static Timer opCall(real delay, real start)
         {               
             Timer t;
-            t.start_ = time;
+            t.start_ = start;
             t.delay_ = delay; 
             return t;
         }
 
-        ///Returns time when the timer was started.
+        ///Get time when the timer was started.
         real start(){return start_;}
 
-        ///Returns delay of this timer.
+        ///Get delay of this timer.
         real delay(){return delay_;}
 
         /**
-         * Returns time since start of the timer at given time.
+         * Returns time since start of the timer at specified time.
          *
-         * Used for events that have to be synchronized (e.g. every event
-         * during a frame must have time equal to start of that frame)
+         * Params:  time = Time relative to which to calculate the age.
+         *
+         * Returns: Age of the timer relative to specified time.
          */
         real age(real time){return time - start_;}
 
@@ -57,44 +67,41 @@ align(1) struct Timer
         real age(){return age(get_time());}
 
         /**
-         * Returns time since start of the timer at given time, relative to the timer's delay.
+         * Returns time since start of the timer at specified time divided by the timer's delay.
          *
-         * age_relative returns 0.0 at the start of the timer, and 1.0 at its
-         * end, so it can be used to get percentage of timer's delay that has
-         * elapsed.
-         * Used for events that have to be synchronized (e.g. every event
-         * during a frame must have time equal to start of that frame)
+         * Params:  time = Time relative to which to calculate the age.
+         *
+         * Returns: Age of the timer relative to specified time divided by the delay.
+         *          This is 0.0 at the start of the timer, and 1.0 at its end, 
+         *          so it can be used to get percentage of timer's delay that has elapsed.
+         *
          */
         real age_relative(real time){return age(time) / delay_;}
 
         /**
-         * Returns time since start of the timer, relative to the timer's delay.
+         * Returns time since start of the timer divided by the timer's delay. 
          *
-         * age_relative returns 0.0 at the start of the timer, and 1.0 at its
-         * end, so it can be used to get percentage of timer's delay that has
-         * elapsed.
+         * Returns: Age of the timer divided by the delay.
+         *          This is 0.0 at the start of the timer, and 1.0 at its end, 
+         *          so it can be used to get percentage of timer's delay that has elapsed.
          */
         real age_relative(){return age_relative(get_time());}
 
         /**
-         * Determines if the timer is expired at given time.
+         * Determines if the timer has expired at specified time.
          *
-         * Used for events that have to be synchronized (e.g. every event
-         * during a frame must have time equal to start of that frame)
+         * Params:  time = Time relative to which to check for expiration.
+         *
+         * Returns: True if the timer has expired, false otherwise.
          */
         bool expired(real time){return time - start_ > delay_;}
 
-        ///Determines if the timer is expired.
+        ///Determines if the timer has expired.
         bool expired(){return expired(get_time());}
 
-        /**
-         * Resets the timer with specified start time.
-         *
-         * Used for events that have to be synchronized (e.g. every event
-         * during a frame must have time equal to start of that frame)
-         */
+        ///Resets the timer with specified start time.
         void reset(real start){start_ = start;}
 
-        ///Resets the timer with specified start time.
+        ///Resets the timer.
         void reset(){reset(get_time());}
 }

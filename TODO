@@ -561,6 +561,9 @@ Maybe:
     base it on object height) - every frame, a simple bucket sort should
     be used to sort objects to depth groups, then every group should
     be sorted using heapsort or something.
+15:
+    Proper time_string function supporting any time format,
+    like /usr/bin/time
 16:
     If multitextures will be supported in future, their data should
     be stored in pairs/triplets/quadruplets/etc of pages at same coords.
