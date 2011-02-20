@@ -30,18 +30,18 @@ class GridSpatialManager(T) : SpatialManager!(T)
 {
     invariant
     {
-        assert(cell_size_ > 0.0f, "Grid spatial manager cell size must be greater than zero.");
-        assert(grid_size_ > 0, "Grid spatial manager grid size must be greater than zero.");
+        assert(cell_size_ > 0.0f, "Cell size must be greater than zero.");
+        assert(grid_size_ > 0, "Grid size must be greater than zero.");
     }
 
     package:
-        //Grid cell struct.
+        ///Grid cell.
         align(1) static struct Cell
         {
-            //Objects in the cell.
+            ///Objects in the cell.
             Vector!(T) objects;
 
-            //Construct a cell.
+            ///Construct a cell.
             static Cell opCall()
             {
                 Cell cell;
@@ -49,21 +49,21 @@ class GridSpatialManager(T) : SpatialManager!(T)
                 return cell;
             }
 
-            //Destroy the cell.
+            ///Destroy the cell.
             void die(){objects.die();}
         }
 
-        //Cells of the grid.
+        ///Cells of the grid.
         Array2D!(Cell) grid_;
-
         ///Cell representing the area outside the grid.
         Cell outer_;
 
     private:
-        //Iterator used to iterate over groups of spatially close objects in the grid spatial manager.
+        ///Iterator used to iterate over groups of spatially close objects (cells).
         class ObjectIterator(T) : Iterator!(T[])
         {
             public:
+                ///Used by foreach
                 int opApply(int delegate(ref T[]) dg)
                 {
                     int result = 0;
@@ -82,11 +82,11 @@ class GridSpatialManager(T) : SpatialManager!(T)
                 }
         }
 
-        //Origin of the grid (top-left corner).
+        ///Origin of the grid (top-left corner) in world space.
         Vector2f origin_;
-        //Size of a single cell (both x and y).
+        ///Size of a single cell (both x and y).
         float cell_size_;
-        //Size of the grid in cells (both x and y).
+        ///Size of the grid in cells (both x and y).
         uint grid_size_;
 
     public:
@@ -111,37 +111,29 @@ class GridSpatialManager(T) : SpatialManager!(T)
             outer_ = Cell();
         }
 
-        void die()
+        override void die()
         {
             outer_.die();
             grid_.die();
         }
 
-        void add_object(T object)
-        in
+        override void add_object(T object)
         {
-            assert(object.volume !is null, 
-                   "Spatial manager can't manage objects with null volumes");
-        }
-        body
-        {
+            assert(object.volume !is null, "Can't manage objects with null volumes");
+            
             foreach(cell; cells(object.position, object.volume))
             {
                 assert(!cell.objects.contains(object, true),
-                       "Trying to add an object to a cell where it already is in"
-                       " grid spatial manager.");
+                       "Trying to add an object to a cell where it already is in the "
+                       "grid spatial manager.");
                 cell.objects ~= object;
             }
         }
 
-        void remove_object(T object)
-        in
+        override void remove_object(T object)
         {
-            assert(object.volume !is null, 
-                   "Spatial manager can't manage objects with null volumes");
-        }
-        body
-        {
+            assert(object.volume !is null, "Can't manage objects with null volumes");
+            
             foreach(cell; cells(object.position, object.volume))
             {
                 assert(cell.objects.contains(object, true),
@@ -151,14 +143,10 @@ class GridSpatialManager(T) : SpatialManager!(T)
             }
         }
 
-        void update_object(T object, Vector2f old_position)
-        in
+        override void update_object(T object, Vector2f old_position)
         {
-            assert(object.volume !is null, 
-                   "Spatial manager can't manage objects with null volumes");
-        }
-        body
-        {
+            assert(object.volume !is null, "Can't manage objects with null volumes");
+            
             foreach(cell; cells(old_position, object.volume))
             {
                 assert(cell.objects.contains(object, true),
@@ -169,7 +157,7 @@ class GridSpatialManager(T) : SpatialManager!(T)
             add_object(object);
         }
 
-        Iterator!(T[]) iterator(){return new ObjectIterator!(T);}
+        override Iterator!(T[]) iterator(){return new ObjectIterator!(T);}
 
         final override MonitorMenu monitor_menu()
         {
@@ -180,20 +168,20 @@ class GridSpatialManager(T) : SpatialManager!(T)
         uint grid_size(){return grid_size_;}
 
     private:
-        /*
-         * Determine in which cells should specified volume be present.
+        /**
+         * Get all cells a volume is present in.
          *
-         * More cells than needed could be returned, but never less.
-         * (all cells in which the volume is present will be returned.)
+         * More cells than needed might be returned, but all cells in which the volume
+         * is present will be returned.
          *
-         * Params:  position = Position of the volume.
+         * Params:  position = Position of the volume in world space.
          *          volume   = Volume to check.
          *
-         * Returns: Array of cells in which the volume should be present.
+         * Returns: Array of cells in which the volume is present.
          */
         Cell*[] cells(Vector2f position, Volume volume)
         {
-            //determine volume type and use correct function based on that.
+            //determine volume type and use correct method based on that.
             if(volume.classinfo is VolumeAABBox.classinfo)
             {
                 return cells_aabbox(position, cast(VolumeAABBox)volume);
@@ -205,26 +193,26 @@ class GridSpatialManager(T) : SpatialManager!(T)
             else{assert(false, "Unsupported volume type in GridSpatialManager");}
         }
 
-        /*
-         * Determine in which cells should specified bounding box be present.
+        /**
+         * Get all cells an axis aligned bounding box is present in.
          *
-         * Params:  position = Position of the box.
+         * Params:  position = Position of the box in world space.
          *          box      = Bounding box to check.
          *
-         * Returns: Array of cells in which the box should be present.
+         * Returns: Array of cells in which the box is present.
          */
         Cell*[] cells_aabbox(Vector2f position, VolumeAABBox box)
         {
             return cells_rectangle(position, box.rectangle);
         }
 
-        /*
-         * Determine in which cells should specified bounding circle be present.
+        /**
+         * Get all cells a bounding circle is present in.
          *
-         * Params:  position = Position of the circle.
+         * Params:  position = Position of the circle in world space.
          *          circle   = Bounding circle to check.
          *
-         * Returns: Array of cells in which the circle should be present.
+         * Returns: Array of cells in which the circle is present.
          */
         Cell*[] cells_circle(Vector2f position, VolumeCircle circle)
         {
@@ -235,13 +223,13 @@ class GridSpatialManager(T) : SpatialManager!(T)
             return cells_rectangle(position + circle.offset, box);
         }
 
-        /*
-         * Determine in which cells should specified rectangle be present.
+        /**
+         * Get all cells a bounding circle is present in.
          *
-         * Params:  position = Position of the rectangle.
+         * Params:  position = Position of the rectangle in world space.
          *          rect     = Rectangle to check.
          *
-         * Returns: Array of cells in which the rectangle should be present.
+         * Returns: Array of cells in which the rectangle is present.
          */
         Cell*[] cells_rectangle(Vector2f position, ref Rectanglef rect)
         {
@@ -283,6 +271,7 @@ class GridSpatialManager(T) : SpatialManager!(T)
             }
             return result;
         }
+        ///Unittest for cells_rectangle.
         unittest
         {
             auto zero = Vector2f(0.0f, 0.0f);

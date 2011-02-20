@@ -28,10 +28,10 @@ import color;
 final package class GridMonitor(T) : SubMonitor
 {
     private:
-        //Monitored GridSpatialManager.
+        ///Monitored GridSpatialManager.
         GridSpatialManager!(T) monitored_;
 
-        //GUI element used to view the grid.
+        ///GUI element used to view the grid.
         class GridView : GUIElement
         {
             invariant
@@ -41,14 +41,15 @@ final package class GridMonitor(T) : SubMonitor
             }
 
             private:
-                //Current view offset,
+                ///Current view offset,
                 Vector2f offset_;
-                //Zoom multiplier corresponding to one zoom level.
+                ///Zoom multiplier corresponding to one zoom level.
                 real zoom_mult_ = 1.1;
-                //Current zoom. 
+                ///Current zoom. 
                 real zoom_ = 1.0;
 
             public:
+                ///Construct a GridView.
                 this()
                 {
                     super(GUIElementParams("p_left + 2", "p_top + 2", 
@@ -120,13 +121,21 @@ final package class GridMonitor(T) : SubMonitor
                 }
 
             private:
-                //Zoom by specified number of levels.
+                /**
+                 * Zoom by specified number of levels.
+                 *
+                 * Params:  relative = Number of zoom levels (doesn't have to be an integer).
+                 */
                 void zoom(float relative){zoom_ = zoom_ * pow(zoom_mult_, relative);}
 
-                //Pan view with specified offset.
+                /**
+                 * Pan view with specified offset.
+                 *
+                 * Params:  relative = Offset to pan the view by.
+                 */
                 void pan(Vector2f relative){offset_ += relative;}
 
-                //Restore default view.
+                ///Restore default view.
                 void reset_view()
                 {
                     zoom_ = 1.0;
@@ -134,17 +143,17 @@ final package class GridMonitor(T) : SubMonitor
                 }
         }
 
-        //2D array storing object counts of cells in the grid.
+        ///2D array storing object counts of cells in the grid.
         Array2D!(uint) object_counts_;
-        //Object count in the "outer" cell of the GridSpatialManager (objects outside the grid).
+        ///Objects in the "outer" cell of the GridSpatialManager (objects outside the grid).
         uint outer_object_count_;
 
-        //Widget displaying the grid.
+        ///Widget displaying the grid.
         GridView view_;
-        //Timer used to determine when to update data from the monitored manager..
+        ///Timer used to determine when to update data from the monitored manager.
         Timer update_timer_;
 
-        //Size of the grid (both X and Y).
+        ///Size of the grid (both X and Y).
         uint grid_size_;
 
     public:
@@ -158,12 +167,11 @@ final package class GridMonitor(T) : SubMonitor
             super();
 
             monitored_ = monitored;
+            grid_size_ = monitored_.grid_size;
+            object_counts_ = Array2D!(uint)(grid_size_, grid_size_);
 
             view_ = new GridView;
             add_child(view_);
-
-            grid_size_ = monitored_.grid_size;
-            object_counts_ = Array2D!(uint)(grid_size_, grid_size_);
 
             update_timer_ = Timer(0.02);
         }

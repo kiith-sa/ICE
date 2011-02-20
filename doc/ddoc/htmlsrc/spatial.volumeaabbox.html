@@ -30,15 +30,15 @@
 <span class="d StorageClass"><span class="k">final</span></span> <span class="d Class"><span class="k">class</span> <span class="i">VolumeAABBox</span> : <span class="t BaseClass"><span class="t Identifier"><span class="i">Volume</span></span></span>
 <span class="d Compound">{
     <span class="d Protection"><span class="k">public</span></span>:
-        <span class="lc">//Bounding box rectangle in object space.</span>
+        <span class="lc">///Bounding box rectangle in object space.</span>
         <span class="d Compound"><span class="d Variables"><span class="t Identifier"><span class="i">Rectanglef</span></span> <span class="i">rectangle</span>;</span>
 
     <span class="d Protection"><span class="k">public</span></span>:
         <span class="bc">/**
-         * Construct an axis aligned bounding box with specified parameters.
+         * Construct an axis aligned bounding box.
          *
-         * Params:    offset = Position of the top-left corner of the box in object space.
-         *            size   = Size of the bounding box.
+         * Params:  offset = Position of the top-left corner of the box in object space.
+         *          size   = Size of the bounding box.
          */</span>
         <span class="d Compound"><span class="d Constructor"><span class="k">this</span><span class="o Parameters">(<span class="o Parameter"><span class="t Identifier"><span class="i">Vector2f</span></span> <span class="i">offset</span></span>, <span class="o Parameter"><span class="t Identifier"><span class="i">Vector2f</span></span> <span class="i">size</span></span>)</span>
         <span class="s FuncBody"><span class="s Compound">{
@@ -46,7 +46,7 @@
             <span class="s Expression"><span class="e Assign"><span class="e Identifier"><span class="i">rectangle</span></span>.<span class="e Identifier"><span class="i">max</span></span> = <span class="e Plus"><span class="e Identifier"><span class="i">offset</span></span> + <span class="e Identifier"><span class="i">size</span></span></span></span>;</span>
         }</span></span></span>
 
-        <span class="lc">///Returns bounding box rectangle in world space - to be used by non-physics code</span>
+        <span class="lc">///Returns bounding box rectangle in object space - used by non-physics code.</span>
         <span class="d Function"><span class="t Identifier"><span class="i">Rectanglef</span></span> <span class="i">bounding_box</span><span class="o Parameters">()</span><span class="s FuncBody"><span class="s Compound">{<span class="s Return"><span class="k">return</span> <span class="e Identifier"><span class="i">rectangle</span></span>;</span>}</span></span></span></span></span>
 }</span></span></span>
 

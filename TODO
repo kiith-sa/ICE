@@ -189,6 +189,18 @@ Actually, only add code examples where really needed - too much work
 16:
     Ensure everything is documented in DDoc and push, for the first time
     to gitorious or github. Not necessarily announcing it.
+17:
+    Write detailed tutorials on installing from source and test installing
+    according to this tutorial on other PC's with Linux as well as in VirtualBox 
+    with various distros
+
+    Also, create a Xonotic-like package with 32bit and 64bit binaries
+    and all or most dependencies (not sure about SDL) - 
+    dependencies not present should be specified so users know what they need
+17:
+    Write developer docs with stuff like how to get started hacking
+    the engine, see Wesnoth, OGRE, other projects that do this well.
+
 --AFTER PONG    
 4:
     Consider D2 (at this point it might be mature enough :p)

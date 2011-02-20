@@ -31,17 +31,17 @@
     <span class="d Invariant"><span class="k">invariant</span><span class="s FuncBody"><span class="s Compound">{<span class="s Expression"><span class="e Assert"><span class="k">assert</span>(<span class="e Rel"><span class="e Identifier"><span class="i">radius</span></span> &gt; <span class="e Float"><span class="n">0.0f</span></span></span>, <span class="e String"><span class="sl">"Collision circle radius must be positive"</span></span>)</span>;</span>}</span></span></span>
 
     <span class="d Protection"><span class="k">public</span></span>:
-        <span class="lc">//Position of circle center in object space.</span>
+        <span class="lc">///Position of circle center in object space.</span>
         <span class="d Compound"><span class="d Variables"><span class="t Identifier"><span class="i">Vector2f</span></span> <span class="i">offset</span>;</span>
-        <span class="lc">//Radius of the circle.</span>
+        <span class="lc">///Radius of the circle.</span>
         <span class="d Variables"><span class="t Integral"><span class="k">float</span></span> <span class="i">radius</span>;</span>
 
     <span class="d Protection"><span class="k">public</span></span>:
         <span class="bc">/**
          * Construct a bounding circle with specified parameters.
          *
-         * Params:    offset = Position of circle's center in object space.
-         *            radius = Radius of the circle. Must be greater than 0.
+         * Params:  offset = Position of circle's center in object space.
+         *          radius = Radius of the circle. Must be greater than 0.
          */</span>
         <span class="d Compound"><span class="d Constructor"><span class="k">this</span><span class="o Parameters">(<span class="o Parameter"><span class="t Identifier"><span class="i">Vector2f</span></span> <span class="i">offset</span></span>, <span class="o Parameter"><span class="t Integral"><span class="k">float</span></span> <span class="i">radius</span></span>)</span>
         <span class="s FuncBody"><span class="s Compound">{
