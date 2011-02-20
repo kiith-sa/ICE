@@ -29,17 +29,17 @@ import math.math;
 import color;
 
 
-///Used to gather statistics data to be sent by GLVideoDriver to GL monitors.
+///Statistics data sent by GLVideoDriver to GL monitors.
 package struct Statistics
 {
-    //Draw calls.
+    ///Draw calls.
     uint lines, textures, texts, rectangles;
-    //Drawing primitives.
+    ///Drawing primitives.
     uint vertices, characters;
-    //State changes.
+    ///State changes.
     uint shader, page;
 
-    //Reset the statistics gathered for the next frame.
+    ///Reset the statistics gathered for the next frame.
     void zero()
     {    
         lines = textures = texts = rectangles 
@@ -63,16 +63,15 @@ final package class PagesMonitor : SubMonitor
             }
 
             private:
-                //Movement step in screen pixels, used when navigating the page.
-                real step_ = 64.0;
-                //Current offset of the view on the page, in texture pixels.
+                ///Current offset of the view on the page, in texture pixels.
                 Vector2f offset_ = Vector2f(0, 0);
-                //Zoom multiplier used when zooming in/out.
+                ///Zoom multiplier used when zooming in/out.
                 real zoom_mult_ = 1.2;
-                //Current zoom.
+                ///Current zoom.
                 real zoom_ = 1.0;
 
             public:
+                ///Construct a PageView.
                 this()
                 {
                     super(GUIElementParams("p_left + 28", "p_top + 2", 
@@ -109,13 +108,13 @@ final package class PagesMonitor : SubMonitor
                 }
 
             private:
-                //Zoom by specified number of levels.
+                ///Zoom by specified number of levels.
                 void zoom(float relative){zoom_ = zoom_ * pow(zoom_mult_, relative);}
 
-                //Pan view with specified offset.
+                ///Pan view with specified offset.
                 void pan(Vector2f relative){offset_ += relative / zoom_;}
 
-                //Reset view back to default.
+                ///Reset view back to default.
                 void reset_view()
                 {
                     zoom_ = 1.0;
@@ -123,20 +122,19 @@ final package class PagesMonitor : SubMonitor
                 }
         }
 
-        //GLVideoDriver we're monitoring.
+        ///GLVideoDriver we're monitoring.
         GLVideoDriver driver_;
         
+        ///Page view widget.
         PageView view_;
-
-        GUIMenuVertical menu_;
-        
-        //Information about the page.
+        ///Information about the page.
         GUIStaticText info_text_;
 
-        //Currently viewed page index (in GLVideoDriver.pages).
+        ///Currently viewed page index (in GLVideoDriver.pages_).
         uint current_page_ = 0;
 
     public:
+        ///Construct a GLMonitor monitoring specified GLVideoDriver.
         this(GLVideoDriver driver)
         {
             super();
@@ -155,12 +153,14 @@ final package class PagesMonitor : SubMonitor
         }
 
     private:
+        ///Initialize page view.
         void init_view()
         {
             view_ = new PageView;
             add_child(view_);
         }
 
+        ///Initialize menu.
         void init_menu()
         {
             with(new GUIMenuVerticalFactory)
@@ -173,11 +173,11 @@ final package class PagesMonitor : SubMonitor
                 item_font_size = Monitor.font_size;
                 add_item("Next", &next);
                 add_item("Prev", &prev);
-                menu_ = produce();
+                add_child(produce());
             }
-            add_child(menu_);
         }
 
+        ///Initialize info text.
         void init_text()
         {
             with(new GUIStaticTextFactory)
@@ -194,11 +194,15 @@ final package class PagesMonitor : SubMonitor
             update_text();
         }
 
+        ///Show next page.
         void next()
         {
+            //Cycle back to first if we're at the last.
             if(current_page_ >= driver_.pages.length - 1){current_page_ = 0;}
             else{++current_page_;}
+
             if(driver_.pages.length == 0){return;}
+            //If the page was destroyed, move to next one.
             if(driver_.pages[current_page_] == null)
             {
                 next();
@@ -208,11 +212,14 @@ final package class PagesMonitor : SubMonitor
             view_.reset_view();
         }
 
+        ///Show previous page.
         void prev()
         {
+            //Cycle back to last if we're at the first.
             if(current_page_ == 0){current_page_ = driver_.pages.length - 1;}
             else{--current_page_;}
             if(driver_.pages.length == 0){return;}
+            //If the page was destroyed, move to previous one.
             if(driver_.pages[current_page_] is null)
             {
                 prev();
@@ -222,6 +229,7 @@ final package class PagesMonitor : SubMonitor
             view_.reset_view();
         }
 
+        ///Update text with information about the page.
         void update_text()
         {
             if(driver_.pages.length == 0)
@@ -238,48 +246,48 @@ final package class PagesMonitor : SubMonitor
         }
 }
 
-///Displays info about draw calls
+///Graph showing numbers of draw calls.
 final package class DrawsMonitor : GraphMonitor
 {
     public:
-        ///Construct a DrawsMonitor, set value names and colors.
+        ///Construct a DrawsMonitor monitoring specified GLVideoDriver.
         this(GLVideoDriver monitored)
         {
             mixin(generate_graph_monitor_ctor("lines", "textures", "texts", "rectangles"));
         }
 
     private:
-        //Callback called by GLVideoDriver once per frame to update monitored statistics.
+        ///Called by GLVideoDriver once per frame to update monitored statistics.
         mixin(generate_graph_fetch_statistics("lines", "textures", "texts", "rectangles"));
 }
   
-///Displays info about graphics primitives drawn
+///Graph showing numbers of graphics primitives drawn.
 final package class PrimitivesMonitor : GraphMonitor
 {
      public:
-        ///Construct a PrimitivesMonitor.
+        ///Construct a PrimitivesMonitor monitoring specified GLVideoDriver. 
         this(GLVideoDriver monitored)
         {
             mixin(generate_graph_monitor_ctor("vertices", "characters"));
         }
 
     private:
-        //Callback called by GLVideoDriver once per frame to update monitored statistics.
+        ///Called by GLVideoDriver once per frame to update monitored statistics.
         mixin(generate_graph_fetch_statistics("vertices", "characters"));
 }            
           
-///Displays info about state changes during the frame
+///Graph showing numbers of state changes during the frame 
 final package class ChangesMonitor : GraphMonitor
 { 
     public:
-        ///Construct a ChangesMonitor.
+        ///Construct a ChangesMonitor monitoring specified GLVideoDriver.
         this(GLVideoDriver monitored)
         {
             mixin(generate_graph_monitor_ctor("shader", "page"));
         }
 
     private:
-        //Callback called by GLVideoDriver once per frame to update monitored statistics.
+        ///Called by GLVideoDriver once per frame to update monitored statistics.
         mixin(generate_graph_fetch_statistics("shader", "page"));
 }         
 

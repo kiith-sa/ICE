@@ -15,39 +15,49 @@ import derelict.opengl.gl;
 
 import file.fileio;
 
+
+///OpenGL (GLSL only right now) shader.
 package struct GLShader
 {
     invariant{assert(program_ != 0, "Shader program is null");}
 
     private:
-		//GLSL linked shader program.
+		///Linked GLSL shader program.
         GLuint program_ = 0;
 
-        //Load specified shader.
-        void ctor(string name)
-        {
-            load_GLSL("shaders/" ~ name ~ ".vert", "shaders/" ~ name ~ ".frag");
-        }
-
     public:
-        ///Fake constructor. Load shader with given name.
+        /**
+         * Construct (load) a shader.
+         *
+         * Params:  name = File name of the shader in the "shaders/" subdirectory.
+         * 
+         * Returns: Loaded shader.
+         *
+         * Throws:  Exception if the shader could not be loaded or was invalid.
+         */
         static GLShader opCall(string name)
         {
             GLShader shader;
-            shader.ctor(name);
+            shader.load_GLSL("shaders/" ~ name ~ ".vert", "shaders/" ~ name ~ ".frag");
             return shader;
         }
 
-        ///use this shader in following drawing commands.
+        ///Use this shader in following drawing commands.
         void start(){glUseProgram(program_);}
         
         ///Destroy this shader.
         void die(){glDeleteProgram(program_);}
         
     private:
-        //Load a GLSL shader
+        /**
+         * Load a GLSL shader.
+         *
+         * Params:  vfname = File name of the vertex shader.
+         *          ffname = File name of the fragment shader.
+         */
         void load_GLSL(string vfname, string ffname)
         {
+            //opening and loading from files
             File vfile;
             File ffile;
             try
@@ -57,8 +67,7 @@ package struct GLShader
             }
             catch(Exception e)
             {
-                throw new Exception("Couldn't load shader " ~ vfname ~
-                                    " and/or " ~ ffname);
+                throw new Exception("Couldn't load shader " ~ vfname ~ " and/or " ~ ffname);
             }                                 
             scope(exit){close_file(vfile);}
             scope(exit){close_file(ffile);}
@@ -105,8 +114,7 @@ package struct GLShader
 			if(!linked)
 			{
                 glDeleteProgram(program_);
-				throw new Exception("Couldn't link shaders " ~ vfname ~ " and "
-                                     ~ ffname);
+				throw new Exception("Couldn't link shaders " ~ vfname ~ " and " ~ ffname);
 			}
         }
 }

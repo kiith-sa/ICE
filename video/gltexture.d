@@ -14,9 +14,11 @@ import math.rectangle;
 ///OpenGL texture struct. Texture data is stored by texture page the texture is on.
 package align(1) struct GLTexture
 {
+    ///Texture coordinates.
     Rectanglef texcoords;
-    //offset relative to page this texture is on
+    ///Offset relative to the page.
     Vector2u offset;
+    ///Index of the page.
     uint page_index;
 }
 

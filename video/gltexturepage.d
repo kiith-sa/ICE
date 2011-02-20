@@ -20,7 +20,14 @@ import image;
 import memory.memory;
 
 
-///Convert a ColorFormat to OpenGL color format parameters.
+/**
+ * Convert a ColorFormat to OpenGL color format parameters.
+ *
+ * Params:  format          = ColorFormat to convert.
+ *          gl_format       = GL format of the data (RGBA, luminance, etc) will be written here.
+ *          type            = GL data type (unsigned byte, etc) will be written here.
+ *          internal_format = GL internal format (RGBA8, etc) will be written here.
+ */
 package void gl_color_format(ColorFormat format, out GLenum gl_format,
                              out GLenum type, out GLint internal_format)
 {
@@ -44,24 +51,30 @@ package void gl_color_format(ColorFormat format, out GLenum gl_format,
 }
 
 //Parts of this code could be abstracted to a more general TexturePage
-//struct that could be "inherited" in D2 using alias this,
-//but that would only make sense if we are to add more texture page 
-//implementations.
-///OpenGL texture page struct.
+//struct that could be "inherited" in D2 using alias this, but that would only 
+//make sense if we added more texture page implementations.
+///OpenGL texture page with customizable texture packer.
 package align(1) struct GLTexturePage(TexturePacker) 
 {
     private:
-        ///Packer, handles allocation of texture space.
+        ///Texture packer, handles allocation of texture space.
         TexturePacker packer_;
         ///Size of the page in pixels.
         Vector2u size_;
-        ///OpenGL texture object
-        GLuint  texture_;
+        ///OpenGL texture of the page.
+        GLuint texture_;
         ///Color format of the page.
         ColorFormat format_;
 
     public:
-        ///Fake constructor. Returns a page with specified format and size.
+        /**
+         * Construct a GLTexturePage.
+         *
+         * Params:  size   = Dimensions of the page in pixels.
+         *          format = Color format of the page.
+         *
+         * Returns: Constructed GLTexturePage.
+         */
         static GLTexturePage!(TexturePacker) opCall(Vector2u size, ColorFormat format)
         {
             GLTexturePage!(TexturePacker) page;
@@ -76,18 +89,18 @@ package align(1) struct GLTexturePage(TexturePacker)
             glDeleteTextures(1, &texture_);
         }
         
-        ///Try to insert an image to this page and use it as a texture.
         /**
-         * @param image Image to insert.
-         * @param texcoords Texture coords of the texture will be output here.
-         * @param offset Offset of the texture relative to page will be output here.
+         * Try to insert an image to this page and use it as a texture.
          *
-         * @return true on success.
-         * @return false on failure.
+         * Params:  image     = Image to insert.
+         *          texcoords = Texture coords of the texture will be written here.
+         *          offset    = Offset of the texture on the page will be written here.
+         *
+         * Returns: True on success, false on failure.
          */
-        bool insert_texture(ref Image image, out Rectanglef texcoords, 
-                            out Vector2u offset) 
+        bool insert_texture(ref Image image, out Rectanglef texcoords, out Vector2u offset)
         {
+            //image format must match
             if(image.format != format_){return false;}
             if(packer_.allocate_space(image.size, texcoords, offset))
             {                                  
@@ -114,8 +127,8 @@ package align(1) struct GLTexturePage(TexturePacker)
         ///Use this page to draw textured geometry from now on.
         void start(){glBindTexture(GL_TEXTURE_2D, texture_);}
 
-        ///Determine if this texture page is resident in the video memory.
-        bool is_resident()
+        ///Determine if the page is resident in the video memory.
+        bool resident()
         {
             GLboolean resident;
             glAreTexturesResident(1, &texture_, &resident);
@@ -128,10 +141,17 @@ package align(1) struct GLTexturePage(TexturePacker)
         ///Determine if this page is empty (i.e. there are no textures on it).
         bool empty(){return packer_.empty();}
 
-        ///Return size of the page.
+        ///Get size of the page in pixels.
         Vector2u size(){return size_;}
 
-        ///Return a string containing information about this page.
+        /**
+         * Return a string containing information about the page.
+         *
+         * Format of this string might change, it is used strictly for debugging
+         * purposes and not meant to be parsed.
+         *
+         * Returns: String with information about the page.
+         */
         string info()
         {
             string output;
@@ -144,20 +164,21 @@ package align(1) struct GLTexturePage(TexturePacker)
         }
 
     private:
-        ///Initialization method used by the fake constructor.
+        /**
+         * Construct the page.
+         *
+         * Params:  size   = Dimensions of the page in pixels.
+         *          format = Color format of the page.
+         */
         void ctor(Vector2u size, ColorFormat format)
-        in
-        {
-            assert(is_pot(size.x) && is_pot(size.y), 
-                   "Non-power-of-two texture page size");
-        }
+        in{assert(is_pot(size.x) && is_pot(size.y), "Non-power-of-two texture page size");}
         body
         {
             size_ = size;
             format_ = format;
             packer_ = TexturePacker(size);
 
-            //create blank image to use as texture data
+            //create blank image to use as initial texture data
             scope Image image = new Image(size.x, size.y, format);
             glGenTextures(1, &texture_);
             
@@ -175,4 +196,5 @@ package align(1) struct GLTexturePage(TexturePacker)
         }
 }
 
+///GLTexturePage using NodePacker for texture packing.
 alias GLTexturePage!(NodePacker) TexturePage;
