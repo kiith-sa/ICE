@@ -56,4 +56,7 @@ template Signal(Args ...)
             alias containers.array.remove_first remove_first;
             slots_.remove_first(slot, true);
         }
+
+        ///Disconnect all connected slots.
+        void disconnect_all(){slots_ = [];}
 }

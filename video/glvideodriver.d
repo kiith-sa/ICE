@@ -33,56 +33,64 @@ import memory.memory;
 import util.signal;
 
 
-///Handles all drawing functionality.
+///OpenGL (currently a mix of 1.x and 2.x, planning to be purely 2.x) based video driver.
 abstract class GLVideoDriver : VideoDriver
 {
     protected:
+        ///Video mode width in pixels.
         uint screen_width_ = 0;
+        ///Video mode height in pixels.
         uint screen_height_ = 0;
     
-    //using package to allow debugger access
     private:
+        ///Derelict OpenGL version.
         GLVersion version_;
 
-        real view_zoom_ = 0.0;
+        ///View zoom. 1.0 is normal, > 1.0 is zoomed in, < 1.0 is zoomed out.
+        real view_zoom_ = 1.0;
+        ///Current view offset in screen space.
         Vector2d view_offset_ = Vector2d(0.0, 0.0);
 
-        //Is line antialiasing enabled?
+        ///Is line antialiasing enabled?
         bool line_aa_ = false;
+        ///Line width in pixels.
         float line_width_ = 1.0;
 
-        //Shader used to draw lines and rectangles without textures.
+        ///Shader used to draw lines and rectangles without textures.
         Shader plain_shader;
-        //Shader used to draw textured surfaces.
+        ///Shader used to draw textured surfaces.
         Shader texture_shader_;
-        //Shader used to draw fonts.
+        ///Shader used to draw fonts.
         Shader font_shader_;
-
+        ///Shaders.
         GLShader* [] shaders_;
-        //Index of currently used shader; uint.max means none.
+        ///Index of currently used shader; uint.max means none.
         uint current_shader_ = uint.max;
 
-        //Texture pages
+        ///Texture pages.
         TexturePage* [] pages_;
-        //Index of currently used page; uint.max means none.
+        ///Index of currently used page; uint.max means none.
         uint current_page_ = uint.max;
-
-        //Textures
+        ///Textures.
         GLTexture* [] textures_;
                               
-        //Statistics data for monitoring.
+        ///Statistics data for monitoring.
         Statistics statistics_;
 
     package:
-        //Used to send statistics data to physics monitors.
+        ///Used to send statistics data to physics monitors.
         mixin Signal!(Statistics) send_statistics;
         
     public:
+        /**
+         * Construct a GLVideoDriver.
+         *
+         * Params:  font_manager = Font manager to use for font rendering and management.
+         */
         this(FontManager font_manager)
         {
             super(font_manager);
             DerelictGL.load();
-            view_zoom_ = 1.0;
         }
 
         override void die()
@@ -129,21 +137,21 @@ abstract class GLVideoDriver : VideoDriver
             DerelictGL.unload();
         }
 
-        override void set_video_mode(uint width, uint height, 
-                                     ColorFormat format, bool fullscreen);
-
         override void start_frame()
         {
             glClear(GL_COLOR_BUFFER_BIT);
             setup_viewport();
+
+            //disable current page
             current_page_ = uint.max;
+
             send_statistics.emit(statistics_);
             statistics_.zero();
         }
 
         override void end_frame(){glFlush();}
 
-        void scissor(ref Rectanglei scissor_area)
+        final override void scissor(ref Rectanglei scissor_area)
         {
             glEnable(GL_SCISSOR_TEST);
             glScissor(scissor_area.min.x, 
@@ -151,7 +159,7 @@ abstract class GLVideoDriver : VideoDriver
                       scissor_area.width, scissor_area.height);
         }
 
-        void disable_scissor(){glDisable(GL_SCISSOR_TEST);}
+        final override void disable_scissor(){glDisable(GL_SCISSOR_TEST);}
 
         final override void draw_line(Vector2f v1, Vector2f v2, Color c1, Color c2)
         {
@@ -167,6 +175,8 @@ abstract class GLVideoDriver : VideoDriver
             offset_base.normalize();
             float half_width = line_width_ * 0.5;
             Vector2f offset = offset_base * half_width;
+
+            //vertices of the rectangle that represents the line.
             Vector2f r1, r2, r3, r4;
             r1 = v1 + offset;
             r2 = v1 - offset;
@@ -177,8 +187,7 @@ abstract class GLVideoDriver : VideoDriver
             {
                 statistics_.vertices += 8;
 
-                //If AA is on, add two transparent vertices to the sides of the 
-                //rectangle.
+                //If AA is on, add two transparent vertices to the sides of the rectangle.
                 Vector2f offset_aa = offset_base * (half_width + 0.4);
                 Vector2f aa1, aa2, aa3, aa4;
                 aa1 = v1 + offset_aa;
@@ -236,6 +245,7 @@ abstract class GLVideoDriver : VideoDriver
 
             set_shader(plain_shader);
 
+            //draw the rectangle
             glColor4ubv(cast(ubyte*)&color);
             glBegin(GL_TRIANGLE_STRIP);
             glVertex2f(min.x, min.y);
@@ -246,9 +256,9 @@ abstract class GLVideoDriver : VideoDriver
         }
 
         final override void draw_texture(Vector2i position, ref Texture texture)
-        in{assert(texture.index < textures_.length);}
-        body
         {
+            assert(texture.index < textures_.length, "Texture index out of bounds");
+
             ++statistics_.textures;
             statistics_.vertices += 4;
 
@@ -272,6 +282,7 @@ abstract class GLVideoDriver : VideoDriver
             Vector2f tmin = gl_texture.texcoords.min;
             Vector2f tmax = gl_texture.texcoords.max;
 
+            //draw rectangle with the texture
             glColor4ub(255, 255, 255, 255);
             glBegin(GL_TRIANGLE_STRIP);
             glTexCoord2f(tmin.x, tmin.y);
@@ -370,19 +381,17 @@ abstract class GLVideoDriver : VideoDriver
 
         final override void line_aa(bool aa){line_aa_ = aa;}
         
-        final override void line_width(float width){line_width_ = width;}
+        final override void line_width(float width)
+        {
+            assert(width >= 0.0, "Can't set negative line width");
+            line_width_ = width;
+        }
 
         final override void font(string font_name){font_manager_.font = font_name;}
 
         final override void font_size(uint size){font_manager_.font_size = size;}
         
         final override void zoom(real zoom)
-        in
-        {
-            assert(zoom > 0.0001, "Can't zoom out further than 0.0001x");
-            assert(zoom < 100.0, "Can't zoom in further than 100x");
-        }
-        body
         {
             view_zoom_ = zoom;
             setup_ortho();
@@ -429,7 +438,6 @@ abstract class GLVideoDriver : VideoDriver
         }
 
 		final override Texture create_texture(ref Image image, bool force_page)
-        in
         {
             if(force_page)
             {
@@ -437,9 +445,7 @@ abstract class GLVideoDriver : VideoDriver
                        "When forcing a single texture to have its"
                        "own page, power of two texture is required");
             }
-        }
-        body
-		{
+
             Rectanglef texcoords;
             //offset of the texture on the page
             Vector2u offset;
@@ -456,8 +462,7 @@ abstract class GLVideoDriver : VideoDriver
                 create_page(image.size, image.format, force_page);
                 pages_[$ - 1].insert_texture(image, texcoords, offset);
                 new_texture(pages_.length - 1);
-                assert(textures_[$ - 1].texcoords == 
-                       Rectanglef(0.0, 0.0, 1.0, 1.0), 
+                assert(textures_[$ - 1].texcoords == Rectanglef(0.0, 0.0, 1.0, 1.0), 
                        "Texture coordinates of a single page texture must "
                        "span the whole texture");
                 return Texture(image.size, textures_.length - 1);
@@ -466,8 +471,7 @@ abstract class GLVideoDriver : VideoDriver
             //try to find a page to fit the new texture to
             foreach(index, ref page; pages_)
             {
-                if(page !is null && 
-                   page.insert_texture(image, texcoords, offset))
+                if(page !is null && page.insert_texture(image, texcoords, offset))
                 {
                     new_texture(index);
                     return Texture(image.size, textures_.length - 1);
@@ -478,7 +482,7 @@ abstract class GLVideoDriver : VideoDriver
             //enough for the image.
             create_page(image.size, image.format);
             return create_texture(image, false);
-		}
+        }
 
         final override void delete_texture(Texture texture)
         {
@@ -488,8 +492,8 @@ abstract class GLVideoDriver : VideoDriver
             assert(pages_[page_index] !is null, "Trying to delete a texture from"
                                                " a nonexistent page");
             pages_[page_index].remove_texture(Rectangleu(gl_texture.offset,
-                                                        gl_texture.offset + 
-                                                        texture.size));
+                                                         gl_texture.offset + 
+                                                         texture.size));
             free(textures_[texture.index]);
             textures_[texture.index] = null;
 
@@ -516,8 +520,8 @@ abstract class GLVideoDriver : VideoDriver
         override MonitorMenu monitor_menu(){return new GLVideoDriverMonitor(this);}
 
     package:
-        //Debugging: draw specified area of a page on the specified quad.
-        void draw_page(uint page_index, ref Rectanglef area, ref Rectanglef quad)
+        ///Debugging: draw specified area of a texture page on the specified quad.
+        final void draw_page(uint page_index, ref Rectanglef area, ref Rectanglef quad)
         {
             statistics_.vertices += 4;  
 
@@ -552,7 +556,11 @@ abstract class GLVideoDriver : VideoDriver
         TexturePage*[] pages(){return pages_;}
 
     protected:
-        //Initialize OpenGL context.
+        /**
+         * Initialize OpenGL context.
+         *
+         * Throws:  Exception on failure.
+         */
         final void init_gl()
         {
             try
@@ -585,7 +593,7 @@ abstract class GLVideoDriver : VideoDriver
 
     private:
         //not ready for public interface yet- will take shader spec file in future
-        //Load shader with specified name.
+        ///Load shader with specified name.
         final Shader create_shader(string name)
         {
             shaders_ ~= alloc_struct!(GLShader)(name);
@@ -593,7 +601,7 @@ abstract class GLVideoDriver : VideoDriver
         }
 
         //not ready for public interface yet
-        //Delete a shader.
+        ///Delete a shader.
         final void delete_shader(Shader shader)
         {
             GLShader* gl_shader = shaders_[shader.index];
@@ -610,7 +618,7 @@ abstract class GLVideoDriver : VideoDriver
         }
 
         //not ready for public interface yet
-        //Use specified shader for drawing.
+        ///Use specified shader for drawing.
         final void set_shader(Shader shader)
         {
             uint index = shader.index;
@@ -623,17 +631,17 @@ abstract class GLVideoDriver : VideoDriver
             }
         }
 
-        ///Create a texture page with at least specified size, color format
         /**
-         * Throws an exception if it's not possible to create a page with
-         * required parameters.
-         * @param size_image Size of image we need to fit on the page, i.e.
-         *                   minimum size of the page
-         * @param format     Color format of the page.
-         * @param force_size Force page size to be exactly size_image.
+         * Create a texture page with at least specified size, color format
+         *
+         * Params:  size_image = Size of image we need to fit on the page, i.e.
+         *                       minimum size of the page
+         *          format     = Color format of the page.
+         *          force_size = Force page size to be exactly size_image.
+         *
+         * Throws:  Exception if it's not possible to create a page with required parameters.
          */
-        final void create_page(Vector2u size_image, ColorFormat format, 
-                               bool force_size = false)
+        final void create_page(Vector2u size_image, ColorFormat format, bool force_size = false)
         {
             //1/16 MiB grayscale, 1/4 MiB RGBA8
             static uint size_min = 256;
@@ -689,20 +697,20 @@ abstract class GLVideoDriver : VideoDriver
             pages_ ~= alloc_struct!(TexturePage)(size, format);
         }
 
-        //Set up OpenGL viewport.
+        ///Set up OpenGL viewport.
         final void setup_viewport()
         {
             glViewport(0, 0, screen_width_, screen_height_);
             setup_ortho();
         }
 
-        //Set up orthographic projection.
+        ///Set up orthographic projection.
         final void setup_ortho()
         {
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
-            glOrtho(0.0f, screen_width_ / view_zoom_, screen_height_ / view_zoom_, 
-                    0.0f, -1.0f, 1.0f);
+            glOrtho(0.0f, screen_width_ / view_zoom_, screen_height_ / view_zoom_, 0.0f,
+                    -1.0f, 1.0f);
             glMatrixMode(GL_MODELVIEW);
             glLoadIdentity();
             glTranslatef(-view_offset_.x, -view_offset_.y, 0.0f);

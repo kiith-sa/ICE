@@ -39,46 +39,14 @@ package struct Statistics
 }
 
 ///Graph showing values related to fine collision detection.
-final package class ContactMonitor : GraphMonitor
-{
-    public:
-        ///Construct a ContactMonitor.
-        this(PhysicsEngine monitored)
-        {
-            mixin(generate_graph_monitor_ctor("contacts", "penetration", "response"));
-        }
-
-    private:
-        ///Called by PhysicsMonitor once per frame to update monitored statistics.
-        mixin(generate_graph_fetch_statistics("contacts", "penetration", "response"));
-}
+alias SimpleGraphMonitor!(PhysicsEngine, Statistics, 
+                          "contacts", "penetration", "response") ContactMonitor;
 
 ///Graph showing values related to coarse collision detection.
-final package class CoarseContactMonitor : GraphMonitor
-{
-    public:
-        ///Construct a CoarseContactMonitor.
-        this(PhysicsEngine monitored){mixin(generate_graph_monitor_ctor("tests"));}
-
-    private:
-        ///Called by PhysicsMonitor once per frame to update monitored statistics.
-        mixin(generate_graph_fetch_statistics("tests"));
-}
+alias SimpleGraphMonitor!(PhysicsEngine, Statistics, "tests") CoarseContactMonitor;
 
 ///Graph showing statistics about physics bodies.
-final package class BodiesMonitor : GraphMonitor
-{
-    public:
-        ///Construct a BodiesMonitor.
-        this(PhysicsEngine monitored)
-        {
-            mixin(generate_graph_monitor_ctor("bodies", "col_bodies"));
-        }
-
-    private:
-        ///Called by PhysicsMonitor once per frame to update monitored statistics.
-        mixin(generate_graph_fetch_statistics("bodies", "col_bodies"));
-}
+alias SimpleGraphMonitor!(PhysicsEngine, Statistics, "bodies", "col_bodies") BodiesMonitor;
 
 ///PhysicsEngineMonitor class - a MonitorMenu implementation is generated here.
 mixin(generate_monitor_menu("PhysicsEngine", 

@@ -24,19 +24,7 @@ package struct Statistics
 }
 
 ///Graph showing statistics about memory usage.
-final package class UsageMonitor : GraphMonitor
-{
-    public:
-        ///Construct a UsageMonitor.
-        this(MemoryMonitorable monitored)
-        {
-            mixin(generate_graph_monitor_ctor("manual_MiB"));
-        }
-
-    private:
-        ///Callback called by Memory once per update to update monitored statistics.
-        mixin(generate_graph_fetch_statistics("manual_MiB"));
-}
+alias SimpleGraphMonitor!(MemoryMonitorable, Statistics, "manual_MiB") UsageMonitor;
 
 ///MemoryMonitor class - a MonitorMenu implementation is generated here.
 mixin(generate_monitor_menu("MemoryMonitorable", 

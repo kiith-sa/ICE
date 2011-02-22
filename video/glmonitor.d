@@ -247,49 +247,15 @@ final package class PagesMonitor : SubMonitor
 }
 
 ///Graph showing numbers of draw calls.
-final package class DrawsMonitor : GraphMonitor
-{
-    public:
-        ///Construct a DrawsMonitor monitoring specified GLVideoDriver.
-        this(GLVideoDriver monitored)
-        {
-            mixin(generate_graph_monitor_ctor("lines", "textures", "texts", "rectangles"));
-        }
-
-    private:
-        ///Called by GLVideoDriver once per frame to update monitored statistics.
-        mixin(generate_graph_fetch_statistics("lines", "textures", "texts", "rectangles"));
-}
+alias SimpleGraphMonitor!(GLVideoDriver, Statistics, 
+                          "lines", "textures", "texts", "rectangles") DrawsMonitor;
   
 ///Graph showing numbers of graphics primitives drawn.
-final package class PrimitivesMonitor : GraphMonitor
-{
-     public:
-        ///Construct a PrimitivesMonitor monitoring specified GLVideoDriver. 
-        this(GLVideoDriver monitored)
-        {
-            mixin(generate_graph_monitor_ctor("vertices", "characters"));
-        }
+alias SimpleGraphMonitor!(GLVideoDriver, Statistics, 
+                          "vertices", "characters") PrimitivesMonitor;
 
-    private:
-        ///Called by GLVideoDriver once per frame to update monitored statistics.
-        mixin(generate_graph_fetch_statistics("vertices", "characters"));
-}            
-          
 ///Graph showing numbers of state changes during the frame 
-final package class ChangesMonitor : GraphMonitor
-{ 
-    public:
-        ///Construct a ChangesMonitor monitoring specified GLVideoDriver.
-        this(GLVideoDriver monitored)
-        {
-            mixin(generate_graph_monitor_ctor("shader", "page"));
-        }
-
-    private:
-        ///Called by GLVideoDriver once per frame to update monitored statistics.
-        mixin(generate_graph_fetch_statistics("shader", "page"));
-}         
+alias SimpleGraphMonitor!(GLVideoDriver, Statistics, "shader", "page") ChangesMonitor;
 
 ///GLVideoDriverMonitor class - a MonitorMenu implementation is generated here.
 mixin(generate_monitor_menu("GLVideoDriver", 

@@ -213,8 +213,12 @@ abstract class VideoDriver : Monitorable
         ///Return maximum square texture size supported with given color format.
         uint max_texture_size(ColorFormat format);
 
-        ///Create a texture from given image. Optionally force the texture to have its own texture page.
-		Texture create_texture(ref Image image, bool force_page = false);
+        /**
+         * Create a texture from given image. Optionally force the texture to have its own texture page.
+         *
+         * Throws:  Exception if texture of needed size could not be created.
+         */
+        Texture create_texture(ref Image image, bool force_page = false);
 
         ///Delete given texture.
         void delete_texture(Texture texture);

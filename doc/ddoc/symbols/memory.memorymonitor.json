@@ -1,5 +1,4 @@
-["memorymonitor",1,[],[1,45],[
+["memorymonitor",1,[],[1,33],[
 ["Statistics",5,[2],[20,24],[
 ["manual_MiB",11,[],[23,23],[]]]],
-["UsageMonitor",3,[2,10],[27,39],[
-["this",17,[3],[31,34],[]]]]]]
+["UsageMonitor",7,[],[27,27],[]]]]
