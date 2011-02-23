@@ -226,6 +226,8 @@ Actually, only add code examples where really needed - too much work
 --AFTER PONG    
 4:
     Consider D2 (at this point it might be mature enough :p)
+    We'll need to port CDC first, look if there's a new CDC, if not,
+    port it, test with some small test project
 5:
     Move to 64bit (whether or not we're already at D2)
 14:
