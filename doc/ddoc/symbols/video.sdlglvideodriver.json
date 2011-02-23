@@ -1,5 +1,5 @@
-["sdlglvideodriver",1,[],[1,81],[
-["SDLGLVideoDriver",3,[10],[18,80],[
-["this",17,[3],[21,21],[]],
-["set_video_mode",12,[11],[23,73],[]],
-["end_frame",12,[11],[75,79],[]]]]]]
+["sdlglvideodriver",1,[],[1,83],[
+["SDLGLVideoDriver",3,[10],[18,82],[
+["this",17,[3],[26,26],[]],
+["set_video_mode",12,[11],[28,75],[]],
+["end_frame",12,[11],[77,81],[]]]]]]

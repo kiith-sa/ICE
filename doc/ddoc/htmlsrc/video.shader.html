@@ -10,7 +10,7 @@
   <link href="html.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-<table><tr><td class="linescolumn"><a id="L1" href="#L1">1</a><a id="L2" href="#L2">2</a><a id="L3" href="#L3">3</a><a id="L4" href="#L4">4</a><a id="L5" href="#L5">5</a><a id="L6" href="#L6">6</a><a id="L7" href="#L7">7</a><a id="L8" href="#L8">8</a><a id="L9" href="#L9">9</a><a id="L10" href="#L10">10</a><a id="L11" href="#L11">11</a><a id="L12" href="#L12">12</a><a id="L13" href="#L13">13</a><a id="L14" href="#L14">14</a><a id="L15" href="#L15">15</a></td>
+<table><tr><td class="linescolumn"><a id="L1" href="#L1">1</a><a id="L2" href="#L2">2</a><a id="L3" href="#L3">3</a><a id="L4" href="#L4">4</a><a id="L5" href="#L5">5</a><a id="L6" href="#L6">6</a><a id="L7" href="#L7">7</a><a id="L8" href="#L8">8</a><a id="L9" href="#L9">9</a><a id="L10" href="#L10">10</a><a id="L11" href="#L11">11</a><a id="L12" href="#L12">12</a><a id="L13" href="#L13">13</a><a id="L14" href="#L14">14</a><a id="L15" href="#L15">15</a><a id="L16" href="#L16">16</a><a id="L17" href="#L17">17</a></td>
 <td><td><pre class="sourcecode">
 
 <span class="lc">//          Copyright Ferdinand Majerech 2010 - 2011.</span>
@@ -21,9 +21,11 @@
 <span class="d Compound"><span class="d Module"><span class="k">module</span> <span class="i">video</span>.<span class="i">shader</span>;</span>
 
 
+<span class="lc">///Opague and immutable shader handle used used by code outside video subsystem.</span>
 <span class="d Align"><span class="k">align</span>(<span class="n">1</span>)</span> <span class="d Struct"><span class="k">struct</span> <span class="i">Shader</span>
 <span class="d Compound">{
     <span class="d Protection"><span class="k">package</span></span>:
+        <span class="lc">///Index of the shader in VideoDriver implementation.</span>
         <span class="d Compound"><span class="d Variables"><span class="t Integral"><span class="k">uint</span></span> <span class="i">index</span>;</span></span>
 }</span></span></span>
 

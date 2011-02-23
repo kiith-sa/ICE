@@ -18,19 +18,21 @@ import color;
 final class SDLGLVideoDriver : GLVideoDriver
 {
     public:
+        /**
+         * Construct a SDLGLVideoDriver.
+         *
+         * Params:  font_manager = Font manager to use for font rendering and management.
+         */
         this(FontManager font_manager){super(font_manager);}
 
-        override void set_video_mode(uint width, uint height, 
-                                     ColorFormat format, bool fullscreen)
-        in
+        override void set_video_mode(uint width, uint height, ColorFormat format, bool fullscreen)
         {
             assert(width > 160 && width < 65536, 
                    "Can't set video mode with such ridiculous width");
             assert(height > 120 && width < 49152, 
                    "Can't set video mode with such ridiculous height");
-        }
-        body
-        {
+
+            //determine bit depths of color channels.
             uint red, green, blue, alpha;
             switch(format)
             {

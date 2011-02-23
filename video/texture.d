@@ -14,6 +14,8 @@ import math.vector2;
 align(1) struct Texture
 {
     package:
+        ///Size of the texture in pixels.
         Vector2u size;
+        ///Index of the texture in the VideoDriver implementation.
         uint index;
 }

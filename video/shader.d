@@ -7,8 +7,10 @@
 module video.shader;
 
 
+///Opague and immutable shader handle used used by code outside video subsystem.
 align(1) struct Shader
 {
     package:
+        ///Index of the shader in VideoDriver implementation.
         uint index;
 }
