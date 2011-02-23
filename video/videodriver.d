@@ -33,14 +33,14 @@ abstract class VideoDriver : Monitorable
         FontManager font_manager_;
 
     public:
-        ///Construct a VideoDriver.
+        /**
+         * Construct a VideoDriver.
+         *
+         * Params:  font_manager = Font manager to use for font rendering and management.
+         */
         this(FontManager font_manager)
         {
             singleton_ctor();
-            //Force font manager to load if not yet loaded. 
-            //Placed here because font manager ctor needs working videodriver
-            //and a call to font manager ctor from videodriver ctor would
-            //result in infinite recursion.
             font_manager_ = font_manager;
         }
 
@@ -50,15 +50,14 @@ abstract class VideoDriver : Monitorable
         /**
          * Sets video mode.
          *
-         * Params:    width      = Screen _width to set in pixels;
-         *            height     = Screen _height to set in pixels;
-         *            format     = Color _format to use for screen.
-         *            fullscreen = If true, use fullscreen, otherwise windowed.
+         * Params:  width      = Video mode width in pixels;
+         *          height     = Video mode height in pixels;
+         *          format     = Video mode color format.
+         *          fullscreen = If true, use fullscreen, otherwise windowed.
          *
          * Throws: Exception on failure.   
          */ 
-        void set_video_mode(uint width, uint height, ColorFormat format, 
-                            bool fullscreen);
+        void set_video_mode(uint width, uint height, ColorFormat format, bool fullscreen);
 
         ///Start drawing a frame. Must be called before any drawing calls.
         void start_frame();
@@ -69,8 +68,8 @@ abstract class VideoDriver : Monitorable
         /**
          * Enable scissor test using specified rectangle as scissor area.
          *
-         * Until scissor test is disabled, only specified area of the screen
-         * will be drawn to. This can be used e.g. for 2D clipping of GUI.
+         * Until the scissor test is disabled, only specified area of the screen
+         * will be drawn to. This can be used e.g. for 2D clipping of GUI elements.
          *
          * Params:  scissor_area = Scissor area in screen coordinates.
          */
@@ -80,10 +79,9 @@ abstract class VideoDriver : Monitorable
         void disable_scissor();
 
         /**
-         * Draw a line between specified points, with specified colors.
+         * Draw a line between specified points with specified colors.
          *
          * Colors are interpolated from start to end of the line.
-         * If the points specified are identical, drawn result is undefined.
          *
          * Params:  v1 = Start point of the line.
          *          v2 = End point of the line.
@@ -93,10 +91,10 @@ abstract class VideoDriver : Monitorable
         void draw_line(Vector2f v1, Vector2f v2, Color c1, Color c2);
 
         /**
-         * Draw a line strip through specified points with specified color.
+         * Draw a line strip through specified points with specified colors.
          *
          * Params:  v = Vertices of the strip.
-         *          c = Color of the strip.
+         *          c = Colors of the vertices.
          */
         void draw_line_strip(Vector2f[] v, Color c)
         in{assert(v.length >= 2, "Must have at least 2 vertices to draw a line strip");}
@@ -110,16 +108,23 @@ abstract class VideoDriver : Monitorable
             }
         }
 
-        ///Draw a circle with specified center, radius, color and number of vertices.
+        /**
+         * Draw a stroked circle.
+         *
+         * Params:  center       = Center of the circle.
+         *          radius       = Radius of the circle.
+         *          color        = Color of the circle stroke.
+         *          vertex_count = Number of vertices in the circle.
+         */
         void draw_circle(Vector2f center, float radius, 
-                         Color color = Color(255, 255, 255, 255), 
+                         Color color = Color.white, 
                          uint vertex_count = 32)
         in
         {
             assert(radius >= 0, "Can't draw a circle with negative radius");
             assert(vertex_count >= 3, "Can't draw a circle with less than 3 vertices");
-            assert(vertex_count <= 8192, "Can't draw a circle with absurd number of "
-                                     "vertices (more than 8192)");
+            assert(vertex_count <= 8192, "Can't draw a circle with such absurd number of "
+                                         "vertices (more than 8192)");
         }
         body
         {
@@ -146,8 +151,14 @@ abstract class VideoDriver : Monitorable
             }
         }
 
-        ///Draw a rectangle with specified extents and color.
-        void draw_rectangle(Vector2f min, Vector2f max, Color color = Color(255, 255, 255, 255))
+        /**
+         * Draw a stroked rectangle.
+         *
+         * Params:  min   = Minimum extents of the rectangle.
+         *          max   = Maximum extents of the rectangle.
+         *          color = Color of the rectangle stroke.
+         */
+        void draw_rectangle(Vector2f min, Vector2f max, Color color = Color.white)
         in
         {
             assert(min.x <= max.x && min.y <= max.y, 
@@ -166,21 +177,42 @@ abstract class VideoDriver : Monitorable
             draw_line(min_max, max, color, color);
         }
 
-        ///Draw a filled rectangle with specified extents and color.
-        void draw_filled_rectangle(Vector2f min, Vector2f max, 
-                                   Color color = Color(255, 255, 255, 255));
+        /**
+         * Draw a filled rectangle.
+         *
+         * Params:  min   = Minimum extents of the rectangle.
+         *          max   = Maximum extents of the rectangle.
+         *          color = Color of the rectangle.
+         */
+        void draw_filled_rectangle(Vector2f min, Vector2f max, Color color = Color.white);
 
-        ///Draw a texture at given position.
+        /**
+         * Draw a texture.
+         *
+         * Params:  position = Position of the upper-left corner of the texture.
+         *          texture  = Texture to draw.
+         */
         void draw_texture(Vector2i position, ref Texture texture);
         
-        ///Draw a string of text at given position.
-        void draw_text(Vector2i position, string text, 
-                       Color color = Color(255, 255, 255, 255));
+        /**
+         * Draw a text string.
+         *
+         * Params:  position = Position to draw the text at.
+         *          text     = Text to draw.
+         *          color    = Text color.
+         */
+        void draw_text(Vector2i position, string text, Color color = Color.white);
         
-        ///Return the size a text string would have if it was drawn.
+        /**
+         * Get the size a text string would have if it was drawn.
+         *
+         * Params:  text = Text to measure.
+         *
+         * Returns: Size of the text in pixels.
+         */
         Vector2u text_size(string text);
 
-        ///Enable/disable line antialiasing.
+        ///Set line antialiasing.
         void line_aa(bool aa);
         
         ///Set line width.
@@ -195,35 +227,46 @@ abstract class VideoDriver : Monitorable
         ///Set view zoom.
         void zoom(real zoom);
         
-        ///Return view zoom.
+        ///Get view zoom.
         real zoom();
 
         ///Set view offset.
         void view_offset(Vector2d offset);
 
-        ///Return view offset.
+        ///Get view offset.
         Vector2d view_offset();
 
-        ///Return screen width.
+        ///Get screen width.
         uint screen_width();
 
-        ///Return screen height.
+        ///Get screen height.
         uint screen_height();
 
-        ///Return maximum square texture size supported with given color format.
+        /**
+         * Get maximum square texture size supported with specified color format.
+         *
+         * Params:  format = Texture color format.
+         *
+         * Returns: Maximum square texture size supported with specified color format.
+         */
         uint max_texture_size(ColorFormat format);
 
         /**
-         * Create a texture from given image. Optionally force the texture to have its own texture page.
+         * Create a texture from given image.
+         *
+         * Params:  image      = Image to create a texture from.
+         *          force_page = Force the texture to be on a separate texture page?
+         *
+         * Returns: Handle to the created texture.
          *
          * Throws:  Exception if texture of needed size could not be created.
          */
         Texture create_texture(ref Image image, bool force_page = false);
 
-        ///Delete given texture.
+        ///Delete a texture.
         void delete_texture(Texture texture);
 
-        MonitorMenu monitor_menu()
+        override MonitorMenu monitor_menu()
         {
             //This exists due to what appears to be a linker bug - linker
             //doesn't work if this is not implemented even for abstract class
