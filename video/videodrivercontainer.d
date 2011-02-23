@@ -13,16 +13,17 @@ import video.fontmanager;
 import color;
 
 
-///Class managing lifetime and dependencies of video driver..
+///Class managing lifetime and dependencies of video driver.
 class VideoDriverContainer
 {
     private:
-        //FontManager used by the VideoDriver.
+        ///FontManager used by the VideoDriver.
         FontManager font_manager_;
-        //Video driver managed.
+        ///Video driver managed.
         VideoDriver video_driver_;
 
     public:
+        ///Construct a VideoDriverContainer.
         this(){font_manager_ = new FontManager;}
 
         /**
@@ -33,8 +34,7 @@ class VideoDriverContainer
          *          format     = Color format of initial video mode.
          *          fullscreen = Should initial video mode be fullscreen?
          */
-        VideoDriver produce(T)(uint width, uint height, ColorFormat format, 
-                               bool fullscreen)
+        VideoDriver produce(T)(uint width, uint height, ColorFormat format, bool fullscreen)
         {
             static assert(is(T : VideoDriver));
             video_driver_ = new T(font_manager_);
@@ -48,11 +48,16 @@ class VideoDriverContainer
         {
             font_manager_.unload_textures(video_driver_);
             video_driver_.die();
+            video_driver_ = null;
         }
 
-        ///Destroy the container and any existing video driver dependencies.
+        /**
+         * Destroy the container.
+         *
+         * Destroys any video driver dependencies.
+         * Video driver must be destroyed first by calling destroy().
+         */
         void die()
-        {
-            font_manager_.die();
-        }
+        in{assert(video_driver_ is null, "VideoDriver must be destroyed before its container");}
+        body{font_manager_.die();}
 }

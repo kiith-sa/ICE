@@ -1,12 +1,3 @@
-OK, so now document SimpleGraphMonitor and remove the commented out graph 
-generator functions.
-
-
-
-
-
-
-
 Now:
 
 Rewrite all docs comments to /// and /** format
