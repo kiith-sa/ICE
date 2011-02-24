@@ -340,7 +340,7 @@ table.params td:first-child {
   margin: 0.5em 0em;
   border: 1px dotted Gray;
   border-collapse: collapse;
-  background-color: #484854;
+  background-color: #A0A0C8;
 }
 .d_code pre {
   margin: 0.1em 0.2em;
@@ -355,7 +355,7 @@ table.params td:first-child {
 
 .d_codelines {
   border-right: 1px dotted Gray;
-  background-color: #707078;
+  background-color: #9898B8;
   text-align: right;
 }
 
@@ -369,11 +369,11 @@ table.params td:first-child {
   border: 1px dotted Gray;
   max-height: 300px;
   overflow: auto;
-  color: White;
+  color: Black;
 }
 
 .d_codelines a {
-  color: #D0D0FF;
+  color: Black;
   text-decoration: none;
   display: inline-block;
   width: 100%;
@@ -388,31 +388,31 @@ table.params td:first-child {
 }
 
 /* Number */
-/*.d_code*/ .n { color: #FF80FF; }
+/*.d_code*/ .n { color: #800000; }
 /* Keyword */
 /*.d_code*/ .k, .kw { color: #000020; font-weight: bold; }
 /* Line, block and nested comments */
-.d_code .lc, .d_code .bc, .d_code .nc { color: #E0E0FF; }
+.d_code .lc, .d_code .bc, .d_code .nc { color: #101010; }
 /* Identifier */
-/*.d_code*/ .i { color: #40AF00; }
+/*.d_code*/ .i { color: #003000; }
 /* String literal */
-/*.d_code*/ .sl { color: yellow; }
+/*.d_code*/ .sl { color: #402000; }
 /* Character literal */
-/*.d_code*/ .cl { color: purple; }
+/*.d_code*/ .cl { color: #201000; }
 /* Special tokens */
-/*.d_code*/ .st { color: lightgreen; font-weight: bold; }
+/*.d_code*/ .st { color: #008000; font-weight: bold; }
 /* #line, hash line */
-.d_code .hl { color: #80A080; }
+.d_code .hl { color: #204020; }
 /* filespec (e.g. #line number [filespec]) */
 .d_code .fs { color: purple;}
 /* The first line that starts with "#!" is called a "shebang" */
 .d_code .shebang { color: red; }
 /* Escape sequences. */
-.d_code .es { color: #10A0E0; }
+.d_code .es { color: #1010E0; }
 
 .d_code .d.Module .i, .d_code .d.Import .i { color: #200020; }
-.d_code .t.Identifier .i, .d_code .TemplateTypeParameter .i { color: #F0A040; }
-.d_code .t .k { color: #F0A040; font-weight: normal; }
+.d_code .t.Identifier .i, .d_code .TemplateTypeParameter .i { color: #000080; }
+.d_code .t .k { color: #000080; font-weight: normal; }
 
-.d_code .d > .i { color: #80FF80; }
-.d_code .o.Parameter > .i { color: #60D020; font-style: italic; }
+.d_code .d > .i { color: #003000; }
+.d_code .o.Parameter > .i { color: #404000; font-style: italic; }

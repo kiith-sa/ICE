@@ -1,6 +1,4 @@
 19:
-    Fix ddoc.css contrast issues.
-19:
     Look at every single signal and check if we disconnect properly.
     Particularly make sure to disconnect all buttons at destruction.
     (should do that automatically through disconnect_all)
