@@ -33,7 +33,14 @@ import memory.memory;
 import util.signal;
 
 
-///OpenGL (currently a mix of 1.x and 2.x, planning to be purely 2.x) based video driver.
+/**
+ * OpenGL (currently a mix of 1.x and 2.x, planning to be purely 2.x) based video driver.
+ * 
+ * Signal:
+ *     package mixin Signal!(Statistics) send_statistics
+ *
+ *     Used to send statistics data to GL monitors.
+ */
 abstract class GLVideoDriver : VideoDriver
 {
     protected:
@@ -78,7 +85,7 @@ abstract class GLVideoDriver : VideoDriver
         Statistics statistics_;
 
     package:
-        ///Used to send statistics data to physics monitors.
+        ///Used to send statistics data to GL monitors.
         mixin Signal!(Statistics) send_statistics;
         
     public:
@@ -134,6 +141,9 @@ abstract class GLVideoDriver : VideoDriver
             pages_ = [];
             textures_ = [];
             shaders_ = [];
+
+            send_statistics.disconnect_all();
+
             DerelictGL.unload();
         }
 

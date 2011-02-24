@@ -14,13 +14,19 @@ import time.timer;
 import util.signal;
 
 
-///Generalization of an FPS counter - counts how often an event happens
+/**
+ * Generalization of an FPS counter - counts how many times an event happens
+ *
+ * Signal:
+ *     public mixin Signal!(real) update
+ *
+ *     Emitted when a period ends - passes events per second.
+ */
 final class EventCounter
 {
     private:
         ///Time when this eventcounter started.
         real start_time_;
-
         ///Used for periodic updates.
         Timer period_;
 
@@ -45,6 +51,9 @@ final class EventCounter
             period_ = Timer(period);
             start_time_ = get_time();
         }
+
+        ///Destroy this EventCounter.
+        void die(){update.disconnect_all();}
 
         ///Count one event.
         void event()

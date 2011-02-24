@@ -28,7 +28,14 @@ enum ButtonState
     Clicked
 }                   
 
-///Simple clickable button with text.
+/**
+ * Simple clickable button with text.
+ *
+ * Signal:
+ *     public mixin Signal!() pressed
+ *
+ *     Emitted when this button is pressed. 
+ */
 class GUIButton : GUIElement
 {
     private:

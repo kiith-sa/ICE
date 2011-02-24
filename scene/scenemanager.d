@@ -81,7 +81,7 @@ final class SceneManager : ActorContainer
         void die()
         {
             clear();
-            update_counter_.update.disconnect(&ups_update);
+            update_counter_.die();
             singleton_dtor();
         }
 

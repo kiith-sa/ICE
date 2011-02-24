@@ -16,7 +16,14 @@ import util.signal;
 
 
 //Ugly, but must be here due to circular dependencies.
-///Used for monitoring manually allocated memory. 
+/**
+ * Used for monitoring manually allocated memory. 
+ * 
+ * Signal:
+ *     package mixin Signal!(Statistics) send_statistics
+ *
+ *     Used to send statistics data to memory monitors.
+ */
 final class MemoryMonitorable : Monitorable
 {
     mixin WeakSingleton;
@@ -33,7 +40,11 @@ final class MemoryMonitorable : Monitorable
         this(){singleton_ctor();}
 
         ///Destroy this MemoryMonitorable.
-        void die(){singleton_dtor();}
+        void die()
+        {
+            singleton_dtor();
+            send_statistics.disconnect_all();
+        }
 
         ///Update and send monitoring data to monitor.
         void update()

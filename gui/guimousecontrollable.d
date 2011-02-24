@@ -25,6 +25,22 @@ import util.signal;
  * as a child of GUI elements that need mouse  zooming/panning logic.
  *
  * Also, the name is ugly. Need a better one.
+ *
+ * Signal:
+ *     public mixin Signal!(float) zoom
+ *
+ *     Emitted when zooming. Float passed specifies zoom level change
+ *     (-1 : zoom out 1 level, +1 : zoom in 1 level)
+ *
+ * Signal:
+ *     public mixin Signal!(Vector2f) pan
+ *
+ *     Emitted when panning. Vector2f passed specifies relative change of panning.
+ *
+ * Signal:
+ *     public mixin Signal!() reset_view
+ *
+ *     Emitted user presses a button to return to default view.
  */
 final class GUIMouseControllable : GUIElement
 {
@@ -60,6 +76,15 @@ final class GUIMouseControllable : GUIElement
             super(GUIElementParams("p_left", "p_top", "p_width", "p_height", false));
             pan_key_ = pan_key;
             reset_view_key_ = reset_view_key;
+        }
+
+        override void die()
+        {
+            zoom.disconnect_all();
+            pan.disconnect_all();
+            reset_view.disconnect_all();
+
+            super.die();
         }
 
     protected:

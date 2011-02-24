@@ -15,7 +15,25 @@ import util.weaksingleton;
 import util.signal;
 
 
-///Handles platform specific functionality like input/output.
+/**
+ * Handles platform specific functionality like input/output.
+ *
+ *
+ * Signal:
+ *     public mixin Signal!(KeyState, Key, dchar) key
+ *
+ *     Emitted when a key is pressed. Passes the key, its state and unicode value.
+ *
+ * Signal:
+ *     public mixin Signal!(KeyState, MouseKey, Vector2u) mouse_key 
+ *
+ *     Emitted when a mouse button is pressed. Passes the key, its state and mouse position.
+ *
+ * Signal:
+ *     public mixin Signal!(Vector2u, Vector2i) mouse_motion
+ *
+ *     Emitted when mouse is moved. Passes mouse position and position change. 
+ */
 abstract class Platform
 {
     mixin WeakSingleton;
@@ -30,7 +48,6 @@ abstract class Platform
     public:
         ///Emitted when a key is pressed. Passes the key, its state and unicode value.
         mixin Signal!(KeyState, Key, dchar) key;
-
         ///Emitted when a mouse button is pressed. Passes the key, its state and mouse position.
         mixin Signal!(KeyState, MouseKey, Vector2u) mouse_key;
         ///Emitted when mouse is moved. Passes mouse position and position change.
@@ -44,7 +61,14 @@ abstract class Platform
         this(){singleton_ctor();}
 
         ///Destroy the Platform.
-        void die(){singleton_dtor();}
+        void die()
+        {
+            key.disconnect_all();
+            mouse_key.disconnect_all();
+            mouse_motion.disconnect_all();
+
+            singleton_dtor();
+        }
         
         ///Collect input and determine if the game should continue to run.
         bool run(){return run_;}

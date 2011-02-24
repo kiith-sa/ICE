@@ -2108,7 +2108,7 @@ class Pong
                 game_container_.destroy();
                 game_ = null;
             }
-            fps_counter_.update.disconnect(&fps_update);
+            fps_counter_.die();
             gui_.monitor.remove_monitorable(video_driver_);
             gui_.monitor.remove_monitorable(memory_);
             gui_.die();

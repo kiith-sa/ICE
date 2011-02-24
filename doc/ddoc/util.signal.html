@@ -18,14 +18,30 @@
   <h1 class="module" id="m-util.signal"><a href="htmlsrc/util.signal.html" class="symbol">util.signal</a></h1>
 
 <dl>
-<dt class="decl"><span class="kw">template</span> <a class="symbol _template" name="Signal" href="htmlsrc/util.signal.html#L14">Signal</a><span class="tparams">(<em>Args</em>...)</span> <a href="util.signal.html#Signal" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">template</span> <a class="symbol _template" name="Signal" href="htmlsrc/util.signal.html#L28">Signal</a><span class="tparams">(<em>Args</em>...)</span> <a href="util.signal.html#Signal" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Signal template mixin for Qt-like signals/slots.</div></div>
+<div class="cmnt">Signals should always be documented in header class documentation,
+ and always disconnect all their slots (disconnect_all) at their
+ owner class destructor or die() method.</div>
+<p class="sec_header">Examples:</p><div class="cmnt"><table class="d_code">
+  <tr><td class="d_codelines">
+<pre><a href="#L1_ex1" name="L1_ex1">1</a>
+<a href="#L2_ex1" name="L2_ex1">2</a>
+<a href="#L3_ex1" name="L3_ex1">3</a>
+<a href="#L4_ex1" name="L4_ex1">4</a>
+</pre></td><td class="d_codetext"><pre>
+<span class="i">Signal</span>:
+    <span class="k">public</span> <span class="k">mixin</span> <span class="i">Signal</span>!() <span class="i">back</span>
+
+    <span class="i">Used</span> <span class="i">to</span> <span class="k">return</span> <span class="i">back</span> <span class="i">to</span> <span class="i">parent</span> <span class="i">menu</span>.</pre>
+</td></tr>
+</table></div>
 <dl>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Signal.emit" href="htmlsrc/util.signal.html#L22">emit</a><span class="params">(Args <em>args</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="util.signal.html#Signal.emit" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Signal.emit" href="htmlsrc/util.signal.html#L36">emit</a><span class="params">(Args <em>args</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="util.signal.html#Signal.emit" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Emit the signal (call all slots with specified arguments).</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Signal.connect" href="htmlsrc/util.signal.html#L35">connect</a><span class="params">(void delegate(Args) <em>slot</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="util.signal.html#Signal.connect" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Signal.connect" href="htmlsrc/util.signal.html#L49">connect</a><span class="params">(void delegate(Args) <em>slot</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="util.signal.html#Signal.connect" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Connect a slot to the signal.</div></div>
 <div class="cmnt">One slot can be connected more than once, resulting in multiple calls 
@@ -33,7 +49,7 @@
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>slot</em></td><td>Slot to connect.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Signal.disconnect" href="htmlsrc/util.signal.html#L47">disconnect</a><span class="params">(void delegate(Args) <em>slot</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="util.signal.html#Signal.disconnect" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Signal.disconnect" href="htmlsrc/util.signal.html#L61">disconnect</a><span class="params">(void delegate(Args) <em>slot</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="util.signal.html#Signal.disconnect" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Disconnect a slot from the signal.</div></div>
 <div class="cmnt">If a slot is connected more than once, it must be disconnected
@@ -41,13 +57,13 @@
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>slot</em></td><td>Slot to disconnect. Must already be connected.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Signal.disconnect_all" href="htmlsrc/util.signal.html#L61">disconnect_all</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="util.signal.html#Signal.disconnect_all" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Signal.disconnect_all" href="htmlsrc/util.signal.html#L75">disconnect_all</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="util.signal.html#Signal.disconnect_all" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Disconnect all connected slots.</div></div></dd></dl></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Feb 24 21:00:04 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Feb 24 21:54:10 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

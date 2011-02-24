@@ -10,7 +10,21 @@ module util.signal;
 import containers.array;
 
 
-///Signal template mixin for Qt-like signals/slots.
+/**
+ * Signal template mixin for Qt-like signals/slots.
+ *
+ * Signals should always be documented in header class documentation,
+ * and always disconnect all their slots (disconnect_all) at their
+ * owner class destructor or die() method.
+ * 
+ * Examples:
+ * --------------------
+ * Signal:
+ *     public mixin Signal!() back
+ *
+ *     Used to return back to parent menu.
+ * --------------------
+ */
 template Signal(Args ...)	
 {
     private:

@@ -27,6 +27,11 @@ import util.iterator;
  *
  * Physics objects are PhysicsBodies which contain state like mass, velocity
  * and collision volume.
+ * 
+ * Signal:
+ *     package mixin Signal!(Statistics) send_statistics
+ *
+ *     Used to send statistics data to physics monitors.
  */
 final class PhysicsEngine : Monitorable
 {
@@ -101,6 +106,7 @@ final class PhysicsEngine : Monitorable
             //destroy any remaining bodies
             foreach(physics_body; bodies_){physics_body.die();}
             bodies_ = [];
+            send_statistics.disconnect_all();
             singleton_dtor();
         }
 

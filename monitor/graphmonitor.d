@@ -235,7 +235,7 @@ abstract class GraphMonitor : SubMonitor
  *         Statistics statistics_;
  *
  *     public:  
- *         Signal!(Statistics) send_statistics;
+ *         mixin Signal!(Statistics) send_statistics;
  *         
  *         void update()
  *         {
