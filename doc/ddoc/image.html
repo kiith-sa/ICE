@@ -18,51 +18,78 @@
   <h1 class="module" id="m-image"><a href="htmlsrc/image.html" class="symbol">image</a></h1>
 
 <dl>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="Image" href="htmlsrc/image.html#L15">Image</a> <span class="attrs">[<span class="stc">final</span>]</span> <a href="image.html#Image" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="Image" href="htmlsrc/image.html#L17">Image</a> <span class="attrs">[<span class="stc">final</span>]</span> <a href="image.html#Image" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Image object capable of storing images in various color formats.</div></div>
 <dl>
-<dt class="decl"><a class="symbol _invariant" name="Image.invariant" href="htmlsrc/image.html#L17">invariant</a> <a href="image.html#Image.invariant" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _invariant" name="Image.invariant" href="htmlsrc/image.html#L19">invariant</a> <a href="image.html#Image.invariant" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><a class="symbol _ctor" name="Image.this" href="htmlsrc/image.html#L31">this</a><span class="params">(uint <em>width</em>, uint <em>height</em>, ColorFormat <em>format</em> = <span class="defval"><span class="i">RGBA_8</span></span>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="image.html#Image.this" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _ctor" name="Image.this" href="htmlsrc/image.html#L37">this</a><span class="params">(uint <em>width</em>, uint <em>height</em>, ColorFormat <em>format</em> = <span class="defval"><span class="i">RGBA_8</span></span>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="image.html#Image.this" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Construct an image with specified size and format.</div></div></dd>
-<dt class="decl"><a class="symbol _dtor" name="Image.~this" href="htmlsrc/image.html#L39">~this</a>() <span class="attrs">[<span class="prot">public</span>]</span> <a href="image.html#Image.~this" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Construct an image.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>width</em></td><td>Width in pixels.</td></tr>
+<tr><td><em>height</em></td><td>Height in pixels.</td></tr>
+<tr><td><em>format</em></td><td>Color format of the image.</td></tr></table></dd>
+<dt class="decl"><a class="symbol _dtor" name="Image.~this" href="htmlsrc/image.html#L45">~this</a>() <span class="attrs">[<span class="prot">public</span>]</span> <a href="image.html#Image.~this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Destroy the image and free its memory.</div></div></dd>
-<dt class="decl"><span class="rettyp">ColorFormat</span> <a class="symbol _function" name="Image.format" href="htmlsrc/image.html#L42">format</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="image.html#Image.format" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">ColorFormat</span> <a class="symbol _function" name="Image.format" href="htmlsrc/image.html#L48">format</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="image.html#Image.format" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Get color format of the image.</div></div></dd>
-<dt class="decl"><span class="rettyp">Vector2u</span> <a class="symbol _function" name="Image.size" href="htmlsrc/image.html#L45">size</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="image.html#Image.size" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Vector2u</span> <a class="symbol _function" name="Image.size" href="htmlsrc/image.html#L51">size</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="image.html#Image.size" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Get size of the image.</div></div></dd>
-<dt class="decl"><span class="rettyp">ubyte[]</span> <a class="symbol _function" name="Image.data" href="htmlsrc/image.html#L48">data</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="image.html#Image.data" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">ubyte[]</span> <a class="symbol _function" name="Image.data" href="htmlsrc/image.html#L54">data</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="image.html#Image.data" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Get direct access to the data stored in the image.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Image.set_pixel" href="htmlsrc/image.html#L51">set_pixel</a><span class="params">(uint <em>x</em>, uint <em>y</em>, Color <em>color</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="image.html#Image.set_pixel" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Get direct access to image data.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Image.set_pixel" href="htmlsrc/image.html#L65">set_pixel</a><span class="params">(uint <em>x</em>, uint <em>y</em>, Color <em>color</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="image.html#Image.set_pixel" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Set RGBA pixel color.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Image.set_pixel:2" href="htmlsrc/image.html#L68">set_pixel</a><span class="params">(uint <em>x</em>, uint <em>y</em>, ubyte <em>color</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="image.html#Image.set_pixel:2" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Set RGBA pixel color.</div></div>
+<div class="cmnt">Only valid on RGBA_8 images.</div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>x</em></td><td>X coordinate of the pixel.</td></tr>
+<tr><td><em>y</em></td><td>Y coordinate of the pixel.</td></tr>
+<tr><td><em>color</em></td><td>Color to set.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Image.set_pixel:2" href="htmlsrc/image.html#L89">set_pixel</a><span class="params">(uint <em>x</em>, uint <em>y</em>, ubyte <em>color</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="image.html#Image.set_pixel:2" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Set grayscale pixel color.</div></div></dd>
-<dt class="decl"><span class="rettyp">Color</span> <a class="symbol _function" name="Image.get_pixel" href="htmlsrc/image.html#L78">get_pixel</a><span class="params">(uint <em>x</em>, uint <em>y</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="image.html#Image.get_pixel" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Set grayscale pixel color.</div></div>
+<div class="cmnt">Only valid on GRAY_8 images.</div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>x</em></td><td>X coordinate of the pixel.</td></tr>
+<tr><td><em>y</em></td><td>Y coordinate of the pixel.</td></tr>
+<tr><td><em>color</em></td><td>Color to set.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">Color</span> <a class="symbol _function" name="Image.get_pixel" href="htmlsrc/image.html#L107">get_pixel</a><span class="params">(uint <em>x</em>, uint <em>y</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="image.html#Image.get_pixel" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Get RGBA pixel color.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Image.generate_checkers" href="htmlsrc/image.html#L95">generate_checkers</a><span class="params">(uint <em>size</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="image.html#Image.generate_checkers" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Get RGBA color of a pixel.</div></div>
+<div class="cmnt">Only supported on RGBA_8 images (can be improved).</div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>x</em></td><td>X coordinate of the pixel.</td></tr>
+<tr><td><em>y</em></td><td>Y coordinate of the pixel.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Color of the pixel.</div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Image.generate_checkers" href="htmlsrc/image.html#L127">generate_checkers</a><span class="params">(uint <em>size</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="image.html#Image.generate_checkers" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Generate a black/transparent-white/opague checker pattern
-with specified size of one square of the pattern.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Image.generate_stripes" href="htmlsrc/image.html#L129">generate_stripes</a><span class="params">(uint <em>distance</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="image.html#Image.generate_stripes" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Generate a black/transparent-white/opague checker pattern.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>size</em></td><td>Size of one checker square.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Image.generate_stripes" href="htmlsrc/image.html#L164">generate_stripes</a><span class="params">(uint <em>distance</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="image.html#Image.generate_stripes" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Generate a black/transparent-white/opague stripe pattern
-with specified distance between 1-pixel wide stripes.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Image.gamma_correct" href="htmlsrc/image.html#L158">gamma_correct</a><span class="params">(real <em>factor</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="image.html#Image.gamma_correct" class="plink">¶</a></dt>
+<div class="summary"><div class="cmnt">Generate a black/transparent-white/opague stripe pattern</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>distance</em></td><td>Distance between 1 pixel wide stripes.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Image.gamma_correct" href="htmlsrc/image.html#L193">gamma_correct</a><span class="params">(real <em>factor</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="image.html#Image.gamma_correct" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Gamma correct the image with specified factor.</div></div></dd></dl></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Feb 24 12:21:54 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Feb 24 13:03:35 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

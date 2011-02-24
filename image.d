@@ -11,23 +11,29 @@ import math.vector2;
 import color;
 import memory.memory;
 
+
+//could be optimized by adding a pitch data member (bytes per row)    
 ///Image object capable of storing images in various color formats.
 final class Image
 {
     invariant{assert(data_ !is null, "Image with NULL data");}
 
     private:
-        //note: could be optimized by adding a pitch data member (bytes per row)    
-
-        //Image data. Manually allocated.
+        ///Image data. Manually allocated.
         ubyte[] data_ = null;
-        //Size of the image in pixels.
+        ///Size of the image in pixels.
         Vector2u size_;
-        //Color format of the image.
+        ///Color format of the image.
         ColorFormat format_;
 
     public:
-        ///Construct an image with specified size and format.
+        /**
+         * Construct an image.
+         *
+         * Params:  width  = Width in pixels.
+         *          height = Height in pixels.
+         *          format = Color format of the image.
+         */
         this(uint width, uint height, ColorFormat format = ColorFormat.RGBA_8)
         {
             data_ = alloc!(ubyte)(width * height * bytes_per_pixel(format));
@@ -44,16 +50,23 @@ final class Image
         ///Get size of the image.
         Vector2u size(){return size_;}
 
-        ///Get direct access to the data stored in the image.
+        ///Get direct access to image data.
         ubyte[] data(){return data_;}
 
-        ///Set RGBA pixel color.
+        /**
+         * Set RGBA pixel color.
+         *
+         * Only valid on RGBA_8 images.
+         *
+         * Params:  x     = X coordinate of the pixel.
+         *          y     = Y coordinate of the pixel.
+         *          color = Color to set.
+         */
         void set_pixel(uint x, uint y, Color color)
         in
         {
             assert(x < size_.x && y < size_.y, "Pixel out of range");
-            assert(format == ColorFormat.RGBA_8,
-                   "Setting a non-RGBA_8 pixel with RGBA_8 color");
+            assert(format == ColorFormat.RGBA_8, "Incorrect image format");
         }
         body
         {
@@ -64,17 +77,33 @@ final class Image
             data_[offset + 3] = color.a;
         }
 
-        ///Set grayscale pixel color.
+        /**
+         * Set grayscale pixel color.
+         *
+         * Only valid on GRAY_8 images.
+         *
+         * Params:  x     = X coordinate of the pixel.
+         *          y     = Y coordinate of the pixel.
+         *          color = Color to set.
+         */
         void set_pixel(uint x, uint y, ubyte color)
         in
         {
             assert(x < size_.x && y < size_.y, "Pixel out of range");
-            assert(format == ColorFormat.GRAY_8,
-                   "Setting a non-GRAY_8 pixel with GRAY_8 color");
+            assert(format == ColorFormat.GRAY_8, "Incorrect image format");
         }
         body{data_[y * size_.x + x] = color;}
 
-        ///Get RGBA pixel color.
+        /**
+         * Get RGBA color of a pixel.
+         *
+         * Only supported on RGBA_8 images (can be improved).
+         *
+         * Params:  x = X coordinate of the pixel.
+         *          y = Y coordinate of the pixel.
+         *
+         * Returns: Color of the pixel.
+         */
         Color get_pixel(uint x, uint y)
         in
         {
@@ -85,13 +114,16 @@ final class Image
         body
         {
             uint offset = (y * size_.x + x) * 4;
-            return Color(data_[offset], data_[offset + 1], data_[offset + 2],
-                         data_[offset + 3]);
+            return Color(data_[offset], data_[offset + 1], 
+                         data_[offset + 2], data_[offset + 3]);
         }
         
         //This is extremely ineffective/ugly, but not really a priority
-        ///Generate a black/transparent-white/opague checker pattern
-        ///with specified size of one square of the pattern.
+        /**
+         * Generate a black/transparent-white/opague checker pattern.
+         *
+         * Params:  size = Size of one checker square.
+         */
         void generate_checkers(uint size)
         {
             bool white;
@@ -124,8 +156,11 @@ final class Image
         }
 
         //This is extremely ineffective/ugly, but not really a priority
-        ///Generate a black/transparent-white/opague stripe pattern
-        ///with specified distance between 1-pixel wide stripes.
+        /**
+         * Generate a black/transparent-white/opague stripe pattern
+         *
+         * Params:  distance = Distance between 1 pixel wide stripes.
+         */
         void generate_stripes(uint distance)
         {
             for(uint y = 0; y < size_.y; ++y)
@@ -156,10 +191,7 @@ final class Image
 
         ///Gamma correct the image with specified factor.
         void gamma_correct(real factor)
-        in
-        {
-            assert(factor >= 0.0, "Gamma correction factor must not be negative");
-        }
+        in{assert(factor >= 0.0, "Gamma correction factor must not be negative");}
         body
         {
             Color pixel;
@@ -175,13 +207,11 @@ final class Image
                             set_pixel(x, y, pixel);
                             break;
                         case ColorFormat.GRAY_8:
-                            set_pixel(x, y,
-                                      color.gamma_correct(data_[y * size_.x + x], 
-                                                          factor));
+                            set_pixel(x, y, color.gamma_correct(data_[y * size_.x + x], 
+                                      factor));
                             break;
                         default:
-                            assert(false, "Unsupported color format "
-                                          "for gamma correction");
+                            assert(false, "Unsupported color format for gamma correction");
                     }
                 }
             }
