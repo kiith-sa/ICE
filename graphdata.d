@@ -13,6 +13,7 @@ import time.timer;
 import containers.array;
 import containers.vector;
 
+
 ///Graph modes.
 enum GraphMode
 {
@@ -28,14 +29,14 @@ enum GraphMode
 final class GraphData
 {
     private:
-        ///Stores values accumulated over a time period set by GUIGraph's time_resolution.
+        ///Stores values accumulated over a time period set by GraphData's time_resolution.
         static align(1) struct Value
         {
-            //Time point of the value (set to the middle of measurement).
+            ///Time point of the value (set to the middle of measurement).
             real time;
-            //Sum of the values measured.
+            ///Sum of the values measured.
             real value = 0.0;
-            //Number of values accumulated.
+            ///Number of values accumulated.
             uint value_count = 0;
         }                 
 
@@ -43,37 +44,32 @@ final class GraphData
         class Graph
         {
             private:
-                //Value we're currently accumulating to. This is a total of values 
-                //added over period specified by the time resolution.
+                ///Value we're currently accumulating to.
                 Value current_value_;
-                //Values recorded, sorted from earliest to latest.
+                ///Recorded values sorted from earliest to latest.
                 Vector!(Value) values_;
-                //Vector holding memory for arrays returned by data_points.
+                ///Memory for arrays returned by data_points().
                 Vector!(real) data_points_;
-                /*
-                 * Vector holding memory for temporary value ounts arrays used to 
-                 * compute data points in average mode.
-                 */
+                ///Memory for value counts array used to compute data points in average mode.
                 Vector!(uint) value_counts_;
 
             public:
-                /*
-                 * Accumulate recorded values to data points, one point per
-                 * period specified, each data point being an sum or average of values
-                 * over that period, depending on graph mode. 
-                 * Return data points between times specified by start and end.
+                /**
+                 * Accumulate values recorded over a time window to data points, one 
+                 * point per period specified, each data point is an sum or average of 
+                 * values over the period, depending on graph mode. 
                  * 
-                 * Params:  start  = Start time to take data points from.
-                 *          end    = End time to take data points until.
+                 * Params:  start  = Start of the time window.
+                 *          end    = End of the time window.
                  *          period = Time period to represent by single data point.
                  * 
-                 * Returns: Resulting array of data points.
+                 * Returns: Array of data points in specified time window.
                  */
                 real[] data_points(real start, real end, real period)
                 in
                 {
-                    assert(start < end, "Can't retrieve data points for a time window"
-                                        " that ends before it starts");
+                    assert(start < end, 
+                           "Can't get data points for a time window that ends before it starts");
                 }
                 body
                 {
@@ -81,39 +77,33 @@ final class GraphData
                     data_points_.array[] = 0.0;
                     if(empty){return data_points_.array;}
 
-                    if(mode_ == GraphMode.Sum)
-                    {
-                        data_points_sum(start, period);
-                    }
-                    else if(mode_ == GraphMode.Average)
-                    {
-                        data_points_average(start, period);
-                    }
+                    if(mode_ == GraphMode.Sum){data_points_sum(start, period);}
+                    else if(mode_ == GraphMode.Average){data_points_average(start, period);}
                     else{assert(false, "Unsupported graph mode");}
 
                     return data_points_.array;
                 }
 
-                /*
-                 * Is this graph empty, i.e. there are no values stored?
+                /**
+                 * Is the graph empty, i.e. are there no values stored?
                  *
                  * Note that the graph is empty until the first accumulated
                  * value is added, which depends on time resolution.
                  */
                 bool empty(){return values_.length == 0;}
 
-                /*
-                 * Return start time of the graph, i.e. time of the first value in the graph.
+                /**
+                 * Get start time of the graph, i.e. time of the first value in the graph.
                  *
-                 * Note that this only makes sense if the graph is not empty.
+                 * Only makes sense if the graph is not empty.
                  */
                 real start_time()
                 in{assert(!empty(), "Can't get start time of an empty graph");}
                 body{return values_[0].time;}
 
             private:
-                /*
-                 * Construct the graph with specified starting time.
+                /**
+                 * Construct a graph with specified starting time.
                  *
                  * Params:  time = Starting time of the graph.
                  */
@@ -133,7 +123,7 @@ final class GraphData
                     value_counts_.die();
                 }
 
-                /*
+                /**
                  * Update the graph and finish accumulating a value.
                  *
                  * Params:  time = End time of the accumulated value.
@@ -146,7 +136,7 @@ final class GraphData
                     current_value_.value_count = 0;
                 }
 
-                /*
+                /**
                  * Add a value to the graph. 
                  * 
                  * Params:  value = Value to add. 
@@ -158,13 +148,12 @@ final class GraphData
                     current_value_.value_count++;
                 }
 
-            private:
                 /**
                  * Get the index of the first value to be aggregated to data points
                  * with specified start time and period.
                  *
                  * Params:  start  = Start time to get data points from.
-                 *          period = Length of time to represent single data point.
+                 *          period = Length of time to represent by single data point.
                  *
                  * Returns: Index of the first value to aggregate.
                  */
@@ -208,7 +197,6 @@ final class GraphData
                     uint num_points = data_points_.length;
                     real* points_ptr = data_points_.array.ptr;
 
-
                     Value* values_ptr = values_.array.ptr;
                     Value* values_end = values_ptr + values_.length;
 
@@ -245,7 +233,9 @@ final class GraphData
                      
                     //zero all value counts. memset could make this even faster, but want to avoid cstdlib if I can
                     for(uint* count = value_counts_ptr; count < value_counts_end; count++)
-                    {*count = 0;}
+                    {
+                        *count = 0;
+                    }
 
                     Value* values_ptr = values_.array.ptr;
                     Value* values_end = values_ptr + values_.length;
@@ -275,17 +265,17 @@ final class GraphData
         }
                   
 
-        ///Graphs of values measured, indexed by values' names.
+        ///Graphs of measured values, indexed by values' names.
         Graph[string] graphs_;
 
-        //Graph mode, i.e. are data points sums or averages over time?
+        ///Graph mode: Are data points sums or averages over time?
         GraphMode mode_ = GraphMode.Average;
 
-        //Time when this guigraph was created
+        ///Time when this GraphData was created
         real start_time_;
-        //Shortest time period to accumulate values for.
+        ///Shortest time period to accumulate values for.
         real time_resolution_ = 0.0625;
-        //Timer used to time graph updates.
+        ///Timer used to time graph updates.
         Timer update_timer_;
 
     public:
@@ -330,26 +320,25 @@ final class GraphData
         ///Get time when this graph started to exist.
         final real start_time(){return start_time_;}
 
-        ///Get names of values measured.
+        ///Get names of measured values.
         final string[] graph_names(){return graphs_.keys;}
 
-        ///Add a value to the graph for value with specified name.
+        ///Add a value to the graph of value with specified name.
         final void update_value(string name, real value)
         in{assert(graphs_.keys.contains(name), "Adding unknown value to graph");}
         body{graphs_[name].add_value(value);}
 
         /**
-         * Accumulate recorded values to data points, one point per
-         * period specified, each data point being an sum or average of values
-         * over that period, depending on graph mode. 
-         * Return data points between times specified by start and end.
+         * Accumulate values recorded over a time window to data points, one 
+         * point per specified period, each data point is a sum or average of 
+         * values over the period, depending on graph mode. 
          * 
          * Params:  name   = Name of the value to get data points for.
-         *          start  = Start time to take data points from.
-         *          end    = End time to take data points until.
+         *          start  = Start of the time window.
+         *          end    = End of the time window.
          *          period = Time period to represent by single data point.
          * 
-         * Returns: Resulting array of data points.
+         * Returns: Array of data points in the specified time window.
          */
         real[] data_points(string name, real start, real end, real period)
         {
@@ -359,12 +348,12 @@ final class GraphData
         /**
          * Determine if graph of value with specified name is empty.
          *
-         * Note that the graph is empty for a while until first value accumulates
+         * Note that the graph is empty for a while until first accumulated
          * value is added, which depends on time resolution.
          *
          * Params:  name = Name of the value to check.
          *
-         * Returns: true if the graph is empty, false otherwise.
+         * Returns: True if the graph is empty, false otherwise.
          */
         bool empty(string name){return graphs_[name].empty;}
 
