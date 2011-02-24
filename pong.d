@@ -9,9 +9,9 @@
  *
  * Introduction:
  * 
- * This is the complete API documentation for Pong engine. It describes
+ * This is the complete API documentation for the Pong engine. It describes
  * all classes, structs, interfaces, functions, etc. .
- * This API documentation is intended to serve for developers who want to
+ * This API documentation is intended to serve developers who want to
  * improve the Pong engine, as well as those who want to modify it for
  * their own needs.
  */
@@ -27,7 +27,6 @@ import std.c.stdlib;
 
 import math.math;
 import math.vector2;
-import math.line2;
 import math.rectangle;
 import video.videodriver;
 import video.sdlglvideodriver;
@@ -66,16 +65,15 @@ import util.factory;
 class Wall : Actor
 {
     protected:
-
-        //Default color of the wall.
+        ///Default color of the wall.
         Color default_color_ = Color(0, 0, 0, 0);
-        //Current color of the wall.
+        ///Current color of the wall.
         Color color_;
-        //Default color of the wall border.
+        ///Default color of the wall border.
         Color default_color_border_ = Color(224, 224, 255, 224);
-        //Current color of the wall border.                 
+        ///Current color of the wall border.                 
         Color color_border_;
-        //Area taken up by the wall
+        ///Area taken up by the wall.
         Rectanglef box_;
 
     public:
@@ -86,13 +84,12 @@ class Wall : Actor
         void velocity(Vector2f v){physics_body_.velocity = v;}
 
     protected:
-        /*
+        /**
          * Construct a wall with specified parameters.
          *
-         * Params:  container    = Container to manage the wall.
+         * Params:  container    = Actor container to manage the wall.
          *          physics_body = Physics body of the wall.
-         *          box          = Rectangle used for graphical representation of the
-         *                         wall.
+         *          box          = Rectangle used for graphical representation of the wall.
          */
         this(ActorContainer container, PhysicsBody physics_body, ref Rectanglef box)
         {
@@ -113,7 +110,7 @@ class Wall : Actor
         {
             foreach(collider; physics_body_.colliders)
             {
-                if(collider.classinfo == BallBody.classinfo)
+                if(collider.classinfo is BallBody.classinfo)
                 {
                     ball_hit.emit(cast(BallBody)collider);
                 }
@@ -125,18 +122,18 @@ class Wall : Actor
  * Base class for factories constructing Wall and derived classes.
  *
  * Params:  box_min = Minimum extent of the wall relative to its position.
- *                    Default: Vector2f(0.0f, 0.0f)
+ *                    Default; Vector2f(0.0f, 0.0f)
  *          box_max = Maximum extent of the wall relative to its position.
- *                    Default: Vector2f(1.0f, 1.0f)
+ *                    Default; Vector2f(1.0f, 1.0f)
  */
 abstract class WallFactoryBase(T) : ActorFactory!(T)
 {
     mixin(generate_factory("Vector2f $ box_min $ Vector2f(0.0f, 0.0f)", 
                            "Vector2f $ box_max $ Vector2f(1.0f, 1.0f)"));
     private:
-        //Get a collision aabbox based on factory parameters. Used in produce().
+        ///Get a collision aabbox based on factory parameters. Used in produce().
         VolumeAABBox bbox(){return new VolumeAABBox(box_min_, box_max_ - box_min_);}
-        //Get a bounds rectangle based on factory parameters. Used in produce().
+        ///Get a bounds rectangle based on factory parameters. Used in produce().
         Rectanglef rectangle(){return Rectanglef(box_min_, box_max_);}
 }
 
@@ -154,23 +151,24 @@ class WallFactory : WallFactoryBase!(Wall)
 /**
  * Physics body of a paddle. 
  *
- * Contains functionality to make Arkanoid style ball reflection possible.
+ * Contains functionality making Arkanoid style ball reflection possible.
  */
 class PaddleBody : PhysicsBody
 {
     private:
-        //Max ratio of X and Y speed when reflecting the ball,
-        //i.e., if this is 1.0, and the ball gets reflected from
-        //the corner of the paddle, ratio of X and Y members of
-        //reflected ball velocity will be 1:1.
+        /**
+         * Max ratio of X and Y speed when reflecting the ball, i.e., if this is 1.0,
+         * and the ball gets reflected from the corner of the paddle, ratio of X and Y
+         * components of reflected ball velocity will be 1:1.
+        */
         real max_xy_ratio_ = 1.0;
 
-        //Limits of paddle body movement in world space.
+        ///Limits of paddle body movement in world space.
         Rectanglef limits_;
 
     public:
         /**
-         * Return velocity to reflect given BallBody at.
+         * Return velocity to reflect a BallBody at.
          *
          * Used by BallBody collision response.
          *
@@ -227,11 +225,11 @@ class PaddleBody : PhysicsBody
             super.update(time_step, manager);
         }
 
-        ///Return limits of movement of this paddle body.
-        public Rectanglef limits(){return limits_;}
+        ///Get movement limits of this paddle body.
+        final Rectanglef limits(){return limits_;}
 
     protected:
-        /*
+        /**
          * Construct a paddle body with specified parameters.
          *
          * Params:  aabbox   = Collision aabbox of the body. 
@@ -240,8 +238,8 @@ class PaddleBody : PhysicsBody
          *          mass     = Mass of the body.
          *          limits   = Limits of body's movement
          */
-        this(VolumeAABBox aabbox,Vector2f position, Vector2f velocity, 
-             real mass, ref Rectanglef limits)
+        this(VolumeAABBox aabbox,Vector2f position, Vector2f velocity, real mass, 
+             ref Rectanglef limits)
         {
             super(aabbox, position, velocity, mass);
             limits_ = limits;
@@ -249,7 +247,7 @@ class PaddleBody : PhysicsBody
 
     private:
         ///Return rectangle representing bounding box of this body in world space.
-        Rectanglef aabbox()
+        final Rectanglef aabbox()
         in
         {
             //checking here because invariant can't call public function members
@@ -281,25 +279,25 @@ class Paddle : Wall
     }
 
     private:
-        //Default speed of this paddle.
+        ///Default speed of this paddle.
         real default_speed_;
-        //Current speed of this paddle.
+        ///Current speed of this paddle.
         real speed_;
-        //Particle emitter of the paddle
+        ///Particle emitter of the paddle
         ParticleEmitter emitter_;
-        //Default emit frequency of the emitter.
+        ///Default emit frequency of the emitter.
         real default_emit_frequency_;
-        //"Energy" from collisions, affects speed and graphics.
+        ///"Energy" from collisions, affects speed and graphics.
         real energy_ = 0.0;
-        //Multiplier applied to energy related effects.
+        ///Multiplier applied to energy related effects.
         real energy_mult_ = 0.00001;
-        //How much energy "dissipates" per second.
+        ///How much energy "dissipates" per second.
         real dissipate_rate_ = 12000.0;
-        //Color to interpolate to based on energy levels.
+        ///Color to interpolate to based on energy levels.
         Color energy_color_ = Color(224, 224, 255, 192);
 
     public:
-        ///Return limits of movement of this paddle.
+        ///Get movement limits of this paddle.
         Rectanglef limits(){return (cast(PaddleBody)physics_body_).limits;}
 
         ///Control the paddle to move right (used by player or AI).
@@ -321,10 +319,10 @@ class Paddle : Wall
         }
 
     protected:
-        /*
+        /**
          * Construct a paddle with specified parameters.
          *
-         * Params:  container    = Container to manage this actor.
+         * Params:  container    = Actor container to manage this paddle.
          *          physics_body = Physics body of the paddle.
          *          box          = Rectangle used for graphics representation of the paddle.
          *          speed        = Speed of paddle movement.
@@ -366,11 +364,11 @@ class Paddle : Wall
  * Factory used to construct paddles.
  *
  * Params:  limits_min = Minimum extent of paddle movement limits in world space.
- *                       Default: Vector2f(-2.0f, -2.0f)
+ *                       Default; Vector2f(-2.0f, -2.0f)
  *          limits_max = Maximum extent of paddle movement limits in world space.
- *                       Default: Vector2f(2.0f, 2.0f)
+ *                       Default; Vector2f(2.0f, 2.0f)
  *          speed      = Speed of paddle movement.
- *                       Default: 135.0
+ *                       Default; 135.0
  */
 class PaddleFactory : WallFactoryBase!(Paddle)
 {
@@ -381,8 +379,7 @@ class PaddleFactory : WallFactoryBase!(Paddle)
     public override Paddle produce(ActorContainer container)
     {
         auto limits = Rectanglef(limits_min_, limits_max_);
-        auto physics_body = new PaddleBody(bbox, position_, velocity_, real.infinity,
-                                           limits);
+        auto physics_body = new PaddleBody(bbox, position_, velocity_, real.infinity, limits);
 
         //construct particle system of the paddle
         LineEmitter emitter;
@@ -413,6 +410,7 @@ class BallBody : PhysicsBody
 {
     invariant{assert(radius_ > 1.0f, "Ball radius must be at least 1.0");}
     private:
+        ///Radius of the ball body.
         float radius_;
 
     public:
@@ -432,22 +430,21 @@ class BallBody : PhysicsBody
             super.collision_response(contact);
         }
 
-        ///Returns radius of this ball body for drawing.
+        ///Get radius of this ball body.
         float radius(){return radius_;}
 
     protected:
         /**
          * Construct a ball body with specified parameters.
          *
-         * Params:  circle   = Collision circle of the ball.
-         *          position = Starting position of the body.
-         *          velocity = Starting velocity of the body.
+         * Params:  circle   = Collision circle of the body.
+         *          position = Starting position.
+         *          velocity = Starting velocity.
          *          mass     = Mass of the body.
          *          radius   = Radius of a circle representing bounding circle
          *                     of this body (centered at body's position).
          */
-        this(VolumeCircle circle, Vector2f position, Vector2f velocity, 
-             real mass, float radius)
+        this(VolumeCircle circle, Vector2f position, Vector2f velocity, real mass, float radius)
         {
             radius_ = radius;
             super(circle, position, velocity, mass);
@@ -458,7 +455,7 @@ class BallBody : PhysicsBody
  * Physics body of a dummy ball. 
  *
  * Limits dummy ball speed to prevent it being thrown out of the gameplay
- * area after collision with a ball. (normal ball has no limits- it's speed
+ * area after collision with a ball. (normal ball has no such limit- its speed
  * can change, slightly, by collisions with dummy balls)
  */
 class DummyBallBody : BallBody
@@ -481,14 +478,13 @@ class DummyBallBody : BallBody
          * Construct a dummy ball body with specified parameters.
          *
          * Params:  circle   = Collision circle of the body.
-         *          position = Starting position of the body.
-         *          velocity = Starting velocity of the body.
+         *          position = Starting position.
+         *          velocity = Starting velocity.
          *          mass     = Mass of the body.
          *          radius   = Radius of a circle representing bounding circle
          *                     of this body (centered at body's position).
          */
-        this(VolumeCircle circle, Vector2f position, Vector2f velocity, 
-             real mass, float radius)
+        this(VolumeCircle circle, Vector2f position, Vector2f velocity, real mass, float radius)
         {
             super(circle, position, velocity, mass, radius);
         }
@@ -498,17 +494,16 @@ class DummyBallBody : BallBody
 class Ball : Actor
 {
     private:
-        //Particle trail of the ball.
+        ///Particle trail of the ball.
         ParticleEmitter emitter_;
-        //Speed of particles emitted by the ball.
+        ///Speed of particles emitted by the ball.
         float particle_speed_;
-        //Line trail of the ball (particle effect).
+        ///Line trail of the ball.
         LineTrail trail_;
-        //Draw the ball itself or only the particle systems?
+        ///Draw the ball itself or only the particle systems?
         bool draw_ball_;
 
     public:
-        ///Destroy this ball.
         override void die()
         {
             trail_.life_time = 0.5;
@@ -519,14 +514,14 @@ class Ball : Actor
             super.die();
         }
  
-        ///Return the radius of this ball.
+        ///Get the radius of this ball.
         float radius(){return (cast(BallBody)physics_body_).radius;}
 
     protected:
-        /*
+        /**
          * Construct a ball with specified parameters.
          *
-         * Params:  container      = Container to manage this actor.
+         * Params:  container      = Actor container to manage this ball.
          *          physics_body   = Physics body of the ball.
          *          trail          = Line trail of the ball.
          *          emitter        = Particle trail of the ball.
@@ -547,7 +542,7 @@ class Ball : Actor
 
         override void update(real time_step, real game_time)
         {
-            //Ball can only change direction after a collision
+            //Ball can only change direction, not speed, after a collision
             if(physics_body_.collided())
             {
                 emitter_.emit_velocity = -physics_body_.velocity.normalized * particle_speed_;
@@ -572,18 +567,18 @@ class Ball : Actor
  * Factory used to produce balls.
  *
  * Params:  radius         = Radius of the ball.
- *                           Default: Vector2f(-2.0f, -2.0f)
+ *                           Default; 6.0
  *          particle_speed = Speed of particles in the ball's particle trail.
- *                           Default: Vector2f(-2.0f, -2.0f)
+ *                           Default; 25.0
  */
 class BallFactory : ActorFactory!(Ball)
 {
     mixin(generate_factory("float $ radius $ 6.0f",
                            "float $ particle_speed $ 25.0f"));
     private:
-        //factory for ball line trail
+        ///Factory for ball line trail.
         LineTrailFactory trail_factory_;
-        //factory for ball particle trail
+        ///Factory for ball particle trail.
         LineEmitterFactory emitter_factory_;
 
     public:
@@ -623,22 +618,16 @@ class BallFactory : ActorFactory!(Ball)
         }
 
     protected:
-        //Construct collision circle with factory parameters.
-        final VolumeCircle circle()
-        {
-            return new VolumeCircle(Vector2f(0.0f, 0.0f), radius_);
-        }
+        ///Construct a collision circle with factory parameters.
+        final VolumeCircle circle(){return new VolumeCircle(Vector2f(0.0f, 0.0f), radius_);}
 
-        //Construct ball body with factory parameters.
-        BallBody ball_body()
-        {
-            return new BallBody(circle, position_, velocity_, 100.0, radius_);
-        }
+        ///Construct a ball body with factory parameters.
+        BallBody ball_body(){return new BallBody(circle, position_, velocity_, 100.0, radius_);}
 
-        //Adjust particle effect factories. Used by derived classes.
+        ///Adjust particle effect factories. Used by derived classes.
         void adjust_factories(){};
 
-        //Determine if the produced ball should draw itself, instead of just particle systems.
+        ///Determine if the produced ball should draw itself, instead of just particle systems.
         bool draw_ball(){return true;}
 }             
 
@@ -669,12 +658,12 @@ class DummyBallFactory : BallFactory
 abstract class Player
 {
     protected:
-        //Name of this player
+        ///Player name.
         string name_;
-        //Current score of this player
+        ///Current player score.
         uint score_ = 0;
 
-        //Paddle controlled by this player
+        ///Paddle controlled by this player.
         Paddle paddle_;
 
     public:
@@ -688,9 +677,9 @@ abstract class Player
         string name(){return name_;}
 
         /**
-         * Update the player state.
+         * Update player state.
          * 
-         * Params:  game = Reference to the game that updates the player.
+         * Params:  game = Reference to the game.
          */
         void update(Game game){}
 
@@ -698,7 +687,12 @@ abstract class Player
         void die(){delete this;}
 
     protected:
-        ///Construct a player with given name.
+        /**
+         * Construct a player.
+         * 
+         * Params:  name   = Player name.
+         *          paddle = Paddle controlled by the player.
+         */
         this(string name, Paddle paddle)
         {
             name_ = name;
@@ -706,21 +700,27 @@ abstract class Player
         }
 }
 
-//AI player
+///AI player.
 final class AIPlayer : Player
 {
     protected:
-        //Timer determining when to update the AI
+        ///Timer determining when to update the AI.
         Timer update_timer_;
-        //Position of the ball during last AI update.
+        ///Position of the ball during last AI update.
         Vector2f ball_last_;
 
     public:
-        ///Construct an AI controlling specified paddle
-        this(string name, Paddle paddle, real update_time)
+        /**
+         * Construct an AI player.
+         * 
+         * Params:  name          = Player name.
+         *          paddle        = Paddle controlled by the player.
+         *          update_period = Time period of AI updates.
+         */
+        this(string name, Paddle paddle, real update_period)
         {
             super(name, paddle);
-            update_timer_ = Timer(update_time);
+            update_timer_ = Timer(update_period);
         }
 
         override void update(Game game)
@@ -731,8 +731,8 @@ final class AIPlayer : Player
 
                 //currently only support zero or one ball
                 Ball[] balls = game.balls;
-                assert(balls.length <= 1, 
-                       "AI supports only zero or one ball at the moment");
+                assert(balls.length <= 1, "AI supports only zero or one ball at the moment");
+
                 if(balls.length == 0)
                 {
                     //Setting last ball position to center of paddle limits prevents
@@ -756,55 +756,38 @@ final class AIPlayer : Player
         }
 
     protected:
-        //React to the ball closing in
+        ///React to the ball closing in.
         void ball_closing(Ball ball)
         {
             //If paddle x position is roughly equal to ball, no need to move
-            if(equals(paddle_.position.x, ball.position.x, 16.0f))
-            {
-                paddle_.stop();
-            }
-            else if(paddle_.position.x < ball.position.x)
-            {
-                paddle_.move_right();
-            }
-            else 
-            {
-                paddle_.move_left();
-            }
+            if(equals(paddle_.position.x, ball.position.x, 16.0f)){paddle_.stop();}
+            else if(paddle_.position.x < ball.position.x){paddle_.move_right();}
+            else{paddle_.move_left();}
         }
 
-        //Move the paddle to center
+        ///Move the paddle to center.
         void move_to_center()
         {
             Vector2f center = paddle_.limits.center;
             //If paddle x position is roughly in the center, no need to move
-            if(equals(paddle_.position.x, center.x, 16.0f))
-            {
-                paddle_.stop();
-            }
-            else if(paddle_.position.x < center.x)
-            {
-                paddle_.move_right();
-            }
-            else 
-            {
-                paddle_.move_left();
-            }
+            if(equals(paddle_.position.x, center.x, 16.0f)){paddle_.stop();}
+            else if(paddle_.position.x < center.x){paddle_.move_right();}
+            else{paddle_.move_left();}
         }
 }
 
-//Human player controlling the game through user input.
+///Human player controlling the game through user input.
 final class HumanPlayer : Player
 {
     private:
+        ///Platform for user input.
         Platform platform_;
 
     public:
         /**
          * Construct a human player controlling specified paddle.
          *
-         * Params:  platform = Platform used for user input.
+         * Params:  platform = Platform for user input.
          *          name     = Name of the player.
          *          paddle   = Paddle controlled by the player.
          */
@@ -818,7 +801,13 @@ final class HumanPlayer : Player
         ///Destroy this HumanPlayer.
         ~this(){platform_.key.disconnect(&key_handler);}
 
-        ///Handle input
+        /**
+         * Process keyboard input.
+         *
+         * Params:  state   = State of the key.
+         *          key     = Keyboard key.
+         *          unicode = Unicode value of the key.
+         */
         void key_handler(KeyState state, Key key, dchar unicode)
         {
             if(state == KeyState.Pressed)
@@ -866,21 +855,25 @@ class ScoreScreen
     private:
         alias std.string.toString to_string;  
         
-        //score screen ends when this timer expires.
+        ///Score screen ends when this timer expires.
         Timer timer_;
 
-        //Parent of the score screen container.
+        ///Parent of the score screen container.
         GUIElement parent_;
 
-        //Container of all score screen GUI elements.
+        ///Container of all score screen GUI elements.
         GUIElement container_;
-
+        ///Text showing the winner.
         GUIStaticText winner_text_;
+        ///Text showing player names.
         GUIStaticText names_text_;
+        ///Text showing player scores.
         GUIStaticText scores_text_;
+        ///Text showing time the game took.
         GUIStaticText time_text_;
 
     public:
+        ///Emitted when the score screen expires.
         mixin Signal!() expired;
 
         /**
@@ -948,11 +941,13 @@ class ScoreScreen
             timer_ = Timer(8);
         }
 
+        ///Update the score screen (and check for expiration).
         void update()
         {
             if(timer_.expired){expired.emit();}
         }
 
+        ///Destroy the score screen.
         void die()
         {
             parent_.remove_child(container_);
@@ -960,7 +955,7 @@ class ScoreScreen
         }
         
     private:
-        //Initialize players/scores list.
+        ///Initialize players/scores list.
         void init_scores(Player player_1, Player player_2)
         {
             with(new GUIStaticTextFactory)
@@ -992,11 +987,10 @@ class ScoreScreen
 /**
  * Handles ball respawning and related effects.
  *
- * When the spawner is created, it generates a set of directions the ball
- * can be spawned at, in roughly the same direction (determined by specified spread)
- * Then, during its lifetime, it displays the directions to the player 
- * (as rays), gives the player a bit of time and spawns the ball with one
- * of generated directions.
+ * When the spawner is created, it generates a set of directions the ball can be 
+ * spawned at, in roughly the same direction (determined by specified spread) Then, 
+ * during its lifetime, it displays the directions to the player (as rays), gives the
+ * player a bit of time and spawns the ball in one of generated directions.
  */
 class BallSpawner : Actor
 {
@@ -1013,39 +1007,42 @@ class BallSpawner : Actor
     }
 
     private:
-        //When this timer expires, the ball is spawned and the spawner destroyed.
+        ///When this timer expires, the ball is spawned and the spawner destroyed.
         Timer timer_;
         
-        //Speed to spawn balls with.
+        ///Speed to spawn balls at.
         real ball_speed_;
-
-        //Minimum angle difference from 0.5*pi or 1.5*pi (from horizontal line).
-        //Prevents the ball from being spawned too horizontally.
+        /**
+         * Minimum angle difference from 0.5*pi or 1.5*pi (from horizontal line).
+         * Prevents the ball from being spawned too horizontally.
+         */
         real min_angle_ = PI * 0.125;
-         
-        //Number of possible directions to spawn the ball at to generate.
+        ///Number of possible spawn directions to generate.
         uint direction_count_ = 12;
-        //Directions the ball can be spawned at, in radians.
+        ///Directions the ball can be spawned at in radians.
         real[] directions_;
 
-        //"light" direction used by the rays effect.
-        //The light rotates and shows the rays within its range.
+        /**
+         * "Light" direction used by the rays effect.
+         * The light rotates and shows the rays within its range.
+         */
         real light_ = 0;
-        //Rotation speed of the "light", in radians per second.
+        ///Rotation speed of the "light", in radians per second.
         real light_speed_;
-        //Angular width of the "light" in radians.
+        ///Angular width of the "light" in radians.
         real light_width_ = PI / 6.0; 
-        //Draw the "light" ?
+        ///Draw the "light" ?
         bool light_expired = false;
 
     public:
+        ///Emitted when the spawner expires, passing direction and speed to emit the ball at.
         mixin Signal!(Vector2f, real) spawn_ball;
 
     protected:
-        /*
-         * Constructs a BallSpawner with specified parameters.
+        /**
+         * Construct a BallSpawner/
          * 
-         * Params:    container    = Container to manage this actor.
+         * Params:    container    = Actor container to manage this spawner.
          *            physics_body = Physics body of the spawner.
          *            timer        = Ball will be spawned when this timer (game time) expires.
          *                           70% of the time will be taken by the rays effect.
@@ -1065,8 +1062,7 @@ class BallSpawner : Actor
 
             ball_speed_ = ball_speed;
             timer_ = timer;
-            //leave a third of time without the rays effect to give time
-            //to the player
+            //leave a third of time without the rays effect to give time to the player
             light_speed_ = (2 * PI) / (timer.delay * 0.70);
 
             generate_directions(spread);
@@ -1089,7 +1085,7 @@ class BallSpawner : Actor
             light_ += light_speed_ * time_step;
         }
 
-        void draw(VideoDriver driver)
+        override void draw(VideoDriver driver)
         {
             driver.line_aa = true;
             scope(exit){driver.line_aa = false;} 
@@ -1133,7 +1129,7 @@ class BallSpawner : Actor
 
     private:
         /**
-         * Generate the directions ball might be spawned with.
+         * Generate directions the ball might be spawned at.
          * 
          * Params:    spread = "Randomness" of the spawn directions.
          *                     Zero will result in only one definite direction,
@@ -1160,15 +1156,9 @@ class BallSpawner : Actor
                 real range = 2.0 * PI - 4.0 * min_angle_;
                                                    
                 //0.0 - 0.5 gets mapped to 0.5pi+min_angle - 1.5pi-min_angle range
-                if(direction < 0.5)
-                {
-                    direction = PI * 0.5 + min_angle_ + direction * range;
-                }
+                if(direction < 0.5){direction = PI * 0.5 + min_angle_ + direction * range;}
                 //0.5 - 1.0 gets mapped to 1.5pi+min_angle - 0.5pi-min_angle range
-                else
-                {
-                    direction = PI * 1.5 + min_angle_ + (direction - 0.5) * range;
-                }
+                else{direction = PI * 1.5 + min_angle_ + (direction - 0.5) * range;}
 
                 directions_ ~= direction;
             }
@@ -1179,15 +1169,15 @@ class BallSpawner : Actor
  * Factory used to construct ball spawners.
  *
  * Params:  time       = Time to spawn the ball in.
- *                       Default: 5.0
+ *                       Default; 5.0
  *          spread     = "Randomness" of the spawn directions.
  *                       Zero will result in only one definite direction,
  *                       1 will result in completely random direction
  *                       (except for horizontal directions that are 
  *                       disallowed to prevent ball from getting stuck)
- *                       Default: 0.25
+ *                       Default; 0.25
  *          ball_speed = Speed of the spawned ball.
- *                       Default: 200
+ *                       Default; 200
  */
 final class BallSpawnerFactory : ActorFactory!(BallSpawner)
 {
@@ -1195,11 +1185,11 @@ final class BallSpawnerFactory : ActorFactory!(BallSpawner)
                            "real $ spread $ 0.25",
                            "real $ ball_speed $ 200"));
     private:
-        //Start time of the spawners' timer.
+        ///Start time of the spawners' timer.
         real start_time_;
     public:
         /**
-         * Construct a BallSpawnerFactory with specified start time.
+         * Construct a BallSpawnerFactory.
          *
          * Params: start_time = Start time of the produced spawner.
          *                      The time when the ball will be spawned
@@ -1222,22 +1212,24 @@ class HUD
     private:
         alias std.string.toString to_string;  
      
-        //Parent of all the elements in the HUD.
+        ///Parent of all HUD elements.
         GUIElement parent_;
 
-        //Displays players' scores.
-        GUIStaticText score_text_1_, score_text_2_;
-        //Displays time left.
+        ///Displays player 1 score.
+        GUIStaticText score_text_1_;
+        ///Displays player 2 score.
+        GUIStaticText score_text_2_;
+        ///Displays time left in game.
         GUIStaticText time_text_;
 
-        //Maximum time the game can take.
+        ///Maximum time the game can take in game time.
         real time_limit_;
 
     public:
         /**
          * Constructs HUD with specified parameters.
          *
-         * Params:  parent     = Parent GUI element for all the elements in the HUD.  
+         * Params:  parent     = Parent GUI element for all HUD elements.
          *          time_limit = Maximum time the game will take.
          */
         this(GUIElement parent, real time_limit)
@@ -1286,8 +1278,7 @@ class HUD
             //only update if the text has changed
             if(time_str != time_text_.text)
             {
-                time_text_.text = time_str != "0:0" 
-                                  ? time_str : time_str ~ " !";
+                time_text_.text = time_str != "0:0" ? time_str : time_str ~ " !";
 
                 real t = max(time_left / time_limit_, 1.0L);
                 time_text_.text_color = color_start.interpolated(color_end, t);
@@ -1338,11 +1329,11 @@ class HUD
 class GameGUI
 {
     private:
-        //Parent of all game GUI elements.
+        ///Parent of all game GUI elements.
         GUIElement parent_;
-        //Game HUD.
+        ///HUD.
         HUD hud_;
-        //Score screen show at the end of game.
+        ///Score screen shown at the end of game.
         ScoreScreen score_screen_;
 
     public:
@@ -1416,50 +1407,79 @@ class Game
 {
     mixin WeakSingleton;
     private:
-        //Platform used for input.
+        ///Platform used for input.
         Platform platform_;
+        ///Scene manager.
+        SceneManager scene_manager_;
 
-        SceneManager actor_manager_;
-
-        //Area of the game in world space.
+        ///Game area in world space.
         static Rectanglef game_area_ = Rectanglef(0.0f, 0.0f, 800.0f, 600.0f);
         
+        ///Current game ball.
         Ball ball_;
+        ///Default ball radius.
         real ball_radius_ = 6.0;
+        ///Default ball speed.
         real ball_speed_ = 185.0;
 
+        ///BallSpawner spawn time.
         real spawn_time_ = 4.0;
+        ///BallSpawner spawn spread.
         real spawn_spread_ = 0.28;
 
+        ///Dummy balls.
         Ball[] dummies_;
+        ///Number of dummy balls.
         uint dummy_count_ = 20;
 
-        Wall wall_right_, wall_left_; 
-        Wall goal_up_, goal_down_; 
-        Paddle paddle_1_, paddle_2_;
+        ///Right wall of the game area.
+        Wall wall_right_;
+        ///Left wall of the game area.
+        Wall wall_left_; 
+        ///Top goal of the game area.
+        Wall goal_up_; 
+        ///Bottom goal of the game area.
+        Wall goal_down_; 
 
-        Player player_1_, player_2_;
+        ///Player 1 paddle.
+        Paddle paddle_1_;
+        ///Player 2 paddle.
+        Paddle paddle_2_;
+        ///Player 1.
+        Player player_1_;
+        ///Player 2.
+        Player player_2_;
 
-        //Continue running?
+        ///Continue running?
         bool continue_;
 
+        ///Score limit.
         uint score_limit_;
+        ///Time limit in game time.
         real time_limit_;
+        ///Timer determining when the game ends.
         Timer game_timer_;
 
-        ///GUI of the game, e.g. HUD, score screen
+        ///GUI of the game, e.g. HUD, score screen.
         GameGUI gui_;
 
-        //true while the players are playing the game
+        ///True while the players are (still) playing the game.
         bool playing_;
+        ///Has the game started?
         bool started_;
 
+        ///Timer determining when to end the intro and start the game.
         Timer intro_timer_;
 
     public:
+        /**
+         * Update the game.
+         *
+         * Returns: True if the game should continue to run, false otherwise.
+         */
         bool run()
         {
-            real time = actor_manager_.game_time;
+            real time = scene_manager_.game_time;
             if(playing_)
             {
                 //update player state
@@ -1485,39 +1505,42 @@ class Game
 
             if(!started_ && intro_timer_.expired(time)){start_game(time);}
 
-            actor_manager_.update();
+            scene_manager_.update();
 
             return continue_;
         }
 
+        ///Start game intro.
         void intro()
         {
-            intro_timer_ = Timer(2.5, actor_manager_.game_time);
+            intro_timer_ = Timer(2.5, scene_manager_.game_time);
             playing_ = started_ = false;
             continue_ = true;
 
+            //construct walls and goals
             with(new WallFactory)
             {
                 box_max = Vector2f(32.0f, 536.0f);
                 //walls slowly move into place when game starts
                 velocity = Vector2f(73.6f, 0.0f);
                 position = Vector2f(-64.0f, 32.0f);
-                wall_left_ = produce(actor_manager_);
+                wall_left_ = produce(scene_manager_);
 
                 velocity = Vector2f(-73.6f, 0.0f);
                 position = Vector2f(832.0, 32.0f);
-                wall_right_ = produce(actor_manager_);
+                wall_right_ = produce(scene_manager_);
 
                 box_max = Vector2f(560.0f, 28.0f);
                 velocity = Vector2f(320.0f, 0.0f);
                 position = Vector2f(-680.0f, 4.0f);
-                goal_up_ = produce(actor_manager_);
+                goal_up_ = produce(scene_manager_);
 
                 velocity = Vector2f(-320.0f, 0.0f);
                 position = Vector2f(920.0f, 568.0f);
-                goal_down_ = produce(actor_manager_);
+                goal_down_ = produce(scene_manager_);
             }
 
+            //construct paddles.
             float limits_min_x = 152.0f + 2.0 * ball_radius_;
             float limits_max_x = 648.0f - 2.0 * ball_radius_;
             with(new PaddleFactory)
@@ -1528,12 +1551,12 @@ class Game
                 limits_min = Vector2f(limits_min_x, 36.0f);
                 limits_max = Vector2f(limits_max_x, 76.0f);
                 speed = 135.0;
-                paddle_1_ = produce(actor_manager_);
+                paddle_1_ = produce(scene_manager_);
 
                 position = Vector2f(400.0f, 544.0f);
                 limits_min = Vector2f(limits_min_x, 524.0f);
                 limits_max = Vector2f(limits_max_x, 564.0f);
-                paddle_2_ = produce(actor_manager_);
+                paddle_2_ = produce(scene_manager_);
             }
             
             player_1_ = new AIPlayer("AI", paddle_1_, 0.15);
@@ -1555,16 +1578,17 @@ class Game
          *
          * Params:  driver = VideoDriver to draw with.
          */
-        void draw(VideoDriver driver){actor_manager_.draw(driver);}
+        void draw(VideoDriver driver){scene_manager_.draw(driver);}
 
-        ///Get area of the game.
+        ///Get game area.
         static Rectanglef game_area(){return game_area_;}
 
+        ///End the game, regardless of whether it has been won or not.
         void end_game()
         {
-            if(started_){actor_manager_.time_speed = 1.0;}
+            if(started_){scene_manager_.time_speed = 1.0;}
 
-            actor_manager_.clear();
+            scene_manager_.clear();
             player_1_.die();
             player_2_.die();
 
@@ -1574,22 +1598,33 @@ class Game
         }
 
     private:
-        this(Platform platform, SceneManager actor_manager, GameGUI gui, 
+        /**
+         * Construct a Game.
+         *
+         * Params:  platform      = Platform used for input.
+         *          scene_manager = SceneManager managing actors.
+         *          gui           = Game GUI.
+         *          score_limit   = Score limit of the game.
+         *          time_limit    = Time limit of the game in game time.
+         */
+        this(Platform platform, SceneManager scene_manager, GameGUI gui, 
              uint score_limit, real time_limit)
         {
             singleton_ctor();
             gui_ = gui;
             platform_ = platform;
-            actor_manager_ = actor_manager;
+            scene_manager_ = scene_manager;
             score_limit_ = score_limit;
             time_limit_ = time_limit;
         }
 
+        ///Destroy the Game.
         void die(){singleton_dtor();}
 
-        ///Start the game, at specified game time
+        ///Start the game, at specified game time.
         void start_game(real start_time)
         {
+            //spawn dummy balls
             with(new DummyBallFactory)
             {
                 radius = 5.0;
@@ -1598,7 +1633,7 @@ class Game
                 {
                     position = random_position!(float)(game_area_.center, 12.0f);
                     velocity = 2.5 * ball_speed_ * random_direction!(float)(); 
-                    dummies_ ~= produce(actor_manager_);
+                    dummies_ ~= produce(scene_manager_);
                 }
             }
 
@@ -1616,7 +1651,7 @@ class Game
                 spread = spawn_spread_;
                 ball_speed = ball_speed_;
                 position = game_area_.center;
-                auto spawner = produce(actor_manager_);
+                auto spawner = produce(scene_manager_);
                 spawner.spawn_ball.connect(&spawn_ball);
             }
 
@@ -1630,6 +1665,7 @@ class Game
             game_timer_ = Timer(time_limit_, start_time);
         }
 
+        ///Destroy ball with specified ball body.
         void destroy_ball(BallBody ball_body)
         in
         {
@@ -1642,17 +1678,23 @@ class Game
             ball_.die();
             ball_ = null;
 
-            with(new BallSpawnerFactory(actor_manager_.game_time))
+            with(new BallSpawnerFactory(scene_manager_.game_time))
             {
                 time = spawn_time_;
                 spread = spawn_spread_;
                 ball_speed = ball_speed_;
                 position = game_area_.center;
-                auto spawner = produce(actor_manager_);
+                auto spawner = produce(scene_manager_);
                 spawner.spawn_ball.connect(&spawn_ball);
             }
         }
 
+        /**
+         * Spawn a ball.
+         *
+         * Params:  direction = Direction to spawn the ball in.
+         *          speed     = Speed to spawn the ball at.
+         */
         void spawn_ball(Vector2f direction, real speed)
         {
             with(new BallFactory)
@@ -1660,22 +1702,28 @@ class Game
                 position = game_area_.center;
                 velocity = direction * speed;
                 radius = ball_radius_;
-                ball_ = produce(actor_manager_);
+                ball_ = produce(scene_manager_);
             }
         }
 
-        //Called when one of the players wins the game.
+        ///Called when one of the players wins the game.
         void game_won()
         {
             //show the score screen and end the game after it expires
-            gui_.show_scores(game_timer_.age(actor_manager_.game_time), 
-                             player_1_, player_2_);
+            gui_.show_scores(game_timer_.age(scene_manager_.game_time), player_1_, player_2_);
             gui_.score_expired.connect(&end_game);
-            actor_manager_.time_speed = 0.0;
+            scene_manager_.time_speed = 0.0;
 
             playing_ = false;
         }
 
+        /**
+         * Process keyboard input.
+         *
+         * Params:  state   = State of the key.
+         *          key     = Keyboard key.
+         *          unicode = Unicode value of the key.
+         */
         void key_handler(KeyState state, Key key, dchar unicode)
         {
             if(state == KeyState.Pressed)
@@ -1685,12 +1733,12 @@ class Game
                     case Key.Escape:
                         end_game();
                         break;
-                    case Key.K_P:
-                        if(equals(actor_manager_.time_speed, cast(real)0.0))
+                    case Key.K_P: //pause
+                        if(equals(scene_manager_.time_speed, cast(real)0.0))
                         {
-                            actor_manager_.time_speed = 1.0;
+                            scene_manager_.time_speed = 1.0;
                         }
-                        else{actor_manager_.time_speed = 0.0;}
+                        else{scene_manager_.time_speed = 0.0;}
                         break;
                     default:
                         break;
@@ -1703,17 +1751,17 @@ class Game
 class GameContainer
 {
     private:
-        //Spatial manager used by the physics engine for coarse collision detection.
+        ///Spatial manager used by the physics engine for coarse collision detection.
         SpatialManager!(PhysicsBody) spatial_physics_;
-        //Physics engine used by the actor manager.
+        ///Physics engine used by the scene manager.
         PhysicsEngine physics_engine_;
-        //Actor manager used by the game.
-        SceneManager actor_manager_;
-        //GUI of the game.
+        ///Actor manager used by the game.
+        SceneManager scene_manager_;
+        ///GUI of the game.
         GameGUI gui_;
-        //Game itself.
+        ///Game itself.
         Game game_;
-        //Monitor monitoring game subsystems.
+        ///Monitor monitoring game subsystems.
         Monitor monitor_;
 
     public:
@@ -1723,13 +1771,15 @@ class GameContainer
          * Params:  platform   = Platform to use for user input.
          *          monitor    = Monitor to monitor game subsystems.
          *          gui_parent = Parent for all GUI elements used by the game.
+         *
+         * Returns: Produced Game.
          */
         Game produce(Platform platform, Monitor monitor, GUIElement gui_parent)
         in
         {
             assert(spatial_physics_ is null &&
                    physics_engine_ is null && 
-                   actor_manager_ is null &&
+                   scene_manager_ is null &&
                    game_ is null,
                    "Can't produce two games at once with GameContainer");
         }
@@ -1741,9 +1791,9 @@ class GameContainer
             monitor_.add_monitorable("Spatial(P)", spatial_physics_);
             physics_engine_ = new PhysicsEngine(spatial_physics_);
             monitor_.add_monitorable("Physics", physics_engine_);
-            actor_manager_ = new SceneManager(physics_engine_);
+            scene_manager_ = new SceneManager(physics_engine_);
             gui_ = new GameGUI(gui_parent, 300.0);
-            game_ = new Game(platform, actor_manager_, gui_, 10, 300.0);
+            game_ = new Game(platform, scene_manager_, gui_, 10, 300.0);
             return game_;
         }
 
@@ -1752,14 +1802,14 @@ class GameContainer
         {
             game_.die();
             gui_.die();
-            writefln("SceneManager statistics:\n", actor_manager_.statistics, "\n");
-            actor_manager_.die();
+            writefln("SceneManager statistics:\n", scene_manager_.statistics, "\n");
+            scene_manager_.die();
             monitor_.remove_monitorable(physics_engine_);
             physics_engine_.die();
             monitor_.remove_monitorable(spatial_physics_);
             spatial_physics_.die();
             game_ = null;
-            actor_manager_ = null;
+            scene_manager_ = null;
             physics_engine_ = null;
             spatial_physics_ = null;
             monitor_ = null;
@@ -1770,6 +1820,7 @@ class GameContainer
 class Credits
 {
     private:
+        ///Credits text.
         static credits_ = 
         "Credits\n"
         ".\n"
@@ -1789,12 +1840,14 @@ class Credits
         ".\n"
         "Pong is released under the terms of the Boost license.";
 
-        //Parent of the container.
+        ///Parent of the container.
         GUIElement parent_;
 
-        //GUI element containing all elements of the credits screen.
+        ///GUI element containing all elements of the credits screen.
         GUIElement container_;
+        ///Button used to close the screen.
         GUIButton close_button_;
+        ///Credits text.
         GUIStaticText text_;
 
     public:
@@ -1857,16 +1910,16 @@ class Credits
 class PongGUI
 {
     private:
-        //Parent of all Pong GUI elements.
+        ///Parent of all Pong GUI elements.
         GUIElement parent_;
 
-        //Monitor used for debugging, profiling, etc.
+        ///Monitor used for debugging, profiling, etc.
         Monitor monitor_;
-        //Container of the main menu,
+        ///Container of the main menu.
         GUIElement menu_container_;
-        //Main menu.
+        ///Main menu.
         GUIMenu menu_;
-        //Credits screen (null unless shown)
+        ///Credits screen (null unless shown).
         Credits credits_;
 
     public:
@@ -1876,7 +1929,7 @@ class PongGUI
         mixin Signal!() credits_start;
         ///Emitted when the credits screen is closed.
         mixin Signal!() credits_end;
-        ///Emitted when the player clicks the button to quit..
+        ///Emitted when the player clicks the button to quit.
         mixin Signal!() quit;
         ///Emitted when the player clicks the button to reset video mode.
         mixin Signal!() reset_video;
@@ -1985,28 +2038,30 @@ class Pong
 {
     mixin WeakSingleton;
     private:
+        ///FPS counter.
         EventCounter fps_counter_;
-        bool run_pong_ = false;
+        ///Continue running?
         bool continue_ = true;
 
-        //Platform used for user input.
+        ///Platform used for user input.
         Platform platform_;
 
-        //Container managing video driver and its dependencies.
+        ///Container managing video driver and its dependencies.
         VideoDriverContainer video_driver_container_;
-        //Video driver.
+        ///Video driver.
         VideoDriver video_driver_;
 
-        //Root of the GUI.
+        ///Root of the GUI.
         GUIRoot gui_root_;
-
-        //Pong GUI.
+        ///Pong GUI.
         PongGUI gui_;
 
-        //Used for memory monitoring.
+        ///Used for memory monitoring.
         MemoryMonitorable memory_;
 
+        ///Container managing game and its dependencies.
         GameContainer game_container_;
+        ///Game.
         Game game_;
 
     public:
@@ -2022,26 +2077,27 @@ class Pong
             video_driver_container_ = new VideoDriverContainer;
             video_driver_ = video_driver_container_.produce!(SDLGLVideoDriver)
                             (800, 600, ColorFormat.RGBA_8, false);
+
+
+            //initialize GUI
             gui_root_ = new GUIRoot(platform_);
+            gui_ = new PongGUI(gui_root_.root);
+            gui_.credits_start.connect(&credits_start);
+            gui_.credits_end.connect(&credits_end);
+            gui_.game_start.connect(&game_start);
+            gui_.quit.connect(&exit);
+            gui_.reset_video.connect(&reset_video);
+            gui_.monitor.add_monitorable("Memory", memory_);
+            gui_.monitor.add_monitorable("Video", video_driver_);
 
             game_container_ = new GameContainer();
 
             //Update FPS every second.
             fps_counter_ = new EventCounter(1.0);
             fps_counter_.update.connect(&fps_update);
-
-            gui_ = new PongGUI(gui_root_.root);
-            gui_.credits_start.connect(&credits_start);
-            gui_.credits_end.connect(&credits_end);
-            gui_.game_start.connect(&pong_start);
-            gui_.quit.connect(&exit);
-            gui_.reset_video.connect(&reset_video);
-
-            gui_.monitor.add_monitorable("Memory", memory_);
-            gui_.monitor.add_monitorable("Video", video_driver_);
         }
 
-        ///Destroy all subsystems.
+        ///Destroy Pong and all subsystems.
         void die()
         {
             //game might still be running if we're quitting
@@ -2064,6 +2120,7 @@ class Pong
             singleton_dtor();
         }
 
+        ///Update Pong.
         void run()
         {                           
             platform_.key.connect(&key_handler_global);
@@ -2074,14 +2131,15 @@ class Pong
                 //Count this frame
                 fps_counter_.event();
 
-                if(run_pong_ && !game_.run()){pong_end();}
+                bool game_run = game_ !is null && game_.run();
+                if(game_ !is null && !game_run){game_end();}
 
                 //update game state
                 gui_root_.update();
 
                 video_driver_.start_frame();
 
-                if(run_pong_){game_.draw(video_driver_);}
+                if(game_run){game_.draw(video_driver_);}
 
                 gui_root_.draw(video_driver_);
                 video_driver_.end_frame();
@@ -2091,30 +2149,40 @@ class Pong
         }
 
     private:
-        void pong_end()
+        ///Start game.
+        void game_start()
         {
-            game_container_.destroy();
-            game_ = null;
-            platform_.key.connect(&key_handler);
-            gui_.menu_show();
-            run_pong_ = false;
-        }
-
-        void pong_start()
-        {
-            run_pong_ = true;
             gui_.menu_hide();
             platform_.key.disconnect(&key_handler);
             game_ = game_container_.produce(platform_, gui_.monitor, gui_root_.root);
             game_.intro();
         }
 
+        ///End game.
+        void game_end()
+        {
+            game_container_.destroy();
+            game_ = null;
+            platform_.key.connect(&key_handler);
+            gui_.menu_show();
+        }
+
+        ///Show credits screen.
         void credits_start(){platform_.key.disconnect(&key_handler);}
 
+        ///Hide (destroy) credits screen.
         void credits_end(){platform_.key.connect(&key_handler);}
 
+        ///Exit Pong.
         void exit(){continue_ = false;}
 
+        /**
+         * Process keyboard input.
+         *
+         * Params:  state   = State of the key.
+         *          key     = Keyboard key.
+         *          unicode = Unicode value of the key.
+         */
         void key_handler(KeyState state, Key key, dchar unicode)
         {
             if(state == KeyState.Pressed)
@@ -2125,7 +2193,7 @@ class Pong
                         exit();
                         break;
                     case Key.Return:
-                        pong_start();
+                        game_start();
                         break;
                     default:
                         break;
@@ -2133,6 +2201,16 @@ class Pong
             }
         }
 
+        /**
+         * Process keyboard input (global).
+         *
+         * This key handler is always connected, regardless of whether we're in
+         * game or main menu.
+         *
+         * Params:  state   = State of the key.
+         *          key     = Keyboard key.
+         *          unicode = Unicode value of the key.
+         */
         void key_handler_global(KeyState state, Key key, dchar unicode)
         {
             if(state == KeyState.Pressed)
@@ -2148,12 +2226,13 @@ class Pong
             }
         }
 
+        ///Update FPS display.
         void fps_update(real fps)
         {
             platform_.window_caption = "FPS: " ~ std.string.toString(fps);
         }
 
-        ///Reset video mode
+        ///Reset video mode.
         void reset_video(){reset_video_driver(800, 600, ColorFormat.RGBA_8);}
 
         /**
@@ -2165,7 +2244,7 @@ class Pong
          */
         void reset_video_driver(uint width, uint height, ColorFormat format)
         {
-            //Area of the game.
+            //game area
             Rectanglef area = game_.game_area;
 
             gui_.monitor.remove_monitorable(video_driver_);
@@ -2190,6 +2269,8 @@ class Pong
         }
 }
 
+
+///Program entry point.
 void main()
 {
     try

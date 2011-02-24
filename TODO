@@ -1,17 +1,12 @@
-Now:
-
-Rewrite all docs comments to /// and /** format
-and write docs where not present.
-Also add code examples where needed/applicable.
-Actually, only add code examples where really needed - too much work
-
-
 19:
     Fix ddoc.css contrast issues.
 19:
     Look at every single signal and check if we disconnect properly.
     Particularly make sure to disconnect all buttons at destruction.
     (should do that automatically through disconnect_all)
+
+    Also, put all signals documentation to their classes documentation headers
+    (just copy, don't remove, this is because Dil does not see the mixins.)
 19:
     Look at all exceptions thrown,
     see their path all the way to main if not resolved.
@@ -230,6 +225,11 @@ Actually, only add code examples where really needed - too much work
     port it, test with some small test project
 5:
     Move to 64bit (whether or not we're already at D2)
+6:
+    Logic change: when ball collides with anything, emit a signal
+    with its body of the other collider and check that for
+    collision with goals, etc. 
+    This will make more sense in Arkanoid and support more balls.
 14:
     Unittest overhaul all over the code.
     Look at where we can put unittests and do it.
