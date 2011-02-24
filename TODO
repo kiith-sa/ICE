@@ -1,11 +1,4 @@
 19:
-    Look at every single signal and check if we disconnect properly.
-    Particularly make sure to disconnect all buttons at destruction.
-    (should do that automatically through disconnect_all)
-
-    Also, put all signals documentation to their classes documentation headers
-    (just copy, don't remove, this is because Dil does not see the mixins.)
-19:
     Look at all exceptions thrown,
     see their path all the way to main if not resolved.
     Try to resolve as many as possible as soon as possible by fallbacks

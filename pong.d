@@ -61,7 +61,14 @@ import color;
 import util.factory;
 
 
-///A rectangular wall in the game area.
+/**
+ * A rectangular wall in the game area.
+ *
+ * Signal:
+ *     public mixin Signal!(BallBody) ball_hit
+ *
+ *     Emitted when a ball hits the wall. Will emit const BallBody after D2 move. 
+ */
 class Wall : Actor
 {
     protected:
@@ -82,6 +89,12 @@ class Wall : Actor
 
         ///Set wall velocity.
         void velocity(Vector2f v){physics_body_.velocity = v;}
+
+        override void die()
+        {
+            ball_hit.disconnect_all();
+            super.die();
+        }
 
     protected:
         /**
@@ -849,7 +862,14 @@ final class HumanPlayer : Player
         }
 }
 
-///Displays score screen at the end of game.
+/**
+ * Displays score screen at the end of game.
+ *
+ * Signal:
+ *     public mixin Signal!() expired
+ *
+ *     Emitted when the score screen expires. 
+ */
 class ScoreScreen
 {
     private:
@@ -952,6 +972,7 @@ class ScoreScreen
         {
             parent_.remove_child(container_);
             container_.die();
+            expired.disconnect_all();
         }
         
     private:
@@ -991,6 +1012,11 @@ class ScoreScreen
  * spawned at, in roughly the same direction (determined by specified spread) Then, 
  * during its lifetime, it displays the directions to the player (as rays), gives the
  * player a bit of time and spawns the ball in one of generated directions.
+ *
+ * Signal:
+ *     public mixin Signal!(Vector2f, real) spawn_ball
+ *
+ *     Emitted when the spawner expires, passing direction and speed to emit the ball at.
  */
 class BallSpawner : Actor
 {
@@ -1066,6 +1092,12 @@ class BallSpawner : Actor
             light_speed_ = (2 * PI) / (timer.delay * 0.70);
 
             generate_directions(spread);
+        }
+
+        override void die()
+        {
+            spawn_ball.disconnect_all();
+            super.die();
         }
 
         override void update(real time_step, real game_time)
@@ -1325,7 +1357,14 @@ class HUD
         }
 }
 
-///Class holding all GUI used by Game (HUD, etc.).
+/**
+ * Class holding all GUI used by Game (HUD, etc.).
+ *
+ * Signal:
+ *     public mixin Signal!() score_expired
+ *
+ *     Emitted when the score screen expires. 
+ */
 class GameGUI
 {
     private:
@@ -1400,6 +1439,7 @@ class GameGUI
                 score_screen_ = null;
             }
             parent_ = null;
+            score_expired.disconnect_all();
         }
 }
 
@@ -1816,7 +1856,14 @@ class GameContainer
         }
 }
 
-///Credits screen.
+/**
+ * Credits screen.
+ *
+ * Signal:
+ *     public mixin Signal!() closed
+ *
+ *     Emitted when this credits dialog is closed.
+ */
 class Credits
 {
     private:
@@ -1903,10 +1950,38 @@ class Credits
         {
             parent_.remove_child(container_);
             container_.die();
+            closed.disconnect_all();
         }
 }
 
-///Class holding all GUI used by Pong (main menu, etc.).
+/** 
+ * Class holding all GUI used by Pong (main menu, etc.).
+ *
+ * Signal:
+ *     public mixin Signal!() game_start
+ *
+ *     Emitted when the player clicks the button to start the game.
+ *
+ * Signal:
+ *     public mixin Signal!() credits_start
+ *
+ *     Emitted when the credits screen is opened. 
+ *
+ * Signal:
+ *     public mixin Signal!() credits_end
+ *
+ *     Emitted when the credits screen is closed. 
+ *
+ * Signal:
+ *     public mixin Signal!() quit
+ *
+ *     Emitted when the player clicks the button to quit. 
+ *
+ * Signal:
+ *     public mixin Signal!() reset_video
+ *
+ *     Emitted when the player clicks the button to reset video mode. 
+ */
 class PongGUI
 {
     private:
@@ -1996,6 +2071,12 @@ class PongGUI
             menu_container_.die();
             monitor_ = null;
             menu_container_ = null;
+
+            game_start.disconnect_all();
+            credits_start.disconnect_all();
+            credits_end.disconnect_all();
+            quit.disconnect_all();
+            reset_video.disconnect_all();
         }
 
         ///Get the monitor widget.
