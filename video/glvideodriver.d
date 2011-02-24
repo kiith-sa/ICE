@@ -8,6 +8,7 @@ module video.glvideodriver;
 
 
 import std.string;
+import std.stdio;
 
 import derelict.opengl.gl;
 import derelict.util.exception;
@@ -336,55 +337,75 @@ abstract class GLVideoDriver : VideoDriver
 
             glColor4ub(color.r, color.g, color.b, color.a);
 
-            //iterating over utf-32 chars (conversion is automatic)
-            foreach(dchar c; text)
+            try
             {
-                ++statistics_.characters;
-                statistics_.vertices += 4;
-
-                if(!renderer.has_glyph(c)){renderer.load_glyph(this, c);}
-                texture = renderer.glyph(c, offset);
-
-                gl_texture = textures_[texture.index];
-                page_index = gl_texture.page_index;
-
-                //change texture page if needed
-                if(current_page_ != page_index)
+                //iterating over utf-32 chars (conversion is automatic)
+                foreach(dchar c; text)
                 {
-                    ++statistics_.page;
-                    pages_[page_index].start();
-                    current_page_ = page_index;
+                    ++statistics_.characters;
+                    statistics_.vertices += 4;
+
+                    if(!renderer.has_glyph(c)){renderer.load_glyph(this, c);}
+                    texture = renderer.glyph(c, offset);
+
+                    gl_texture = textures_[texture.index];
+                    page_index = gl_texture.page_index;
+
+                    //change texture page if needed
+                    if(current_page_ != page_index)
+                    {
+                        ++statistics_.page;
+                        pages_[page_index].start();
+                        current_page_ = page_index;
+                    }
+
+                    //generate vertices, texcoords
+                    vmin.x = position.x + offset.x;
+                    vmin.y = position.y + offset.y;
+                    vmax.x = vmin.x + texture.size.x;
+                    vmax.y = vmin.y + texture.size.y;
+                    tmin = gl_texture.texcoords.min;
+                    tmax = gl_texture.texcoords.max;
+
+                    //draw the character
+                    glBegin(GL_TRIANGLE_STRIP);
+                    glTexCoord2f(tmin.x, tmin.y);
+                    glVertex2f(vmin.x, vmin.y);
+                    glTexCoord2f(tmin.x, tmax.y);
+                    glVertex2f(vmin.x, vmax.y);
+                    glTexCoord2f(tmax.x, tmin.y);
+                    glVertex2f(vmax.x, vmin.y);
+                    glTexCoord2f(tmax.x, tmax.y);
+                    glVertex2f(vmax.x, vmax.y);
+                    glEnd();
                 }
-
-                //generate vertices, texcoords
-                vmin.x = position.x + offset.x;
-                vmin.y = position.y + offset.y;
-                vmax.x = vmin.x + texture.size.x;
-                vmax.y = vmin.y + texture.size.y;
-                tmin = gl_texture.texcoords.min;
-                tmax = gl_texture.texcoords.max;
-
-                //draw the character
-                glBegin(GL_TRIANGLE_STRIP);
-                glTexCoord2f(tmin.x, tmin.y);
-                glVertex2f(vmin.x, vmin.y);
-                glTexCoord2f(tmin.x, tmax.y);
-                glVertex2f(vmin.x, vmax.y);
-                glTexCoord2f(tmax.x, tmin.y);
-                glVertex2f(vmax.x, vmin.y);
-                glTexCoord2f(tmax.x, tmax.y);
-                glVertex2f(vmax.x, vmax.y);
-                glEnd();
+            }
+            //error loading glyphs
+            catch(Exception e)
+            {
+                writefln("Error drawing text: " ~ text);
+                writefln(e.msg);
+                return;
             }
         }
         
         final override Vector2u text_size(string text)
         {
             auto renderer = font_manager_.renderer();
-            //load any glyphs that aren't loaded yet
-            foreach(dchar c; text)
+            try
             {
-                if(!renderer.has_glyph(c)){renderer.load_glyph(this, c);}
+                //load any glyphs that aren't loaded yet
+                foreach(dchar c; text)
+                {
+                    if(!renderer.has_glyph(c)){renderer.load_glyph(this, c);}
+                }
+            }
+            //error loading glyphs
+            catch(Exception e)
+            {
+                writefln("Error measuring text size: " ~ text);
+                writefln(e.msg);
+                return Vector2u(0,0);
             }
             return renderer.text_size(text);
         }

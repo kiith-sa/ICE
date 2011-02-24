@@ -194,6 +194,8 @@ package class Font
          * Can only be used after textures were unloaded.
          *
          * Params:  driver = Video driver to load textures to.
+         *
+         * Throws:  Exception if the glyph textures could not be reloaded.
          */
         void reload_textures(VideoDriver driver)
         {
@@ -281,6 +283,8 @@ package class Font
          *
          * Params:  driver = Video driver to use for texture creation.
          *          c      = Character to load glyph for.
+         *
+         * Throws:  Exception if the glyph could not be loaded.
          */
         void load_glyph(VideoDriver driver, dchar c)
         {
@@ -301,6 +305,8 @@ package class Font
          * create a texture for it.
          *
          * Params:  driver = Video driver to use for texture creation.
+         *
+         * Throws:  Exception if the glyph texture could not be created.
          */
         Glyph get_default_glyph(VideoDriver driver)
         {
@@ -321,10 +327,12 @@ package class Font
          * Render a glyph of a character and return it.
          *
          * Will create a texture for the glyph, or use default glyph 
-         * if the character has no glyph.
+         * if the character has no glyph or its texture could not be created.
          *
          * Params:  driver = Video driver to use in texture creation.
          *          c      = Character to render glyph for.
+         *
+         * Throws:  Exception if default glyph texture could not be created.
          */
         Glyph render_glyph(VideoDriver driver, dchar c)
         {
@@ -385,7 +393,9 @@ package class Font
                     }
                 }
 
-                glyph.texture = driver.create_texture(image);
+                try{glyph.texture = driver.create_texture(image);}
+                catch(Exception e){return get_default_glyph(driver);}
+
                 return glyph;
             }
             else{return get_default_glyph(driver);}

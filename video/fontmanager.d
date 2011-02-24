@@ -67,6 +67,8 @@ package align(1) struct FontRenderer
          * 
          * Params:  driver = Video driver to use for texture creation.
          *          c      = Character to load glyph for.
+         *
+         * Throws:  Exception if the glyph could not be loaded.
          */
         void load_glyph(VideoDriver driver, dchar c){draw_font_.load_glyph(driver, c);}
 
@@ -210,6 +212,8 @@ package final class FontManager
          * Load glyph textures back to the video driver.
          *
          * Params:  driver = VideoDriver to load textures to.
+         *
+         * Throws:  Exception if the glyph textures could not be reloaded.
          */
         void reload_textures(VideoDriver driver)
         {

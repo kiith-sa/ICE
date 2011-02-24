@@ -33,6 +33,8 @@ class VideoDriverContainer
          *          height     = Height of initial video mode.
          *          format     = Color format of initial video mode.
          *          fullscreen = Should initial video mode be fullscreen?
+         *
+         * Throws:  Exception if the video driver could not be initialized.
          */
         VideoDriver produce(T)(uint width, uint height, ColorFormat format, bool fullscreen)
         {

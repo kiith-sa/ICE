@@ -65,7 +65,7 @@ final class SDLGLVideoDriver : GLVideoDriver
 
             if(SDL_SetVideoMode(width, height, bit_depth, flags) is null)
             {
-                throw new Exception("Could not initialize video mode");
+                throw new Exception("Could not set video mode");
             }
 
             screen_width_ = width;

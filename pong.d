@@ -2152,8 +2152,14 @@ class Pong
             singleton_ctor();
 
             memory_ = new MemoryMonitorable;
+            scope(failure)
+            {
+                memory_.die();
+                singleton_dtor();
+            }
 
             platform_ = new SDLPlatform;
+            scope(failure){platform_.die();}
 
             video_driver_container_ = new VideoDriverContainer;
             video_driver_ = video_driver_container_.produce!(SDLGLVideoDriver)
@@ -2190,12 +2196,18 @@ class Pong
                 game_ = null;
             }
             fps_counter_.die();
-            gui_.monitor.remove_monitorable(video_driver_);
+            //video driver might be already destroyed in exceptional circumstances
+            if(video_driver_ !is null){gui_.monitor.remove_monitorable(video_driver_);}
             gui_.monitor.remove_monitorable(memory_);
             gui_.die();
             gui_root_.die();
-            video_driver_container_.destroy();
-            video_driver_container_.die();
+            //video driver might be already destroyed in exceptional circumstances
+            if(video_driver_ !is null)
+            {
+                video_driver_container_.destroy();
+                video_driver_container_.die();
+                video_driver_ = null;
+            }
             platform_.die();
             memory_.die();
             singleton_dtor();
@@ -2329,9 +2341,20 @@ class Pong
             Rectanglef area = game_.game_area;
 
             gui_.monitor.remove_monitorable(video_driver_);
+
             video_driver_container_.destroy();
-            video_driver_ = video_driver_container_.produce!(SDLGLVideoDriver)
-                            (width, height, format, false);
+            video_driver_ = null;
+            try
+            {
+                video_driver_ = video_driver_container_.produce!(SDLGLVideoDriver)
+                                (width, height, format, false);
+            }
+            catch(Exception e)
+            {
+                writefln(e.msg);
+                exit();
+                return;
+            }
 
             //Zoom according to the new video mode.
             real w_mult = width / area.width;

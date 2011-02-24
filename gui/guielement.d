@@ -8,6 +8,7 @@ module gui.guielement;
 
 
 import std.string;
+import std.stdio;
 
 import video.videodriver;
 import math.vector2;
@@ -111,6 +112,7 @@ class GUIElement
         }
         body
         {
+            alias containers.array.remove remove;
             children_.remove(child, true);
             child.parent_ = null;
         }
@@ -277,16 +279,35 @@ class GUIElement
             substitutions["p_width"] = parent_ is null ? 0 : parent_.bounds_.width;
             substitutions["p_height"] = parent_ is null ? 0 : parent_.bounds_.height;
 
-            bounds_.min = Vector2i(parse_math(x_string_, substitutions), 
-                                   parse_math(y_string_, substitutions));
+            int width, height;
 
-            int width = parse_math(width_string_, substitutions);
-            int height = parse_math(height_string_, substitutions);
-
-            if(height < 0 || width < 0)
+            //fallback to fixed dimensions to avoid complicated exception resolving.
+            void fallback()
             {
-                throw new Exception("Negative width and/or height of a GUI element! "
-                                    "Probably caused by incorrect GUI math expressions.");
+                width = height = 64;
+                writefln("Falling back to fixed dimensions: 64x64");
+            }
+
+            try
+            {
+                bounds_.min = Vector2i(parse_math(x_string_, substitutions), 
+                                       parse_math(y_string_, substitutions));
+
+                width = parse_math(width_string_, substitutions);
+                height = parse_math(height_string_, substitutions);
+
+                if(height < 0 || width < 0)
+                {
+                    writefln("Negative width and/or height of a GUI element! "   
+                             "Probably caused by incorrect GUI math expressions.");
+                    fallback();
+                }
+            }
+            catch(Exception e)
+            {
+                writefln("Invalid GUI math expression.");
+                writefln(e.msg);
+                fallback();
             }
 
             bounds_.max = bounds_.min + Vector2i(width, height);
