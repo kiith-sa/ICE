@@ -1,15 +1,4 @@
 19:
-    Look at all exceptions thrown,
-    see their path all the way to main if not resolved.
-    Try to resolve as many as possible as soon as possible by fallbacks
-    (e.g. hardcoded fallback shader- we removed it but it will make this easier,
-     unless there is a better solution), 
-    and make sure the code in exceptions' paths is exception safe.
-
-    Say, create_texture is used by Font code and throws.
-    So if it throws, use default glyph. If not even that works,
-    THEN we have a problem we probably can't solve.
-19:
     Look at Google C++ code style and implement any useful changes.
 19:
     Try to replace generate_monitor_menu with something template based,

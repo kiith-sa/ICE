@@ -130,6 +130,7 @@ public:
 
         switch(file.mode_)
         {
+            //nothing to write in read mode
             case FileMode.Read:
                 return;
             case FileMode.Write:

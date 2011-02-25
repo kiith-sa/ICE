@@ -8,6 +8,7 @@ module video.fontmanager;
 
 
 import std.c.string;
+import std.stdio;
 
 import derelict.freetype.ft;
 import derelict.util.loader;
@@ -187,14 +188,14 @@ package final class FontManager
                     font_name_ = default_font_name_;
                     font_size_ = default_font_size_;
                 }
-                catch
+                catch(Exception e)
                 {
-                    throw new Exception("Could not load default font.");
+                    throw new Exception("Could not load default font: " ~ e.msg);
                 }
             }
             catch(SharedLibLoadException e)
             {
-                throw new Exception("Could not load FreeType library");
+                throw new Exception("Could not load FreeType library: " ~ e.msg);
             }
         }
 
@@ -319,8 +320,11 @@ package final class FontManager
                 fonts_ ~= new_font;
                 current_font_ = fonts_[$ - 1];
             }
-            catch
+            catch(Exception e)
             {
+                writefln("Failed to load font: ", font_name_, " with size ", font_size_);
+                writefln(e.msg);
+
                 //If we already have default font name and can't load it, 
                 //try font 0 (default with default size)
                 if(font_name_ == default_font_name_)

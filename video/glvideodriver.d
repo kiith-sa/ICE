@@ -624,7 +624,11 @@ abstract class GLVideoDriver : VideoDriver
 
     private:
         //not ready for public interface yet- will take shader spec file in future
-        ///Load shader with specified name.
+        /**
+         * Load shader with specified name.
+         *
+         * Throws:  Exception if the shader could not be loaded.
+         */
         final Shader create_shader(string name)
         {
             shaders_ ~= alloc_struct!(GLShader)(name);

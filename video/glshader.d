@@ -54,6 +54,8 @@ package struct GLShader
          *
          * Params:  vfname = File name of the vertex shader.
          *          ffname = File name of the fragment shader.
+         *
+         * Throws:  Exception if the shader could not be loaded, compiled or linked.
          */
         void load_GLSL(string vfname, string ffname)
         {
