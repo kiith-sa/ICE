@@ -7,8 +7,9 @@
 module file.fileio;
 
 
-import std.file;
 import std.c.stdio;
+
+import std.file;
 import std.string;
 
 public import file.file;
@@ -52,7 +53,8 @@ public:
      * For writing and appending, mod directory must be explicitly set.
      * (e.g. mod::file.txt).
      *
-     * Params:  name = In-engine name of the file to open.
+     * Params:  name = In-engine name of the file to open. For writing,
+     *                 mod directory must be specified.
      *          mode = File mode to open the file in.
      *
      * Returns: File opened.
@@ -106,7 +108,7 @@ public:
             case FileMode.Write, FileMode.Append:
                 if(name.find("::") < 0)
                 {
-                    throw new Exception("File path for writing and/or appending "
+                    throw new Exception("Mod directory for writing and/or appending "
                                         "must be specified explicitly");
                 }
                 return File(name, path, mode, 0, write_reserve_);
@@ -157,6 +159,58 @@ public:
             throw new Exception("Couldn't write to file " ~ file.path_ ~ " Maybe you " ~ 
                                 "don't have sufficient rights to write to that file");
         }
+    }
+
+    /**
+     * Ensure a directory exists. Will create the directory if it doesn't.
+     *
+     * Params:  name = In-engine name of the directory.
+     *
+     * Throws:  Exception if the mod directory is not specified, name is 
+     *          invalid, file with specified name exists that is not a directory
+     *          or it couldn't be created.
+     */
+    void ensure_directory(string name)
+    {
+        if(name.find("::") < 0)
+        {
+            throw new Exception("Mod directory for directory creation must be specified "
+                                "explicitly");
+        }
+        try
+        {
+            bool exists;
+            string path = get_path(name, exists);
+            if(!exists)
+            {
+                mkdir(path);
+                return;
+            }
+            if(!isdir(path))
+            {
+                throw new Exception("File with specified name exists and is not a directory");
+            }
+        }
+        catch(FileException e)
+        {
+            throw new Exception("Directory with specified name could not be created");
+        }
+    }
+
+    /**
+     * Does the specified file(directory) exist?
+     *
+     * Params:  name = In-engine file name.
+     *
+     * Returns: True if the file(directory) exists, false otherwise.
+     *
+     * Throws:  Exception if the file name is invalid.
+     */
+    bool file_exists(string name)
+    {
+        bool exists;
+        string dummy = get_path(name, exists);
+        return exists;
     }
 
 private:

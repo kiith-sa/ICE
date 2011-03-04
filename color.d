@@ -15,6 +15,8 @@ enum ColorFormat
 {
     ///16-bit RGB without alpha.
     RGB_565,
+    ///24-bit RGB.
+    RGB_8,
     ///32-bit RGBA.
     RGBA_8,
     ///8-bit grayscale.
@@ -34,6 +36,8 @@ uint bytes_per_pixel(ColorFormat format)
     {
         case ColorFormat.RGB_565:
             return 2;
+        case ColorFormat.RGB_8:
+            return 3;
         case ColorFormat.RGBA_8:
             return 4;
         case ColorFormat.GRAY_8:
@@ -57,6 +61,8 @@ string to_string(ColorFormat format, bool short_format = false)
     {
         case ColorFormat.RGB_565:
             return short_format ? "RGB_565" : "ColorFormat.RGB_565";
+        case ColorFormat.RGB_8:
+            return short_format ? "RGB_8" : "ColorFormat.RGB_8";
         case ColorFormat.RGBA_8:
             return short_format ? "RGBA_8" : "ColorFormat.RGBA_8";
         case ColorFormat.GRAY_8:

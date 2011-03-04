@@ -35,6 +35,11 @@ package void gl_color_format(ColorFormat format, out GLenum gl_format,
     {
         case ColorFormat.RGB_565:
             assert(false, "Unsupported texture format: RGB_565");
+        case ColorFormat.RGB_8:
+            internal_format = GL_RGB8;
+            gl_format = GL_RGB;
+            type = GL_UNSIGNED_BYTE;
+            break;
         case ColorFormat.RGBA_8:
             internal_format = GL_RGBA8;
             gl_format = GL_RGBA;
@@ -189,8 +194,8 @@ package align(1) struct GLTexturePage(TexturePacker)
             GLint internal_format;
             gl_color_format(format, gl_format, type, internal_format);
             
-            glTexImage2D(GL_TEXTURE_2D, 0, internal_format, size_.x, 
-                         size_.y, 0, gl_format, type, image.data.ptr);
+            glTexImage2D(GL_TEXTURE_2D, 0, internal_format, size_.x, size_.y, 
+                         0, gl_format, type, image.data.ptr);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         }

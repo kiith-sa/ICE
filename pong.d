@@ -55,10 +55,13 @@ import memory.memorymonitorable;
 import time.time;
 import time.timer;
 import time.eventcounter;
+import file.fileio;
+import formats.image;
 import util.signal;
 import util.weaksingleton;
-import color;
 import util.factory;
+import color;
+import image;
 
 
 /**
@@ -2313,6 +2316,9 @@ class Pong
                     case Key.F10:
                         gui_.monitor_toggle();
                         break;
+                    case Key.Scrollock:
+                        save_screenshot();
+                        break;
                     default:
                         break;
                 }
@@ -2370,6 +2376,31 @@ class Pong
             video_driver_.view_offset(offset);
             gui_root_.realign(video_driver_);
             gui_.monitor.add_monitorable("Video", video_driver_);
+        }
+
+        ///Save screenshot (to data/main/screenshots).
+        void save_screenshot()
+        {
+            Image screenshot = video_driver_.screenshot();
+            scope(exit){delete screenshot;}
+
+            try
+            {
+                ensure_directory("main::screenshots");
+
+                //save screenshot with increasing suffix number.
+                for(uint s = 0; s < 100000; s++)
+                {
+                    string file_name = format("main::screenshots/screenshot_%05d.png", s);
+                    if(!file_exists(file_name))
+                    {
+                        write_image(screenshot, file_name);
+                        return;
+                    }
+                }
+                writefln("Screenshot saving error: too many screenshots");
+            }
+            catch(Exception e){writefln("Screenshot saving error.");}
         }
 }
 

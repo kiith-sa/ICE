@@ -7,11 +7,14 @@
 module image;
 
 
+import std.c.string;
+
 import math.vector2;
 import color;
 import memory.memory;
 
 
+//will be an RAII struct in D2
 //could be optimized by adding a pitch data member (bytes per row)    
 ///Image object capable of storing images in various color formats.
 final class Image
@@ -47,8 +50,14 @@ final class Image
         ///Get color format of the image.
         ColorFormat format(){return format_;}
 
-        ///Get size of the image.
+        ///Get size of the image in pixels.
         Vector2u size(){return size_;}
+
+        ///Get image width in pixels.
+        uint width(){return size_.x;}
+
+        ///Get image height in pixels.
+        uint height(){return size_.y;}
 
         ///Get direct access to image data.
         ubyte[] data(){return data_;}
@@ -70,7 +79,7 @@ final class Image
         }
         body
         {
-            uint offset = (y * size_.x + x) * 4;
+            uint offset = y * pitch + x * 4;
             data_[offset] = color.r;
             data_[offset + 1] = color.g;
             data_[offset + 2] = color.b;
@@ -92,7 +101,7 @@ final class Image
             assert(x < size_.x && y < size_.y, "Pixel out of range");
             assert(format == ColorFormat.GRAY_8, "Incorrect image format");
         }
-        body{data_[y * size_.x + x] = color;}
+        body{data_[y * pitch + x] = color;}
 
         /**
          * Get RGBA color of a pixel.
@@ -113,9 +122,11 @@ final class Image
         }
         body
         {
-            uint offset = (y * size_.x + x) * 4;
-            return Color(data_[offset], data_[offset + 1], 
-                         data_[offset + 2], data_[offset + 3]);
+            uint offset = y * pitch + x * 4;
+            return Color(data_[offset], 
+                         data_[offset + 1], 
+                         data_[offset + 2], 
+                         data_[offset + 3]);
         }
         
         //This is extremely ineffective/ugly, but not really a priority
@@ -138,8 +149,13 @@ final class Image
                         switch(format_)
                         {
                             case ColorFormat.RGB_565:
-                                data_[(y * size_.x + x) * 2] = 255;
-                                data_[(y * size_.x + x) * 2 + 1] = 255;
+                                data_[y * pitch + x * 2] = 255;
+                                data_[y * pitch + x * 2 + 1] = 255;
+                                break;
+                            case ColorFormat.RGB_8:
+                                data_[y * pitch + x * 3] = 255;
+                                data_[y * pitch + x * 3 + 1] = 255;
+                                data_[y * pitch + x * 3 + 2] = 255;
                                 break;
                             case ColorFormat.RGBA_8:
                                 set_pixel(x, y, Color.white);
@@ -172,8 +188,13 @@ final class Image
                         switch(format_)
                         {
                             case ColorFormat.RGB_565:
-                                data_[(y * size_.x + x) * 2] = 255;
-                                data_[(y * size_.x + x) * 2 + 1] = 255;
+                                data_[y * pitch + x * 2] = 255;
+                                data_[y * pitch + x * 2 + 1] = 255;
+                                break;
+                            case ColorFormat.RGB_8:
+                                data_[y * pitch + x * 3] = 255;
+                                data_[y * pitch + x * 3 + 1] = 255;
+                                data_[y * pitch + x * 3 + 2] = 255;
                                 break;
                             case ColorFormat.RGBA_8:
                                 set_pixel(x, y, Color.white);
@@ -207,8 +228,7 @@ final class Image
                             set_pixel(x, y, pixel);
                             break;
                         case ColorFormat.GRAY_8:
-                            set_pixel(x, y, color.gamma_correct(data_[y * size_.x + x], 
-                                      factor));
+                            set_pixel(x, y, color.gamma_correct(data_[y * pitch + x], factor));
                             break;
                         default:
                             assert(false, "Unsupported color format for gamma correction");
@@ -216,4 +236,25 @@ final class Image
                 }
             }
         }
+
+        ///Flip the image vertically.
+        void flip_vertical()
+        {
+            uint pitch = pitch();
+            ubyte[] temp_row = alloc!(ubyte)(pitch);
+            for(uint row = 0; row < size_.y / 2; ++row)
+            {
+                //swap row and size_.y - row
+                ubyte* row_a = data_.ptr + pitch * row;
+                ubyte* row_b = data_.ptr + pitch * (size_.y - row - 1);
+                memcpy(temp_row.ptr, row_a, pitch);
+                memcpy(row_a, row_b, pitch);
+                memcpy(row_b, temp_row.ptr, pitch);
+            }
+            free(temp_row);
+        }
+
+    private:
+        ///Get pitch (bytes per row) of the image.
+        uint pitch(){return bytes_per_pixel(format_) * size_.x;}
 }

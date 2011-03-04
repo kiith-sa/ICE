@@ -266,6 +266,9 @@ abstract class VideoDriver : Monitorable
         ///Delete a texture.
         void delete_texture(Texture texture);
 
+        ///Capture a screenshot. Can't be called during an update.
+        Image screenshot();
+
         override MonitorMenu monitor_menu()
         {
             //This exists due to what appears to be a linker bug - linker

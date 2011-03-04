@@ -87,6 +87,7 @@ package align(1) struct NodePacker
                         full_ = true;
                         return this;
                     }
+
                     child_a_ = alloc_struct!(Node)(area);
                     child_b_ = alloc_struct!(Node)(area);
 

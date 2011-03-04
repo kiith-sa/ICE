@@ -79,6 +79,7 @@ abstract class MonitorMenu
         void back_to_parent(){back.emit();}
 }
 
+
 /**
  * Generate a MonitorMenu implementation class providing access to specified monitors.
  *

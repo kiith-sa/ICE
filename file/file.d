@@ -105,8 +105,11 @@ struct File
         }
         body{return cast(void[])data_;}
 
-        ///Return OS filesystem path of the file.
+        ///Get OS filesystem path of the file.
         string path(){return path_;}
+
+        ///Get file mode.
+        FileMode mode(){return mode_;}
 
         /**
          * Write data to file (only applicable in Write, Append modes).

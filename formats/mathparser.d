@@ -210,7 +210,7 @@ private:
             stack[$ - 2] = operator(x, y);
             stack = stack[0 .. $ - 1];}
 
-        foreach(string token; tokens)
+        foreach(token; tokens)
         {
             switch(token[0])
             {

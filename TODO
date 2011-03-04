@@ -1,12 +1,25 @@
-19:
-    Look at Google C++ code style and implement any useful changes.
-19:
-    Try to replace generate_monitor_menu with something template based,
-    or at least used as a template, same as SimpleGraphMonitor, with strings.
-    Same with generate_factory.
-20:
-    Screenshot. Probably glReadPixels from framebuffer. Also need PNG output 
-    (must be with a function that still exists in GL3!)
+21:
+    Lodepng: Remove unneeded code (tango, text chunks
+                                   (?-maybe keep those and move such
+                                      unlikely-needed stuff to a separate module,
+                                      and make it very D2 compatible)
+                                   , extra ctors, convenience overloaded functions,
+                                   maybe more),
+    simplify, refactor, maybe add grayscale support.
+    If writing leads to memory bloat, also use manual allocation through Vector,
+    etc (might want to turn lodepng into a subpackage of the formats package)
+
+
+    For interface ideas, see some OOP PNG libs, e.g. C++ wrapper/s
+
+
+    Also profile PNG saving. Compression probably takes most of the time.
+
+
+    Also, for formats.png : fast and best(default) compression options, fast
+    being default.
+21:
+    Color, image getters, setters - specific method names for each color format.
 2!:
     (Only if still true)
     Right now, when the same font is loaded with different font sizes,
@@ -15,6 +28,11 @@
     (Resource manager might help here)
 20:
     Check for a newer version of (D1) Derelict, if any, just in case.
+21:
+    Exception overhaul with Java style exceptions.
+22:
+    get_path in file.fileio should only get path, not if it exists or not.
+    Separate function should handle that.
 18:
     main menu could have an ai-ai game playing in the background
 17: 
@@ -23,6 +41,9 @@
     draw an animation with gui leaving the screen                    
     to the left. we can do this with a guioffset member in gui root
 20: 
+    Replace GL_LUMINANCE WITH GL_RED, as the former is deprecated.
+    (Use shader to get the correct color)
+    
     Get rid of immediate mode:
     support VAs and maybe VBOs (not that necessary right now) -
     use VAs with colors (but support multiple vertex types)
@@ -47,6 +68,9 @@
     Once we use custom matrices with shaders, we might simply
     store projection matrices with caches and draw all out
     at the end, but we need to learn that
+
+    If we draw everything at the end of frame, we can add support
+    for drawing to FBO (separate pass) and using that for screenshots.
 
     use gDebugger to profile OGL performance
 24:

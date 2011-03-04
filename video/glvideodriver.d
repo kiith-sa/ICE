@@ -548,6 +548,27 @@ abstract class GLVideoDriver : VideoDriver
             }
         }
 
+        final override Image screenshot()
+        {
+            ColorFormat format = ColorFormat.RGB_8;
+
+            Image image = new Image(screen_width_, screen_height_, format);
+
+            GLenum gl_format, type;
+            GLint internal_format;
+            gl_color_format(format, gl_format, type, internal_format);
+
+            glPixelStorei(GL_PACK_ALIGNMENT, 1);
+            //get front buffer as we do this after end_frame
+            glReadBuffer(GL_FRONT);
+            glReadPixels(0, 0, screen_width_, screen_height_, gl_format, type, image.data.ptr);
+
+            //GL y starts from bottom, our Image starts from top, so we need to flip.
+            image.flip_vertical();
+
+            return image;
+        }
+
         override MonitorMenu monitor_menu(){return new GLVideoDriverMonitor(this);}
 
     package:
