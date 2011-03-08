@@ -1,25 +1,29 @@
-21:
-    Lodepng: Remove unneeded code (tango, text chunks
-                                   (?-maybe keep those and move such
-                                      unlikely-needed stuff to a separate module,
-                                      and make it very D2 compatible)
-                                   , extra ctors, convenience overloaded functions,
-                                   maybe more),
-    simplify, refactor, maybe add grayscale support.
-    If writing leads to memory bloat, also use manual allocation through Vector,
-    etc (might want to turn lodepng into a subpackage of the formats package)
+22: 
+    Check all PNG TODOs (aka use Vectors).
+22:
+    PNG code: profile, optimize.
+    Compression probably takes most of the time.
+    Maybe roll our own zlib compressor.
 
+    Profile both decoder and encoder. Concentrate on
+    unnecessary copies in decoder - they might be removed, but
+    that'd make code more ugly.
 
-    For interface ideas, see some OOP PNG libs, e.g. C++ wrapper/s
-
-
-    Also profile PNG saving. Compression probably takes most of the time.
-
-
+    Possibly, if profiling shows this makes sense:
     Also, for formats.png : fast and best(default) compression options, fast
     being default.
+23:
+    Remove PNG testing code (the texture)
+21:
+    CDC: Remove Tango code, make it simpler, more straightforward.
 21:
     Color, image getters, setters - specific method names for each color format.
+22:
+    Descriptive template type names (can be one-letter, but not just T)
+23:
+    Use enforceEx to throw exceptions where possible
+24: 
+    Look at where we can replace memcpy by a[] = b[] array copying
 2!:
     (Only if still true)
     Right now, when the same font is loaded with different font sizes,
@@ -33,13 +37,6 @@
 22:
     get_path in file.fileio should only get path, not if it exists or not.
     Separate function should handle that.
-18:
-    main menu could have an ai-ai game playing in the background
-17: 
-    Effects:
-    when changing the gui, (e.g. moving from menu to pong, or between dialogs), 
-    draw an animation with gui leaving the screen                    
-    to the left. we can do this with a guioffset member in gui root
 20: 
     Replace GL_LUMINANCE WITH GL_RED, as the former is deprecated.
     (Use shader to get the correct color)
@@ -73,7 +70,13 @@
     for drawing to FBO (separate pass) and using that for screenshots.
 
     use gDebugger to profile OGL performance
-24:
+18:
+    main menu could have an ai-ai game playing in the background
+17: 
+    Effects:
+    when changing the gui, (e.g. moving from menu to pong, or between dialogs), 
+    draw an animation with gui leaving the screen                    
+    to the left. we can do this with a guioffset member in gui root
     Weak singleton class handling time, updating actormanager and perhaps other
     stuff. Pass this class when updating actors, instead of time_step, game_time.
     This class will also allow timed delegates,
@@ -83,7 +86,6 @@
     However, that might require globally accessible singletons (no testability) 
     -only do stuff that needs no singletons
 24:
-    1:
     Move FPS counter out of game code, UPS out of ActorManager. Get rid of
     statistics method/s, maybe eventcounter if can't find a use for it. 
     We can have monitor/s for that. Need to separate monitor GUI and logic.
@@ -111,11 +113,11 @@
     Consider Model-View-Controller style code. (maybe just M-VC instead of M-V-C)
 4:
     FPS graph
+14:
+    Look for D files in main directory that can be put into packages.
 20:
     Look at other games/demos for graphics effect ideas...
     or maybe we have enough effects by now...
-14:
-    Look for D files in main directory that can be put into packages.
 25:
     Consider abstracting
     GLTexturePage to TexturePage and moving as much code as possile to VideoDriver,
@@ -133,13 +135,13 @@
     Stop printing UPS to stdout, maybe move to monitor or get rid of it altogether.
 25:
     Logo, and use it as background in docs in a non-intrusive, MiniINI-like way.
-20:
-    Multiple (two, and maybe option to generate) color schemes
-    (game, not GUI, colors)
 26:
     Optional(user options) smarter AI that takes note of ray hints from BallSpawner
     (only if those rays intersect with the goal - ignore if they're intersecting
      the walls to prevent extra stupidity)
+20:
+    Multiple (two, and maybe option to generate) color schemes
+    (game, not GUI, colors)
 25: 
     Background colors for GUI elements 
     (nothing more, though, for now - just rects with the color)
@@ -199,6 +201,12 @@
 1:
     Measurements and graphs of how much time per frame does e.g. line drawing take,
     and display them somehow. Could measure times of non-videodriver code as well.
+16:
+    Ensure everything is polished, create README and such and push, for the first time,
+    to gitorious or github. Not necessarily announcing it.
+    Also a simple binary archive, both 32-bit and 64-bit if possible.
+    And detailed installation instructions both from source and binary archive
+    on wiki.
 26: 
     Sounds
 17:
@@ -207,9 +215,6 @@
     Maybe show an AI/AI game on the background of the credits screen.
     (i.e. just start the game with two AI players in credits_start
      and call pong_end from credits_end)
-16:
-    Ensure everything is documented in DDoc and push, for the first time
-    to gitorious or github. Not necessarily announcing it.
 17:
     Write detailed tutorials on installing from source and test installing
     according to this tutorial on other PC's with Linux as well as in VirtualBox 
@@ -228,7 +233,9 @@
     We'll need to port CDC first, look if there's a new CDC, if not,
     port it, test with some small test project
 5:
-    Move to 64bit (whether or not we're already at D2)
+  Move to 64bit (whether or not we're already at D2)
+6:
+  Save screenshots in a separate thread.
 6:
     Logic change: when ball collides with anything, emit a signal
     with its body of the other collider and check that for

@@ -28,6 +28,8 @@ import std.c.stdlib;
 import math.math;
 import math.vector2;
 import math.rectangle;
+//TEMP
+import video.texture;
 import video.videodriver;
 import video.sdlglvideodriver;
 import video.videodrivercontainer;
@@ -2148,6 +2150,11 @@ class Pong
         ///Game.
         Game game_;
 
+
+        //TEMP
+        bool have_texture_;
+        Texture texture_;
+
     public:
         ///Initialize Pong.
         this()
@@ -2167,7 +2174,6 @@ class Pong
             video_driver_container_ = new VideoDriverContainer;
             video_driver_ = video_driver_container_.produce!(SDLGLVideoDriver)
                             (800, 600, ColorFormat.RGBA_8, false);
-
 
             //initialize GUI
             gui_root_ = new GUIRoot(platform_);
@@ -2234,6 +2240,9 @@ class Pong
                 gui_root_.update();
 
                 video_driver_.start_frame();
+
+                //TEMP
+                if(have_texture_){video_driver_.draw_texture(Vector2i(0,0), texture_);}
 
                 if(game_run){game_.draw(video_driver_);}
 
@@ -2318,6 +2327,13 @@ class Pong
                         break;
                     case Key.Scrollock:
                         save_screenshot();
+                        break;
+                        //TEMP
+                    case Key.F9:
+                        Image image = read_image("main::screenshots/screenshot_00000.png");
+                        texture_ = video_driver_.create_texture(image);
+                        have_texture_ = true;
+                        delete image;
                         break;
                     default:
                         break;

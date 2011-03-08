@@ -44,6 +44,9 @@ template Signal(Args ...)
          * One slot can be connected more than once, resulting in multiple calls 
          * to that slot when the signal is emitted.
          *
+         * Only embedded, class/struct member functions can be connected, 
+         * global functions are not supported at the moment.
+         *
          * Params:  slot = Slot to connect.
          */
         void connect(void delegate(Args) slot)

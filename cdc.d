@@ -112,6 +112,12 @@
 
 module cdc;
 
+
+import std.c.stdarg;
+
+import std.string;
+
+
 /**
  * Use to implement your own custom build script, or pass args on to defaultBuild() 
  * to use this file as a generic build script like bud or rebuild. */
@@ -748,7 +754,7 @@ struct FS
 		else
 		{	// Remove filename
 			char[] filename;
-			int index = rfind(rel_path, FS.sep);
+			int index = std.string.rfind(rel_path, FS.sep);
 			if (index != -1)
 			{   filename = rel_path[index..length];
 				rel_path = replace(rel_path, filename, "");
@@ -976,7 +982,10 @@ struct String
 		{	message = substitute(message, "%s", "{}");
 			return Format.convert(message, args);
 		} else
-		{	char[] swritef(...) // wrapper to convert varargs
+		{	
+            return std.string.format(message, args);
+            /*
+            char[] swritef(...) // wrapper to convert varargs
 			{	char[] res;
 				void putchar(dchar c)
 				{   res~= c;
@@ -985,6 +994,7 @@ struct String
 				return res;
 			}
 			return swritef(message, args);
+            */
 	}	}
 	unittest {
 		assert(String.format("%s World %s", "Hello", 23) == "Hello World 23");
@@ -1007,7 +1017,7 @@ struct String
 	static char[][] split(char[] source, char[] pattern)
 	{	version (Tango)
 			return Regex(pattern).split(source);
-		else return .split(source, pattern);
+		else return std.string.split(source, pattern);
 	}
 
 	/// Does "source" begin with "beginning" ?

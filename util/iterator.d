@@ -15,5 +15,5 @@ abstract class Iterator(T)
 {
     public:
         ///Used by foreach.
-        int opApply(int delegate(ref T) dg);
+        int opApply(int delegate(ref T) visitor);
 }
