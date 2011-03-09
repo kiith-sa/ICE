@@ -23,6 +23,8 @@ import std.intrinsic;
 import formats.pngcommon;
 import formats.zlib;
 import math.vector2;
+import memory.memory;
+import containers.vector;
 import util.iterator;
 import util.exception;
 import util.swap;
@@ -45,21 +47,26 @@ struct PNGDecoder
          * Params:  source = PNG data to decode.
          *          info   = PNG info object to write image information to.
          *
-         * Returns: Decoded image data.
+         * Returns: Manually allocated decoded image data. Must be freed manually.
          *
          * Throws:  PNGException on decoding error, Exception on decompression error.
          */
         ubyte[] decode(ubyte[] source, ref PNGInfo info)
         {
-            //TODO Vector, and return Vector. Don't care about copying yet, it might
-            //end up being fast enough (probably much faster than deflating, anyway)
-            info = PNGInfo(read_header(source, info.interlace));
+            ubyte interlace;
+            info = PNGInfo(read_header(source, interlace));
+            info.interlace = interlace;
 
             uint expected_length = info.interlace 
                                    ? buffer_size(info.image) + info.image.height * 2
                                    : buffer_size(info.image) + info.image.height;
 
-            auto inflator = Inflator(expected_length);
+
+            auto buffer = Vector!(ubyte)();
+            buffer.reserve(expected_length);
+            scope(exit){buffer.die();}
+
+            auto inflator = Inflator(buffer);
 
             foreach(chunk; new PNGChunkIterator(source[header_size - 1 .. $]))
             {
@@ -134,7 +141,7 @@ struct PNGDecoder
                             else
                             {
                                 info.text.latin[chunk.data[0 .. sep]] = 
-                                               zlib_inflate(chunk.data[sep + 2 .. $]);
+                                                zlib_inflate(chunk.data[sep + 2 .. $]);
                             }
                         }
                         break;
@@ -170,12 +177,13 @@ struct PNGDecoder
                 }
             }
 
-            ubyte[] buffer = inflator.inflated;
+            if(info.interlace != 0){deinterlace(buffer, info.image);}
+            else{reconstruct(buffer, info.image);}
 
-            buffer = (info.interlace == 0) ? reconstruct(buffer, info.image)
-                                           : deinterlace(buffer, info.image);
+            ubyte[] output = alloc!(ubyte)(buffer.length);
+            output[] = buffer.array;
 
-            return buffer;
+            return output;
         }
 }
 
@@ -235,7 +243,7 @@ PNGImage read_header(ubyte[] source, out ubyte interlace)
  */
 uint buffer_size(ref PNGImage image){return ((image.width * image.bpp + 7) / 8) * image.height;}
 
-///Iterator over PNG chunks.
+///Iterator over PNG chunks. 
 class PNGChunkIterator : Iterator!(PNGChunk)
 {
     private:
@@ -246,14 +254,14 @@ class PNGChunkIterator : Iterator!(PNGChunk)
         ///Construct a PNGChunkIterator over specified stream (without header).
         this(ubyte[] stream){stream_ = stream;}
 
+        ///Iterate over chunks. Chunk will be destroyed after their respective iterations.
         override int opApply(int delegate(ref PNGChunk chunk) visitor)
         {
             int result = 0;
             uint pos = 0;
-            PNGChunk chunk;
             while(pos + chunk_min_size <= stream_.length)
             {
-                chunk = PNGChunk.from_stream(stream_[pos .. $]);
+                PNGChunk chunk = PNGChunk.from_stream(stream_[pos .. $]);
                 if(chunk.type == IEND){break;}
                 result = visitor(chunk);
                 if(result){return result;}
@@ -322,15 +330,16 @@ void unfilter_line(ubyte[] result, ubyte[] line, ubyte[] previous, uint pixel_by
 /**
  * Deinterlace Adam7 interlaced data.
  *
- * Params:  lines = Interlaced data.
- *          image = Image information.
- * 
- * Returns: Deinterlaced data.
+ * Params:  buffer = Interlaced data will be read from here and deinterlaced data 
+ *                   will be written here.
+ *          image  = Image information.
  */
-ubyte[] deinterlace(ubyte[] input, ref PNGImage image)
+void deinterlace(ref Vector!(ubyte) buffer, ref PNGImage image)
 {
-    //TODO Vector
-    ubyte[] result = new ubyte[buffer_size(image)/* + image.height*/];
+    //result buffer
+    auto result = Vector!(ubyte)();
+    scope(exit){result.die();}
+    result.length = buffer_size(image);
 
     /**
      * Perform an adam7 deinterlacing pass.
@@ -446,12 +455,12 @@ ubyte[] deinterlace(ubyte[] input, ref PNGImage image)
         //empty pass
         if(pass_dim[p].y * pass_dim[p].x == 0){continue;}
 
-        adam7_pass(input[offset .. $], pass_start[p], pass_dist[p], pass_dim[p]);
+        adam7_pass(buffer[offset .. buffer.length], pass_start[p], pass_dist[p], pass_dim[p]);
 
         offset += (pass_dim[p].y * (1 + (pass_dim[p].x * image.bpp + 7) / 8));
     }
 
-    return result;
+    buffer = result.array;
 }
 
 /**
@@ -461,14 +470,15 @@ ubyte[] deinterlace(ubyte[] input, ref PNGImage image)
  * line and the line is filtered using that filter.
  * This will unapply the filter and pack lines together.
  *
- * Params:  buffer = PNG data. Might be altered (changed in place).
+ * Params:  buffer = PNG data will be read from here and output will be written here.
+ *                   This might be done in place.
  *          image  = Information about the image.
- *
- * Returns: Reconstructed image.
  */
-ubyte[] reconstruct(ubyte[] data, ref PNGImage image)
+void reconstruct(ref Vector!(ubyte) buffer, ref PNGImage image)
 {
-    //TODO Vectors
+    //we can work with the array directly as we do this in place
+    ubyte[] data = buffer.array;
+
 	uint pixel_bytes = (image.bpp + 7) / 8;
     //bits are tightly packed, but lines are always padded to 1 byte boundaries
     uint line_length = ((image.width * image.bpp) + 7) / 8;
@@ -535,6 +545,5 @@ ubyte[] reconstruct(ubyte[] data, ref PNGImage image)
             line_start += 1 + line_length;
         }
     }
-    data.length = buffer_size(image); 
-	return data;
+    buffer.length = buffer_size(image); 
 }

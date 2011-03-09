@@ -257,7 +257,6 @@ struct PNGChunk
     ///Chunk type.
     uint type;
     ///Raw chunk contents.
-    //TODO VECTOR
     ubyte[] data;
 
     /**
@@ -276,7 +275,7 @@ struct PNGChunk
         uint data_length = get_uint(stream);
         //chunk type
         result.type = get_uint(stream[4 .. 8]);
-        if(data_length){result.data = stream[8 .. 8 + data_length];}
+        result.data = data_length ? stream[8 .. 8 + data_length] : null;
         //crc at the end of the chunk
         uint crc = get_uint(stream[8 + data_length .. 12 + data_length]);
         enforceEx!(PNGException)(zlib_check_crc(crc, stream[4..8 + data_length]),

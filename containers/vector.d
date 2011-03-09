@@ -7,7 +7,10 @@
 module containers.vector;
 
 
+import std.c.string;
+
 import memory.memory;
+import math.math;
 
 
 /**
@@ -24,6 +27,7 @@ import memory.memory;
  */
 align(1) struct Vector(T)
 {
+    invariant(){assert(data_ !is null, "Vector data is null - probably not constructed");}
     private:
         ///Manually allocated data storage. More storage than used can be allocated.
         T[] data_;
@@ -38,6 +42,19 @@ align(1) struct Vector(T)
         {
             Vector!(T) result;
             result.data_ = alloc!(T)(2);
+            return result;
+        }
+
+        ///Construct a vector from an array.
+        static Vector opCall(T[] array)
+        out(result){assert(result.used_ == array.length, "Unexpected vector length");}
+        body
+        {
+            Vector!(T) result;
+            result.data_ = alloc!(T)(max(2u, array.length));
+            //copy array data
+            result.data_[] = array;
+            result.used_ = array.length;
             return result;
         }
 
@@ -65,6 +82,23 @@ align(1) struct Vector(T)
             return result;
         }
 
+        /**
+         * Used by foreach.
+         *
+         * Foreach will iterate over all elements of the vector in linear order
+         * from start to end.
+         */
+        int opApply(int delegate(ref uint, ref T) dg)
+        {
+            int result = 0;
+            for(uint i = 0; i < used_; i++)
+            {
+                result = dg(i, data_[i]);
+                if(result){break;}
+            }
+            return result;
+        }
+
         ///Append an element to the vector. (~= operator)
         void opCatAssign(T element)
         out
@@ -75,10 +109,42 @@ align(1) struct Vector(T)
         body
         {
             //if out of space, reallocate.
-            if(used_ >= data_.length){data_ = realloc(data_, data_.length * 2);}
-
+            reserve(used_ + 1);
             data_[used_] = element;
             used_++;
+        }
+
+        ///Append contents of an array to the vector. (~= operator)
+        void opCatAssign(T[] array)
+        in
+        {
+            assert(array.ptr + array.length <= data_.ptr || 
+                   array.ptr >= data_.ptr + data_.length,
+                   "Can't append an overlapping array to a vector.");
+        }
+        body
+        {
+            //if out of space, reallocate.
+            reserve(used_ + array.length);
+            //copy array data
+            data_[used_ .. used_ + array.length] = array;
+            used_ += array.length;
+        }
+
+        ///Append contents of a vector to the vector. (~= operator)
+        void opCatAssign(Vector!(T) vector){opCatAssign(vector.array);}
+
+        /**
+         * Assign array to the vector. This will destroy any
+         * data owned by this vector and copy array data to this vector.
+         *
+         * Params:  array = Array to assign.
+         */
+        void opAssign(T[] array)
+        {
+            reserve(array.length);
+            data_[0 .. array.length] = array;
+            used_ = array.length;
         }
 
         /**
@@ -88,7 +154,7 @@ align(1) struct Vector(T)
          *
          * Returns: Element at the specified index.
          */
-        T opIndex(uint index)
+        T opIndex(size_t index)
         in{assert(index < used_, "Vector index out of bounds");}
         body{return data_[index];}
 
@@ -97,9 +163,41 @@ align(1) struct Vector(T)
          *
          * Params:  index = Index of the element to set. Must be within bounds. 
          */
-        void opIndexAssign(T value, uint index)
+        void opIndexAssign(T value, size_t index)
         in{assert(index < used_, "Vector index out of bounds");}
         body{data_[index] = value;}
+
+        /**
+         * Copy array to specified slice of the vector.
+         *
+         * Array and slice length must match.
+         *
+         * Params:  array = Array to copy.
+         *          start = Start of the slice.
+         *          end   = End of the slice.
+         */
+        void opSliceAssign(T[] array, size_t start, size_t end)
+        in
+        {
+            assert(array.length == end - start, "Slice lengths for assignment don't match");
+            assert(end <= used_, "Vector slice index out of bounds");
+            assert(start <= end, "Slice start greater than slice end");
+        }
+        body{data_[start .. end] = array;}
+
+        /**
+         * Get a slice of the vector as a D array.
+         *
+         * Params:  start = Start of the slice.
+         *          end   = End of the slice.
+         */
+        T[] opSlice(size_t start, size_t end)
+        in
+        {
+            assert(end <= used_, "Vector slice index out of bounds");
+            assert(start <= end, "Slice start greater than slice end");
+        }
+        body{return data_[start .. end];}
 
         //In D2, this should return const if possible
         /**
@@ -109,7 +207,7 @@ align(1) struct Vector(T)
          *
          * Returns: Pointer to the element at the specified index.
          */
-        T* ptr(uint index)
+        T* ptr(size_t index)
         in{assert(index < used_, "Vector index out of bounds");}
         out(result)
         {
@@ -118,9 +216,11 @@ align(1) struct Vector(T)
         }
         body{return &data_[index];}
 
-        //In D2, this should return const if possible
         ///Access vector contents as an array.
         T[] array(){return data_[0 .. used_];}
+
+        ///Access vector contents through a pointer.
+        T* ptr(){return data_.ptr;}
 
         /**
          * Remove element from the vector.
@@ -200,9 +300,18 @@ align(1) struct Vector(T)
          */
         void length(uint length)
         {
-            if(length > data_.length){data_ = realloc(data_, length);}
+            reserve(length);
             used_ = length;
         }
+
+        ///Reserve space for at least specified number of elements.
+        void reserve(uint elements)
+        {
+            if(elements > data_.length){data_ = realloc(data_, elements);}
+        }
+
+        ///Get currently allocated capacity.
+        size_t allocated(){return data_.length;}
 }
 ///Unittest for Vector.
 unittest
@@ -248,4 +357,19 @@ unittest
     vector.length = 5;
     assert(vector.length == 5);
     assert(vector.array.length == 5);
+
+    uint[] array = [1, 2, 3];
+    vector ~= array;
+    assert(vector.length == 8);
+    assert(vector.array[$ - array.length .. $] == array);
+
+    vector[0 .. array.length] = array;
+    assert(vector[0 .. array.length] == array);
+
+    vector = array;
+    assert(vector.array == array);
+
+    auto vector2 = Vector!(uint)(array);
+    scope(exit){vector2.die();}
+    assert(vector2.array == array);
 }

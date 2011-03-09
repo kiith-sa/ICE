@@ -13,13 +13,12 @@ import formats.zlib;
 import formats.pngcommon;
 import formats.pngdecoder;
 import formats.pngencoder;
+import memory.memory;
 import util.exception;
 import color;
 
 
 package:
-
-///TODO: Vectors
 /**
  * Encode image data to PNG format, ready to write to a file.
  *
@@ -29,7 +28,7 @@ package:
  *          height = Image height in pixels.
  *          format = Color format of the image.
  *
- * Returns: Array with encoded data.
+ * Returns: Manually allocated array with encoded data. Must be manually freed.
  *
  * Throws:  Exception in case of an encoding error.
  */
@@ -63,7 +62,7 @@ body
  *          height = Image height in pixels will be written here.
  *          format = Color format of the image will be written here.
  *
- * Returns: Decoded image data.
+ * Returns: Manually allocated decoded image data. Must be manually freed.
  *
  * Throws:  Exception on failure.
  */
@@ -75,11 +74,14 @@ ubyte[] decode_png(ubyte[] data, out uint width, out uint height, out ColorForma
     try
     {
         ubyte[] decoded = decoder.decode(data, info);
+        scope(failure){free(decoded);}
+
         width = info.image.width;
         height = info.image.height;
         format = color_format_from_png(info.image.color_type, info.image.bit_depth);
         assert(decoded.length == width * height * bytes_per_pixel(format),
                "Image data size does not match image parameters");
+
         return decoded;
     }
     catch(PNGException e){throw new Exception("PNG decoding error: " ~ e.msg);}

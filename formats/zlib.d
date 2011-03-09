@@ -10,6 +10,7 @@ module formats.zlib;
 import etc.c.zlib;
 
 import math.math;
+import containers.vector;
 import util.exception;
 
 
@@ -74,13 +75,16 @@ ubyte[] zlib_inflate(ubyte[] input, uint reserve = 0)
     assert(false, "Unfinished zlib decompression");
 }
 
-//TODO USE VECTORS
-///Buffered Zlib decompressor. Used to decompress Zlib data piece by piece.
+/**
+ * Buffered Zlib decompressor. Used to decompress Zlib data piece by piece.
+ *
+ * Stores compressed data in an outside vector.
+ */
 struct Inflator
 {
     private:
         ///Decompressed data.
-        ubyte[] inflated_;
+        Vector!(ubyte)* inflated_;
         ///Zlib stream used for decompression.
         z_stream stream_;
 
@@ -93,16 +97,16 @@ struct Inflator
         /**
          * Construct an Inflator.
          *
-         * Params:  reserve = Expected size of decompressed data, used to reserve
-         *                    space for decompression. 0 (default) means automatic.
+         * Params:  inflated = Vector to write decompressed data to.
+         *                     Any existing data in the vector will be overwritten.
          */
-        static Inflator opCall(uint reserve)
+        static Inflator opCall(ref Vector!(ubyte) inflated)
         {
             Inflator result;
 
-            ubyte[] inflated = new ubyte[max(1u, reserve)];
+            inflated.length = inflated.allocated;
 
-            result.inflated_ = inflated;
+            result.inflated_ = &inflated;
             result.stream_.next_out = inflated.ptr;
             result.stream_.avail_out = inflated.length;
             result.stream_.avail_out = inflated.length;
@@ -110,11 +114,6 @@ struct Inflator
 
             return result;
         }
-
-        ///Get the decompressed data. Can only be called when decompression is over.
-        ubyte[] inflated()
-        in{assert(ended_, "Inflator has not finished its work yet");}
-        body{return inflated_;}
 
         ///Decompress a piece of the data.
         void inflate(ubyte[] input)
@@ -148,7 +147,7 @@ struct Inflator
                 else if(stream_.avail_out == 0)
                 {
                     inflated_.length = inflated_.length * 2;
-                    stream_.next_out = &inflated_[inflated_.length / 2];
+                    stream_.next_out = inflated_.ptr + inflated_.length / 2;
                     stream_.avail_out = inflated_.length / 2;
                 }
             }
@@ -166,48 +165,26 @@ struct Inflator
  */
 ubyte[] zlib_deflate(ubyte[] source, CompressionStrategy strategy = CompressionStrategy.RLE,
                      uint level = 9)
-in{assert(level <= 9, "Invalid zlib compression level");}
-body
 {
-    ///TODO VECTOR, AND RETURN A VECTOR, TOO, NOT JUST ubyte[]
     ubyte[] buffer;
-
-    if(source.length == 0){return buffer;}
-
-    //arbitrary length, zlib usually compresses images to less than a half or better 
-    //and we usually compress images
-    //also prevent zero sized buffers in case we're deflating something really small
-    buffer.length = max(1u, source.length / 2);
-
-    z_stream stream;
-    with(stream)
-    {
-        next_in = source.ptr;
-        avail_in = source.length;
-        next_out = buffer.ptr;
-        avail_out = buffer.length;
-        data_type = Z_BINARY;
-    }
-
-    deflateInit2(&stream, level, Z_DEFLATED, 15, 9, cast(ubyte)strategy);
-
-    //deflate
-    auto message = deflate(&stream, Z_FINISH);
-    while(message != Z_STREAM_END)
-    {
-        buffer.length = buffer.length * 2;
-        stream.next_out = &buffer[buffer.length / 2];
-        stream.avail_out = buffer.length / 2;
-        message = deflate(&stream, Z_FINISH);
-    }
-
-    assert(message == Z_STREAM_END, "Unfinished zlib compression");
-
-    buffer.length = stream.total_out;
-    deflateEnd(&stream);
-
+    deflate_(buffer, source, strategy, level);
     return buffer;
 }
+
+/**
+ * Compress data using Zlib.
+ *
+ * Params:  result   = Compressed data will be written here.
+ *          source   = Data to compress.
+ *          strategy = Zlib compression strategy to use.
+ *          level    = Compression level. Must be at least 0 and at most 9.
+ *
+ * Returns: Compressed data.
+ */
+void zlib_deflate(ref Vector!(ubyte) result, ubyte[] source, 
+                  CompressionStrategy strategy = CompressionStrategy.RLE,
+                  uint level = 9)
+{deflate_(result, source, strategy, level);}
 
 package:
 /**
@@ -229,3 +206,52 @@ bool zlib_check_crc(uint crc, ubyte[] data){return crc == crc32(0, data.ptr, dat
  */
 uint zlib_crc(ubyte[] data){return crc32(0, data.ptr, data.length);}
 
+private:
+/**
+ * Compress data using Zlib (implementation).
+ *
+ * Params:  result   = Compressed data will be written here.
+ *          source   = Data to compress.
+ *          strategy = Zlib compression strategy to use.
+ *          level    = Compression level. Must be at least 0 and at most 9.
+ *
+ * Returns: Compressed data.
+ */
+void deflate_(Buffer)(ref Buffer result, ubyte[] source, 
+                      CompressionStrategy strategy, uint level)
+in{assert(level <= 9, "Invalid zlib compression level");}
+body
+{
+    if(source.length == 0){return;}
+
+    //zlib usually compresses images to less than a fourth and we usually compress images
+    //also prevent zero sized buffers in case we're deflating something really small
+    result.length = max(1u, source.length / 4);
+
+    z_stream stream;
+    with(stream)
+    {
+        next_in = source.ptr;
+        avail_in = source.length;
+        next_out = result.ptr;
+        avail_out = result.length;
+        data_type = Z_BINARY;
+    }
+
+    deflateInit2(&stream, level, Z_DEFLATED, 15, 9, cast(ubyte)strategy);
+
+    //deflate
+    auto message = deflate(&stream, Z_FINISH);
+    while(message != Z_STREAM_END)
+    {
+        result.length = result.length * 2;
+        stream.next_out = result.ptr + result.length / 2;
+        stream.avail_out = result.length / 2;
+        message = deflate(&stream, Z_FINISH);
+    }
+
+    assert(message == Z_STREAM_END, "Unfinished zlib compression");
+
+    result.length = stream.total_out;
+    deflateEnd(&stream);
+}

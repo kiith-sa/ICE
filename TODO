@@ -1,7 +1,22 @@
 22: 
-    Check all PNG TODOs (aka use Vectors).
+    Commit check, commit
 22:
     PNG code: profile, optimize.
+
+    Can often reserve vector space.
+
+    Also, in decoding, we could directly assign decoded buffer to the image
+    instead of copying it (although we'd have to add an unsafe method to image
+    interface)
+
+    Another possible optimization:
+    If chunks required to be passed manually allocated buffers 
+    (we can do an assert + a memory function for that), we wouldn't
+    have to copy at chunk construction, 
+    For from_stream, we could require stream to exist all the time chunk exists,
+    and just store slices from stream. (But would not be able to free them... 
+    we'd need a flag for this so die() won't try to free them)
+
     Compression probably takes most of the time.
     Maybe roll our own zlib compressor.
 
@@ -14,6 +29,18 @@
     being default.
 23:
     Remove PNG testing code (the texture)
+24:
+    Possible color interpolation optimization:
+    instead of using float artithmetic, convert multipliers to ints from
+    0 to 255, multiply with colors, and assign interpolated values
+    to results of those multiplications / 256 (use shifts)
+
+    Test on a heavy workload (many dummyballs).
+
+
+    Also, look if we can do this in MMX registers (as they can hold 4 16bit integers)
+24: 
+    Grep through code and make sure we use Vector.ptr instead of Vector.array.ptr
 21:
     CDC: Remove Tango code, make it simpler, more straightforward.
 21:

@@ -12,6 +12,7 @@ import std.stdio;
 
 import formats.png;
 import file.fileio;
+import memory.memory;
 import image;
 import color;
 
@@ -50,7 +51,9 @@ void write_image(Image image, string file_name,
         scope(exit){close_file(file);}
         if(file_format == ImageFileFormat.PNG)
         {
-            file.write(encode_png(image.data, image.width, image.height, image.format));
+            ubyte[] data = encode_png(image.data, image.width, image.height, image.format);
+            file.write(data);
+            free(data);
         }
         else{assert(false, "Unsupported image file format for writing");}
     }
@@ -86,7 +89,8 @@ Image read_image(string file_name, ImageFileFormat file_format = ImageFileFormat
         //parameters of the loaded image will be written here
         uint width, height;
         ColorFormat format;
-        ubyte[] image_data;
+
+        ubyte[] image_data = null;
 
         if(file_format == ImageFileFormat.PNG)
         {
@@ -96,6 +100,7 @@ Image read_image(string file_name, ImageFileFormat file_format = ImageFileFormat
 
         Image image = new Image(width, height, format);
         image.data[] = image_data;
+        if(image_data !is null){free(image_data);}
         return image;
     }
     catch(Exception e)

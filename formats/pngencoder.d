@@ -23,6 +23,8 @@ import std.math;
 
 import formats.zlib;
 import formats.pngcommon;
+import memory.memory;
+import containers.vector;
 
 
 package:
@@ -57,7 +59,6 @@ struct PNGEncoder
         ///Compress text data? (on by default)
         void compress_text(bool compress){compress_text_ = compress;}
 
-        //TODO USE VECTORS
         /**
          * Encode image data to PNG format.
          *
@@ -66,6 +67,8 @@ struct PNGEncoder
          * Params:  info   = PNG information to encode.
          *          source = Image data to encode. 
          *                   Must correspond to width, height and color type in info.
+         *
+         * Returns: Manually allocated array with encoded PNG data. Must be manually freed.
          *
          * Throws:  PNGException on failure.
          */
@@ -81,19 +84,29 @@ struct PNGEncoder
             PNGChunk[] chunks;
             //header chunk
             chunks ~= PNGChunk(IHDR, header(info.image));
-            //encode image data
-            source = zlib_deflate(filter_data(source, info.image), compression_, level_);
-            chunks ~= PNGChunk(IDAT, source);
+            //filter image data
+            auto filtered = Vector!(ubyte)();
+            scope(exit){filtered.die();}
+            filter_data(filtered, source, info.image);
+            //compress image data
+            auto compressed = Vector!(ubyte)();
+            scope(exit){compressed.die();}
+            zlib_deflate(compressed, filtered.array, compression_, level_);
+            chunks ~= PNGChunk(IDAT, compressed.array);
             //auxiliary chunks from PNGInfo.
             chunks ~= auxiliary_chunks(info);
             chunks.sort;
             chunks ~= PNGChunk(IEND, []);
 
-            ubyte[] buffer = png_magic_number;
+            auto buffer = Vector!(ubyte)(png_magic_number);
+            scope(exit){buffer.die();}
             //write chunks to buffer
             foreach(chunk; chunks){write_chunk(buffer, chunk);}
 
-            return buffer;
+            ubyte[] output = alloc!(ubyte)(buffer.length);
+            output[] = buffer.array;
+
+            return output;
         }
 
     private:
@@ -121,16 +134,16 @@ struct PNGEncoder
             if(info.color_key)
             {
                 chunks ~= PNGChunk(tRNS, [info.color_key_r / 256, info.color_key_r % 256, 
-                                       info.color_key_g / 256, info.color_key_g % 256, 
-                                       info.color_key_b / 256, info.color_key_b % 256]);
+                                          info.color_key_g / 256, info.color_key_g % 256, 
+                                          info.color_key_b / 256, info.color_key_b % 256]);
             }
 
             //background color chunk
             if(info.background.length == 3)
             {
                 chunks ~= PNGChunk(bKGD, [0, info.background[0], 
-                                       0, info.background[1], 
-                                       0, info.background[2]]);
+                                          0, info.background[1], 
+                                          0, info.background[2]]);
             }
             else if(info.background.length == 6)
             {
@@ -175,12 +188,11 @@ struct PNGEncoder
         /**
          * Filter the image data before compression.
          *
-         * Params:  source = Data to filter.
+         * Params:  buffer = Output buffer.
+         *          source = Data to filter.
          *          image  = Image information.
-         *
-         * Returns: Filtered data.
          */
-        ubyte[] filter_data(ubyte[] source, ref PNGImage image)
+        void filter_data(ref Vector!(ubyte) buffer, ubyte[] source, ref PNGImage image)
         {
             uint pixel_bytes = (image.bpp + 7) / 8;
             //size of a line in bytes
@@ -190,17 +202,18 @@ struct PNGEncoder
             ubyte[] line, previous;
             line = source[0 .. pitch];
 
-            //TODO VECTOR
-            //output buffer
-            ubyte[] buffer;
-
             //line of zeroes used as previous line when we're filtering first line
             ubyte[] zero_line = new ubyte[pitch];
             zero_line[] = cast(ubyte)0;
 
+            //filtered line is written here
+            auto filtered = Vector!(ubyte)();
+            scope(exit){filtered.die();}
+
             //filter each line separately to get best results
             if(filter_ == PNGFilter.Dynamic)
             {
+                filtered.length = pitch;
                 for(uint y = 0; y < image.height; y++)
                 {
                     ulong smallest = ulong.max;
@@ -214,7 +227,7 @@ struct PNGEncoder
                     for(auto f = PNGFilter.None; f < PNGFilter.Dynamic; f++)
                     {
                         //filtered line
-                        auto filtered = filter_line(previous, line, filters_[f], pixel_bytes);
+                        filter_line(filtered, previous, line, filters_[f], pixel_bytes);
 
                         //absolute sum of the filtered line
                         uint sum = 0;
@@ -228,7 +241,8 @@ struct PNGEncoder
                     }
 
                     buffer ~= cast(ubyte)best_filter;
-                    buffer ~= filter_line(previous, line, filters_[best_filter], pixel_bytes);
+                    filter_line(filtered, previous, line, filters_[best_filter], pixel_bytes);
+                    buffer ~= filtered.array;
                 }
             }
             //one filter for the whole image
@@ -241,10 +255,10 @@ struct PNGEncoder
                     previous = y == 0 ? zero_line : source[pitch * (y - 1) .. pitch * y];
 
                     buffer ~= cast(ubyte)filter_;
-                    buffer ~= filter_line(zero_line, line, filters_[filter_], pixel_bytes);
+                    filter_line(filtered, previous, line, filters_[filter_], pixel_bytes);
+                    buffer ~= filtered.array;
                 }
             }
-            return buffer;
         }
 }
 
@@ -261,8 +275,8 @@ ubyte[] header(PNGImage image)
     ubyte[] header = new ubyte[13];
     header.length = 0;
 
-    header.add_uint(image.width);
-    header.add_uint(image.height);
+    add_uint(header, image.width);
+    add_uint(header, image.height);
     header ~= image.bit_depth;
     header ~= image.color_type;
     //compression method
@@ -281,53 +295,51 @@ ubyte[] header(PNGImage image)
  * Params:  buffer = Buffer to write to.
  *          chunk  = PNGChunk to write.
  */
-void write_chunk(ref ubyte[] buffer, ref PNGChunk chunk)
+void write_chunk(ref Vector!(ubyte) buffer, ref PNGChunk chunk)
 {
     //chunk header
-    buffer.add_uint(chunk.data.length);
-    buffer.add_uint(chunk.type);
+    add_uint(buffer, chunk.data.length);
+    add_uint(buffer, chunk.type);
 
     //chunk data
-    buffer.length = buffer.length + chunk.data.length;
-    buffer[$ - chunk.data.length .. $] = chunk.data;
+    buffer ~= chunk.data;
+    auto l = buffer.length;
 
     //crc
-    buffer.add_uint(zlib_crc(buffer[$ - chunk.data.length - 4 .. $]));
+    add_uint(buffer, zlib_crc(buffer[l - chunk.data.length - 4 .. l]));
 }
 
 /**
- * Append a uint to specified ubyte buffer.
+ * Append a uint to specified ubyte buffer (vector or array).
  *
  * Params:  buffer = Buffer to append to.
  *          i      = uint to append.
  */
-void add_uint(ref ubyte[] buffer, uint i)
+void add_uint(T)(ref T buffer, uint i)
 {
     buffer.length = buffer.length + 4;
-    buffer[$ - 4] = cast(ubyte)(i >> 24);
-    buffer[$ - 3] = cast(ubyte)(i >> 16);
-    buffer[$ - 2] = cast(ubyte)(i >> 8);
-    buffer[$ - 1] = cast(ubyte)(i);
+    uint l = buffer.length;
+    buffer[l - 4] = cast(ubyte)(i >> 24);
+    buffer[l - 3] = cast(ubyte)(i >> 16);
+    buffer[l - 2] = cast(ubyte)(i >> 8);
+    buffer[l - 1] = cast(ubyte)(i);
 }
 
 /**  
  * Filter a line of image data.
  *
- * Params:  previous   = Previous line in the image. 
- *                       Should be a line of zeroes if this is the first line.
- *          line       = Current line in the image.
- *          filter     = Filter function to use.
+ * Params:  result      = Filtered line will be written here.
+ *          previous    = Previous line in the image. 
+ *                        Should be a line of zeroes if this is the first line.
+ *          line        = Current line in the image.
+ *          filter      = Filter function to use.
  *          pixel_bytes = Size of a pixel in bytes.
- *
- * Returns the filtered line.
  */
-ubyte[] filter_line(ubyte[] previous, ubyte[] line, 
-                    ubyte function(ubyte, ubyte, ubyte, ubyte) filter, uint pixel_bytes)
+void filter_line(ref Vector!(ubyte) result, ubyte[] previous, ubyte[] line, 
+                 ubyte function(ubyte, ubyte, ubyte, ubyte) filter, uint pixel_bytes)
 in{assert(previous.length == line.length, "Image line lengths don't match");}
 body
 {
-    ubyte[] result = new ubyte[line.length];
-
     auto b = pixel_bytes;
     //first pixel has nothing before it
     while(b--){result[b] = filter(0, previous[b], 0, line[b]);}
@@ -336,8 +348,6 @@ body
         result[i] = filter(previous[i - pixel_bytes], previous[i], 
                            line[i - pixel_bytes], line[i]);
     }
-
-    return result;
 }
 
 /**
