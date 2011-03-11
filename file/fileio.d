@@ -97,14 +97,13 @@ void add_mod_directory(string directory)
  */
 File open_file(string name, FileMode mode)
 {
-    bool exists;
     //get the file path
-    string path = get_path(name, exists);
+    string path = get_path(name);
     switch(mode)
     {
         case FileMode.Read:
             enforceEx!(FileIOException) 
-                      (exists, "File to read not found: " ~ name ~ " path: " ~ path);
+                      (file_exists(name), "File to read not found: " ~ name ~ " path: " ~ path);
             //load file into memory
             return load_file(name, path);
         case FileMode.Write, FileMode.Append:
@@ -171,19 +170,18 @@ void close_file(File file)
  */
 void ensure_directory(string name)
 {
-    enforceEx!(FileIOException)(name.find("::") >= 0, 
-                          "Mod directory for directory creation not specified");
+    enforceEx!(FileIOException)
+              (name.find("::") >= 0, "Mod directory for directory creation not specified");
     try
     {
-        bool exists;
-        string path = get_path(name, exists);
-        if(!exists)
+        if(!file_exists(name))
         {
-            mkdir(path);
+            mkdir(get_path(name));
             return;
         }
         enforceEx!(FileIOException)
-                  (isdir(path), "File with specified name exists but is not a directory");
+                  (isdir(get_path(name)), 
+                   "File with specified name exists but is not a directory");
     }
     catch(FileException e)
     {
@@ -200,12 +198,7 @@ void ensure_directory(string name)
  *
  * Throws:  FileIOException if the file name is invalid.
  */
-bool file_exists(string name)
-{
-    bool exists;
-    string dummy = get_path(name, exists);
-    return exists;
-}
+bool file_exists(string name){return cast(bool)exists(get_path(name));}
 
 private:
 ///Default amount of bytes to reserve for file writing buffers - to prevent
@@ -230,16 +223,19 @@ static this()
 }
 
 /**
- * Convert an in-engine filename to real file path and determine if the file exists.
+ * Convert an in-engine filename to real file path.
+ *
+ * If a mod directory is not specified, the file is searched for in known mod 
+ * directories. If the file is not present in any mod directory, file path in
+ * the default mod directory (data/main) is returned.
  *
  * Params:  file_name   = In-engine file name.
- *          file_exists = If the file exists, true will be written here, false otherwise.
  *
  * Returns: Real filesystem path of the file.
  *
  * Throws:  FileIOException on failure.
  */
-string get_path(string file_name, out bool file_exists)
+string get_path(string file_name/*, out bool file_exists*/)
 {
     string[] parts = file_name.split("::");
     string path;
@@ -253,20 +249,16 @@ string get_path(string file_name, out bool file_exists)
         enforceEx!(FileIOException)
                   (exists(path), "File name with invalid mod directory: " ~ file_name);
         path ~= "/" ~ parts[1];
-        file_exists = cast(bool)exists(path);
     }
     //file name contains no directory - look for it in known mod directories
     else
     {
-        file_exists = true;
         //look for the file in mod directories
         foreach_reverse(dir; mod_directories_)
         {
             path = root_ ~ "/" ~ dir ~ "/" ~ file_name;
             if(exists(path)){return path;}
         }           
-        //file not found anywhere
-        file_exists = false;
         //return path in default directory if it doesn't exist anywhere
     }
     return path;

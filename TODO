@@ -1,6 +1,3 @@
-22:
-    get_path in file.fileio should only get path, not if it exists or not.
-    Separate function should handle that.
 2!:
     (Only if still true)
     Right now, when the same font is loaded with different font sizes,

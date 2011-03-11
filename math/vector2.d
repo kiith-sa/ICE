@@ -108,6 +108,7 @@ align(1) struct Vector2(T)
                 Vector2!(T) vector = *this;
                 asm
                 {                             
+                    //for some reason, movlps XMM0, [EAX]; segfaults.
                     //copy vector to lower half of xmm0
                     movlps XMM0, vector;
                     //square all floats in xmm0 
@@ -153,15 +154,14 @@ align(1) struct Vector2(T)
         {
             static if(typeid(T) is typeid(float))
             {
-                Vector2!(T)* vector = this;
                 asm
                 {     
-                    mov EBX, vector;
+                    //this pointer is passed in EAX
+
                     //copy this vector to both low and high half of xmm0
                     //this instruction is supposed to take a double and
                     //duplicate it, but two floats works too
-                    movddup XMM0, [EBX];
-                    //movlps XMM0, [EBX];
+                    movddup XMM0, [EAX];
                     //copy vector to xmm2
                     movaps XMM2, XMM0;       
                     //square all floats in xmm0 
@@ -174,7 +174,7 @@ align(1) struct Vector2(T)
                     //multiply x and y with that and we have a normalized 2D vector
                     mulps XMM2, XMM0;
                     //copy xmm2.x, xmm2y into this vector.
-                    movlps [EBX], XMM2;
+                    movlps [EAX], XMM2;
                 }
                 return;
             }
