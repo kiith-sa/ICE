@@ -13,7 +13,9 @@ import std.stdio;
 
 import derelict.opengl.gl;
 
+import video.shader;
 import file.fileio;
+import util.exception;
 
 
 ///OpenGL (GLSL only right now) shader.
@@ -22,7 +24,7 @@ package struct GLShader
     invariant{assert(program_ != 0, "Shader program is null");}
 
     private:
-		///Linked GLSL shader program.
+        ///Linked GLSL shader program.
         GLuint program_ = 0;
 
     public:
@@ -33,12 +35,13 @@ package struct GLShader
          * 
          * Returns: Loaded shader.
          *
-         * Throws:  Exception if the shader could not be loaded or was invalid.
+         * Throws:  ShaderException if the shader could not be loaded or was invalid.
          */
         static GLShader opCall(string name)
         {
             GLShader shader;
-            shader.load_GLSL("shaders/" ~ name ~ ".vert", "shaders/" ~ name ~ ".frag");
+            try{shader.load_GLSL("shaders/" ~ name ~ ".vert", "shaders/" ~ name ~ ".frag");}
+            catch(FileIOException e){throw new Exception("Shader could not be read: " ~ e.msg);}
             return shader;
         }
 
@@ -55,24 +58,20 @@ package struct GLShader
          * Params:  vfname = File name of the vertex shader.
          *          ffname = File name of the fragment shader.
          *
-         * Throws:  Exception if the shader could not be loaded, compiled or linked.
+         * Throws:  FileIOException if a shader file could not be found or file name is invalid.
+         *          ShaderException if the shader could not be loaded, compiled or linked.
          */
         void load_GLSL(string vfname, string ffname)
         {
             //opening and loading from files
             File vfile;
             File ffile;
-            try
-            {
-                vfile = open_file(vfname, FileMode.Read);
-                ffile = open_file(ffname, FileMode.Read);
-            }
-            catch(Exception e)
-            {
-                throw new Exception("Couldn't load shader " ~ vfname ~ " and/or " ~ ffname);
-            }                                 
+
+            vfile = open_file(vfname, FileMode.Read);
             scope(exit){close_file(vfile);}
+            ffile = open_file(ffname, FileMode.Read);
             scope(exit){close_file(ffile);}
+
             string vsource = cast(string)vfile.data;
             string fsource = cast(string)ffile.data;
             int vlength = vsource.length; 
@@ -80,43 +79,38 @@ package struct GLShader
             char* vptr = vsource.ptr;
             char* fptr = fsource.ptr;
             
-			//creating OpenGL objects for shaders
+            //creating OpenGL objects for shaders
             GLuint vshader = glCreateShader(GL_VERTEX_SHADER);
             GLuint fshader = glCreateShader(GL_FRAGMENT_SHADER);
 
-			//passing shader code to OpenGL
-			glShaderSource(vshader, 1, &vptr, &vlength);
-			glShaderSource(fshader, 1, &fptr, &flength);
+            //passing shader code to OpenGL
+            glShaderSource(vshader, 1, &vptr, &vlength);
+            glShaderSource(fshader, 1, &fptr, &flength);
 
-			//compiling shaders
-			int compiled;
-			glCompileShader(vshader);
-			glGetShaderiv(vshader, GL_COMPILE_STATUS, &compiled);
-			if(!compiled)
-			{
-				throw new Exception("Couldn't compile vertex shader " ~ vfname);
-			}
-			glCompileShader(fshader);
+            //compiling shaders
+            int compiled;
+            glCompileShader(vshader);
+            glGetShaderiv(vshader, GL_COMPILE_STATUS, &compiled);
+            enforceEx!(ShaderException)(compiled, "Couldn't compile vertex shader " ~ vfname);
+
+            glCompileShader(fshader);
             glGetShaderiv(fshader, GL_COMPILE_STATUS, &compiled);
-			if(!compiled)
-			{
-				throw new Exception("Couldn't compile fragment shader " ~ ffname);
-			}
+            enforceEx!(ShaderException)(compiled, "Couldn't compile fragment shader " ~ ffname);
 
             program_ = glCreateProgram();
 
-			//passing shaders to the program
-			glAttachShader(program_, vshader);
-			glAttachShader(program_, fshader);
+            //passing shaders to the program
+            glAttachShader(program_, vshader);
+            glAttachShader(program_, fshader);
 
-			//linking shaders
-			int linked;
-			glLinkProgram(program_);
-			glGetProgramiv(program_, GL_LINK_STATUS, &linked);
-			if(!linked)
-			{
+            //linking shaders
+            int linked;
+            glLinkProgram(program_);
+            glGetProgramiv(program_, GL_LINK_STATUS, &linked);
+            if(!linked)
+            {
                 glDeleteProgram(program_);
-				throw new Exception("Couldn't link shaders " ~ vfname ~ " and " ~ ffname);
-			}
+                throw new ShaderException("Couldn't link shaders " ~ vfname ~ " and " ~ ffname);
+            }
         }
 }

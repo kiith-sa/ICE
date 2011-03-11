@@ -17,12 +17,13 @@ import derelict.util.exception;
 import video.videodriver;
 import video.font;
 import video.texture;
+import file.fileio;
 import math.math;
 import math.vector2;
+import memory.memory;
+import containers.array;
 import util.weaksingleton;
 import color;
-import containers.array;
-import memory.memory;
 
 
 ///Used by VideoDriver implementations to draw a string.
@@ -69,7 +70,7 @@ package align(1) struct FontRenderer
          * Params:  driver = Video driver to use for texture creation.
          *          c      = Character to load glyph for.
          *
-         * Throws:  Exception if the glyph could not be loaded.
+         * Throws:  TextureException if the glyph texture could not be created.
          */
         void load_glyph(VideoDriver driver, dchar c){draw_font_.load_glyph(driver, c);}
 
@@ -160,7 +161,7 @@ package final class FontManager
         /**
          * Construct the font manager, load default font.
          *
-         * Throws:  Exception on failure.
+         * Throws:  FontException on failure.
          */
         this()
         {
@@ -177,7 +178,7 @@ package final class FontManager
                 //initialize FreeType
                 if(FT_Init_FreeType(&freetype_lib_) != 0 || freetype_lib_ is null)
                 {
-                    throw new Exception("FreeType initialization error");
+                    throw new FontException("FreeType initialization error");
                 }
                 try
                 {
@@ -188,14 +189,18 @@ package final class FontManager
                     font_name_ = default_font_name_;
                     font_size_ = default_font_size_;
                 }
-                catch(Exception e)
+                catch(FileIOException e)
                 {
-                    throw new Exception("Could not load default font: " ~ e.msg);
+                    throw new FontException("Could not open file with default font: " ~ e.msg);
+                }
+                catch(FontException e)
+                {
+                    throw new FontException("Could not load default font: " ~ e.msg);
                 }
             }
             catch(SharedLibLoadException e)
             {
-                throw new Exception("Could not load FreeType library: " ~ e.msg);
+                throw new FontException("Could not load FreeType library: " ~ e.msg);
             }
         }
 
@@ -214,7 +219,7 @@ package final class FontManager
          *
          * Params:  driver = VideoDriver to load textures to.
          *
-         * Throws:  Exception if the glyph textures could not be reloaded.
+         * Throws:  TextureException if the glyph textures could not be reloaded.
          */
         void reload_textures(VideoDriver driver)
         {
@@ -310,20 +315,11 @@ package final class FontManager
                 return;
             }
 
-            //Font is not loaded, try to load it
-            Font new_font;
-            try
+            //fallback scenario when the font could not be loaded 
+            void fallback(string error)
             {
-                new_font = new Font(freetype_lib_, font_name_, font_size_, 
-                                    fast_glyphs_, antialiasing_);
-                //Font was succesfully loaded, set it
-                fonts_ ~= new_font;
-                current_font_ = fonts_[$ - 1];
-            }
-            catch(Exception e)
-            {
-                writefln("Failed to load font: ", font_name_, " with size ", font_size_);
-                writefln(e.msg);
+                writefln("Failed to load font: ", font_name_);
+                writefln(error);
 
                 //If we already have default font name and can't load it, 
                 //try font 0 (default with default size)
@@ -336,5 +332,18 @@ package final class FontManager
                 font_name_ = default_font_name_;
                 load_font();
             }
+
+            //Font is not loaded, try to load it
+            Font new_font;
+            try
+            {
+                new_font = new Font(freetype_lib_, font_name_, font_size_, 
+                                    fast_glyphs_, antialiasing_);
+                //Font was succesfully loaded, set it
+                fonts_ ~= new_font;
+                current_font_ = fonts_[$ - 1];
+            }
+            catch(FileIOException e){fallback("Font file could not be read: " ~ e.msg);}
+            catch(FontException e){fallback("FreeType error: " ~ e.msg);}
         }
 }

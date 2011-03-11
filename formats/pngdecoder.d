@@ -49,7 +49,8 @@ struct PNGDecoder
          *
          * Returns: Manually allocated decoded image data. Must be freed manually.
          *
-         * Throws:  PNGException on decoding error, Exception on decompression error.
+         * Throws:  PNGException on decoding error.
+         *          CompressionException on PNG data decompression error.
          */
         ubyte[] decode(ubyte[] source, ref PNGInfo info)
         {
@@ -284,33 +285,34 @@ class PNGChunkIterator : Iterator!(PNGChunk)
 void unfilter_line(ubyte[] result, ubyte[] line, ubyte[] previous, uint pixel_bytes,
                    PNGFilter filter)
 {
-	switch(filter)
-	{
-		case PNGFilter.Paeth:
+    switch(filter)
+    {
+        case PNGFilter.Paeth:
+            result[0 .. line.length] = line;
             //first pixel
-            result[0 .. pixel_bytes] = line[0 .. pixel_bytes] + previous[0 .. pixel_bytes];
-            //rest of the line
-			for(uint i = pixel_bytes; i < line.length; i++)
+            result[0 .. pixel_bytes] += previous[0 .. pixel_bytes];
+
+            //i is current pixel in this and previous line
+            //o is previous pixel in this and previous line
+            for(uint i = pixel_bytes, o = 0; i < line.length; i++, o++)
             {
-                result[i] = cast(ubyte)(line[i] +
-                                        paeth_predictor(result[i - pixel_bytes],
-                                                       previous[i],
-                                                       previous[i - pixel_bytes]));
+                result[i] += paeth_predictor(result[o], previous[i], previous[o]);
             }
             break;
-		case PNGFilter.Average:
+        case PNGFilter.Average:
+            result[0 .. line.length] = line[];
             //first pixel
-            result[0 .. pixel_bytes] = line[0 .. pixel_bytes] + previous[0 .. pixel_bytes] / 2;
+            for(uint i = 0; i < pixel_bytes; i++){result[i] += previous[i] / 2;}
             //rest of the line
-			for(uint i = pixel_bytes; i < line.length; i++)
+            for(uint i = pixel_bytes; i < line.length; i++)
             {
-                result[i] = line[i] + ((result[i - pixel_bytes] + previous[i]) / 2);
+                result[i] += (result[i - pixel_bytes] + previous[i]) / 2;
             }
-			break;
-		case PNGFilter.Up:
+            break;
+        case PNGFilter.Up:
             result[0 .. line.length] = line[] + previous[];
-			break;
-		case PNGFilter.Sub:
+            break;
+        case PNGFilter.Sub:
             //first pixel
             result[0 .. pixel_bytes] = line[0 .. pixel_bytes];
             //rest of the line
@@ -322,9 +324,9 @@ void unfilter_line(ubyte[] result, ubyte[] line, ubyte[] previous, uint pixel_by
         case PNGFilter.None:
             result[0 .. line.length] = line[];
             break;
-		default:
+        default:
             assert(false, "Invalid PNG filter.");
-	}
+    }
 }
 
 /**
@@ -479,7 +481,7 @@ void reconstruct(ref Vector!(ubyte) buffer, ref PNGImage image)
     //we can work with the array directly as we do this in place
     ubyte[] data = buffer.array;
 
-	uint pixel_bytes = (image.bpp + 7) / 8;
+    uint pixel_bytes = (image.bpp + 7) / 8;
     //bits are tightly packed, but lines are always padded to 1 byte boundaries
     uint line_length = ((image.width * image.bpp) + 7) / 8;
     enforceEx!(PNGException)(data.length >= (line_length + 1) * image.height, "Invalid size of source data");

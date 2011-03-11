@@ -303,7 +303,7 @@ class GUIElement
                     fallback();
                 }
             }
-            catch(Exception e)
+            catch(MathParserException e)
             {
                 writefln("Invalid GUI math expression.");
                 writefln(e.msg);

@@ -25,23 +25,24 @@ class SDLPlatform : Platform
          *
          * Initializes SDL.
          *
-         * Throws:  Exception on failure.
+         * Throws:  PlatformException on failure.
          */
         this()
         {
             super();
             DerelictSDL.load();
-			if(SDL_Init(SDL_INIT_VIDEO) < 0)
+            if(SDL_Init(SDL_INIT_VIDEO) < 0)
             {
-                string error = std.string.toString(SDL_GetError());
-				throw new Exception("Could not initialize SDL: " ~ error);
+                alias std.string.toString to_string;
+                throw new PlatformException("Could not initialize SDL: " 
+                                            ~ to_string(SDL_GetError()));
             }
             SDL_EnableUNICODE(SDL_ENABLE);
         }
 
         override void die()
         {
-			SDL_Quit();
+            SDL_Quit();
             DerelictSDL.unload();
             super.die();
         }
@@ -57,8 +58,8 @@ class SDLPlatform : Platform
                     case SDL_QUIT:
                         quit();
                         break;
-					case SDL_KEYDOWN:
-					case SDL_KEYUP:
+                    case SDL_KEYDOWN:
+                    case SDL_KEYUP:
                         process_key(event.key);
                         break;
                     case SDL_MOUSEBUTTONDOWN:

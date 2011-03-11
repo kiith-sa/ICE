@@ -15,6 +15,9 @@ import util.weaksingleton;
 import util.signal;
 
 
+///Exception thrown at platform related errors.
+class PlatformException : Exception{this(string msg){super(msg);}} 
+
 /**
  * Handles platform specific functionality like input/output.
  *
@@ -56,7 +59,7 @@ abstract class Platform
         /**
          * Construct Platform.
          *
-         * Throws:  Exception on failure.
+         * Throws:  PlatformException on failure.
          */
         this(){singleton_ctor();}
 

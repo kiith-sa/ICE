@@ -24,6 +24,9 @@ import color;
 import image;
 
 
+///Exception thrown at video driver related errors.
+class VideoDriverException : Exception{this(string msg){super(msg);}} 
+
 ///Handles all drawing functionality.
 abstract class VideoDriver : Monitorable
 {
@@ -55,7 +58,7 @@ abstract class VideoDriver : Monitorable
          *          format     = Video mode color format.
          *          fullscreen = If true, use fullscreen, otherwise windowed.
          *
-         * Throws: Exception on failure.   
+         * Throws: VideoDriverException on failure.   
          */ 
         void set_video_mode(uint width, uint height, ColorFormat format, bool fullscreen);
 
@@ -259,7 +262,7 @@ abstract class VideoDriver : Monitorable
          *
          * Returns: Handle to the created texture.
          *
-         * Throws:  Exception if texture of needed size could not be created.
+         * Throws:  TextureException if texture of needed size could not be created.
          */
         Texture create_texture(ref Image image, bool force_page = false);
 

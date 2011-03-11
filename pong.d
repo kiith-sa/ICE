@@ -28,8 +28,6 @@ import std.c.stdlib;
 import math.math;
 import math.vector2;
 import math.rectangle;
-//TEMP
-import video.texture;
 import video.videodriver;
 import video.sdlglvideodriver;
 import video.videodrivercontainer;
@@ -1676,7 +1674,7 @@ class Game
 
                 for(uint dummy = 0; dummy < dummy_count_; dummy++)
                 {
-                    position = random_position!(float)(game_area_.center, 12.0f);
+                    position = random_position!(float)(game_area_.center, 24.0f);
                     velocity = 2.5 * ball_speed_ * random_direction!(float)(); 
                     dummies_ ~= produce(scene_manager_);
                 }
@@ -2150,11 +2148,6 @@ class Pong
         ///Game.
         Game game_;
 
-
-        //TEMP
-        bool have_texture_;
-        Texture texture_;
-
     public:
         ///Initialize Pong.
         this()
@@ -2172,12 +2165,17 @@ class Pong
             scope(failure){platform_.die();}
 
             video_driver_container_ = new VideoDriverContainer;
+            scope(failure){video_driver_container_.die();}
             video_driver_ = video_driver_container_.produce!(SDLGLVideoDriver)
                             (800, 600, ColorFormat.RGBA_8, false);
+            scope(failure){video_driver_.die();}
 
             //initialize GUI
             gui_root_ = new GUIRoot(platform_);
+            scope(failure){gui_root_.die();}
+
             gui_ = new PongGUI(gui_root_.root);
+            scope(failure){gui_.die();}
             gui_.credits_start.connect(&credits_start);
             gui_.credits_end.connect(&credits_end);
             gui_.game_start.connect(&game_start);
@@ -2240,9 +2238,6 @@ class Pong
                 gui_root_.update();
 
                 video_driver_.start_frame();
-
-                //TEMP
-                if(have_texture_){video_driver_.draw_texture(Vector2i(0,0), texture_);}
 
                 if(game_run){game_.draw(video_driver_);}
 
@@ -2328,13 +2323,6 @@ class Pong
                     case Key.Scrollock:
                         save_screenshot();
                         break;
-                        //TEMP
-                    case Key.F9:
-                        Image image = read_image("main::screenshots/screenshot_00000.png");
-                        texture_ = video_driver_.create_texture(image);
-                        have_texture_ = true;
-                        delete image;
-                        break;
                     default:
                         break;
                 }
@@ -2371,9 +2359,9 @@ class Pong
                 video_driver_ = video_driver_container_.produce!(SDLGLVideoDriver)
                                 (width, height, format, false);
             }
-            catch(Exception e)
+            catch(VideoDriverException e)
             {
-                writefln(e.msg);
+                writefln("Video driver initialization failed:", e.msg);
                 exit();
                 return;
             }
@@ -2416,7 +2404,8 @@ class Pong
                 }
                 writefln("Screenshot saving error: too many screenshots");
             }
-            catch(Exception e){writefln("Screenshot saving error.");}
+            catch(FileIOException e){writefln("Screenshot saving error: " ~ e.msg);}
+            catch(ImageFileException e){writefln("Screenshot saving error: " ~ e.msg);}
         }
 }
 
@@ -2432,7 +2421,7 @@ void main()
     }
     catch(Exception e)
     {
-        writefln("ERROR: ", e.toString());
+        writefln("Unhandled exeption: ", e.toString(), " ", e.msg);
         exit(-1);
     }
 }                                     

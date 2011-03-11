@@ -242,6 +242,7 @@ bool validate_color(PNGColorType color_type, uint bit_depth)
 int paeth_predictor(int a, int b, int c)
 {
     int p = a + b - c;
+
     int pa = p > a ? p - a : a - p;
     int pb = p > b ? p - b : b - p;
     int pc = p > c ? p - c : c - p;
@@ -280,7 +281,7 @@ struct PNGChunk
         uint crc = get_uint(stream[8 + data_length .. 12 + data_length]);
         enforceEx!(PNGException)(zlib_check_crc(crc, stream[4..8 + data_length]),
                                  "CRC does not match, probably corrupted file");
-		return result;
+        return result;
     }
 
     ///Chunk comparison for ordering chunks to write to file.
@@ -291,7 +292,7 @@ struct PNGChunk
             case IHDR:
                 return -1;
             case PLTE:
-            	return (other.type == bKGD || other.type == tRNS) ? -1 : 1;
+                return (other.type == bKGD || other.type == tRNS) ? -1 : 1;
             case IEND:
                 return 1;
             case IDAT:

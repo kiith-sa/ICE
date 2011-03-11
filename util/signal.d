@@ -25,7 +25,7 @@ import containers.array;
  *     Used to return back to parent menu.
  * --------------------
  */
-template Signal(Args ...)	
+template Signal(Args ...)    
 {
     private:
         ///Slots of this signal.

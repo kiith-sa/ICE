@@ -7,6 +7,9 @@
 module video.shader;
 
 
+///Exception thrown at shader related errors.
+class ShaderException : Exception{this(string msg){super(msg);}} 
+
 ///Opague and immutable shader handle used used by code outside video subsystem.
 align(1) struct Shader
 {

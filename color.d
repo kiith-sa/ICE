@@ -206,16 +206,19 @@ align(1) struct Color
     in{assert(d >= 0.0 && d <= 1.0, "Color interpolation value must be between 0.0 and 1.0");}
     body
     {
-        float inv = 1.0 - d;
-        //this truncates the fraction part and hence is imprecise, but fast.
-        return Color(floor_u8(r * d + c.r * inv), 
-                     floor_u8(g * d + c.g * inv),
-                     floor_u8(b * d + c.b * inv), 
-                     floor_u8(a * d + c.a * inv));
+        ubyte d_byte = floor_u8(d * 255.0);
+        ubyte inv_byte = 255 - d_byte;
+
+        //ugly, but fast
+        //colors are multiplied as ubytes from 0 to 255 and then divided by 256
+        return Color(cast(ubyte)((r * d_byte + c.r * inv_byte) >> 8),
+                     cast(ubyte)((g * d_byte + c.g * inv_byte) >> 8),
+                     cast(ubyte)((b * d_byte + c.b * inv_byte) >> 8),
+                     cast(ubyte)((a * d_byte + c.a * inv_byte) >> 8));
     }
 
     ///Set grayscale color.
-    void gray(ubyte gray){r = g = b = a = gray;}
+    void gray_8(ubyte gray){r = g = b = a = gray;}
 
     ///Gamma correct the color with specified factor.
     void gamma_correct(real factor)
@@ -234,8 +237,8 @@ align(1) struct Color
         if (G > 1.0 && (temp = (1.0 / G)) < scale) scale = temp;
         if (B > 1.0 && (temp = (1.0 / B)) < scale) scale = temp;
         scale *= 255.0;
-        R *= scale;	
-        G *= scale;	
+        R *= scale;    
+        G *= scale;    
         B *= scale;
         r = cast(ubyte)R;
         g = cast(ubyte)G;

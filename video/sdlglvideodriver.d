@@ -9,6 +9,10 @@ module video.sdlglvideodriver;
 
 import derelict.sdl.sdl;
 
+import std.stdio;
+import std.string;
+
+import video.videodriver;
 import video.glvideodriver;
 import video.fontmanager;
 import color;
@@ -65,7 +69,10 @@ final class SDLGLVideoDriver : GLVideoDriver
 
             if(SDL_SetVideoMode(width, height, bit_depth, flags) is null)
             {
-                throw new Exception("Could not set video mode");
+                string msg = std.string.format("Could not set video mode: %d %d %dbpp"
+                                               , width, height, bit_depth);
+                writefln(msg);
+                throw new VideoDriverException(msg);
             }
 
             screen_width_ = width;

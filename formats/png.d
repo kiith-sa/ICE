@@ -13,6 +13,7 @@ import formats.zlib;
 import formats.pngcommon;
 import formats.pngdecoder;
 import formats.pngencoder;
+import formats.image;
 import memory.memory;
 import util.exception;
 import color;
@@ -30,7 +31,7 @@ package:
  *
  * Returns: Manually allocated array with encoded data. Must be manually freed.
  *
- * Throws:  Exception in case of an encoding error.
+ * Throws:  ImageFileException in case of an encoding error.
  */
 ubyte[] encode_png(ubyte[] data, uint width, uint height, ColorFormat format)
 in
@@ -51,7 +52,7 @@ body
     encoder.level = 9;
 
     try{return encoder.encode(info, data);}
-    catch(PNGException e){throw new Exception("PNG encoding error: " ~ e.msg);}
+    catch(PNGException e){throw new ImageFileException("PNG encoding error: " ~ e.msg);}
 }
 
 /**
@@ -64,7 +65,7 @@ body
  *
  * Returns: Manually allocated decoded image data. Must be manually freed.
  *
- * Throws:  Exception on failure.
+ * Throws:  ImageFileException on failure.
  */
 ubyte[] decode_png(ubyte[] data, out uint width, out uint height, out ColorFormat format)
 {
@@ -84,8 +85,11 @@ ubyte[] decode_png(ubyte[] data, out uint width, out uint height, out ColorForma
 
         return decoded;
     }
-    catch(PNGException e){throw new Exception("PNG decoding error: " ~ e.msg);}
-    catch(Exception e){throw new Exception("PNG decompression error: " ~ e.msg);}
+    catch(PNGException e){throw new ImageFileException("PNG decoding error: " ~ e.msg);}
+    catch(CompressionException e)
+    {
+        throw new ImageFileException("PNG decompression error: " ~ e.msg);
+    }
 }
 
 private:
@@ -136,22 +140,22 @@ PNGColorType png_color_type(ColorFormat format)
  *
  * Returns: Corresponding color format.
  *
- * Throws:  Exception if the PNG color type/bitdepth is not supported.
+ * Throws:  ImageFileException if the PNG color type/bitdepth is not supported.
  */
 ColorFormat color_format_from_png(PNGColorType type, ubyte bit_depth)
 {
     switch(type)
     {
         case PNGColorType.Greyscale:
-            enforceEx!(Exception)(bit_depth == 8, "Unsupported PNG grayscale bit depth");
+            enforceEx!(ImageFileException)(bit_depth == 8, "Unsupported PNG gray bit depth");
             return ColorFormat.GRAY_8;
         case PNGColorType.RGB:
-            enforceEx!(Exception)(bit_depth == 8, "Unsupported PNG RGB bit depth");
+            enforceEx!(ImageFileException)(bit_depth == 8, "Unsupported PNG RGB bit depth");
             return ColorFormat.RGB_8;
         case PNGColorType.RGBA:
-            enforceEx!(Exception)(bit_depth == 8, "Unsupported PNG RGBA bit depth");
+            enforceEx!(ImageFileException)(bit_depth == 8, "Unsupported PNG RGBA bit depth");
             return ColorFormat.RGBA_8;
         default:
-            throw new Exception("Unsupported PNG color type.");
+            throw new ImageFileException("Unsupported PNG color type.");
     }
 }

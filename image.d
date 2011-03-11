@@ -71,7 +71,7 @@ final class Image
          *          y     = Y coordinate of the pixel.
          *          color = Color to set.
          */
-        void set_pixel(uint x, uint y, Color color)
+        void set_pixel_rgba8(uint x, uint y, Color color)
         in
         {
             assert(x < size_.x && y < size_.y, "Pixel out of range");
@@ -95,7 +95,7 @@ final class Image
          *          y     = Y coordinate of the pixel.
          *          color = Color to set.
          */
-        void set_pixel(uint x, uint y, ubyte color)
+        void set_pixel_gray8(uint x, uint y, ubyte color)
         in
         {
             assert(x < size_.x && y < size_.y, "Pixel out of range");
@@ -158,10 +158,10 @@ final class Image
                                 data_[y * pitch + x * 3 + 2] = 255;
                                 break;
                             case ColorFormat.RGBA_8:
-                                set_pixel(x, y, Color.white);
+                                set_pixel_rgba8(x, y, Color.white);
                                 break;
                             case ColorFormat.GRAY_8:
-                                set_pixel(x, y, 255);
+                                set_pixel_gray8(x, y, 255);
                                 break;
                             default:
                                 assert(false, "Unsupported color format");
@@ -197,10 +197,10 @@ final class Image
                                 data_[y * pitch + x * 3 + 2] = 255;
                                 break;
                             case ColorFormat.RGBA_8:
-                                set_pixel(x, y, Color.white);
+                                set_pixel_rgba8(x, y, Color.white);
                                 break;
                             case ColorFormat.GRAY_8:
-                                set_pixel(x, y, 255);
+                                set_pixel_gray8(x, y, 255);
                                 break;
                             default:
                                 assert(false, "Unsupported color format");
@@ -225,10 +225,11 @@ final class Image
                         case ColorFormat.RGBA_8:
                             pixel = get_pixel(x, y);
                             pixel.gamma_correct(factor);
-                            set_pixel(x, y, pixel);
+                            set_pixel_rgba8(x, y, pixel);
                             break;
                         case ColorFormat.GRAY_8:
-                            set_pixel(x, y, color.gamma_correct(data_[y * pitch + x], factor));
+                            set_pixel_gray8(x, y, 
+                                            color.gamma_correct(data_[y * pitch + x], factor));
                             break;
                         default:
                             assert(false, "Unsupported color format for gamma correction");

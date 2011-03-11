@@ -9,6 +9,8 @@ module video.font;
 
 import std.c.string;
 
+import std.stdio;
+
 import derelict.freetype.ft;
 
 import video.fontmanager;
@@ -21,6 +23,9 @@ import file.fileio;
 import image;
 import memory.memory;
 
+
+///Exception thrown at font related errors.
+class FontException : Exception{this(string msg){super(msg);}} 
 
 //use of bytes here limits font size to about 128 pixels,
 //but it also decreases struct size to 20 bytes allowing faster copying.
@@ -76,7 +81,8 @@ package class Font
          *                         from glyph 0. E.g. 128 means 0-127, i.e. ASCII.
          *          antialiasing = Should the font be antialiased?
          *
-         * Throws:  Exception if the font could not be loaded.
+         * Throws:  FileIOException if the font file name is invalid or it could not be opened.
+         *          FontException if the font could not be loaded.
          */
         this(FT_Library freetype_lib, string name, uint size, uint fast_glyphs, 
              bool antialiasing)
@@ -104,14 +110,14 @@ package class Font
             //load face from memory buffer (font_data)
             if(FT_Open_Face(freetype_lib, &args, face, &font_face_) != 0) 
             {
-                throw new Exception("Couldn't load font face from font " ~ file_.path);
+                throw new FontException("Couldn't load font face from font " ~ file_.path);
             }
             
             //set font size in pixels
             //could use a better approach, but worked for all fonts so far.
             if(FT_Set_Pixel_Sizes(font_face_, 0, size) != 0)
             {
-                throw new Exception("Couldn't set pixel size with font " ~ file_.path);
+                throw new FontException("Couldn't set pixel size with font " ~ file_.path);
             }
 
             height_ = size;
@@ -195,7 +201,7 @@ package class Font
          *
          * Params:  driver = Video driver to load textures to.
          *
-         * Throws:  Exception if the glyph textures could not be reloaded.
+         * Throws:  TextureException if the glyph textures could not be reloaded.
          */
         void reload_textures(VideoDriver driver)
         {
@@ -225,28 +231,28 @@ package class Font
         body
         {
             //previous glyph index, for kerning
-			uint previous_index = 0;
-			uint pen_x = 0;
+            uint previous_index = 0;
+            uint pen_x = 0;
             //current glyph index
             uint glyph_index;
             FT_Vector kerning;
             Glyph * glyph;
-			
-			foreach(dchar chr; str) 
+            
+            foreach(dchar chr; str) 
             {
                 glyph = get_glyph(chr);
-				glyph_index = glyph.freetype_index;
-				
-				if(use_kerning && previous_index != 0 && glyph_index != 0) 
+                glyph_index = glyph.freetype_index;
+                
+                if(use_kerning && previous_index != 0 && glyph_index != 0) 
                 {
-					//adjust the pen for kerning
-					FT_Get_Kerning(font_face_, previous_index, glyph_index, 
+                    //adjust the pen for kerning
+                    FT_Get_Kerning(font_face_, previous_index, glyph_index, 
                                    FT_Kerning_Mode.FT_KERNING_DEFAULT, &kerning);
-					pen_x += kerning.x / 64;
-				}
+                    pen_x += kerning.x / 64;
+                }
 
                 pen_x += glyph.advance;
-			}
+            }
             return pen_x;
         }
 
@@ -284,7 +290,7 @@ package class Font
          * Params:  driver = Video driver to use for texture creation.
          *          c      = Character to load glyph for.
          *
-         * Throws:  Exception if the glyph could not be loaded.
+         * Throws:  TextureException if the glyph texture could not be created.
          */
         void load_glyph(VideoDriver driver, dchar c)
         {
@@ -306,7 +312,7 @@ package class Font
          *
          * Params:  driver = Video driver to use for texture creation.
          *
-         * Throws:  Exception if the glyph texture could not be created.
+         * Throws:  TextureException if the glyph texture could not be created.
          */
         Glyph get_default_glyph(VideoDriver driver)
         {
@@ -332,7 +338,7 @@ package class Font
          * Params:  driver = Video driver to use in texture creation.
          *          c      = Character to render glyph for.
          *
-         * Throws:  Exception if default glyph texture could not be created.
+         * Throws:  TextureException if default glyph texture could not be created.
          */
         Glyph render_glyph(VideoDriver driver, dchar c)
         {
@@ -345,10 +351,10 @@ package class Font
             { 
                 return get_default_glyph(driver);
             }
-			FT_GlyphSlot slot = font_face_.glyph;
+            FT_GlyphSlot slot = font_face_.glyph;
 
             //convert font_face_.glyph to image
-			if(FT_Render_Glyph(slot, render_mode()) == 0) 
+            if(FT_Render_Glyph(slot, render_mode()) == 0) 
             {
                 glyph.advance = cast(byte)(font_face_.glyph.advance.x / 64);
                 glyph.offset.x = cast(byte)slot.bitmap_left;
@@ -368,12 +374,12 @@ package class Font
                 //image to create texture from
                 scope Image image = new Image(size.x, size.y, ColorFormat.GRAY_8);
 
-				//return 255 if the bit at (x,y) is set. 0 otherwise.
-				ubyte bitmap_color(uint x, uint y) 
+                //return 255 if the bit at (x,y) is set. 0 otherwise.
+                ubyte bitmap_color(uint x, uint y) 
                 {
                     ubyte b = bitmap.buffer[y * bitmap.pitch + (x / 8)];
-					return cast(ubyte)((b & (0b10000000 >> (x % 8))) ? 255 : 0);
-				}
+                    return cast(ubyte)((b & (0b10000000 >> (x % 8))) ? 255 : 0);
+                }
 
                 //copy freetype bitmap to our image
                 if(antialiasing_)
@@ -388,13 +394,17 @@ package class Font
                     {
                         for(uint x = 0; x < size.x; ++x) 
                         {
-                            image.set_pixel(x, y, bitmap_color(x, y));
+                            image.set_pixel_gray8(x, y, bitmap_color(x, y));
                         }
                     }
                 }
 
                 try{glyph.texture = driver.create_texture(image);}
-                catch(Exception e){return get_default_glyph(driver);}
+                catch(TextureException e)
+                {
+                    writefln("Could not create glyph texture");
+                    return get_default_glyph(driver);
+                }
 
                 return glyph;
             }
@@ -402,9 +412,9 @@ package class Font
         }
         
         ///Get freetype render mode (antialiased or bitmap)
-		FT_Render_Mode render_mode() 
+        FT_Render_Mode render_mode() 
         {
             return antialiasing_ ? FT_Render_Mode.FT_RENDER_MODE_NORMAL 
                                  : FT_Render_Mode.FT_RENDER_MODE_MONO;
-		}
+        }
 }

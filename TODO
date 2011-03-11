@@ -1,69 +1,24 @@
-22: 
-    Commit check, commit
-22:
-    PNG code: profile, optimize.
-
-    Can often reserve vector space.
-
-    Also, in decoding, we could directly assign decoded buffer to the image
-    instead of copying it (although we'd have to add an unsafe method to image
-    interface)
-
-    Another possible optimization:
-    If chunks required to be passed manually allocated buffers 
-    (we can do an assert + a memory function for that), we wouldn't
-    have to copy at chunk construction, 
-    For from_stream, we could require stream to exist all the time chunk exists,
-    and just store slices from stream. (But would not be able to free them... 
-    we'd need a flag for this so die() won't try to free them)
-
-    Compression probably takes most of the time.
-    Maybe roll our own zlib compressor.
-
-    Profile both decoder and encoder. Concentrate on
-    unnecessary copies in decoder - they might be removed, but
-    that'd make code more ugly.
-
-    Possibly, if profiling shows this makes sense:
-    Also, for formats.png : fast and best(default) compression options, fast
-    being default.
-23:
-    Remove PNG testing code (the texture)
-24:
-    Possible color interpolation optimization:
-    instead of using float artithmetic, convert multipliers to ints from
-    0 to 255, multiply with colors, and assign interpolated values
-    to results of those multiplications / 256 (use shifts)
-
-    Test on a heavy workload (many dummyballs).
-
-
-    Also, look if we can do this in MMX registers (as they can hold 4 16bit integers)
-24: 
-    Grep through code and make sure we use Vector.ptr instead of Vector.array.ptr
 21:
-    CDC: Remove Tango code, make it simpler, more straightforward.
-21:
-    Color, image getters, setters - specific method names for each color format.
+    Exception overhaul with Java style exceptions.
+
+    In the end, document all exceptions (grep for them)
 22:
-    Descriptive template type names (can be one-letter, but not just T)
-23:
-    Use enforceEx to throw exceptions where possible
-24: 
-    Look at where we can replace memcpy by a[] = b[] array copying
+    Convert pngcommon, pngencoder, pngdecoder, zlib to Unix line endings.
+22:
+    get_path in file.fileio should only get path, not if it exists or not.
+    Separate function should handle that.
 2!:
     (Only if still true)
     Right now, when the same font is loaded with different font sizes,
     it is loaded to memory twice. Share that buffer between all font
     instances with same font name to prevent duplication of memory
     (Resource manager might help here)
+25:
+    Look for newer CDC and integrate changes to our CDC.
+    If no new CDC, refactor CDC further, especially for D2
+    forward compatibility.
 20:
     Check for a newer version of (D1) Derelict, if any, just in case.
-21:
-    Exception overhaul with Java style exceptions.
-22:
-    get_path in file.fileio should only get path, not if it exists or not.
-    Separate function should handle that.
 20: 
     Replace GL_LUMINANCE WITH GL_RED, as the former is deprecated.
     (Use shader to get the correct color)
@@ -231,9 +186,12 @@
 16:
     Ensure everything is polished, create README and such and push, for the first time,
     to gitorious or github. Not necessarily announcing it.
-    Also a simple binary archive, both 32-bit and 64-bit if possible.
+
+    Then: simple binary archive, both 32-bit and 64-bit if possible.
     And detailed installation instructions both from source and binary archive
-    on wiki.
+    on wiki (maybe a script to do the installation).
+
+    Then: announce.
 26: 
     Sounds
 17:
@@ -577,6 +535,21 @@ Optimizations:
     If drawing text is too slow, we can cache glyph offsets for strings
     somewhere in videodriver (or a member class/struct of videodriver)
     We can search for cached strings quickly using simple bucket sort/search.
+7: 
+    PNG:
+    Decoding time is 45% zlib decoding, 45% unfiltering and 10% array copying.
+
+    We could optimize PNG unfiltering with pure asm paeth predictor,
+    SSE, (MMX might be good as well, as we're dividing ubytes and MMX is
+    useful for integer ops) even multithreading.
+
+    Also we could try to reduce copying.
+
+    Encoding: Almost all time is zlib.
+
+    We could fix that by rolling our own zlib clone, maybe using SSE and/or 
+    multithreading.
+
 GUI:
 1:
     Progress bars should be simple animation with frame depending

@@ -11,7 +11,11 @@ import std.string;
 import std.conv;
 
 import containers.array;
+import util.exception;
 
+
+///Exception thrown at math parsing errors.
+class MathParserException : Exception{this(string msg){super(msg);}} 
 
 /**
  * Parse a string as a math expression.
@@ -26,15 +30,13 @@ import containers.array;
  *
  * Returns: Result of the expression.
  *
- * Throws:  Exception if the expression is invalid 
+ * Throws:  MathParserException if the expression is invalid 
  *          (e.g. parentheses mismatch or redundant operator)
  */
 T parse_math(T)(string expression, T[string] substitutions = null)
 {
-    if(expression.length == 0)
-    {
-        throw new Exception("Can't parse an empty string as a math expression");
-    }
+    enforceEx!(MathParserException)(expression.length > 0, 
+                                    "Can't parse an empty string as a math expression");
     if(substitutions !is null){expression = substitute(expression, substitutions);}
     return parse_postfix!(T)(to_postfix(expression));
 }
@@ -95,7 +97,7 @@ private:
      *
      * Returns: Input expression converted to postfix notation.
      *
-     * Throws:  Exception if the expression is invalid 
+     * Throws:  MathParserException if the expression is invalid 
      *          (e.g. parentheses mismatch or redundant operator)
      */
     string to_postfix(string expression)
@@ -126,8 +128,10 @@ private:
                 //if there are two operators in a row, we have an error.
                 if(arithmetic.contains(prev_c) && arithmetic.contains(c))
                 {
-                    throw new Exception("Redundant operator in math expression " ~ expression);
+                    throw new MathParserException("Redundant operator in math expression " 
+                                                  ~ expression);
                 }
+
                 //parentheses
                 if(c == '('){stack ~= c;}//push to stack
                 else if(c == ')')
@@ -135,11 +139,9 @@ private:
                     dchar tok = pop();
                     while(tok != '(')
                     {
-                        if(tok == 0)
-                        {
-                            throw new Exception("Parenthesis mismatch in math "
-                                                "expression " ~ expression);
-                        }
+                        enforceEx!(MathParserException)
+                                  (tok != 0, "Parenthesis mismatch in math expression " 
+                                              ~ expression);
                         output ~= " ";
                         output ~= tok;
                         tok = pop();
@@ -176,10 +178,9 @@ private:
                                             
         while(tok != 0)
         {
-            if(tok == '(')
-            {
-                throw new Exception("Parenthesis mismatch in math expression " ~ expression);
-            }
+            enforceEx!(MathParserException)
+                      (tok != '(', "Parenthesis mismatch in math expression " ~ expression);
+
             tok = pop();
 
             output ~= " ";
@@ -198,7 +199,7 @@ private:
      *
      * Returns: Result of the expression.
      *
-     * Throws:  Exception if an invalid token is detected in the expression.
+     * Throws:  MathParsetException if an invalid token is detected in the expression.
      */
     T parse_postfix(T)(string postfix)
     {
@@ -219,8 +220,9 @@ private:
                 case '*': bin_operator(function(T x, T y){return y * x;}); break; 
                 case '/': bin_operator(function(T x, T y){return y / x;}); break; 
                 default:
-                    if(isNumeric(token)){stack ~= cast(T) toReal(token);}
-                    else{throw new Exception("Invalid token in an expression: " ~ token);}
+                    enforceEx!(MathParserException)
+                              (isNumeric(token), "Invalid token a in math expression: " ~ token);
+                    stack ~= cast(T) toReal(token);
                     break;
             }
         }

@@ -8,6 +8,7 @@ module memory.memory;
 
 
 import std.c.stdlib;
+import std.c.string;
 
 import std.stdio;
 import std.string;
@@ -197,7 +198,7 @@ private:
     {
         assert(result.length == elems, "Failed to allocate space for "
                                        "specified number of elements");
-        assert(T.sizeof * elems <= ulong.max && elems <= ulong.max,
+        assert(T.sizeof * elems <= uint.max && elems <= uint.max,
                "Memory allocation over 4 GiB or for over 2^32 objects not supported yet");
     }
     body
@@ -211,7 +212,9 @@ private:
         debug_allocate(array.ptr, elems); 
 
         //default-initialize the array.
-        static if (is(typeof(T.init))) 
+        //using memset for ubytes as it's faster and ubytes are often used for large arrays.
+        static if (is(T == ubyte)){memset(array.ptr, 0, cast(uint)bytes);}
+        else if (is(typeof(T.init))) 
         {
             array[] = T.init;
         }
@@ -260,15 +263,24 @@ private:
         debug_reallocate(array.ptr, array.length, old_ptr, old_length); 
 
         //default-initialize new elements, if any
-        static if (is(typeof(T.init))) 
+        if(array.length > old_length)
         {
-            if(array.length > old_length)
+            //using memset for ubytes as it's faster and ubytes are often used for large arrays.
+            static if (is(T == ubyte))
             {
-                array[old_length .. $] = T.init;
+                memset(array.ptr + old_length, 0, cast(uint)(new_bytes - old_bytes));
+            }
+            else if (is(typeof(T.init))) 
+            {
+                if(array.length > old_length)
+                {
+                    array[old_length .. $] = T.init;
+                }
             }
         }
         return array;
     }
+
     ///Free an object allocated by allocate(). If a die() method is defined, it will be called.
     void deallocate(T)(ref T* ptr)
     in

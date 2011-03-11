@@ -10,6 +10,9 @@ module video.texture;
 import math.vector2;
 
 
+///Exception thrown at texture related errors.
+class TextureException : Exception{this(string msg){super(msg);}} 
+
 ///Opague and immutable texture handle struct used by code outside video subsystem.
 align(1) struct Texture
 {

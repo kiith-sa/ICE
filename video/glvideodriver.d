@@ -32,6 +32,7 @@ import color;
 import image;
 import memory.memory;
 import util.signal;
+import util.exception;
 
 
 /**
@@ -65,7 +66,7 @@ abstract class GLVideoDriver : VideoDriver
         float line_width_ = 1.0;
 
         ///Shader used to draw lines and rectangles without textures.
-        Shader plain_shader;
+        Shader plain_shader_;
         ///Shader used to draw textured surfaces.
         Shader texture_shader_;
         ///Shader used to draw fonts.
@@ -105,7 +106,7 @@ abstract class GLVideoDriver : VideoDriver
         {
             super.die();
 
-            delete_shader(plain_shader);
+            delete_shader(plain_shader_);
             delete_shader(texture_shader_);
             delete_shader(font_shader_);
 
@@ -178,7 +179,7 @@ abstract class GLVideoDriver : VideoDriver
             if(v1 == v2){return;}
             ++statistics_.lines;
 
-            set_shader(plain_shader);
+            set_shader(plain_shader_);
             //The line is drawn as a rectangle with width slightly lower than
             //line_width_ to prevent artifacts.
             //equivalent to (v2 - v1).normal;
@@ -254,7 +255,7 @@ abstract class GLVideoDriver : VideoDriver
             statistics_.rectangles += 1;
             statistics_.vertices += 4;
 
-            set_shader(plain_shader);
+            set_shader(plain_shader_);
 
             //draw the rectangle
             glColor4ubv(cast(ubyte*)&color);
@@ -381,7 +382,7 @@ abstract class GLVideoDriver : VideoDriver
                 }
             }
             //error loading glyphs
-            catch(Exception e)
+            catch(TextureException e)
             {
                 writefln("Error drawing text: " ~ text);
                 writefln(e.msg);
@@ -401,7 +402,7 @@ abstract class GLVideoDriver : VideoDriver
                 }
             }
             //error loading glyphs
-            catch(Exception e)
+            catch(TextureException e)
             {
                 writefln("Error measuring text size: " ~ text);
                 writefln(e.msg);
@@ -468,7 +469,7 @@ abstract class GLVideoDriver : VideoDriver
             return size;
         }
 
-		final override Texture create_texture(ref Image image, bool force_page)
+        final override Texture create_texture(ref Image image, bool force_page)
         {
             if(force_page)
             {
@@ -611,7 +612,7 @@ abstract class GLVideoDriver : VideoDriver
         /**
          * Initialize OpenGL context.
          *
-         * Throws:  Exception on failure.
+         * Throws:  VideoDriverException on failure.
          */
         final void init_gl()
         {
@@ -619,28 +620,35 @@ abstract class GLVideoDriver : VideoDriver
             {
                 //Loads the newest available OpenGL version
                 version_ = DerelictGL.availableVersion();
-                if(version_ < GLVersion.Version20)
-                {
-                    throw new Exception("Could not load OpenGL 2.0 or greater."
-                                        " Try updating graphics card driver.");
-                }
+                enforceEx!(VideoDriverException)(version_ >= GLVersion.Version20,
+                                                 "Could not load OpenGL 2.0 or greater. "
+                                                 "Try updating graphics card driver.");
             }
             catch(SharedLibProcLoadException e)
             {
-                throw new Exception("Could not load OpenGL. Try updating graphics "
-                                    "card driver.");
+                throw new VideoDriverException("Could not load OpenGL: " ~ e.msg);
             } 
 
             glEnable(GL_CULL_FACE);
             glCullFace(GL_BACK);
-			glEnable(GL_BLEND);
+            glEnable(GL_BLEND);
             glEnable(GL_TEXTURE_2D);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-            plain_shader = create_shader("line");
-            texture_shader_ = create_shader("texture");
-            font_shader_ = create_shader("font");
+            try
+            {
+                plain_shader_ = create_shader("line");
+                scope(failure){delete_shader(plain_shader_);}
+                texture_shader_ = create_shader("texture");
+                scope(failure){delete_shader(texture_shader_);}
+                font_shader_ = create_shader("font");
+                scope(failure){delete_shader(font_shader_);}
+            }
+            catch(ShaderException e)
+            {
+                throw new VideoDriverException("Could not load default shaders: " ~ e.msg);
+            }
         }
 
     private:
@@ -648,7 +656,7 @@ abstract class GLVideoDriver : VideoDriver
         /**
          * Load shader with specified name.
          *
-         * Throws:  Exception if the shader could not be loaded.
+         * Throws:  ShaderException if the shader could not be loaded.
          */
         final Shader create_shader(string name)
         {
@@ -695,26 +703,23 @@ abstract class GLVideoDriver : VideoDriver
          *          format     = Color format of the page.
          *          force_size = Force page size to be exactly size_image.
          *
-         * Throws:  Exception if it's not possible to create a page with required parameters.
+         * Throws:  TextureException if it's not possible to create a page with required parameters.
          */
         final void create_page(Vector2u size_image, ColorFormat format, bool force_size = false)
         {
             //1/16 MiB grayscale, 1/4 MiB RGBA8
             static uint size_min = 256;
             uint supported = max_texture_size(format);
-            if(size_min > supported)
-            {
-                throw new Exception("GL Video driver doesn't support minimum "
-                                    "texture size for specified color format.");
-            }
+            enforceEx!(TextureException)(size_min <= supported,
+                                         "GL Video driver doesn't support minimum "
+                                         "texture size for color format " ~ to_string(format));
 
             size_image.x = pot_ceil(size_image.x);
             size_image.y = pot_ceil(size_image.y);
-            if(size_image.x > supported || size_image.y > supported)
-            {
-                throw new Exception("GL Video driver doesn't support requested "
-                                    "texture size for specified color format.");
-            }
+            enforceEx!(TextureException)(size_image.x <= supported && size_image.y <= supported,
+                                         "GL Video driver doesn't support requested "
+                                         "texture size for specified color " ~ to_string(format));
+
             //determining recommended maximum page size:
             //we want at least 1024 but will settle for less if not supported.
             //if supported / 4 > 1024, we take that.

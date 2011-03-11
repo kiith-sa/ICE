@@ -14,6 +14,9 @@ import containers.vector;
 import util.exception;
 
 
+///Exception thrown at errors related to compression (such as zlib).
+class CompressionException : Exception{this(string msg){super(msg);}}
+
 ///Zlib compression strategy.
 enum CompressionStrategy : ubyte
 {
@@ -34,11 +37,10 @@ enum CompressionStrategy : ubyte
  *
  * Returns: Decompressed data.
  *
- * Throws:  Exception if the data could not be decompressed.
+ * Throws:  CompressionException if the data could not be decompressed.
  */
 ubyte[] zlib_inflate(ubyte[] input, uint reserve = 0)
 {
-    //TODO Vector, and return Vector
     ubyte[] inflated = new ubyte[reserve == 0 ? max(1u, input.length * 4) : reserve];
 
     z_stream stream;
@@ -52,8 +54,8 @@ ubyte[] zlib_inflate(ubyte[] input, uint reserve = 0)
     }
 
     scope(exit){inflateEnd(&stream);}
-    enforceEx!(Exception)(!cast(bool)inflateInit(&stream), 
-                          "Zlib decompression initialization error");
+    enforceEx!(CompressionException)
+              (!cast(bool)inflateInit(&stream), "Zlib decompression initialization error");
 
     while(stream.avail_in)
     {
@@ -64,7 +66,7 @@ ubyte[] zlib_inflate(ubyte[] input, uint reserve = 0)
             inflated.length = stream.total_out;
             return inflated;
         }
-        else if(message != Z_OK){throw new Exception("Zlib decompression error");}
+        else if(message != Z_OK){throw new CompressionException("Zlib decompression error");}
         else if(stream.avail_out == 0)
         {
             inflated.length = inflated.length * 2;
@@ -115,7 +117,11 @@ struct Inflator
             return result;
         }
 
-        ///Decompress a piece of the data.
+        /**
+         * Decompress a piece of the data.
+         *
+         * Throws:  CompressionException if the data could not be decompressed.
+         */
         void inflate(ubyte[] input)
         {
             stream_.next_in = input.ptr;
@@ -124,8 +130,8 @@ struct Inflator
             if(!started_)
             {
                 started_ = true;
-                enforceEx!(Exception)(!cast(bool)inflateInit(&stream_), 
-                                      "Zlib decompression initialization error");
+                enforceEx!(CompressionException)(!cast(bool)inflateInit(&stream_), 
+                                                 "Zlib decompression initialization error");
             }
 
             while(stream_.avail_in)
@@ -142,7 +148,7 @@ struct Inflator
                 else if(message != Z_OK)
                 {
                     inflateEnd(&stream_);
-                    throw new Exception("Zlib decompression error");
+                    throw new CompressionException("Zlib decompression error");
                 }
                 else if(stream_.avail_out == 0)
                 {

@@ -17,6 +17,9 @@ import image;
 import color;
 
 
+///Exception thrown at errors related to image files.
+class ImageFileException : Exception{this(string msg){super(msg);}} 
+
 ///Image file formats, e.g. PNG, GIF, etc.
 enum ImageFileFormat
 {
@@ -38,7 +41,8 @@ enum ImageFileFormat
  * added in future). Also, only 24-bit RGB and 32-bit RGBA color formats are supported
  * at the moment.
  *
- * Throws:  Exception if the file could not be written, the color format is not 
+ * Throws:  FileIOException if the image could not be written.
+ *          ImageFileException in the case of an encoding error, if the color format is not 
  *          supported or file format could not be detected in case of autodetection.
  */
 void write_image(Image image, string file_name, 
@@ -57,12 +61,7 @@ void write_image(Image image, string file_name,
         }
         else{assert(false, "Unsupported image file format for writing");}
     }
-    catch(Exception e)
-    {
-        string error = "Error writing image to file: " ~ file_name ~ "\n" ~ e.msg;
-        writefln(error);
-        throw(new Exception(error));
-    }
+    catch(ImageFileException e){throw new ImageFileException("Image encoding error:" ~ e.msg);}
 }
 
 /**
@@ -76,11 +75,13 @@ void write_image(Image image, string file_name,
  * added in future). Also, only 8-bit grayscale, 24-bit RGB and 32-bit RGBA color 
  * formats are supported at the moment.
  *
- * Throws:  Exception if the file could not be read from or the PNG data was invalid.
+ * Throws:  FileIOException if the file could not be read from.
+ *          ImageFileException if image data was invalid.
  */
 Image read_image(string file_name, ImageFileFormat file_format = ImageFileFormat.Auto)
 {
     if(file_format == ImageFileFormat.Auto){file_format = detect_image_format(file_name);}
+
     try
     {
         File file = open_file(file_name, FileMode.Read);
@@ -103,11 +104,11 @@ Image read_image(string file_name, ImageFileFormat file_format = ImageFileFormat
         if(image_data !is null){free(image_data);}
         return image;
     }
-    catch(Exception e)
+    catch(ImageFileException e)
     {
-        string error = "Error reading image from file: " ~ file_name ~ "\n" ~ e.msg;
+        string error = "Error decoding image: " ~ e.msg;
         writefln(error);
-        throw(new Exception(error));
+        throw(new ImageFileException(error));
     }
 }
 

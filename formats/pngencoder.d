@@ -357,11 +357,11 @@ body
  *     a x
  *
  * filter      construction                                                    Reconstruction
- * 0  None	   Filt(x) = Orig(x)                                               Recon(x) = Filt(x)
- * 1  Sub	   Filt(x) = Orig(x) - Orig(a)                                     Recon(x) = Filt(x) + Recon(a)
- * 2  Up	   Filt(x) = Orig(x) - Orig(b) 	                                   Recon(x) = Filt(x) + Recon(b)
- * 3  Average  Filt(x) = Orig(x) - floor((Orig(a) + Orig(b)) / 2) 	           Recon(x) = Filt(x) + floor((Recon(a) + Recon(b)) / 2)
- * 4  Paeth	   Filt(x) = Orig(x) - PaethPredictor(Orig(a), Orig(b), Orig(c))   Recon(x) = Filt(x) + PaethPredictor(Recon(a), Recon(b), Recon(c)
+ * 0  None     Filt(x) = Orig(x)                                               Recon(x) = Filt(x)
+ * 1  Sub      Filt(x) = Orig(x) - Orig(a)                                     Recon(x) = Filt(x) + Recon(a)
+ * 2  Up       Filt(x) = Orig(x) - Orig(b)                                     Recon(x) = Filt(x) + Recon(b)
+ * 3  Average  Filt(x) = Orig(x) - floor((Orig(a) + Orig(b)) / 2)              Recon(x) = Filt(x) + floor((Recon(a) + Recon(b)) / 2)
+ * 4  Paeth    Filt(x) = Orig(x) - PaethPredictor(Orig(a), Orig(b), Orig(c))   Recon(x) = Filt(x) + PaethPredictor(Recon(a), Recon(b), Recon(c)
  */
 ubyte none   (ubyte c, ubyte b, ubyte a, ubyte x){return x;}
 ubyte sub    (ubyte c, ubyte b, ubyte a, ubyte x){return x - a;}

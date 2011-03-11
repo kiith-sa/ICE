@@ -2,7 +2,7 @@
 /**
  * License: Boost 1.0
  *
- * Copyright (c) 2009-2010 Eric Poggel
+ * Copyright (c) 2009-2010 Eric Poggel, Changes 2011 Ferdinand Majerech
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@
  *
  * CDC's only requirement is a D compiler.  It is/will be supported on any 
  * operating system supported by the language.  It works with dmd, ldc (soon), 
- * and gdc, phobos or tango.
+ * and gdc.
  *
  * CDC can be used just like dmd, except for the following improvements.
  * <ul>
@@ -65,11 +65,11 @@
  *
  * In addition, these optional flags have been added.
  * <dl>
- * <dt>-dmd</dt>       <dd>Use dmd to compile</dd>
- * <dt>-gdc</dt>       <dd>Use gdc to compile</dd>
- * <dt>-ldc</dt>       <dd>Use ldc to compile</dd>
- * <dt>-verbose</dt>   <dd>Print all commands as they're executed.</dd>
- * <dt>-root</dt>      <dd>Set the root directory of all source files.
+ * <dt>--dmd</dt>       <dd>Use dmd to compile</dd>
+ * <dt>--gdc</dt>       <dd>Use gdc to compile</dd>
+ * <dt>--ldc</dt>       <dd>Use ldc to compile</dd>
+ * <dt>--verbose</dt>   <dd>Print all commands as they're executed.</dd>
+ * <dt>--root</dt>      <dd>Set the root directory of all source files.
  *                 This is useful if CDC is run from a path outside the source folder.</dd>
  * </dl>
  *
@@ -83,11 +83,8 @@
  * Test_Matrix:
  * <ul>
  * <li>pass - DMD/phobos/Win32</li>
- * <li>pass - DMD/tango/Win32</li>
- * <li>pass - DMD/tango/Linux32</li>
  * <li>pass - GDC/phobos/Win32</li>
  * <li>pass - GDC/phobos/Linux32</li>
- * <li>fail - LDC/tango/Linux32</li>
  * <li>pass - GDC/phobos/OSX</li>
  * <li>? - DMD/OSX</li>
  * <li>? - BSD</li>
@@ -96,7 +93,7 @@
  *
  * TODO:
  * <ul>
- * <li>Add support for a -script argument to accept another .d file that calls cdc's functions.</li>
+ * <li>Add support for a --script argument to accept another .d file that calls cdc's functions.</li>
  * <li>Print help or at least info on run.</li>
  * <li>-Df option</li>
  * <li>GDC - Remove dependancy on "ar" on windows? </li>
@@ -121,18 +118,18 @@ import std.string;
 /**
  * Use to implement your own custom build script, or pass args on to defaultBuild() 
  * to use this file as a generic build script like bud or rebuild. */
-int main(char[][] args)
+int main(string[] args)
 {
-	// Operate cdc as a generic build script
-	//return defaultBuild(args);
+    // Operate cdc as a generic build script
+    //return defaultBuild(args);
 
-	/*
-	// This is an example of a custom build script.
-	if (!FS.exists("bar.lib")
-		CDC.compile(["foo"], ["-lib", "-offoo.lib"]);
-	CDC.compile(["bar", "main.d", "foo.lib"], ["-D", "-ofbar"]);
-	return 0;
-	*/
+    /*
+    // This is an example of a custom build script.
+    if (!exists("bar.lib")
+        CDC.compile(["foo"], ["-lib", "-offoo.lib"]);
+    CDC.compile(["bar", "main.d", "foo.lib"], ["-D", "-ofbar"]);
+    return 0;
+    */
 
     string build = "debug";
     bool no_sse = false;
@@ -156,7 +153,7 @@ int main(char[][] args)
     string[] no_contracts_args = ["-release", "-gc", "-ofpong-no-contracts"];
     string[] release_args = ["-O", "-inline", "-release", "-gc", "-ofpong-release"];
 
-    void compile(string [] arguments, string [] extra_files = [])
+    void compile(string[] arguments, string[] extra_files = [])
     {
         CDC.compile(extra_files ~ [
                      "dependencies/", 
@@ -192,7 +189,7 @@ int main(char[][] args)
             break;
     }
 
-	return 0;
+    return 0;
 }
 
 ///Print help information.
@@ -235,94 +232,72 @@ void help()
  */
 
 // Imports
-version(Tango)
-{	import tango.core.Array : find;
-	import tango.core.Exception : ProcessException;
-	import tango.core.Thread;
-	import tango.io.device.File;
-	import tango.io.FilePath;
-	import tango.io.FileScan;
-	import tango.io.FileSystem;
-	import tango.io.Stdout;
-	import tango.sys.Environment;
-	import tango.text.convert.Format;
-	import tango.text.Regex;
-	import tango.text.Util;
-	import tango.text.Ascii;
-	import tango.time.Clock;
-	import tango.util.Convert;
-	extern (C) int system(char *);  // Tango's process hangs sometimes
-	//import tango.core.tools.TraceExceptions; // enable to get stack trace in buildyage.d on internal failure
-} else
-{	import std.date;
-	import std.string : join, find, replace, tolower;
-	import std.stdio : writefln;
-	import std.path : sep, getDirName, getName, addExt;
-	import std.file : chdir, copy, isdir, isfile, listdir, mkdir, exists, getcwd, remove, write;
-	import std.format;
-	import std.regexp;
-	import std.traits;
-	import std.c.process;
-	import std.c.time : sleep, usleep;
-}
+import std.string : join, find, replace, tolower;
+import std.stdio : writefln;
+import std.path : sep, getDirName, getName, addExt;
+import std.file : chdir, copy, isdir, isfile, listdir, mkdir, exists, getcwd, remove, write;
+import std.format;
+import std.traits;
+import std.c.process;
+import std.c.time : usleep;
+
 
 /// This is always set to the name of the default compiler, which is the compiler used to build cdc.
 version (DigitalMars)
-	char[] compiler = "dmd";
+    string compiler = "dmd";
 version (GNU)
-	char[] compiler = "gdc"; /// ditto
+    string compiler = "gdc"; /// ditto
 version (LDC)
-	char[] compiler = "ldmd";  /// ditto
+    string compiler = "ldmd";  /// ditto
 
 version (Windows)
-{	const char[][] obj_ext = [".obj", ".o"]; /// An array of valid object file extensions for the current.
-	const char[] lib_ext = ".lib"; /// Library extension for the current platform.
-	const char[] bin_ext = ".exe"; /// executable file extension for the current platform.
+{    const string[] obj_ext = ["obj", "o"]; /// An array of valid object file extensions for the current.
+    const string lib_ext = "lib"; /// Library extension for the current platform.
+    const string bin_ext = "exe"; /// executable file extension for the current platform.
 }
 else
-{	const char[][] obj_ext = [".o"]; /// An array of valid object file extensions for the current.
-	const char[] lib_ext = ".a"; /// Library extension for the current platform.
-	const char[] bin_ext = ""; /// Executable file extension for the current platform.
+{    const string[] obj_ext = ["o"]; /// An array of valid object file extensions for the current.
+    const string lib_ext = "a"; /// Library extension for the current platform.
+    const string bin_ext = ""; /// Executable file extension for the current platform.
 }
 
 /**
  * Program entry point.  Parse args and run the compiler.*/
-int defaultBuild(char[][] args)
-{	args = args[1..$];// remove self-name from args
+int defaultBuild(string[] args)
+{    args = args[1..$];// remove self-name from args
 
-	char[] root;
-	char[][] options;
-	char[][] paths;
-	char[][] run_args;
-	bool verbose;
+    string root;
+    string[] options;
+    string[] paths;
+    string[] run_args;
 
-	// Populate options, paths, and run_args from args
-	bool run;
-	foreach (arg; args)
-	{	switch (arg)
-		{	case "-verbose": verbose = true; break;
-			case "-dmd": compiler = "dmd"; break;
-			case "-gdc": compiler = "gdc"; break;
-			case "-ldc": compiler = "ldc"; break;
-			case "-run": run = true; options~="-run";  break;
-			default:
-				if (String.starts(arg, "-root"))
-				{	root = arg[5..$];
-					continue;
-				}
+    // Populate options, paths, and run_args from args
+    bool run;
+    foreach (arg; args)
+    {    switch (arg)
+        {    case "--verbose": verbose = true; break;
+            case "--dmd": compiler = "dmd"; break;
+            case "--gdc": compiler = "gdc"; break;
+            case "--ldc": compiler = "ldc"; break;
+            case "-run": run = true; options~="-run";  break;
+            default:
+                if (starts_with(arg, "--root"))
+                {    root = arg[6..$];
+                    continue;
+                }
 
-				if (arg[0] == '-' && (!run || !paths.length))
-					options ~= arg;
-				else if (!run || FS.exists(arg))
-					paths ~= arg;
-				else if (run && paths.length)
-					run_args ~= arg;
-	}	}
+                if (arg[0] == '-' && (!run || !paths.length))
+                    options ~= arg;
+                else if (!run || exists(arg))
+                    paths ~= arg;
+                else if (run && paths.length)
+                    run_args ~= arg;
+    }    }
 
-	// Compile
-	CDC.compile(paths, options, run_args, root, verbose);
+    // Compile
+    CDC.compile(paths, options, run_args, root);
 
-	return 0; // success
+    return 0; // success
 }
 
 /**
@@ -336,708 +311,423 @@ int defaultBuild(char[][] args)
  */
 struct CDC
 {
-	/**
-	 * Compile d code using the current compiler.
-	 * Params:
-	 *     paths = Array of source and library files and folders.  Folders are recursively searched.
-	 *     options = Compiler options.
-	 *     run_args = If -run is specified, pass these arguments to the generated executable.
-	 *     root = Use this folder as the root of all paths, instead of the current folder.  This can be relative or absolute.
-	 *     verbose = Print each command before it's executed.
-	 * Returns:
-	 *     Array of commands that were executed.
-	 * TODO: Add a dry run option to just return an array of commands to execute. */
-	static char[][] compile(char[][] paths, char[][] options=null, char[][] run_args=null, char[] root=null, bool verbose=false)
-	{	Log.operations = null;
-		Log.verbose = verbose;
+    /**
+     * Compile d code using the current compiler.
+     * Params:
+     *     paths = Array of source and library files and folders.  Directories are recursively searched.
+     *     options = Compiler options.
+     *     run_args = If -run is specified, pass these arguments to the generated executable.
+     *     root = Use this folder as the root of all paths, instead of the current folder.  This can be relative or absolute.
+     *     verbose = Print each command before it's executed.
+     * Returns:
+     *     Array of commands that were executed.
+     * TODO: Add a dry run option to just return an array of commands to execute. */
+    static string[] compile(string[] paths, string[] options=null, string[] run_args=null, string root=null)
+    {    
+        // Change to root directory and back again when done.
+        string cwd = getcwd();
+        if (root.length)
+        {    if (!exists(root))
+                throw new Exception(`Directory specified for --root "` ~ root ~ `" doesn't exist.`);
+            chdir(root);
+        }
+        scope(exit)
+            if (root.length)
+                chdir(cwd);
 
-		// Change to root directory and back again when done.
-		char[] cwd = FS.getDir();
-		if (root.length)
-		{	if (!FS.exists(root))
-				throw new Exception(`Directory specified for -root "` ~ root ~ `" doesn't exist.`);
-			FS.chDir(root);
-		}
-		scope(exit)
-			if (root.length)
-				FS.chDir(cwd);
+        // Convert src and lib paths to files
+        string[] sources;
+        string[] libs;
+        string[] ddocs;
+        foreach (src; paths)
+            if (src.length)
+            {    if (!exists(src))
+                    throw new Exception(`Source file/folder "` ~ src ~ `" does not exist.`);
+                if (isdir(src)) // a directory of source or lib files
+                {    sources ~= scan(src, [".d"]);
+                    ddocs ~= scan(src, [".ddoc"]);
+                    libs ~= scan(src, [lib_ext]);
+                } else if (isfile(src)) // a single file
+                {
+                    scope ext = src[rfind(src, ".")..$];
+                    if (".d" == ext)
+                        sources ~= src;
+                    else if (lib_ext == ext)
+                        libs ~= src;
+                }
+            }
 
-		// Convert src and lib paths to files
-		char[][] sources;
-		char[][] libs;
-		char[][] ddocs;
-		foreach (src; paths)
-			if (src.length)
-			{	if (!FS.exists(src))
-					throw new Exception(`Source file/folder "` ~ src ~ `" does not exist.`);
-				if (FS.isDir(src)) // a directory of source or lib files
-				{	sources ~= FS.scan(src, [".d"]);
-					ddocs ~= FS.scan(src, [".ddoc"]);
-					libs ~= FS.scan(src, [lib_ext]);
-				} else if (FS.isFile(src)) // a single file
-				{
-					scope ext = src[String.rfind(src, ".")..$];
-					if (".d" == ext)
-						sources ~= src;
-					else if (lib_ext == ext)
-						libs ~= src;
-				}
-			}
+        // Add dl.a for dynamic linking on linux
+        version (linux)
+            libs ~= ["-L-ldl"];
 
-		// Add dl.a for dynamic linking on linux
-		version (linux)
-			libs ~= ["-L-ldl"];
+        // Combine all options, sources, ddocs, and libs
+        CompileOptions co = CompileOptions(options, sources);
+        options = co.getOptions(compiler);
+        if (compiler=="gdc")
+            foreach (inout d; ddocs)
+                d = "-fdoc-inc="~d;
+        else foreach (inout l; libs)
+            version (GNU) // or should this only be version(!Windows)
+                l = `-L`~l; // TODO: Check in dmd and gdc
 
-		// Combine all options, sources, ddocs, and libs
-		CompileOptions co = CompileOptions(options, sources);
-		options = co.getOptions(compiler);
-		if (compiler=="gdc")
-			foreach (inout d; ddocs)
-				d = "-fdoc-inc="~d;
-		else foreach (inout l; libs)
-			version (GNU) // or should this only be version(!Windows)
-				l = `-L`~l; // TODO: Check in dmd and gdc
+        // Create modules.ddoc and add it to array of ddoc's
+        if (co.D)
+        {    string modules = "MODULES = \r\n";
+            sources.sort;
+            foreach(string src; sources)
+            {    src = split(src, "\\.")[0]; // get filename
+                src = replace(replace(src, "/", "."), "\\", ".");
+                modules ~= "\t$(MODULE "~src~")\r\n";
+            }
+            write("modules.ddoc", modules);
+            ddocs ~= "modules.ddoc";
+            scope(failure) remove("modules.ddoc");
+        }
+        
+        string[] arguments = options ~ sources ~ ddocs ~ libs;
 
-		// Create modules.ddoc and add it to array of ddoc's
-		if (co.D)
-		{	char[] modules = "MODULES = \r\n";
-			sources.sort;
-			foreach(char[] src; sources)
-			{	src = String.split(src, "\\.")[0]; // get filename
-				src = String.replace(String.replace(src, "/", "."), "\\", ".");
-				modules ~= "\t$(MODULE "~src~")\r\n";
-			}
-			FS.write("modules.ddoc", modules);
-			ddocs ~= "modules.ddoc";
-			scope(failure) FS.remove("modules.ddoc");
-		}
-		
-		char[][] arguments = options ~ sources ~ ddocs ~ libs;
+        // Compile
+        if (compiler=="gdc")
+        {
+            // Add support for building libraries to gdc.
+            if (co.lib || co.D || co.c) // GDC must build incrementally if creating documentation or a lib.
+            {
+                // Remove options that we don't want to pass to gcd when building files incrementally.
+                string[] incremental_options;
+                foreach (option; options)
+                    if (option!="-lib" && !starts_with(option, "-o"))
+                        incremental_options ~= option;
 
-		// Compile
-		if (compiler=="gdc")
-		{
-			// Add support for building libraries to gdc.
-			if (co.lib || co.D || co.c) // GDC must build incrementally if creating documentation or a lib.
-			{
-				// Remove options that we don't want to pass to gcd when building files incrementally.
-				char[][] incremental_options;
-				foreach (option; options)
-					if (option!="-lib" && !String.starts(option, "-o"))
-						incremental_options ~= option;
+                // Compile files individually, outputting full path names
+                string[] obj_files;
+                foreach(source; sources)
+                {    string obj = replace(source, "/", ".")[0..$-2]~".o";
+                    string ddoc = obj[0..$-2];
+                    if (co.od)
+                        obj = co.od ~ file_separator ~ obj;
+                    obj_files ~= obj;
+                    string[] exec = incremental_options ~ ["-o"~obj, "-c"] ~ [source];
+                    if (co.D) // ensure doc files are always fully qualified.
+                        exec ~= ddocs ~ ["-fdoc-file="~ddoc~".html"];
+                    execute(compiler, exec); // throws ProcessException on compile failure
+                }
 
-				// Compile files individually, outputting full path names
-				char[][] obj_files;
-				foreach(source; sources)
-				{	char[] obj = String.replace(source, "/", ".")[0..$-2]~".o";
-					char[] ddoc = obj[0..$-2];
-					if (co.od)
-						obj = co.od ~ FS.sep ~ obj;
-					obj_files ~= obj;
-					char[][] exec = incremental_options ~ ["-o"~obj, "-c"] ~ [source];
-					if (co.D) // ensure doc files are always fully qualified.
-						exec ~= ddocs ~ ["-fdoc-file="~ddoc~".html"];
-					System.execute(compiler, exec); // throws ProcessException on compile failure
-				}
+                // use ar to join the .o files into a lib and cleanup obj files (TODO: how to join on GDC windows?)
+                if (co.lib)
+                {    remove(co.of); // since ar refuses to overwrite it.
+                    execute("ar", "cq "~ co.of ~ obj_files);
+                }
 
-				// use ar to join the .o files into a lib and cleanup obj files (TODO: how to join on GDC windows?)
-				if (co.lib)
-				{	FS.remove(co.of); // since ar refuses to overwrite it.
-					System.execute("ar", "cq "~ co.of ~ obj_files);
-				}
+                // Remove obj files if -c or -od not were supplied.
+                if (!co.od && !co.c)
+                    foreach (o; obj_files)
+                        remove(o);
+            }
 
-				// Remove obj files if -c or -od not were supplied.
-				if (!co.od && !co.c)
-					foreach (o; obj_files)
-						FS.remove(o);
-			}
+            if (!co.lib && !co.c)
+            {
+                // Remove documentation arguments since they were handled above
+                string[] nondoc_args;
+                foreach (arg; arguments)
+                    if (!starts_with(arg, "-fdoc") && !starts_with(arg, "-od"))
+                        nondoc_args ~= arg;
 
-			if (!co.lib && !co.c)
-			{
-				// Remove documentation arguments since they were handled above
-				char[][] nondoc_args;
-				foreach (arg; arguments)
-					if (!String.starts(arg, "-fdoc") && !String.starts(arg, "-od"))
-						nondoc_args ~= arg;
+                executeCompiler(compiler, nondoc_args);
+            }
+        }
+        else // (compiler=="dmd" || compiler=="ldc")
+        {    
+            executeCompiler(compiler, arguments);        
+            // Move all html files in doc_path to the doc output folder and rename with the "package.module" naming convention.
+            if (co.D)
+            {    foreach (string src; sources)
+                {    
+                    if (src[$-2..$] != ".d")
+                        continue;
 
-				executeCompiler(compiler, nondoc_args);
-			}
-		}
-		else // (compiler=="dmd" || compiler=="ldc")
-		{	
-			executeCompiler(compiler, arguments);		
-			// Move all html files in doc_path to the doc output folder and rename with the "package.module" naming convention.
-			if (co.D)
-			{	foreach (char[] src; sources)
-				{	
-					if (src[$-2..$] != ".d")
-						continue;
+                    string html = src[0..$-2] ~ ".html";
+                    string dest = replace(replace(html, "/", "."), "\\", ".");
+                    if (co.Dd.length)
+                    {    
+                        dest = co.Dd ~ file_separator ~ dest;
+                        html = co.Dd ~ file_separator ~ html;
+                    }
+                    if (html != dest) // TODO: Delete remaining folders where source files were placed.
+                    {    copy(html, dest);
+                        remove(html);
+            }    }    }
+        }
 
-					char[] html = src[0..$-2] ~ ".html";
-					char[] dest = String.replace(String.replace(html, "/", "."), "\\", ".");
-					if (co.Dd.length)
-					{	
-						dest = co.Dd ~ FS.sep ~ dest;
-						html = co.Dd ~ FS.sep ~ html;
-					}
-					if (html != dest) // TODO: Delete remaining folders where source files were placed.
-					{	FS.copy(html, dest);
-						FS.remove(html);
-			}	}	}
-		}
+        // Remove extra files
+        string basename = co.of[rfind(co.of, "/")+1..$];
+        remove(addExt(basename, "map"));
+        if (co.D)
+            remove("modules.ddoc");
+        if (co.of && !(co.c || co.od))
+            foreach (ext; obj_ext)
+                remove(addExt(co.of, ext)); // delete object files with same name as output file that dmd sometimes leaves.
 
-		// Remove extra files
-		char[] basename = co.of[String.rfind(co.of, "/")+1..$];
-		FS.remove(String.changeExt(basename, ".map"));
-		if (co.D)
-			FS.remove("modules.ddoc");
-		if (co.of && !(co.c || co.od))
-			foreach (ext; obj_ext)
-				FS.remove(String.changeExt(co.of, ext)); // delete object files with same name as output file that dmd sometimes leaves.
+        // If -run is set.
+        if (co.run)
+        {    execute("./" ~ co.of, run_args);
+            version(Windows) // give dmd windows time to release the lock.
+                if (compiler=="dmd")
+                    usleep(100000);
+            remove(co.of); // just like dmd
+        }
 
-		// If -run is set.
-		if (co.run)
-		{	System.execute("./" ~ co.of, run_args);
-			version(Windows) // give dmd windows time to release the lock.
-				if (compiler=="dmd")
-					System.sleep(.1);
-			FS.remove(co.of); // just like dmd
-		}
+    }
 
-		return Log.operations;
-	}
+    // A wrapper around execute to write compile options to a file, to get around max arg lenghts on Windows.
+    private static void executeCompiler(string compiler, string[] arguments)
+    {    try {
+            version (Windows)
+            {    write("compile", join(arguments, " "));
+                scope(exit)
+                    remove("compile");
+                execute(compiler~" ", ["@compile"]);
+            } else
+                execute(compiler, arguments);
+        } catch (ProcessException e)
+        {    throw new Exception("Compiler failed.");
+        }
+    }
 
-	// A wrapper around execute to write compile options to a file, to get around max arg lenghts on Windows.
-	private static void executeCompiler(char[] compiler, char[][] arguments)
-	{	try {
-			version (Windows)
-			{	FS.write("compile", String.join(arguments, " "));
-				scope(exit)
-					FS.remove("compile");
-				System.execute(compiler~" ", ["@compile"]);
-			} else
-				System.execute(compiler, arguments);
-		} catch (ProcessException e)
-		{	throw new Exception("Compiler failed.");
-		}
-	}
+    /*
+     * Store compilation options that must be handled differently between compilers
+     * This also implicitly enables -of and -op for easier handling. */
+    private struct CompileOptions
+    {
+        bool c;                // do not link
+        bool D;                // generate documentation
+        string Dd;            // write documentation file to this directory
+        string Df;            // write documentation file to this filename
+        bool lib;            // generate library rather than object files
+        bool o;                // do not write object file
+        string od;            // write object & library files to this directory
+        string of;            // name of output file.
+        bool run;
+        string[] run_args;    // run immediately afterward with these arguments.
 
-	/*
-	 * Store compilation options that must be handled differently between compilers
-	 * This also implicitly enables -of and -op for easier handling. */
-	private struct CompileOptions
-	{
-		bool c;				// do not link
-		bool D;				// generate documentation
-		char[] Dd;			// write documentation file to this directory
-		char[] Df;			// write documentation file to this filename
-		bool lib;			// generate library rather than object files
-		bool o;				// do not write object file
-		char[] od;			// write object & library files to this directory
-		char[] of;			// name of output file.
-		bool run;
-		char[][] run_args;	// run immediately afterward with these arguments.
+        private string[] options; // stores modified options.
 
-		private char[][] options; // stores modified options.
+        /*
+         * Constructor */
+        static CompileOptions opCall(string[] options, string[] sources)
+        {    CompileOptions result;
+            foreach (i, option; options)
+            {
+                if (option == "-c")
+                    result.c = true;
+                else if (option == "-D" || option == "-fdoc")
+                    result.D = true;
+                else if (starts_with(option, "-Dd"))
+                    result.Dd = option[3..$];
+                else if (starts_with(option, "-fdoc-dir="))
+                    result.Df = option[10..$];
+                else if (starts_with(option, "-Df"))
+                    result.Df = option[3..$];
+                else if (starts_with(option, "-fdoc-file="))
+                    result.Df = option[11..$];
+                else if (option == "-lib")
+                    result.lib = true;
+                else if (option == "-o-" || option=="-fsyntax-only")
+                    result.o = true;
+                else if (starts_with(option, "-of"))
+                    result.of = option[3..$];
+                else if (starts_with(option, "-od"))
+                    result.od = option[3..$];
+                else if (starts_with(option, "-o") && option != "-op")
+                    result.of = option[2..$];
+                else if (option == "-run")
+                    result.run = true;
 
-		/*
-		 * Constructor */
-		static CompileOptions opCall(char[][] options, char[][] sources)
-		{	CompileOptions result;
-			foreach (i, option; options)
-			{
-				if (option == "-c")
-					result.c = true;
-				else if (option == "-D" || option == "-fdoc")
-					result.D = true;
-				else if (String.starts(option, "-Dd"))
-					result.Dd = option[3..$];
-				else if (String.starts(option, "-fdoc-dir="))
-					result.Df = option[10..$];
-				else if (String.starts(option, "-Df"))
-					result.Df = option[3..$];
-				else if (String.starts(option, "-fdoc-file="))
-					result.Df = option[11..$];
-				else if (option == "-lib")
-					result.lib = true;
-				else if (option == "-o-" || option=="-fsyntax-only")
-					result.o = true;
-				else if (String.starts(option, "-of"))
-					result.of = option[3..$];
-				else if (String.starts(option, "-od"))
-					result.od = option[3..$];
-				else if (String.starts(option, "-o") && option != "-op")
-					result.of = option[2..$];
-				else if (option == "-run")
-					result.run = true;
+                if (option != "-run") // run will be handled specially to allow for it to be used w/ multiple source files.
+                    result.options ~= option;
+            }
 
-				if (option != "-run") // run will be handled specially to allow for it to be used w/ multiple source files.
-					result.options ~= option;
-			}
+            // Set the -o (output filename) flag to the first source file, if not already set.
+            string ext = result.lib ? lib_ext : bin_ext; // This matches the default behavior of dmd.
+            if (!result.of.length && !result.c && !result.o && sources.length)
+            {    result.of = split(split(sources[0], "/")[$-1], "\\.")[0] ~ ext;
+                result.options ~= ("-of" ~ result.of);
+            }
+            version (Windows)
+            {    if (find(result.of, ".") <= rfind(result.of, "/"))
+                    result.of ~= bin_ext;
 
-			// Set the -o (output filename) flag to the first source file, if not already set.
-			char[] ext = result.lib ? lib_ext : bin_ext; // This matches the default behavior of dmd.
-			if (!result.of.length && !result.c && !result.o && sources.length)
-			{	result.of = String.split(String.split(sources[0], "/")[$-1], "\\.")[0] ~ ext;
-				result.options ~= ("-of" ~ result.of);
-			}
-			version (Windows)
-			{	if (String.find(result.of, ".") <= String.rfind(result.of, "/"))
-					result.of ~= bin_ext;
+                //Stdout(find(result.of, ".")).newline;
+            }
+            // Exception for conflicting flags
+            if (result.run && (result.c || result.o))
+                throw new Exception("flags '-c', '-o-', and '-fsyntax-only' conflict with -run");
 
-				//Stdout(String.find(result.of, ".")).newline;
-			}
-			// Exception for conflicting flags
-			if (result.run && (result.c || result.o))
-				throw new Exception("flags '-c', '-o-', and '-fsyntax-only' conflict with -run");
+            return result;
+        }
 
-			return result;
-		}
+        /*
+        * Translate DMD/LDC compiler options to GDC options.
+        * This function is incomplete. (what about -L? )*/
+        string[] getOptions(string compiler)
+        {    string[] result = options.dup;
 
-		/*
-		* Translate DMD/LDC compiler options to GDC options.
-		* This function is incomplete. (what about -L? )*/
-		char[][] getOptions(char[] compiler)
-		{	char[][] result = options.dup;
+            if (compiler != "gdc")
+            {
+                version(Windows)
+                    foreach (inout option; result)
+                        if (starts_with(option, "-of")) // fix -of with / on Windows
+                            option = replace(option, "/", "\\");
 
-			if (compiler != "gdc")
-			{
-				version(Windows)
-					foreach (inout option; result)
-						if (String.starts(option, "-of")) // fix -of with / on Windows
-							option = String.replace(option, "/", "\\");
+                if (!contains(result, "-op"))
+                    return result ~ ["-op"]; // this ensures ddocs don't overwrite one another.
+                return result;
+            }
 
-				if (!String.contains(result, "-op"))
-					return result ~ ["-op"]; // this ensures ddocs don't overwrite one another.
-				return result;
-			}
+            // is gdc
+            string[string] translate;
+            translate["-Dd"] = "-fdoc-dir=";
+            translate["-Df"] = "-fdoc-file=";
+            translate["-debug="] = "-fdebug=";
+            translate["-debug"] = "-fdebug"; // will this still get selected?
+            translate["-inline"] = "-finline-functions";
+            translate["-L"] = "-Wl";
+            translate["-lib"] = "";
+            translate["-O"] = "-O3";
+            translate["-o-"] = "-fsyntax-only";
+            translate["-of"] = "-o ";
+            translate["-unittest"] = "-funittest";
+            translate["-version"] = "-fversion=";
+            translate["-w"] = "-wall";
 
-			// is gdc
-			char[][char[]] translate;
-			translate["-Dd"] = "-fdoc-dir=";
-			translate["-Df"] = "-fdoc-file=";
-			translate["-debug="] = "-fdebug=";
-			translate["-debug"] = "-fdebug"; // will this still get selected?
-			translate["-inline"] = "-finline-functions";
-			translate["-L"] = "-Wl";
-			translate["-lib"] = "";
-			translate["-O"] = "-O3";
-			translate["-o-"] = "-fsyntax-only";
-			translate["-of"] = "-o ";
-			translate["-unittest"] = "-funittest";
-			translate["-version"] = "-fversion=";
-			translate["-w"] = "-wall";
-
-			// Perform option translation
-			foreach (inout option; result)
-			{	if (String.starts(option, "-od")) // remove unsupported -od
-					option = "";
-				if (option =="-D")
-					option = "-fdoc";
-				else
-					foreach (before, after; translate) // Options with a direct translation
-						if (option.length >= before.length && option[0..before.length] == before)
-						{	option = after ~ option[before.length..$];
-							break;
-						}
-			}
-			return result;
-		}
-		unittest {
-			char[][] sources = [cast(char[])"foo.d"];
-			char[][] options = [cast(char[])"-D", "-inline", "-offoo"];
-			scope result = CompileOptions(options, sources).getOptions("gdc");
-			assert(result[0..3] == [cast(char[])"-fdoc", "-finline-functions", "-o foo"]);
-		}
-	}
+            // Perform option translation
+            foreach (inout option; result)
+            {    if (starts_with(option, "-od")) // remove unsupported -od
+                    option = "";
+                if (option =="-D")
+                    option = "-fdoc";
+                else
+                    foreach (before, after; translate) // Options with a direct translation
+                        if (option.length >= before.length && option[0..before.length] == before)
+                        {    option = after ~ option[before.length..$];
+                            break;
+                        }
+            }
+            return result;
+        }
+        unittest {
+            string[] sources = [cast(string)"foo.d"];
+            string[] options = [cast(string)"-D", "-inline", "-offoo"];
+            scope result = CompileOptions(options, sources).getOptions("gdc");
+            assert(result[0..3] == [cast(string)"-fdoc", "-finline-functions", "-o foo"]);
+        }
+    }
 }
 
-// Log actions of functions in this module.
-private struct Log
-{
-	static bool verbose;
-	static char[][] operations;
+bool verbose = false;
 
-	static void add(char[] operation)
-	{	if (verbose)
-			System.trace("CDC:  " ~ operation);
-		operations ~= operation;
-	}
+/**
+ * Execute a command-line program and print its output.
+ *
+ * Params: command = The command to execute, e.g. "dmd".
+ *         args    = Arguments to pass to the command.
+ *
+ * Throws: ProcessException on failure or status code 1.
+ */
+void execute(string command, string[] args=null)
+{    
+    command ~= " " ~ join(args, " ");
+
+    if(verbose){writefln("CDC:  " ~ command);}
+
+    version(Windows)
+    {
+        if(starts_with(command, "./")){command = command[2 .. $];}
+    }
+            
+    int status = !system((command ~ "\0").ptr);
+    if(!status)
+    {
+        throw new ProcessException(format("Process '%s' exited with status %d", 
+                                          command, status));
+    }
 }
 
-/// This is a brief, tango/phobos neutral system library.
-struct System
-{
-	/**
-	 * Execute execute an arbitrary command-line program and print its output
-	 * Params:
-	 *     command = The command to execute, e.g. "dmd"
-	 *     args = Array of string arguments to pass to this command.
-	 * Throws: ProcessException on failure or status code 1.
-	 * TODO: Return output (stdout/stderr) instead of directly printing it. */
-	static void execute(char[] command, char[][] args=null)
-	{	Log.add(command~` `~String.join(args, ` `));
-		version (Windows)
-			if (String.starts(command, "./"))
-				command = command[2..$];
-				
-		
-		version (Tango)
-		{	/+ // hangs in Tango 0.99.9
-			scope p = new Process(true);
-			scope(exit)
-				p.close();
-			p.execute(command, args);
+///Path separator character for the current platform.
+version(Windows){char file_separator ='\\';}
+else{char file_separator ='/';}
 
-			Stdout.copy(p.stdout).flush; // adds extra line returns?
-			Stdout.copy(p.stderr).flush;
-			scope result = p.wait();
-			if (result.status != Process.Result.Exit)
-				throw new ProcessException(result.toString());
-			+/
-
-			char[] execute = command ~ " " ~ String.join(args, " ") ~ "\0";
-			int status = system(execute.ptr);
-			if (status != 0)
-				throw new ProcessException(String.format("Process '%s' exited with status %s", command, status));
-		} else		
-		{
-			command = command ~ " " ~ String.join(args, " ");
-			bool success =  !system((command ~ "\0").ptr);
-			if (!success)
-				throw new ProcessException(String.format("Process '%s' exited with status 1", command));
-		}
-	}
-
-	/// Get the current number of milliseconds since Jan 1 1970.
-	static long time()
-	{	version (Tango)
-			return Clock.now.unix.millis;
-		else
-			return getUTCtime();
-	}
-
-	/// Print output to the console.  Uses String.format internally and therefor accepts the same arguments.
-	static void trace(T...)(char[] message, T args)
-	{	version (Tango)
-			Stdout(String.format(message, args)).newline;
-		else
-			writefln(String.format(message, args));
-	}
-
-	/// Sleep for the given number of seconds.
-	static void sleep(double seconds)
-	{	version (Tango)
-			Thread.sleep(seconds);
-		else
-		{	version (GNU)
-				sleep(cast(int)seconds);
-			else
-				usleep(cast(int)(seconds/1_000_000));
-		}
-	}
+///Directory scan mode. 
+enum ScanMode
+{    
+    ///Scan files.
+    Files = 1,
+    ///Scan folders.
+    Directories = 2,
 }
 
-/// This is a brief, tango/phobos neutral filesystem library.
-struct FS
-{
-	/// Path separator character of the current platform
-	version (Windows)
-		static char[] sep ="\\";
-	else
-		static char[] sep ="/";
-
-	/// Convert a relative path to an absolute path.
-	static char[] abs(char[] rel_path)
-	{	version (Tango)
-			return (new FilePath).absolute(rel_path).toString();
-		else
-		{	// Remove filename
-			char[] filename;
-			int index = std.string.rfind(rel_path, FS.sep);
-			if (index != -1)
-			{   filename = rel_path[index..length];
-				rel_path = replace(rel_path, filename, "");
-			}
-
-			char[] cur_path = getcwd();
-			try {   // if can't chdir, rel_path is current path.
-				chdir(rel_path);
-			} catch {};
-			char[] result = getcwd();
-			chdir(cur_path);
-			return result~filename;
-		}
-	}
-
-	/// Set the current working directory.
-	static void chDir(char[] path)
-	{	Log.add(`cd "`~path~`"`);
-		version (Tango)
-			Environment.cwd(path);
-		else .chdir(path);
-	}
-
-	/// Copy a file from source to destination
-	static void copy(char[] source, char[] destination)
-	{	Log.add(`copy "`~source~`" "`~destination~`"`);
-		version (Tango)
-		{	scope from = new File(source);
-			scope to = new File(destination, File.WriteCreate);
-			to.output.copy (from);
-			to.close;
-			from.close;
-		}
-		else
-			.copy(source, destination);
-	}
-
-	/// Does a file exist?
-	static bool exists(char[] path)
-	{	version (Tango)
-			return FilePath(path).exists();
-		else return !!.exists(path);
-	}
-
-	/// Get the current working directory.
-	static char[] getDir()
-	{	version (Tango)
-			return Environment.cwd();
-		else return getcwd();
-	}
-
-	/// Is a path a directory?
-	static bool isDir(char[] path)
-	{	version (Tango)
-			return FilePath(path).isFolder();
-		else return !!.isdir(path);
-	}
-
-	/// Is a path a file?
-	static bool isFile(char[] path)
-	{	version (Tango)
-			return FilePath(path).isFile();
-		else return !!.isfile(path);
-	}
-
-	/// Get an array of all files/folders in a path.
-	/// TODO: Fix with LDC + Tango
-	static char[][] listDir(char[] path)
-	{	version (Tango)
-		{	char[][] result;
-			foreach (dir; FilePath(path).toList())
-				result ~= FilePath(dir.toString()).file();
-			return result;
-		}
-		else return .listdir(path);
-	}
-
-	/// Create a directory.  Returns false if the directory already exists.
-	static bool mkDir(char[] path)
-	{	if (!FS.exists(path))
-		{	version(Tango)
-				FilePath(path).create();
-			else
-				mkdir(path);
-			return true;
-		}
-		return false;
-	}
-
-	/// Argument for FS.scan() function.
-	static enum ScanMode
-	{	FILES = 1, ///
-		FOLDERS = 2, ///
-		BOTH = 3 ///
-	}
-
-	/**
-	 * Recursively get all files in directory and subdirectories that have an extension in exts.
-	 * This may return files in a different order depending on whether Tango or Phobos is used.
-	 * Params:
-	 *     directory = Absolute or relative path to the current directory
-	 *     exts = Array of extensions to match
-	 *     mode = files, folders, or both
-	 * Returns: An array of paths (including filename) relative to directory.
-	 * BUGS: LDC fails to return any results. */
-	static char[][] scan(char[] folder, char[][] exts=null, ScanMode mode=ScanMode.FILES)
-	{	char[][] result;
-		if (exts is null)
-			exts = [""];
-		foreach(char[] filename; FS.listDir(folder))
-		{	char[] name = folder~"/"~filename; // FS.sep breaks gdc windows.
-			if(FS.isDir(name))
-				result ~= scan(name, exts, mode);
-			if (((mode & ScanMode.FILES) && FS.isFile(name)) || ((mode & ScanMode.FOLDERS) && FS.isDir(name)))
-			{	// if filename is longer than ext and filename's extention is ext.
-				foreach (char[] ext; exts)
-					if (filename.length>=ext.length && filename[(length-ext.length)..length]==ext)
-						result ~= name;
-		}	}
-		return result;
-	}
-
-	/**
-	 * Remove a file or a folder along with all files/folders in it.
-	 * Params: path = Path to remove, can be a file or folder.
-	 * Return: true on success, or false if the path didn't exist. */
-	static bool remove(char[] path)
-	{
-		Log.add(`remove "`~path~`"`);
-		if (!FS.exists(path))
-			return false;
-		version (Tango)
-			FilePath(path).remove();
-		else
-			.remove(path);
-		return true;
-	}
-	unittest {
-		assert (!remove("foo/bar/ding/dong/do.txt")); // a non-existant file
-		Log.operations = null;
-	}
-
-	/// Write a file to disk
-	static void write(T)(char[] filename, T[] data)
-	{	scope data2 = String.replace(String.replace(String.replace(data, "\n", "\\n"), "\r", "\\r"), "\t", "\\t");
-		Log.add(`write "` ~ filename ~ `" "` ~ data2 ~ `"`);
-		version (Tango)
-			File.set(filename, data);
-		else .write(filename, data);
-	}
-
-	// test path functions
-	unittest
-	{	char[] path = "_random_path_ZZZZZ";
-		if (!FS.exists(path))
-		{	assert(FS.mkDir(path));
-			assert(FS.exists(path));
-			assert(String.contains(FS.listDir("./"), path));
-			assert(String.contains(FS.scan("./", null, ScanMode.FOLDERS), path));
-			assert(FS.remove(path));
-			assert(!FS.exists(path));
-	}	}
+/**
+ * Recursively get all files with specified extensions in directory and subdirectories.
+ *
+ * Params:  directory  = Absolute or relative path to the current directory
+ *          extensions = Array of extensions to match
+ *          mode       = Scan mode. Files or directories.
+ *
+ * Returns: An array of paths (including filename) relative to directory.
+ *
+ * BUGS: LDC fails to return any results. 
+ */
+string[] scan(string folder, string[] extensions = [""], ScanMode mode = ScanMode.Files)
+{    
+    string[] result;
+    foreach(string filename; listdir(folder))
+    {    
+        //file_separator breaks gdc windows.
+        string name = folder ~ "/" ~ filename; 
+        if(isdir(name)){result ~= scan(name, extensions, mode);}
+        if((mode == ScanMode.Files && isfile(name)) || 
+           (mode == ScanMode.Directories && isdir(name)))
+        {    
+            foreach(string ext; extensions)
+            {
+                //if filename ends with ext
+                if(filename.length >= ext.length && filename[$ - ext.length .. length] == ext)
+                {
+                    result ~= name;
+                }
+            }
+        }    
+    }
+    return result;
 }
 
-/// This is a brief, tango/phobos neutral string library.
-struct String
+/**
+ * Does a string start with specified prefix?
+ *
+ * Params:  str    = String to check.
+ *          prefix = Prefix to look for.
+ *
+ * Returns: True if the string starts with specified prefix, false otherwise.
+ */
+bool starts_with(string str, string prefix)
 {
-	static char[] changeExt(char[] filename, char[] ext)
-	{	version(Tango)
-			return FilePath(filename).folder() ~ FilePath(filename).name() ~ ext;
-		else
-			return addExt(filename, ext[1..$]);
-	}
-	unittest {
-		assert(changeExt("foo.a", "b") == "foo.b");
-		assert(changeExt("bar/foo", "b") == "bar/foo.b");
-	}
+    return str.length >= prefix.length && str[0 .. prefix.length] == prefix;
+}
 
-	/// Does haystack contain needle?
-	static bool contains(T)(T[] haystack, T needle)
-	{	version (Tango)
-			return .contains(haystack, needle);
-		foreach (straw; haystack)
-			if (straw == needle)
-				return true;
-		return false;
-	}
-
-	/// Find the first or last instance of needle in haystack, or -1 if not found.
-	static int find(T)(T[] haystack, T[] needle)
-	{	if (needle.length > haystack.length)
-			return -1;
-		for (int i=0; i<haystack.length - needle.length+1; i++)
-			if (haystack[i..i+needle.length] == needle)
-				return i;
-		return -1;
-	}
-	static int rfind(T)(T[] haystack, T[] needle) /// ditto
-	{	if (needle.length > haystack.length)
-			return -1;
-		for (int i=haystack.length - needle.length-1; i>0; i--)
-			if (haystack[i..i+needle.length] == needle)
-				return i;
-		return -1;
-	}
-	unittest
-	{	assert(find("hello world world.", "wo") == 6);
-		assert(find("hello world world.", "world.") == 12);
-		assert(rfind("hello world world.", "wo") == 12);
-		assert(rfind("hello world world.", "world.") == 12);
-	}
-
-	/**
-	 * Format variables.
-	 * Params:
-	 *     message = String to apply formatting.  Use %s for variable replacement.
-	 *     args = Variable arguments to insert into message.
-	 * Example:
-	 * --------
-	 * String.format("%s World %s", "Hello", 23); // returns "Hello World 23"
-	 * --------
-	 */
-	static char[] format(T...)(char[] message, T args)
-	{	version (Tango)
-		{	message = substitute(message, "%s", "{}");
-			return Format.convert(message, args);
-		} else
-		{	
-            return std.string.format(message, args);
-            /*
-            char[] swritef(...) // wrapper to convert varargs
-			{	char[] res;
-				void putchar(dchar c)
-				{   res~= c;
-				}
-				doFormat(&putchar, _arguments, cast(char*)_argptr);
-				return res;
-			}
-			return swritef(message, args);
-            */
-	}	}
-	unittest {
-		assert(String.format("%s World %s", "Hello", 23) == "Hello World 23");
-		assert(String.format("foo") == "foo");
-	}
-
-	/// Join an array of strings using glue.
-	static char[] join(char[][] array, char[] glue)
-	{	return .join(array, glue);
-	}
-
-	/// In source, repalce all instances of "find" with "repl".
-	static char[] replace(char[] source, char[] find, char[] repl)
-	{	version (Tango)
-			return substitute(source, find, repl);
-		else return .replace(source, find, repl);
-	}
-
-	/// Split an array by the regex pattern.
-	static char[][] split(char[] source, char[] pattern)
-	{	version (Tango)
-			return Regex(pattern).split(source);
-		else return std.string.split(source, pattern);
-	}
-
-	/// Does "source" begin with "beginning" ?
-	static bool starts(char[] source, char[] beginning)
-	{	return source.length >= beginning.length && source[0..beginning.length] == beginning;
-	}
-
-	/// Get the ascii lower-case version of a string.
-	static char[] toLower(char[] input)
-	{	version (Tango)
-			return .toLower(input);
-		else return tolower(input);
-	}
-
+/**
+ * Determine whether or not does an array contain an element.
+ *
+ * Params:  array = Array to check.
+ *          elem  = Element to look for.
+ */
+bool contains(T)(T[] array, T element)
+{
+    foreach(array_element; array)
+    {
+        if(array_element == element){return true;}
+    }
+    return false;
 }
 
 // Define ProcessException in Phobos
-version(Tango) {}
-else
-{	class ProcessException : Exception {
-		this(char[] message) { super(message); }
-	};
-}
+class ProcessException : Exception {this(string message){super(message);}};

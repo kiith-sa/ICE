@@ -166,7 +166,7 @@ final class GraphData
                     uint value = clamp(floor_s32(age / time_resolution_) ,0 , 
                                        cast(int)values_.length - 1);
 
-                    Value* values_ptr = values_.array.ptr;
+                    Value* values_ptr = values_.ptr;
                     Value* value_ptr = values_ptr + value;
                     Value* values_end = values_ptr + values_.length;
 
@@ -195,9 +195,9 @@ final class GraphData
                 {
                     //ugly, but optimized
                     uint num_points = data_points_.length;
-                    real* points_ptr = data_points_.array.ptr;
+                    real* points_ptr = data_points_.ptr;
 
-                    Value* values_ptr = values_.array.ptr;
+                    Value* values_ptr = values_.ptr;
                     Value* values_end = values_ptr + values_.length;
 
                     //index of data point to add current value to.
@@ -225,7 +225,7 @@ final class GraphData
                 {
                     //ugly, but optimized
                     uint num_points = data_points_.length;
-                    real* points_ptr = data_points_.array.ptr;
+                    real* points_ptr = data_points_.ptr;
 
                     value_counts_.length = num_points;
                     uint* value_counts_ptr = value_counts_.array.ptr;
@@ -237,7 +237,7 @@ final class GraphData
                         *count = 0;
                     }
 
-                    Value* values_ptr = values_.array.ptr;
+                    Value* values_ptr = values_.ptr;
                     Value* values_end = values_ptr + values_.length;
 
                     //index of data point to add current value to.
