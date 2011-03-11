@@ -1,9 +1,3 @@
-21:
-    Exception overhaul with Java style exceptions.
-
-    In the end, document all exceptions (grep for them)
-22:
-    Convert pngcommon, pngencoder, pngdecoder, zlib to Unix line endings.
 22:
     get_path in file.fileio should only get path, not if it exists or not.
     Separate function should handle that.
