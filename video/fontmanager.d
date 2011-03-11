@@ -22,12 +22,15 @@ import math.math;
 import math.vector2;
 import memory.memory;
 import containers.array;
+import containers.vector;
 import util.weaksingleton;
 import color;
 
 
+package:
+
 ///Used by VideoDriver implementations to draw a string.
-package align(1) struct FontRenderer
+align(1) struct FontRenderer
 {
     private:
         ///Font we're drawing with.
@@ -122,7 +125,7 @@ package align(1) struct FontRenderer
 }
 
 ///Manages all font resources. 
-package final class FontManager
+final class FontManager
 {
     mixin WeakSingleton;
     private:
@@ -131,6 +134,9 @@ package final class FontManager
 
         ///All currently loaded fonts. fonts_[0] is the default font.
         Font[] fonts_;
+
+        ///Buffers storing font file data indexed by file names.
+        Vector!(ubyte)[string] font_files_;
         
         ///Fallback font name.
         string default_font_name_ = "DejaVuSans.ttf";
@@ -182,8 +188,10 @@ package final class FontManager
                 }
                 try
                 {
+                    load_font_file(default_font_name_);
                     //load default font.
-                    fonts_ ~= new Font(freetype_lib_, default_font_name_, default_font_size_, 
+                    fonts_ ~= new Font(freetype_lib_, font_files_[default_font_name_],
+                                       default_font_name_, default_font_size_, 
                                        fast_glyphs_, antialiasing_);
                     current_font_ = fonts_[$ - 1];
                     font_name_ = default_font_name_;
@@ -234,7 +242,9 @@ package final class FontManager
         void die()
         {
             foreach(ref font; fonts_){font.die();}
+            foreach(ref file; font_files_){file.die();}
             fonts_ = [];
+            font_files_ = null;
             FT_Done_FreeType(freetype_lib_);
             DerelictFT.unload(); 
             singleton_dtor();
@@ -288,6 +298,21 @@ package final class FontManager
 
     private:
         /**
+         * Load font data from a file if it's not loaded yet. 
+         *
+         * Params:  name = Name of the font in the fonts/ directory.
+         * 
+         * Throws:  FileIOException if the font file name is invalid or it could not be opened.
+         */
+        void load_font_file(string name)
+        {
+            if(font_files_.keys.contains(name)){return;}
+            File file = open_file("fonts/" ~ name, FileMode.Read);
+            font_files_[name] = Vector!(ubyte)(cast(ubyte[])file.data);
+            close_file(file);
+        }
+
+        /**
          * Try to set font according to font_name_ and font_size_.
          *
          * Will load the font if needed, and if it can't load, will
@@ -337,8 +362,9 @@ package final class FontManager
             Font new_font;
             try
             {
-                new_font = new Font(freetype_lib_, font_name_, font_size_, 
-                                    fast_glyphs_, antialiasing_);
+                load_font_file(font_name_);
+                new_font = new Font(freetype_lib_, font_files_[font_name_], font_name_, 
+                                    font_size_, fast_glyphs_, antialiasing_);
                 //Font was succesfully loaded, set it
                 fonts_ ~= new_font;
                 current_font_ = fonts_[$ - 1];

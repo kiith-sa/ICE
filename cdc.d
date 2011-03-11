@@ -159,8 +159,8 @@ int main(string[] args)
                      "dependencies/", 
                      
                      "physics/", "scene/", "file/", "formats/", "gui/", "math/", 
-                     "memory/", "monitor/", "platform/", "spatial/", "time/", 
-                     "video/", "containers/", "util/",
+                     "memory/", "monitor/", "platform/", "spatial/", 
+                     "time/", "video/", "containers/", "util/",
 
                      "color.d", "graphdata.d", "image.d", "pong.d", "stringctfe.d"
                      ],

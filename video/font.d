@@ -18,10 +18,11 @@ import video.videodriver;
 import video.texture;
 import math.vector2;
 import math.math;
-import color;
 import file.fileio;
-import image;
 import memory.memory;
+import containers.vector;
+import color;
+import image;
 
 
 ///Exception thrown at font related errors.
@@ -67,36 +68,28 @@ package class Font
         ///Should the font be rendered with antialiasing?
         bool antialiasing_;
 
-        ///File this font was loaded from (stores loaded file data).
-        File file_;
-
     public:
         /**
-         * Construct (load) a font.
+         * Construct a font.
          *
          * Params:  freetype_lib = Handle to the freetype library used to work with fonts.
-         *          name         = Name of the font (file name in the fonts/ directory).
+         *          font_data    = Font data (loaded from a font file).
+         *          name         = Name of the font.
          *          size         = Size of the font in points.
          *          fast_glyphs  = Number of glyphs to store in fast access array,
          *                         from glyph 0. E.g. 128 means 0-127, i.e. ASCII.
          *          antialiasing = Should the font be antialiased?
          *
-         * Throws:  FileIOException if the font file name is invalid or it could not be opened.
-         *          FontException if the font could not be loaded.
+         * Throws:  FontException if the font could not be loaded.
          */
-        this(FT_Library freetype_lib, string name, uint size, uint fast_glyphs, 
-             bool antialiasing)
+        this(FT_Library freetype_lib, ref Vector!(ubyte) font_data, string name, 
+             uint size, uint fast_glyphs, bool antialiasing)
         {
             fast_glyphs_ = new Glyph*[fast_glyphs];
             fast_glyph_count_ = fast_glyphs;
 
             name_ = name;
             antialiasing_ = antialiasing;
-
-            //load the file
-            file_ = open_file("fonts/" ~ name, FileMode.Read);
-            ubyte[] font_data = cast(ubyte[])file_.data;
-            scope(failure){close_file(file_);}
 
             FT_Open_Args args;
             args.memory_base = font_data.ptr;
@@ -110,14 +103,14 @@ package class Font
             //load face from memory buffer (font_data)
             if(FT_Open_Face(freetype_lib, &args, face, &font_face_) != 0) 
             {
-                throw new FontException("Couldn't load font face from font " ~ file_.path);
+                throw new FontException("Couldn't load font face from font " ~ name);
             }
             
             //set font size in pixels
             //could use a better approach, but worked for all fonts so far.
             if(FT_Set_Pixel_Sizes(font_face_, 0, size) != 0)
             {
-                throw new FontException("Couldn't set pixel size with font " ~ file_.path);
+                throw new FontException("Couldn't set pixel size with font " ~ name);
             }
 
             height_ = size;
@@ -135,7 +128,6 @@ package class Font
                 if(glyph !is null){free(glyph);}
             }
             FT_Done_Face(font_face_);
-            close_file(file_);
             fast_glyphs_ = [];
             glyphs_ = null;
         }
@@ -296,7 +288,7 @@ package class Font
         {
             if(c < fast_glyph_count_)
             {
-                fast_glyphs_[c] = alloc!(Glyph)();
+                if(fast_glyphs_[c] is null){fast_glyphs_[c] = alloc!(Glyph)();}
                 *fast_glyphs_[c] = render_glyph(driver, c);
                 return;
             }

@@ -60,10 +60,8 @@ class VideoDriverContainer
                 video_driver_ = null;
             }
             video_driver_.set_video_mode(width, height, format, fullscreen);
-            try
-            {
-                font_manager_.reload_textures(video_driver_);
-            }
+
+            try{font_manager_.reload_textures(video_driver_);}
             catch(TextureException e)
             {
                 throw new VideoDriverException("Video driver construction error: "

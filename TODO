@@ -1,9 +1,3 @@
-2!:
-    (Only if still true)
-    Right now, when the same font is loaded with different font sizes,
-    it is loaded to memory twice. Share that buffer between all font
-    instances with same font name to prevent duplication of memory
-    (Resource manager might help here)
 25:
     Look for newer CDC and integrate changes to our CDC.
     If no new CDC, refactor CDC further, especially for D2
@@ -208,6 +202,60 @@
     Consider D2 (at this point it might be mature enough :p)
     We'll need to port CDC first, look if there's a new CDC, if not,
     port it, test with some small test project
+4:
+    Hierarchical resource manager:
+    (Current font code does not fit this, as there's no way to load/unload
+     fonts from user side. Might change that with simple VideoDriver load_font,
+     unload_font methods or with font handles working like texture handles.
+     (with a default font handle of course))
+
+    Hierarchical idea is very elegant for levels, mods, whatever:
+
+    Idea seen here:
+
+How I do it is to have roughly these classes:
+
+Representation - e.g. Texture
+
+Resource Locator (not always necessary)
+
+Resource Factory (sometimes just a constructor in the Representation)
+
+Hierarchical Resource Cache
+
+
+The key is the last one. I have multiple caches, 
+which interact in a hierarchical manner. 
+One is created in main, and it is used to 
+load the non-game resources (menu resources, music, etc). 
+Others are created for each level.
+
+The cache for the first level uses the "global" one in main() as a parent. 
+When resources are loaded, the parent is consulted, as well as the local cache,
+before delegating to the factory to build a new resources.
+
+Between levels, the old cache is used as the parent of the new cache. 
+This means that data that persists between level 
+(in your example, player mesh and common enemies)
+will pull them from the previous level. Once the new level is loaded, 
+the set of resources that are now unused are freed by disposing the previous cache. 
+This is all implicit, there is no need to specify whether a resource is going to 
+be common between levels.
+
+Downsides of this approach:
+
+During level transitions you have all the resources for two levels in memory, 
+even if lots for the previous level aren't going to be re-used. 
+This isn't a problem for me because the games I write are small 2D games 
+with relatively small resource usage.
+
+It is fairly static, every resource must be touched at level load to ensure 
+it stays resident and isn't flushed.
+
+It isn't a true cache, there is no replacement policy. 
+If a resource is used once in the level, even temporarily, 
+it will remain memory resident for the entire l
+
 5:
   Move to 64bit (whether or not we're already at D2)
 6:
