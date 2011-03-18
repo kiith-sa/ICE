@@ -35,7 +35,7 @@ package struct Statistics
     ///Draw calls.
     uint lines, textures, texts, rectangles;
     ///Drawing primitives.
-    uint vertices, characters;
+    uint vertices, indices, characters;
     ///State changes.
     uint shader, page;
 
@@ -43,7 +43,7 @@ package struct Statistics
     void zero()
     {    
         lines = textures = texts = rectangles 
-              = vertices = characters = shader = page = 0;
+              = vertices = indices = characters = shader = page = 0;
     }
 }
 
@@ -252,7 +252,7 @@ alias SimpleGraphMonitor!(GLVideoDriver, Statistics,
   
 ///Graph showing numbers of graphics primitives drawn.
 alias SimpleGraphMonitor!(GLVideoDriver, Statistics, 
-                          "vertices", "characters") PrimitivesMonitor;
+                          "vertices", "indices", "characters") PrimitivesMonitor;
 
 ///Graph showing numbers of state changes during the frame 
 alias SimpleGraphMonitor!(GLVideoDriver, Statistics, "shader", "page") ChangesMonitor;

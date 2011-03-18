@@ -99,6 +99,18 @@ package struct GLRenderer
             scissor_areas_.die();
         }
 
+        ///Get number of vertices used during the frame so far.
+        uint vertex_count()
+        {
+            return colored_buffer_.vertex_count + textured_buffer_.vertex_count;
+        }
+
+        ///Get number of indices used during the frame so far.
+        uint index_count()
+        {
+            return colored_buffer_.index_count + textured_buffer_.index_count;
+        }
+
         ///Set draw mode. Should not be called during a frame.
         void draw_mode(GLDrawMode mode)
         {

@@ -81,7 +81,6 @@ abstract class GLVideoDriver : VideoDriver
         ///Statistics data for monitoring.
         Statistics statistics_;
 
-
         ///Caches vertices and draws them at the end of frame.
         GLRenderer renderer_;
 
@@ -160,8 +159,6 @@ abstract class GLVideoDriver : VideoDriver
             //disable current shader
             current_shader_ = uint.max;
 
-            renderer_.reset();
-
             send_statistics.emit(statistics_);
             statistics_.zero();
         }
@@ -169,6 +166,9 @@ abstract class GLVideoDriver : VideoDriver
         override void end_frame()
         {
             renderer_.render(screen_width_, screen_height_);
+            statistics_.vertices = renderer_.vertex_count();
+            statistics_.indices = renderer_.index_count();
+            renderer_.reset();
             glFlush();
         }
 
@@ -200,7 +200,6 @@ abstract class GLVideoDriver : VideoDriver
         final override void draw_filled_rectangle(Vector2f min, Vector2f max, Color color)
         {
             statistics_.rectangles += 1;
-            statistics_.vertices += 4;
 
             set_shader(plain_shader_);
 
@@ -212,7 +211,6 @@ abstract class GLVideoDriver : VideoDriver
             assert(texture.index < textures_.length, "Texture index out of bounds");
 
             ++statistics_.textures;
-            statistics_.vertices += 4;
 
             set_shader(texture_shader_);
 
@@ -269,7 +267,6 @@ abstract class GLVideoDriver : VideoDriver
                 foreach(dchar c; text)
                 {
                     ++statistics_.characters;
-                    statistics_.vertices += 4;
 
                     if(!renderer.has_glyph(c)){renderer.load_glyph(this, c);}
                     texture = renderer.glyph(c, offset);
@@ -509,8 +506,6 @@ abstract class GLVideoDriver : VideoDriver
         ///Debugging: draw specified area of a texture page on the specified quad.
         final void draw_page(uint page_index, ref Rectanglef area, ref Rectanglef quad)
         {
-            statistics_.vertices += 4;  
-
             set_shader(texture_shader_);
 
             assert(pages_[page_index] !is null, "Trying to draw a nonexistent page");

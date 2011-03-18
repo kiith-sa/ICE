@@ -1,4 +1,4 @@
-update monitoring, then commit, only after THAT do optimization. 
+Optimization
 Also optimize immediate mode.
 19:
     GLVideoDriver should have a data member specifying if we're between
@@ -13,9 +13,8 @@ Also optimize immediate mode.
     
     Replace GL_LUMINANCE WITH GL_RED, as the former is deprecated.
     (Use shader to get the correct color)
-    
-    If we cache per frame like in Catom, we have to draw stuff out
-    every time zoom/offset changes.
+
+    Custom matrices.
 
     Once we use custom matrices with shaders, we might simply
     store projection matrices with caches and draw all out
@@ -280,6 +279,9 @@ it will remain memory resident for the entire l
              debug tool. Probably better that way.
         -etc.
 
+7:
+    Shaders should be available to the user, passed to draw functions 
+    (with defaults) - this might require a shader spec format 
 6:
   FPS benchmark
 6:
