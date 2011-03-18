@@ -1,10 +1,47 @@
-25:
-    Look for newer CDC and integrate changes to our CDC.
-    If no new CDC, refactor CDC further, especially for D2
-    forward compatibility.
+Renderer: 
+git diff check, then update monitoring, 
+then commit, only after THAT do optimization. Also optimize immediate mode.
+
+
+
+
+19:
+    VAs/VBOs (interface so we can switch at least between VAs and VBOs)
+
+    Start out with an immediate mode implementation, simply caching stuff.
+    Then VAs, then VBOs.
+
+
+
+    Basically, what we need is:
+    1) GLVertexCache struct (no need for class, and struct is faster)
+    2) GLVertexGroup struct: 
+           Type (lines, tris, etc)
+           GLTexturePage (if applicable, disabled if not)
+           Shader
+           array of vertices (immediate/VAs)
+           + streaming VBO handle(for VBOs) - only if we need it, maybe we'll
+             simply upload VBO once per frame, but we might find a way to
+             keep the VBO and reupload to the same VBO (although, if the array size
+             changes...)
+
+             More likely: when in VBO mode, when caching, keep the old data
+             and check if anything changes. Only if anything changes should
+             we reupload the VBO, otherwise we can use the old one.
+             Monitor could help seeing how many VertexGroups work this way.
+             Probably not much use in Pong, but much better in isometric stuff etc.
+    
+19:
+    GLVideoDriver should have a data member specifying if we're between
+    start_frame and end_frame, and asserts enforcing that we're not making
+    calls we shouldn't make at that time 
+    (like draw_mode, creating and deleting textures)
 20:
-    Check for a newer version of (D1) Derelict, if any, just in case.
+    FBO screenshot
 20: 
+    Step by step move to GL2, GL3 compatible where possible.
+    Basically, go through every GL function we use and check for compatibility
+    
     Replace GL_LUMINANCE WITH GL_RED, as the former is deprecated.
     (Use shader to get the correct color)
     
@@ -18,7 +55,7 @@
 
     If slow, instead of Catom like caching of everything in frame to one VBO,
     first consider caching computed data (such as the VBO) for each
-    draw call. (store using bucket sort based e.g. on drawing position)
+    draw call. (store using bucket sort based e.g. on drawing position, or a grid)
     basically, if the same draw call is made in multiple frames,
     it's VBO and/or other data is computed at the first call, then stored.
     If a draw call is not made for X frames, (e.g. 8), it's deleted.
@@ -37,8 +74,30 @@
     for drawing to FBO (separate pass) and using that for screenshots.
 
     use gDebugger to profile OGL performance
+19:
+    Figure out why SSE doesn't work on GDC. Maybe it's different asm conventions,
+    or it is because we build 64 bit. Fix it and update cdc.
 18:
     main menu could have an ai-ai game playing in the background
+18:
+    Directory structure: needs further changes:
+    On Unix/Linux, we need to install the main game files to root but have user
+    editable files (screenshots, logs, addons, ini, saves) in home directory.
+    And the binary needs to be in /usr/bin.
+    So work on that. (look at wesnoth)
+    Probably one directory in /usr/local or something, and one in /home/xxx .
+    Get it to work and create an installation script that will install it
+    that way so we can test it.
+
+    In normal case, both directories are set to the same directory.
+
+    A launcher script/program(D is easy) can provide these directories through
+    command line args, while by default, both are set to the current directory. 
+
+    So when we install, we also install the launcher, which is what the user
+    launches. When we just copy the directory Nexuiz style, we don't need the 
+    launcher.
+
 17: 
     Effects:
     when changing the gui, (e.g. moving from menu to pong, or between dialogs), 
@@ -124,6 +183,8 @@
     Also time/score limit.
 
     Also graphics settings (enable/disable certain particle systems, maybe more)
+
+    Video driver settings too (draw mode, line aa)
 
 
     After that, keyboard settings for each player
@@ -255,9 +316,21 @@ it stays resident and isn't flushed.
 It isn't a true cache, there is no replacement policy. 
 If a resource is used once in the level, even temporarily, 
 it will remain memory resident for the entire l
+15:
+    GLVideoDriver Debug tool (maybe belonging to monitors):
+        -Set draw mode.
+        -Replace all textures with a 2x2 placeholder.
+        -Force line AA off
+        -Reload all shaders (can be changed on runtime this way)
+        -Reload all textures
+             Would need management shaders as textures are now loaded from 
+             mages passed by the user, but would be extremely useful for modders.
+             Alternatively, user code managing textures might do this, in a separate
+             debug tool. Probably better that way.
+        -etc.
 
-5:
-  Move to 64bit (whether or not we're already at D2)
+6:
+  FPS benchmark
 6:
   Save screenshots in a separate thread.
 6:
@@ -535,7 +608,6 @@ Monitor:
     1:need listbox: snapshot of all collisions in a certain frame
     2:need listbox: detailed look on an object, i.e. select object and see all its parameters
 
-
 Optimizations:
 1:
     Allocator alloc/dealloc recording could be done using
@@ -588,7 +660,14 @@ Optimizations:
 
     We could fix that by rolling our own zlib clone, maybe using SSE and/or 
     multithreading.
-
+8:
+    If GLVideoDriver vertex cache is too slow, we could use mapped VBO
+    in the GLVertexBuffer instead of a vector.
+    Alternatively, we could double buffer
+    (draw vbo1, copy to vbo2 at frame 1, draw vbo2, copy to vbo1 at frame 2, repeat),
+    and we could even combine these mapped VBO with double buffering.
+    This could significantly improve performance at high loads where
+    OpenGL can take as much as 40% time stalling buffer data uploads.
 GUI:
 1:
     Progress bars should be simple animation with frame depending
@@ -653,3 +732,10 @@ Maybe:
     -could be a switch for low-memory systems
 22: 
     Try AI and/or file loading in a separate thread
+
+Bugs:
+1:
+    We're not deleting OpenGL vertex buffer names because of what seems to
+    be a driver bug. This still might be a bug in our code. As we only
+    use a few buffers during run time and deallocate them, this is unlikely
+    to cause problems, but should be fixed if possible.

@@ -194,7 +194,7 @@ final class GraphData
                 void data_points_sum(real start, real period)
                 {
                     //ugly, but optimized
-                    uint num_points = data_points_.length;
+                    auto num_points = data_points_.length;
                     real* points_ptr = data_points_.ptr;
 
                     Value* values_ptr = values_.ptr;
@@ -224,7 +224,7 @@ final class GraphData
                 void data_points_average(real start, real period)
                 {
                     //ugly, but optimized
-                    uint num_points = data_points_.length;
+                    auto num_points = data_points_.length;
                     real* points_ptr = data_points_.ptr;
 
                     value_counts_.length = num_points;

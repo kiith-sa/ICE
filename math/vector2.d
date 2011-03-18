@@ -35,7 +35,7 @@ align(1) struct Vector2(T)
     ///Subtraction with a vector.
     Vector2!(T) opSub(Vector2!(T) v){return Vector2!(T)(cast(T)(x - v.x), cast(T)(y - v.y));}
 
-    ///Multiplication with a vector.
+    ///Multiplication with a scalar.
     Vector2!(T) opMul(T m){return Vector2!(T)(cast(T)(x * m), cast(T)(y * m));}
 
     ///Division by a scalar. 

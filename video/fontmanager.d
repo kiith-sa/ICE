@@ -297,6 +297,7 @@ final class FontManager
         bool kerning(){return kerning_;}
 
     private:
+        //might be replaced by serious resource management.
         /**
          * Load font data from a file if it's not loaded yet. 
          *

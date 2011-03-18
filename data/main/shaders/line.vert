@@ -1,9 +1,10 @@
+in vec2 in_position;
+in vec4 in_color;
+
+varying vec4 out_color;
+
 void main (void)
 {
-	//If we would want to use the texture matrix:
-	//gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;
-
-	//gl_TexCoord[0] = gl_MultiTexCoord0;       
-	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
-    gl_FrontColor = gl_Color;
+    out_color = in_color;
+    gl_Position = gl_ModelViewProjectionMatrix * vec4(in_position, 0, 1);
 }

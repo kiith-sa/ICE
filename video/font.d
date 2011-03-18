@@ -199,7 +199,7 @@ package class Font
         {
             foreach(c, glyph; fast_glyphs_)
             {
-                if(glyph !is null){load_glyph(driver, c);}
+                if(glyph !is null){load_glyph(driver, cast(dchar)c);}
             }
             foreach(c, glyph; glyphs_){load_glyph(driver, c);}
         }

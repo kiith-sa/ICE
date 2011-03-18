@@ -27,6 +27,23 @@ import image;
 ///Exception thrown at video driver related errors.
 class VideoDriverException : Exception{this(string msg){super(msg);}} 
 
+/**
+ * Video driver draw modes. 
+ *
+ * Implementations do not need to support all draw modes,
+ * but must support at least one and be able to fall back to
+ * a supported draw mode.
+ */
+enum DrawMode
+{
+    ///Each draw is applied separately.
+    Immediate,
+    ///Draws are merged into buffers stored in RAM and applied together.
+    RAMBuffers,
+    ///Draws are merged into buffers stored in video RAM and applied together.
+    VRAMBuffers
+}
+
 ///Handles all drawing functionality.
 abstract class VideoDriver : Monitorable
 {
@@ -205,6 +222,21 @@ abstract class VideoDriver : Monitorable
          *          color    = Text color.
          */
         void draw_text(Vector2i position, string text, Color color = Color.white);
+
+        /**
+         * Set draw mode.
+         *
+         * Not all implementations support all draw modes. If specified
+         * draw mode is not supported, video driver falls back to a supported
+         * draw mode. Draw mode actually applied is returned.
+         *
+         * Must not be called between calls to start_frame() and end_frame().
+         *
+         * Params:  mode = Draw mode to set.
+         *
+         * Returns: Draw mode that was actually set.
+         */
+        DrawMode draw_mode(DrawMode mode);
         
         /**
          * Get the size a text string would have if it was drawn.

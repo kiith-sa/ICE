@@ -151,8 +151,8 @@ void close_file(File file)
 
     assert(file.write_used_ <= uint.max, "Writing over 4GiB files is not yet supported.");
 
-    int blocks_written = fwrite(file.write_data_.ptr, 
-                                cast(uint)file.write_used_, 1, handle);
+    auto blocks_written = fwrite(file.write_data_.ptr, 
+                                 cast(uint)file.write_used_, 1, handle);
 
     enforceEx!(FileIOException)
               (blocks_written == 1, "Couldn't write to file " ~ file.path_ ~ " Maybe you " ~ 

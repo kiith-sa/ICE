@@ -2317,6 +2317,15 @@ class Pong
             {
                 switch(key)
                 {
+                    case Key.K_1:
+                        video_driver_.draw_mode(DrawMode.Immediate);
+                        break;
+                    case Key.K_2:
+                        video_driver_.draw_mode(DrawMode.RAMBuffers);
+                        break;
+                    case Key.K_3:
+                        video_driver_.draw_mode(DrawMode.VRAMBuffers);
+                        break;
                     case Key.F10:
                         gui_.monitor_toggle();
                         break;

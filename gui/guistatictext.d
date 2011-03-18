@@ -255,8 +255,8 @@ class GUIStaticText : GUIElement
         {
             //if AlignY is Top, we're aligned as lines start at y == 0 by default
             if(lines_.length == 0 || align_y_ == AlignY.Top){return;}
-            uint text_height = font_size_ * lines_.length + line_gap_ * (lines_.length - 1);
-            int offset_y = size.y - text_height;
+            auto text_height = font_size_ * lines_.length + line_gap_ * (lines_.length - 1);
+            auto offset_y = size.y - text_height;
             if(align_y_ == AlignY.Center){offset_y /= 2;}
             //move lines according to the offset
             foreach(ref line; lines_){line.offset.y += offset_y;}

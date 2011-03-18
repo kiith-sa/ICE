@@ -9,6 +9,7 @@ pong-release
 wrapper
 data/main/screenshots/
 cdc
+*.out
 *.o
 *.tbp.dir
 *.ebp.dir

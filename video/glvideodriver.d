@@ -17,6 +17,8 @@ import video.videodriver;
 import video.glshader;
 import video.gltexture;
 import video.gltexturepage;
+import video.glrenderer;
+import video.gldrawmode;
 import video.shader;
 import video.texture;
 import video.fontmanager;
@@ -60,11 +62,6 @@ abstract class GLVideoDriver : VideoDriver
         ///Current view offset in screen space.
         Vector2d view_offset_ = Vector2d(0.0, 0.0);
 
-        ///Is line antialiasing enabled?
-        bool line_aa_ = false;
-        ///Line width in pixels.
-        float line_width_ = 1.0;
-
         ///Shader used to draw lines and rectangles without textures.
         Shader plain_shader_;
         ///Shader used to draw textured surfaces.
@@ -86,6 +83,10 @@ abstract class GLVideoDriver : VideoDriver
         ///Statistics data for monitoring.
         Statistics statistics_;
 
+
+        ///Caches vertices and draws them at the end of frame.
+        GLRenderer renderer_;
+
     package:
         ///Used to send statistics data to GL monitors.
         mixin Signal!(Statistics) send_statistics;
@@ -105,6 +106,8 @@ abstract class GLVideoDriver : VideoDriver
         override void die()
         {
             super.die();
+
+            if(renderer_.initialized){renderer_.die();}
 
             delete_shader(plain_shader_);
             delete_shader(texture_shader_);
@@ -156,97 +159,43 @@ abstract class GLVideoDriver : VideoDriver
 
             //disable current page
             current_page_ = uint.max;
+            //disable current shader
+            current_shader_ = uint.max;
+
+            renderer_.reset();
 
             send_statistics.emit(statistics_);
             statistics_.zero();
         }
 
-        override void end_frame(){glFlush();}
+        override void end_frame()
+        {
+            renderer_.render();
+            glFlush();
+        }
 
         final override void scissor(ref Rectanglei scissor_area)
         {
-            glEnable(GL_SCISSOR_TEST);
-            glScissor(scissor_area.min.x, 
-                      screen_height_ - scissor_area.min.y - scissor_area.height,
-                      scissor_area.width, scissor_area.height);
+            //convert to GL coords (origin on the bottom-left instead of top-left)
+            Rectanglei translated = scissor_area;
+            translated.min.y = screen_height_ - translated.max.y;
+            translated.max.y = translated.min.y + scissor_area.height;
+            renderer_.scissor(translated);
         }
 
-        final override void disable_scissor(){glDisable(GL_SCISSOR_TEST);}
+        final override void disable_scissor(){renderer_.disable_scissor();}
 
         final override void draw_line(Vector2f v1, Vector2f v2, Color c1, Color c2)
         {
             //can't draw zero-sized lines
-            if(v1 == v2){return;}
-            ++statistics_.lines;
-
-            set_shader(plain_shader_);
-            //The line is drawn as a rectangle with width slightly lower than
-            //line_width_ to prevent artifacts.
-            //equivalent to (v2 - v1).normal;
-            Vector2f offset_base = Vector2f(v1.y - v2.y, v2.x - v1.x); 
-            offset_base.normalize();
-            float half_width = line_width_ * 0.5;
-            Vector2f offset = offset_base * half_width;
-
-            //vertices of the rectangle that represents the line.
-            Vector2f r1, r2, r3, r4;
-            r1 = v1 + offset;
-            r2 = v1 - offset;
-            r3 = v2 + offset;
-            r4 = v2 - offset;
-
-            if(line_aa_)
+            //optimized, fast comparison, but not fuzzy
+            //if(v1 != v2)
+            if(*(cast(ulong*)&v1) != *(cast(ulong*)&v2))
             {
-                statistics_.vertices += 8;
+                ++statistics_.lines;
 
-                //If AA is on, add two transparent vertices to the sides of the rectangle.
-                Vector2f offset_aa = offset_base * (half_width + 0.4);
-                Vector2f aa1, aa2, aa3, aa4;
-                aa1 = v1 + offset_aa;
-                aa2 = v1 - offset_aa;
-                aa3 = v2 + offset_aa;
-                aa4 = v2 - offset_aa;
-
-                Color c3 = c1;
-                Color c4 = c2;
-                c3.a = 0;
-                c4.a = 0;
-
-                glBegin(GL_TRIANGLE_STRIP);
-                glColor4ubv(cast(ubyte*)&c3);
-                glVertex2fv(cast(float*)&aa1);
-                glColor4ubv(cast(ubyte*)&c4);
-                glVertex2fv(cast(float*)&aa3);
-
-                glColor4ubv(cast(ubyte*)&c1);
-                glVertex2fv(cast(float*)&r1);
-                glColor4ubv(cast(ubyte*)&c2);
-                glVertex2fv(cast(float*)&r3);
-                glColor4ubv(cast(ubyte*)&c1);
-                glVertex2fv(cast(float*)&r2);
-                glColor4ubv(cast(ubyte*)&c2);
-                glVertex2fv(cast(float*)&r4);
-
-                glColor4ubv(cast(ubyte*)&c3);
-                glVertex2fv(cast(float*)&aa2);
-                glColor4ubv(cast(ubyte*)&c4);
-                glVertex2fv(cast(float*)&aa4);
-                glEnd();
-            }
-            else
-            {
-                statistics_.vertices += 4;
-
-                glBegin(GL_TRIANGLE_STRIP);
-                glColor4ubv(cast(ubyte*)&c1);
-                glVertex2fv(cast(float*)&r1);
-                glColor4ubv(cast(ubyte*)&c2);
-                glVertex2fv(cast(float*)&r3);
-                glColor4ubv(cast(ubyte*)&c1);
-                glVertex2fv(cast(float*)&r2);
-                glColor4ubv(cast(ubyte*)&c2);
-                glVertex2fv(cast(float*)&r4);
-                glEnd();
+                set_shader(plain_shader_);
+                renderer_.draw_line(v1, v2, c1, c2);
             }
         }
 
@@ -257,14 +206,7 @@ abstract class GLVideoDriver : VideoDriver
 
             set_shader(plain_shader_);
 
-            //draw the rectangle
-            glColor4ubv(cast(ubyte*)&color);
-            glBegin(GL_TRIANGLE_STRIP);
-            glVertex2f(min.x, min.y);
-            glVertex2f(min.x, max.y);
-            glVertex2f(max.x, min.y);
-            glVertex2f(max.x, max.y);
-            glEnd();
+            renderer_.draw_rectangle(min, max, color);
         }
 
         final override void draw_texture(Vector2i position, ref Texture texture)
@@ -284,28 +226,13 @@ abstract class GLVideoDriver : VideoDriver
             if(current_page_ != page_index)
             {
                 ++statistics_.page;
-                pages_[page_index].start();
                 current_page_ = page_index;
+                renderer_.set_texture_page(pages_[page_index]);
             }
 
             Vector2f vmin = to!(float)(position);
-            Vector2f vmax = vmin + to!(float)(texture.size);
-
-            Vector2f tmin = gl_texture.texcoords.min;
-            Vector2f tmax = gl_texture.texcoords.max;
-
-            //draw rectangle with the texture
-            glColor4ub(255, 255, 255, 255);
-            glBegin(GL_TRIANGLE_STRIP);
-            glTexCoord2f(tmin.x, tmin.y);
-            glVertex2f(vmin.x, vmin.y);
-            glTexCoord2f(tmin.x, tmax.y);
-            glVertex2f(vmin.x, vmax.y);
-            glTexCoord2f(tmax.x, tmin.y);
-            glVertex2f(vmax.x, vmin.y);
-            glTexCoord2f(tmax.x, tmax.y);
-            glVertex2f(vmax.x, vmax.y);
-            glEnd();
+            renderer_.draw_texture(vmin, vmin + to!(float)(texture.size), 
+                                   gl_texture.texcoords.min, gl_texture.texcoords.max);
         }
         
         final override void draw_text(Vector2i position, string text, Color color)
@@ -356,8 +283,8 @@ abstract class GLVideoDriver : VideoDriver
                     if(current_page_ != page_index)
                     {
                         ++statistics_.page;
-                        pages_[page_index].start();
                         current_page_ = page_index;
+                        renderer_.set_texture_page(pages_[page_index]);
                     }
 
                     //generate vertices, texcoords
@@ -365,20 +292,11 @@ abstract class GLVideoDriver : VideoDriver
                     vmin.y = position.y + offset.y;
                     vmax.x = vmin.x + texture.size.x;
                     vmax.y = vmin.y + texture.size.y;
-                    tmin = gl_texture.texcoords.min;
-                    tmax = gl_texture.texcoords.max;
 
-                    //draw the character
-                    glBegin(GL_TRIANGLE_STRIP);
-                    glTexCoord2f(tmin.x, tmin.y);
-                    glVertex2f(vmin.x, vmin.y);
-                    glTexCoord2f(tmin.x, tmax.y);
-                    glVertex2f(vmin.x, vmax.y);
-                    glTexCoord2f(tmax.x, tmin.y);
-                    glVertex2f(vmax.x, vmin.y);
-                    glTexCoord2f(tmax.x, tmax.y);
-                    glVertex2f(vmax.x, vmax.y);
-                    glEnd();
+                    renderer_.draw_texture(vmin, vmax, 
+                                           gl_texture.texcoords.min, 
+                                           gl_texture.texcoords.max, 
+                                           color);
                 }
             }
             //error loading glyphs
@@ -388,6 +306,25 @@ abstract class GLVideoDriver : VideoDriver
                 writefln(e.msg);
                 return;
             }
+        }
+
+        final override DrawMode draw_mode(DrawMode mode)
+        {
+            switch(mode)
+            {
+                case DrawMode.Immediate:
+                    renderer_.draw_mode(GLDrawMode.Immediate);
+                    break;
+                case DrawMode.RAMBuffers:
+                    renderer_.draw_mode(GLDrawMode.VertexArray);
+                    break;
+                case DrawMode.VRAMBuffers:
+                    renderer_.draw_mode(GLDrawMode.VertexBuffer);
+                    break;
+                default:
+                    assert(false, "Unknown draw mode");
+            }
+            return mode;
         }
         
         final override Vector2u text_size(string text)
@@ -411,12 +348,12 @@ abstract class GLVideoDriver : VideoDriver
             return renderer.text_size(text);
         }
 
-        final override void line_aa(bool aa){line_aa_ = aa;}
+        final override void line_aa(bool aa){renderer_.line_aa = aa;}
         
         final override void line_width(float width)
         {
             assert(width >= 0.0, "Can't set negative line width");
-            line_width_ = width;
+            renderer_.line_width = width;
         }
 
         final override void font(string font_name){font_manager_.font = font_name;}
@@ -483,7 +420,7 @@ abstract class GLVideoDriver : VideoDriver
             Vector2u offset;
 
             //create new GLTexture with specified parameters.
-            void new_texture(uint page_index)
+            void new_texture(size_t page_index)
             {
                 textures_ ~= alloc_struct!(GLTexture)(texcoords, offset, page_index);
             }
@@ -497,7 +434,7 @@ abstract class GLVideoDriver : VideoDriver
                 assert(textures_[$ - 1].texcoords == Rectanglef(0.0, 0.0, 1.0, 1.0), 
                        "Texture coordinates of a single page texture must "
                        "span the whole texture");
-                return Texture(image.size, textures_.length - 1);
+                return Texture(image.size, cast(uint)textures_.length - 1);
             }
 
             //try to find a page to fit the new texture to
@@ -506,7 +443,7 @@ abstract class GLVideoDriver : VideoDriver
                 if(page !is null && page.insert_texture(image, texcoords, offset))
                 {
                     new_texture(index);
-                    return Texture(image.size, textures_.length - 1);
+                    return Texture(image.size, cast(uint)textures_.length - 1);
                 }
             }
             //if we're here, no page has space for our texture, so create
@@ -584,26 +521,17 @@ abstract class GLVideoDriver : VideoDriver
             if(current_page_ != page_index)
             {
                 ++statistics_.page;
-                pages_[page_index].start();
                 current_page_ = page_index;
+                renderer_.set_texture_page(pages_[page_index]);
             }
 
             Vector2f page_size = to!(float)(pages_[current_page_].size);
 
+            //texcoords
             Vector2f tmin = area.min / page_size;
             Vector2f tmax = area.max / page_size;
 
-            glColor4ub(255, 255, 255, 255);
-            glBegin(GL_TRIANGLE_STRIP);
-            glTexCoord2f(tmin.x, tmin.y);
-            glVertex2f(quad.min.x, quad.min.y);
-            glTexCoord2f(tmin.x, tmax.y);
-            glVertex2f(quad.min.x, quad.max.y);
-            glTexCoord2f(tmax.x, tmin.y);
-            glVertex2f(quad.max.x, quad.min.y);
-            glTexCoord2f(tmax.x, tmax.y);
-            glVertex2f(quad.max.x, quad.max.y);
-            glEnd();
+            renderer_.draw_texture(quad.min, quad.max, tmin, tmax);
         }
 
         TexturePage*[] pages(){return pages_;}
@@ -636,6 +564,8 @@ abstract class GLVideoDriver : VideoDriver
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
+            renderer_ = GLRenderer(GLDrawMode.VertexBuffer);
+
             try
             {
                 plain_shader_ = create_shader("line");
@@ -651,6 +581,7 @@ abstract class GLVideoDriver : VideoDriver
             }
         }
 
+
     private:
         //not ready for public interface yet- will take shader spec file in future
         /**
@@ -661,7 +592,7 @@ abstract class GLVideoDriver : VideoDriver
         final Shader create_shader(string name)
         {
             shaders_ ~= alloc_struct!(GLShader)(name);
-            return Shader(shaders_.length - 1);
+            return Shader(cast(uint)shaders_.length - 1);
         }
 
         //not ready for public interface yet
@@ -687,12 +618,11 @@ abstract class GLVideoDriver : VideoDriver
         {
             uint index = shader.index;
 
-            if(current_shader_ != index)
-            {
-                ++statistics_.shader;
-                shaders_[index].start;
-                current_shader_ = index;
-            }
+            if(current_shader_ == index){return;}
+
+            ++statistics_.shader;
+            current_shader_ = index;
+            renderer_.set_shader(shaders_[index]);
         }
 
         /**
@@ -728,7 +658,7 @@ abstract class GLVideoDriver : VideoDriver
 
             Vector2u size = Vector2u(size_min, size_min);
 
-            void page_size(uint index)
+            void page_size(size_t index)
             {
                 index = min(powers_of_two.length - 1, index);
                 //every page has double the page area of the previous one.

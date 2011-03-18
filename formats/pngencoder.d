@@ -122,7 +122,7 @@ struct PNGEncoder
         PNGChunk[] auxiliary_chunks(ref PNGInfo info)
         in
         {
-            uint length = info.background.length;
+            auto length = info.background.length;
             assert(length == 0 || length == 3 || length == 6, 
                    "Unsupported background color format for encoding");
         }
@@ -298,7 +298,7 @@ ubyte[] header(PNGImage image)
 void write_chunk(ref Vector!(ubyte) buffer, ref PNGChunk chunk)
 {
     //chunk header
-    add_uint(buffer, chunk.data.length);
+    add_uint(buffer, cast(uint)chunk.data.length);
     add_uint(buffer, chunk.type);
 
     //chunk data
@@ -318,7 +318,7 @@ void write_chunk(ref Vector!(ubyte) buffer, ref PNGChunk chunk)
 void add_uint(T)(ref T buffer, uint i)
 {
     buffer.length = buffer.length + 4;
-    uint l = buffer.length;
+    auto l = buffer.length;
     buffer[l - 4] = cast(ubyte)(i >> 24);
     buffer[l - 3] = cast(ubyte)(i >> 16);
     buffer[l - 2] = cast(ubyte)(i >> 8);

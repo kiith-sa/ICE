@@ -49,10 +49,10 @@ string[] split(string str, char delimiter)
  */
 string strip(string str)
 {
-    uint left = 0;
+    size_t left = 0;
     while(str[left] == ' '){left++;}
     if(left == str.length){return "";}
-    uint right = str.length - 1;
+    size_t right = str.length - 1;
     while(str[right] == ' '){right--;}
     return str[left .. right + 1];
 }

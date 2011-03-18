@@ -194,10 +194,10 @@ final package class GridMonitor(T) : SubMonitor
                 {
                     for(uint y = 0; y < grid_size_; y++)
                     {
-                        object_counts_[x, y] = monitored_.grid_[x, y].objects.length;
+                        object_counts_[x, y] = cast(uint)monitored_.grid_[x, y].objects.length;
                     }
                 }
-                outer_object_count_ = monitored_.outer_.objects.length;
+                outer_object_count_ = cast(uint)monitored_.outer_.objects.length;
                 update_timer_.reset();
             }
         }

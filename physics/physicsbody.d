@@ -99,9 +99,9 @@ class PhysicsBody
          *          manager   = Spatial manager managing the body.
          */
         void update(real time_step, SpatialManager!(PhysicsBody) manager)
-        in{assert(time_step >= 0.0, "Can't update a physics body with negative time step");}
-        body
         {
+            assert(time_step >= 0.0, "Can't update a physics body with negative time step");
+
             position_ += velocity_ * time_step;
             colliders_.length = 0; 
             //spatial manager does not manage bodies without volumes.

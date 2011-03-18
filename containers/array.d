@@ -100,7 +100,7 @@ void remove(T)(ref T[] array, T element, bool ident = false)
  */
 void remove(T)(ref T[] array, bool delegate(ref T) deleg)
 {
-    foreach_reverse(int index, ref elem; array)
+    foreach_reverse(index, ref elem; array)
     {
         if(deleg(elem))
         {
@@ -192,7 +192,7 @@ unittest
  * Examples:
  * --------------------
  * int[] array = [1, 2, 1, 4, 3];
- * int i = array.find((ref int i){return i >= 3;}); //i is 3 (fourth element).
+ * size_t i = array.find((ref int i){return i >= 3;}); //i is 3 (fourth element).
  * i = array.find((ref int i){return i > 4;});      //i is -1 (no element is greater than 4).
  * --------------------
  */
@@ -200,7 +200,7 @@ int find(T)(ref T[] array, bool delegate(ref T) deleg)
 out(result){assert(result < cast(int)array.length, "Find result out of bounds");}
 body
 {
-    foreach(index, ref element; array){if(deleg(element)){return index;}}
+    foreach(index, ref element; array){if(deleg(element)){return cast(int)index;}}
     return -1;
 }
 ///Unittest for find().

@@ -110,8 +110,6 @@
 module cdc;
 
 
-import std.c.stdarg;
-
 import std.string;
 
 
@@ -139,14 +137,24 @@ int main(string[] args)
     args = args[1 .. $];
     foreach(arg; args)
     {
-        if(arg == "--no-sse"){no_sse = true;}
-        else if(arg == "--help" || arg == "-h"){help(); return 0;}
-        else if(arg[0] == '-'){extra_args ~= arg;}
+        if(arg[0] == '-')
+        {
+            switch(arg)
+            {
+                case "--no-sse": no_sse = true; break;
+                case "--help", "-h": help(); return 0;
+                case "--dmd": compiler = "dmd"; break;
+                case "--gdc": compiler = "gdmd"; break;
+                case "--ldc": compiler = "ldmd"; break;
+                default: extra_args ~= arg;
+            }
+        }
     }
     if(args.length > 0 && args[$ - 1][0] != '-'){build = args[$ - 1];}
 
-    string sse3 = " -version=sse3 -version=sse2 -version=sse1";
-    if(!no_sse){extra_args ~= sse3;}
+    string[] sse3 = ["-version=sse3", "-version=sse2", "-version=sse1"];
+    //sse doesn't work on gdc for some reason
+    if(!no_sse && compiler != "gdmd" && compiler != "gdc"){extra_args ~= sse3;}
     
 
     string[] debug_args = ["-unittest", "-gc", "-ofpong-debug"];
@@ -200,7 +208,7 @@ void help()
         "Changes Copyright (C) 2010-2011 Ferdinand Majerech\n"
         "Based on CDC script Copyright (C) 2009-2010 Eric Poggel\n"
         "Usage: cdc [OPTION ...] [EXTRA COMPILER OPTION ...] [TARGET]\n"
-        "This script uses the compiler it was built with to compile the project.\n"
+        "By default, cdc uses the compiler it was built with to compile the project.\n"
         "\n"
         "Any options starting with '-' not parsed by the script will be\n"
         "passed to the compiler used.\n"
@@ -221,6 +229,11 @@ void help()
         "    --no-sse        Don't use hand-coded SSE optimizations.\n"
         "                    By default, custom SSE code requiring SSE 3 is included.\n"
         "                    This is needed on old X86 or non-X86 platforms.\n"
+        "                    This code does not work on GDC, so it is automatically"
+        "                    disabled there.\n"
+        "    --gdc           Use GDC for compilation.\n"
+        "    --dmd           Use DMD for compilation.\n"
+        "    --ldc           Use LDC for compilation. (not tested)\n"
         ;
     writefln(help);
 }
@@ -240,13 +253,14 @@ import std.format;
 import std.traits;
 import std.c.process;
 import std.c.time : usleep;
+import std.c.stdarg;
 
 
 /// This is always set to the name of the default compiler, which is the compiler used to build cdc.
 version (DigitalMars)
     string compiler = "dmd";
 version (GNU)
-    string compiler = "gdc"; /// ditto
+    string compiler = "gdmd"; /// ditto
 version (LDC)
     string compiler = "ldmd";  /// ditto
 
@@ -276,9 +290,6 @@ int defaultBuild(string[] args)
     foreach (arg; args)
     {    switch (arg)
         {    case "--verbose": verbose = true; break;
-            case "--dmd": compiler = "dmd"; break;
-            case "--gdc": compiler = "gdc"; break;
-            case "--ldc": compiler = "ldc"; break;
             case "-run": run = true; options~="-run";  break;
             default:
                 if (starts_with(arg, "--root"))
@@ -320,9 +331,8 @@ struct CDC
      *     root = Use this folder as the root of all paths, instead of the current folder.  This can be relative or absolute.
      *     verbose = Print each command before it's executed.
      * Returns:
-     *     Array of commands that were executed.
      * TODO: Add a dry run option to just return an array of commands to execute. */
-    static string[] compile(string[] paths, string[] options=null, string[] run_args=null, string root=null)
+    static void compile(string[] paths, string[] options=null, string[] run_args=null, string root=null)
     {    
         // Change to root directory and back again when done.
         string cwd = getcwd();
@@ -368,7 +378,7 @@ struct CDC
             foreach (inout d; ddocs)
                 d = "-fdoc-inc="~d;
         else foreach (inout l; libs)
-            version (GNU) // or should this only be version(!Windows)
+            if(compiler=="gdc")// or should this only be version(!Windows)
                 l = `-L`~l; // TODO: Check in dmd and gdc
 
         // Create modules.ddoc and add it to array of ddoc's
@@ -461,12 +471,12 @@ struct CDC
 
         // Remove extra files
         string basename = co.of[rfind(co.of, "/")+1..$];
-        remove(addExt(basename, "map"));
         if (co.D)
             remove("modules.ddoc");
         if (co.of && !(co.c || co.od))
             foreach (ext; obj_ext)
-                remove(addExt(co.of, ext)); // delete object files with same name as output file that dmd sometimes leaves.
+                try{remove(addExt(co.of, ext));}// delete object files with same name as output file that dmd sometimes leaves.
+                catch(Exception e){continue;}
 
         // If -run is set.
         if (co.run)
@@ -488,7 +498,9 @@ struct CDC
                     remove("compile");
                 execute(compiler~" ", ["@compile"]);
             } else
+            {
                 execute(compiler, arguments);
+            }
         } catch (ProcessException e)
         {    throw new Exception("Compiler failed.");
         }
@@ -598,7 +610,10 @@ struct CDC
             translate["-of"] = "-o ";
             translate["-unittest"] = "-funittest";
             translate["-version"] = "-fversion=";
-            translate["-w"] = "-wall";
+            translate["-version="] = "-fversion=";
+            translate["-wi"] = "-Wextra";
+            translate["-w"] = "-Wall";
+            translate["-gc"] = "-g";
 
             // Perform option translation
             foreach (inout option; result)

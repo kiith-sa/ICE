@@ -17,7 +17,7 @@ import video.shader;
 import file.fileio;
 import util.exception;
 
-
+           
 ///OpenGL (GLSL only right now) shader.
 package struct GLShader
 {
@@ -42,15 +42,28 @@ package struct GLShader
             GLShader shader;
             try{shader.load_GLSL("shaders/" ~ name ~ ".vert", "shaders/" ~ name ~ ".frag");}
             catch(FileIOException e){throw new Exception("Shader could not be read: " ~ e.msg);}
+            catch(ShaderException e){writefln(e.msg); throw e;}
             return shader;
         }
+
+        ///Destroy this shader.
+        void die(){glDeleteProgram(program_);}
 
         ///Use this shader in following drawing commands.
         void start(){glUseProgram(program_);}
         
-        ///Destroy this shader.
-        void die(){glDeleteProgram(program_);}
-        
+        /**
+         * Get a handle to vertex attribute with specified name in the shader.
+         *
+         * Params:  name = Name of the attribute.
+         * 
+         * Returns: Handle to the attribute or -1 if not found in the shader.
+         */
+        GLint get_attribute(string name)
+        {
+            return glGetAttribLocation(program_, toStringz(name));
+        }
+
     private:
         /**
          * Load a GLSL shader.
@@ -74,8 +87,8 @@ package struct GLShader
 
             string vsource = cast(string)vfile.data;
             string fsource = cast(string)ffile.data;
-            int vlength = vsource.length; 
-            int flength = fsource.length; 
+            int vlength = cast(int)vsource.length; 
+            int flength = cast(int)fsource.length; 
             char* vptr = vsource.ptr;
             char* fptr = fsource.ptr;
             

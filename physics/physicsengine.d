@@ -127,7 +127,7 @@ final class PhysicsEngine : Monitorable
             resolve_penetrations();
             collision_response();
 
-            statistics_.contacts = contacts_.length;
+            statistics_.contacts = cast(uint)contacts_.length;
             send_statistics.emit(statistics_);
             statistics_.zero();
 

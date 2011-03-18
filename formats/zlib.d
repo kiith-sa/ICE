@@ -41,16 +41,16 @@ enum CompressionStrategy : ubyte
  */
 ubyte[] zlib_inflate(ubyte[] input, uint reserve = 0)
 {
-    ubyte[] inflated = new ubyte[reserve == 0 ? max(1u, input.length * 4) : reserve];
+    ubyte[] inflated = new ubyte[reserve == 0 ? max(cast(size_t)1, input.length * 4) : reserve];
 
     z_stream stream;
     with(stream)
     {
         data_type = Z_BINARY;
         next_out = inflated.ptr;
-        avail_out = inflated.length;
+        avail_out = cast(uint)inflated.length;
         next_in = input.ptr;
-        avail_in = input.length;
+        avail_in = cast(uint)input.length;
     }
 
     scope(exit){inflateEnd(&stream);}
@@ -71,7 +71,7 @@ ubyte[] zlib_inflate(ubyte[] input, uint reserve = 0)
         {
             inflated.length = inflated.length * 2;
             stream.next_out = &inflated[inflated.length / 2];
-            stream.avail_out = inflated.length / 2;
+            stream.avail_out = cast(uint)inflated.length / 2;
         }
     }
     assert(false, "Unfinished zlib decompression");
@@ -110,8 +110,9 @@ struct Inflator
 
             result.inflated_ = &inflated;
             result.stream_.next_out = inflated.ptr;
-            result.stream_.avail_out = inflated.length;
-            result.stream_.avail_out = inflated.length;
+            //for some reason, this needs to be set twice (review in future)
+            result.stream_.avail_out = cast(uint)inflated.length;
+            result.stream_.avail_out = cast(uint)inflated.length;
             result.stream_.data_type = Z_BINARY;
 
             return result;
@@ -125,7 +126,7 @@ struct Inflator
         void inflate(ubyte[] input)
         {
             stream_.next_in = input.ptr;
-            stream_.avail_in = input.length;
+            stream_.avail_in = cast(uint)input.length;
 
             if(!started_)
             {
@@ -154,7 +155,7 @@ struct Inflator
                 {
                     inflated_.length = inflated_.length * 2;
                     stream_.next_out = inflated_.ptr + inflated_.length / 2;
-                    stream_.avail_out = inflated_.length / 2;
+                    stream_.avail_out = cast(uint)inflated_.length / 2;
                 }
             }
         }
@@ -201,7 +202,10 @@ package:
  *
  * Returns: True if CRC matches, false otherwise.
  */
-bool zlib_check_crc(uint crc, ubyte[] data){return crc == crc32(0, data.ptr, data.length);}
+bool zlib_check_crc(uint crc, ubyte[] data)
+{
+    return crc == crc32(0, data.ptr, cast(uint)data.length);
+}
 
 /**
  * Generate CRC using zlib CRC32 function.
@@ -210,7 +214,7 @@ bool zlib_check_crc(uint crc, ubyte[] data){return crc == crc32(0, data.ptr, dat
  * 
  * Returns: Generated CRC32.
  */
-uint zlib_crc(ubyte[] data){return crc32(0, data.ptr, data.length);}
+uint zlib_crc(ubyte[] data){return crc32(0, data.ptr, cast(uint)data.length);}
 
 private:
 /**
@@ -232,15 +236,15 @@ body
 
     //zlib usually compresses images to less than a fourth and we usually compress images
     //also prevent zero sized buffers in case we're deflating something really small
-    result.length = max(1u, source.length / 4);
+    result.length = max(cast(size_t)1, source.length / 4);
 
     z_stream stream;
     with(stream)
     {
         next_in = source.ptr;
-        avail_in = source.length;
+        avail_in = cast(uint)source.length;
         next_out = result.ptr;
-        avail_out = result.length;
+        avail_out = cast(uint)result.length;
         data_type = Z_BINARY;
     }
 
@@ -252,7 +256,7 @@ body
     {
         result.length = result.length * 2;
         stream.next_out = result.ptr + result.length / 2;
-        stream.avail_out = result.length / 2;
+        stream.avail_out = cast(uint)result.length / 2;
         message = deflate(&stream, Z_FINISH);
     }
 

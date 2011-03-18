@@ -32,7 +32,7 @@ align(1) struct Vector(T)
         ///Manually allocated data storage. More storage than used can be allocated.
         T[] data_;
         ///Used storage (number of items in the vector).
-        uint used_;
+        size_t used_;
 
     public:
         ///Construct an empty vector.
@@ -51,7 +51,7 @@ align(1) struct Vector(T)
         body
         {
             Vector!(T) result;
-            result.data_ = alloc!(T)(max(2u, array.length));
+            result.data_ = alloc!(T)(max(cast(size_t)2, array.length));
             //copy array data
             result.data_[] = array;
             result.used_ = array.length;
@@ -248,9 +248,9 @@ align(1) struct Vector(T)
          */
         void remove(bool delegate(ref T) deleg)
         {
-            for(int i = used_ - 1; i >= 0; i--)
+            for(long i = cast(long)used_ - 1; i >= 0; i--)
             {
-                if(deleg(data_[i])){remove_at_index(i);}
+                if(deleg(data_[cast(size_t)i])){remove_at_index(cast(size_t)i);}
             }
         }
 
@@ -259,11 +259,11 @@ align(1) struct Vector(T)
          *
          * Params:  index = Index to remove at. Must be within bounds.
          */
-        void remove_at_index(uint index)
+        void remove_at_index(size_t index)
         in{assert(index < used_, "Index of element to remove from vector out of bounds");}
         body
         {
-            for(uint i = index + 1; i < used_; i++){data_[i - 1] = data_[i];}
+            for(size_t i = index + 1; i < used_; i++){data_[i - 1] = data_[i];}
             used_--;
         }
 
@@ -287,7 +287,7 @@ align(1) struct Vector(T)
         }
 
         ///Get number of elements in the vector.
-        uint length(){return used_;}
+        size_t length(){return used_;}
 
         /**
          * Change length of the vector.
@@ -298,16 +298,20 @@ align(1) struct Vector(T)
          *
          * Params:  length = length to set.
          */
-        void length(uint length)
+        void length(size_t length)
         {
-            reserve(length);
             used_ = length;
+            //awkward control flow due to optimization. we realloc if elements > data_.length
+            if(length <= data_.length){return;}
+            data_ = realloc(data_, length);
         }
 
         ///Reserve space for at least specified number of elements.
-        void reserve(uint elements)
+        void reserve(size_t elements)
         {
-            if(elements > data_.length){data_ = realloc(data_, elements);}
+            //awkward control flow due to optimization. we realloc if elements > data_.length
+            if(elements <= data_.length){return;}
+            data_ = realloc(data_, elements);
         }
 
         ///Get currently allocated capacity.

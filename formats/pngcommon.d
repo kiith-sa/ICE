@@ -306,7 +306,7 @@ struct PNGChunk
     }
 
     ///Get length of the chunk in bytes.
-    uint length(){return data.length + chunk_min_size;}
+    size_t length(){return data.length + chunk_min_size;}
 }
 
 ///Minimum chunk size, taken up by chunk length, type and crc uints.

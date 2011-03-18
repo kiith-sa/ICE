@@ -198,7 +198,7 @@ final package class PagesMonitor : SubMonitor
         void next()
         {
             //Cycle back to first if we're at the last.
-            if(current_page_ >= driver_.pages.length - 1){current_page_ = 0;}
+            if(current_page_ >= cast(uint)driver_.pages.length - 1){current_page_ = 0;}
             else{++current_page_;}
 
             if(driver_.pages.length == 0){return;}
@@ -216,7 +216,7 @@ final package class PagesMonitor : SubMonitor
         void prev()
         {
             //Cycle back to last if we're at the first.
-            if(current_page_ == 0){current_page_ = driver_.pages.length - 1;}
+            if(current_page_ == 0){current_page_ = cast(uint)driver_.pages.length - 1;}
             else{--current_page_;}
             if(driver_.pages.length == 0){return;}
             //If the page was destroyed, move to previous one.
