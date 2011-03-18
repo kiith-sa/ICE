@@ -84,8 +84,8 @@ package struct GLVertexBuffer(Vertex)
         {
             if(mode_ == GLDrawMode.VertexBuffer)
             {
-                uint vertex_bytes = Vertex.sizeof * vertices_.length;
-                uint index_bytes = uint.sizeof * indices_.length;
+                uint vertex_bytes = cast(uint)(Vertex.sizeof * vertices_.length);
+                uint index_bytes = cast(uint)(uint.sizeof * indices_.length);
 
                 //bind the buffers
                 glBindBuffer(GL_ARRAY_BUFFER, vbo_);
@@ -113,10 +113,10 @@ package struct GLVertexBuffer(Vertex)
         uint[] indices(){return indices_.array;}
 
         ///Get number of vertices in the buffer.
-        size_t vertex_count(){return vertices_.length;}
+        uint vertex_count(){return cast(uint)vertices_.length;}
 
         ///Get number of indices in the buffer.
-        size_t index_count(){return indices_.length;}
+        uint index_count(){return cast(uint)indices_.length;}
 
         ///Set number of vertices in the buffer (to add more vertices).
         void vertex_count(size_t length){vertices_.length = length;}

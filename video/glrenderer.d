@@ -207,8 +207,8 @@ package struct GLRenderer
             Vector2f offset = offset_base * half_width;
 
             //get current vertex, index count in colored buffer
-            auto v = colored_buffer_.vertex_count;
-            auto i = colored_buffer_.index_count;
+            uint v = colored_buffer_.vertex_count;
+            uint i = colored_buffer_.index_count;
             //enlarge colored buffer to fit new vertices, indices
             colored_buffer_.vertex_count = line_aa_ ? v + 8 : v + 4;
             colored_buffer_.index_count =  line_aa_ ? i + 18 : i + 6;

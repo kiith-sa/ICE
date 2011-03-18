@@ -30,6 +30,9 @@ Also optimize immediate mode.
 18:
     main menu could have an ai-ai game playing in the background
 18:
+    For GL profiling, possibly install a separate minimal linux and
+    install NVidia instrumented driver there.
+18:
     Directory structure: needs further changes:
     On Unix/Linux, we need to install the main game files to root but have user
     editable files (screenshots, logs, addons, ini, saves) in home directory.
