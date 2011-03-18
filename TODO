@@ -1,36 +1,5 @@
-Renderer: 
-git diff check, then update monitoring, 
-then commit, only after THAT do optimization. Also optimize immediate mode.
-
-
-
-
-19:
-    VAs/VBOs (interface so we can switch at least between VAs and VBOs)
-
-    Start out with an immediate mode implementation, simply caching stuff.
-    Then VAs, then VBOs.
-
-
-
-    Basically, what we need is:
-    1) GLVertexCache struct (no need for class, and struct is faster)
-    2) GLVertexGroup struct: 
-           Type (lines, tris, etc)
-           GLTexturePage (if applicable, disabled if not)
-           Shader
-           array of vertices (immediate/VAs)
-           + streaming VBO handle(for VBOs) - only if we need it, maybe we'll
-             simply upload VBO once per frame, but we might find a way to
-             keep the VBO and reupload to the same VBO (although, if the array size
-             changes...)
-
-             More likely: when in VBO mode, when caching, keep the old data
-             and check if anything changes. Only if anything changes should
-             we reupload the VBO, otherwise we can use the old one.
-             Monitor could help seeing how many VertexGroups work this way.
-             Probably not much use in Pong, but much better in isometric stuff etc.
-    
+update monitoring, then commit, only after THAT do optimization. 
+Also optimize immediate mode.
 19:
     GLVideoDriver should have a data member specifying if we're between
     start_frame and end_frame, and asserts enforcing that we're not making
@@ -45,24 +14,6 @@ then commit, only after THAT do optimization. Also optimize immediate mode.
     Replace GL_LUMINANCE WITH GL_RED, as the former is deprecated.
     (Use shader to get the correct color)
     
-    Get rid of immediate mode:
-    support VAs and maybe VBOs (not that necessary right now) -
-    use VAs with colors (but support multiple vertex types)
-
-    Line VAs/VBOs will need color per vertex.
-    Texture/Font will not - we can pass it as a param to
-    the shader.
-
-    If slow, instead of Catom like caching of everything in frame to one VBO,
-    first consider caching computed data (such as the VBO) for each
-    draw call. (store using bucket sort based e.g. on drawing position, or a grid)
-    basically, if the same draw call is made in multiple frames,
-    it's VBO and/or other data is computed at the first call, then stored.
-    If a draw call is not made for X frames, (e.g. 8), it's deleted.
-    This might be fast, but might also be very slow, we need to find out.
-    Maybe it'd be good to abstract an interface for drawing lines/etc.
-    within VideoDriver so we could try and switch multiple implementations.
-
     If we cache per frame like in Catom, we have to draw stuff out
     every time zoom/offset changes.
 

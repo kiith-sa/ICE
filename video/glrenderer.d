@@ -59,6 +59,10 @@ package struct GLRenderer
         GLShader* shader_ = null;
         ///Texture page of the current group.
         TexturePage* texture_page_ = null;
+        ///View zoom of the current group.
+        Vector2f view_offset_ = Vector2f(0.0f, 0.0f);
+        ///View offset of the current group.
+        float view_zoom_ = 1.0f;
         
         ///Current line width.
         float line_width_ = 1.0f;
@@ -133,6 +137,26 @@ package struct GLRenderer
             scissor_ = false;
             flush_group_ = true;
         }
+
+        ///Set view zoom for following draw calls.
+        void view_zoom(float zoom)
+        {
+            view_zoom_ = zoom;
+            flush_group_ = true;
+        }
+
+        ///Get view zoom.
+        real view_zoom(){return view_zoom_;}
+
+        ///Set view offset for following draw calls.
+        void view_offset(Vector2f offset)
+        {
+            view_offset_ = offset;
+            flush_group_ = true;
+        }
+
+        ///Get view offset.
+        Vector2f view_offset(){return view_offset_;}
 
         ///Set line width for following draw calls.
         void line_width(real width){line_width_ = width;}
@@ -302,8 +326,13 @@ package struct GLRenderer
             indices[i++] = v + 1; indices[i++] = v + 2; indices[i++] = v + 3;
         }
 
-        ///Render out data specified with previous draw calls.
-        void render()
+        /**
+         * Render out data specified with previous draw calls.
+         *
+         * Params:  screen_width  = Video mode width.
+         *          screen_height = Video mode height.
+         */
+        void render(uint screen_width, uint screen_height)
         {
             //if we have an unfinished group, add it
             if(current_group_.vertices > 0){vertex_groups_ ~= current_group_;}
@@ -322,6 +351,19 @@ package struct GLRenderer
                     glScissor(scissor.min.x, scissor.min.y,
                               scissor.width, scissor.height);
                 }
+
+                //will be replaced by custom matrices
+                glMatrixMode(GL_PROJECTION);
+                glLoadIdentity();
+                glOrtho(0.0f, 
+                        screen_width / group.view_zoom, 
+                        screen_height / group.view_zoom, 
+                        0.0f,
+                        -1.0f, 
+                        1.0f);
+                glMatrixMode(GL_MODELVIEW);
+                glLoadIdentity();
+                glTranslatef(-group.view_offset.x, -group.view_offset.y, 0.0f);
 
                 //enable shader of the group
                 group.shader.start();
@@ -399,6 +441,9 @@ package struct GLRenderer
                 offset = type == GLVertexType.Colored ? cast(uint)colored_buffer_.index_count
                                                       : cast(uint)textured_buffer_.index_count;
                 vertices = 0;
+
+                view_zoom = view_zoom_;
+                view_offset = view_offset_;
 
                 scissor = scissor_ ? cast(uint)scissor_areas_.length - 1 : uint.max;
                 shader = shader_;

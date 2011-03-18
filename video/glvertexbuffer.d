@@ -13,6 +13,7 @@ import video.glvertex;
 import video.gldrawmode;
 import video.gltexturepage;
 import video.glshader;
+import math.vector2;
 import containers.vector;
 
 
@@ -277,9 +278,14 @@ package align(1) struct GLVertexGroup
     ///Shader used to draw the group.
     GLShader* shader;
     ///Texture page of the group if it uses texturing.
-    TexturePage* texture_page = null;
+    TexturePage* texture_page;
     ///Scissor index of the group. uint.max means no scissor is used.
     uint scissor = uint.max;
+
+    ///View zoom. 1.0 is normal, > 1.0 is zoomed in, < 1.0 is zoomed out.
+    float view_zoom = 1.0;
+    ///Current view offset in screen space.
+    Vector2f view_offset;
 
     ///Offset to index buffer used.
     uint offset;

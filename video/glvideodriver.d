@@ -39,6 +39,9 @@ import util.exception;
 
 /**
  * OpenGL (currently a mix of 1.x and 2.x, planning to be purely 2.x) based video driver.
+ *
+ * Most of the actual drawing is done by GLRenderer, GLVideoDriver basically
+ * manages other GL video classes.
  * 
  * Signal:
  *     package mixin Signal!(Statistics) send_statistics
@@ -56,11 +59,6 @@ abstract class GLVideoDriver : VideoDriver
     private:
         ///Derelict OpenGL version.
         GLVersion version_;
-
-        ///View zoom. 1.0 is normal, > 1.0 is zoomed in, < 1.0 is zoomed out.
-        real view_zoom_ = 1.0;
-        ///Current view offset in screen space.
-        Vector2d view_offset_ = Vector2d(0.0, 0.0);
 
         ///Shader used to draw lines and rectangles without textures.
         Shader plain_shader_;
@@ -170,7 +168,7 @@ abstract class GLVideoDriver : VideoDriver
 
         override void end_frame()
         {
-            renderer_.render();
+            renderer_.render(screen_width_, screen_height_);
             glFlush();
         }
 
@@ -360,21 +358,19 @@ abstract class GLVideoDriver : VideoDriver
 
         final override void font_size(uint size){font_manager_.font_size = size;}
         
-        final override void zoom(real zoom)
-        {
-            view_zoom_ = zoom;
-            setup_ortho();
-        }
+        final override void zoom(real zoom){renderer_.view_zoom = cast(float)zoom;}
         
-        final override real zoom(){return view_zoom_;}
+        final override real zoom(){return renderer_.view_zoom;}
 
         final override void view_offset(Vector2d offset)
         {
-            view_offset_ = offset;
-            setup_ortho();
+            renderer_.view_offset = to!(float)(offset);
         }
 
-        final override Vector2d view_offset(){return view_offset_;}
+        final override Vector2d view_offset()
+        {
+            return to!(double)(renderer_.view_offset);
+        }
 
         final override uint screen_width(){return screen_width_;}
 
@@ -689,21 +685,5 @@ abstract class GLVideoDriver : VideoDriver
         }
 
         ///Set up OpenGL viewport.
-        final void setup_viewport()
-        {
-            glViewport(0, 0, screen_width_, screen_height_);
-            setup_ortho();
-        }
-
-        ///Set up orthographic projection.
-        final void setup_ortho()
-        {
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-            glOrtho(0.0f, screen_width_ / view_zoom_, screen_height_ / view_zoom_, 0.0f,
-                    -1.0f, 1.0f);
-            glMatrixMode(GL_MODELVIEW);
-            glLoadIdentity();
-            glTranslatef(-view_offset_.x, -view_offset_.y, 0.0f);
-        }
+        final void setup_viewport(){glViewport(0, 0, screen_width_, screen_height_);}
 }
