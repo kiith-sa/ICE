@@ -63,6 +63,18 @@ package struct GLShader
         {
             return glGetAttribLocation(program_, toStringz(name));
         }
+        
+        /**
+         * Get a handle to uniform variable with specified name in the shader.
+         *
+         * Params:  name = Name of the uniform.
+         * 
+         * Returns: Handle to the uniform or -1 if not found in the shader.
+         */
+        GLint get_uniform(string name)
+        {
+            return glGetUniformLocation(program_, toStringz(name));
+        }
 
     private:
         /**

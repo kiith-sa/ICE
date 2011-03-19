@@ -18,6 +18,7 @@ import video.glshader;
 import video.gltexture;
 import video.gltexturepage;
 import math.vector2;
+import math.matrix4;
 import math.rectangle;
 import containers.vector;
 import color;
@@ -382,22 +383,29 @@ package struct GLRenderer
                     glScissor(scissor.min.x, scissor.min.y,
                               scissor.width, scissor.height);
                 }
-
-                //will be replaced by custom matrices
-                glMatrixMode(GL_PROJECTION);
-                glLoadIdentity();
-                glOrtho(0.0f, 
-                        screen_width / group.view_zoom, 
-                        screen_height / group.view_zoom, 
-                        0.0f,
-                        -1.0f, 
-                        1.0f);
-                glMatrixMode(GL_MODELVIEW);
-                glLoadIdentity();
-                glTranslatef(-group.view_offset.x, -group.view_offset.y, 0.0f);
+                scope(exit)
+                {
+                    if(group.scissor != uint.max){glDisable(GL_SCISSOR_TEST);}
+                }
 
                 //enable shader of the group
                 group.shader.start();
+
+                auto modelview = translation_matrix(-group.view_offset /
+                                                    Vector2f(screen_width, screen_height));
+                auto projection = ortho_matrix(0.0f, screen_width / group.view_zoom,
+                                               screen_height / group.view_zoom, 0.0f,
+                                               -1.0f, 1.0f);
+
+                //model-view-projection
+                auto mvp = group.shader.get_uniform("mvp_matrix");
+                if(mvp < 0)
+                {
+                    writefln("Missing uniform mvp_matrix in shader");
+                    continue;
+                }
+
+                glUniformMatrix4fv(mvp, 1, GL_FALSE, (modelview * projection).ptr);
 
                 //determine which buffer the group belongs to
                 switch(group.vertex_type)
@@ -418,8 +426,6 @@ package struct GLRenderer
                     default:
                         assert(false, "Unknown vertex type");
                 }
-
-                if(group.scissor != uint.max){glDisable(GL_SCISSOR_TEST);}
             }
         }
 

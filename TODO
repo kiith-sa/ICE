@@ -1,8 +1,9 @@
+Custom matrices now work.
+Now we need to clean up, document, add contracts etc, and commit.
+
 20: 
     Move to GL2, GL3 compatible where possible.
     Go through every GL function we use and check for compatibility.
-    
-    Custom matrices (modelview, projection), passed through shaders.
 
     FBO screenshot (separate pass)
 21:
@@ -83,13 +84,6 @@
     in such a way that VideoDriver, not GLVideoDriver, manages pages,
     using GLVideoDriver overriden methods. I.e. algorithms in VideoDriver,
     specific stuff in GLVideoDriver.
-25:
-    Advanced shaders: custom matrix, etc. passing. - see opengl superbible
-    Look at Humus, Mizanin, GL forums, GL3 tutorials, etc.
-    First pass matrices using loadMatrix, after it works, use
-    them as shader parameters.
-    also make sure to see gl3 tutorials for projection matrix
-    and to tes it with various zooms/offsets
 25:
     Stop printing UPS to stdout, maybe move to monitor or get rid of it altogether.
 25:
