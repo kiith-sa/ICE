@@ -1,37 +1,22 @@
-Optimization
-Also optimize immediate mode.
-19:
-    GLVideoDriver should have a data member specifying if we're between
-    start_frame and end_frame, and asserts enforcing that we're not making
-    calls we shouldn't make at that time 
-    (like draw_mode, creating and deleting textures)
-20:
-    FBO screenshot
+MONITOR BROKEN! VIDEO DRIVER RESET CAUSES A CRASH!
+
 20: 
-    Step by step move to GL2, GL3 compatible where possible.
-    Basically, go through every GL function we use and check for compatibility
+    Move to GL2, GL3 compatible where possible.
+    Go through every GL function we use and check for compatibility.
     
     Replace GL_LUMINANCE WITH GL_RED, as the former is deprecated.
     (Use shader to get the correct color)
 
-    Custom matrices.
+    Custom matrices (modelview, projection), passed through shaders.
 
-    Once we use custom matrices with shaders, we might simply
-    store projection matrices with caches and draw all out
-    at the end, but we need to learn that
-
-    If we draw everything at the end of frame, we can add support
-    for drawing to FBO (separate pass) and using that for screenshots.
-
-    use gDebugger to profile OGL performance
+    FBO screenshot (separate pass)
+21:
+    Monitor: vertex group count, average vertices/indices per group
 19:
     Figure out why SSE doesn't work on GDC. Maybe it's different asm conventions,
     or it is because we build 64 bit. Fix it and update cdc.
 18:
     main menu could have an ai-ai game playing in the background
-18:
-    For GL profiling, possibly install a separate minimal linux and
-    install NVidia instrumented driver there.
 18:
     Directory structure: needs further changes:
     On Unix/Linux, we need to install the main game files to root but have user
@@ -114,10 +99,6 @@ Also optimize immediate mode.
     Stop printing UPS to stdout, maybe move to monitor or get rid of it altogether.
 25:
     Logo, and use it as background in docs in a non-intrusive, MiniINI-like way.
-26:
-    Optional(user options) smarter AI that takes note of ray hints from BallSpawner
-    (only if those rays intersect with the goal - ignore if they're intersecting
-     the walls to prevent extra stupidity)
 20:
     Multiple (two, and maybe option to generate) color schemes
     (game, not GUI, colors)
@@ -125,11 +106,11 @@ Also optimize immediate mode.
     Background colors for GUI elements 
     (nothing more, though, for now - just rects with the color)
 23:
-    Profiling:
-    Valgrind, Massif, Callgrind, Cachegrind, Sysprof, CodeAnalyst,
-    manual time measurement - at least get total time and VideoDriver methods' time
-    Don't forget to do this with an optimized build.
-24:
+    Profiling: 
+    Manual time measurement - at least get total time and VideoDriver methods' time,
+    but might want something more fine grained.
+    If slow, move it to separate build. 
+24:                                    
     Options start: player names (also, whether the player is AI or human-
     so we can have AI/AI, AI/human, human/human)
     Character count should be limited to fit to score statictexts.
@@ -137,8 +118,9 @@ Also optimize immediate mode.
 
     Also graphics settings (enable/disable certain particle systems, maybe more)
 
-    Video driver settings too (draw mode, line aa)
+    Screen size change
 
+    Video driver settings too (draw mode, line aa)
 
     After that, keyboard settings for each player
 25:
@@ -160,10 +142,9 @@ Also optimize immediate mode.
     (also the default font?, etc.)
 16:
     Draw cursor
-17:
-    Screen size change (in an Options dialog in menu, not during Game run)
-25:
-    User configurable key bindings - stored in HumanPlayer
+18:
+    For GL profiling, possibly install a separate minimal linux and
+    install NVidia instrumented driver there.
 25:
     Simple logging. (basically just a wrapper around std.stdio
     with a few extra features maybe, but no console or in-game log display yet.
@@ -179,6 +160,10 @@ Also optimize immediate mode.
     clamp width/height to zero or some fixed value and log an error message.
 14:
     AI difficulty settings
+
+    Optional(user options) smarter AI that takes note of ray hints from BallSpawner
+    (only if those rays intersect with the goal - ignore if they're intersecting
+     the walls to prevent extra stupidity)
 1:
     Measurements and graphs of how much time per frame does e.g. line drawing take,
     and display them somehow. Could measure times of non-videodriver code as well.

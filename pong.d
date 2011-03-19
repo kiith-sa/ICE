@@ -2152,6 +2152,8 @@ class Pong
         ///Initialize Pong.
         this()
         {
+            writefln("Initializing Pong");
+
             singleton_ctor();
 
             memory_ = new MemoryMonitorable;
@@ -2194,6 +2196,8 @@ class Pong
         ///Destroy Pong and all subsystems.
         void die()
         {
+            writefln("Destroying Pong");
+
             //game might still be running if we're quitting
             //because the platform stopped to run
             if(game_ !is null)
@@ -2362,7 +2366,7 @@ class Pong
             gui_.monitor.remove_monitorable(video_driver_);
 
             video_driver_container_.destroy();
-            video_driver_ = null;
+            scope(failure){(video_driver_ = null);}
             try
             {
                 video_driver_ = video_driver_container_.produce!(SDLGLVideoDriver)

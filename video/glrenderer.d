@@ -99,6 +99,25 @@ package struct GLRenderer
             scissor_areas_.die();
         }
 
+        ///Reset all frame state. (end the frame)
+        void reset()
+        {
+            colored_buffer_.reset();
+            textured_buffer_.reset();
+
+            texture_page_ = null;
+            shader_ = null;
+            scissor_ = false;
+
+            scissor_areas_.length = 0;
+            vertex_groups_.length = 0;
+
+            current_group_.vertices = 0;
+            flush_group_ = true;
+
+            //we're not resetting zoom, view offset - those keep their values between frames
+        }
+
         ///Get number of vertices used during the frame so far.
         uint vertex_count()
         {
@@ -402,23 +421,6 @@ package struct GLRenderer
 
                 if(group.scissor != uint.max){glDisable(GL_SCISSOR_TEST);}
             }
-        }
-
-        ///Reset all frame state. (end the frame)
-        void reset()
-        {
-            colored_buffer_.reset();
-            textured_buffer_.reset();
-
-            texture_page_ = null;
-            shader_ = null;
-            scissor_ = false;
-
-            scissor_areas_.length = 0;
-            vertex_groups_.length = 0;
-
-            current_group_.vertices = 0;
-            flush_group_ = true;
         }
 
     private:

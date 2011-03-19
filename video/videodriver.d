@@ -79,10 +79,15 @@ abstract class VideoDriver : Monitorable
          */ 
         void set_video_mode(uint width, uint height, ColorFormat format, bool fullscreen);
 
-        ///Start drawing a frame. Must be called before any drawing calls.
+        /**
+         * Start drawing a frame. 
+         *
+         * Frame must not already be in progress. 
+         * Must be called before any draw calls.
+         */
         void start_frame();
 
-        ///Finish drawing a frame.
+        ///Finish drawing a frame. Must be called after start_frame.
         void end_frame();
 
         /**
@@ -91,17 +96,25 @@ abstract class VideoDriver : Monitorable
          * Until the scissor test is disabled, only specified area of the screen
          * will be drawn to. This can be used e.g. for 2D clipping of GUI elements.
          *
+         * Can only be called between start_frame and end_frame.
+         *
          * Params:  scissor_area = Scissor area in screen coordinates.
          */
         void scissor(ref Rectanglei scissor_area);
 
-        ///Disable scissor test.
+        /**
+         * Disable scissor test.
+         *
+         * Can only be called between start_frame and end_frame.
+         */
         void disable_scissor();
 
         /**
          * Draw a line between specified points with specified colors.
          *
          * Colors are interpolated from start to end of the line.
+         *
+         * Can only be called between start_frame and end_frame.
          *
          * Params:  v1 = Start point of the line.
          *          v2 = End point of the line.
@@ -112,6 +125,8 @@ abstract class VideoDriver : Monitorable
 
         /**
          * Draw a line strip through specified points with specified colors.
+         *
+         * Can only be called between start_frame and end_frame.
          *
          * Params:  v = Vertices of the strip.
          *          c = Colors of the vertices.
@@ -130,6 +145,8 @@ abstract class VideoDriver : Monitorable
 
         /**
          * Draw a stroked circle.
+         *
+         * Can only be called between start_frame and end_frame.
          *
          * Params:  center       = Center of the circle.
          *          radius       = Radius of the circle.
@@ -174,6 +191,8 @@ abstract class VideoDriver : Monitorable
         /**
          * Draw a stroked rectangle.
          *
+         * Can only be called between start_frame and end_frame.
+         *
          * Params:  min   = Minimum extents of the rectangle.
          *          max   = Maximum extents of the rectangle.
          *          color = Color of the rectangle stroke.
@@ -200,6 +219,8 @@ abstract class VideoDriver : Monitorable
         /**
          * Draw a filled rectangle.
          *
+         * Can only be called between start_frame and end_frame.
+         *
          * Params:  min   = Minimum extents of the rectangle.
          *          max   = Maximum extents of the rectangle.
          *          color = Color of the rectangle.
@@ -209,6 +230,8 @@ abstract class VideoDriver : Monitorable
         /**
          * Draw a texture.
          *
+         * Can only be called between start_frame and end_frame.
+         *
          * Params:  position = Position of the upper-left corner of the texture.
          *          texture  = Texture to draw.
          */
@@ -216,6 +239,8 @@ abstract class VideoDriver : Monitorable
         
         /**
          * Draw a text string.
+         *
+         * Can only be called between start_frame and end_frame.
          *
          * Params:  position = Position to draw the text at.
          *          text     = Text to draw.
@@ -230,7 +255,7 @@ abstract class VideoDriver : Monitorable
          * draw mode is not supported, video driver falls back to a supported
          * draw mode. Draw mode actually applied is returned.
          *
-         * Must not be called between calls to start_frame() and end_frame().
+         * Must not be called between calls to start_frame and end_frame.
          *
          * Params:  mode = Draw mode to set.
          *
@@ -298,10 +323,19 @@ abstract class VideoDriver : Monitorable
          */
         Texture create_texture(ref Image image, bool force_page = false);
 
-        ///Delete a texture.
+        /**
+         * Delete a texture.
+         *
+         * If deleted during a frame, this texture must not be used in drawing in that
+         * frame.
+         */
         void delete_texture(Texture texture);
 
-        ///Capture a screenshot. Can't be called during an update.
+        /**
+         * Capture a screenshot. Can't be called during an update.
+         *
+         * Must not be called between calls to start_frame and end_frame.
+         */
         Image screenshot();
 
         override MonitorMenu monitor_menu()

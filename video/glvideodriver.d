@@ -81,8 +81,11 @@ abstract class GLVideoDriver : VideoDriver
         ///Statistics data for monitoring.
         Statistics statistics_;
 
-        ///Caches vertices and draws them at the end of frame.
+        ///Caches vertices and renders them at the end of frame.
         GLRenderer renderer_;
+
+        ///Are we between start_frame and end_frame?
+        bool frame_in_progress_;
 
     package:
         ///Used to send statistics data to GL monitors.
@@ -151,6 +154,9 @@ abstract class GLVideoDriver : VideoDriver
 
         override void start_frame()
         {
+            assert(!frame_in_progress_, 
+                   "GLVideoDriver.start_frame called, but a frame is already in progress");
+
             glClear(GL_COLOR_BUFFER_BIT);
             setup_viewport();
 
@@ -161,10 +167,17 @@ abstract class GLVideoDriver : VideoDriver
 
             send_statistics.emit(statistics_);
             statistics_.zero();
+
+            frame_in_progress_ = true;
         }
 
         override void end_frame()
         {
+            assert(frame_in_progress_, 
+                   "GLVideoDriver.end_frame called, but no frame has been started");
+
+            frame_in_progress_ = false;
+
             renderer_.render(screen_width_, screen_height_);
             statistics_.vertices = renderer_.vertex_count();
             statistics_.indices = renderer_.index_count();
@@ -174,6 +187,8 @@ abstract class GLVideoDriver : VideoDriver
 
         final override void scissor(ref Rectanglei scissor_area)
         {
+            assert(frame_in_progress_, "GLVideoDriver.scissor called outside a frame");
+
             //convert to GL coords (origin on the bottom-left instead of top-left)
             Rectanglei translated = scissor_area;
             translated.min.y = screen_height_ - translated.max.y;
@@ -181,10 +196,17 @@ abstract class GLVideoDriver : VideoDriver
             renderer_.scissor(translated);
         }
 
-        final override void disable_scissor(){renderer_.disable_scissor();}
+        final override void disable_scissor()
+        {
+            assert(frame_in_progress_, "GLVideoDriver.disable_scissor called outside a frame");
+
+            renderer_.disable_scissor();
+        }
 
         final override void draw_line(Vector2f v1, Vector2f v2, Color c1, Color c2)
         {
+            assert(frame_in_progress_, "GLVideoDriver.draw_line called outside a frame");
+
             //can't draw zero-sized lines
             //optimized, fast comparison, but not fuzzy
             //if(v1 != v2)
@@ -199,7 +221,10 @@ abstract class GLVideoDriver : VideoDriver
 
         final override void draw_filled_rectangle(Vector2f min, Vector2f max, Color color)
         {
-            statistics_.rectangles += 1;
+            assert(frame_in_progress_, 
+                   "GLVideoDriver.draw_filled_rectangle called outside a frame");
+
+            statistics_.rectangles ++;
 
             set_shader(plain_shader_);
 
@@ -208,6 +233,7 @@ abstract class GLVideoDriver : VideoDriver
 
         final override void draw_texture(Vector2i position, ref Texture texture)
         {
+            assert(frame_in_progress_, "GLVideoDriver.draw_texture called outside a frame");
             assert(texture.index < textures_.length, "Texture index out of bounds");
 
             ++statistics_.textures;
@@ -233,6 +259,8 @@ abstract class GLVideoDriver : VideoDriver
         
         final override void draw_text(Vector2i position, string text, Color color)
         {
+            assert(frame_in_progress_, "GLVideoDriver.draw_text called outside a frame");
+
             ++statistics_.texts;
 
             //font textures are grayscale and use a shader
@@ -245,21 +273,13 @@ abstract class GLVideoDriver : VideoDriver
             //offset of the current character relative to position
             Vector2u offset;
 
-            Texture* texture;
-            GLTexture* gl_texture;
-            uint page_index;
-
             //vertices and texcoords for current character
             Vector2f vmin;
             Vector2f vmax;
-            Vector2f tmin;
-            Vector2f tmax;
 
             //make up for the fact that fonts are drawn from lower left corner
             //instead of upper left
             position.y += renderer.height;
-
-            glColor4ub(color.r, color.g, color.b, color.a);
 
             try
             {
@@ -269,10 +289,10 @@ abstract class GLVideoDriver : VideoDriver
                     ++statistics_.characters;
 
                     if(!renderer.has_glyph(c)){renderer.load_glyph(this, c);}
-                    texture = renderer.glyph(c, offset);
+                    auto texture = renderer.glyph(c, offset);
 
-                    gl_texture = textures_[texture.index];
-                    page_index = gl_texture.page_index;
+                    auto gl_texture = textures_[texture.index];
+                    auto page_index = gl_texture.page_index;
 
                     //change texture page if needed
                     if(current_page_ != page_index)
@@ -305,6 +325,8 @@ abstract class GLVideoDriver : VideoDriver
 
         final override DrawMode draw_mode(DrawMode mode)
         {
+            assert(!frame_in_progress_, "GLVideoDriver.draw_mode called during a frame");
+
             switch(mode)
             {
                 case DrawMode.Immediate:
@@ -481,6 +503,8 @@ abstract class GLVideoDriver : VideoDriver
 
         final override Image screenshot()
         {
+            assert(!frame_in_progress_, "GLVideoDriver.screenshot called during a frame");
+
             ColorFormat format = ColorFormat.RGB_8;
 
             Image image = new Image(screen_width_, screen_height_, format);
@@ -590,8 +614,7 @@ abstract class GLVideoDriver : VideoDriver
         ///Delete a shader.
         final void delete_shader(Shader shader)
         {
-            GLShader* gl_shader = shaders_[shader.index];
-            assert(gl_shader !is null, "Trying to delete a nonexistent shader");
+            assert(shaders_[shader.index] !is null, "Trying to delete a nonexistent shader");
             free(shaders_[shader.index]);
             shaders_[shader.index] = null;
 
