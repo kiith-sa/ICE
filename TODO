@@ -1,12 +1,7 @@
-MONITOR BROKEN! VIDEO DRIVER RESET CAUSES A CRASH!
-
 20: 
     Move to GL2, GL3 compatible where possible.
     Go through every GL function we use and check for compatibility.
     
-    Replace GL_LUMINANCE WITH GL_RED, as the former is deprecated.
-    (Use shader to get the correct color)
-
     Custom matrices (modelview, projection), passed through shaders.
 
     FBO screenshot (separate pass)

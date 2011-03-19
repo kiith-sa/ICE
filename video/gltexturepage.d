@@ -46,8 +46,8 @@ package void gl_color_format(ColorFormat format, out GLenum gl_format,
             type = GL_UNSIGNED_INT_8_8_8_8;
             break;
         case ColorFormat.GRAY_8:
-            internal_format = GL_LUMINANCE8;
-            gl_format = GL_LUMINANCE;
+            internal_format = GL_RED;
+            gl_format = GL_RED;
             type = GL_UNSIGNED_BYTE;
             break;
         default:
