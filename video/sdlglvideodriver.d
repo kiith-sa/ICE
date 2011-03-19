@@ -31,9 +31,9 @@ final class SDLGLVideoDriver : GLVideoDriver
 
         override void set_video_mode(uint width, uint height, ColorFormat format, bool fullscreen)
         {
-            assert(width > 160 && width < 65536, 
+            assert(width >= 80 && width <= 65536, 
                    "Can't set video mode with such ridiculous width");
-            assert(height > 120 && width < 49152, 
+            assert(height >= 60 && width <= 49152, 
                    "Can't set video mode with such ridiculous height");
 
             //determine bit depths of color channels.

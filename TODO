@@ -1,11 +1,13 @@
-Custom matrices now work.
-Now we need to clean up, document, add contracts etc, and commit.
-
 20: 
     Move to GL2, GL3 compatible where possible.
     Go through every GL function we use and check for compatibility.
 
+    Specifically check functions used with texture pages (texsubimage, etc),
+    as well as subdata
+
     FBO screenshot (separate pass)
+21:
+    In code with exceptions, use writefln with scope(failure) to write error related info
 21:
     Monitor: vertex group count, average vertices/indices per group
 19:
@@ -99,6 +101,11 @@ Now we need to clean up, document, add contracts etc, and commit.
     Manual time measurement - at least get total time and VideoDriver methods' time,
     but might want something more fine grained.
     If slow, move it to separate build. 
+
+    Special build version for OpenGL benchmarking with GLFinish between frames
+    or maybe even between parts of frames. Also a benchmark option
+    to decrease viewport size to something like 4 * 3, eliminating fragment
+    processing.
 24:                                    
     Options start: player names (also, whether the player is AI or human-
     so we can have AI/AI, AI/human, human/human)
@@ -148,6 +155,8 @@ Now we need to clean up, document, add contracts etc, and commit.
     Also, if GUI element width/height is negative, don't throw, just
     clamp width/height to zero or some fixed value and log an error message.
 14:
+    Adjust graphics and GUI for various resolutions - particularly 640*480
+14:
     AI difficulty settings
 
     Optional(user options) smarter AI that takes note of ray hints from BallSpawner
@@ -184,6 +193,14 @@ Now we need to clean up, document, add contracts etc, and commit.
 17:
     Write developer docs with stuff like how to get started hacking
     the engine, see Wesnoth, OGRE, other projects that do this well.
+4:
+    Get the thing to compile on Windows (if it doesn't work already).
+
+    Probably use Cygwin, it might be easier that way.
+
+    If SDL is a problem, create SFML Platform implementation.
+    Platform implementations to compile should be specified at compile time
+    to prevent requiring all dependencies.
 
 --AFTER PONG    
 4:
@@ -256,6 +273,8 @@ it will remain memory resident for the entire l
              debug tool. Probably better that way.
         -etc.
 
+7:
+    Unary - for math expressions so we can avoid currently used hack in substitute()
 7:
     Shaders should be available to the user, passed to draw functions 
     (with defaults) - this might require a shader spec format 
@@ -333,9 +352,6 @@ it will remain memory resident for the entire l
     also a graph showing each allocation as a box
     with size depending on size of allocated memory (advanced, but could help)
 4:
-    Get the thing to compile on Windows (if it doesn't work already)
-    - will need windows specific high-resolution clock
-4:
     Particle system overhaul. Every particle should have its own color,
     etc; and whole thing should have a better structure.
     Also, LineTrail might not need to be derived from LineEmitter
@@ -359,12 +375,6 @@ it will remain memory resident for the entire l
 10:
     Test mod directories with a simple Pong "mod" that replaces shaders
     and/or fonts (say, with negative or black/white colors or something)
-6:
-    Consider mipmapping using 
-    glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE)
-    -automatically regenerates mipmaps at SubImage calls
-    - maximum mipmap level might be preferrable to not mess up very distant zooms,
-    e.g. texparameter GL_TEXTURE_MAX_LEVEL (at 2, 3 or 4)
 8:
     timer calling a given function at expiration,
     and some kind of singleton or module to update these timers to

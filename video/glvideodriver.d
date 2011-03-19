@@ -87,6 +87,9 @@ abstract class GLVideoDriver : VideoDriver
         ///Are we between start_frame and end_frame?
         bool frame_in_progress_;
 
+        ///Has GL been initialized (through init_gl) ?
+        bool gl_initialized_;
+
     package:
         ///Used to send statistics data to GL monitors.
         mixin Signal!(Statistics) send_statistics;
@@ -107,11 +110,14 @@ abstract class GLVideoDriver : VideoDriver
         {
             super.die();
 
-            if(renderer_.initialized){renderer_.die();}
+            if(gl_initialized_)
+            {
+                renderer_.die();
 
-            delete_shader(plain_shader_);
-            delete_shader(texture_shader_);
-            delete_shader(font_shader_);
+                delete_shader(plain_shader_);
+                delete_shader(texture_shader_);
+                delete_shader(font_shader_);
+            }
 
             //delete any remaining texture pages
             foreach(ref page; pages_)
@@ -149,7 +155,7 @@ abstract class GLVideoDriver : VideoDriver
 
             send_statistics.disconnect_all();
 
-            DerelictGL.unload();
+            if(gl_initialized_){DerelictGL.unload();}
         }
 
         override void start_frame()
@@ -575,7 +581,6 @@ abstract class GLVideoDriver : VideoDriver
             glEnable(GL_CULL_FACE);
             glCullFace(GL_BACK);
             glEnable(GL_BLEND);
-            glEnable(GL_TEXTURE_2D);
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -594,6 +599,8 @@ abstract class GLVideoDriver : VideoDriver
             {
                 throw new VideoDriverException("Could not load default shaders: " ~ e.msg);
             }
+
+            gl_initialized_ = true;
         }
 
 

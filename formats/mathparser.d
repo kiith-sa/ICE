@@ -9,6 +9,7 @@ module formats.mathparser;
 
 import std.string;
 import std.conv;
+import std.stdio;
 
 import containers.array;
 import util.exception;
@@ -37,8 +38,11 @@ T parse_math(T)(string expression, T[string] substitutions = null)
 {
     enforceEx!(MathParserException)(expression.length > 0, 
                                     "Can't parse an empty string as a math expression");
-    if(substitutions !is null){expression = substitute(expression, substitutions);}
-    return parse_postfix!(T)(to_postfix(expression));
+
+    scope(failure){writefln("Parsing math expression failed: " ~ expression);}
+    string substituted = expression;
+    if(substitutions !is null){substituted = substitute(expression, substitutions);}
+    return parse_postfix!(T)(to_postfix(substituted));
 }
 ///Unittest for parse_math
 unittest
@@ -86,7 +90,12 @@ private:
     string substitute(T)(string input, T[string] substitutions)
     {
         alias std.string.toString to_string;
-        foreach(from, to; substitutions){input = replace(input, from, to_string(to));}
+        foreach(from, to; substitutions)
+        {
+            string replacement = to >= cast(T)0 ? to_string(to) 
+                                                : "(0 " ~ to_string(to) ~ ")";
+            input = replace(input, from, replacement);
+        }
         return input;
     }
 
@@ -203,6 +212,8 @@ private:
      */
     T parse_postfix(T)(string postfix)
     {
+        scope(failure){writefln("Parsing postfix notation failed: " ~ postfix);}
+
         T[] stack;
         string[] tokens = split(postfix);
 

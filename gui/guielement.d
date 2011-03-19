@@ -288,6 +288,9 @@ class GUIElement
                 writefln("Falling back to fixed dimensions: 64x64");
             }
 
+            scope(failure){writefln("GUI dimension expression parsing failed: width: " 
+                                    ~ width_string_ ~ ", height: " ~ height_string_);}
+
             try
             {
                 bounds_.min = Vector2i(parse_math(x_string_, substitutions), 
