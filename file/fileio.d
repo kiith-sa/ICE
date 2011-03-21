@@ -185,7 +185,7 @@ void ensure_directory(string name)
     }
     catch(FileException e)
     {
-        throw new FileIOException("Directory could not be created: " ~ e.msg);
+        throw new FileIOException("Could not create directory: " ~ e.msg);
     }
 }
 
@@ -235,7 +235,7 @@ static this()
  *
  * Throws:  FileIOException on failure.
  */
-string get_path(string file_name/*, out bool file_exists*/)
+string get_path(string file_name)
 {
     string[] parts = file_name.split("::");
     string path;

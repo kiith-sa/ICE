@@ -27,7 +27,11 @@ final class SDLGLVideoDriver : GLVideoDriver
          *
          * Params:  font_manager = Font manager to use for font rendering and management.
          */
-        this(FontManager font_manager){super(font_manager);}
+        this(FontManager font_manager)
+        {
+            writefln("Initializing SDLGLVideoDriver");
+            super(font_manager);
+        }
 
         override void set_video_mode(uint width, uint height, ColorFormat format, bool fullscreen)
         {

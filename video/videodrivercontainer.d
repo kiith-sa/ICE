@@ -7,6 +7,8 @@
 module video.videodrivercontainer;
 
 
+import std.stdio;
+
 import video.videodriver;
 import video.sdlglvideodriver;
 import video.fontmanager;
@@ -58,6 +60,7 @@ class VideoDriverContainer
             {
                 video_driver_.die();
                 video_driver_ = null;
+                writefln("VideoDriver initialization failed");
             }
             video_driver_.set_video_mode(width, height, format, fullscreen);
 

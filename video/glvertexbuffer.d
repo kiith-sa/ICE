@@ -90,15 +90,9 @@ package struct GLVertexBuffer(Vertex)
                 //bind the buffers
                 glBindBuffer(GL_ARRAY_BUFFER, vbo_);
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_);
-                //orphan the buffers (optimization)
-                //this allows GL to allocate a new buffer without touhing previous
-                //buffer contents, avoiding a stall to finish draw calls before
-                //buffer data change.
-                glBufferData(GL_ARRAY_BUFFER, vertex_bytes, null, GL_STREAM_DRAW);
-                glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_bytes, null, GL_STREAM_DRAW);
-                //copy data to the buffers
-                glBufferSubData(GL_ARRAY_BUFFER, 0, vertex_bytes, vertices_.ptr);
-                glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, index_bytes, indices_.ptr);
+                //upload data to the buffers
+                glBufferData(GL_ARRAY_BUFFER, vertex_bytes, vertices_.ptr, GL_STREAM_DRAW);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_bytes, indices_.ptr, GL_STREAM_DRAW);
 
                 //unbind the buffers
                 glBindBuffer(GL_ARRAY_BUFFER, 0);

@@ -85,6 +85,8 @@ package class Font
         this(FT_Library freetype_lib, ref Vector!(ubyte) font_data, string name, 
              uint size, uint fast_glyphs, bool antialiasing)
         {
+            scope(failure){writefln("Could not load font " ~ name);}
+
             fast_glyphs_ = new Glyph*[fast_glyphs];
             fast_glyph_count_ = fast_glyphs;
 
@@ -394,7 +396,7 @@ package class Font
                 try{glyph.texture = driver.create_texture(image);}
                 catch(TextureException e)
                 {
-                    writefln("Could not create glyph texture");
+                    writefln("Could not create glyph texture, falling back to default");
                     return get_default_glyph(driver);
                 }
 

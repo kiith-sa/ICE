@@ -39,9 +39,14 @@ package struct GLShader
          */
         static GLShader opCall(string name)
         {
+            scope(failure){writefln("Shader initialization failed: " ~ name);}
+
             GLShader shader;
             try{shader.load_GLSL("shaders/" ~ name ~ ".vert", "shaders/" ~ name ~ ".frag");}
-            catch(FileIOException e){throw new Exception("Shader could not be read: " ~ e.msg);}
+            catch(FileIOException e)
+            {
+                throw new ShaderException("Shader could not be read: " ~ e.msg);
+            }
             catch(ShaderException e){writefln(e.msg); throw e;}
             return shader;
         }

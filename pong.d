@@ -2374,7 +2374,7 @@ class Pong
             }
             catch(VideoDriverException e)
             {
-                writefln("Video driver initialization failed:", e.msg);
+                writefln("Video driver reset failed:", e.msg);
                 exit();
                 return;
             }

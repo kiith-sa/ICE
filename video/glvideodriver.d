@@ -267,6 +267,7 @@ abstract class GLVideoDriver : VideoDriver
         final override void draw_text(Vector2i position, string text, Color color)
         {
             assert(frame_in_progress_, "GLVideoDriver.draw_text called outside a frame");
+            scope(failure){writefln("Error drawing text: " ~ text);}
 
             ++statistics_.texts;
 
@@ -324,7 +325,6 @@ abstract class GLVideoDriver : VideoDriver
             //error loading glyphs
             catch(TextureException e)
             {
-                writefln("Error drawing text: " ~ text);
                 writefln(e.msg);
                 return;
             }
@@ -353,6 +353,8 @@ abstract class GLVideoDriver : VideoDriver
         
         final override Vector2u text_size(string text)
         {
+            scope(failure){writefln("Error measuring text size: " ~ text);}
+
             auto renderer = font_manager_.renderer();
             try
             {
@@ -365,7 +367,6 @@ abstract class GLVideoDriver : VideoDriver
             //error loading glyphs
             catch(TextureException e)
             {
-                writefln("Error measuring text size: " ~ text);
                 writefln(e.msg);
                 return Vector2u(0,0);
             }
@@ -610,6 +611,8 @@ abstract class GLVideoDriver : VideoDriver
          */
         final void init_gl()
         {
+            scope(failure){writefln("OpenGL initialization failed");}
+
             try
             {
                 //Loads the newest available OpenGL version

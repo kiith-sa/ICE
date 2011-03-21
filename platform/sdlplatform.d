@@ -8,6 +8,7 @@ module platform.sdlplatform;
 
 
 import std.string;
+import std.stdio;
 
 import derelict.sdl.sdl;
 
@@ -29,6 +30,9 @@ class SDLPlatform : Platform
          */
         this()
         {
+            writefln("Initializing SDLPlatform");
+            scope(failure){writefln("SDLPlatform initialization failed");}
+
             super();
             DerelictSDL.load();
             if(SDL_Init(SDL_INIT_VIDEO) < 0)

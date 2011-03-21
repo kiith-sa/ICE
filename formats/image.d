@@ -48,6 +48,8 @@ enum ImageFileFormat
 void write_image(Image image, string file_name, 
                  ImageFileFormat file_format = ImageFileFormat.Auto)
 {
+    scope(failure){writefln("Image writing failed: " ~ file_name);}
+
     if(file_format == ImageFileFormat.Auto){file_format = detect_image_format(file_name);}
     try
     {
@@ -80,6 +82,8 @@ void write_image(Image image, string file_name,
  */
 Image read_image(string file_name, ImageFileFormat file_format = ImageFileFormat.Auto)
 {
+    scope(failure){writefln("Image reading failed: " ~ file_name);}
+
     if(file_format == ImageFileFormat.Auto){file_format = detect_image_format(file_name);}
 
     try

@@ -1,31 +1,21 @@
-20: 
-   FBO WORKS NOW, JUST POLISH, DOCUMENT, ETC
-
-    NOTE: SCREENSHOT CAN NOW THROW EXCEPTION, DOCUMENT THAT
-
-21:
-    In code with exceptions, use writefln with scope(failure) to write error related info
-19:
-    Figure out why SSE doesn't work on GDC. Maybe it's different asm conventions,
-    or it is because we build 64 bit. Fix it and update cdc.
 18:
-    main menu could have an ai-ai game playing in the background
-18:
-    Directory structure: needs further changes:
-    On Unix/Linux, we need to install the main game files to root but have user
+    Directory structure needs changes:
+    On Unix/Linux, we must install the main game files to /usr but have user
     editable files (screenshots, logs, addons, ini, saves) in home directory.
     And the binary needs to be in /usr/bin.
     So work on that. (look at wesnoth)
     Probably one directory in /usr/local or something, and one in /home/xxx .
-    Get it to work and create an installation script that will install it
-    that way so we can test it.
+    Get it to work and create an installation script (part of CDC?)
+    that will install it that way so we can test it.
 
     In normal case, both directories are set to the same directory.
 
     A launcher script/program(D is easy) can provide these directories through
     command line args, while by default, both are set to the current directory. 
 
-    So when we install, we also install the launcher, which is what the user
+    CDC should build both this launcher and the game.
+
+    When we install, we also install the launcher, which is what the user
     launches. When we just copy the directory Nexuiz style, we don't need the 
     launcher.
 
@@ -34,6 +24,31 @@
     when changing the gui, (e.g. moving from menu to pong, or between dialogs), 
     draw an animation with gui leaving the screen                    
     to the left. we can do this with a guioffset member in gui root
+    or, better, by using a separate GUI element (under root) as root for all
+    game GUI. That way Monitor wouldn't be affected.
+
+    Concept: 
+    User clicks Credits.
+    Credits screen is created, left of the viewport, menu is not hidden yet.
+    GUI moves left, moving main menu out of the view.
+    mein menu is hidden.
+    When user clicks the close button in credits screen, opposite happens.
+
+    Alternatively, all the GUI elements could always be there, with
+    the GUI simply moving from one to the next, i.e. no hiding.
+
+    We need some class to manage this effect, that class being the GUI element
+    used as root of the game GUI.
+
+    We would simply use some method to add() GUI elements to this class
+    that would be managed this way, and implementation of this class
+    would decide on the effect to change them (e.g. a basic effect would be
+    to have all the "screens" in a horizontal row, with always only one per screen.
+    Alternative implementation could pack them tightly together, so the current
+    "screen" is centered but you can see adjacent ones. Another alternative 
+    implementatio could be some zooming effects, and so on, and so on.)
+    
+18:
     Weak singleton class handling time, updating actormanager and perhaps other
     stuff. Pass this class when updating actors, instead of time_step, game_time.
     This class will also allow timed delegates,
@@ -72,6 +87,11 @@
     FPS graph
 21:
     Monitor: vertex group count, average vertices/indices per group
+19:
+    Figure out why SSE doesn't work on GDC. Maybe it's different asm conventions,
+    or it is because we build 64 bit. Fix it and update cdc.
+18:
+    main menu could have an ai-ai game playing in the background
 14:
     Look for D files in main directory that can be put into packages.
 20:
@@ -87,19 +107,17 @@
     Stop printing UPS to stdout, maybe move to monitor or get rid of it altogether.
 25:
     Logo, and use it as background in docs in a non-intrusive, MiniINI-like way.
-20:
-    Multiple (two, and maybe option to generate) color schemes
-    (game, not GUI, colors)
 25: 
-    Background colors for GUI elements 
-    (nothing more, though, for now - just rects with the color)
+    Background colors for GUI elements (nothing more, for now - just rects with color)
 23:
     Profiling: 
     Manual time measurement - at least get total time and VideoDriver methods' time,
     but might want something more fine grained.
     If slow, move it to separate build. 
 
-    Special build version for OpenGL benchmarking with GLFinish between frames
+    Also, we could view this stuff in graph monitors.
+
+    Special build for OpenGL benchmarking with GLFinish between frames
     or maybe even between parts of frames. Also a benchmark option
     to decrease viewport size to something like 4 * 3, eliminating fragment
     processing.
@@ -133,11 +151,10 @@
 
     FontManager settings like FontAA and FastGlyphs should be set through INI
     (also the default font?, etc.)
+
+    Alternatively, use YAML (or even WML?) from start.
 16:
     Draw cursor
-18:
-    For GL profiling, possibly install a separate minimal linux and
-    install NVidia instrumented driver there.
 25:
     Simple logging. (basically just a wrapper around std.stdio
     with a few extra features maybe, but no console or in-game log display yet.
@@ -159,18 +176,20 @@
     Optional(user options) smarter AI that takes note of ray hints from BallSpawner
     (only if those rays intersect with the goal - ignore if they're intersecting
      the walls to prevent extra stupidity)
-1:
-    Measurements and graphs of how much time per frame does e.g. line drawing take,
-    and display them somehow. Could measure times of non-videodriver code as well.
 16:
     Ensure everything is polished, create README and such and push, for the first time,
     to gitorious or github. Not necessarily announcing it.
 
     Then: simple binary archive, both 32-bit and 64-bit if possible.
+    At least Linux, but also Windows if possible. Maybe even Mac if we can find
+    someone with one.
     And detailed installation instructions both from source and binary archive
     on wiki (maybe a script to do the installation).
 
     Then: announce.
+20:
+    Multiple (two, and maybe option to generate) color schemes
+    (game, not GUI, colors)
 26: 
     Sounds
 17:
@@ -312,8 +331,17 @@ it will remain memory resident for the entire l
     similarly to GUIMouseControllable and sent through signals
     to whatever code needs them.
 14:
+    Postprocess shaders:
+    Draw scene to texture through FBO first, then put that on a quad taking
+    up the whole screen. Apply post process shaders to that.
+    Effects such as nuke in RA2 could work that way.
+    We could also chain effects by drawing that to FBO, running through another 
+    shader, and so on (the only way to apply multiple shaders without
+    having hardcoded number of shaders called from a main function in a shader)
+    - this might be slow, but maybe not too slow. Mainly taxing fragment shaders.
+14:
     SpatialManager:
-    Write code required for usage in culling (special iterator), and use in culling.
+    Write code required for culling (special iterator), and use in culling.
 
     As drawing volumes could need to change (particle systems),
     so we might have a special function supplying old volume at update/remove.
@@ -569,6 +597,9 @@ Optimizations:
     by ~15%. However, would probably result in a bit uglier code
     and need for asserts for too large textures/pages.)
     (would require to pass textures/glyphs by value in font drawing code)
+
+    Also, GLTextures could store texcoords as unnormalized shorts, but
+    that would probably be overkill
 3?: 
     Alpha testing could be used in combination with blending. I.e.
     a fragment with 0 alpha would automatically be discarded.
@@ -615,74 +646,67 @@ Optimizations:
     in the GLVertexBuffer instead of a vector.
     Alternatively, we could double buffer
     (draw vbo1, copy to vbo2 at frame 1, draw vbo2, copy to vbo1 at frame 2, repeat),
-    and we could even combine these mapped VBO with double buffering.
+    or even combine mapped VBO with double buffering.
     This could significantly improve performance at high loads where
     OpenGL can take as much as 40% time stalling buffer data uploads.
+9:
+    RGBA4 (converted from RGBA8 in VideoDriver implementation) 
+    could be a switch for low-memory systems
 GUI:
 1:
-    Progress bars should be simple animation with frame depending
-    of progress of something. This way we can have various fancy
+    Progress bars should be a simple animation with frame depending
+    on progress of something. This way we can have various 
     loading bars, unit construction progress C&C style, etc.
 2:
     once loading GUI from files, CSS-like style code (subset),
     and look at YAGE GUI
-
 GL1:
 1:
     Remapping equivalent to shader based remapping 
     (i.e. using colors with alpha 0 as remap) can be done without shaders
     using GL_ARB_imaging with color tables, or with core OpenGL 1.x pixel
-    mapping. OpenGL SuperBible explains how to use this.
-
-
+    mapping. OpenGL SuperBible explains how to do this.
 Maybe:
 1:
     Paddle acceleration
-3:
-    Graphics: Filled polygons/circles
 4:
     Consider writing a tool like 3DtoSprite seen at 
     http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?t=25397
-    Basically, use OpenGL to render all frames of a sprite, based on some settings
-    (e.g. resolution, x,y,z model offset, camera angle, number of angles
-     the object can face, ambient/directional/local lights. maybe
-     even shaders used to change the colors, etc.)
+    Use OpenGL to render frames of a sprite, based on some settings
+    (e.g. resolution, xyz model offset, camera angle, number of angles
+     the object can face, ambient/directional/local lights, maybe
+     shaders to change the colors, etc.)
     This would need 3D animations (maybe bone or frame-to-frame interpolations too),
-    but it could be done with simple, brute force code as it would be
-    non-realtime anyway. Try to do this through our VideoDriver
-    so that any future non-OpenGL backends can be used (e.g. raytracer?)
-    Note that we don't need perspective on this; ortho is OK.
-    Accumulation buffer could be used for high quality AA, and per pixel lighting
-    could be used as well. In future, even normals used for 3D lighting could be drawn
-    (with a specific shader).
+    but it could be done with simple, brute force code as it would not be
+    realtime. Try to do this through VideoDriver
+    so that any future non-OpenGL backends can be used.
+    We don't need perspective for this; ortho is OK.
+    Accumulation buffer (or rather some equivalent GL3 method) 
+    could be used for high quality AA, and per pixel lighting
+    could be used as well. In future, even normals used for 3D lighting could be 
+    drawn.
 13:
     (Arkanoid) High scores
 14:
     This might not be needed if we draw stuff in the right order:
-    A draw order/layer argument passed to videodriver draw method/s, 
-    which should be a real value (so, in isometric games, we can 
-    base it on object height) - every frame, a simple bucket sort should
-    be used to sort objects to depth groups, then every group should
-    be sorted using heapsort or something.
+    A draw order/layer argument passed to videodriver draw methods, 
+    should be a real value (so in isometric games we can base it on object height) 
+    - every frame, a bucket sort or something might be used to sort objects to depth 
+    groups.
 15:
     Proper time_string function supporting any time format,
     like /usr/bin/time
 16:
     If multitextures will be supported in future, their data should
-    be stored in pairs/triplets/quadruplets/etc of pages at same coords.
-    All we'd need would be a special GLTexture, not Texture:
+    be stored in pairs/triplets/quadruplets/etc of pages.
+    We'd only have to change GLTexture, not Texture:
     GLTexture would contain indices of the pages.
-    Might be enough to just modify GLTexture, not use a separate struct.
-    A special createtexture method would be needed too.
+    A special createtexture method would be needed.
     (taking multiple images).
 15:
     (Arkanoid)Save games (ini?)
-16:
-    RGBA4 (converted from RGBA8 in VideoDriver implementation) 
-    -could be a switch for low-memory systems
 22: 
     Try AI and/or file loading in a separate thread
-
 Bugs:
 1:
     We're not deleting OpenGL vertex buffer names because of what seems to

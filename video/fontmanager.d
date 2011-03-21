@@ -171,6 +171,9 @@ final class FontManager
          */
         this()
         {
+            writefln("Initializing FontManager");
+            scope(failure){writefln("FontManager initialization failed");}
+
             singleton_ctor();
             try
             {
@@ -307,6 +310,8 @@ final class FontManager
          */
         void load_font_file(string name)
         {
+            scope(failure){writefln("Could not read from font file: " ~ name);}
+
             if(font_files_.keys.contains(name)){return;}
             File file = open_file("fonts/" ~ name, FileMode.Read);
             font_files_[name] = Vector!(ubyte)(cast(ubyte[])file.data);
