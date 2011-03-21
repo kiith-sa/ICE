@@ -55,6 +55,27 @@ package void gl_color_format(ColorFormat format, out GLenum gl_format,
     }
 }
 
+/**
+ * Determine OpenGL packing/unpacking alignment needed for specified color format.
+ *
+ * GL only supports 1, 2, 4, 8, so using bytes per pixel doesn't work for e.g. RGB8.
+ *
+ * Params:  format = Format to get alignment for.
+ *
+ * Returns: Alignment for specified format.
+ */
+package GLint pack_alignment(ColorFormat format)
+{
+    switch(format)
+    {
+        case ColorFormat.RGB_565: return 2;
+        case ColorFormat.RGB_8: return 1;
+        case ColorFormat.RGBA_8: return 4;
+        case ColorFormat.GRAY_8: return 1;
+        default: assert(false, "Unsupported texture format");
+    }
+}
+
 //Parts of this code could be abstracted to a more general TexturePage
 //struct that could be "inherited" in D2 using alias this, but that would only 
 //make sense if we added more texture page implementations.
@@ -119,7 +140,7 @@ package align(1) struct GLTexturePage(TexturePacker)
                 //default GL alignment is 4 bytes which messes up less than
                 //4 Bpp textures (e.g. grayscale) when their row sizes are not
                 //divisible by 4. So we force alignment here.
-                glPixelStorei(GL_UNPACK_ALIGNMENT, bytes_per_pixel(image.format));
+                glPixelStorei(GL_UNPACK_ALIGNMENT, pack_alignment(image.format));
                 //write to texture
                 glTexSubImage2D(GL_TEXTURE_2D, 0, offset.x, offset.y, 
                                 image.size.x, image.size.y, 

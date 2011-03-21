@@ -106,6 +106,17 @@ package struct GLVertexBuffer(Vertex)
             }
         }
 
+        ///End drawing with this buffer. Must be called after calls to draw().
+        void end_draw()
+        {
+            //not necessary, just forcing the buffers not to be bound at the end of frame
+            if(mode_ == GLDrawMode.VertexBuffer)
+            {
+                glBindBuffer(GL_ARRAY_BUFFER, 0);
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+            }
+        }
+
         ///Access vertex data as an array.
         Vertex[] vertices(){return vertices_.array;}
 
@@ -216,12 +227,6 @@ package struct GLVertexBuffer(Vertex)
         {
             vertices_.length = 0;
             indices_.length = 0;
-            //not necessary, just forcing the buffers not to be bound at the end of frame
-            if(mode_ == GLDrawMode.VertexBuffer)
-            {
-                glBindBuffer(GL_ARRAY_BUFFER, 0);
-                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-            }
         }
 
     private:

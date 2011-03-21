@@ -1,15 +1,10 @@
 20: 
-    Move to GL2, GL3 compatible where possible.
-    Go through every GL function we use and check for compatibility.
+   FBO WORKS NOW, JUST POLISH, DOCUMENT, ETC
 
-    Specifically check functions used with texture pages (texsubimage, etc),
-    as well as subdata
+    NOTE: SCREENSHOT CAN NOW THROW EXCEPTION, DOCUMENT THAT
 
-    FBO screenshot (separate pass)
 21:
     In code with exceptions, use writefln with scope(failure) to write error related info
-21:
-    Monitor: vertex group count, average vertices/indices per group
 19:
     Figure out why SSE doesn't work on GDC. Maybe it's different asm conventions,
     or it is because we build 64 bit. Fix it and update cdc.
@@ -75,6 +70,8 @@
     Consider Model-View-Controller style code. (maybe just M-VC instead of M-V-C)
 4:
     FPS graph
+21:
+    Monitor: vertex group count, average vertices/indices per group
 14:
     Look for D files in main directory that can be put into packages.
 20:
@@ -207,6 +204,10 @@
     Consider D2 (at this point it might be mature enough :p)
     We'll need to port CDC first, look if there's a new CDC, if not,
     port it, test with some small test project
+4:
+    Whether or now we're at D2, move to Derelict2 (if we haven't moved to D2,
+    we can only do this if Derelict2 is not D2 only.)
+    Replace current use of GL_EXT_framebuffer_object with GL_ARB_framebuffer_object.
 4:
     Hierarchical resource manager:
     (Current font code does not fit this, as there's no way to load/unload
@@ -389,6 +390,15 @@ it will remain memory resident for the entire l
 12:
     Consider (or not) a hierarchical ActorManager. Physics objects would also
     need some hierarchy (or not - will see)
+13:
+    Voxels?
+    Look at any existing file formats, but probably need our own.
+    8-bit or 16-bit normals, 16-bit or 32-bit color (with alpha),
+    zlib or lzma compression, PNG-like.
+    Look at PolyVox for 3D model to voxel conversion, maybe some other tools.
+    Also write an import tool for RA2/TS voxels.
+    For drawing, we need to use point sprites as plain points are deprecated.
+    Also look up marching cubes algorithm.
 14:
     Could also look at the source of the Diamond memory debugger and
     use the ideas there to measure memory usage

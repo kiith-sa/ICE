@@ -11,6 +11,7 @@ import std.string;
 import std.stdio;
 
 import derelict.opengl.gl;
+import derelict.opengl.extension.ext.framebuffer_object;
 import derelict.util.exception;
 
 import video.videodriver;
@@ -162,6 +163,7 @@ abstract class GLVideoDriver : VideoDriver
         {
             assert(!frame_in_progress_, 
                    "GLVideoDriver.start_frame called, but a frame is already in progress");
+            renderer_.reset();
 
             glClear(GL_COLOR_BUFFER_BIT);
             setup_viewport();
@@ -187,7 +189,6 @@ abstract class GLVideoDriver : VideoDriver
             renderer_.render(screen_width_, screen_height_);
             statistics_.vertices = renderer_.vertex_count();
             statistics_.indices = renderer_.index_count();
-            renderer_.reset();
             glFlush();
         }
 
@@ -512,17 +513,61 @@ abstract class GLVideoDriver : VideoDriver
             assert(!frame_in_progress_, "GLVideoDriver.screenshot called during a frame");
 
             ColorFormat format = ColorFormat.RGB_8;
-
             Image image = new Image(screen_width_, screen_height_, format);
 
             GLenum gl_format, type;
             GLint internal_format;
             gl_color_format(format, gl_format, type, internal_format);
+            glPixelStorei(GL_PACK_ALIGNMENT, pack_alignment(format));
 
-            glPixelStorei(GL_PACK_ALIGNMENT, 1);
-            //get front buffer as we do this after end_frame
-            glReadBuffer(GL_FRONT);
-            glReadPixels(0, 0, screen_width_, screen_height_, gl_format, type, image.data.ptr);
+            //directly read from the front buffer if we can't use FBO.
+            void fallback()
+            {
+                writefln("Couldn't get screenshot using FBO: falling back to "
+                         "glReadPixels from the framebuffer");
+
+                //get front buffer as we do this after end_frame
+                glReadBuffer(GL_FRONT);
+                glReadPixels(0, 0, screen_width_, screen_height_, gl_format, type, image.data.ptr);
+            }
+
+            if(EXTFramebufferObject.isEnabled())
+            {
+                //create FBO and RBO
+                GLuint fbo, rbo;
+                glGenFramebuffersEXT(1, &fbo);
+                glGenRenderbuffersEXT(1, &rbo);
+                glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fbo);
+                glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, rbo);
+
+                scope(exit)
+                {
+                    //clean up
+                    glDeleteRenderbuffersEXT(1, &rbo);
+                    glDeleteFramebuffersEXT(1, &fbo);
+                }
+
+                //init FBO and RBO
+                glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_RGBA8, 
+                                         screen_width_, screen_height_);
+                glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT,
+                                             GL_RENDERBUFFER_EXT, rbo);
+
+                if(glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT) == 
+                   GL_FRAMEBUFFER_COMPLETE_EXT)
+                {
+                    //render the frame to the FBO
+                    glClear(GL_COLOR_BUFFER_BIT);
+                    renderer_.render(screen_width_, screen_height_);
+
+                    //read to the image
+                    glReadBuffer(GL_FRONT);
+                    glReadPixels(0, 0, screen_width_, screen_height_, gl_format, type, image.data.ptr);
+                }
+                //not frame buffer complete, maybe the color format is not supported
+                else{fallback();}
+            }
+            else{fallback();}
 
             //GL y starts from bottom, our Image starts from top, so we need to flip.
             image.flip_vertical();
@@ -577,6 +622,8 @@ abstract class GLVideoDriver : VideoDriver
             {
                 throw new VideoDriverException("Could not load OpenGL: " ~ e.msg);
             } 
+
+            DerelictGL.loadExtensions();
 
             glEnable(GL_CULL_FACE);
             glCullFace(GL_BACK);

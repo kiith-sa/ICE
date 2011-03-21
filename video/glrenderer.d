@@ -427,6 +427,10 @@ package struct GLRenderer
                         assert(false, "Unknown vertex type");
                 }
             }
+
+            //end drawing with the buffers
+            colored_buffer_.end_draw();
+            textured_buffer_.end_draw();
         }
 
     private:
