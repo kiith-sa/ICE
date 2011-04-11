@@ -1,7 +1,3 @@
-CLEAN UP AND COMMIT
-01:
-    Log memory info to a file instead of terminal.
-    (later will be replaced by logging system, just plain file now)
 02:
     Move FPS counter out of game code, UPS out of ActorManager. Get rid of
     statistics method/s, maybe eventcounter if can't find a use for it. 

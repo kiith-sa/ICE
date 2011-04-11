@@ -13,6 +13,7 @@ import std.c.string;
 import std.stdio;
 import std.string;
 
+import file.fileio;
 import containers.array;
 
 
@@ -357,7 +358,20 @@ private:
     }
 
     ///Write out allocator statistics at program exit.
-    static ~this(){writefln(statistics());}
+    static ~this()
+    {
+        scope(failure){writefln("Error logging memory usage");}
+        ensure_directory_user("main::logs");
+        string stats = statistics();
+        File file = open_file("main::logs/memory.log", FileMode.Write);
+        file.write(stats);
+        close_file(file);
+        if(alloc_pointers_.length > 0)
+        {
+            writefln("WARNING: MEMORY LEAK DETECTED, FOR MORE INFO SEE:\n"
+                     "userdata::main::logs/memory.log");
+        }
+    }
 
     /**
      * Record data about an allocation.

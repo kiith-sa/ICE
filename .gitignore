@@ -8,6 +8,7 @@ pong-no-contracts
 pong-release
 wrapper
 user_data/main/screenshots/
+user_data/main/logs/
 cdc
 *.out
 *.o

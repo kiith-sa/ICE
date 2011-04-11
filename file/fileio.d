@@ -275,24 +275,6 @@ string root_ = "./data";
 string user_root_ = "./user_data";
 
 /**
- * Static constructor. Adds the main data directory.
- *
- * Throws:  FileIOException if the main directory does not exist.
- */
-/*
-static this()
-{
-    string path = root_ ~ "/main";
-    enforceEx!(FileIOException)
-              (exists(path) && isdir(path), "Main data directory (root) doesn't exist");
-    path = user_root_ ~ "/main";
-    enforceEx!(FileIOException)
-              (exists(path) && isdir(path), "Main data directory (user) doesn't exist");
-    add_mod_directory("main");
-}
-*/
-
-/**
  * Get filesystem path for reading.
  *
  * If the mod directory is specified explicitly, this will look for the file
