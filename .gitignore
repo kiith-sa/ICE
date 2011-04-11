@@ -7,7 +7,7 @@ pong-debug
 pong-no-contracts
 pong-release
 wrapper
-data/main/screenshots/
+user_data/main/screenshots/
 cdc
 *.out
 *.o

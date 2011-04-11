@@ -14,6 +14,7 @@ import std.string;
 
 public import file.file;
 import memory.memory;
+import containers.array : contains;
 import util.exception;
 
 
@@ -21,12 +22,9 @@ import util.exception;
 class FileIOException : Exception{this(string msg){super(msg);}} 
 
 /**
- * Add a mod directory (subdirectory of ./data/) to read data from. 
+ * Add a mod directory.
  *
- * Directories added later take precedence over directories
- * added before, e.g., if we add 3 directories, "main", "mod1" and "mod2",
- * file "file.txt" will be first searched for as "./data/mod2/file.txt",
- * then "./data/mod1/file.txt" and finally "./data/main/file.txt"
+ * Directories added later take precedence over directories added before.
  *
  * Only lowercase letters, numbers and the '_' character are legal in mod directory names.
  *
@@ -37,11 +35,12 @@ class FileIOException : Exception{this(string msg){super(msg);}}
 void add_mod_directory(string directory)
 {
     enforceEx!(FileIOException)
-              (valid_directory(directory),
+              (valid_mod_directory(directory),
               "Invalid data subdirectory: " ~ directory ~ " Only lowercase ASCII "
               "alphanumeric characters and '_' are allowed.");
     enforceEx!(FileIOException)
-              (exists(root_ ~ "/" ~ directory), "Mod directory not found: " ~ directory);
+              (exists(root_ ~ "/" ~ directory) || exists(user_root_ ~ "/" ~ directory)
+               , "Mod directory not found: " ~ directory);
 
     mod_directories_ ~= directory;
 }
@@ -49,13 +48,19 @@ void add_mod_directory(string directory)
 /**
  * Open a file with given name and mode.
  *
- * Files are searched for in known ./data/ subdirectories, e.g. if "main" and "mod"
- * are known subdirectories, file "file.txt" is first searched for in "./data/mod"
- * and the "./data/main". Alternatively, subdirectory can be specified explicitly,
- * e.g. "mod::file.txt" will always open "./data/mod/file.txt" .
- * Reading a file that doesn't exist is an error.
- * For writing and appending, mod directory must be explicitly set.
- * (e.g. mod::file.txt).
+ * Files are searched for in mod subdirectories in root and user data directories.
+ * If opening a file for reading, it is first searched for in the newest mod directory
+ * in user data, then in root data, then in second newest mod directory and so on.
+ * If it's not found, a FileIOException is thrown.
+ *
+ * Alternatively, mod directory can be explicitly specified, like this : "mod::file.ext",
+ * which will look only in that subdirectory in user, root data directories.
+ * If specified explicitly, the mod directory only needs to exist in root and/or user data,
+ * it doesn't need to be registered with add_mod_directory().
+ *
+ * If the file is opened for writing or appending, the mod directory must be specified
+ * and must exist in user data, and the file will be opened whether it already exists or not.
+ * Files are always written to user data (root data is read only).
  *
  * Params:  name = In-engine name of the file to open. For writing or appending,
  *                 mod directory must be specified.
@@ -97,20 +102,16 @@ void add_mod_directory(string directory)
  */
 File open_file(string name, FileMode mode)
 {
-    //get the file path
-    string path = get_path(name);
     switch(mode)
     {
         case FileMode.Read:
-            enforceEx!(FileIOException) 
-                      (file_exists(name), "File to read not found: " ~ name ~ " path: " ~ path);
             //load file into memory
-            return load_file(name, path);
+            return load_file(name, get_path_read(name));
         case FileMode.Write, FileMode.Append:
             enforceEx!(FileIOException) 
                       (name.find("::") >= 0, "Mod directory for writing and/or appending "
                                              "not specified");
-            return File(name, path, mode, 0, write_reserve_);
+            return File(name, get_path_write(name), mode, 0, write_reserve_);
         default:
             assert(false, "Unsupported file mode");
     }
@@ -160,27 +161,31 @@ void close_file(File file)
 }
 
 /**
- * Ensure a directory exists. Will create the directory if it doesn't.
+ * Ensure a directory exists in user data. Will create the directory if it doesn't.
  *
+ * Mod directory must be specified.
+ * 
  * Params:  name = In-engine name of the directory.
  *
  * Throws:  FileIOException if the mod directory is not specified, name is invalid, file with 
- *                          specified name exists that is not a directory or it couldn't be 
+ *                          specified file exists that is not a directory or it couldn't be 
  *                          created.
  */
-void ensure_directory(string name)
+void ensure_directory_user(string name)
 {
     enforceEx!(FileIOException)
               (name.find("::") >= 0, "Mod directory for directory creation not specified");
     try
     {
-        if(!file_exists(name))
+        string path = get_path_write(name);
+
+        if(!exists(path))
         {
-            mkdir(get_path(name));
+            mkdir(path);
             return;
         }
         enforceEx!(FileIOException)
-                  (isdir(get_path(name)), 
+                  (isdir(path), 
                    "File with specified name exists but is not a directory");
     }
     catch(FileException e)
@@ -190,15 +195,59 @@ void ensure_directory(string name)
 }
 
 /**
- * Does the specified file(directory) exist?
+ * Does the specified file(directory) exist in user data?
+ *
+ * Mod directory must be specified.
  *
  * Params:  name = In-engine file name.
  *
- * Returns: True if the file(directory) exists, false otherwise.
+ * Returns: True if the file(directory) exists in user data, false otherwise.
  *
- * Throws:  FileIOException if the file name is invalid.
+ * Throws:  FileIOException if the mod directory is not specified or the
+ *          file name is invalid.
  */
-bool file_exists(string name){return cast(bool)exists(get_path(name));}
+bool file_exists_user(string name){return cast(bool)exists(get_path_write(name));}
+
+/**
+ * Set root data directory. Must be called exactly once at startup.
+ *
+ * Params:  root_data = Root data directory to set. 
+ *
+ * Throws:  FileIOException if the directory does not exist or is invalid.
+ */
+void root_data(string root_data)
+{
+    root_ = root_data;
+    string path = root_ ~ "/main";
+    enforceEx!(FileIOException)
+              (exists(path) && isdir(path), "Main data directory (root) doesn't exist");
+}
+
+/**
+ * Set user data directory. Must be called exactly once at startup. 
+ *
+ * If the specified directory doesn't exist, it will be created.
+ *
+ * Params:  user_data = User data directory to set. 
+ *
+ * Throws:  FileIOException if the path specified exists but is not a directory,
+ *          or the user data directory could not be created.
+ */
+void user_data(string user_data)
+{
+    user_root_ = user_data;
+    string path = user_root_ ~ "/main";
+    try
+    {
+        if(!exists(user_root_)){mkdir(user_root_);}
+        if(!exists(path)){mkdir(path);}
+    }
+    catch(FileException e)
+    {
+        throw new FileIOException("Could not create directory: " ~ path ~ " " ~ e.msg);
+    }
+    enforceEx!(FileIOException)(isdir(path), "Main data directory (user) is not a directory");
+}
 
 private:
 ///Default amount of bytes to reserve for file writing buffers - to prevent
@@ -206,62 +255,118 @@ private:
 const write_reserve_ = 4096;
 
 ///known (added) mod directories.
-string[] mod_directories_;
+string[] mod_directories_ = ["main"];
 
-///directory mod directories are in.
+/**
+ * Main game data directory. This directory contains default game data.
+ * 
+ * E.g. on Linux this could be /usr/local/share/xxx . This directory is read only.
+ */
 string root_ = "./data";
+
+/**
+ * User data directory. This directory containg saves, screenshots and other writable data.
+ * 
+ * Files in user data directory override files in root data directory,
+ * i.e. if the same file exists in user data and root data, the one from user data is read.
+ * 
+ * E.g. on Linux this could be /home/user/.xxx .
+ */
+string user_root_ = "./user_data";
 
 /**
  * Static constructor. Adds the main data directory.
  *
  * Throws:  FileIOException if the main directory does not exist.
  */
+/*
 static this()
 {
-    enforceEx!(FileIOException)(exists(root_ ~ "/main"), "Main data directory doesn't exist");
+    string path = root_ ~ "/main";
+    enforceEx!(FileIOException)
+              (exists(path) && isdir(path), "Main data directory (root) doesn't exist");
+    path = user_root_ ~ "/main";
+    enforceEx!(FileIOException)
+              (exists(path) && isdir(path), "Main data directory (user) doesn't exist");
     add_mod_directory("main");
 }
+*/
 
 /**
- * Convert an in-engine filename to real file path.
+ * Get filesystem path for reading.
  *
- * If a mod directory is not specified, the file is searched for in known mod 
- * directories. If the file is not present in any mod directory, file path in
- * the default mod directory (data/main) is returned.
+ * If the mod directory is specified explicitly, this will look for the file
+ * first in user data and then in root data, and return first match or throw
+ * if not found.
  *
- * Params:  file_name   = In-engine file name.
+ * If the mod directory is not specified, it will look in each mod directory
+ * from newest to oldest, both in user and root data and return the first match,
+ * or throw if not found.
  *
- * Returns: Real filesystem path of the file.
+ * Params:  file_name = In-engine file name to get path for.
  *
- * Throws:  FileIOException on failure.
+ * Returns: Path corresponding to the file name.
+ *
+ * Throws:  FileIOException if the file was not found anywhere or the file name is invalid,
  */
-string get_path(string file_name)
+string get_path_read(string file_name)
 {
     string[] parts = file_name.split("::");
-    string path;
-    //can't have nested absolute mod directory specifiers
-    enforceEx!(FileIOException)(parts.length <= 2, "Invalid file name: " ~ file_name);
-    //absolute mod directory in the file name (e.g. mod::fonts/font.ttf)
+    //can't have nested mod directory specifiers
+    enforceEx!(FileIOException)(parts.length <= 2, "Invalid file name (reading): " ~ file_name);
+
+    //mod directory specified
     if(parts.length == 2)
     {
-        path = root_ ~ "/" ~ parts[0];
-        //does the mod directory exist?
-        enforceEx!(FileIOException)
-                  (exists(path), "File name with invalid mod directory: " ~ file_name);
-        path ~= "/" ~ parts[1];
+        foreach(root; [user_root_, root_])
+        {
+            string path = root ~ "/" ~ parts[0] ~ "/" ~ parts[1];
+            if(exists(path)){return path;}
+        }
     }
-    //file name contains no directory - look for it in known mod directories
+    //mod directory not specified
     else
     {
         //look for the file in mod directories
         foreach_reverse(dir; mod_directories_)
         {
-            path = root_ ~ "/" ~ dir ~ "/" ~ file_name;
-            if(exists(path)){return path;}
+            //try in user data, root data
+            foreach(root; [user_root_, root_])
+            {
+                string path = root ~ "/" ~ dir ~ "/" ~ file_name;
+                if(exists(path)){return path;}
+            }
         }           
-        //return path in default directory if it doesn't exist anywhere
     }
-    return path;
+    throw new FileIOException("File to read does not exist: " ~ file_name);
+}
+
+/**
+ * Get filesystem path for writing.
+ * 
+ * Mod directory must be specified. Also, the specified directory must exist,
+ * although it doesn't need to be a registered mod directory - it only needs to
+ * be a subdirectory of user data directory.
+ *
+ * The path will be returned whether or not a file with that path already exists.
+ *
+ * Params:  file_name = In-engine file name to get path for.
+ *
+ * Returns: Path corresponding to the file name.
+ *
+ * Throws: FileIOException if the mod directory is not specified or does not exist,
+ *         or the file name is invalid.
+ */
+string get_path_write(string file_name)
+{
+    string[] parts = file_name.split("::");
+    //can't have nested mod directory specifiers
+    enforceEx!(FileIOException)(parts.length == 2, "Invalid file name (writing): " ~ file_name);
+    
+    enforceEx!(FileException)(exists(user_root_ ~ "/" ~ parts[0]),
+                              "File name with invalid mod directory: " ~ file_name);
+
+    return user_root_ ~ "/" ~ parts[0] ~ "/" ~ parts[1];
 }
 
 /**
@@ -271,7 +376,7 @@ string get_path(string file_name)
  *
  * Returns: True if the directory name is valid, false otherwise.
  */
-bool valid_directory(string directory)
+bool valid_mod_directory(string directory)
 {
     //only lowercase, digits and _ are allowed
     foreach(dchar c; directory)

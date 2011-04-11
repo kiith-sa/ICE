@@ -110,7 +110,15 @@
 module cdc;
 
 
-import std.string;
+import std.string : join, find, replace, tolower;
+import std.stdio : writefln;
+import std.path : sep, getDirName, getName, addExt;
+import std.file : chdir, copy, isdir, isfile, listdir, mkdir, exists, getcwd, remove, write;
+import std.format;
+import std.traits;
+import std.c.process;
+import std.c.time : usleep;
+import std.c.stdarg;
 
 
 /**
@@ -237,23 +245,6 @@ void help()
         ;
     writefln(help);
 }
-
-/*
- * ----------------------------------------------------------------------------
- * CDC Code, modify with caution
- * ----------------------------------------------------------------------------
- */
-
-// Imports
-import std.string : join, find, replace, tolower;
-import std.stdio : writefln;
-import std.path : sep, getDirName, getName, addExt;
-import std.file : chdir, copy, isdir, isfile, listdir, mkdir, exists, getcwd, remove, write;
-import std.format;
-import std.traits;
-import std.c.process;
-import std.c.time : usleep;
-import std.c.stdarg;
 
 
 /// This is always set to the name of the default compiler, which is the compiler used to build cdc.
@@ -443,12 +434,12 @@ struct CDC
                     if (!starts_with(arg, "-fdoc") && !starts_with(arg, "-od"))
                         nondoc_args ~= arg;
 
-                executeCompiler(compiler, nondoc_args);
+                execute_compiler(compiler, nondoc_args);
             }
         }
         else // (compiler=="dmd" || compiler=="ldc")
         {    
-            executeCompiler(compiler, arguments);        
+            execute_compiler(compiler, arguments);        
             // Move all html files in doc_path to the doc output folder and rename with the "package.module" naming convention.
             if (co.D)
             {    foreach (string src; sources)
@@ -487,23 +478,6 @@ struct CDC
             remove(co.of); // just like dmd
         }
 
-    }
-
-    // A wrapper around execute to write compile options to a file, to get around max arg lenghts on Windows.
-    private static void executeCompiler(string compiler, string[] arguments)
-    {    try {
-            version (Windows)
-            {    write("compile", join(arguments, " "));
-                scope(exit)
-                    remove("compile");
-                execute(compiler~" ", ["@compile"]);
-            } else
-            {
-                execute(compiler, arguments);
-            }
-        } catch (ProcessException e)
-        {    throw new Exception("Compiler failed.");
-        }
     }
 
     /*
@@ -586,14 +560,14 @@ struct CDC
 
             if (compiler != "gdc")
             {
-                version(Windows)
-                    foreach (inout option; result)
-                        if (starts_with(option, "-of")) // fix -of with / on Windows
-                            option = replace(option, "/", "\\");
+            version(Windows)
+                foreach (inout option; result)
+                    if (starts_with(option, "-of")) // fix -of with / on Windows
+                        option = replace(option, "/", "\\");
 
-                if (!contains(result, "-op"))
-                    return result ~ ["-op"]; // this ensures ddocs don't overwrite one another.
-                return result;
+            if (!contains(result, "-op"))
+                return result ~ ["-op"]; // this ensures ddocs don't overwrite one another.
+            return result;
             }
 
             // is gdc
@@ -638,6 +612,23 @@ struct CDC
         }
     }
 }
+
+// A wrapper around execute to write compile options to a file, to get around max arg lenghts on Windows.
+void execute_compiler(string compiler, string[] arguments)
+{    
+    try
+    {
+        version (Windows)
+        {    
+            write("compile", join(arguments, " "));
+            scope(exit){remove("compile");}
+            execute(compiler ~ " ", ["@compile"]);
+        } 
+        else{execute(compiler, arguments);}
+    } 
+    catch(ProcessException e){throw new Exception("Compiler failed: " ~ e.msg);}
+}
+
 
 bool verbose = false;
 
@@ -690,7 +681,7 @@ enum ScanMode
  *
  * Returns: An array of paths (including filename) relative to directory.
  *
- * BUGS: LDC fails to return any results. 
+ * Bugs:    LDC fails to return any results. 
  */
 string[] scan(string folder, string[] extensions = [""], ScanMode mode = ScanMode.Files)
 {    

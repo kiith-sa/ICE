@@ -51,7 +51,7 @@ endif
 " Also switch on highlighting the last used search pattern.
 if &t_Co > 2 || has("gui_running")
   syntax on
-  " set hlsearch
+  set hlsearch
 endif
 
 " Only do this part when compiled with support for autocommands.
@@ -123,4 +123,3 @@ set t_vb=
 set cmdheight=2
 set number
 set scrolloff=2
-colorscheme tango

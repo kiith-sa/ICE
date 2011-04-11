@@ -62,6 +62,7 @@ import util.weaksingleton;
 import util.factory;
 import color;
 import image;
+import formats.cli;
 
 
 /**
@@ -2403,13 +2404,13 @@ class Pong
 
             try
             {
-                ensure_directory("main::screenshots");
+                ensure_directory_user("main::screenshots");
 
                 //save screenshot with increasing suffix number.
                 for(uint s = 0; s < 100000; s++)
                 {
                     string file_name = format("main::screenshots/screenshot_%05d.png", s);
-                    if(!file_exists(file_name))
+                    if(!file_exists_user(file_name))
                     {
                         write_image(screenshot, file_name);
                         return;
@@ -2424,8 +2425,23 @@ class Pong
 
 
 ///Program entry point.
-void main()
+void main(string[] args)
 {
+    //will add -h/--help and generate usage info by itself
+    auto cli = new CLI();
+    cli.description = "DPong 0.1.0\n"
+                      "Pong game written in D.\n"
+                      "Copyright (C) 2010-2011 Ferdinand Majerech";
+    cli.epilog = "Report errors at <kiithsacmp@gmail.com> (in English, Czech or Slovak).";
+
+    //Root data and user data MUST be specified at startup
+    cli.add_option(CLIOption("root_data").short_name('R')
+                                         .target(&root_data).default_args("./data"));
+    cli.add_option(CLIOption("user_data").short_name('U')
+                                         .target(&user_data).default_args("./user_data"));
+
+    if(!cli.parse(args)){return;}
+
     try
     {
         Pong pong = new Pong;

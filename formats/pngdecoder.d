@@ -172,8 +172,8 @@ struct PNGDecoder
                         }
                         break;
                     default:
-                        size_t type = chunk.type;
-                        enforceEx!(PNGException)((bt(&type, cast(size_t)6) < 0), 
+                        //size_t type = chunk.type;
+                        enforceEx!(PNGException)((bt(&chunk.type, cast(size_t)6) < 0), 
                                    "Unrecognized critical chunk");
                         break;
                 }

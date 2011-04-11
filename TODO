@@ -1,24 +1,161 @@
-18:
-    Directory structure needs changes:
-    On Unix/Linux, we must install the main game files to /usr but have user
-    editable files (screenshots, logs, addons, ini, saves) in home directory.
-    And the binary needs to be in /usr/bin.
-    So work on that. (look at wesnoth)
-    Probably one directory in /usr/local or something, and one in /home/xxx .
-    Get it to work and create an installation script (part of CDC?)
-    that will install it that way so we can test it.
+CLEAN UP AND COMMIT
+01:
+    Log memory info to a file instead of terminal.
+    (later will be replaced by logging system, just plain file now)
+02:
+    Move FPS counter out of game code, UPS out of ActorManager. Get rid of
+    statistics method/s, maybe eventcounter if can't find a use for it. 
+    We can have monitor/s for that. Need to separate monitor GUI and logic.
 
-    In normal case, both directories are set to the same directory.
+    Ability to run monitor graphs in background w/o rendering them and then 
+    render them to file (SVG or PNG).
+    Even better: write out simple text, binary or gzipped file and have a 
+    python or D script to render them.
+    Monitors should have an 'enable' button that will make them 
+    persistent, running in background even when not viewing them.
+    This should be handled by a base class used by all submonitors,
+    and some kind of monitor manager.
+    I.e. physicsmonitor (or w/e) requests e.g. 
+    MonitorManager.get_monitor("MonitorName") which will either create new monitor
+    and return it or return already existing monitor.
 
-    A launcher script/program(D is easy) can provide these directories through
-    command line args, while by default, both are set to the current directory. 
+    As for memory usage: consider more
+    advanced recording and storage 
+    (monitor running in background, not measuring all the time, 
+     gradual data loss, gzipping in memory, dumping to file)
+    Also consider making graph data time independent, supplying time
+    to it through methods.
 
-    CDC should build both this launcher and the game.
+    Monitors' presentation and functionality should be completely separate.
+    Consider Model-View-Controller style code. (maybe just M-VC instead of M-V-C)
+03:
+    FPS graph
+04:
+    Monitor: vertex group count, average vertices/indices per group
+05:
+    Weak singleton class handling time, updating actormanager and perhaps other
+    stuff. Pass this class when updating actors, instead of time_step, game_time.
+    This class will also allow timed delegates,
+    both delayed in real time and in game time. Use this in BallSpawner, ScoreScreen.
+    Might allow timers, which, when expired, call a delegate, as well as timed signals,
+    and signals that are fired at the beginning of the next frame.
+    However, that might require globally accessible singletons (no testability) 
+    -only do stuff that needs no singletons
+06:
+    Figure out why SSE doesn't work on GDC. Maybe it's different asm conventions,
+    or it is because we build 64 bit. Fix it and update cdc.
+07:
+    Look for D files in main directory that can be put into packages.
+08:
+    Stop printing UPS to stdout, maybe move to monitor or get rid of it altogether.
+09:
+    Logo, and use it as background in docs in a non-intrusive, MiniINI-like way.
+10: 
+    Background colors for GUI elements (nothing more, for now - just rects with color)
+11:                                    
+    Options start: player names (also, whether the player is AI or human-
+    so we can have AI/AI, AI/human, human/human)
+    Character count should be limited to fit to score statictexts.
+    Also time/score limit.
 
-    When we install, we also install the launcher, which is what the user
-    launches. When we just copy the directory Nexuiz style, we don't need the 
-    launcher.
+    Also graphics settings (enable/disable certain particle systems, maybe more)
 
+    Screen size change
+
+    Video driver settings too (draw mode, line aa)
+
+    After that, keyboard settings for each player
+12:
+    Settings from ini files, also paddle, ball, wall properties
+    (possibility to add more walls from INI files, but hardcoded two paddles)
+    and paddle, ball graphics objects serialization (including line trail
+    particle system, maybe others of coded)
+    Among other things, time speed and update period of actormanager should
+    be in INI files.
+
+    GUI should also be serializable to/from INI
+    There should be default set of values (in INI), e.g. for buttons in general,
+    and every button could be customized with INI code that only mentions
+    differences.
+
+    Both GUI layout files and GUI skins/themes (just border widths/colors for now)
+
+    FontManager settings like FontAA and FastGlyphs should be set through INI
+    (also the default font?, etc.)
+
+    Alternatively, use YAML (or even WML?) from start.
+
+
+    Newest ideas:
+    We need to separate GUI content (element dimensions, text, etc)
+                    and GUI presentation (border color, font size, etc.)
+
+    Handle these in separate files.
+
+    It would help to have a GUIStyle class ahndling all presentation parameters
+    and pass that to GUIElement factories.
+    Maybe even move dimensions to style, but that would require each element
+    to have a name (or a CSS-like class/id?) and get its data according to that.
+
+    Actually, the CSS-like class/id might be the best idea.
+
+    Also, it would be good to have an option to reset, reload the GUI at run time.
+    That'd help modders changing GUI style.
+13:
+    Adjust graphics and GUI for various resolutions - particularly 640*480
+14:
+    AI difficulty settings
+
+    Optional(user options) smarter AI that takes note of ray hints from BallSpawner
+    (only if those rays intersect with the goal - ignore if they're intersecting
+     the walls to prevent extra stupidity)
+15:
+    Ensure everything is polished, create README and such and push, for the first time,
+    to gitorious or github. Not necessarily announcing it.
+
+    Then: simple binary archive, both 32-bit and 64-bit if possible.
+    At least Linux, but also Windows if possible. Maybe even Mac if we can find
+    someone with one.
+    And detailed installation instructions both from source and binary archive
+    on wiki (maybe a script to do the installation).
+
+    Then: announce.
+17:
+    Write detailed tutorials on installing from source and test installing
+    according to this tutorial on other PC's with Linux as well as in VirtualBox 
+    with various distros
+
+    Also, create a Xonotic-like package with 32bit and 64bit binaries
+    and all or most dependencies (not sure about SDL) - 
+    dependencies not present should be specified so users know what they need
+17:
+    Write developer docs with stuff like how to get started hacking
+    the engine, see Wesnoth, OGRE, other projects that do this well.
+4:
+    Get the thing to compile on Windows (if it doesn't work already).
+
+    Probably use Cygwin, it might be easier that way.
+
+    If SDL is a problem, create SFML Platform implementation.
+    Platform implementations to compile should be specified at compile time
+    to prevent requiring all dependencies.
+
+--D2
+4:
+    Consider D2 (at this point it might be mature enough :p)
+    We'll need to port CDC first, look if there's a new CDC, if not,
+    port it, test with some small test project
+
+    Alternatively, consider rewriting CDC in Python (3.x). That would allow us
+    to split it into multiple files without complicated compiler commands.
+4:
+    Whether or now we're at D2, move to Derelict2 (if we haven't moved to D2,
+    we can only do this if Derelict2 is not D2 only.)
+    Replace current use of GL_EXT_framebuffer_object with GL_ARB_framebuffer_object.
+26: 
+    Sounds
+17:
+    Multiplayer, with single PC and over a network (test with two computers)
 17: 
     Effects:
     when changing the gui, (e.g. moving from menu to pong, or between dialogs), 
@@ -47,56 +184,13 @@
     Alternative implementation could pack them tightly together, so the current
     "screen" is centered but you can see adjacent ones. Another alternative 
     implementatio could be some zooming effects, and so on, and so on.)
-    
-18:
-    Weak singleton class handling time, updating actormanager and perhaps other
-    stuff. Pass this class when updating actors, instead of time_step, game_time.
-    This class will also allow timed delegates,
-    both delayed in real time and in game time. Use this in BallSpawner, ScoreScreen.
-    Might allow timers, which, when expired, call a delegate, as well as timed signals,
-    and signals that are fired at the beginning of the next frame.
-    However, that might require globally accessible singletons (no testability) 
-    -only do stuff that needs no singletons
-24:
-    Move FPS counter out of game code, UPS out of ActorManager. Get rid of
-    statistics method/s, maybe eventcounter if can't find a use for it. 
-    We can have monitor/s for that. Need to separate monitor GUI and logic.
-
-    Ability to run monitor graphs in background w/o rendering them and then 
-    render them to file (SVG or PNG).
-    Even better: write out simple text, binary or gzipped file and have a 
-    python or D script to render them.
-    Monitors should have an 'enable' button that will make them 
-    persistent, running in background even when not viewing them.
-    This should be handled by a base class used by all submonitors,
-    and some kind of monitor manager.
-    I.e. physicsmonitor (or w/e) requests e.g. 
-    MonitorManager.get_monitor("MonitorName") which will either create new monitor
-    and return it or return already existing monitor.
-
-    As for memory usage: consider more
-    advanced recording and storage 
-    (monitor running in background, not measuring all the time, 
-     gradual data loss, gzipping in memory, dumping to file)
-    Also consider making graph data time independent, supplying time
-    to it through methods.
-
-    Monitors' presentation and functionality should be completely separate.
-    Consider Model-View-Controller style code. (maybe just M-VC instead of M-V-C)
-4:
-    FPS graph
-21:
-    Monitor: vertex group count, average vertices/indices per group
-19:
-    Figure out why SSE doesn't work on GDC. Maybe it's different asm conventions,
-    or it is because we build 64 bit. Fix it and update cdc.
+16:
+    Draw cursor
 18:
     main menu could have an ai-ai game playing in the background
-14:
-    Look for D files in main directory that can be put into packages.
 20:
-    Look at other games/demos for graphics effect ideas...
-    or maybe we have enough effects by now...
+    Multiple (two, and maybe option to generate) color schemes
+    (game, not GUI, colors)
 25:
     Consider abstracting
     GLTexturePage to TexturePage and moving as much code as possile to VideoDriver,
@@ -104,11 +198,14 @@
     using GLVideoDriver overriden methods. I.e. algorithms in VideoDriver,
     specific stuff in GLVideoDriver.
 25:
-    Stop printing UPS to stdout, maybe move to monitor or get rid of it altogether.
-25:
-    Logo, and use it as background in docs in a non-intrusive, MiniINI-like way.
-25: 
-    Background colors for GUI elements (nothing more, for now - just rects with color)
+    Simple logging. (basically just a wrapper around std.stdio
+    with a few extra features maybe, but no console or in-game log display yet.
+    Look at Wesnoth, Xonotic, other FOSS games and how they handle logging.
+    Also articles on FlipCode, GameDev, DevMaster, GPWiki and such.
+    Remember to make it simple.)
+18:
+    If both UPS and FPS is over some value, sleep from time to time
+    to free up CPU. This should be enabled/disabled by a debug button somewhere
 23:
     Profiling: 
     Manual time measurement - at least get total time and VideoDriver methods' time,
@@ -121,112 +218,6 @@
     or maybe even between parts of frames. Also a benchmark option
     to decrease viewport size to something like 4 * 3, eliminating fragment
     processing.
-24:                                    
-    Options start: player names (also, whether the player is AI or human-
-    so we can have AI/AI, AI/human, human/human)
-    Character count should be limited to fit to score statictexts.
-    Also time/score limit.
-
-    Also graphics settings (enable/disable certain particle systems, maybe more)
-
-    Screen size change
-
-    Video driver settings too (draw mode, line aa)
-
-    After that, keyboard settings for each player
-25:
-    Settings from ini files, also paddle, ball, wall properties
-    (possibility to add more walls from INI files, but hardcoded two paddles)
-    and paddle, ball graphics objects serialization (including line trail
-    particle system, maybe others of coded)
-    Among other things, time speed and update period of actormanager should
-    be in INI files.
-
-    GUI should also be serializable to/from INI
-    There should be default set of values (in INI), e.g. for buttons in general,
-    and every button could be customized with INI code that only mentions
-    differences.
-
-    Both GUI layout files and GUI skins/themes (just border widths/colors for now)
-
-    FontManager settings like FontAA and FastGlyphs should be set through INI
-    (also the default font?, etc.)
-
-    Alternatively, use YAML (or even WML?) from start.
-16:
-    Draw cursor
-25:
-    Simple logging. (basically just a wrapper around std.stdio
-    with a few extra features maybe, but no console or in-game log display yet.
-    Look at Wesnoth, Xonotic, other FOSS games and how they handle logging.
-    Also articles on FlipCode, GameDev, DevMaster, GPWiki and such.
-    Remember to make it simple.)
-    When logging works:
-    Handle exceptions thrown by parse_math() in GUIElement.realign()
-    by using some fixed bounds for the GUI element and logging
-    an error.
-
-    Also, if GUI element width/height is negative, don't throw, just
-    clamp width/height to zero or some fixed value and log an error message.
-14:
-    Adjust graphics and GUI for various resolutions - particularly 640*480
-14:
-    AI difficulty settings
-
-    Optional(user options) smarter AI that takes note of ray hints from BallSpawner
-    (only if those rays intersect with the goal - ignore if they're intersecting
-     the walls to prevent extra stupidity)
-16:
-    Ensure everything is polished, create README and such and push, for the first time,
-    to gitorious or github. Not necessarily announcing it.
-
-    Then: simple binary archive, both 32-bit and 64-bit if possible.
-    At least Linux, but also Windows if possible. Maybe even Mac if we can find
-    someone with one.
-    And detailed installation instructions both from source and binary archive
-    on wiki (maybe a script to do the installation).
-
-    Then: announce.
-20:
-    Multiple (two, and maybe option to generate) color schemes
-    (game, not GUI, colors)
-26: 
-    Sounds
-17:
-    Multiplayer, with single PC and over a network (test with two computers)
-15:
-    Maybe show an AI/AI game on the background of the credits screen.
-    (i.e. just start the game with two AI players in credits_start
-     and call pong_end from credits_end)
-17:
-    Write detailed tutorials on installing from source and test installing
-    according to this tutorial on other PC's with Linux as well as in VirtualBox 
-    with various distros
-
-    Also, create a Xonotic-like package with 32bit and 64bit binaries
-    and all or most dependencies (not sure about SDL) - 
-    dependencies not present should be specified so users know what they need
-17:
-    Write developer docs with stuff like how to get started hacking
-    the engine, see Wesnoth, OGRE, other projects that do this well.
-4:
-    Get the thing to compile on Windows (if it doesn't work already).
-
-    Probably use Cygwin, it might be easier that way.
-
-    If SDL is a problem, create SFML Platform implementation.
-    Platform implementations to compile should be specified at compile time
-    to prevent requiring all dependencies.
-
---AFTER PONG    
-4:
-    Consider D2 (at this point it might be mature enough :p)
-    We'll need to port CDC first, look if there's a new CDC, if not,
-    port it, test with some small test project
-4:
-    Whether or now we're at D2, move to Derelict2 (if we haven't moved to D2,
-    we can only do this if Derelict2 is not D2 only.)
-    Replace current use of GL_EXT_framebuffer_object with GL_ARB_framebuffer_object.
 4:
     Hierarchical resource manager:
     (Current font code does not fit this, as there's no way to load/unload
@@ -347,6 +338,10 @@ it will remain memory resident for the entire l
     so we might have a special function supplying old volume at update/remove.
     Write that as a future TODO. 
 15:
+    Command line parser: implement positional arguments, subparsers (e.g. git commit),
+    equivalents of choices= and required= paramters of argparse in Python
+    (if needed)
+15:
     Consider tree-based math parser. Advantage is:
     GUI elements can keep the tree and just change the vaues of substitution,
     tree can be evaluated w/o being regenerated. If this is not needed, move it to 
@@ -363,6 +358,18 @@ it will remain memory resident for the entire l
 
     Most importantly would allow significant implementation changes
     on the background.
+17:
+    Write a script using OProfile to get CodeAnalyst- like stats.
+    (for now, just stats per process, library, function, not per line)
+    Maybe even a GUI (best with our own GUI, but QT/Vala/PyGTK would be good too.).
+    Even if there is a GUI, though, it should be only built as a frontend for the script.
+    The script might be in Python 3 or in D.
+    
+    It should support a simple interface to select the binary to run, 
+    use sudo to get password from the user (through gksudo?),
+    offer builtin profiles (what is measured and how much per second),
+    as well as support for custom profiles.
+    Could also demangle D function (and class?) names.
 8:
     Subset of HTML tags for text drawing (just support <br> for now),
     will need a parser (fast!) and e.g. StaticText will need to use

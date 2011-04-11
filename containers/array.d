@@ -41,12 +41,7 @@ void remove_first(T)(ref T[] array, T element, bool ident = false)
     {
         if(ident ? array_element is element : array_element == element)
         {
-            //remove the first element - no need to reallocate
-            if(index == 0){array = array[1 .. $];}
-            //remove the last element - no need to reallocate
-            else if(index + 1 == array.length){array = array[0 .. index];}
-            //remove from the middle - ~ forces reallocation
-            else{array = array[0 .. index] ~ array[index + 1 .. $];}
+            array.remove_index(index);
             return;
         }
     }
@@ -102,16 +97,32 @@ void remove(T)(ref T[] array, bool delegate(ref T) deleg)
 {
     foreach_reverse(index, ref elem; array)
     {
-        if(deleg(elem))
-        {
-            //remove first element - no need to reallocate
-            if(index == 0){array = array[1 .. $];}
-            //remove last element - no need to reallocate
-            else if(index + 1 == array.length){array = array[0 .. index];}
-            //remove from the middle - ~ forces reallocate
-            else{array = array[0 .. index] ~ array[index + 1 .. $];}
-        }
+        if(deleg(elem)){array.remove_index(index);}
     }
+}
+
+/**
+ * Remove element at the specified index from the array.
+ *
+ * Params:  array = Array to remove from.
+ *          index = Index to remove at. Must be within bounds.
+ *
+ * Examples:
+ * --------------------
+ * int[] array = [1, 2, 1, 3];
+ * array.remove_index(0); //Removes element at index 0.
+ * --------------------
+ */
+void remove_index(T)(ref T[] array, uint index)
+in{assert(index < array.length, "Array index to remove out of bounds");}
+body
+{
+    //remove first element - no need to reallocate
+    if(index == 0){array = array[1 .. $];}
+    //remove last element - no need to reallocate
+    else if(index + 1 == array.length){array = array[0 .. index];}
+    //remove from the middle - ~ forces reallocate
+    else{array = array[0 .. index] ~ array[index + 1 .. $];}
 }
 ///Unittest for remove_first() and both versions of remove()
 unittest
@@ -177,10 +188,19 @@ unittest
     //should remove all elements as comparison compares sum of their members
     array.remove((ref Element e){return e < new Element(1, 1);});
     assert(array == cast(Element[])[]);
+
+    //test remove_index
+    array = default_array.dup;
+    array.remove_index(0);
+    assert(array == default_array[1 .. $]);
+    array.remove_index(array.length - 1);
+    assert(array == default_array[1 .. $ - 1]);
+    array.remove_index(1);
+    assert(array == default_array[1 .. 2] ~ default_array[3 .. $ - 1]);
 }
 
 /**
- * Find an element in an array with a function.
+ * Find first matching element in an array using a function.
  *
  * Params:  array = Array to search in.
  *          deleg = Function determining if this is the element we're looking for.
@@ -205,10 +225,29 @@ body
 }
 ///Unittest for find().
 unittest
-{
+{                                         
     int[] array = [1, 2, 1, 4, 3];
     assert(array.find((ref int i){return i >= 3;}) == 3);
     assert(array.find((ref int i){return i > 4;}) == -1);
+}
+
+/**
+ * Get an array of all matching elements from an array using a function.
+ *
+ * This function is quite slow, especially with arrays of large structs,
+ * and should be used with care.
+ *
+ * Params:  array = Array to search in.
+ *          deleg = Function determining if we should get this element.
+ *                  All elements for which this function returns true
+ *                  will be returned.
+ *
+ */
+T[] get_all(T)(ref T[] array, bool delegate(ref T) deleg)
+{
+    T[] result;
+    foreach(ref element; array){if(deleg(element)){result ~= element;}}
+    return result;
 }
 
 /**
