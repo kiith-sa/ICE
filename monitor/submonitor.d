@@ -22,7 +22,7 @@ abstract class SubMonitor
         this(){}
 
         ///Destroy the SubMonitor.
-        void die(){assert(false);/*avoid linker error*/};
+        void die(){};
 
         ///Get a GUI view viewing this monitor.
         SubMonitorView view();

@@ -164,19 +164,9 @@ final package class PageMonitorView : SubMonitorView
         ///GUI element used to view a texture page.
         class PageView : GUIElement
         {
-            invariant
-            {
-                assert(zoom_mult_ >= 1.0, "Page view zoom multiplier must be greater than 1");
-                assert(zoom_ >= 0.0, "Page view display zoom must be greater than zero");
-            }
-
             private:
-                ///Current offset of the view on the page, in texture pixels.
-                Vector2f offset_ = Vector2f(0, 0);
-                ///Zoom multiplier used when zooming in/out.
-                real zoom_mult_ = 1.2;
-                ///Current zoom.
-                real zoom_ = 1.0;
+                ///Provides mouse zooming and panning.
+                mixin MouseControl!(1.1) mouse_;
 
             public:
                 ///Construct a PageView.
@@ -185,14 +175,7 @@ final package class PageMonitorView : SubMonitorView
                     super(GUIElementParams("p_left + 28", "p_top + 2", 
                                            "p_width - 106", "p_height - 4", 
                                            true));
-
-                    //provides zooming/panning functionality
-                    auto mouse_control = new GUIMouseControllable;
-                    mouse_control.zoom.connect(&zoom);
-                    mouse_control.pan.connect(&pan);
-                    mouse_control.reset_view.connect(&reset_view);
-
-                    add_child(mouse_control);
+                    mouse_.init();
                 }
 
                 override void draw(VideoDriver driver)
@@ -201,20 +184,6 @@ final package class PageMonitorView : SubMonitorView
                     super.draw(driver);
 
                     page_iterator_.draw(bounds_, offset_, zoom_);
-                }
-
-            private:
-                ///Zoom by specified number of levels.
-                void zoom(float relative){zoom_ = zoom_ * pow(zoom_mult_, relative);}
-
-                ///Pan view with specified offset.
-                void pan(Vector2f relative){offset_ += relative / zoom_;}
-
-                ///Reset view back to default.
-                void reset_view()
-                {
-                    zoom_ = 1.0;
-                    offset_ = Vector2f(0.0f, 0.0f);
                 }
         }
 

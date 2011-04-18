@@ -129,3 +129,50 @@ final class GUIMouseControllable : GUIElement
             if(pan_key_pressed_){pan.emit(to!(float)(relative));}
         }
 }
+
+///Basic GUIMouseControllable based mouse control code, good default for simple mouse control.
+template MouseControl(real zoom_multiplier)
+{
+    static assert(zoom_multiplier > 1.0, "Mouse control zoom multiplier must be greater than 1");
+
+    invariant{assert(zoom_ >= 0.0, "MouseControl zoom must be greater than 0");}
+
+    private:
+        ///Current view offset.
+        Vector2f offset_;
+        ///Current zoom. 
+        real zoom_ = 1.0;
+
+    public:
+        ///Initialize mouse control.
+        void init()
+        {
+            //provides zooming/panning functionality
+            auto mouse_control = new GUIMouseControllable;
+            mouse_control.zoom.connect(&zoom);
+            mouse_control.pan.connect(&pan);
+            mouse_control.reset_view.connect(&reset_view);
+            add_child(mouse_control);
+        }
+
+        /**
+         * Zoom by specified number of levels.
+         *
+         * Params:  relative = Number of zoom levels (doesn't have to be an integer).
+         */
+        void zoom(float relative){zoom_ = zoom_ * pow(zoom_multiplier, relative);}
+
+        /**
+         * Pan view with specified offset.
+         *
+         * Params:  relative = Offset to pan the view by.
+         */
+        void pan(Vector2f relative){offset_ += relative;}
+
+        ///Restore default view.
+        void reset_view()
+        {
+            zoom_ = 1.0;
+            offset_ = Vector2f(0.0f, 0.0f);
+        }
+}

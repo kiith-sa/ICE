@@ -1,18 +1,8 @@
-03:
-    Turn zoom/offset code in GridMonitor, PageMonitorView into a SIgnal style mixin,
-    along with its invariants.
-03:
+02:
     Move GraphData.mode outside of the class and only pass it through arguments
     (if possible) - this would allow multiple monitor views to see the
     graph data of the same monitor in multiple modes.
 03:
-    Memory usage: consider more
-    advanced recording and storage for GraphData
-    (monitor running in background, not measuring all the time, 
-     gradual data loss, gzipping in memory, dumping to file)
-    Also consider making GraphData time independent, supplying time
-    through methods.
-
     Stop printing UPS to stdout, maybe move to monitor or get rid of it altogether.
 
     Move FPS counter out of game code, and add an FPS monitor. Get rid of
@@ -20,14 +10,17 @@
     We can have monitor/s for that. Need to separate monitor GUI and logic.
 04:
     Monitor: vertex group count, average vertices/indices per group
-06:
+05:
     Figure out why SSE doesn't work on GDC. Maybe it's different asm conventions,
     or it is because we build 64 bit. Fix it and update cdc.
-07:
+06:
     Look for D files in main directory that can be put into packages.
-09:
+07:
     Logo, and use it as background in docs in a non-intrusive, MiniINI-like way.
-15:
+07:
+    Simple site, don't upload yet 
+    (consider availability of CherryPy, Django, etc on TuxFamily)
+08:
     Ensure everything is polished, create README and such and push, for the first time,
     to gitorious or github. Not necessarily announcing it.
 
@@ -38,7 +31,7 @@
     on wiki (maybe a script to do the installation).
 
     DO NOT ANNOUNCE!
-17:
+09:
     Write detailed tutorials on installing from source and test installing
     according to this tutorial on other PC's with Linux as well as in VirtualBox 
     with various distros
@@ -46,10 +39,10 @@
     Also, create a Xonotic-like package with 32bit and 64bit binaries
     and all or most dependencies (not sure about SDL) - 
     dependencies not present should be specified so users know what they need
-17:
+10:
     Write developer docs with stuff like how to get started hacking
     the engine, see Wesnoth, OGRE, other projects that do this well.
-4:
+11:
     Get the thing to compile on Windows (if it doesn't work already).
 
     Probably use Cygwin, it might be easier that way.
@@ -57,7 +50,7 @@
     If SDL is a problem, create SFML Platform implementation.
     Platform implementations to compile should be specified at compile time
     to prevent requiring all dependencies.
-5:
+12:
     Write these TODOs to an issue tracker of some kind.
 
 --D2
@@ -68,6 +61,14 @@
 
     Alternatively, consider rewriting CDC in Python (3.x). That would allow us
     to split it into multiple files without complicated compiler commands.
+5:
+    Memory usage: consider more
+    advanced recording and storage for GraphData
+    (monitor running in background, not measuring all the time, 
+     gradual data loss, gzipping in memory, dumping to file)
+    Also consider making GraphData time independent, supplying time
+    through methods.
+
 5:
     Each file should have a documentation header, not just documentation
     for classes/functions.

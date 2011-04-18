@@ -96,37 +96,20 @@ final package class GridMonitor(T) : SubMonitor
 ///Grid monitor GUI view.
 final package class GridMonitorView(GridMonitor) : SubMonitorView
 {
-    invariant
-    {
-        assert(zoom_mult_ >= 1.0, "GridView zoom multiplier must be greater than 1");
-        assert(zoom_ >= 0.0, "GridView zoom must be greater than 0");
-    }
-
     private:
         ///GridMonitor viewed.
         GridMonitor monitor_;
 
-        ///Current view offset.
-        Vector2f offset_;
-        ///Zoom multiplier corresponding to one zoom level.
-        real zoom_mult_ = 1.1;
-        ///Current zoom. 
-        real zoom_ = 1.0;
+        ///Provides mouse zooming and panning.
+        mixin MouseControl!(1.1) mouse_;
 
     public:
         ///Construct a GridView viewing specified GridMonitor.
         this(GridMonitor monitor)
         {
             super();
-
             monitor_ = monitor;
-
-            //provides zooming/panning functionality
-            auto mouse_control = new GUIMouseControllable;
-            mouse_control.zoom.connect(&zoom);
-            mouse_control.pan.connect(&pan);
-            mouse_control.reset_view.connect(&reset_view);
-            add_child(mouse_control);
+            mouse_.init();
         }
 
     protected:
@@ -186,27 +169,5 @@ final package class GridMonitorView(GridMonitor) : SubMonitorView
             }
 
             driver.disable_scissor();
-        }
-
-    private:
-        /**
-         * Zoom by specified number of levels.
-         *
-         * Params:  relative = Number of zoom levels (doesn't have to be an integer).
-         */
-        void zoom(float relative){zoom_ = zoom_ * pow(zoom_mult_, relative);}
-
-        /**
-         * Pan view with specified offset.
-         *
-         * Params:  relative = Offset to pan the view by.
-         */
-        void pan(Vector2f relative){offset_ += relative;}
-
-        ///Restore default view.
-        void reset_view()
-        {
-            zoom_ = 1.0;
-            offset_ = Vector2f(0.0f, 0.0f);
         }
 }
