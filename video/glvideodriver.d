@@ -24,13 +24,15 @@ import video.shader;
 import video.texture;
 import video.fontmanager;
 import video.glmonitor;
+import monitor.monitordata;
+import monitor.submonitor;
+import monitor.graphmonitor;
 import math.math;
 import math.vector2;
 import math.line2;
 import math.rectangle;
 import platform.platform;
 import gui.guielement;
-import monitor.monitormenu;
 import color;
 import image;
 import memory.memory;
@@ -44,7 +46,7 @@ import util.exception;
  * Most of the actual drawing is done by GLRenderer, GLVideoDriver basically
  * manages other GL video classes.
  * 
- * Signal:
+ * Signals:
  *     package mixin Signal!(Statistics) send_statistics
  *
  *     Used to send statistics data to GL monitors.
@@ -576,7 +578,20 @@ abstract class GLVideoDriver : VideoDriver
             return image;
         }
 
-        override MonitorMenu monitor_menu(){return new GLVideoDriverMonitor(this);}
+        override MonitorData monitor_data()
+        {
+            SubMonitor function(GLVideoDriver)[string] ctors_;
+            ctors_["Draws"] = &new_graph_monitor!(GLVideoDriver, Statistics, 
+                                                  "lines", "textures", "texts", "rectangles");
+
+            ctors_["Primitives"] = &new_graph_monitor!(GLVideoDriver, Statistics, 
+                                                       "vertices", "indices", "characters"),
+            ctors_["Changes"] = &new_graph_monitor!(GLVideoDriver, Statistics, 
+                                                    "shader", "page");
+            ctors_["Pages"] = function SubMonitor(GLVideoDriver v)
+                                                  {return new PageMonitor(v);};
+            return new MonitorManager!(GLVideoDriver)(this, ctors_);
+        }
 
     package:
         ///Debugging: draw specified area of a texture page on the specified quad.

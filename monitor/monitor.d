@@ -7,147 +7,232 @@
 module monitor.monitor;
 
 
+import std.string : join;
+
+import util.weaksingleton;
 import gui.guielement;
 import gui.guimenu;
 import math.vector2;
 import math.math;
 import time.timer;
-import monitor.monitormenu;
 import monitor.submonitor;
 import monitor.monitorable;
+import monitor.monitordata;
 import containers.array;
+import util.signal;
+import util.action;
 
 
-///Displays information about engine subsystems in real time.
-final class Monitor : GUIElement
+/**
+ * Monitor subsystem.
+ * 
+ * Provides access to monitors of classes implementing the Monitorable 
+ * interface, and can be viewed through MonitorView (GUI frontend).
+ *
+ * Signals:
+ *     package mixin Signal!() update_views
+ *
+ *     Used to update views viewing this monitor e.g. when a monitorable is added/removed.
+ */
+final class Monitor
 {
     private:
-        //Should be replaced by a closure in D2.
-        ///Function object used to show a monitor menu of a monitorable.
-        class MonitorableCallback
-        {
-            ///The monitorable object.
-            Monitorable monitorable_;
-            ///Construct a callback for specified monitorable.
-            this(Monitorable monitorable){monitorable_ = monitorable;}
-            ///Show monitor menu of the monitorable.
-            void show_menu(){menu(monitorable_);}
-        }
+        mixin WeakSingleton;
 
-        ///Main menu used to access menus of subsystems' monitors.
-        GUIMenuHorizontal main_menu_;
+        ///Monitor data of each monitorable, indexed by name.
+        MonitorData[string] monitored_;
 
-        ///Currently shown submenu (null if we're in the main menu).
-        MonitorMenu current_menu_;
-        ///Monitorable owning the current monitor menu.
-        Monitorable current_menu_monitorable_;
-
-        ///Currently shown monitor (null if none).
-        GUIElement current_monitor_;
-        ///Monitorable owning the current monitor.
-        Monitorable current_monitor_monitorable_;
-
-        ///Callbacks to show monitor menus.
-        MonitorableCallback[] callbacks_;
-        ///Data about monitorables used to regenerate the main menu.
-        MonitorableData[] monitorables_;
+        ///Monitor ID's of pinned monitors.
+        MonitorID[] pinned_;
 
     public:
-        ///Return font size for monitor widgets.
+        ///Construct a Monitor.
+        this(){singleton_ctor();}
+
+        ///Destroy the Monitor.
+        void die()
+        in
+        {
+            assert(monitored_.length == 0, 
+                   "All monitorables must be removed before destroying monitor. \n"
+                   "Not removed: " ~ monitored_.keys.join(" "));
+        }
+        body{singleton_dtor();}
+
+
+        /**
+         * Add a monitorable.
+         *
+         * Params:  monitorable = Monitorable to add.
+         *          name        = Name to use for the monitorable. Must be unique.
+         */
+        void add_monitorable(Monitorable monitorable, string name)
+        in
+        {
+            assert(!monitored_.keys.contains(name), 
+                    "Trying to add a monitorable with name that is already used");
+        }
+        body
+        {
+            monitored_[name] = monitorable.monitor_data;
+            update_views.emit();
+        }
+
+        ///Remove monitorable with specified name.
+        void remove_monitorable(string name)
+        in
+        {
+            assert(monitored_.keys.contains(name), 
+                   "Trying to remove a monitorable that is not present");
+        }
+        body
+        {
+            //unpin all pinned monitors
+            pinned_.remove((ref MonitorID id){return id.monitored == name;});
+            monitored_[name].die();
+            monitored_.remove(name);
+            update_views.emit();
+        }
+
+    package:
+        ///Emitted when the view/s viewing this monitor need to be updated.
+        mixin Signal!() update_views;
+
+        ///Get names of monitored objects.
+        string[] monitored_names(){return monitored_.keys;}
+
+        ///Get names of monitors of the specified monitored object.
+        string[] monitor_names(string monitored)
+        in
+        {
+            assert(monitored_.keys.contains(monitored), 
+                   "Trying to get monitor names of a monitorable that is not present");
+        }
+        body{return monitored_[monitored].monitor_names();}
+
+        ///Start specified monitor (unless it's pinned).
+        void start(MonitorID id)
+        in
+        {
+            assert(monitored_.keys.contains(id.monitored), 
+                   "Trying to start monitor of a monitorable that is not present");
+        }
+        body
+        {
+            if(!pinned(id)){monitored_[id.monitored].start_monitor(id.monitor);}
+        }
+
+        ///Stop specified monitor (unless it's pinned).
+        void stop(MonitorID id)
+        in
+        {
+            assert(monitored_.keys.contains(id.monitored), 
+                   "trying to stop monitor of a monitorable that is not present");
+        }
+        body
+        {
+            if(!pinned(id)){monitored_[id.monitored].stop_monitor(id.monitor);}
+        }
+
+        ///Get specified monitor. Should return const in D2.
+        SubMonitor get(MonitorID id)
+        in
+        {
+            assert(monitored_.keys.contains(id.monitored), 
+                   "trying to get monitor of a monitorable that is not present");
+        }
+        body{return monitored_[id.monitored].get_monitor(id.monitor);}
+
+        ///Pin specified monitor. Pinned monitors can't be stopped or started.
+        void pin(MonitorID id)
+        in
+        {
+            assert(!pinned(id), "Trying to pin a monitor that is already pinned");
+            assert(monitored_.keys.contains(id.monitored), 
+                   "Trying to pin monitor of a monitorable that is not present");
+        }
+        body{pinned_ ~= id;}
+
+        ///Unpin specified monitor. Pinned monitors can't be stopped or started.
+        void unpin(MonitorID id)
+        in{assert(pinned(id), "Trying to unpin a monitor that is not pinned");}
+        body{pinned_.remove(id);}
+
+        ///Is a submonitor pinned?
+        bool pinned(MonitorID id){return pinned_.contains(id);}
+}
+
+///GUI view of the monitor subsystem.
+final class MonitorView : GUIElement
+{
+    private:
+        ///Monitor we're viewing.
+        Monitor monitor_;
+
+        ///Menu used to select monitored objects or submonitors to view.
+        GUIMenu menu_ = null;
+        ///Currently shown submonitor view.
+        SubMonitorView current_view_;
+
+        ///Name of the monitored object currently shown by the menu (null if none).
+        string current_monitored_;
+
+        ///ID of currently viewed submonitor (contents as null if none).
+        MonitorID current_monitor_;
+
+    public:
+        ///Return font size for monitor widgets to use.
         static uint font_size(){return 8;}
 
-        /**
-         * Add a monitorable with specified name.
-         *
-         * A menu item for the monitorable will appear, providing access to its monitor menu.
-         *
-         * Params:  name        = Name of the monitorable (used as menu item text).
-         *          monitorable = Monitorable to add.
-         */
-        void add_monitorable(string name, Monitorable monitorable)
-        in
+        override void die()
         {
-            assert(monitorables_.find((ref MonitorableData c)
-                                      {return c.monitorable is monitorable;}) == -1,
-                   "Trying to add a monitorable that is already being monitored.");
-        }
-        body                                                     
-        {
-            monitorables_ ~= MonitorableData(name, monitorable);
-            regenerate();
-        }
-
-        /**
-         * Remove specified monitorable.
-         *
-         * Menu item of the monitorable will be removed, and if its menu or any
-         * of its monitors are active, they'll be disabled.
-         *
-         * Params:  monitorable = Monitorable to remove.
-         */
-        void remove_monitorable(Monitorable monitorable)
-        in
-        {
-            assert(monitorables_.find((ref MonitorableData c)
-                                      {return c.monitorable is monitorable;}) != -1,
-                   "Trying to remove a monitorable that is not monitored by the monitor.");
-        }
-        body                                                     
-        {
-            //remove the monitorable
-            monitorables_.remove((ref MonitorableData c)
-                                 {return c.monitorable is monitorable;});
-
-            //disable any widgets that work with the monitorable we're removing
-            if(monitorable is current_menu_monitorable_){show_main_menu();}
-            if(monitorable is current_monitor_monitorable_){disable_monitor();}
-            regenerate();
+            monitor_.update_views.disconnect(&regenerate);
+            super.die();
         }
 
     protected:
         /**
-         * Construct a new monitor with specified parameters.
-         * 
-         * Params:  params       = Parameters for GUIElement constructor.
-         *          monitorables = Interfaces to classes to monitor, with names to use.
+         * Construct a MonitorView.
+         *
+         * Params:  params  = Parameters for GUIElement constructor.
+         *          monitor = Monitor to view.
          */
-        this(GUIElementParams params, MonitorableData[] monitorables)
-        in
-        {
-            foreach(monitorable; monitorables)
-            {
-                assert(monitorable.monitorable !is null, "Can't monitor a null class");
-            }
-        }
-        body
-        {
+        this(GUIElementParams params, Monitor monitor)
+        {          
             super(params);
 
-            monitorables_ = monitorables;
+            monitor_ = monitor;
+            monitor.update_views.connect(&regenerate);
             regenerate();
         }
 
-        override void update(){update_children();}
-
     private:
-        ///Generate the main menu and callbacks from monitorables.
+        ///Destroy and regenerate menu of the view.
         void regenerate()
         {
-            bool visible = true;
-
-            //If we already have a main menu, get rid of it.
-            if(main_menu_ !is null)
+            //destroy menu, if any
+            if(menu_ !is null)
             {
-                //Save the visibility of the main menu, so it doesn't suddenly get
-                //shown when we're already showing another menu.
-                visible = main_menu_.visible;
-                remove_child(main_menu_);
-                main_menu_.die();
+                remove_child(menu_);
+                menu_.die();
+                menu_ = null;
             }
 
-            callbacks_ = null;
+            //current monitored might have been removed by the monitor, so check for that
+            string[] monitored_names = monitor_.monitored_names;
+            if(!monitored_names.contains(current_monitored_))
+            {
+                if(current_monitor_.monitored == current_monitored_)
+                {
+                    //must do this here, set_monitor would try to stop nonexistent monitor
+                    current_monitor_.set_null();
+                    //will also destroy the view
+                    set_monitor(current_monitor_);
+                }
+                current_monitored_ = null;
+            }
 
-            //Generate main menu.
+            //generate the menu
             with(new GUIMenuHorizontalFactory)
             {
                 x = "p_left";
@@ -156,112 +241,103 @@ final class Monitor : GUIElement
                 item_height = "14";
                 item_spacing = "4";
                 item_font_size = font_size;
-                //Button to disable the current monitor.
-                add_item("Disable", &disable_monitor);
 
-                //Add menu items, callbacks for each monitorable
-                foreach(monitorable; monitorables_)
+                //hide will set null monitor
+                MonitorID id;
+                id.set_null();
+                add_item("Hide", new Action!(MonitorID)(&set_monitor, id));
+
+                //if we're at top level, add menu items, callbacks for each monitorable
+                if(current_monitored_ is null)
                 {
-                    auto callback = new MonitorableCallback(monitorable.monitorable);
-                    add_item(monitorable.name, &callback.show_menu);
-                    callbacks_ ~= callback;
+                    foreach(monitored; monitor_.monitored_names)
+                    {
+                        add_item(monitored, new Action!(string)(&set_monitored, monitored));
+                    }
+                }
+                //add menu items, callbacks for each submonitor and a back button.
+                else
+                {
+                    add_item("Back", new Action!(string)(&set_monitored, null));
+                    foreach(monitor; monitor_.monitor_names(current_monitored_))
+                    {
+                        id = MonitorID(current_monitored_, monitor);
+                        add_item(monitor, new Action!(MonitorID)(&set_monitor, id));
+                    }
                 }
 
-                main_menu_ = produce();
+                menu_ = produce();
             }
-            if(!visible){main_menu_.hide();}
-            add_child(main_menu_);
+
+            add_child(menu_);
         }
 
-        ///Replace main menu with monitor menu of specified monitorable.
-        void menu(Monitorable monitorable)
-        in{assert(main_menu_.visible, "Trying to replace main menu but it's not visible");}
-        body
+        ///Set specified monitored object.
+        void set_monitored(string monitored)
         {
-            main_menu_.hide();
-
-            //get and connect the monitor menu
-            auto menu = monitorable.monitor_menu;
-            menu.back.connect(&show_main_menu);
-            menu.set_monitor.connect(&monitor);
-
-            //show the monitor menu
-            current_menu_ = menu;
-            current_menu_monitorable_ = monitorable;
-            add_child(menu.menu);
+            current_monitored_ = monitored;
+            regenerate();
         }
 
-        ///Show main menu, removing currently shown submenu.
-        void show_main_menu()
-        in
+        ///Set specified submonitor.
+        void set_monitor(MonitorID id)
         {
-            assert(!main_menu_.visible,
-                   "Trying to show monitor main menu even though it's shown already");
-        }
-        body
-        {
-            remove_child(current_menu_.menu);
-            current_menu_.die();
-            current_menu_ = null;
-            current_menu_monitorable_ = null;
-            main_menu_.show();
-        }
-
-        ///Show given monitor, replacing any monitor previously shown.
-        void monitor(SubMonitor monitor)
-        {
-            if(current_monitor_ !is null)
+            //will be stopped if not pinned
+            if(!current_monitor_.is_null){monitor_.stop(current_monitor_);}
+            if(current_view_ !is null)
             {
-                remove_child(current_monitor_);
-                current_monitor_.die();
+                current_view_.toggle_pinned.disconnect(&toggle_pinned);
+                current_view_.die();
+                current_view_ = null;
             }
 
-            current_monitor_ = monitor;
-            //Remember the monitorable to which this monitor belongs.
-            current_monitor_monitorable_ = current_menu_monitorable_;
-            add_child(current_monitor_);
+            current_monitor_ = id;
+
+            //if null monitor is set, we don't need to start it.
+            if(id.is_null){return;}
+
+            monitor_.start(id);
+            current_view_ = monitor_.get(id).view;
+            add_child(current_view_);
+            current_view_.toggle_pinned.connect(&toggle_pinned);
+            current_view_.set_pinned(monitor_.pinned(current_monitor_));
         }
 
-        ///Disable the current monitor.
-        void disable_monitor()
+        ///Pin/unpin currently viewed monitor.
+        void toggle_pinned()
         {
-            if(current_monitor_ is null){return;}
-            remove_child(current_monitor_);
-            current_monitor_.die();
-            current_monitor_ = null;
-            current_monitor_monitorable_ = null;
+            if(!monitor_.pinned(current_monitor_)){monitor_.pin(current_monitor_);}
+            else{monitor_.unpin(current_monitor_);}
         }
 }
 
-/**
- * Factory used for monitor construction.
- *
- * See_Also: GUIElementFactoryBase
- *
- * Params:  add_monitorable = Add a class to be monitored, with specified name.
- */
-final class MonitorFactory : GUIElementFactoryBase!(Monitor)
+///Struct identifying a submonitor.
+private struct MonitorID
+{
+    ///Name of the monitored object the submonitor belongs to.
+    string monitored;
+    ///Name of the submonitor.
+    string monitor;
+
+    ///Set this submonitor to "null" (no submonitor).
+    void set_null(){monitored = monitor = null;}
+    ///Is the submonitor "null"?
+    bool is_null(){return monitored is null;}
+}
+
+///Factory producing MonitorViews.
+final class MonitorViewFactory : GUIElementFactoryBase!(MonitorView)
 {
     private:
-        ///Data for monitorables to be added during construction.
-        MonitorableData[] monitorables_;
+        ///Monitor to be viewed by produced view/s.
+        Monitor monitor_;
 
     public:
-        void add_monitorable(string name, Monitorable monitorable)
+        ///Construct a MonitorViewFactory with specified monitor.
+        this(Monitor monitor){monitor_ = monitor;}
+
+        override MonitorView produce()
         {
-            monitorables_ ~= MonitorableData(name, monitorable);
+            return new MonitorView(gui_element_params, monitor_);
         }
-
-        Monitor produce(){return new Monitor(gui_element_params, monitorables_);}
 }
-
-private:
-
-///Data describing a monitorable to the monitor.
-struct MonitorableData
-{
-    ///Name to use to identify the monitorable.
-    string name;
-    ///Monitorable itself.
-    Monitorable monitorable;
-}                                          

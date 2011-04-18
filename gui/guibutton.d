@@ -63,6 +63,7 @@ class GUIButton : GUIElement
         override void die()
         {
             super.die();
+            pressed.disconnect_all();
             text_ = null;
         }
 

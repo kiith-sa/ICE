@@ -145,6 +145,9 @@ void close_file(File file)
             assert(false, "Unsupported file mode");
     }
 
+    enforceEx!(FileIOException)(handle !is null, 
+                                "Could not open file " ~ file.path_ ~ " for writing");
+
     //close the file at exit
     scope(exit){fclose(handle);}
     //nothing to write
@@ -391,6 +394,9 @@ File load_file(string name, string path)
     if(size == 0){return file;}
 
     FILE* handle = fopen(toStringz(path), "rb");
+    enforceEx!(FileIOException)(handle !is null, 
+                                "Could not open file " ~ path ~ " for reading");
+
     //read to file
     size_t blocks_read = fread(file.data_.ptr, cast(uint)size, 1, handle);
     fclose(handle);

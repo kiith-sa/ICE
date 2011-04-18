@@ -9,7 +9,6 @@ module spatial.spatialmanager;
 
 import physics.physicsbody;
 import monitor.monitorable;
-import monitor.monitormenu;
 import math.vector2;
 import math.rectangle;
 import util.iterator;
@@ -63,10 +62,4 @@ abstract class SpatialManager(T) : Monitorable
 
         ///Return an iterator iterating over groups of spatially close objects.
         Iterator!(T[]) iterator();
-
-        override MonitorMenu monitor_menu()
-        {
-            //This must be implemented due to what's apparently a compiler bug
-            assert(false);
-        }
 }

@@ -8,7 +8,9 @@ module memory.memorymonitorable;
 
 
 import memory.memory;
-import monitor.monitormenu;
+import monitor.monitordata;
+import monitor.submonitor;
+import monitor.graphmonitor;
 import monitor.monitorable;
 import memory.memorymonitor;
 import util.weaksingleton;
@@ -53,5 +55,10 @@ final class MemoryMonitorable : Monitorable
             send_statistics.emit(statistics_);
         }
 
-        MonitorMenu monitor_menu(){return new MemoryMonitorableMonitor(this);}
+        MonitorData monitor_data()
+        {
+            SubMonitor function(MemoryMonitorable)[string] ctors_;
+            ctors_["Usage"] = &new_graph_monitor!(MemoryMonitorable, Statistics, "manual_MiB");
+            return new MonitorManager!(MemoryMonitorable)(this, ctors_);
+        }
 }

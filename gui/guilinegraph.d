@@ -17,9 +17,10 @@ import gui.guielement;
 import graphdata;
 import time.time;
 import time.timer;
-import color;
-import util.factory;     
 import containers.vector;
+import util.factory;     
+import util.string;
+import color;
 
 /**
  * Line graph widget, showing graphs for multiple changing values system monitor style.

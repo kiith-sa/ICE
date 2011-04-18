@@ -14,7 +14,8 @@ import spatial.volumecircle;
 import spatial.gridmonitor;
 //used by unittest
 import physics.physicsbody;
-import monitor.monitormenu;
+import monitor.monitordata;
+import monitor.submonitor;
 import math.math;
 import math.vector2;
 import math.rectangle;
@@ -159,13 +160,16 @@ class GridSpatialManager(T) : SpatialManager!(T)
 
         override Iterator!(T[]) iterator(){return new ObjectIterator!(T);}
 
-        final override MonitorMenu monitor_menu()
-        {
-            return new GridSpatialManagerMonitor!(T)(this);
-        }
-
         ///Get grid size (both X and Y) in cells.
         uint grid_size(){return grid_size_;}
+
+        MonitorData monitor_data()
+        {
+            SubMonitor function(GridSpatialManager!(T))[string] ctors_;
+            ctors_["Grid"] = function SubMonitor(GridSpatialManager!(T) m)
+                                                 {return new GridMonitor!(T)(m);};
+            return new MonitorManager!(GridSpatialManager!(T))(this, ctors_);
+        }
 
     private:
         /**

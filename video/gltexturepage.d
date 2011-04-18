@@ -183,7 +183,7 @@ package align(1) struct GLTexturePage(TexturePacker)
             string output;
             output ~= "width: " ~ std.string.toString(size_.x) ~ "\n";
             output ~= "height: " ~ std.string.toString(size_.y) ~ "\n";
-            output ~= "format: " ~ to_string(format_, true) ~ "\n";
+            output ~= "format: " ~ to_string(format_) ~ "\n";
             output ~= "packer:\n";
             output ~= packer_.info;
             return output;

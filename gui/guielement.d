@@ -20,6 +20,7 @@ import color;
 import containers.array;
 import util.factory;
 import util.weaksingleton;
+import util.string;
 
 
 //In future, this should be rewritten to support background and border(?) textures,
@@ -28,9 +29,8 @@ import util.weaksingleton;
 ///Base class for all GUI elements. Can be used directly to draw empty elements.
 class GUIElement
 {
+    alias std.string.toString to_string;
     protected:
-        alias std.string.toString to_string;
-
         ///Parent element of this element.
         GUIElement parent_ = null;
         ///Children elements of this element.
@@ -67,6 +67,7 @@ class GUIElement
                 child = null;
             }
             children_ = null;
+            if(parent_ !is null){parent_.remove_child(this);}
             parent_ = null;
         }                 
 
@@ -475,20 +476,45 @@ final class GUIElementFactory : GUIElementFactoryBase!(GUIElement)
  */
 abstract class GUIElementFactoryBase(T)
 {
+    alias std.string.toString to_string;
+
     mixin(generate_factory("string $ x $ \"p_left\"", 
                            "string $ y $ \"p_top\"", 
                            "string $ width $ \"64\"", 
                            "string $ height $ \"64\"",
                            "bool $ draw_border $ true"));
 
-    ///Return a struct containing factory parameters packaged for GUIElement ctor.
-    protected final GUIElementParams gui_element_params()
-    {
-        return GUIElementParams(x_, y_, width_, height_, draw_border_);
-    }
+    protected:
+        ///Return a struct containing factory parameters packaged for GUIElement ctor.
+        final GUIElementParams gui_element_params()
+        {
+            return GUIElementParams(x_, y_, width_, height_, draw_border_);
+        }
 
-    ///Return a new instance of the class produced by the factory with parameters of the factory.
-    public T produce();
+    public:
+        /**                                          
+         * Set dimensions of the element relative to the parent.
+         *
+         * Can be used instead of manually specifying x, y, width and height.
+         * Works similarly to HTML margin, but only takes the parent to account,
+         * NOT the siblings.
+         *
+         * Params:  top    = Width of top y margin relative to parent top y.
+         *          right  = Width of right x margin relative to parent right y.
+         *          bottom = Width of bottom y margin relative to parent bottom y.
+         *          left   = Width of left y margin relative to parent left y.
+         */
+        final void margin(int top, int right, int bottom, int left)
+        {
+            x = "p_left + " ~ to_string(left);
+            y = "p_top + " ~ to_string(top);
+            width = "p_width - " ~ to_string(left + right);
+            height = "p_height - " ~ to_string(top + bottom);
+        }
+
+
+        ///Return a new instance of the class produced by the factory with parameters of the factory.
+        T produce();
 }
 
 ///GUI element constructor parameters

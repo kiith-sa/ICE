@@ -20,49 +20,176 @@ import math.vector2;
 import math.rectangle;
 import platform.platform;
 import util.signal;
+import util.action;
+import util.string;
 import graphdata;
 import color;
 import stringctfe;
 
 
 /**
- * Base class for system monitor style graph monitoring widgets.
+ * Create and return a reference to a graph monitor with specified parameters.
  *
- * User can zoom and scroll the graph with mouse, change data point time, 
- * set average or sum mode and toggle display of monitored values.
+ * Params:  Monitored  = Type of monitored object. Must have a send_statistics 
+ *                       signal that passes a Statistics struct.
+ *          Statistics = Struct used by the Monitorable to send statistics to 
+ *                       the GraphMonitor.
+ *          Values     = Strings specifying names of values measured. Must
+ *                       correspond with public data members of Statistics.
+ *  
+ * Examples:
+ * --------------------
+ * struct StatisticsExample
+ * {
+ *     int a;
+ *     int b;
+ * }
+ *
+ * class MonitoredExample
+ * {
+ *     private:
+ *         StatisticsExample statistics_;
+ *
+ *     public:  
+ *         mixin Signal!(StatisticsExample) send_statistics;
+ *         
+ *         void update()
+ *         {
+ *             //send statistics
+ *             send_statistics.emit(statistics_);
+ *             //reset statistics for next measurement
+ *             statistics_.a = statistics_.b = 0;
+ *         }
+ *
+ *         //stuff done between updates
+ *         void do_stuff(){statistics_.a++;}
+ *         void do_something_else(){statistics_.b++;}
+ *         
+ *         SubMonitor monitor()
+ *         {
+ *             //get a graph monitor monitoring this object
+ *             return new_graph_monitor!(MonitoredExample, StatisticsExample, "a")(this);
+ *         }
+ *}
  */
-abstract class GraphMonitor : SubMonitor
+SubMonitor new_graph_monitor(Monitored, Statistics, Values ...)(Monitored monitored)
 {
-    invariant{assert(zoom_mult_ > 1.0, "GraphMonitor zoom multiplier must be greater than 1");}
+    //copy V to an array of strings
+    string[] values;
+    foreach(s; Values){values ~= s.dup;}
+    return new GraphMonitor!(Monitored, Statistics, Values)(monitored, new GraphData(values));
+}
 
-    protected:
-        ///Measured graph data.
+private:
+
+/**
+ * Monitor that measures statistics of monitored object and stores them in GraphData.
+ *
+ * Params:  Monitored  = Type of monitored object. Must have a send_statistics 
+ *                       signal that passes a Statistics struct.
+ *          Statistics = Struct used by the Monitorable to send statistics to 
+ *                       the GraphMonitor.
+ *          Values     = Strings specifying names of values measured. Must
+ *                       correspond with public data members of Statistics.
+ */
+final package class GraphMonitor(Monitored, Statistics, Values ...) : SubMonitor
+{
+    private:
+        ///Graph data.
         GraphData data_;
 
-    private:
-        alias std.string.toString to_string;  
-        ///Graph widget controlled by this monitor.
-        GUILineGraph graph_;
-        ///Buttons used to toggle display of values on the graph.
-        ///Not using menu since we need to control color of each button.
-        GUIButton[string] value_buttons_;
-        ///Menu of buttons controlling the graph.
-        GUIMenuHorizontal menu_;
+        ///Disconnects the monitor from monitorable's send_statistics.
+        Action!(void delegate(Statistics)) disconnect_;
 
-        //note: in D2, this can be replaced with closures
-        ///Function object used by buttons to toggle display of values.
-        class Toggle
+    public:
+        override void die()
         {
-            ///Name of the value to toggle.
-            string name_;
-            ///Construct a Toggle for value with specified name.
-            this(string name){name_ = name;}
-            ///Toggle display of the value.
-            void toggle(){graph_.toggle_value(name_);}
+            disconnect_();
+            data_.die();
+            data_ = null;
+            super.die();
         }
 
-        ///Buttons' function objects to toggle display of values.
-        Toggle[] toggles_;
+        override SubMonitorView view()
+        {
+            return new GraphMonitorView!(typeof(this))(this);
+        }
+
+        ///Get access to graph data. Should return const in D2.
+        GraphData data(){return data_;}
+
+    protected:
+        /**
+         * Construct a GraphMonitor.
+         *
+         * Params:  monitored  = Object to monitor.
+         *          graph_data = Graph data to store statistics in.
+         */
+        this(Monitored monitored, GraphData graph_data)
+        {
+            super();
+            monitored.send_statistics.connect(&receive_statistics); 
+            disconnect_ = new Action!(void delegate(Statistics))
+                          (&monitored.send_statistics.disconnect, &receive_statistics);
+            data_ = graph_data;
+        }
+
+        ///Receive statistics data from the monitored object.
+        void receive_statistics(Statistics statistics)
+        {
+            //Generate code to update graph values at compile time.
+            string update_values()
+            {
+                string result;
+                foreach(value; Values)
+                {
+                    result ~= "data_.update_value(\"" ~ value ~ "\", statistics." ~ value ~ ");\n";
+                }
+                return result;
+            }
+
+            mixin(update_values());
+            
+            data_.update();
+        }
+}
+
+/**
+ * GUI view for GraphMonitor.
+ *
+ * Allows the user to view a system monitor style graph, select which values to 
+ * view, pan and zoom the view and change graph resolution.
+ *
+ * Params:  GraphMonitor = Type of GraphMonitor (template specialization) viewed.
+ */
+final package class GraphMonitorView(GraphMonitor) : SubMonitorView
+{
+    private:
+        ///Palette of colors used by generated graph monitor code.
+        const Color[] palette = [Color.red,
+                                 Color.green,
+                                 Color.blue,
+                                 Color.yellow,
+                                 Color.cyan,
+                                 Color.magenta,
+                                 Color.burgundy,
+                                 Color(0, 128, 0, 255),
+                                 Color(0, 0, 128, 255),
+                                 Color.forest_green,
+                                 Color(0, 128, 128, 255),
+                                 Color.dark_purple];
+
+        ///Graph monitor viewed. Should be const in D2.
+        GraphMonitor monitor_;
+
+        ///Graph widget.
+        GUILineGraph graph_;
+        //Not using menu since we need to control color of each button.
+        ///Buttons used to toggle display of values on the graph.
+        GUIButton[string] value_buttons_;
+
+        ///Actions that toggle display of values in the graph widget.
+        Action!(string)[] toggles_;
 
         ///Default graph X scale to return to after zooming.
         float scale_x_default_;
@@ -70,98 +197,82 @@ abstract class GraphMonitor : SubMonitor
         float zoom_mult_ = 1.1;
 
     public:
+        ///Construct a GraphMonitorView viewing specified monitor.
+        this(GraphMonitor monitor)
+        {
+            super();
+
+            monitor_ = monitor;
+
+            init_graph();
+            init_mouse();
+            init_toggles();
+            init_menu();
+        }
+
         override void die()
         {
-            data_.die();
-            data_ = null;
             toggles_ = [];
+            //will destroy all children as well
             super.die();
         }
 
-    protected:
-        /**
-         * Construct a GraphMonitor working on specified graph data.
-         *
-         * Params:  factory    = Factory used to produce the graph widget.
-         *                       Derived class is responsible with adding values'
-         *                       graphs to the factory.
-         *          graph_data = Graph data to link the graph widget to.
-         */
-        this(GUILineGraphFactory factory, GraphData graph_data)
+    private:
+        ///Initialize the graph widget.
+        void init_graph()
         {
-            super();
-            init_menu();
-            data_ = graph_data;
-
             //construct the graph widget
-            with(factory)
+            with(new GUILineGraphFactory)
             {
-                x = "p_left + 52";
-                y = "p_top + 2";
-                width = "p_width - 54";
-                height = "p_height - 26";
-                data = graph_data;
+                foreach(color, value; monitor_.data.graph_names)
+                {
+                    graph_color(value, palette[color]);
+                }
+                margin(2, 2, 24, 52);
+                data = monitor_.data;
                 graph_ = produce();
             }
-
-            //provides zooming/panning functionality
-            auto mouse_control = new GUIMouseControllable;
-            mouse_control.zoom.connect(&zoom);
-            mouse_control.pan.connect(&pan);
-            mouse_control.reset_view.connect(&reset_view);
-            graph_.add_child(mouse_control);
-
-            add_child(graph_);
-
+            main_.add_child(graph_);
             scale_x_default_ = graph_.scale_x;
         }
 
-        /**
-         * Add a new measurement of value with specified name.
-         *
-         * Params:  name  = Name of the value.
-         *          value = Measurement to add.
-         */
-        final void update_value(string name, real value){data_.update_value(name,value);}
-
-        ///Set graph mode.
-        final void mode(GraphMode graph_mode){data_.mode(graph_mode);}
-
-        /**
-         * Add a display toggling button for a value.
-         *
-         * Params:  name  = Name of the value toggled by the button.
-         *          color = Color of the button text.
-         */  
-        void add_toggle(string name, Color color)
+        ///Initialize mouse control.
+        void init_mouse()
         {
-            auto toggle = new Toggle(name);
-            with(new GUIButtonFactory)
+            //provides zooming/panning functionality
+            auto mouse= new GUIMouseControllable;
+            mouse.zoom.connect(&zoom);
+            mouse.pan.connect(&pan);
+            mouse.reset_view.connect(&reset_view);
+            graph_.add_child(mouse);
+        }
+        
+        ///Initialize buttons that toggle values' graph display.
+        void init_toggles()
+        {
+            foreach(color, name; monitor_.data.graph_names)
             {
-                x = "p_left + 2";
-                width = "48";
-                height = "12";
-                font_size = 8;
-                y = "p_top + " ~ to_string(2 + 14 * value_buttons_.keys.length);
-                font_size = Monitor.font_size;
-                text_color(ButtonState.Normal, color);
-                text = name;
+                with(new GUIButtonFactory)
+                {
+                    x = "p_left + 2";
+                    width = "48";
+                    height = "12";
+                    font_size = 8;
+                    y = "p_top + " ~ to_string(2 + 14 * value_buttons_.keys.length);
+                    font_size = MonitorView.font_size;
+                    text_color(ButtonState.Normal, palette[color]);
+                    text = name;
 
-                auto button = produce();
-                button.pressed.connect(&(toggle.toggle));
-                value_buttons_[name] = button;
-                add_child(button);
+                    auto button = produce();
+                    auto action = new Action!(string)(&graph_.toggle_value, name);
+                    button.pressed.connect(&action.opCall);
+                    toggles_ ~= action;
+                    value_buttons_[name] = button;
+                    main_.add_child(button);
+                }
             }
-            toggles_ ~= toggle;
         }     
 
-        override void update()
-        {
-            super.update();
-            data_.update();
-        }
-
-    private:
         ///Initialize menu. 
         void init_menu()
         {
@@ -172,14 +283,13 @@ abstract class GraphMonitor : SubMonitor
                 item_width = "48";
                 item_height = "20";
                 item_spacing = "2";
-                item_font_size = Monitor.font_size;
-                add_item ("res +", &resolution_increase);
-                add_item ("res -", &resolution_decrease);
-                add_item ("sum", &sum);
-                add_item ("avg", &average);
-                menu_ = produce();
+                item_font_size = MonitorView.font_size;
+                add_item("res +", &resolution_increase);
+                add_item("res -", &resolution_decrease);
+                add_item("sum", &sum);
+                add_item("avg", &average);
+                main_.add_child(produce());
             }
-            add_child(menu_);
         }
 
         ///Decrease graph data point time - used by resolution + button.
@@ -189,10 +299,10 @@ abstract class GraphMonitor : SubMonitor
         void resolution_decrease(){graph_.data_point_time = graph_.data_point_time * 2.0;}
 
         ///Set sum graph mode - used by sum button.
-        void sum(){data_.mode = GraphMode.Sum;}
+        void sum(){monitor_.data_.mode = GraphMode.Sum;}
 
         ///Set average graph mode - used by average button.
-        void average(){data_.mode = GraphMode.Average;}
+        void average(){monitor_.data_.mode = GraphMode.Average;}
 
         ///Zoom by specified number of levels.
         void zoom(float relative)
@@ -211,113 +321,5 @@ abstract class GraphMonitor : SubMonitor
             graph_.scale_x = scale_x_default_;
             graph_.auto_scale = true;
             graph_.auto_scroll = true;
-        }
-}
-
-/**
- * Basic graph monitor template, will fetch statistics from monitored object and display them.
- *
- * Monitorable template type must have a send_statistics signal that sends
- * an object of Statistics template type. Any further template parameters
- * are strings representing data members of the Statistics object to use as 
- * graph values. At most 16 values are supported at the moment.
- *
- * Examples:
- * --------------------
- * struct Statistics
- * {
- *     int value;
- * }
- *
- * class Monitored
- * {
- *     private:
- *         Statistics statistics_;
- *
- *     public:  
- *         mixin Signal!(Statistics) send_statistics;
- *         
- *         void update()
- *         {
- *             //send statistics
- *             send_statistics.emit(statistics_);
- *             //reset statistics for next measurement
- *             statistics_.value = 0;
- *         }
- *
- *         //stuff done between updates
- *         void do_stuff(){statistics_.value++;}
- * }
- *
- * //The monitor using Monitored and Statistics types aliased for easier usage.
- * alias SimpleGraphMonitor!(Monitored, Statistics, "value") ExampleMonitor;
- * --------------------
- */
-class SimpleGraphMonitor(Monitored, Statistics, Values ...) : GraphMonitor
-{
-    private:
-        ///Palette of colors used by generated graph monitor code.
-        const Color[] palette = [Color.red,
-                                 Color.green,
-                                 Color.blue,
-                                 Color.yellow,
-                                 Color.cyan,
-                                 Color.magenta,
-                                 Color.burgundy,
-                                 Color(0, 128, 0, 255),
-                                 Color(0, 0, 128, 255),
-                                 Color.forest_green,
-                                 Color(0, 128, 128, 255),
-                                 Color.dark_purple];
-
-        ///Signal used to... disconnect from monitored objects' send_statistics signal.
-        mixin Signal!(void delegate(Statistics)) disconnect_;
-
-    public:
-        ///Construct a SimpleGraphMonitor monitoring specified object.
-        this(Monitored monitored)
-        {
-            auto factory = new GUILineGraphFactory;
-
-            //names of values will be stored here to be passed to GraphData ctor
-            string values[];
-            foreach(color, value; Values)
-            {
-                //can't pass template parameter strings around directly, must copy them
-                string v = value.dup;
-                values ~= v;
-                factory.graph_color(v, palette[color]);
-                add_toggle(v, palette[color]);
-            }
-            auto data = new GraphData(values);
-            super(factory, data);
-
-            monitored.send_statistics.connect(&fetch_statistics); 
-            disconnect_.connect(&monitored.send_statistics.disconnect);
-        }
-
-        override void die()
-        {
-            disconnect_.emit(&fetch_statistics);
-            disconnect_.disconnect_all();
-            super.die();
-        }
-
-    private:
-        ///Called by monitored object to pass statistics gathered.
-        void fetch_statistics(Statistics statistics)
-        {
-            ///Generate code to update graph values at compile time.
-            string update_values()
-            {
-                string result;
-                foreach(value; Values)
-                {
-                    result ~= "data_.update_value(\"" ~ value ~ "\", statistics." ~ value ~ ");\n";
-                }
-                return result;
-            }
-
-            mixin(update_values());
         }
 }

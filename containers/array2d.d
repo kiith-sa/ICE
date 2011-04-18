@@ -39,7 +39,7 @@ align(1) struct Array2D(T)
     private:
         ///Manually allocated data storage.
         T[] data_;
-        ///Array height.
+        ///Array width.
         uint x_;
         ///Array height.
         uint y_;

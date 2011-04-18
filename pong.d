@@ -974,7 +974,6 @@ class ScoreScreen
         ///Destroy the score screen.
         void die()
         {
-            parent_.remove_child(container_);
             container_.die();
             expired.disconnect_all();
         }
@@ -1347,15 +1346,12 @@ class HUD
         ///Destroy the HUD.
         void die()
         {
-            parent_.remove_child(score_text_1_);
             score_text_1_.die();
             score_text_1_ = null;
 
-            parent_.remove_child(score_text_2_);
             score_text_2_.die();
             score_text_2_ = null;
 
-            parent_.remove_child(time_text_);
             time_text_.die();
             time_text_ = null;
         }
@@ -1832,9 +1828,9 @@ class GameContainer
             monitor_ = monitor;
             spatial_physics_ = new GridSpatialManager!(PhysicsBody)
                                    (Vector2f(400.0f, 300.0f), 25.0f, 32);
-            monitor_.add_monitorable("Spatial(P)", spatial_physics_);
+            monitor_.add_monitorable(spatial_physics_, "Spatial(P)");
             physics_engine_ = new PhysicsEngine(spatial_physics_);
-            monitor_.add_monitorable("Physics", physics_engine_);
+            monitor_.add_monitorable(physics_engine_, "Physics");
             scene_manager_ = new SceneManager(physics_engine_);
             gui_ = new GameGUI(gui_parent, 300.0);
             game_ = new Game(platform, scene_manager_, gui_, 10, 300.0);
@@ -1848,9 +1844,9 @@ class GameContainer
             gui_.die();
             writefln("SceneManager statistics:\n", scene_manager_.statistics, "\n");
             scene_manager_.die();
-            monitor_.remove_monitorable(physics_engine_);
+            monitor_.remove_monitorable("Physics");
             physics_engine_.die();
-            monitor_.remove_monitorable(spatial_physics_);
+            monitor_.remove_monitorable("Spatial(P)");
             spatial_physics_.die();
             game_ = null;
             scene_manager_ = null;
@@ -1916,20 +1912,14 @@ class Credits
 
             with(new GUIElementFactory)
             {
-                x = "p_left + 96";
-                y = "p_top + 16";
-                width = "p_right - 192";
-                height = "p_bottom - 32";
+                margin(16, 96, 16, 96);
                 container_ = produce();
             }
             parent_.add_child(container_);
 
             with(new GUIStaticTextFactory)
             {
-                x = "p_left + 16";
-                y = "p_top + 16";
-                width = "p_width - 32";
-                height = "p_height - 56";
+                margin(16, 16, 40, 16);
                 text = credits_;
                 this.text_ = produce();
             }
@@ -1952,7 +1942,6 @@ class Credits
         ///Destroy this credits screen.
         void die()
         {
-            parent_.remove_child(container_);
             container_.die();
             closed.disconnect_all();
         }
@@ -1992,8 +1981,7 @@ class PongGUI
         ///Parent of all Pong GUI elements.
         GUIElement parent_;
 
-        ///Monitor used for debugging, profiling, etc.
-        Monitor monitor_;
+        MonitorView monitor_;
         ///Container of the main menu.
         GUIElement menu_container_;
         ///Main menu.
@@ -2016,23 +2004,22 @@ class PongGUI
         /**
          * Construct PongGUI with specified parameters.
          *
-         * Params:  parent = GUI element to use as parent for all pong GUI elements.
+         * Params:  parent  = GUI element to use as parent for all pong GUI elements.
+         *          monitor = Monitor subsystem, used to initialize monitor GUI view.
          */
-        this(GUIElement parent)
+        this(GUIElement parent, Monitor monitor)
         {
             parent_ = parent;
 
-            //Construct the monitor.
-            with(new MonitorFactory)
+            with(new MonitorViewFactory(monitor))
             {
                 x = "16";
                 y = "16";
                 width ="192 + w_right / 4";
                 height ="168 + w_bottom / 6";
-                monitor_ = produce();
+                this.monitor_ = produce();
             }
             parent_.add_child(monitor_);
-            //We don't want to see the monitor unless the user requests it.
             monitor_.hide();
 
             with(new GUIElementFactory)
@@ -2064,16 +2051,15 @@ class PongGUI
         ///Destroy the PongGUI.
         void die()
         {
-            parent_.remove_child(monitor_);
-            parent_.remove_child(menu_container_);
+            monitor_.die();
+            monitor_ = null;
+
             if(credits_ !is null)
             {
                 credits_.die();
                 credits_ = null;
             }
-            monitor_.die();                   
             menu_container_.die();
-            monitor_ = null;
             menu_container_ = null;
 
             game_start.disconnect_all();
@@ -2084,7 +2070,7 @@ class PongGUI
         }
 
         ///Get the monitor widget.
-        Monitor monitor(){return monitor_;}
+        MonitorView monitor(){return monitor_;}
 
         ///Toggle monitor display.
         void monitor_toggle()
@@ -2149,6 +2135,9 @@ class Pong
         ///Game.
         Game game_;
 
+        ///Monitor subsystem, providing debugging and profiling info.
+        Monitor monitor_;
+
     public:
         ///Initialize Pong.
         this()
@@ -2157,35 +2146,44 @@ class Pong
 
             singleton_ctor();
 
+            monitor_ = new Monitor();
+
             memory_ = new MemoryMonitorable;
+
             scope(failure)
             {
+                monitor_.die();
                 memory_.die();
                 singleton_dtor();
             }
+            monitor_.add_monitorable(memory_, "Memory");
+            scope(failure){monitor_.remove_monitorable("Memory");}
 
             platform_ = new SDLPlatform;
             scope(failure){platform_.die();}
 
             video_driver_container_ = new VideoDriverContainer;
-            scope(failure){video_driver_container_.die();}
             video_driver_ = video_driver_container_.produce!(SDLGLVideoDriver)
                             (800, 600, ColorFormat.RGBA_8, false);
-            scope(failure){video_driver_.die();}
+            scope(failure)
+            {
+                video_driver_.die();
+                video_driver_container_.die();
+            }
+            monitor_.add_monitorable(video_driver_, "Video");
+            scope(failure){monitor_.remove_monitorable("Video");}
 
             //initialize GUI
             gui_root_ = new GUIRoot(platform_);
             scope(failure){gui_root_.die();}
 
-            gui_ = new PongGUI(gui_root_.root);
+            gui_ = new PongGUI(gui_root_.root, monitor_);
             scope(failure){gui_.die();}
             gui_.credits_start.connect(&credits_start);
             gui_.credits_end.connect(&credits_end);
             gui_.game_start.connect(&game_start);
             gui_.quit.connect(&exit);
             gui_.reset_video.connect(&reset_video);
-            gui_.monitor.add_monitorable("Memory", memory_);
-            gui_.monitor.add_monitorable("Video", video_driver_);
 
             game_container_ = new GameContainer();
 
@@ -2208,11 +2206,16 @@ class Pong
                 game_ = null;
             }
             fps_counter_.die();
+
+            monitor_.remove_monitorable("Memory");
             //video driver might be already destroyed in exceptional circumstances
-            if(video_driver_ !is null){gui_.monitor.remove_monitorable(video_driver_);}
-            gui_.monitor.remove_monitorable(memory_);
+            if(video_driver_ !is null){monitor_.remove_monitorable("Video");}
+
+            monitor_.die();
+
             gui_.die();
             gui_root_.die();
+
             //video driver might be already destroyed in exceptional circumstances
             if(video_driver_ !is null)
             {
@@ -2259,7 +2262,7 @@ class Pong
         {
             gui_.menu_hide();
             platform_.key.disconnect(&key_handler);
-            game_ = game_container_.produce(platform_, gui_.monitor, gui_root_.root);
+            game_ = game_container_.produce(platform_, monitor_, gui_root_.root);
             game_.intro();
         }
 
@@ -2364,7 +2367,7 @@ class Pong
             //game area
             Rectanglef area = game_.game_area;
 
-            gui_.monitor.remove_monitorable(video_driver_);
+            monitor_.remove_monitorable("Video");
 
             video_driver_container_.destroy();
             scope(failure){(video_driver_ = null);}
@@ -2393,7 +2396,7 @@ class Pong
             video_driver_.zoom(zoom);
             video_driver_.view_offset(offset);
             gui_root_.realign(video_driver_);
-            gui_.monitor.add_monitorable("Video", video_driver_);
+            monitor_.add_monitorable(video_driver_, "Video");
         }
 
         ///Save screenshot (to data/main/screenshots).

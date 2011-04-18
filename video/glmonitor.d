@@ -16,16 +16,13 @@ import video.gltexturepage;
 import gui.guielement;
 import gui.guimenu;
 import gui.guistatictext;
-import gui.guilinegraph;
 import gui.guimousecontrollable;
-import graphdata;
 import monitor.monitor;
-import monitor.graphmonitor;
-import monitor.monitormenu;
 import monitor.submonitor;
 import math.vector2;
 import math.rectangle;
 import math.math;
+import util.signal;
 import color;
 
 
@@ -47,12 +44,123 @@ package struct Statistics
     }
 }
 
-///Displays info about texture pages.
-final package class PagesMonitor : SubMonitor
+///Provides access to information about texture pages in GLVideoDriver.
+final package class PageMonitor : SubMonitor
 {
+    public:
+        ///Allows iteration over and access to texture pages in GLVideoDriver.
+        final class PageIterator
+        {
+            private:
+                ///Current page index.
+                uint current_page_;
+
+            public:
+                ///Construct a PageIterator.
+                this(){}
+
+                ///Move to the next page (wraps to the first one). 
+                void next()
+                {
+                    //Cycle back to first if we're at the last.
+                    if(current_page_ >= cast(uint)driver_.pages.length - 1)
+                    {
+                        current_page_ = 0;
+                    }
+                    else{++current_page_;}
+
+                    if(driver_.pages.length == 0){return;}
+                    //If the page was destroyed, move to the next one.
+                    if(driver_.pages[current_page_] == null)
+                    {
+                        next();
+                        return;
+                    }
+                }
+
+                ///Move to previous page (wraps to the last one).
+                void prev()
+                {
+                    //Cycle back to last if we're at the first.
+                    if(current_page_ == 0)
+                    {
+                        current_page_ = cast(uint)driver_.pages.length - 1;
+                    }
+                    else{--current_page_;}
+                    if(driver_.pages.length == 0){return;}
+                    //If the page was destroyed, move to the previous one.
+                    if(driver_.pages[current_page_] is null)
+                    {
+                        prev();
+                        return;
+                    }
+                }
+
+                ///Get information text about the current page.
+                string text()
+                {
+                    if(driver_.pages.length == 0){return "No pages";}
+
+                    while(driver_.pages[current_page_] == null){next();}
+
+                    string text = "page index: " ~ to_string(current_page_) ~ "\n" ~
+                                  driver_.pages[current_page_].info;
+
+                    return text;
+                }
+
+                /**
+                 * Draw the current page.
+                 *
+                 * Will automatically switch to the next page if the current page
+                 * has been destroyed. Won't draw anything if there are no pages.
+                 *
+                 * Params:  bounds = Screen space bounds to draw the page in.
+                 *          offset = Offset into the page in texture pixels (wraps).
+                 *          zoom   = Zoom factor.
+                 */
+                void draw(Rectanglei bounds, Vector2f offset, real zoom)
+                {
+                    //no page to draw
+                    if(driver_.pages.length == 0){return;}
+                    //current page was deleted, change to another one
+                    while(driver_.pages[current_page_] == null){next();}
+
+                    bounds.min = bounds.min + Vector2i(1, 1);
+                    bounds.max = bounds.max - Vector2i(1, 1);
+
+                    //draw the page view
+                    //texture area to draw
+                    auto area = Rectanglef(Vector2f(0, 0), 
+                                           to!(float)(bounds.size) / zoom) - offset; 
+                    //quad to map the texture area to
+                    auto quad = Rectanglef(to!(float)(bounds.min), to!(float)(bounds.max));
+                    driver_.draw_page(current_page_, area, quad);
+                }
+        }
+
     private:
         alias std.string.toString to_string;
 
+        ///GLVideoDriver we're monitoring.
+        GLVideoDriver driver_;
+
+    public:
+        ///Construct a GLMonitor monitoring specified GLVideoDriver.
+        this(GLVideoDriver driver)
+        {
+            super();
+            driver_ = driver;
+        }
+
+    protected:
+        override SubMonitorView view(){return new PageMonitorView(new PageIterator());}
+}
+
+///GUI view for the PageMonitor.
+final package class PageMonitorView : SubMonitorView
+{
+    private:
         ///GUI element used to view a texture page.
         class PageView : GUIElement
         {
@@ -92,19 +200,7 @@ final package class PagesMonitor : SubMonitor
                     if(!visible_){return;}
                     super.draw(driver);
 
-                    //no page to draw
-                    if(driver_.pages.length == 0){return;}
-                    //current page was deleted, change to another one
-                    while(driver_.pages[current_page_] == null){next();}
-
-                    //draw the page view
-                    //texture area to draw
-                    Rectanglef area = Rectanglef(0, 0, size.x / zoom_, 
-                                                 size.y / zoom_) - offset_; 
-                    //quad to map the texture area on
-                    Rectanglef quad = Rectanglef(to!(float)(bounds_.min) + Vector2f(1, 1),
-                                                 to!(float)(bounds_.max) - Vector2f(1, 1));
-                    driver_.draw_page(current_page_, area, quad);
+                    page_iterator_.draw(bounds_, offset_, zoom_);
                 }
 
             private:
@@ -122,25 +218,23 @@ final package class PagesMonitor : SubMonitor
                 }
         }
 
-        ///GLVideoDriver we're monitoring.
-        GLVideoDriver driver_;
-        
+        ///PageIterator used to access texture pages.
+        PageMonitor.PageIterator page_iterator_;
+
         ///Page view widget.
         PageView view_;
         ///Information about the page.
         GUIStaticText info_text_;
 
-        ///Currently viewed page index (in GLVideoDriver.pages_).
-        uint current_page_ = 0;
-
     public:
-        ///Construct a GLMonitor monitoring specified GLVideoDriver.
-        this(GLVideoDriver driver)
+        ///Construct a PageMonitorView using specified iterator to access texture pages.
+        this(PageMonitor.PageIterator iterator)
         {
             super();
 
-            driver_ = driver;
-            init_view();
+            page_iterator_ = iterator;
+
+            main_.add_child(new PageView);
             init_menu();
             init_text();
         }
@@ -148,18 +242,12 @@ final package class PagesMonitor : SubMonitor
     protected:
         override void update()
         {
+            string text = page_iterator_.text;
+            if(text != info_text_.text){info_text_.text = text;}
             super.update();
-            update_text();
         }
 
     private:
-        ///Initialize page view.
-        void init_view()
-        {
-            view_ = new PageView;
-            add_child(view_);
-        }
-
         ///Initialize menu.
         void init_menu()
         {
@@ -170,10 +258,10 @@ final package class PagesMonitor : SubMonitor
                 item_width = "24";
                 item_height = "14";
                 item_spacing = "2";
-                item_font_size = Monitor.font_size;
-                add_item("Next", &next);
-                add_item("Prev", &prev);
-                add_child(produce());
+                item_font_size = MonitorView.font_size;
+                add_item("Next", &page_iterator_.next);
+                add_item("Prev", &page_iterator_.prev);
+                main_.add_child(produce());
             }
         }
 
@@ -186,79 +274,11 @@ final package class PagesMonitor : SubMonitor
                 y = "p_top + 2";
                 width = "72";
                 height = "p_height - 4";
-                font_size = Monitor.font_size;
+                font_size = MonitorView.font_size;
                 align_x = AlignX.Right;
+                text = page_iterator_.text;
                 info_text_ = produce();
             }
-            add_child(info_text_);
-            update_text();
-        }
-
-        ///Show next page.
-        void next()
-        {
-            //Cycle back to first if we're at the last.
-            if(current_page_ >= cast(uint)driver_.pages.length - 1){current_page_ = 0;}
-            else{++current_page_;}
-
-            if(driver_.pages.length == 0){return;}
-            //If the page was destroyed, move to next one.
-            if(driver_.pages[current_page_] == null)
-            {
-                next();
-                return;
-            }
-            update_text();
-            view_.reset_view();
-        }
-
-        ///Show previous page.
-        void prev()
-        {
-            //Cycle back to last if we're at the first.
-            if(current_page_ == 0){current_page_ = cast(uint)driver_.pages.length - 1;}
-            else{--current_page_;}
-            if(driver_.pages.length == 0){return;}
-            //If the page was destroyed, move to previous one.
-            if(driver_.pages[current_page_] is null)
-            {
-                prev();
-                return;
-            }
-            update_text();
-            view_.reset_view();
-        }
-
-        ///Update text with information about the page.
-        void update_text()
-        {
-            if(driver_.pages.length == 0)
-            {
-                info_text_.text = "No pages";
-                return;
-            }
-            while(driver_.pages[current_page_] == null){next();}
-
-            string text = "page index: " ~ to_string(current_page_) ~ "\n" ~
-                          driver_.pages[current_page_].info;
-
-            if(info_text_.text != text){info_text_.text = text;}
+            main_.add_child(info_text_);
         }
 }
-
-///Graph showing numbers of draw calls.
-alias SimpleGraphMonitor!(GLVideoDriver, Statistics, 
-                          "lines", "textures", "texts", "rectangles") DrawsMonitor;
-  
-///Graph showing numbers of graphics primitives drawn.
-alias SimpleGraphMonitor!(GLVideoDriver, Statistics, 
-                          "vertices", "indices", "characters") PrimitivesMonitor;
-
-///Graph showing numbers of state changes during the frame 
-alias SimpleGraphMonitor!(GLVideoDriver, Statistics, "shader", "page") ChangesMonitor;
-
-///GLVideoDriverMonitor class - a MonitorMenu implementation is generated here.
-mixin(generate_monitor_menu("GLVideoDriver", 
-                            ["Pages", "Draws", "Primitives", "Changes"], 
-                            ["PagesMonitor", "DrawsMonitor", "PrimitivesMonitor",
-                             "ChangesMonitor"]));

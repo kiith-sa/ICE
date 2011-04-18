@@ -13,8 +13,10 @@ import physics.contactdetect;
 import physics.physicsmonitor;
 import spatial.spatialmanager;
 import spatial.gridspatialmanager;
-import monitor.monitormenu;
 import monitor.monitorable;
+import monitor.monitordata;
+import monitor.submonitor;
+import monitor.graphmonitor;
 import math.vector2;
 import util.signal;
 import util.weaksingleton;
@@ -136,8 +138,6 @@ final class PhysicsEngine : Monitorable
             updating_ = false;
         }
 
-        MonitorMenu monitor_menu(){return new PhysicsEngineMonitor(this);}
-
         /**
          * Add a new physics body to the simulation.
          *
@@ -192,6 +192,17 @@ final class PhysicsEngine : Monitorable
             bodies_.remove(physics_body, true);
         }
 
+        MonitorData monitor_data()
+        {
+            SubMonitor function(PhysicsEngine)[string] ctors_;
+            ctors_["Contacts"] = &new_graph_monitor!(PhysicsEngine, Statistics, 
+                                                     "contacts", "penetration", "response");
+
+            ctors_["Bodies"] = &new_graph_monitor!(PhysicsEngine, Statistics, 
+                                                   "bodies", "col_bodies"),
+            ctors_["Coarse"] = &new_graph_monitor!(PhysicsEngine, Statistics, "tests");
+            return new MonitorManager!(PhysicsEngine)(this, ctors_);
+        }
     private:
         ///Detect collisions between bodies.
         void detect_contacts()

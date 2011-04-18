@@ -17,7 +17,7 @@ import math.line2;
 import math.rectangle;
 import platform.platform;
 import gui.guielement;
-import monitor.monitormenu;
+import monitor.monitordata;
 import monitor.monitorable;
 import util.weaksingleton;
 import color;
@@ -338,7 +338,7 @@ abstract class VideoDriver : Monitorable
          */
         Image screenshot();
 
-        override MonitorMenu monitor_menu()
+        MonitorData monitor_data()
         {
             //This exists due to what appears to be a linker bug - linker
             //doesn't work if this is not implemented even for abstract class

@@ -110,7 +110,7 @@
 module cdc;
 
 
-import std.string : join, find, replace, tolower;
+import std.string : join, find, replace, tolower, rfind, split, format;
 import std.stdio : writefln;
 import std.path : sep, getDirName, getName, addExt;
 import std.file : chdir, copy, isdir, isfile, listdir, mkdir, exists, getcwd, remove, write;
@@ -642,16 +642,14 @@ bool verbose = false;
  */
 void execute(string command, string[] args=null)
 {    
-    command ~= " " ~ join(args, " ");
-
-    if(verbose){writefln("CDC:  " ~ command);}
-
     version(Windows)
     {
         if(starts_with(command, "./")){command = command[2 .. $];}
     }
             
-    int status = !system((command ~ "\0").ptr);
+    if(verbose){writefln("CDC:  " ~ command);}
+
+    int status = !system((command ~ " " ~ join(args, " ") ~ "\0").ptr);
     if(!status)
     {
         throw new ProcessException(format("Process '%s' exited with status %d", 

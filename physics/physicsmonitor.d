@@ -7,17 +7,6 @@
 module physics.physicsmonitor;
 
 
-import physics.physicsengine;
-import gui.guielement;
-import gui.guimenu;
-import gui.guilinegraph;
-import graphdata;
-import monitor.monitor;
-import monitor.monitormenu;
-import monitor.graphmonitor;
-import color;
-
-
 ///Statistics data sent by PhysicsEngine to physics monitors.
 package struct Statistics
 {
@@ -37,18 +26,3 @@ package struct Statistics
     ///Reset the statistics gathered for the next frame.
     void zero(){tests = contacts = penetration = response = 0;}
 }
-
-///Graph showing values related to fine collision detection.
-alias SimpleGraphMonitor!(PhysicsEngine, Statistics, 
-                          "contacts", "penetration", "response") ContactMonitor;
-
-///Graph showing values related to coarse collision detection.
-alias SimpleGraphMonitor!(PhysicsEngine, Statistics, "tests") CoarseContactMonitor;
-
-///Graph showing statistics about physics bodies.
-alias SimpleGraphMonitor!(PhysicsEngine, Statistics, "bodies", "col_bodies") BodiesMonitor;
-
-///PhysicsEngineMonitor class - a MonitorMenu implementation is generated here.
-mixin(generate_monitor_menu("PhysicsEngine", 
-                            ["Bodies", "Contacts", "Coarse"], 
-                            ["BodiesMonitor", "ContactMonitor", "CoarseContactMonitor"]));

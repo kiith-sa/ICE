@@ -50,23 +50,22 @@ uint bytes_per_pixel(ColorFormat format)
 /**
  * Return a string representation of specified color format.
  *
- * Params:  format       = Color format to get string representation of.
- *          short_format = Use a shorter format?
+ * Params:  format = Color format to get string representation of.
  *
  * Returns: String representation of specified color format.
  */
-string to_string(ColorFormat format, bool short_format = false)
+string to_string(ColorFormat format)
 {
     switch(format)
     {
         case ColorFormat.RGB_565:
-            return short_format ? "RGB_565" : "ColorFormat.RGB_565";
+            return "RGB_565";
         case ColorFormat.RGB_8:
-            return short_format ? "RGB_8" : "ColorFormat.RGB_8";
+            return "RGB_8";
         case ColorFormat.RGBA_8:
-            return short_format ? "RGBA_8" : "ColorFormat.RGBA_8";
+            return "RGBA_8";
         case ColorFormat.GRAY_8:
-            return short_format ? "GRAY_8" : "ColorFormat.GRAY_8";
+            return "GRAY_8";
         default:
             assert(false, "Unsupported image color format!");
     }
