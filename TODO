@@ -1,11 +1,7 @@
-02:
-    Move GraphData.mode outside of the class and only pass it through arguments
-    (if possible) - this would allow multiple monitor views to see the
-    graph data of the same monitor in multiple modes.
 03:
     Stop printing UPS to stdout, maybe move to monitor or get rid of it altogether.
 
-    Move FPS counter out of game code, and add an FPS monitor. Get rid of
+    Move FPS counter out of game code, and add an FPS (Video)monitor. Get rid of
     statistics method/s, maybe eventcounter if can't find a use for it. 
     We can have monitor/s for that. Need to separate monitor GUI and logic.
 04:

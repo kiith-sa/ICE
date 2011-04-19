@@ -62,10 +62,11 @@ final class GraphData
                  * Params:  start  = Start of the time window.
                  *          end    = End of the time window.
                  *          period = Time period to represent by single data point.
+                 *          mode   = Graph mode (average per measurement or sums over time).
                  * 
                  * Returns: Array of data points in specified time window.
                  */
-                real[] data_points(real start, real end, real period)
+                real[] data_points(real start, real end, real period, GraphMode mode)
                 in
                 {
                     assert(start < end, 
@@ -77,8 +78,8 @@ final class GraphData
                     data_points_.array[] = 0.0;
                     if(empty){return data_points_.array;}
 
-                    if(mode_ == GraphMode.Sum){data_points_sum(start, period);}
-                    else if(mode_ == GraphMode.Average){data_points_average(start, period);}
+                    if(mode == GraphMode.Sum){data_points_sum(start, period);}
+                    else if(mode == GraphMode.Average){data_points_average(start, period);}
                     else{assert(false, "Unsupported graph mode");}
 
                     return data_points_.array;
@@ -268,9 +269,6 @@ final class GraphData
         ///Graphs of measured values, indexed by values' names.
         Graph[string] graphs_;
 
-        ///Graph mode: Are data points sums or averages over time?
-        GraphMode mode_ = GraphMode.Average;
-
         ///Time when this GraphData was created
         real start_time_;
         ///Shortest time period to accumulate values for.
@@ -311,9 +309,6 @@ final class GraphData
             foreach(graph; graphs_.values){graph.die();}
         }
 
-        ///Set graph mode, i.e. should data points be sums or averages?
-        final void mode(GraphMode mode){mode_ = mode;}
-
         ///Get time resolution of the graph.
         final real time_resolution(){return time_resolution_;}
 
@@ -337,12 +332,13 @@ final class GraphData
          *          start  = Start of the time window.
          *          end    = End of the time window.
          *          period = Time period to represent by single data point.
+         *          mode   = Graph mode (average per measurement or sums over time).
          * 
          * Returns: Array of data points in the specified time window.
          */
-        real[] data_points(string name, real start, real end, real period)
+        real[] data_points(string name, real start, real end, real period, GraphMode mode)
         {
-            return graphs_[name].data_points(start, end, period);
+            return graphs_[name].data_points(start, end, period, mode);
         }
 
         /**

@@ -66,6 +66,9 @@ final class GUILineGraph : GUIElement
 
         ///Graph data we're displaying.
         GraphData data_;
+        ///Graph mode (average per measurement or sums over time). 
+        GraphMode mode_ = GraphMode.Average;
+
         /**
          * Time offset of the graph view, used for scrolling.
          *
@@ -155,6 +158,9 @@ final class GUILineGraph : GUIElement
 
         ///Set font size of the graph.
         void font_size(uint size){font_size_ = size;}
+
+        ///Set graph mode (data points are average per measurement or sums over time).
+        void graph_mode(GraphMode mode){mode_ = mode;}
 
         ///Destroy this GUILineGraph.
         void die()
@@ -287,7 +293,8 @@ final class GUILineGraph : GUIElement
             //getting all data points and the maximum
             foreach(name; data_.graph_names)
             {
-                real[] points = data_.data_points(name, start_time, end_time, data_point_time_);
+                real[] points = data_.data_points(name, start_time, end_time, 
+                                                  data_point_time_, mode_);
 
                 data_points[name] = points;
                 if(points.length <= 1){continue;}

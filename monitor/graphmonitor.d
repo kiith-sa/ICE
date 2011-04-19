@@ -299,10 +299,10 @@ final package class GraphMonitorView(GraphMonitor) : SubMonitorView
         void resolution_decrease(){graph_.data_point_time = graph_.data_point_time * 2.0;}
 
         ///Set sum graph mode - used by sum button.
-        void sum(){monitor_.data_.mode = GraphMode.Sum;}
+        void sum(){graph_.graph_mode = GraphMode.Sum;}
 
         ///Set average graph mode - used by average button.
-        void average(){monitor_.data_.mode = GraphMode.Average;}
+        void average(){graph_.graph_mode = GraphMode.Average;}
 
         ///Zoom by specified number of levels.
         void zoom(float relative)
