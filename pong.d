@@ -1832,6 +1832,7 @@ class GameContainer
             physics_engine_ = new PhysicsEngine(spatial_physics_);
             monitor_.add_monitorable(physics_engine_, "Physics");
             scene_manager_ = new SceneManager(physics_engine_);
+            monitor_.add_monitorable(scene_manager_, "Scene");
             gui_ = new GameGUI(gui_parent, 300.0);
             game_ = new Game(platform, scene_manager_, gui_, 10, 300.0);
             return game_;
@@ -1842,7 +1843,7 @@ class GameContainer
         {
             game_.die();
             gui_.die();
-            writefln("SceneManager statistics:\n", scene_manager_.statistics, "\n");
+            monitor_.remove_monitorable("Scene");
             scene_manager_.die();
             monitor_.remove_monitorable("Physics");
             physics_engine_.die();

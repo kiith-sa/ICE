@@ -18,13 +18,24 @@ import video.videodriver;
 import math.vector2;
 import time.time;
 import time.timer;
-import time.eventcounter;
-import util.weaksingleton;
+import monitor.monitorable;
+import monitor.monitordata;
+import monitor.submonitor;
+import monitor.graphmonitor;
 import containers.array;
+import util.weaksingleton;
+import util.signal;
 
+
+///Stores monitoring statistics about the scene manager.
+private struct Statistics
+{
+    ///Scene updates per second.
+    real ups;
+}
 
 ///Stores and manages all Actors.
-final class SceneManager : ActorContainer
+final class SceneManager : ActorContainer, Monitorable
 {
     mixin WeakSingleton;
 
@@ -58,8 +69,14 @@ final class SceneManager : ActorContainer
         ///Time speed multiplier. Zero means pause (stopped time).
         real time_speed_ = 1.0;
 
-        ///Collects statistics about actor updates.
-        EventCounter update_counter_;
+        ///Statistics data for monitoring.
+        Statistics statistics_;
+
+        ///Used to send statistics data to GL monitors.
+        mixin Signal!(Statistics) send_statistics;
+
+        ///Timer used to measure updates per second.
+        Timer ups_timer_;
 
     public:
         /**
@@ -70,10 +87,10 @@ final class SceneManager : ActorContainer
         this(PhysicsEngine physics_engine)
         {
             physics_engine_ = physics_engine;
-            update_counter_ = new EventCounter(1.0);
-            update_counter_.update.connect(&ups_update);
             game_time_ = 0.0;
             frame_start_ = get_time();
+            //dummy delay, not used.
+            ups_timer_ = Timer(1.0);
             singleton_ctor();
         }
 
@@ -81,7 +98,6 @@ final class SceneManager : ActorContainer
         void die()
         {
             clear();
-            update_counter_.die();
             singleton_dtor();
         }
 
@@ -147,9 +163,6 @@ final class SceneManager : ActorContainer
             actors_to_remove_ = [];
         }
 
-        ///Return a string with statistics about the SceneManager run.
-        string statistics(){return "UPS statistics:\n" ~ update_counter_.statistics();}
-
         /**
          * Add a new actor. Will be added at the beginning of the next update.
          * 
@@ -181,11 +194,22 @@ final class SceneManager : ActorContainer
         }
         body{actors_to_remove_ ~= actor;}
 
+        MonitorData monitor_data()
+        {
+            SubMonitor function(SceneManager)[string] ctors_;
+            ctors_["UPS"] = &new_graph_monitor!(SceneManager, Statistics, "ups");
+            return new MonitorManager!(SceneManager)(this, ctors_);
+        }
+
     package:
         ///Update all actors.
         void update_actors()
         {
-            update_counter_.event();
+            real age = ups_timer_.age();
+            ups_timer_.reset();
+            //avoid divide by zero
+            statistics_.ups = age == 0.0L ? 0.0 : 1.0 / age;
+            send_statistics.emit(statistics_);
 
             //Add or remove any actors requested
             foreach(actor; actors_to_remove_)
@@ -210,7 +234,4 @@ final class SceneManager : ActorContainer
                 actor.update_actor(time_step_, game_time_);
             }
         }
-        
-        ///Output updates per second.
-        void ups_update(real ups){writefln("UPS: ", ups);}
 }

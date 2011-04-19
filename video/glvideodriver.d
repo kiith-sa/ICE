@@ -182,11 +182,11 @@ abstract class GLVideoDriver : VideoDriver
             current_shader_ = uint.max;
 
             real age = fps_timer_.age();
+            fps_timer_.reset();
             //avoid divide by zero
             statistics_.fps = age == 0.0L ? 0.0 : 1.0 / age;
             send_statistics.emit(statistics_);
             statistics_.zero();
-            fps_timer_.reset();
 
             frame_in_progress_ = true;
         }
