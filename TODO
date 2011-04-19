@@ -1,9 +1,5 @@
 03:
     Stop printing UPS to stdout, maybe move to monitor or get rid of it altogether.
-
-    Move FPS counter out of game code, and add an FPS (Video)monitor. Get rid of
-    statistics method/s, maybe eventcounter if can't find a use for it. 
-    We can have monitor/s for that. Need to separate monitor GUI and logic.
 04:
     Monitor: vertex group count, average vertices/indices per group
 05:
@@ -57,6 +53,22 @@
 
     Alternatively, consider rewriting CDC in Python (3.x). That would allow us
     to split it into multiple files without complicated compiler commands.
+11:
+    Drawing in separate thread:
+    Both in GUI and in SceneManager, this thread works ONLY on const actors/elements,
+    just reading, never writing.
+    This should not cause problems even if it draws stuff during a physics update
+    (would draw some objects in e.g. physics update 1555, and some in 1556, not
+     a big deal) In the physics/game state thread, time not spent updating 
+    would be spent sleeping (first just use an infinite loop as a placeholder)
+
+    Only thing to keep an eye on: drawing thread must never read
+    data that is invalid at the moment, e.g. during some kind of update.
+    Might still need per-object locks for that.
+    Only acquired by non-const methods, though. Maybe D2 has something
+    like synchronized in D1 for that.
+
+    THis should completely remove time aliasing.
 5:
     Memory usage: consider more
     advanced recording and storage for GraphData

@@ -33,11 +33,12 @@ import math.line2;
 import math.rectangle;
 import platform.platform;
 import gui.guielement;
-import color;
-import image;
 import memory.memory;
+import time.timer;
 import util.signal;
 import util.exception;
+import color;
+import image;
 
 
 /**
@@ -93,6 +94,9 @@ abstract class GLVideoDriver : VideoDriver
         ///Has GL been initialized (through init_gl) ?
         bool gl_initialized_;
 
+        ///Timer used to measure FPS.
+        Timer fps_timer_;
+
     package:
         ///Used to send statistics data to GL monitors.
         mixin Signal!(Statistics) send_statistics;
@@ -106,6 +110,8 @@ abstract class GLVideoDriver : VideoDriver
         this(FontManager font_manager)
         {
             super(font_manager);
+            //dummy delay, not used
+            fps_timer_ = Timer(1.0);
             DerelictGL.load();
         }
 
@@ -175,8 +181,12 @@ abstract class GLVideoDriver : VideoDriver
             //disable current shader
             current_shader_ = uint.max;
 
+            real age = fps_timer_.age();
+            //avoid divide by zero
+            statistics_.fps = age == 0.0L ? 0.0 : 1.0 / age;
             send_statistics.emit(statistics_);
             statistics_.zero();
+            fps_timer_.reset();
 
             frame_in_progress_ = true;
         }
@@ -581,6 +591,7 @@ abstract class GLVideoDriver : VideoDriver
         override MonitorData monitor_data()
         {
             SubMonitor function(GLVideoDriver)[string] ctors_;
+            ctors_["FPS"] = &new_graph_monitor!(GLVideoDriver, Statistics, "fps");
             ctors_["Draws"] = &new_graph_monitor!(GLVideoDriver, Statistics, 
                                                   "lines", "textures", "texts", "rectangles");
 

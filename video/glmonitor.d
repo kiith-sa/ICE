@@ -35,12 +35,15 @@ package struct Statistics
     uint vertices, indices, characters;
     ///State changes.
     uint shader, page;
+    ///FPS this frame (inverse of frame length).
+    real fps = 0.0;
 
     ///Reset the statistics gathered for the next frame.
     void zero()
     {    
         lines = textures = texts = rectangles 
-              = vertices = indices = characters = shader = page = 0;
+              = vertices = indices = characters = shader = page;
+        fps = 0.0;
     }
 }
 

@@ -48,7 +48,7 @@ final class SceneManager : ActorContainer
         Actor[] actors_to_remove_;
 
         ///Time taken by single game update.
-        real time_step_ = 1.0 / 120.0; 
+        real time_step_ = 1.0 / 90.0; 
         ///Time this update started, in game time.
         real game_time_;
         ///Time this frame (which can have multiple updates) started, in absolute time.
@@ -203,7 +203,6 @@ final class SceneManager : ActorContainer
 
             actors_to_add_ = [];
             actors_to_remove_ = [];
-            update_counter_.event();
 
             //Update actors' states
             foreach(actor; actors_)

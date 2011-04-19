@@ -1667,7 +1667,7 @@ class Game
             //spawn dummy balls
             with(new DummyBallFactory)
             {
-                radius = 5.0;
+                radius = 8.0;
 
                 for(uint dummy = 0; dummy < dummy_count_; dummy++)
                 {
