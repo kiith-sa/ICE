@@ -176,7 +176,7 @@ int main(string[] args)
                      
                      "physics/", "scene/", "file/", "formats/", "gui/", "math/", 
                      "memory/", "monitor/", "platform/", "spatial/", 
-                     "time/", "video/", "containers/", "util/",
+                     "time/", "video/", "containers/", "util/", "pong/",
 
                      "color.d", "graphdata.d", "image.d", "pong.d"
                      ],
