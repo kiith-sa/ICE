@@ -1,5 +1,3 @@
-04:
-    Split pong.d to multiple files in the pong package.
 05:
     Figure out why SSE doesn't work on GDC. Maybe it's different asm conventions,
     or it is because we build 64 bit. Fix it and update cdc.
