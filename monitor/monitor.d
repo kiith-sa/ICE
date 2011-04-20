@@ -29,7 +29,8 @@ import util.action;
  * Provides access to monitors of classes implementing the Monitorable 
  * interface, and can be viewed through MonitorView (GUI frontend).
  *
- * Signals:
+ * Signal:
+ *
  *     package mixin Signal!() update_views
  *
  *     Used to update views viewing this monitor e.g. when a monitorable is added/removed.

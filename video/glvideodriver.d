@@ -47,7 +47,7 @@ import image;
  * Most of the actual drawing is done by GLRenderer, GLVideoDriver basically
  * manages other GL video classes.
  * 
- * Signals:
+ * Signal:
  *     package mixin Signal!(Statistics) send_statistics
  *
  *     Used to send statistics data to GL monitors.

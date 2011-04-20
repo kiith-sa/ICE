@@ -30,7 +30,8 @@ abstract class SubMonitor
 
 /**
  * Base class for SubMonitor GUI views.
- * Signals:
+ *
+ * Signal:
  *     public mixin Signal!() toggle_pinned;
  *
  *     Emitted when the submonitor viewed should be pinned/unpinned.
