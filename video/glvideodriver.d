@@ -201,6 +201,7 @@ abstract class GLVideoDriver : VideoDriver
             renderer_.render(screen_width_, screen_height_);
             statistics_.vertices = renderer_.vertex_count();
             statistics_.indices = renderer_.index_count();
+            statistics_.vgroups = renderer_.vertex_group_count();
             glFlush();
         }
 
@@ -597,6 +598,8 @@ abstract class GLVideoDriver : VideoDriver
 
             ctors_["Primitives"] = &new_graph_monitor!(GLVideoDriver, Statistics, 
                                                        "vertices", "indices", "characters"),
+            ctors_["Cache"] = &new_graph_monitor!(GLVideoDriver, Statistics, 
+                                                  "vgroups");
             ctors_["Changes"] = &new_graph_monitor!(GLVideoDriver, Statistics, 
                                                     "shader", "page");
             ctors_["Pages"] = function SubMonitor(GLVideoDriver v)

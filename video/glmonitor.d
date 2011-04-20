@@ -32,7 +32,7 @@ package struct Statistics
     ///Draw calls.
     uint lines, textures, texts, rectangles;
     ///Drawing primitives.
-    uint vertices, indices, characters;
+    uint vertices, indices, characters, vgroups;
     ///State changes.
     uint shader, page;
     ///FPS this frame (inverse of frame length).
@@ -41,8 +41,8 @@ package struct Statistics
     ///Reset the statistics gathered for the next frame.
     void zero()
     {    
-        lines = textures = texts = rectangles 
-              = vertices = indices = characters = shader = page;
+        lines = textures = texts = rectangles = vertices = indices = characters 
+              = vgroups = shader = page = 0;
         fps = 0.0;
     }
 }

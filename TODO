@@ -1,5 +1,3 @@
-04:
-    Monitor: vertex group count, average vertices/indices per group
 05:
     Figure out why SSE doesn't work on GDC. Maybe it's different asm conventions,
     or it is because we build 64 bit. Fix it and update cdc.

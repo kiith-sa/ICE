@@ -45,6 +45,7 @@ package struct GLRenderer
 
         ///Vertex group we're currently adding vertices to.
         GLVertexGroup current_group_;
+
         /**
          * Do we need to flush the current group (add it to vertex_groups_)? 
          *
@@ -130,6 +131,9 @@ package struct GLRenderer
         {
             return colored_buffer_.index_count + textured_buffer_.index_count;
         }
+
+        ///Get number of vertex groups created during the frame so far.
+        uint vertex_group_count(){return vertex_groups_.length;}
 
         ///Set draw mode. Should not be called during a frame.
         void draw_mode(GLDrawMode mode)
