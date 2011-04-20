@@ -1,8 +1,10 @@
+04:
+    Split pong.d to multiple files in the pong package.
 05:
     Figure out why SSE doesn't work on GDC. Maybe it's different asm conventions,
     or it is because we build 64 bit. Fix it and update cdc.
-06:
-    Look for D files in main directory that can be put into packages.
+07:
+    API Docs
 07:
     Logo, and use it as background in docs in a non-intrusive, MiniINI-like way.
 07:

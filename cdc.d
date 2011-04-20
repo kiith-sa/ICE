@@ -178,7 +178,7 @@ int main(string[] args)
                      "memory/", "monitor/", "platform/", "spatial/", 
                      "time/", "video/", "containers/", "util/",
 
-                     "color.d", "graphdata.d", "image.d", "pong.d", "stringctfe.d"
+                     "color.d", "graphdata.d", "image.d", "pong.d"
                      ],
                      arguments ~ extra_args);
     }

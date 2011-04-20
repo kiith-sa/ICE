@@ -22,9 +22,9 @@ import platform.platform;
 import util.signal;
 import util.action;
 import util.string;
+import util.stringctfe;
 import graphdata;
 import color;
-import stringctfe;
 
 
 /**
