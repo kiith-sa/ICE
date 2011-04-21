@@ -18,35 +18,46 @@
   <h1 class="module" id="m-file.fileio"><a href="htmlsrc/file.fileio.html" class="symbol">file.fileio</a></h1>
 
 <dl>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="add_mod_directory" href="htmlsrc/file.fileio.html#L33">add_mod_directory</a><span class="params">(string <em>directory</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="file.fileio.html#add_mod_directory" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="FileIOException" href="htmlsrc/file.fileio.html#L22">FileIOException</a> : <span class="bclass">Exception</span> <a href="file.fileio.html#FileIOException" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Add a mod directory (subdirectory of ./data/) to read data from.</div></div>
-<div class="cmnt">Directories added later take precedence over directories
- added before, e.g., if we add 3 directories, "main", "mod1" and "mod2",
- file "file.txt" will be first searched for as "./data/mod2/file.txt",
- then "./data/mod1/file.txt" and finally "./data/main/file.txt"
+<div class="summary"><div class="cmnt">Exception thrown at file errors.</div></div>
+<dl>
+<dt class="decl"><a class="symbol _ctor" name="FileIOException.this" href="htmlsrc/file.fileio.html#L22">this</a><span class="params">(string <em>msg</em>)</span> <a href="file.fileio.html#FileIOException.this" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="add_mod_directory" href="htmlsrc/file.fileio.html#L35">add_mod_directory</a><span class="params">(string <em>directory</em>)</span> <a href="file.fileio.html#add_mod_directory" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Add a mod directory.</div></div>
+<div class="cmnt">Directories added later take precedence over directories added before.
 <p class="bl"></p>
  Only lowercase letters, numbers and the '_' character are legal in mod directory names.</div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>directory</em></td><td>Mod directory to add.</td></tr></table>
-<p class="sec_header">Throws:</p><div class="cmnt">Exception on if the directory name is invalid or the directory does not exist.</div></dd>
-<dt class="decl"><span class="rettyp">File</span> <a class="symbol _function" name="open_file" href="htmlsrc/file.fileio.html#L91">open_file</a><span class="params">(string <em>name</em>, FileMode <em>mode</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="file.fileio.html#open_file" class="plink">¶</a></dt>
+<p class="sec_header">Throws:</p><div class="cmnt">FileIOException on if the directory name is invalid or it does not exist.</div></dd>
+<dt class="decl"><span class="rettyp">File</span> <a class="symbol _function" name="open_file" href="htmlsrc/file.fileio.html#L103">open_file</a><span class="params">(string <em>name</em>, FileMode <em>mode</em>)</span> <a href="file.fileio.html#open_file" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Open a file with given name and mode.</div></div>
-<div class="cmnt">Files are searched for in known ./data/ subdirectories, e.g. if "main" and "mod"
- are known subdirectories, file "file.txt" is first searched for in "./data/mod"
- and the "./data/main". Alternatively, subdirectory can be specified explicitly,
- e.g. "mod::file.txt" will always open "./data/mod/file.txt" .
- Reading a file that doesn't exist is an error.
- For writing and appending, mod directory must be explicitly set.
- (e.g. mod::file.txt).</div>
+<div class="cmnt">Files are searched for in mod subdirectories in root and user data directories.
+ If opening a file for reading, it is first searched for in the newest mod directory
+ in user data, then in root data, then in second newest mod directory and so on.
+ If it's not found, a FileIOException is thrown.
+<p class="bl"></p>
+ Alternatively, mod directory can be explicitly specified, like this : "mod::file.ext",
+ which will look only in that subdirectory in user, root data directories.
+ If specified explicitly, the mod directory only needs to exist in root and/or user data,
+ it doesn't need to be registered with add_mod_directory().
+<p class="bl"></p>
+ If the file is opened for writing or appending, the mod directory must be specified
+ and must exist in user data, and the file will be opened whether it already exists or not.
+ Files are always written to user data (root data is read only).</div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
-<tr><td><em>name</em></td><td>In-engine name of the file to open.</td></tr>
+<tr><td><em>name</em></td><td>In-engine name of the file to open. For writing or appending,
+                 mod directory must be specified.</td></tr>
 <tr><td><em>mode</em></td><td>File mode to open the file in.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">File opened.</div>
-<p class="sec_header">Throws:</p><div class="cmnt">Exception on failure.</div>
+<p class="sec_header">Throws:</p><div class="cmnt">FileIOException if the file to read could not be found, file name is invalid 
+                          or the mod directory was not specified for writing/appending.</div>
 <p class="sec_header">Examples:</p><div class="cmnt"><table class="d_code">
   <tr><td class="d_codelines">
 <pre><a href="#L1_ex1" name="L1_ex1">1</a>
@@ -102,21 +113,57 @@
 <span class="k">scope</span>(<span class="i">exit</span>){<span class="i">close_file</span>(<span class="i">file</span>);}</pre>
 </td></tr>
 </table></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="close_file" href="htmlsrc/file.fileio.html#L125">close_file</a><span class="params">(File <em>file</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="file.fileio.html#close_file" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="close_file" href="htmlsrc/file.fileio.html#L127">close_file</a><span class="params">(File <em>file</em>)</span> <a href="file.fileio.html#close_file" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Close a file. This will write out any changes and delete any buffers.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>file</em></td><td>File to close.</td></tr></table>
-<p class="sec_header">Throws:</p><div class="cmnt">Exception if the buffers couldn't be written out in append or write mode.</div></dd>
-<dt class="decl"><span class="kw">auto</span> <a class="symbol _variable" name="write_reserve_" href="htmlsrc/file.fileio.html#L164">write_reserve_</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="file.fileio.html#write_reserve_" class="plink">¶</a></dt>
+<p class="sec_header">Throws:</p><div class="cmnt">FileIOException if the buffers couldn't be written out in append or write mode.</div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="ensure_directory_user" href="htmlsrc/file.fileio.html#L177">ensure_directory_user</a><span class="params">(string <em>name</em>)</span> <a href="file.fileio.html#ensure_directory_user" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Ensure a directory exists in user data. Will create the directory if it doesn't.</div></div>
+<div class="cmnt">Mod directory must be specified.</div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>name</em></td><td>In-engine name of the directory.</td></tr></table>
+<p class="sec_header">Throws:</p><div class="cmnt">FileIOException if the mod directory is not specified, name is invalid, file with 
+                          specified file exists that is not a directory or it couldn't be 
+                          created.</div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="file_exists_user" href="htmlsrc/file.fileio.html#L212">file_exists_user</a><span class="params">(string <em>name</em>)</span> <a href="file.fileio.html#file_exists_user" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Does the specified file(directory) exist in user data?</div></div>
+<div class="cmnt">Mod directory must be specified.</div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>name</em></td><td>In-engine file name.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">True if the file(directory) exists in user data, false otherwise.</div>
+<p class="sec_header">Throws:</p><div class="cmnt">FileIOException if the mod directory is not specified or the
+          file name is invalid.</div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="root_data" href="htmlsrc/file.fileio.html#L221">root_data</a><span class="params">(string <em>root_data</em>)</span> <a href="file.fileio.html#root_data" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Set root data directory. Must be called exactly once at startup.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>root_data</em></td><td>Root data directory to set.</td></tr></table>
+<p class="sec_header">Throws:</p><div class="cmnt">FileIOException if the directory does not exist or is invalid.</div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="user_data" href="htmlsrc/file.fileio.html#L239">user_data</a><span class="params">(string <em>user_data</em>)</span> <a href="file.fileio.html#user_data" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Set user data directory. Must be called exactly once at startup.</div></div>
+<div class="cmnt">If the specified directory doesn't exist, it will be created.</div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>user_data</em></td><td>User data directory to set.</td></tr></table>
+<p class="sec_header">Throws:</p><div class="cmnt">FileIOException if the path specified exists but is not a directory,
+          or the user data directory could not be created.</div></dd>
+<dt class="decl"><span class="kw">auto</span> <a class="symbol _variable" name="write_reserve_" href="htmlsrc/file.fileio.html#L258">write_reserve_</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="file.fileio.html#write_reserve_" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Default amount of bytes to reserve for file writing buffers - to prevent
 frequent reallocations.</div></div></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Feb 24 22:14:43 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Apr 21 16:10:56 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

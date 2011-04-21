@@ -45,31 +45,28 @@
 <dt class="decl">uint <a class="symbol _variable" name="GraphData.Value.value_count" href="htmlsrc/graphdata.html#L40">value_count</a> <a href="graphdata.html#GraphData.Value.value_count" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Number of values accumulated.</div></div></dd></dl></dd>
-<dt class="decl"><a class="symbol _ctor" name="GraphData.this" href="htmlsrc/graphdata.html#L287">this</a><span class="params">(string[] <em>graph_names</em>...)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="graphdata.html#GraphData.this" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _ctor" name="GraphData.this" href="htmlsrc/graphdata.html#L285">this</a><span class="params">(string[] <em>graph_names</em>...)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="graphdata.html#GraphData.this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct graph data with specified names of measured values.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>graph_names</em></td><td>Names of measured values.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphData.die" href="htmlsrc/graphdata.html#L309">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="graphdata.html#GraphData.die" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphData.die" href="htmlsrc/graphdata.html#L307">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="graphdata.html#GraphData.die" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Destroy this GraphData.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphData.mode" href="htmlsrc/graphdata.html#L315">mode</a><span class="params">(GraphMode <em>mode</em>)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="graphdata.html#GraphData.mode" class="plink">¶</a></dt>
-<dd class="ddef">
-<div class="summary"><div class="cmnt">Set graph mode, i.e. should data points be sums or averages?</div></div></dd>
-<dt class="decl"><span class="rettyp">real</span> <a class="symbol _function" name="GraphData.time_resolution" href="htmlsrc/graphdata.html#L318">time_resolution</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="graphdata.html#GraphData.time_resolution" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">real</span> <a class="symbol _function" name="GraphData.time_resolution" href="htmlsrc/graphdata.html#L313">time_resolution</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="graphdata.html#GraphData.time_resolution" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Get time resolution of the graph.</div></div></dd>
-<dt class="decl"><span class="rettyp">real</span> <a class="symbol _function" name="GraphData.start_time" href="htmlsrc/graphdata.html#L321">start_time</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="graphdata.html#GraphData.start_time" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">real</span> <a class="symbol _function" name="GraphData.start_time" href="htmlsrc/graphdata.html#L316">start_time</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="graphdata.html#GraphData.start_time" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Get time when this graph started to exist.</div></div></dd>
-<dt class="decl"><span class="rettyp">string[]</span> <a class="symbol _function" name="GraphData.graph_names" href="htmlsrc/graphdata.html#L324">graph_names</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="graphdata.html#GraphData.graph_names" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">string[]</span> <a class="symbol _function" name="GraphData.graph_names" href="htmlsrc/graphdata.html#L319">graph_names</a><span class="params">()</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="graphdata.html#GraphData.graph_names" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Get names of measured values.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphData.update_value" href="htmlsrc/graphdata.html#L327">update_value</a><span class="params">(string <em>name</em>, real <em>value</em>)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="graphdata.html#GraphData.update_value" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphData.update_value" href="htmlsrc/graphdata.html#L322">update_value</a><span class="params">(string <em>name</em>, real <em>value</em>)</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="graphdata.html#GraphData.update_value" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Add a value to the graph of value with specified name.</div></div></dd>
-<dt class="decl"><span class="rettyp">real[]</span> <a class="symbol _function" name="GraphData.data_points" href="htmlsrc/graphdata.html#L343">data_points</a><span class="params">(string <em>name</em>, real <em>start</em>, real <em>end</em>, real <em>period</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="graphdata.html#GraphData.data_points" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">real[]</span> <a class="symbol _function" name="GraphData.data_points" href="htmlsrc/graphdata.html#L339">data_points</a><span class="params">(string <em>name</em>, real <em>start</em>, real <em>end</em>, real <em>period</em>, GraphMode <em>mode</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="graphdata.html#GraphData.data_points" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Accumulate values recorded over a time window to data points, one 
  point per specified period, each data point is a sum or average of 
@@ -79,9 +76,10 @@
 <tr><td><em>name</em></td><td>Name of the value to get data points for.</td></tr>
 <tr><td><em>start</em></td><td>Start of the time window.</td></tr>
 <tr><td><em>end</em></td><td>End of the time window.</td></tr>
-<tr><td><em>period</em></td><td>Time period to represent by single data point.</td></tr></table>
+<tr><td><em>period</em></td><td>Time period to represent by single data point.</td></tr>
+<tr><td><em>mode</em></td><td>Graph mode (average per measurement or sums over time).</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">Array of data points in the specified time window.</div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="GraphData.empty" href="htmlsrc/graphdata.html#L358">empty</a><span class="params">(string <em>name</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="graphdata.html#GraphData.empty" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="GraphData.empty" href="htmlsrc/graphdata.html#L354">empty</a><span class="params">(string <em>name</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="graphdata.html#GraphData.empty" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Determine if graph of value with specified name is empty.</div></div>
 <div class="cmnt">Note that the graph is empty for a while until first accumulated
@@ -90,20 +88,20 @@
 <table class="params">
 <tr><td><em>name</em></td><td>Name of the value to check.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">True if the graph is empty, false otherwise.</div></dd>
-<dt class="decl"><span class="rettyp">real</span> <a class="symbol _function" name="GraphData.delay" href="htmlsrc/graphdata.html#L367">delay</a><span class="params">(string <em>name</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="graphdata.html#GraphData.delay" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">real</span> <a class="symbol _function" name="GraphData.delay" href="htmlsrc/graphdata.html#L363">delay</a><span class="params">(string <em>name</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="graphdata.html#GraphData.delay" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Get delay of graph of value with specified name relative to this GraphData.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>name</em></td><td>Name of the value to check.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">Delay of the graph relative to this GraphData in seconds.</div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphData.update" href="htmlsrc/graphdata.html#L370">update</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="graphdata.html#GraphData.update" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GraphData.update" href="htmlsrc/graphdata.html#L366">update</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="graphdata.html#GraphData.update" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Update graph data memory representation.</div></div></dd></dl></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Feb 24 22:14:44 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Apr 21 16:10:55 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

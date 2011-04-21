@@ -113,9 +113,9 @@
          *          manager   = Spatial manager managing the body.
          */</span>
         <span class="d Function"><span class="t Integral"><span class="k">void</span></span> <span class="i">update</span><span class="o Parameters">(<span class="o Parameter"><span class="t Integral"><span class="k">real</span></span> <span class="i">time_step</span></span>, <span class="o Parameter"><span class="t TemplateInstance"><span class="i">SpatialManager</span>!<span class="o TemplateArguments">(<span class="t Identifier"><span class="i">PhysicsBody</span></span>)</span></span> <span class="i">manager</span></span>)</span>
-        <span class="s FuncBody"><span class="k">in</span><span class="s Compound">{<span class="s Expression"><span class="e Assert"><span class="k">assert</span>(<span class="e Rel"><span class="e Identifier"><span class="i">time_step</span></span> &gt;= <span class="e Float"><span class="n">0.0</span></span></span>, <span class="e String"><span class="sl">"Can't update a physics body with negative time step"</span></span>)</span>;</span>}</span>
-        <span class="k">body</span>
-        <span class="s Compound">{
+        <span class="s FuncBody"><span class="s Compound">{
+            <span class="s Expression"><span class="e Assert"><span class="k">assert</span>(<span class="e Rel"><span class="e Identifier"><span class="i">time_step</span></span> &gt;= <span class="e Float"><span class="n">0.0</span></span></span>, <span class="e String"><span class="sl">"Can't update a physics body with negative time step"</span></span>)</span>;</span>
+
             <span class="s Expression"><span class="e PlusAssign"><span class="e Identifier"><span class="i">position_</span></span> += <span class="e Mul"><span class="e Identifier"><span class="i">velocity_</span></span> * <span class="e Identifier"><span class="i">time_step</span></span></span></span>;</span>
             <span class="s Expression"><span class="e Assign"><span class="e Identifier"><span class="i">colliders_</span></span>.<span class="e Identifier"><span class="i">length</span></span> = <span class="e Int"><span class="n">0</span></span></span>;</span> 
             <span class="lc">//spatial manager does not manage bodies without volumes.</span>

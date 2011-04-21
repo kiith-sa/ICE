@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>monitor.monitordata</title>
+  <link href="css/style.css" rel="stylesheet" type="text/css"/>
+  <!-- no favicon -->
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/utilities.js"></script>
+  <script type="text/javascript" src="js/symbols.js"></script>
+  <script type="text/javascript" src="js/modules.js"></script>
+  <script type="text/javascript" src="js/quicksearch.js"></script>
+  <script type="text/javascript" src="js/navigation.js"></script>
+</head>
+<body id="monitor.monitordata">
+<div id="kandil-content">
+<div class="module">
+  <h1 class="module" id="m-monitor.monitordata"><a href="htmlsrc/monitor.monitordata.html" class="symbol">monitor.monitordata</a></h1>
+
+<dl>
+<dt class="decl"><span class="kw">interface</span> <a class="symbol _interface" name="MonitorData" href="htmlsrc/monitor.monitordata.html#L16">MonitorData</a> <a href="monitor.monitordata.html#MonitorData" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Interface passed by Monitorables to the Monitor to access SubMonitors.</div></div>
+<dl>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="MonitorData.die" href="htmlsrc/monitor.monitordata.html#L19">die</a><span class="params">()</span> <a href="monitor.monitordata.html#MonitorData.die" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Destroy the MonitorData.</div></div></dd>
+<dt class="decl"><span class="rettyp">string[]</span> <a class="symbol _function" name="MonitorData.monitor_names" href="htmlsrc/monitor.monitordata.html#L22">monitor_names</a><span class="params">()</span> <a href="monitor.monitordata.html#MonitorData.monitor_names" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get names of submonitors available.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="MonitorData.start_monitor" href="htmlsrc/monitor.monitordata.html#L25">start_monitor</a><span class="params">(string <em>name</em>)</span> <a href="monitor.monitordata.html#MonitorData.start_monitor" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Start monitor with specified name.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="MonitorData.stop_monitor" href="htmlsrc/monitor.monitordata.html#L28">stop_monitor</a><span class="params">(string <em>name</em>)</span> <a href="monitor.monitordata.html#MonitorData.stop_monitor" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Stop monitor with specified name.</div></div></dd>
+<dt class="decl"><span class="rettyp">SubMonitor</span> <a class="symbol _function" name="MonitorData.get_monitor" href="htmlsrc/monitor.monitordata.html#L31">get_monitor</a><span class="params">(string <em>name</em>)</span> <a href="monitor.monitordata.html#MonitorData.get_monitor" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Access monitor with specified name. Should return const in D2.</div></div></dd></dl></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="MonitorManager" href="htmlsrc/monitor.monitordata.html#L37">MonitorManager</a><span class="tparams">(<em>M</em>)</span> : <span class="bclass">MonitorData</span> <span class="attrs">[<span class="stc">final</span>]</span> <a href="monitor.monitordata.html#MonitorManager" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">MonitorData implementation providing access to submonitors of monitorable of specified type.</div></div>
+<dl>
+<dt class="decl"><a class="symbol _ctor" name="MonitorManager.this" href="htmlsrc/monitor.monitordata.html#L56">this</a><span class="params">(M <em>monitored</em>, SubMonitor function(M)[string] <em>constructors</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="monitor.monitordata.html#MonitorManager.this" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Construct a MonitorManager providing access to monitors monitoring specified object.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>monitored</em></td><td>Monitored object.</td></tr>
+<tr><td><em>constructors</em></td><td>"Constructor" functions to get submonitors from.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="MonitorManager.die" href="htmlsrc/monitor.monitordata.html#L62">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="monitor.monitordata.html#MonitorManager.die" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">string[]</span> <a class="symbol _function" name="MonitorManager.monitor_names" href="htmlsrc/monitor.monitordata.html#L69">monitor_names</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="monitor.monitordata.html#MonitorManager.monitor_names" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="MonitorManager.start_monitor" href="htmlsrc/monitor.monitordata.html#L71">start_monitor</a><span class="params">(string <em>name</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="monitor.monitordata.html#MonitorManager.start_monitor" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="MonitorManager.stop_monitor" href="htmlsrc/monitor.monitordata.html#L76">stop_monitor</a><span class="params">(string <em>name</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="monitor.monitordata.html#MonitorManager.stop_monitor" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">SubMonitor</span> <a class="symbol _function" name="MonitorManager.get_monitor" href="htmlsrc/monitor.monitordata.html#L88">get_monitor</a><span class="params">(string <em>name</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="monitor.monitordata.html#MonitorManager.get_monitor" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd></dl>
+</div>
+<div id="kandil-footer">
+  <p></p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Apr 21 16:10:55 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+</div>
+</div>
+</body>
+</html>

@@ -27,11 +27,19 @@
 <tr><td><em>gl_format</em></td><td>GL format of the data (RGBA, luminance, etc) will be written here.</td></tr>
 <tr><td><em>type</em></td><td>GL data type (unsigned byte, etc) will be written here.</td></tr>
 <tr><td><em>internal_format</em></td><td>GL internal format (RGBA8, etc) will be written here.</td></tr></table></dd>
-<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="GLTexturePage" href="htmlsrc/video.gltexturepage.html#L57">GLTexturePage</a><span class="tparams">(<em>TexturePacker</em>)</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="video.gltexturepage.html#GLTexturePage" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">GLint</span> <a class="symbol _function" name="pack_alignment" href="htmlsrc/video.gltexturepage.html#L67">pack_alignment</a><span class="params">(ColorFormat <em>format</em>)</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="video.gltexturepage.html#pack_alignment" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Determine OpenGL packing/unpacking alignment needed for specified color format.</div></div>
+<div class="cmnt">GL only supports 1, 2, 4, 8, so using bytes per pixel doesn't work for e.g. RGB8.</div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>format</em></td><td>Format to get alignment for.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Alignment for specified format.</div></dd>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="GLTexturePage" href="htmlsrc/video.gltexturepage.html#L83">GLTexturePage</a><span class="tparams">(<em>TexturePacker</em>)</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="video.gltexturepage.html#GLTexturePage" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">OpenGL texture page with customizable texture packer.</div></div>
 <dl>
-<dt class="decl"><span class="rettyp">GLTexturePage!(TexturePacker)</span> <a class="symbol _function" name="GLTexturePage.opCall" href="htmlsrc/video.gltexturepage.html#L78">opCall</a><span class="params">(Vector2u <em>size</em>, ColorFormat <em>format</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="video.gltexturepage.html#GLTexturePage.opCall" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">GLTexturePage!(TexturePacker)</span> <a class="symbol _function" name="GLTexturePage.opCall" href="htmlsrc/video.gltexturepage.html#L104">opCall</a><span class="params">(Vector2u <em>size</em>, ColorFormat <em>format</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="video.gltexturepage.html#GLTexturePage.opCall" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct a GLTexturePage.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -39,10 +47,10 @@
 <tr><td><em>size</em></td><td>Dimensions of the page in pixels.</td></tr>
 <tr><td><em>format</em></td><td>Color format of the page.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">Constructed GLTexturePage.</div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GLTexturePage.die" href="htmlsrc/video.gltexturepage.html#L86">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.gltexturepage.html#GLTexturePage.die" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GLTexturePage.die" href="htmlsrc/video.gltexturepage.html#L112">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.gltexturepage.html#GLTexturePage.die" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Destroy the page.</div></div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="GLTexturePage.insert_texture" href="htmlsrc/video.gltexturepage.html#L101">insert_texture</a><span class="params">(<span class="k">ref</span> Image <em>image</em>,  <span class="k">out</span> Rectanglef <em>texcoords</em>,  <span class="k">out</span> Vector2u <em>offset</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.gltexturepage.html#GLTexturePage.insert_texture" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="GLTexturePage.insert_texture" href="htmlsrc/video.gltexturepage.html#L127">insert_texture</a><span class="params">(<span class="k">ref</span> Image <em>image</em>,  <span class="k">out</span> Rectanglef <em>texcoords</em>,  <span class="k">out</span> Vector2u <em>offset</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.gltexturepage.html#GLTexturePage.insert_texture" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Try to insert an image to this page and use it as a texture.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -51,34 +59,34 @@
 <tr><td><em>texcoords</em></td><td>Texture coords of the texture will be written here.</td></tr>
 <tr><td><em>offset</em></td><td>Offset of the texture on the page will be written here.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">True on success, false on failure.</div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GLTexturePage.start" href="htmlsrc/video.gltexturepage.html#L128">start</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.gltexturepage.html#GLTexturePage.start" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GLTexturePage.start" href="htmlsrc/video.gltexturepage.html#L154">start</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.gltexturepage.html#GLTexturePage.start" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Use this page to draw textured geometry from now on.</div></div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="GLTexturePage.resident" href="htmlsrc/video.gltexturepage.html#L131">resident</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.gltexturepage.html#GLTexturePage.resident" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="GLTexturePage.resident" href="htmlsrc/video.gltexturepage.html#L157">resident</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.gltexturepage.html#GLTexturePage.resident" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Determine if the page is resident in the video memory.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GLTexturePage.remove_texture" href="htmlsrc/video.gltexturepage.html#L139">remove_texture</a><span class="params">(<span class="k">ref</span> Rectangleu <em>bounds</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.gltexturepage.html#GLTexturePage.remove_texture" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GLTexturePage.remove_texture" href="htmlsrc/video.gltexturepage.html#L165">remove_texture</a><span class="params">(<span class="k">ref</span> Rectangleu <em>bounds</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.gltexturepage.html#GLTexturePage.remove_texture" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Remove texture with specified bounds from this page.</div></div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="GLTexturePage.empty" href="htmlsrc/video.gltexturepage.html#L142">empty</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.gltexturepage.html#GLTexturePage.empty" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="GLTexturePage.empty" href="htmlsrc/video.gltexturepage.html#L168">empty</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.gltexturepage.html#GLTexturePage.empty" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Determine if this page is empty (i.e. there are no textures on it).</div></div></dd>
-<dt class="decl"><span class="rettyp">Vector2u</span> <a class="symbol _function" name="GLTexturePage.size" href="htmlsrc/video.gltexturepage.html#L145">size</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.gltexturepage.html#GLTexturePage.size" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Vector2u</span> <a class="symbol _function" name="GLTexturePage.size" href="htmlsrc/video.gltexturepage.html#L171">size</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.gltexturepage.html#GLTexturePage.size" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Get size of the page in pixels.</div></div></dd>
-<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="GLTexturePage.info" href="htmlsrc/video.gltexturepage.html#L155">info</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.gltexturepage.html#GLTexturePage.info" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="GLTexturePage.info" href="htmlsrc/video.gltexturepage.html#L181">info</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.gltexturepage.html#GLTexturePage.info" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Return a string containing information about the page.</div></div>
 <div class="cmnt">Format of this string might change, it is used strictly for debugging
  purposes and not meant to be parsed.</div>
 <p class="sec_header">Returns:</p><div class="cmnt">String with information about the page.</div></dd></dl></dd>
-<dt class="decl"><span class="kw">alias</span> GLTexturePage!(NodePacker) <a class="symbol _alias" name="TexturePage" href="htmlsrc/video.gltexturepage.html#L200">TexturePage</a> <a href="video.gltexturepage.html#TexturePage" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">alias</span> GLTexturePage!(NodePacker) <a class="symbol _alias" name="TexturePage" href="htmlsrc/video.gltexturepage.html#L226">TexturePage</a> <a href="video.gltexturepage.html#TexturePage" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">GLTexturePage using NodePacker for texture packing.</div></div></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Feb 24 22:14:43 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Apr 21 16:10:55 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

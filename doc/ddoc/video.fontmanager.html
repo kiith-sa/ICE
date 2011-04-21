@@ -18,32 +18,33 @@
   <h1 class="module" id="m-video.fontmanager"><a href="htmlsrc/video.fontmanager.html" class="symbol">video.fontmanager</a></h1>
 
 <dl>
-<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="FontRenderer" href="htmlsrc/video.fontmanager.html#L28">FontRenderer</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="video.fontmanager.html#FontRenderer" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="FontRenderer" href="htmlsrc/video.fontmanager.html#L33">FontRenderer</a> <a href="video.fontmanager.html#FontRenderer" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Used by VideoDriver implementations to draw a string.</div></div>
 <dl>
-<dt class="decl"><span class="rettyp">uint</span> <a class="symbol _function" name="FontRenderer.height" href="htmlsrc/video.fontmanager.html#L44">height</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontRenderer.height" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">uint</span> <a class="symbol _function" name="FontRenderer.height" href="htmlsrc/video.fontmanager.html#L49">height</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontRenderer.height" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Get height of the font we're drawing.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="FontRenderer.start" href="htmlsrc/video.fontmanager.html#L47">start</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontRenderer.start" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="FontRenderer.start" href="htmlsrc/video.fontmanager.html#L52">start</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontRenderer.start" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Start drawing a string.</div></div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="FontRenderer.has_glyph" href="htmlsrc/video.fontmanager.html#L61">has_glyph</a><span class="params">(dchar <em>c</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontRenderer.has_glyph" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="FontRenderer.has_glyph" href="htmlsrc/video.fontmanager.html#L66">has_glyph</a><span class="params">(dchar <em>c</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontRenderer.has_glyph" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Determine if the glyph of a character is loaded.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>c</em></td><td>Character to check.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">True if the glyph is loaded, false otherwise.</div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="FontRenderer.load_glyph" href="htmlsrc/video.fontmanager.html#L71">load_glyph</a><span class="params">(VideoDriver <em>driver</em>, dchar <em>c</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontRenderer.load_glyph" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="FontRenderer.load_glyph" href="htmlsrc/video.fontmanager.html#L78">load_glyph</a><span class="params">(VideoDriver <em>driver</em>, dchar <em>c</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontRenderer.load_glyph" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Load glyph for a character.</div></div>
 <div class="cmnt">Will render the glyph and create a texture for it.</div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>driver</em></td><td>Video driver to use for texture creation.</td></tr>
-<tr><td><em>c</em></td><td>Character to load glyph for.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">Texture*</span> <a class="symbol _function" name="FontRenderer.glyph" href="htmlsrc/video.fontmanager.html#L82">glyph</a><span class="params">(dchar <em>c</em>,  <span class="k">out</span> Vector2u <em>offset</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontRenderer.glyph" class="plink">¶</a></dt>
+<tr><td><em>c</em></td><td>Character to load glyph for.</td></tr></table>
+<p class="sec_header">Throws:</p><div class="cmnt">TextureException if the glyph texture could not be created.</div></dd>
+<dt class="decl"><span class="rettyp">Texture*</span> <a class="symbol _function" name="FontRenderer.glyph" href="htmlsrc/video.fontmanager.html#L89">glyph</a><span class="params">(dchar <em>c</em>,  <span class="k">out</span> Vector2u <em>offset</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontRenderer.glyph" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Get glyph texture and offset to draw a glyph at.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -52,38 +53,39 @@
 <tr><td><em>offset</em></td><td>Offset to draw the glyph at will be written here
                    (relative to string start).</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">Pointer to the texture of the glyph.</div></dd>
-<dt class="decl"><span class="rettyp">Vector2u</span> <a class="symbol _function" name="FontRenderer.text_size" href="htmlsrc/video.fontmanager.html#L112">text_size</a><span class="params">(string <em>text</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontRenderer.text_size" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Vector2u</span> <a class="symbol _function" name="FontRenderer.text_size" href="htmlsrc/video.fontmanager.html#L119">text_size</a><span class="params">(string <em>text</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontRenderer.text_size" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Get size of text as it would be drawn in pixels.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>text</em></td><td>Text to get size of.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">Size of the text in X and Y. Y might be slightly imprecise.</div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="FontManager" href="htmlsrc/video.fontmanager.html#L121">FontManager</a> <span class="attrs">[<span class="prot">package</span>, <span class="stc">final</span>]</span> <a href="video.fontmanager.html#FontManager" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="FontManager" href="htmlsrc/video.fontmanager.html#L128">FontManager</a> <span class="attrs">[<span class="stc">final</span>]</span> <a href="video.fontmanager.html#FontManager" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Manages all font resources.</div></div>
 <dl>
-<dt class="decl"><a class="symbol _ctor" name="FontManager.this" href="htmlsrc/video.fontmanager.html#L162">this</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontManager.this" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _ctor" name="FontManager.this" href="htmlsrc/video.fontmanager.html#L172">this</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontManager.this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct the font manager, load default font.</div></div>
-<p class="sec_header">Throws:</p><div class="cmnt">Exception on failure.</div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="FontManager.unload_textures" href="htmlsrc/video.fontmanager.html#L204">unload_textures</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontManager.unload_textures" class="plink">¶</a></dt>
+<p class="sec_header">Throws:</p><div class="cmnt">FontException on failure.</div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="FontManager.unload_textures" href="htmlsrc/video.fontmanager.html#L223">unload_textures</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontManager.unload_textures" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Delete all glyph textures from the video driver.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>driver</em></td><td>VideoDriver to unload textures from.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="FontManager.reload_textures" href="htmlsrc/video.fontmanager.html#L214">reload_textures</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontManager.reload_textures" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="FontManager.reload_textures" href="htmlsrc/video.fontmanager.html#L235">reload_textures</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontManager.reload_textures" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Load glyph textures back to the video driver.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
-<tr><td><em>driver</em></td><td>VideoDriver to load textures to.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="FontManager.die" href="htmlsrc/video.fontmanager.html#L224">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontManager.die" class="plink">¶</a></dt>
+<tr><td><em>driver</em></td><td>VideoDriver to load textures to.</td></tr></table>
+<p class="sec_header">Throws:</p><div class="cmnt">TextureException if the glyph textures could not be reloaded.</div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="FontManager.die" href="htmlsrc/video.fontmanager.html#L245">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontManager.die" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Destroy the FontManager.</div></div>
 <div class="cmnt">To destroy all FontManager resources, unload_textures must be called first.</div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="FontManager.font" href="htmlsrc/video.fontmanager.html#L240">font</a><span class="params">(string <em>font_name</em>, bool <em>force_load</em> = <span class="defval"><span class="k">false</span></span>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontManager.font" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="FontManager.font" href="htmlsrc/video.fontmanager.html#L263">font</a><span class="params">(string <em>font_name</em>, bool <em>force_load</em> = <span class="defval"><span class="k">false</span></span>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontManager.font" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Set font to use.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -91,7 +93,7 @@
 <tr><td><em>font_name</em></td><td>Name of the font to set.</td></tr>
 <tr><td><em>force_load</em></td><td>Force the font to be set right now and loaded 
                        if it's not loaded yet.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="FontManager.font_size" href="htmlsrc/video.fontmanager.html#L255">font_size</a><span class="params">(uint <em>size</em>, bool <em>force_load</em> = <span class="defval"><span class="k">false</span></span>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontManager.font_size" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="FontManager.font_size" href="htmlsrc/video.fontmanager.html#L278">font_size</a><span class="params">(uint <em>size</em>, bool <em>force_load</em> = <span class="defval"><span class="k">false</span></span>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontManager.font_size" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Set font size to use.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -99,19 +101,19 @@
 <tr><td><em>size</em></td><td>Font size to set.</td></tr>
 <tr><td><em>force_load</em></td><td>Force the font size to be set right now and font loaded
                        if it's not loaded yet.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">FontRenderer</span> <a class="symbol _function" name="FontManager.renderer" href="htmlsrc/video.fontmanager.html#L267">renderer</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontManager.renderer" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">FontRenderer</span> <a class="symbol _function" name="FontManager.renderer" href="htmlsrc/video.fontmanager.html#L290">renderer</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontManager.renderer" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Return a renderer to draw text with.</div></div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="FontManager.antialiasing" href="htmlsrc/video.fontmanager.html#L274">antialiasing</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontManager.antialiasing" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="FontManager.antialiasing" href="htmlsrc/video.fontmanager.html#L297">antialiasing</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontManager.antialiasing" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Is font antialiasing enabled?</div></div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="FontManager.kerning" href="htmlsrc/video.fontmanager.html#L277">kerning</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontManager.kerning" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="FontManager.kerning" href="htmlsrc/video.fontmanager.html#L300">kerning</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.fontmanager.html#FontManager.kerning" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Is kerning enabled?</div></div></dd></dl></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Feb 24 22:14:43 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Apr 21 16:10:55 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

@@ -24,8 +24,8 @@ import util.traits;
 /**
  * Command line option.
  *
- * Methods of this struct are used to specify all parameters of the option
- * and the option is added to a CLI using its add_option() method.
+ * Methods of this struct are used to specify parameters of the option.
+ * The option is then added to a CLI using its add_option() method.
  */
 struct CLIOption
 {
@@ -75,9 +75,9 @@ struct CLIOption
         CLIOption help(string help){help_ = help; return *this;}
 
         /**
-         * Set (value) target.                       
+         * Set value target.                       
          * 
-         * Parse (single) argument of the option as target type and write it to the target.
+         * Parse single argument of the option as target type and write it to the target.
          * 
          * Target must be specified (by any of the target() methods).
          *
@@ -93,9 +93,9 @@ struct CLIOption
         }              
 
         /**
-         * Set (setter) target.                       
+         * Set setter target.                       
          * 
-         * Parse (single) argument of the option as target type and pass it to specified setter.
+         * Parse single argument of the option as target type and pass it to specified setter.
          * 
          * Target must be specified (by any of the target() methods).
          *
@@ -109,7 +109,7 @@ struct CLIOption
         }
 
         /**
-         * Set (array) target.                       
+         * Set array target.                       
          * 
          * Parse arguments of the option as target type and write them to specified array.
          * If the option is specified more than once, arguments from all instances
@@ -127,7 +127,7 @@ struct CLIOption
         }
 
         /**
-         * Set (function) target.                       
+         * Set function target.                       
          * 
          * Pass arguments of the option to specified function without any parsing.
          * Optionally, required number of arguments can be specified.
@@ -147,7 +147,7 @@ struct CLIOption
          * Specify default arguments for this option.
          *
          * Option's action will be executed with specified arguments
-         * when the option is not present.
+         * if the option is not present.
          * If default arguments are not specified, and the option is not present,
          * option's action will not be executed.
          *
@@ -245,7 +245,7 @@ class CLI
         alias containers.array.find find;
 
         ///Struct holding preprocessed (not yet parsed) option data.
-        static struct OptionData
+        private static struct OptionData
         {                  
             ///Option name.
             string name;
@@ -286,7 +286,7 @@ class CLI
         ///Set program description (start of the help text).
         void description(string text){description_ = text;}
 
-        ///Set help epilog of the help text.
+        ///Set epilog of the help text.
         void epilog(string text){epilog_ = text;}
 
         /**
@@ -570,7 +570,7 @@ private:
 class CLIException : Exception{this(string msg){super(msg);}}
 
 ///Action to be executed when an option is specified.
-abstract class Action
+private abstract class Action
 {
     /**
      * Execute the action.

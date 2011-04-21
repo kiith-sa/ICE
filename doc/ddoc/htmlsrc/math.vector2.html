@@ -49,7 +49,7 @@
     <span class="lc">///Subtraction with a vector.</span>
     <span class="d Function"><span class="t TemplateInstance"><span class="i">Vector2</span>!<span class="o TemplateArguments">(<span class="t Identifier"><span class="i">T</span></span>)</span></span> <span class="i">opSub</span><span class="o Parameters">(<span class="o Parameter"><span class="t TemplateInstance"><span class="i">Vector2</span>!<span class="o TemplateArguments">(<span class="t Identifier"><span class="i">T</span></span>)</span></span> <span class="i">v</span></span>)</span><span class="s FuncBody"><span class="s Compound">{<span class="s Return"><span class="k">return</span> <span class="e Call"><span class="e TemplateInstance"><span class="i">Vector2</span>!<span class="o TemplateArguments">(<span class="t Identifier"><span class="i">T</span></span>)</span></span>(<span class="k">cast</span>(<span class="i">T</span>)(<span class="i">x</span> - <span class="i">v</span>.<span class="i">x</span>), <span class="k">cast</span>(<span class="i">T</span>)(<span class="i">y</span> - <span class="i">v</span>.<span class="i">y</span>))</span>;</span>}</span></span></span>
 
-    <span class="lc">///Multiplication with a vector.</span>
+    <span class="lc">///Multiplication with a scalar.</span>
     <span class="d Function"><span class="t TemplateInstance"><span class="i">Vector2</span>!<span class="o TemplateArguments">(<span class="t Identifier"><span class="i">T</span></span>)</span></span> <span class="i">opMul</span><span class="o Parameters">(<span class="o Parameter"><span class="t Identifier"><span class="i">T</span></span> <span class="i">m</span></span>)</span><span class="s FuncBody"><span class="s Compound">{<span class="s Return"><span class="k">return</span> <span class="e Call"><span class="e TemplateInstance"><span class="i">Vector2</span>!<span class="o TemplateArguments">(<span class="t Identifier"><span class="i">T</span></span>)</span></span>(<span class="k">cast</span>(<span class="i">T</span>)(<span class="i">x</span> * <span class="i">m</span>), <span class="k">cast</span>(<span class="i">T</span>)(<span class="i">y</span> * <span class="i">m</span>))</span>;</span>}</span></span></span>
 
     <span class="lc">///Division by a scalar. </span>
@@ -122,6 +122,7 @@
                 <span class="s Declaration"><span class="d Variables"><span class="t TemplateInstance"><span class="i">Vector2</span>!<span class="o TemplateArguments">(<span class="t Identifier"><span class="i">T</span></span>)</span></span> <span class="i">vector</span> = <span class="e Deref">*<span class="e This"><span class="k">this</span></span></span>;</span></span>
                 <span class="s AsmBlock"><span class="k">asm</span>
                 <span class="s Compound">{                             
+                    <span class="lc">//for some reason, movlps XMM0, [EAX]; segfaults.</span>
                     <span class="lc">//copy vector to lower half of xmm0</span>
                     <span class="s Asm"><span class="i">movlps</span> <span class="e AsmRegister"><span class="i">XMM0</span></span>, <span class="e Identifier"><span class="i">vector</span></span>;</span>
                     <span class="lc">//square all floats in xmm0 </span>
@@ -167,15 +168,14 @@
         <span class="s Compound">{
             <span class="s StaticIf"><span class="k">static</span> <span class="k">if</span>(<span class="e Identity"><span class="e Typeid"><span class="k">typeid</span>(<span class="t Identifier"><span class="i">T</span></span>)</span> <span class="k">is</span> <span class="e Typeid"><span class="k">typeid</span>(<span class="t Integral"><span class="k">float</span></span>)</span></span>)
             <span class="s Compound">{
-                <span class="s Declaration"><span class="d Variables"><span class="t TemplateInstance"><span class="i">Vector2</span>!<span class="o TemplateArguments">(<span class="t Identifier"><span class="i">T</span></span>)</span></span><span class="t Pointer">*</span> <span class="i">vector</span> = <span class="e This"><span class="k">this</span></span>;</span></span>
                 <span class="s AsmBlock"><span class="k">asm</span>
                 <span class="s Compound">{     
-                    <span class="s Asm"><span class="i">mov</span> <span class="e AsmRegister"><span class="i">EBX</span></span>, <span class="e Identifier"><span class="i">vector</span></span>;</span>
+                    <span class="lc">//this pointer is passed in EAX</span>
+
                     <span class="lc">//copy this vector to both low and high half of xmm0</span>
                     <span class="lc">//this instruction is supposed to take a double and</span>
                     <span class="lc">//duplicate it, but two floats works too</span>
-                    <span class="s Asm"><span class="i">movddup</span> <span class="e AsmRegister"><span class="i">XMM0</span></span>, <span class="e AsmBracket">[<span class="e AsmRegister"><span class="i">EBX</span></span>]</span>;</span>
-                    <span class="lc">//movlps XMM0, [EBX];</span>
+                    <span class="s Asm"><span class="i">movddup</span> <span class="e AsmRegister"><span class="i">XMM0</span></span>, <span class="e AsmBracket">[<span class="e AsmRegister"><span class="i">EAX</span></span>]</span>;</span>
                     <span class="lc">//copy vector to xmm2</span>
                     <span class="s Asm"><span class="i">movaps</span> <span class="e AsmRegister"><span class="i">XMM2</span></span>, <span class="e AsmRegister"><span class="i">XMM0</span></span>;</span>       
                     <span class="lc">//square all floats in xmm0 </span>
@@ -188,7 +188,7 @@
                     <span class="lc">//multiply x and y with that and we have a normalized 2D vector</span>
                     <span class="s Asm"><span class="i">mulps</span> <span class="e AsmRegister"><span class="i">XMM2</span></span>, <span class="e AsmRegister"><span class="i">XMM0</span></span>;</span>
                     <span class="lc">//copy xmm2.x, xmm2y into this vector.</span>
-                    <span class="s Asm"><span class="i">movlps</span> <span class="e AsmBracket">[<span class="e AsmRegister"><span class="i">EBX</span></span>]</span>, <span class="e AsmRegister"><span class="i">XMM2</span></span>;</span>
+                    <span class="s Asm"><span class="i">movlps</span> <span class="e AsmBracket">[<span class="e AsmRegister"><span class="i">EAX</span></span>]</span>, <span class="e AsmRegister"><span class="i">XMM2</span></span>;</span>
                 }</span></span>
                 <span class="s Return"><span class="k">return</span>;</span>
             }</span>

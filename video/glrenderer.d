@@ -25,13 +25,12 @@ import color;
 
 
 /**
- * Caches draws and executes them at the end of the frame.
+ * Caches rendering commands and executes them at the end of the frame.
  *
- * GLRenderer is basically a massive render cache. Every draw call
- * generates vertices used by that draw (a line, texture draw or whatever),
- * which are added to a buffer that is passed to OpenGL at the end of the frame.
+ * GLRenderer works as a rendering cache. Every draw call generates vertices
+ * which are stored in buffers passed to OpenGL at the end of the frame.
  * State changes (shader, texture, scissor) are also recorded. Everything is rendered
- * in the order of draw calls used.
+ * in order of draw calls used.
  */
 package struct GLRenderer
 {

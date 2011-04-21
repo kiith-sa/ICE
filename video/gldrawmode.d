@@ -12,21 +12,21 @@ enum GLDrawMode
     /**
      * Immediate mode. Each vertex needs to be drawn in a separate function call.
      *
-     * Obsolete, but good for old GPUs, worse open source drivers and software GL.
+     * Obsolete, but good for old GPUs, some open source drivers and software GL.
      */
     Immediate,
     /**
      * Vertex arrays. Client memory (RAM) arrays drawn in a single function call.
      *
-     * Deprecated in OpenGL 3.x, but still very well supported and effective for 
-     * geometry generated at run time.
+     * Deprecated in OpenGL 3.x, but well supported and fast for geometry 
+     * generated at run time.
      */
     VertexArray,
     /**
      * Vertex buffer. Server memory (VRAM or RAM) arrays drawn in a single function call.
      *
-     * Only method to draw stuff supported in OpenGL 3.x (core) and onwards.
-     * Very fast for static geometry, but sufficient for streaming as well.
+     * Only drawing method supported in OpenGL 3.x (core) and onwards.
+     * Fast for static geometry, good enough for streaming as well.
      */
     VertexBuffer
 }

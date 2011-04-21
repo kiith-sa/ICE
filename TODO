@@ -2,8 +2,6 @@
     Figure out why SSE doesn't work on GDC. Maybe it's different asm conventions,
     or it is because we build 64 bit. Fix it and update cdc.
 07:
-    API Docs
-07:
     Logo, and use it as background in docs in a non-intrusive, MiniINI-like way.
 07:
     Simple site, don't upload yet 
@@ -11,6 +9,11 @@
 08:
     Ensure everything is polished, create README and such and push, for the first time,
     to gitorious or github. Not necessarily announcing it.
+
+    Do NOT forget that we have some LodePNG code and assign credit to that
+    in Credits, (and license? - see how others do it, e.g. Irrlicht also
+    includes libpng).
+    Also don't forget the same for Derelict as we're using it.
 
     Then: simple binary archive, both 32-bit and 64-bit if possible.
     At least Linux, but also Windows if possible. Maybe even Mac if we can find

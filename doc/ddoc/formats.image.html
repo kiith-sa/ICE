@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>formats.image</title>
+  <link href="css/style.css" rel="stylesheet" type="text/css"/>
+  <!-- no favicon -->
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/utilities.js"></script>
+  <script type="text/javascript" src="js/symbols.js"></script>
+  <script type="text/javascript" src="js/modules.js"></script>
+  <script type="text/javascript" src="js/quicksearch.js"></script>
+  <script type="text/javascript" src="js/navigation.js"></script>
+</head>
+<body id="formats.image">
+<div id="kandil-content">
+<div class="module">
+  <h1 class="module" id="m-formats.image"><a href="htmlsrc/formats.image.html" class="symbol">formats.image</a></h1>
+
+<dl>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="ImageFileException" href="htmlsrc/formats.image.html#L21">ImageFileException</a> : <span class="bclass">Exception</span> <a href="formats.image.html#ImageFileException" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Exception thrown at errors related to image files.</div></div>
+<dl>
+<dt class="decl"><a class="symbol _ctor" name="ImageFileException.this" href="htmlsrc/formats.image.html#L21">this</a><span class="params">(string <em>msg</em>)</span> <a href="formats.image.html#ImageFileException.this" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl"><span class="kw">enum</span> <a class="symbol _enum" name="ImageFileFormat" href="htmlsrc/formats.image.html#L24">ImageFileFormat</a> <a href="formats.image.html#ImageFileFormat" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Image file formats, e.g. PNG, GIF, etc.</div></div>
+<dl>
+<dt class="decl"><a class="symbol _enummem" name="ImageFileFormat.PNG" href="htmlsrc/formats.image.html#L27">PNG</a> <a href="formats.image.html#ImageFileFormat.PNG" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">PNG (Portable Network Graphics).</div></div></dd>
+<dt class="decl"><a class="symbol _enummem" name="ImageFileFormat.Auto" href="htmlsrc/formats.image.html#L29">Auto</a> <a href="formats.image.html#ImageFileFormat.Auto" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Automatic file format detection based on file extension (.png for PNG files).</div></div></dd></dl></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="write_image" href="htmlsrc/formats.image.html#L48">write_image</a><span class="params">(Image <em>image</em>, string <em>file_name</em>, ImageFileFormat <em>file_format</em> = <span class="defval"><span class="i">Auto</span></span>)</span> <a href="formats.image.html#write_image" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Write an image to file.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>image</em></td><td>Image to write.</td></tr>
+<tr><td><em>file_name</em></td><td>In-engine name of the file to write to.</td></tr>
+<tr><td><em>file_format</em></td><td>Image file format. Autodetected by default.
+                        If the format can't be autodetected, PNG format is used.
+<p class="bl"></p>
+ PNG is the only supported format at the moment (more formats may or may not be
+ added in future). Also, only 24-bit RGB and 32-bit RGBA color formats are supported
+ at the moment.</td></tr></table>
+<p class="sec_header">Throws:</p><div class="cmnt">FileIOException if the image could not be written.
+          ImageFileException in the case of an encoding error, if the color format is not 
+          supported or file format could not be detected in case of autodetection.</div></dd>
+<dt class="decl"><span class="rettyp">Image</span> <a class="symbol _function" name="read_image" href="htmlsrc/formats.image.html#L83">read_image</a><span class="params">(string <em>file_name</em>, ImageFileFormat <em>file_format</em> = <span class="defval"><span class="i">Auto</span></span>)</span> <a href="formats.image.html#read_image" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Read an image from a file.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>file_name</em></td><td>In-engine name of the file to read from.</td></tr>
+<tr><td><em>file_format</em></td><td>Image file format. Autodetected by default.
+                        If the format can't be autodetected, PNG format is used.
+<p class="bl"></p>
+ PNG is the only supported format at the moment (more formats may or may not be
+ added in future). Also, only 8-bit grayscale, 24-bit RGB and 32-bit RGBA color 
+ formats are supported at the moment.</td></tr></table>
+<p class="sec_header">Throws:</p><div class="cmnt">FileIOException if the file could not be read from.
+          ImageFileException if image data was invalid.</div></dd></dl>
+</div>
+<div id="kandil-footer">
+  <p></p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Apr 21 16:10:56 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+</div>
+</div>
+</body>
+</html>

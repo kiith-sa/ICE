@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <title>stringctfe</title>
+  <title>util.stringctfe</title>
   <style type="text/css">
   .linescolumn > a { display: block; }
   td { vertical-align: top; }
@@ -18,7 +18,7 @@
 <span class="lc">//    (See accompanying file LICENSE_1_0.txt or copy at</span>
 <span class="lc">//          http://www.boost.org/LICENSE_1_0.txt)</span>
 
-<span class="d Compound"><span class="d Module"><span class="k">module</span> <span class="i">stringctfe</span>;</span>
+<span class="d Compound"><span class="d Module"><span class="k">module</span> <span class="i">util</span>.<span class="i">stringctfe</span>;</span>
 
 
 <span class="bc">/**
@@ -63,10 +63,10 @@
  */</span>
 <span class="d Function"><span class="t Identifier"><span class="i">string</span></span> <span class="i">strip</span><span class="o Parameters">(<span class="o Parameter"><span class="t Identifier"><span class="i">string</span></span> <span class="i">str</span></span>)</span>
 <span class="s FuncBody"><span class="s Compound">{
-    <span class="s Declaration"><span class="d Variables"><span class="t Integral"><span class="k">uint</span></span> <span class="i">left</span> = <span class="e Int"><span class="n">0</span></span>;</span></span>
+    <span class="s Declaration"><span class="d Variables"><span class="t Identifier"><span class="i">size_t</span></span> <span class="i">left</span> = <span class="e Int"><span class="n">0</span></span>;</span></span>
     <span class="s While"><span class="k">while</span>(<span class="e Equal"><span class="e Index"><span class="e Identifier"><span class="i">str</span></span>[<span class="e Identifier"><span class="i">left</span></span>]</span> == <span class="e Char"><span class="cl">' '</span></span></span>)<span class="s Scope"><span class="s Compound">{<span class="s Expression"><span class="e PostIncr"><span class="e Identifier"><span class="i">left</span></span>++</span>;</span>}</span></span></span>
     <span class="s If"><span class="k">if</span>(<span class="e Equal"><span class="e Identifier"><span class="i">left</span></span> == <span class="e Identifier"><span class="i">str</span></span>.<span class="e Identifier"><span class="i">length</span></span></span>)<span class="s Scope"><span class="s Compound">{<span class="s Return"><span class="k">return</span> <span class="e String"><span class="sl">""</span></span>;</span>}</span></span></span>
-    <span class="s Declaration"><span class="d Variables"><span class="t Integral"><span class="k">uint</span></span> <span class="i">right</span> = <span class="e Minus"><span class="e Identifier"><span class="i">str</span></span>.<span class="e Identifier"><span class="i">length</span></span> - <span class="e Int"><span class="n">1</span></span></span>;</span></span>
+    <span class="s Declaration"><span class="d Variables"><span class="t Identifier"><span class="i">size_t</span></span> <span class="i">right</span> = <span class="e Minus"><span class="e Identifier"><span class="i">str</span></span>.<span class="e Identifier"><span class="i">length</span></span> - <span class="e Int"><span class="n">1</span></span></span>;</span></span>
     <span class="s While"><span class="k">while</span>(<span class="e Equal"><span class="e Index"><span class="e Identifier"><span class="i">str</span></span>[<span class="e Identifier"><span class="i">right</span></span>]</span> == <span class="e Char"><span class="cl">' '</span></span></span>)<span class="s Scope"><span class="s Compound">{<span class="s Expression"><span class="e PostDecr"><span class="e Identifier"><span class="i">right</span></span>--</span>;</span>}</span></span></span>
     <span class="s Return"><span class="k">return</span> <span class="e Slice"><span class="e Identifier"><span class="i">str</span></span>[<span class="e Identifier"><span class="i">left</span></span> .. <span class="e Plus"><span class="e Identifier"><span class="i">right</span></span> + <span class="e Int"><span class="n">1</span></span></span>]</span>;</span>
 }</span></span></span>

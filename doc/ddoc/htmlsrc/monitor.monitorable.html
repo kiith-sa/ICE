@@ -21,14 +21,14 @@
 <span class="d Compound"><span class="d Module"><span class="k">module</span> <span class="i">monitor</span>.<span class="i">monitorable</span>;</span>
 
 
-<span class="d Import"><span class="k">import</span> <span class="i">monitor</span>.<span class="i">monitormenu</span>;</span>
+<span class="d Import"><span class="k">import</span> <span class="i">monitor</span>.<span class="i">monitordata</span>;</span>
 
 
-<span class="lc">///Classes implementing this interface are monitorable by the monitor.</span>
+<span class="lc">///Interace used by classes that can be monitored by the monitor subsystem.</span>
 <span class="d Interface"><span class="k">interface</span> <span class="i">Monitorable</span>
 <span class="d Compound">{
-    <span class="lc">///Return monitor menu of the monitorable class.</span>
-    <span class="d Function"><span class="t Identifier"><span class="i">MonitorMenu</span></span> <span class="i">monitor_menu</span><span class="o Parameters">()</span><span class="s FuncBody">;</span></span>
+    <span class="lc">///Get MonitorData to access submonitors of the monitorable.</span>
+    <span class="d Function"><span class="t Identifier"><span class="i">MonitorData</span></span> <span class="i">monitor_data</span><span class="o Parameters">()</span><span class="s FuncBody">;</span></span>
 }</span></span></span>
 
 </pre></td>

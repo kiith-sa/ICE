@@ -18,32 +18,32 @@
   <h1 class="module" id="m-spatial.gridspatialmanager"><a href="htmlsrc/spatial.gridspatialmanager.html" class="symbol">spatial.gridspatialmanager</a></h1>
 
 <dl>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GridSpatialManager" href="htmlsrc/spatial.gridspatialmanager.html#L29">GridSpatialManager</a><span class="tparams">(<em>T</em>)</span> : <span class="bclass">SpatialManager!(T)</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GridSpatialManager" href="htmlsrc/spatial.gridspatialmanager.html#L30">GridSpatialManager</a><span class="tparams">(<em>T</em>)</span> : <span class="bclass">SpatialManager!(T)</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Implementation of spatial manager storing objects in a simple square grid.</div></div>
 <dl>
-<dt class="decl"><a class="symbol _invariant" name="GridSpatialManager.invariant" href="htmlsrc/spatial.gridspatialmanager.html#L31">invariant</a> <a href="spatial.gridspatialmanager.html#GridSpatialManager.invariant" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _invariant" name="GridSpatialManager.invariant" href="htmlsrc/spatial.gridspatialmanager.html#L32">invariant</a> <a href="spatial.gridspatialmanager.html#GridSpatialManager.invariant" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="GridSpatialManager.Cell" href="htmlsrc/spatial.gridspatialmanager.html#L39">Cell</a> <span class="attrs">[<span class="stc">static</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.Cell" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="GridSpatialManager.Cell" href="htmlsrc/spatial.gridspatialmanager.html#L40">Cell</a> <span class="attrs">[<span class="stc">static</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.Cell" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Grid cell.</div></div>
 <dl>
-<dt class="decl">Vector!(T) <a class="symbol _variable" name="GridSpatialManager.Cell.objects" href="htmlsrc/spatial.gridspatialmanager.html#L42">objects</a> <a href="spatial.gridspatialmanager.html#GridSpatialManager.Cell.objects" class="plink">¶</a></dt>
+<dt class="decl">Vector!(T) <a class="symbol _variable" name="GridSpatialManager.Cell.objects" href="htmlsrc/spatial.gridspatialmanager.html#L43">objects</a> <a href="spatial.gridspatialmanager.html#GridSpatialManager.Cell.objects" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Objects in the cell.</div></div></dd>
-<dt class="decl"><span class="rettyp">Cell</span> <a class="symbol _function" name="GridSpatialManager.Cell.opCall" href="htmlsrc/spatial.gridspatialmanager.html#L45">opCall</a><span class="params">()</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.Cell.opCall" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Cell</span> <a class="symbol _function" name="GridSpatialManager.Cell.opCall" href="htmlsrc/spatial.gridspatialmanager.html#L46">opCall</a><span class="params">()</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.Cell.opCall" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct a cell.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GridSpatialManager.Cell.die" href="htmlsrc/spatial.gridspatialmanager.html#L53">die</a><span class="params">()</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.Cell.die" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GridSpatialManager.Cell.die" href="htmlsrc/spatial.gridspatialmanager.html#L54">die</a><span class="params">()</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.Cell.die" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Destroy the cell.</div></div></dd></dl></dd>
-<dt class="decl">Array2D!(Cell) <a class="symbol _variable" name="GridSpatialManager.grid_" href="htmlsrc/spatial.gridspatialmanager.html#L57">grid_</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.grid_" class="plink">¶</a></dt>
+<dt class="decl">Array2D!(Cell) <a class="symbol _variable" name="GridSpatialManager.grid_" href="htmlsrc/spatial.gridspatialmanager.html#L58">grid_</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.grid_" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Cells of the grid.</div></div></dd>
-<dt class="decl">Cell <a class="symbol _variable" name="GridSpatialManager.outer_" href="htmlsrc/spatial.gridspatialmanager.html#L59">outer_</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.outer_" class="plink">¶</a></dt>
+<dt class="decl">Cell <a class="symbol _variable" name="GridSpatialManager.outer_" href="htmlsrc/spatial.gridspatialmanager.html#L60">outer_</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.outer_" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Cell representing the area outside the grid.</div></div></dd>
-<dt class="decl"><a class="symbol _ctor" name="GridSpatialManager.this" href="htmlsrc/spatial.gridspatialmanager.html#L100">this</a><span class="params">(Vector2f <em>center</em>, float <em>cell_size</em>, uint <em>grid_size</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.this" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _ctor" name="GridSpatialManager.this" href="htmlsrc/spatial.gridspatialmanager.html#L101">this</a><span class="params">(Vector2f <em>center</em>, float <em>cell_size</em>, uint <em>grid_size</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct a grid spatial manager with specified parameters.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -51,25 +51,25 @@
 <tr><td><em>center</em></td><td>Center of the grid in world space.</td></tr>
 <tr><td><em>cell_size</em></td><td>Size of a grid cell (both x and y).</td></tr>
 <tr><td><em>grid_size</em></td><td>Size of the grid in cells (both x and y).</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GridSpatialManager.die" href="htmlsrc/spatial.gridspatialmanager.html#L114">die</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.die" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GridSpatialManager.die" href="htmlsrc/spatial.gridspatialmanager.html#L115">die</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.die" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GridSpatialManager.add_object" href="htmlsrc/spatial.gridspatialmanager.html#L120">add_object</a><span class="params">(T <em>object</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.add_object" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GridSpatialManager.add_object" href="htmlsrc/spatial.gridspatialmanager.html#L121">add_object</a><span class="params">(T <em>object</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.add_object" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GridSpatialManager.remove_object" href="htmlsrc/spatial.gridspatialmanager.html#L133">remove_object</a><span class="params">(T <em>object</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.remove_object" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GridSpatialManager.remove_object" href="htmlsrc/spatial.gridspatialmanager.html#L134">remove_object</a><span class="params">(T <em>object</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.remove_object" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GridSpatialManager.update_object" href="htmlsrc/spatial.gridspatialmanager.html#L146">update_object</a><span class="params">(T <em>object</em>, Vector2f <em>old_position</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.update_object" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GridSpatialManager.update_object" href="htmlsrc/spatial.gridspatialmanager.html#L147">update_object</a><span class="params">(T <em>object</em>, Vector2f <em>old_position</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.update_object" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">Iterator!(T[])</span> <a class="symbol _function" name="GridSpatialManager.iterator" href="htmlsrc/spatial.gridspatialmanager.html#L160">iterator</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.iterator" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Iterator!(T[])</span> <a class="symbol _function" name="GridSpatialManager.iterator" href="htmlsrc/spatial.gridspatialmanager.html#L161">iterator</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.iterator" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">MonitorMenu</span> <a class="symbol _function" name="GridSpatialManager.monitor_menu" href="htmlsrc/spatial.gridspatialmanager.html#L162">monitor_menu</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>, <span class="stc">final</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.monitor_menu" class="plink">¶</a></dt>
-<dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">uint</span> <a class="symbol _function" name="GridSpatialManager.grid_size" href="htmlsrc/spatial.gridspatialmanager.html#L168">grid_size</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.grid_size" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">uint</span> <a class="symbol _function" name="GridSpatialManager.grid_size" href="htmlsrc/spatial.gridspatialmanager.html#L164">grid_size</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.grid_size" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Get grid size (both X and Y) in cells.</div></div></dd></dl></dd></dl>
+<div class="summary"><div class="cmnt">Get grid size (both X and Y) in cells.</div></div></dd>
+<dt class="decl"><span class="rettyp">MonitorData</span> <a class="symbol _function" name="GridSpatialManager.monitor_data" href="htmlsrc/spatial.gridspatialmanager.html#L166">monitor_data</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="spatial.gridspatialmanager.html#GridSpatialManager.monitor_data" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Feb 24 22:14:45 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Apr 21 16:10:54 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

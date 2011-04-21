@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>pong.wall</title>
+  <link href="css/style.css" rel="stylesheet" type="text/css"/>
+  <!-- no favicon -->
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/utilities.js"></script>
+  <script type="text/javascript" src="js/symbols.js"></script>
+  <script type="text/javascript" src="js/modules.js"></script>
+  <script type="text/javascript" src="js/quicksearch.js"></script>
+  <script type="text/javascript" src="js/navigation.js"></script>
+</head>
+<body id="pong.wall">
+<div id="kandil-content">
+<div class="module">
+  <h1 class="module" id="m-pong.wall"><a href="htmlsrc/pong.wall.html" class="symbol">pong.wall</a></h1>
+
+<dl>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="Wall" href="htmlsrc/pong.wall.html#L30">Wall</a> : <span class="bclass">Actor</span> <a href="pong.wall.html#Wall" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">A rectangular wall in the game area.</div></div>
+<p class="sec_header">Signal:</p><div class="cmnt">public mixin Signal!(BallBody) ball_hit
+<p class="bl"></p>
+     Emitted when a ball hits the wall. Will emit const BallBody after D2 move.</div>
+<dl>
+<dt class="decl">Color <a class="symbol _variable" name="Wall.default_color_" href="htmlsrc/pong.wall.html#L34">default_color_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.wall.html#Wall.default_color_" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Default color of the wall.</div></div></dd>
+<dt class="decl">Color <a class="symbol _variable" name="Wall.color_" href="htmlsrc/pong.wall.html#L36">color_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.wall.html#Wall.color_" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Current color of the wall.</div></div></dd>
+<dt class="decl">Color <a class="symbol _variable" name="Wall.default_color_border_" href="htmlsrc/pong.wall.html#L38">default_color_border_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.wall.html#Wall.default_color_border_" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Default color of the wall border.</div></div></dd>
+<dt class="decl">Color <a class="symbol _variable" name="Wall.color_border_" href="htmlsrc/pong.wall.html#L40">color_border_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.wall.html#Wall.color_border_" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Current color of the wall border.</div></div></dd>
+<dt class="decl">Rectanglef <a class="symbol _variable" name="Wall.box_" href="htmlsrc/pong.wall.html#L42">box_</a> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.wall.html#Wall.box_" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Area taken up by the wall.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Wall.velocity" href="htmlsrc/pong.wall.html#L49">velocity</a><span class="params">(Vector2f <em>v</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="pong.wall.html#Wall.velocity" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Set wall velocity.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Wall.die" href="htmlsrc/pong.wall.html#L51">die</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.wall.html#Wall.die" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _ctor" name="Wall.this" href="htmlsrc/pong.wall.html#L65">this</a><span class="params">(ActorContainer <em>container</em>, PhysicsBody <em>physics_body</em>,  <span class="k">ref</span> Rectanglef <em>box</em>)</span> <span class="attrs">[<span class="prot">protected</span>]</span> <a href="pong.wall.html#Wall.this" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Construct a wall with specified parameters.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>container</em></td><td>Actor container to manage the wall.</td></tr>
+<tr><td><em>physics_body</em></td><td>Physics body of the wall.</td></tr>
+<tr><td><em>box</em></td><td>Rectangle used for graphical representation of the wall.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Wall.draw" href="htmlsrc/pong.wall.html#L73">draw</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.wall.html#Wall.draw" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Wall.update" href="htmlsrc/pong.wall.html#L80">update</a><span class="params">(real <em>time_step</em>, real <em>game_time</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="pong.wall.html#Wall.update" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="WallFactoryBase" href="htmlsrc/pong.wall.html#L100">WallFactoryBase</a><span class="tparams">(<em>T</em>)</span> : <span class="bclass">ActorFactory!(T)</span> <span class="attrs">[<span class="stc">abstract</span>]</span> <a href="pong.wall.html#WallFactoryBase" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Base class for factories constructing Wall and derived classes.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>box_min</em></td><td>Minimum extent of the wall relative to its position.
+                    Default; Vector2f(0.0f, 0.0f)</td></tr>
+<tr><td><em>box_max</em></td><td>Maximum extent of the wall relative to its position.
+                    Default; Vector2f(1.0f, 1.0f)</td></tr></table>
+<dl>
+<dt class="decl"><span class="rettyp">VolumeAABBox</span> <a class="symbol _function" name="WallFactoryBase.bbox" href="htmlsrc/pong.wall.html#L106">bbox</a><span class="params">()</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="pong.wall.html#WallFactoryBase.bbox" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get a collision aabbox based on factory parameters. Used in produce().</div></div></dd>
+<dt class="decl"><span class="rettyp">Rectanglef</span> <a class="symbol _function" name="WallFactoryBase.rectangle" href="htmlsrc/pong.wall.html#L108">rectangle</a><span class="params">()</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="pong.wall.html#WallFactoryBase.rectangle" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get a bounds rectangle based on factory parameters. Used in produce().</div></div></dd></dl></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="WallFactory" href="htmlsrc/pong.wall.html#L112">WallFactory</a> : <span class="bclass">WallFactoryBase!(Wall)</span> <a href="pong.wall.html#WallFactory" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Factory used to construct walls.</div></div>
+<dl>
+<dt class="decl"><span class="rettyp">Wall</span> <a class="symbol _function" name="WallFactory.produce" href="htmlsrc/pong.wall.html#L114">produce</a><span class="params">(ActorContainer <em>container</em>)</span> <span class="attrs">[<span class="prot">public</span>, <span class="stc">override</span>]</span> <a href="pong.wall.html#WallFactory.produce" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd></dl>
+</div>
+<div id="kandil-footer">
+  <p></p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Apr 21 16:10:54 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+</div>
+</div>
+</body>
+</html>

@@ -57,7 +57,7 @@
 <span class="i">array</span>.<span class="i">remove_first</span>(<span class="k">new</span> <span class="i">Foo</span>(<span class="n">1</span>));       <span class="lc">//Removes the first Foo.</span></pre>
 </td></tr>
 </table></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="remove" href="htmlsrc/containers.array.html#L82">remove</a><span class="tparams">(<em>T</em>)</span><span class="params">(<span class="k">ref</span> T[] <em>array</em>, T <em>element</em>, bool <em>ident</em> = <span class="defval"><span class="k">false</span></span>)</span> <a href="containers.array.html#remove" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="remove" href="htmlsrc/containers.array.html#L77">remove</a><span class="tparams">(<em>T</em>)</span><span class="params">(<span class="k">ref</span> T[] <em>array</em>, T <em>element</em>, bool <em>ident</em> = <span class="defval"><span class="k">false</span></span>)</span> <a href="containers.array.html#remove" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Remove an element from the array.
  
@@ -100,7 +100,7 @@
 <span class="i">array</span>.<span class="i">remove</span>(<span class="k">new</span> <span class="i">Foo</span>(<span class="n">1</span>));       <span class="lc">//Removes the first and third element.</span></pre>
 </td></tr>
 </table></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="remove:2" href="htmlsrc/containers.array.html#L101">remove</a><span class="tparams">(<em>T</em>)</span><span class="params">(<span class="k">ref</span> T[] <em>array</em>, bool delegate(ref T) <em>deleg</em>)</span> <a href="containers.array.html#remove:2" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="remove:2" href="htmlsrc/containers.array.html#L96">remove</a><span class="tparams">(<em>T</em>)</span><span class="params">(<span class="k">ref</span> T[] <em>array</em>, bool delegate(ref T) <em>deleg</em>)</span> <a href="containers.array.html#remove:2" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Remove elements from an array with a function.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -117,12 +117,28 @@
 <span class="i">array</span>.<span class="i">remove</span>((<span class="k">ref</span> <span class="k">int</span> <span class="i">i</span>){<span class="k">return</span> <span class="i">i</span> &lt; <span class="n">3</span>;}); <span class="lc">//Removes all elements smaller than 3.</span></pre>
 </td></tr>
 </table></div></dd>
-<dt class="decl"><a class="symbol _unittest" name="unittest" href="htmlsrc/containers.array.html#L117">unittest</a> <a href="containers.array.html#unittest" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="remove_index" href="htmlsrc/containers.array.html#L116">remove_index</a><span class="tparams">(<em>T</em>)</span><span class="params">(<span class="k">ref</span> T[] <em>array</em>, uint <em>index</em>)</span> <a href="containers.array.html#remove_index" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Remove element at the specified index from the array.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>array</em></td><td>Array to remove from.</td></tr>
+<tr><td><em>index</em></td><td>Index to remove at. Must be within bounds.</td></tr></table>
+<p class="sec_header">Examples:</p><div class="cmnt"><table class="d_code">
+  <tr><td class="d_codelines">
+<pre><a href="#L1_ex6" name="L1_ex6">1</a>
+<a href="#L2_ex6" name="L2_ex6">2</a>
+</pre></td><td class="d_codetext"><pre>
+<span class="k">int</span>[] <span class="i">array</span> = [<span class="n">1</span>, <span class="n">2</span>, <span class="n">1</span>, <span class="n">3</span>];
+<span class="i">array</span>.<span class="i">remove_index</span>(<span class="n">0</span>); <span class="lc">//Removes element at index 0.</span></pre>
+</td></tr>
+</table></div></dd>
+<dt class="decl"><a class="symbol _unittest" name="unittest" href="htmlsrc/containers.array.html#L128">unittest</a> <a href="containers.array.html#unittest" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Unittest for remove_first() and both versions of remove()</div></div></dd>
-<dt class="decl"><span class="rettyp">int</span> <a class="symbol _function" name="find" href="htmlsrc/containers.array.html#L199">find</a><span class="tparams">(<em>T</em>)</span><span class="params">(<span class="k">ref</span> T[] <em>array</em>, bool delegate(ref T) <em>deleg</em>)</span> <a href="containers.array.html#find" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">int</span> <a class="symbol _function" name="find" href="htmlsrc/containers.array.html#L219">find</a><span class="tparams">(<em>T</em>)</span><span class="params">(<span class="k">ref</span> T[] <em>array</em>, bool delegate(ref T) <em>deleg</em>)</span> <a href="containers.array.html#find" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Find an element in an array with a function.</div></div>
+<div class="summary"><div class="cmnt">Find first matching element in an array using a function.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>array</em></td><td>Array to search in.</td></tr>
@@ -132,19 +148,30 @@
 <p class="sec_header">Returns:</p><div class="cmnt">Index of the element if found, -1 otherwise.</div>
 <p class="sec_header">Examples:</p><div class="cmnt"><table class="d_code">
   <tr><td class="d_codelines">
-<pre><a href="#L1_ex6" name="L1_ex6">1</a>
-<a href="#L2_ex6" name="L2_ex6">2</a>
-<a href="#L3_ex6" name="L3_ex6">3</a>
+<pre><a href="#L1_ex7" name="L1_ex7">1</a>
+<a href="#L2_ex7" name="L2_ex7">2</a>
+<a href="#L3_ex7" name="L3_ex7">3</a>
 </pre></td><td class="d_codetext"><pre>
 <span class="k">int</span>[] <span class="i">array</span> = [<span class="n">1</span>, <span class="n">2</span>, <span class="n">1</span>, <span class="n">4</span>, <span class="n">3</span>];
-<span class="k">int</span> <span class="i">i</span> = <span class="i">array</span>.<span class="i">find</span>((<span class="k">ref</span> <span class="k">int</span> <span class="i">i</span>){<span class="k">return</span> <span class="i">i</span> &gt;= <span class="n">3</span>;}); <span class="lc">//i is 3 (fourth element).</span>
+<span class="i">size_t</span> <span class="i">i</span> = <span class="i">array</span>.<span class="i">find</span>((<span class="k">ref</span> <span class="k">int</span> <span class="i">i</span>){<span class="k">return</span> <span class="i">i</span> &gt;= <span class="n">3</span>;}); <span class="lc">//i is 3 (fourth element).</span>
 <span class="i">i</span> = <span class="i">array</span>.<span class="i">find</span>((<span class="k">ref</span> <span class="k">int</span> <span class="i">i</span>){<span class="k">return</span> <span class="i">i</span> &gt; <span class="n">4</span>;});      <span class="lc">//i is -1 (no element is greater than 4).</span></pre>
 </td></tr>
 </table></div></dd>
-<dt class="decl"><a class="symbol _unittest" name="unittest:2" href="htmlsrc/containers.array.html#L207">unittest</a> <a href="containers.array.html#unittest:2" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _unittest" name="unittest:2" href="htmlsrc/containers.array.html#L227">unittest</a> <a href="containers.array.html#unittest:2" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Unittest for find().</div></div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="contains" href="htmlsrc/containers.array.html#L240">contains</a><span class="tparams">(<em>T</em>)</span><span class="params">(T[] <em>array</em>, T <em>element</em>, bool <em>ident</em> = <span class="defval"><span class="k">false</span></span>)</span> <a href="containers.array.html#contains" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">T[]</span> <a class="symbol _function" name="get_all" href="htmlsrc/containers.array.html#L246">get_all</a><span class="tparams">(<em>T</em>)</span><span class="params">(<span class="k">ref</span> T[] <em>array</em>, bool delegate(ref T) <em>deleg</em>)</span> <a href="containers.array.html#get_all" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get an array of all matching elements from an array using a function.</div></div>
+<div class="cmnt">This function is quite slow, especially with arrays of large structs,
+ and should be used with care.</div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>array</em></td><td>Array to search in.</td></tr>
+<tr><td><em>deleg</em></td><td>Function determining if we should get this element.
+                  All elements for which this function returns true
+                  will be returned.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="contains" href="htmlsrc/containers.array.html#L279">contains</a><span class="tparams">(<em>T</em>)</span><span class="params">(T[] <em>array</em>, T <em>element</em>, bool <em>ident</em> = <span class="defval"><span class="k">false</span></span>)</span> <a href="containers.array.html#contains" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Determine whether or not does an array contain an element.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -156,9 +183,9 @@
                   Only makes sense for reference types.</td></tr></table>
 <p class="sec_header">Examples:</p><div class="cmnt"><table class="d_code">
   <tr><td class="d_codelines">
-<pre><a href="#L1_ex7" name="L1_ex7">1</a>
-<a href="#L2_ex7" name="L2_ex7">2</a>
-<a href="#L3_ex7" name="L3_ex7">3</a>
+<pre><a href="#L1_ex8" name="L1_ex8">1</a>
+<a href="#L2_ex8" name="L2_ex8">2</a>
+<a href="#L3_ex8" name="L3_ex8">3</a>
 </pre></td><td class="d_codetext"><pre>
 <span class="k">int</span>[] <span class="i">array</span> = [<span class="n">1</span>, <span class="n">2</span>, <span class="n">1</span>, <span class="n">3</span>];
 <span class="k">bool</span> <span class="i">c</span> = <span class="i">array</span>.<span class="i">contains</span>(<span class="n">1</span>); <span class="lc">//c is true.</span>
@@ -168,13 +195,13 @@
  
  <table class="d_code">
   <tr><td class="d_codelines">
-<pre><a href="#L1_ex8" name="L1_ex8">1</a>
-<a href="#L2_ex8" name="L2_ex8">2</a>
-<a href="#L3_ex8" name="L3_ex8">3</a>
-<a href="#L4_ex8" name="L4_ex8">4</a>
-<a href="#L5_ex8" name="L5_ex8">5</a>
-<a href="#L6_ex8" name="L6_ex8">6</a>
-<a href="#L7_ex8" name="L7_ex8">7</a>
+<pre><a href="#L1_ex9" name="L1_ex9">1</a>
+<a href="#L2_ex9" name="L2_ex9">2</a>
+<a href="#L3_ex9" name="L3_ex9">3</a>
+<a href="#L4_ex9" name="L4_ex9">4</a>
+<a href="#L5_ex9" name="L5_ex9">5</a>
+<a href="#L6_ex9" name="L6_ex9">6</a>
+<a href="#L7_ex9" name="L7_ex9">7</a>
 </pre></td><td class="d_codetext"><pre>
 <span class="lc">//Assuming Foo is a class defined somewhere prior with a constructor</span>
 <span class="lc">//that always constructs identical instance when given identical parameters.</span>
@@ -185,10 +212,10 @@
 <span class="i">c</span> = <span class="i">array</span>.<span class="i">contains</span>(<span class="k">new</span> <span class="i">Foo</span>(<span class="n">1</span>));          <span class="lc">//c is true.</span></pre>
 </td></tr>
 </table></div></dd>
-<dt class="decl"><a class="symbol _unittest" name="unittest:3" href="htmlsrc/containers.array.html#L249">unittest</a> <a href="containers.array.html#unittest:3" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _unittest" name="unittest:3" href="htmlsrc/containers.array.html#L288">unittest</a> <a href="containers.array.html#unittest:3" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Unittest for contains().</div></div></dd>
-<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="min" href="htmlsrc/containers.array.html#L300">min</a><span class="tparams">(<em>T</em>)</span><span class="params">(T[] <em>array</em>)</span> <a href="containers.array.html#min" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="min" href="htmlsrc/containers.array.html#L339">min</a><span class="tparams">(<em>T</em>)</span><span class="params">(T[] <em>array</em>)</span> <a href="containers.array.html#min" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Returns minimum value of an array.</div></div>
 <div class="cmnt">Uses the &gt; operator (opCmp for structs and classes) to get the minimum.
@@ -200,10 +227,10 @@
 <p class="sec_header">Returns:</p><div class="cmnt">Minimum of the array.</div>
 <p class="sec_header">Examples:</p><div class="cmnt"><table class="d_code">
   <tr><td class="d_codelines">
-<pre><a href="#L1_ex9" name="L1_ex9">1</a>
-<a href="#L2_ex9" name="L2_ex9">2</a>
-<a href="#L3_ex9" name="L3_ex9">3</a>
-<a href="#L4_ex9" name="L4_ex9">4</a>
+<pre><a href="#L1_ex10" name="L1_ex10">1</a>
+<a href="#L2_ex10" name="L2_ex10">2</a>
+<a href="#L3_ex10" name="L3_ex10">3</a>
+<a href="#L4_ex10" name="L4_ex10">4</a>
 </pre></td><td class="d_codetext"><pre>
 <span class="k">int</span>[] <span class="i">array</span> = [<span class="n">1</span>, <span class="n">2</span>, <span class="n">1</span>, <span class="n">3</span>];
 <span class="k">int</span> <span class="i">minimum</span> = <span class="i">array</span>.<span class="i">min</span>(); <span class="lc">//minimum is 1</span>
@@ -214,13 +241,13 @@
 <p class="bl"></p>
  <table class="d_code">
   <tr><td class="d_codelines">
-<pre><a href="#L1_ex10" name="L1_ex10">1</a>
-<a href="#L2_ex10" name="L2_ex10">2</a>
-<a href="#L3_ex10" name="L3_ex10">3</a>
-<a href="#L4_ex10" name="L4_ex10">4</a>
-<a href="#L5_ex10" name="L5_ex10">5</a>
-<a href="#L6_ex10" name="L6_ex10">6</a>
-<a href="#L7_ex10" name="L7_ex10">7</a>
+<pre><a href="#L1_ex11" name="L1_ex11">1</a>
+<a href="#L2_ex11" name="L2_ex11">2</a>
+<a href="#L3_ex11" name="L3_ex11">3</a>
+<a href="#L4_ex11" name="L4_ex11">4</a>
+<a href="#L5_ex11" name="L5_ex11">5</a>
+<a href="#L6_ex11" name="L6_ex11">6</a>
+<a href="#L7_ex11" name="L7_ex11">7</a>
 </pre></td><td class="d_codetext"><pre>
 <span class="lc">//Assuming Foo is a class defined somewhere prior with a constructor</span>
 <span class="lc">//that always constructs identical instance when given identical parameters,</span>
@@ -231,7 +258,7 @@
 <span class="i">Foo</span> <span class="i">minimum</span> = <span class="i">array</span>.<span class="i">min</span>(); <span class="lc">//minimum is the first or third element of the array.</span></pre>
 </td></tr>
 </table></div></dd>
-<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="min:2" href="htmlsrc/containers.array.html#L323">min</a><span class="tparams">(<em>T</em>)</span><span class="params">(T[] <em>array</em>, bool delegate(ref T a, ref T b) <em>deleg</em>)</span> <a href="containers.array.html#min:2" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="min:2" href="htmlsrc/containers.array.html#L362">min</a><span class="tparams">(<em>T</em>)</span><span class="params">(T[] <em>array</em>, bool delegate(ref T a, ref T b) <em>deleg</em>)</span> <a href="containers.array.html#min:2" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Returns minimum value of an array using a function to compare elements.</div></div>
 <div class="cmnt">If more than one element in the array is the minimum, any one of them could
@@ -245,10 +272,10 @@
 <p class="sec_header">Returns:</p><div class="cmnt">Minimum of the array.</div>
 <p class="sec_header">Examples:</p><div class="cmnt"><table class="d_code">
   <tr><td class="d_codelines">
-<pre><a href="#L1_ex11" name="L1_ex11">1</a>
-<a href="#L2_ex11" name="L2_ex11">2</a>
-<a href="#L3_ex11" name="L3_ex11">3</a>
-<a href="#L4_ex11" name="L4_ex11">4</a>
+<pre><a href="#L1_ex12" name="L1_ex12">1</a>
+<a href="#L2_ex12" name="L2_ex12">2</a>
+<a href="#L3_ex12" name="L3_ex12">3</a>
+<a href="#L4_ex12" name="L4_ex12">4</a>
 </pre></td><td class="d_codetext"><pre>
 <span class="k">int</span>[] <span class="i">array</span> = [<span class="n">1</span>, <span class="n">2</span>, <span class="n">1</span>, <span class="n">3</span>];
 <span class="k">int</span> <span class="i">minimum</span> = <span class="i">array</span>.<span class="i">min</span>((<span class="k">ref</span> <span class="k">int</span> <span class="i">a</span>, <span class="k">ref</span> <span class="k">int</span> <span class="i">b</span>){<span class="k">return</span> <span class="i">a</span> &lt; <span class="i">b</span>;}); <span class="lc">//minimum is 3</span>
@@ -256,7 +283,7 @@
 <span class="i">minimum</span> = <span class="i">array</span>.<span class="i">min</span>(); <span class="lc">//ERROR, can't get minimum of an empty array.</span></pre>
 </td></tr>
 </table></div></dd>
-<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="max" href="htmlsrc/containers.array.html#L365">max</a><span class="tparams">(<em>T</em>)</span><span class="params">(T[] <em>array</em>)</span> <a href="containers.array.html#max" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="max" href="htmlsrc/containers.array.html#L404">max</a><span class="tparams">(<em>T</em>)</span><span class="params">(T[] <em>array</em>)</span> <a href="containers.array.html#max" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Returns maximum value of an array.</div></div>
 <div class="cmnt">Uses the &gt; operator (opCmp for structs and classes) to get the maximum.
@@ -268,10 +295,10 @@
 <p class="sec_header">Returns:</p><div class="cmnt">Maximum of the array.</div>
 <p class="sec_header">Examples:</p><div class="cmnt"><table class="d_code">
   <tr><td class="d_codelines">
-<pre><a href="#L1_ex12" name="L1_ex12">1</a>
-<a href="#L2_ex12" name="L2_ex12">2</a>
-<a href="#L3_ex12" name="L3_ex12">3</a>
-<a href="#L4_ex12" name="L4_ex12">4</a>
+<pre><a href="#L1_ex13" name="L1_ex13">1</a>
+<a href="#L2_ex13" name="L2_ex13">2</a>
+<a href="#L3_ex13" name="L3_ex13">3</a>
+<a href="#L4_ex13" name="L4_ex13">4</a>
 </pre></td><td class="d_codetext"><pre>
 <span class="k">int</span>[] <span class="i">array</span> = [<span class="n">1</span>, <span class="n">2</span>, <span class="n">1</span>, <span class="n">3</span>];
 <span class="k">int</span> <span class="i">maximum</span> = <span class="i">array</span>.<span class="i">max</span>; <span class="lc">//maximum is 3</span>
@@ -282,13 +309,13 @@
 <p class="bl"></p>
  <table class="d_code">
   <tr><td class="d_codelines">
-<pre><a href="#L1_ex13" name="L1_ex13">1</a>
-<a href="#L2_ex13" name="L2_ex13">2</a>
-<a href="#L3_ex13" name="L3_ex13">3</a>
-<a href="#L4_ex13" name="L4_ex13">4</a>
-<a href="#L5_ex13" name="L5_ex13">5</a>
-<a href="#L6_ex13" name="L6_ex13">6</a>
-<a href="#L7_ex13" name="L7_ex13">7</a>
+<pre><a href="#L1_ex14" name="L1_ex14">1</a>
+<a href="#L2_ex14" name="L2_ex14">2</a>
+<a href="#L3_ex14" name="L3_ex14">3</a>
+<a href="#L4_ex14" name="L4_ex14">4</a>
+<a href="#L5_ex14" name="L5_ex14">5</a>
+<a href="#L6_ex14" name="L6_ex14">6</a>
+<a href="#L7_ex14" name="L7_ex14">7</a>
 </pre></td><td class="d_codetext"><pre>
 <span class="lc">//Assuming Foo is a class defined somewhere prior with a constructor</span>
 <span class="lc">//that always constructs identical instance when given identical parameters,</span>
@@ -299,7 +326,7 @@
 <span class="i">Foo</span> <span class="i">maximum</span> = <span class="i">array</span>.<span class="i">max</span>(); <span class="lc">//maximum is the second or fourth element of the array.</span></pre>
 </td></tr>
 </table></div></dd>
-<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="max:2" href="htmlsrc/containers.array.html#L388">max</a><span class="tparams">(<em>T</em>)</span><span class="params">(T[] <em>array</em>, bool delegate(ref T a, ref T b) <em>deleg</em>)</span> <a href="containers.array.html#max:2" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">T</span> <a class="symbol _function" name="max:2" href="htmlsrc/containers.array.html#L427">max</a><span class="tparams">(<em>T</em>)</span><span class="params">(T[] <em>array</em>, bool delegate(ref T a, ref T b) <em>deleg</em>)</span> <a href="containers.array.html#max:2" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Returns maximum value of an array using a function to compare elements.</div></div>
 <div class="cmnt">If more than one element in the array is the maximum, any one of them could
@@ -313,10 +340,10 @@
 <p class="sec_header">Returns:</p><div class="cmnt">Maximum of the array.</div>
 <p class="sec_header">Examples:</p><div class="cmnt"><table class="d_code">
   <tr><td class="d_codelines">
-<pre><a href="#L1_ex14" name="L1_ex14">1</a>
-<a href="#L2_ex14" name="L2_ex14">2</a>
-<a href="#L3_ex14" name="L3_ex14">3</a>
-<a href="#L4_ex14" name="L4_ex14">4</a>
+<pre><a href="#L1_ex15" name="L1_ex15">1</a>
+<a href="#L2_ex15" name="L2_ex15">2</a>
+<a href="#L3_ex15" name="L3_ex15">3</a>
+<a href="#L4_ex15" name="L4_ex15">4</a>
 </pre></td><td class="d_codetext"><pre>
 <span class="k">int</span>[] <span class="i">array</span> = [<span class="n">1</span>, <span class="n">2</span>, <span class="n">1</span>, <span class="n">3</span>];
 <span class="k">int</span> <span class="i">maximum</span> = <span class="i">array</span>.<span class="i">max</span>((<span class="k">ref</span> <span class="k">int</span> <span class="i">a</span>, <span class="k">ref</span> <span class="k">int</span> <span class="i">b</span>){<span class="k">return</span> <span class="i">a</span> &gt; <span class="i">b</span>;}); <span class="lc">//maximum is 3</span>
@@ -324,13 +351,13 @@
 <span class="i">maximum</span> = <span class="i">array</span>.<span class="i">max</span>(); <span class="lc">//ERROR, can't get maximum of an empty array.</span></pre>
 </td></tr>
 </table></div></dd>
-<dt class="decl"><a class="symbol _unittest" name="unittest:4" href="htmlsrc/containers.array.html#L403">unittest</a> <a href="containers.array.html#unittest:4" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _unittest" name="unittest:4" href="htmlsrc/containers.array.html#L442">unittest</a> <a href="containers.array.html#unittest:4" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Unittest for all min() and max() functions.</div></div></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Feb 24 22:14:44 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Apr 21 16:10:53 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

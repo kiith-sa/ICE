@@ -7,14 +7,14 @@
 module util.action;
 
   
-///Base class for Actions (Needed due to templating).
+///Base class for Actions (needed due to templating).
 abstract class ActionBase
 {
     public void opCall(){assert(false);};
 }
 
 ///Wrapper of a function and its arguments. Might be replaceable by closures in D2.
-class Action(Args ...) :ActionBase
+class Action(Args ...) : ActionBase
 {
     private:
         ///Function to execute.

@@ -135,12 +135,12 @@ package struct GLVertexBuffer(Vertex)
          * Vertex group passed must be using data in this buffer, otherwise
          * undefined behavior might occur.
          *
-         * This will only draw the group vertices - other state like the group's shader,
+         * This will only draw the vertices - other state such as shader,
          * texture page or scissor rectangle must be set before this call.
          *
          * Params:  group = Vertex group to draw.
          *
-         * Returns: 0 if the drawing was succesful.
+         * Returns: 0 if drawing was succesful.
          *          -1 if a required shader attribute was not found in group's shader.
          */
         int draw(ref GLVertexGroup group)

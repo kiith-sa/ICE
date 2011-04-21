@@ -10,7 +10,7 @@
  * Introduction:
  * 
  * This is the complete API documentation for the Pong engine. It describes
- * all classes, structs, interfaces, functions, etc. .
+ * all classes, structs, interfaces, functions and so on.
  * This API documentation is intended to serve developers who want to
  * improve the Pong engine, as well as those who want to modify it for
  * their own needs.

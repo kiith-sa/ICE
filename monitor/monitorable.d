@@ -10,7 +10,9 @@ module monitor.monitorable;
 import monitor.monitordata;
 
 
+///Interace used by classes that can be monitored by the monitor subsystem.
 interface Monitorable
 {
+    ///Get MonitorData to access submonitors of the monitorable.
     MonitorData monitor_data();
 }

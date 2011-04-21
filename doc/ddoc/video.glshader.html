@@ -18,30 +18,44 @@
   <h1 class="module" id="m-video.glshader"><a href="htmlsrc/video.glshader.html" class="symbol">video.glshader</a></h1>
 
 <dl>
-<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="GLShader" href="htmlsrc/video.glshader.html#L20">GLShader</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="video.glshader.html#GLShader" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="GLShader" href="htmlsrc/video.glshader.html#L22">GLShader</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="video.glshader.html#GLShader" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">OpenGL (GLSL only right now) shader.</div></div>
 <dl>
-<dt class="decl"><a class="symbol _invariant" name="GLShader.invariant" href="htmlsrc/video.glshader.html#L22">invariant</a> <a href="video.glshader.html#GLShader.invariant" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _invariant" name="GLShader.invariant" href="htmlsrc/video.glshader.html#L24">invariant</a> <a href="video.glshader.html#GLShader.invariant" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">GLShader</span> <a class="symbol _function" name="GLShader.opCall" href="htmlsrc/video.glshader.html#L38">opCall</a><span class="params">(string <em>name</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="video.glshader.html#GLShader.opCall" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">GLShader</span> <a class="symbol _function" name="GLShader.opCall" href="htmlsrc/video.glshader.html#L40">opCall</a><span class="params">(string <em>name</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="video.glshader.html#GLShader.opCall" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct (load) a shader.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>name</em></td><td>File name of the shader in the "shaders/" subdirectory.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">Loaded shader.</div>
-<p class="sec_header">Throws:</p><div class="cmnt">Exception if the shader could not be loaded or was invalid.</div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GLShader.start" href="htmlsrc/video.glshader.html#L46">start</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.glshader.html#GLShader.start" class="plink">¶</a></dt>
+<p class="sec_header">Throws:</p><div class="cmnt">ShaderException if the shader could not be loaded or was invalid.</div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GLShader.die" href="htmlsrc/video.glshader.html#L55">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.glshader.html#GLShader.die" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Destroy this shader.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GLShader.start" href="htmlsrc/video.glshader.html#L58">start</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.glshader.html#GLShader.start" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Use this shader in following drawing commands.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GLShader.die" href="htmlsrc/video.glshader.html#L49">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.glshader.html#GLShader.die" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">GLint</span> <a class="symbol _function" name="GLShader.get_attribute" href="htmlsrc/video.glshader.html#L67">get_attribute</a><span class="params">(string <em>name</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.glshader.html#GLShader.get_attribute" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Destroy this shader.</div></div></dd></dl></dd></dl>
+<div class="summary"><div class="cmnt">Get a handle to vertex attribute with specified name in the shader.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>name</em></td><td>Name of the attribute.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Handle to the attribute or -1 if not found in the shader.</div></dd>
+<dt class="decl"><span class="rettyp">GLint</span> <a class="symbol _function" name="GLShader.get_uniform" href="htmlsrc/video.glshader.html#L79">get_uniform</a><span class="params">(string <em>name</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.glshader.html#GLShader.get_uniform" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get a handle to uniform variable with specified name in the shader.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>name</em></td><td>Name of the uniform.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Handle to the uniform or -1 if not found in the shader.</div></dd></dl></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Feb 24 22:14:43 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Apr 21 16:10:55 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

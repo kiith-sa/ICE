@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>video.glvertex</title>
+  <link href="css/style.css" rel="stylesheet" type="text/css"/>
+  <!-- no favicon -->
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/utilities.js"></script>
+  <script type="text/javascript" src="js/symbols.js"></script>
+  <script type="text/javascript" src="js/modules.js"></script>
+  <script type="text/javascript" src="js/quicksearch.js"></script>
+  <script type="text/javascript" src="js/navigation.js"></script>
+</head>
+<body id="video.glvertex">
+<div id="kandil-content">
+<div class="module">
+  <h1 class="module" id="m-video.glvertex"><a href="htmlsrc/video.glvertex.html" class="symbol">video.glvertex</a></h1>
+
+<dl>
+<dt class="decl"><span class="kw">enum</span> <a class="symbol _enum" name="GLVertexType" href="htmlsrc/video.glvertex.html#L15">GLVertexType</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="video.glvertex.html#GLVertexType" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Vertex type enum.</div></div>
+<dl>
+<dt class="decl"><a class="symbol _enummem" name="GLVertexType.Colored" href="htmlsrc/video.glvertex.html#L18">Colored</a> <a href="video.glvertex.html#GLVertexType.Colored" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Vertex with position and color.</div></div></dd>
+<dt class="decl"><a class="symbol _enummem" name="GLVertexType.Textured" href="htmlsrc/video.glvertex.html#L20">Textured</a> <a href="video.glvertex.html#GLVertexType.Textured" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Vertex with position, color and texture coordinate.</div></div></dd></dl></dd>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="GLVertex2DColored" href="htmlsrc/video.glvertex.html#L24">GLVertex2DColored</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="video.glvertex.html#GLVertex2DColored" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Vertex with position and color.</div></div>
+<dl>
+<dt class="decl">Vector2f <a class="symbol _variable" name="GLVertex2DColored.vertex" href="htmlsrc/video.glvertex.html#L27">vertex</a> <a href="video.glvertex.html#GLVertex2DColored.vertex" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Vertex position.</div></div></dd>
+<dt class="decl">Color <a class="symbol _variable" name="GLVertex2DColored.color" href="htmlsrc/video.glvertex.html#L29">color</a> <a href="video.glvertex.html#GLVertex2DColored.color" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Vertex color.</div></div></dd>
+<dt class="decl"><span class="kw">auto</span> <a class="symbol _variable" name="GLVertex2DColored.vertex_offset" href="htmlsrc/video.glvertex.html#L32">vertex_offset</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="video.glvertex.html#GLVertex2DColored.vertex_offset" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Offset of GLVertex2DColored.vertex relative to the struct in bytes.</div></div></dd>
+<dt class="decl"><span class="kw">auto</span> <a class="symbol _variable" name="GLVertex2DColored.color_offset" href="htmlsrc/video.glvertex.html#L34">color_offset</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="video.glvertex.html#GLVertex2DColored.color_offset" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Offset of GLVertex2DColored.color relative to the struct in bytes.</div></div></dd>
+<dt class="decl"><span class="kw">auto</span> <a class="symbol _variable" name="GLVertex2DColored.vertex_type" href="htmlsrc/video.glvertex.html#L36">vertex_type</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="video.glvertex.html#GLVertex2DColored.vertex_type" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Enum value corresponding to this vertex type.</div></div></dd></dl></dd>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="GLVertex2DTextured" href="htmlsrc/video.glvertex.html#L40">GLVertex2DTextured</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="video.glvertex.html#GLVertex2DTextured" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Vertex with position, color and texture coordinate.</div></div>
+<dl>
+<dt class="decl">Vector2f <a class="symbol _variable" name="GLVertex2DTextured.vertex" href="htmlsrc/video.glvertex.html#L43">vertex</a> <a href="video.glvertex.html#GLVertex2DTextured.vertex" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Vertex position.</div></div></dd>
+<dt class="decl">Vector2f <a class="symbol _variable" name="GLVertex2DTextured.texcoord" href="htmlsrc/video.glvertex.html#L45">texcoord</a> <a href="video.glvertex.html#GLVertex2DTextured.texcoord" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Vertex texcoord.</div></div></dd>
+<dt class="decl">Color <a class="symbol _variable" name="GLVertex2DTextured.color" href="htmlsrc/video.glvertex.html#L47">color</a> <a href="video.glvertex.html#GLVertex2DTextured.color" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Vertex color.</div></div></dd>
+<dt class="decl"><span class="kw">auto</span> <a class="symbol _variable" name="GLVertex2DTextured.vertex_offset" href="htmlsrc/video.glvertex.html#L50">vertex_offset</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="video.glvertex.html#GLVertex2DTextured.vertex_offset" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Offset of GLVertex2DTextured.vertex relative to the struct in bytes.</div></div></dd>
+<dt class="decl"><span class="kw">auto</span> <a class="symbol _variable" name="GLVertex2DTextured.texcoord_offset" href="htmlsrc/video.glvertex.html#L52">texcoord_offset</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="video.glvertex.html#GLVertex2DTextured.texcoord_offset" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Offset of GLVertex2DTextured.texcoord relative to the struct in bytes.</div></div></dd>
+<dt class="decl"><span class="kw">auto</span> <a class="symbol _variable" name="GLVertex2DTextured.color_offset" href="htmlsrc/video.glvertex.html#L54">color_offset</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="video.glvertex.html#GLVertex2DTextured.color_offset" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Offset of GLVertex2DTextured.color relative to the struct in bytes.</div></div></dd>
+<dt class="decl"><span class="kw">auto</span> <a class="symbol _variable" name="GLVertex2DTextured.vertex_type" href="htmlsrc/video.glvertex.html#L56">vertex_type</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="video.glvertex.html#GLVertex2DTextured.vertex_type" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Enum value corresponding to this vertex type.</div></div></dd></dl></dd></dl>
+</div>
+<div id="kandil-footer">
+  <p></p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Apr 21 16:10:55 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+</div>
+</div>
+</body>
+</html>

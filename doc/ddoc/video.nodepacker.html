@@ -48,30 +48,30 @@
 <table class="params">
 <tr><td><em>size</em></td><td>Size of space needed.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">Node with space for the texture on success, null on failure.</div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="NodePacker.Node.remove" href="htmlsrc/video.nodepacker.html#L119">remove</a><span class="params">(<span class="k">ref</span> Rectangleu <em>rect</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.Node.remove" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="NodePacker.Node.remove" href="htmlsrc/video.nodepacker.html#L120">remove</a><span class="params">(<span class="k">ref</span> Rectangleu <em>rect</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.Node.remove" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Try to remove a texture with specified area.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>rect</em></td><td>Area of texture to remove.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">True on success, false on failure.</div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="NodePacker.Node.empty" href="htmlsrc/video.nodepacker.html#L135">empty</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.Node.empty" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="NodePacker.Node.empty" href="htmlsrc/video.nodepacker.html#L136">empty</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.Node.empty" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Determine if this node and all its subnodes are empty.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="NodePacker.Node.die" href="htmlsrc/video.nodepacker.html#L144">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.Node.die" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="NodePacker.Node.die" href="htmlsrc/video.nodepacker.html#L145">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.Node.die" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Destroy this node and its children.</div></div></dd></dl></dd>
-<dt class="decl"><span class="rettyp">NodePacker</span> <a class="symbol _function" name="NodePacker.opCall" href="htmlsrc/video.nodepacker.html#L173">opCall</a><span class="params">(Vector2u <em>size</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="video.nodepacker.html#NodePacker.opCall" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">NodePacker</span> <a class="symbol _function" name="NodePacker.opCall" href="htmlsrc/video.nodepacker.html#L174">opCall</a><span class="params">(Vector2u <em>size</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="video.nodepacker.html#NodePacker.opCall" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct NodePacker.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>size</em></td><td>Size of texture area for the packer to manage.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">NodePacker with specified size.</div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="NodePacker.die" href="htmlsrc/video.nodepacker.html#L182">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.die" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="NodePacker.die" href="htmlsrc/video.nodepacker.html#L183">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.die" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Destroy this NodePacker and its nodes.</div></div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="NodePacker.allocate_space" href="htmlsrc/video.nodepacker.html#L193">allocate_space</a><span class="params">(Vector2u <em>size</em>,  <span class="k">out</span> Rectanglef <em>texcoords</em>,  <span class="k">out</span> Vector2u <em>offset</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.allocate_space" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="NodePacker.allocate_space" href="htmlsrc/video.nodepacker.html#L194">allocate_space</a><span class="params">(Vector2u <em>size</em>,  <span class="k">out</span> Rectanglef <em>texcoords</em>,  <span class="k">out</span> Vector2u <em>offset</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.allocate_space" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Try to allocate space for a texture with given size.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -80,22 +80,22 @@
 <tr><td><em>texcoords</em></td><td>Texture coords of the texture on the page will be written here.</td></tr>
 <tr><td><em>offset</em></td><td>Offset of the texture on the page will be written here.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">True if successful, false otherwise.</div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="NodePacker.free_space" href="htmlsrc/video.nodepacker.html#L212">free_space</a><span class="params">(<span class="k">ref</span> Rectangleu <em>area</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.free_space" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="NodePacker.free_space" href="htmlsrc/video.nodepacker.html#L213">free_space</a><span class="params">(<span class="k">ref</span> Rectangleu <em>area</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.free_space" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Free space taken by a texture.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>area</em></td><td>Area of the texture to free.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="NodePacker.empty" href="htmlsrc/video.nodepacker.html#L219">empty</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.empty" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="NodePacker.empty" href="htmlsrc/video.nodepacker.html#L220">empty</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.empty" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Determine if this NodePacker is empty.</div></div></dd>
-<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="NodePacker.info" href="htmlsrc/video.nodepacker.html#L222">info</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.info" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="NodePacker.info" href="htmlsrc/video.nodepacker.html#L223">info</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.nodepacker.html#NodePacker.info" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Return a string containing information about the packer.</div></div></dd></dl></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Feb 24 22:14:43 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Apr 21 16:10:55 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

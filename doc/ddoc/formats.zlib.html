@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <title>formats.zlib</title>
+  <link href="css/style.css" rel="stylesheet" type="text/css"/>
+  <!-- no favicon -->
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/utilities.js"></script>
+  <script type="text/javascript" src="js/symbols.js"></script>
+  <script type="text/javascript" src="js/modules.js"></script>
+  <script type="text/javascript" src="js/quicksearch.js"></script>
+  <script type="text/javascript" src="js/navigation.js"></script>
+</head>
+<body id="formats.zlib">
+<div id="kandil-content">
+<div class="module">
+  <h1 class="module" id="m-formats.zlib"><a href="htmlsrc/formats.zlib.html" class="symbol">formats.zlib</a></h1>
+
+<dl>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="CompressionException" href="htmlsrc/formats.zlib.html#L18">CompressionException</a> : <span class="bclass">Exception</span> <a href="formats.zlib.html#CompressionException" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Exception thrown at errors related to compression (such as zlib).</div></div>
+<dl>
+<dt class="decl"><a class="symbol _ctor" name="CompressionException.this" href="htmlsrc/formats.zlib.html#L18">this</a><span class="params">(string <em>msg</em>)</span> <a href="formats.zlib.html#CompressionException.this" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl"><span class="kw">enum</span> <a class="symbol _enum" name="CompressionStrategy" href="htmlsrc/formats.zlib.html#L21">CompressionStrategy</a> : ubyte <a href="formats.zlib.html#CompressionStrategy" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Zlib compression strategy.</div></div>
+<dl>
+<dt class="decl"><a class="symbol _enummem" name="CompressionStrategy.Default" href="htmlsrc/formats.zlib.html#L23">Default</a> <a href="formats.zlib.html#CompressionStrategy.Default" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _enummem" name="CompressionStrategy.Filtered" href="htmlsrc/formats.zlib.html#L24">Filtered</a> <a href="formats.zlib.html#CompressionStrategy.Filtered" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _enummem" name="CompressionStrategy.HuffmanOnly" href="htmlsrc/formats.zlib.html#L25">HuffmanOnly</a> <a href="formats.zlib.html#CompressionStrategy.HuffmanOnly" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _enummem" name="CompressionStrategy.RLE" href="htmlsrc/formats.zlib.html#L26">RLE</a> <a href="formats.zlib.html#CompressionStrategy.RLE" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _enummem" name="CompressionStrategy.Fixed" href="htmlsrc/formats.zlib.html#L27">Fixed</a> <a href="formats.zlib.html#CompressionStrategy.Fixed" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><a class="symbol _enummem" name="CompressionStrategy.None" href="htmlsrc/formats.zlib.html#L28">None</a> <a href="formats.zlib.html#CompressionStrategy.None" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl"><span class="rettyp">ubyte[]</span> <a class="symbol _function" name="zlib_inflate" href="htmlsrc/formats.zlib.html#L42">zlib_inflate</a><span class="params">(ubyte[] <em>input</em>, uint <em>reserve</em> = <span class="defval"><span class="n">0</span></span>)</span> <a href="formats.zlib.html#zlib_inflate" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Decompress data compressed with Zlib.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>input</em></td><td>Data to decompress.</td></tr>
+<tr><td><em>reserve</em></td><td>Expected size of decompressed data, used to reserve
+                    space for decompression. 0 (default) means automatic.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Decompressed data.</div>
+<p class="sec_header">Throws:</p><div class="cmnt">CompressionException if the data could not be decompressed.</div></dd>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="Inflator" href="htmlsrc/formats.zlib.html#L85">Inflator</a> <a href="formats.zlib.html#Inflator" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Buffered Zlib decompressor. Used to decompress Zlib data piece by piece.</div></div>
+<div class="cmnt">Stores compressed data in an outside vector.</div>
+<dl>
+<dt class="decl"><span class="rettyp">Inflator</span> <a class="symbol _function" name="Inflator.opCall" href="htmlsrc/formats.zlib.html#L105">opCall</a><span class="params">(<span class="k">ref</span> Vector!(ubyte) <em>inflated</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="formats.zlib.html#Inflator.opCall" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Construct an Inflator.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>inflated</em></td><td>Vector to write decompressed data to.
+                     Any existing data in the vector will be overwritten.</td></tr></table></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Inflator.inflate" href="htmlsrc/formats.zlib.html#L126">inflate</a><span class="params">(ubyte[] <em>input</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="formats.zlib.html#Inflator.inflate" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Decompress a piece of the data.</div></div>
+<p class="sec_header">Throws:</p><div class="cmnt">CompressionException if the data could not be decompressed.</div></dd></dl></dd>
+<dt class="decl"><span class="rettyp">ubyte[]</span> <a class="symbol _function" name="zlib_deflate" href="htmlsrc/formats.zlib.html#L173">zlib_deflate</a><span class="params">(ubyte[] <em>source</em>, CompressionStrategy <em>strategy</em> = <span class="defval"><span class="i">RLE</span></span>, uint <em>level</em> = <span class="defval"><span class="n">9</span></span>)</span> <a href="formats.zlib.html#zlib_deflate" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Compress data using Zlib.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>source</em></td><td>Data to compress.</td></tr>
+<tr><td><em>strategy</em></td><td>Zlib compression strategy to use.</td></tr>
+<tr><td><em>level</em></td><td>Compression level. Must be at least 0 and at most 9.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Compressed data.</div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="zlib_deflate:2" href="htmlsrc/formats.zlib.html#L191">zlib_deflate</a><span class="params">(<span class="k">ref</span> Vector!(ubyte) <em>result</em>, ubyte[] <em>source</em>, CompressionStrategy <em>strategy</em> = <span class="defval"><span class="i">RLE</span></span>, uint <em>level</em> = <span class="defval"><span class="n">9</span></span>)</span> <a href="formats.zlib.html#zlib_deflate:2" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Compress data using Zlib.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>result</em></td><td>Compressed data will be written here.</td></tr>
+<tr><td><em>source</em></td><td>Data to compress.</td></tr>
+<tr><td><em>strategy</em></td><td>Zlib compression strategy to use.</td></tr>
+<tr><td><em>level</em></td><td>Compression level. Must be at least 0 and at most 9.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Compressed data.</div></dd>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="zlib_check_crc" href="htmlsrc/formats.zlib.html#L205">zlib_check_crc</a><span class="params">(uint <em>crc</em>, ubyte[] <em>data</em>)</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="formats.zlib.html#zlib_check_crc" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Check CRC using zlib CRC32 function.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>crc</em></td><td>CRC32 to check.</td></tr>
+<tr><td><em>data</em></td><td>Data to check CRC of.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">True if CRC matches, false otherwise.</div></dd>
+<dt class="decl"><span class="rettyp">uint</span> <a class="symbol _function" name="zlib_crc" href="htmlsrc/formats.zlib.html#L217">zlib_crc</a><span class="params">(ubyte[] <em>data</em>)</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="formats.zlib.html#zlib_crc" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Generate CRC using zlib CRC32 function.</div></div>
+<p class="sec_header">Parameters:</p>
+<table class="params">
+<tr><td><em>data</em></td><td>Data to generate CRC for.</td></tr></table>
+<p class="sec_header">Returns:</p><div class="cmnt">Generated CRC32.</div></dd></dl>
+</div>
+<div id="kandil-footer">
+  <p></p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Apr 21 16:10:56 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+</div>
+</div>
+</body>
+</html>

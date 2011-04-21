@@ -18,45 +18,35 @@
   <h1 class="module" id="m-physics.physicsmonitor"><a href="htmlsrc/physics.physicsmonitor.html" class="symbol">physics.physicsmonitor</a></h1>
 
 <dl>
-<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="Statistics" href="htmlsrc/physics.physicsmonitor.html#L22">Statistics</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="physics.physicsmonitor.html#Statistics" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="Statistics" href="htmlsrc/physics.physicsmonitor.html#L11">Statistics</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="physics.physicsmonitor.html#Statistics" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Statistics data sent by PhysicsEngine to physics monitors.</div></div>
 <dl>
-<dt class="decl">uint <a class="symbol _variable" name="Statistics.bodies" href="htmlsrc/physics.physicsmonitor.html#L25">bodies</a> <a href="physics.physicsmonitor.html#Statistics.bodies" class="plink">¶</a></dt>
+<dt class="decl">uint <a class="symbol _variable" name="Statistics.bodies" href="htmlsrc/physics.physicsmonitor.html#L14">bodies</a> <a href="physics.physicsmonitor.html#Statistics.bodies" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Physics bodies at the moment.</div></div></dd>
-<dt class="decl">uint <a class="symbol _variable" name="Statistics.col_bodies" href="htmlsrc/physics.physicsmonitor.html#L27">col_bodies</a> <a href="physics.physicsmonitor.html#Statistics.col_bodies" class="plink">¶</a></dt>
+<dt class="decl">uint <a class="symbol _variable" name="Statistics.col_bodies" href="htmlsrc/physics.physicsmonitor.html#L16">col_bodies</a> <a href="physics.physicsmonitor.html#Statistics.col_bodies" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Physics bodies with collision volumes at the moment.</div></div></dd>
-<dt class="decl">uint <a class="symbol _variable" name="Statistics.tests" href="htmlsrc/physics.physicsmonitor.html#L29">tests</a> <a href="physics.physicsmonitor.html#Statistics.tests" class="plink">¶</a></dt>
+<dt class="decl">uint <a class="symbol _variable" name="Statistics.tests" href="htmlsrc/physics.physicsmonitor.html#L18">tests</a> <a href="physics.physicsmonitor.html#Statistics.tests" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Contact tests this frame.</div></div></dd>
-<dt class="decl">uint <a class="symbol _variable" name="Statistics.contacts" href="htmlsrc/physics.physicsmonitor.html#L31">contacts</a> <a href="physics.physicsmonitor.html#Statistics.contacts" class="plink">¶</a></dt>
+<dt class="decl">uint <a class="symbol _variable" name="Statistics.contacts" href="htmlsrc/physics.physicsmonitor.html#L20">contacts</a> <a href="physics.physicsmonitor.html#Statistics.contacts" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Contacts detected this frame.</div></div></dd>
-<dt class="decl">uint <a class="symbol _variable" name="Statistics.penetration" href="htmlsrc/physics.physicsmonitor.html#L33">penetration</a> <a href="physics.physicsmonitor.html#Statistics.penetration" class="plink">¶</a></dt>
+<dt class="decl">uint <a class="symbol _variable" name="Statistics.penetration" href="htmlsrc/physics.physicsmonitor.html#L22">penetration</a> <a href="physics.physicsmonitor.html#Statistics.penetration" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Penetration resolution iterations this frame.</div></div></dd>
-<dt class="decl">uint <a class="symbol _variable" name="Statistics.response" href="htmlsrc/physics.physicsmonitor.html#L35">response</a> <a href="physics.physicsmonitor.html#Statistics.response" class="plink">¶</a></dt>
+<dt class="decl">uint <a class="symbol _variable" name="Statistics.response" href="htmlsrc/physics.physicsmonitor.html#L24">response</a> <a href="physics.physicsmonitor.html#Statistics.response" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Collision response iterations this frame.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Statistics.zero" href="htmlsrc/physics.physicsmonitor.html#L38">zero</a><span class="params">()</span> <a href="physics.physicsmonitor.html#Statistics.zero" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Statistics.zero" href="htmlsrc/physics.physicsmonitor.html#L27">zero</a><span class="params">()</span> <a href="physics.physicsmonitor.html#Statistics.zero" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Reset the statistics gathered for the next frame.</div></div></dd></dl></dd>
-<dt class="decl"><span class="kw">alias</span> SimpleGraphMonitor!(PhysicsEngine, Statistics, 
-                          "contacts", "penetration", "response") <a class="symbol _alias" name="ContactMonitor" href="htmlsrc/physics.physicsmonitor.html#L42">ContactMonitor</a> <a href="physics.physicsmonitor.html#ContactMonitor" class="plink">¶</a></dt>
-<dd class="ddef">
-<div class="summary"><div class="cmnt">Graph showing values related to fine collision detection.</div></div></dd>
-<dt class="decl"><span class="kw">alias</span> SimpleGraphMonitor!(PhysicsEngine, Statistics, "tests") <a class="symbol _alias" name="CoarseContactMonitor" href="htmlsrc/physics.physicsmonitor.html#L46">CoarseContactMonitor</a> <a href="physics.physicsmonitor.html#CoarseContactMonitor" class="plink">¶</a></dt>
-<dd class="ddef">
-<div class="summary"><div class="cmnt">Graph showing values related to coarse collision detection.</div></div></dd>
-<dt class="decl"><span class="kw">alias</span> SimpleGraphMonitor!(PhysicsEngine, Statistics, "bodies", "col_bodies") <a class="symbol _alias" name="BodiesMonitor" href="htmlsrc/physics.physicsmonitor.html#L49">BodiesMonitor</a> <a href="physics.physicsmonitor.html#BodiesMonitor" class="plink">¶</a></dt>
-<dd class="ddef">
-<div class="summary"><div class="cmnt">Graph showing statistics about physics bodies.</div></div></dd></dl>
+<div class="summary"><div class="cmnt">Reset the statistics gathered for the next frame.</div></div></dd></dl></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Feb 24 22:14:44 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Apr 21 16:10:54 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

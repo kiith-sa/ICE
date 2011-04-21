@@ -25,69 +25,71 @@
 <dt class="decl"><a class="symbol _enummem" name="ColorFormat.RGB_565" href="htmlsrc/color.html#L17">RGB_565</a> <a href="color.html#ColorFormat.RGB_565" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">16-bit RGB without alpha.</div></div></dd>
-<dt class="decl"><a class="symbol _enummem" name="ColorFormat.RGBA_8" href="htmlsrc/color.html#L19">RGBA_8</a> <a href="color.html#ColorFormat.RGBA_8" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _enummem" name="ColorFormat.RGB_8" href="htmlsrc/color.html#L19">RGB_8</a> <a href="color.html#ColorFormat.RGB_8" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">24-bit RGB.</div></div></dd>
+<dt class="decl"><a class="symbol _enummem" name="ColorFormat.RGBA_8" href="htmlsrc/color.html#L21">RGBA_8</a> <a href="color.html#ColorFormat.RGBA_8" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">32-bit RGBA.</div></div></dd>
-<dt class="decl"><a class="symbol _enummem" name="ColorFormat.GRAY_8" href="htmlsrc/color.html#L21">GRAY_8</a> <a href="color.html#ColorFormat.GRAY_8" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _enummem" name="ColorFormat.GRAY_8" href="htmlsrc/color.html#L23">GRAY_8</a> <a href="color.html#ColorFormat.GRAY_8" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">8-bit grayscale.</div></div></dd></dl></dd>
-<dt class="decl"><span class="rettyp">uint</span> <a class="symbol _function" name="bytes_per_pixel" href="htmlsrc/color.html#L31">bytes_per_pixel</a><span class="params">(ColorFormat <em>format</em>)</span> <a href="color.html#bytes_per_pixel" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">uint</span> <a class="symbol _function" name="bytes_per_pixel" href="htmlsrc/color.html#L33">bytes_per_pixel</a><span class="params">(ColorFormat <em>format</em>)</span> <a href="color.html#bytes_per_pixel" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Return number of bytes per pixel specified color format uses.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>format</em></td><td>Color format to check.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">Bytes per pixel needed by specified color format.</div></dd>
-<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="to_string" href="htmlsrc/color.html#L54">to_string</a><span class="params">(ColorFormat <em>format</em>, bool <em>short_format</em> = <span class="defval"><span class="k">false</span></span>)</span> <a href="color.html#to_string" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">string</span> <a class="symbol _function" name="to_string" href="htmlsrc/color.html#L57">to_string</a><span class="params">(ColorFormat <em>format</em>)</span> <a href="color.html#to_string" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Return a string representation of specified color format.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
-<tr><td><em>format</em></td><td>Color format to get string representation of.</td></tr>
-<tr><td><em>short_format</em></td><td>Use a shorter format?</td></tr></table>
+<tr><td><em>format</em></td><td>Color format to get string representation of.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">String representation of specified color format.</div></dd>
-<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="Color" href="htmlsrc/color.html#L70">Color</a> <a href="color.html#Color" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="Color" href="htmlsrc/color.html#L75">Color</a> <a href="color.html#Color" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">32-bit RGBA8 color.</div></div>
 <dl>
-<dt class="decl">ubyte <a class="symbol _variable" name="Color.r" href="htmlsrc/color.html#L73">r</a> <a href="color.html#Color.r" class="plink">¶</a></dt>
+<dt class="decl">ubyte <a class="symbol _variable" name="Color.r" href="htmlsrc/color.html#L78">r</a> <a href="color.html#Color.r" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Red channel.</div></div></dd>
-<dt class="decl">ubyte <a class="symbol _variable" name="Color.g" href="htmlsrc/color.html#L75">g</a> <a href="color.html#Color.g" class="plink">¶</a></dt>
+<dt class="decl">ubyte <a class="symbol _variable" name="Color.g" href="htmlsrc/color.html#L80">g</a> <a href="color.html#Color.g" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Green channel.</div></div></dd>
-<dt class="decl">ubyte <a class="symbol _variable" name="Color.b" href="htmlsrc/color.html#L77">b</a> <a href="color.html#Color.b" class="plink">¶</a></dt>
+<dt class="decl">ubyte <a class="symbol _variable" name="Color.b" href="htmlsrc/color.html#L82">b</a> <a href="color.html#Color.b" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Blue channel.</div></div></dd>
-<dt class="decl">ubyte <a class="symbol _variable" name="Color.a" href="htmlsrc/color.html#L79">a</a> <a href="color.html#Color.a" class="plink">¶</a></dt>
+<dt class="decl">ubyte <a class="symbol _variable" name="Color.a" href="htmlsrc/color.html#L84">a</a> <a href="color.html#Color.a" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Alpha channel.</div></div></dd>
-<dt class="decl">Color <a class="symbol _variable" name="Color.white" href="htmlsrc/color.html#L82">white</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.white" class="plink">¶</a></dt>
+<dt class="decl">Color <a class="symbol _variable" name="Color.white" href="htmlsrc/color.html#L87">white</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.white" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Common color constants, identical to HTML.</div></div></dd>
-<dt class="decl">Color <a class="symbol _variable" name="Color.grey" href="htmlsrc/color.html#L83">grey</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.grey" class="plink">¶</a></dt>
+<dt class="decl">Color <a class="symbol _variable" name="Color.grey" href="htmlsrc/color.html#L88">grey</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.grey" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Color <a class="symbol _variable" name="Color.black" href="htmlsrc/color.html#L84">black</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.black" class="plink">¶</a></dt>
+<dt class="decl">Color <a class="symbol _variable" name="Color.black" href="htmlsrc/color.html#L89">black</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.black" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Color <a class="symbol _variable" name="Color.red" href="htmlsrc/color.html#L86">red</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.red" class="plink">¶</a></dt>
+<dt class="decl">Color <a class="symbol _variable" name="Color.red" href="htmlsrc/color.html#L91">red</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.red" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Color <a class="symbol _variable" name="Color.green" href="htmlsrc/color.html#L87">green</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.green" class="plink">¶</a></dt>
+<dt class="decl">Color <a class="symbol _variable" name="Color.green" href="htmlsrc/color.html#L92">green</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.green" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Color <a class="symbol _variable" name="Color.blue" href="htmlsrc/color.html#L88">blue</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.blue" class="plink">¶</a></dt>
+<dt class="decl">Color <a class="symbol _variable" name="Color.blue" href="htmlsrc/color.html#L93">blue</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.blue" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Color <a class="symbol _variable" name="Color.burgundy" href="htmlsrc/color.html#L89">burgundy</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.burgundy" class="plink">¶</a></dt>
+<dt class="decl">Color <a class="symbol _variable" name="Color.burgundy" href="htmlsrc/color.html#L94">burgundy</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.burgundy" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Color <a class="symbol _variable" name="Color.yellow" href="htmlsrc/color.html#L91">yellow</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.yellow" class="plink">¶</a></dt>
+<dt class="decl">Color <a class="symbol _variable" name="Color.yellow" href="htmlsrc/color.html#L96">yellow</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.yellow" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Color <a class="symbol _variable" name="Color.cyan" href="htmlsrc/color.html#L92">cyan</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.cyan" class="plink">¶</a></dt>
+<dt class="decl">Color <a class="symbol _variable" name="Color.cyan" href="htmlsrc/color.html#L97">cyan</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.cyan" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Color <a class="symbol _variable" name="Color.magenta" href="htmlsrc/color.html#L93">magenta</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.magenta" class="plink">¶</a></dt>
+<dt class="decl">Color <a class="symbol _variable" name="Color.magenta" href="htmlsrc/color.html#L98">magenta</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.magenta" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Color <a class="symbol _variable" name="Color.forest_green" href="htmlsrc/color.html#L94">forest_green</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.forest_green" class="plink">¶</a></dt>
+<dt class="decl">Color <a class="symbol _variable" name="Color.forest_green" href="htmlsrc/color.html#L99">forest_green</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.forest_green" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">Color <a class="symbol _variable" name="Color.dark_purple" href="htmlsrc/color.html#L95">dark_purple</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.dark_purple" class="plink">¶</a></dt>
+<dt class="decl">Color <a class="symbol _variable" name="Color.dark_purple" href="htmlsrc/color.html#L100">dark_purple</a> <span class="attrs">[<span class="stc">static</span>, <span class="stc">const</span>]</span> <a href="color.html#Color.dark_purple" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">Color</span> <a class="symbol _function" name="Color.opCall" href="htmlsrc/color.html#L107">opCall</a><span class="params">(ubyte <em>r</em>, ubyte <em>g</em>, ubyte <em>b</em>, ubyte <em>a</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="color.html#Color.opCall" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Color</span> <a class="symbol _function" name="Color.opCall" href="htmlsrc/color.html#L112">opCall</a><span class="params">(ubyte <em>r</em>, ubyte <em>g</em>, ubyte <em>b</em>, ubyte <em>a</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="color.html#Color.opCall" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct a color.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -97,7 +99,7 @@
 <tr><td><em>b</em></td><td>Blue channel value.</td></tr>
 <tr><td><em>a</em></td><td>Alpha channel value.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">Color with specified RGBA values.</div></dd>
-<dt class="decl"><span class="rettyp">Color</span> <a class="symbol _function" name="Color.opCall:2" href="htmlsrc/color.html#L128">opCall</a><span class="params">(ubyte <em>r</em>, ubyte <em>g</em>, ubyte <em>b</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="color.html#Color.opCall:2" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Color</span> <a class="symbol _function" name="Color.opCall:2" href="htmlsrc/color.html#L133">opCall</a><span class="params">(ubyte <em>r</em>, ubyte <em>g</em>, ubyte <em>b</em>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="color.html#Color.opCall:2" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct a color (no alpha).</div></div>
 <div class="cmnt">Alpha is fully opague (255).</div>
@@ -107,32 +109,32 @@
 <tr><td><em>g</em></td><td>Green channel value.</td></tr>
 <tr><td><em>b</em></td><td>Blue channel value.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">Color with specified RGB values.</div></dd>
-<dt class="decl"><span class="rettyp">ubyte</span> <a class="symbol _function" name="Color.average" href="htmlsrc/color.html#L131">average</a><span class="params">()</span> <a href="color.html#Color.average" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">ubyte</span> <a class="symbol _function" name="Color.average" href="htmlsrc/color.html#L136">average</a><span class="params">()</span> <a href="color.html#Color.average" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Return the average intensity of the color.</div></div></dd>
-<dt class="decl"><a class="symbol _unittest" name="Color.unittest" href="htmlsrc/color.html#L137">unittest</a> <a href="color.html#Color.unittest" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _unittest" name="Color.unittest" href="htmlsrc/color.html#L142">unittest</a> <a href="color.html#Color.unittest" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Unittest for average().</div></div></dd>
-<dt class="decl"><span class="rettyp">ubyte</span> <a class="symbol _function" name="Color.lightness" href="htmlsrc/color.html#L152">lightness</a><span class="params">()</span> <a href="color.html#Color.lightness" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">ubyte</span> <a class="symbol _function" name="Color.lightness" href="htmlsrc/color.html#L157">lightness</a><span class="params">()</span> <a href="color.html#Color.lightness" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Return lightness of the color.</div></div></dd>
-<dt class="decl"><span class="rettyp">ubyte</span> <a class="symbol _function" name="Color.luminance" href="htmlsrc/color.html#L159">luminance</a><span class="params">()</span> <a href="color.html#Color.luminance" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">ubyte</span> <a class="symbol _function" name="Color.luminance" href="htmlsrc/color.html#L164">luminance</a><span class="params">()</span> <a href="color.html#Color.luminance" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Return luminance of the color.</div></div></dd>
-<dt class="decl"><a class="symbol _unittest" name="Color.unittest:2" href="htmlsrc/color.html#L161">unittest</a> <a href="color.html#Color.unittest:2" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _unittest" name="Color.unittest:2" href="htmlsrc/color.html#L166">unittest</a> <a href="color.html#Color.unittest:2" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Unittest for luminance().</div></div></dd>
-<dt class="decl"><span class="rettyp">Color</span> <a class="symbol _function" name="Color.opAdd" href="htmlsrc/color.html#L174">opAdd</a><span class="params">(Color <em>c</em>)</span> <a href="color.html#Color.opAdd" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Color</span> <a class="symbol _function" name="Color.opAdd" href="htmlsrc/color.html#L179">opAdd</a><span class="params">(Color <em>c</em>)</span> <a href="color.html#Color.opAdd" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Add two colors (values are clamped to range 0 .. 255).</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>c</em></td><td>Color to add.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">Result of color addition.</div></dd>
-<dt class="decl"><a class="symbol _unittest" name="Color.unittest:3" href="htmlsrc/color.html#L182">unittest</a> <a href="color.html#Color.unittest:3" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _unittest" name="Color.unittest:3" href="htmlsrc/color.html#L187">unittest</a> <a href="color.html#Color.unittest:3" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Unittest for add().</div></div></dd>
-<dt class="decl"><span class="rettyp">Color</span> <a class="symbol _function" name="Color.interpolated" href="htmlsrc/color.html#L199">interpolated</a><span class="params">(Color <em>c</em>, float <em>d</em>)</span> <a href="color.html#Color.interpolated" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Color</span> <a class="symbol _function" name="Color.interpolated" href="htmlsrc/color.html#L204">interpolated</a><span class="params">(Color <em>c</em>, float <em>d</em>)</span> <a href="color.html#Color.interpolated" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Interpolate the color to another color.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -140,13 +142,13 @@
 <tr><td><em>c</em></td><td>Color to interpolate with.</td></tr>
 <tr><td><em>d</em></td><td>Interpolation ratio. 1 is this color, 0 other color, 0.5 half in between.
               Must be in 0.0 .. 1.0 range.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Color.gray" href="htmlsrc/color.html#L212">gray</a><span class="params">(ubyte <em>gray</em>)</span> <a href="color.html#Color.gray" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Color.gray_8" href="htmlsrc/color.html#L220">gray_8</a><span class="params">(ubyte <em>gray</em>)</span> <a href="color.html#Color.gray_8" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Set grayscale color.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Color.gamma_correct" href="htmlsrc/color.html#L215">gamma_correct</a><span class="params">(real <em>factor</em>)</span> <a href="color.html#Color.gamma_correct" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Color.gamma_correct" href="htmlsrc/color.html#L223">gamma_correct</a><span class="params">(real <em>factor</em>)</span> <a href="color.html#Color.gamma_correct" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Gamma correct the color with specified factor.</div></div></dd></dl></dd>
-<dt class="decl"><span class="rettyp">ubyte</span> <a class="symbol _function" name="gamma_correct" href="htmlsrc/color.html#L248">gamma_correct</a><span class="params">(ubyte <em>color</em>, real <em>factor</em>)</span> <a href="color.html#gamma_correct" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">ubyte</span> <a class="symbol _function" name="gamma_correct" href="htmlsrc/color.html#L256">gamma_correct</a><span class="params">(ubyte <em>color</em>, real <em>factor</em>)</span> <a href="color.html#gamma_correct" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Gamma correct a GRAY_8 color.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -157,7 +159,7 @@
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Feb 24 22:14:44 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Apr 21 16:10:54 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

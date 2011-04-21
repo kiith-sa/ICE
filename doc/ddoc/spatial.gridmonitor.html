@@ -18,24 +18,45 @@
   <h1 class="module" id="m-spatial.gridmonitor"><a href="htmlsrc/spatial.gridmonitor.html" class="symbol">spatial.gridmonitor</a></h1>
 
 <dl>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GridMonitor" href="htmlsrc/spatial.gridmonitor.html#L28">GridMonitor</a><span class="tparams">(<em>T</em>)</span> : <span class="bclass">SubMonitor</span> <span class="attrs">[<span class="prot">package</span>, <span class="stc">final</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GridMonitor" href="htmlsrc/spatial.gridmonitor.html#L25">GridMonitor</a><span class="tparams">(<em>T</em>)</span> : <span class="bclass">SubMonitor</span> <span class="attrs">[<span class="prot">package</span>, <span class="stc">final</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Monitor displaying a graphical representation of the grid of GridSpatialManager.</div></div>
+<div class="summary"><div class="cmnt">Monitor monitoring object counts in cells of a GridSpatialManager grid.</div></div>
 <dl>
-<dt class="decl"><a class="symbol _ctor" name="GridMonitor.this" href="htmlsrc/spatial.gridmonitor.html#L165">this</a><span class="params">(GridSpatialManager!(T) <em>monitored</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.this" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _ctor" name="GridMonitor.this" href="htmlsrc/spatial.gridmonitor.html#L48">this</a><span class="params">(GridSpatialManager!(T) <em>monitored</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.this" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Construct a GridMonitor.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>monitored</em></td><td>GridSpatialManager to monitor.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GridMonitor.die" href="htmlsrc/spatial.gridmonitor.html#L179">die</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.die" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GridMonitor.die" href="htmlsrc/spatial.gridmonitor.html#L59">die</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.die" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GridMonitor.update" href="htmlsrc/spatial.gridmonitor.html#L186">update</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.update" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">SubMonitorView</span> <a class="symbol _function" name="GridMonitor.view" href="htmlsrc/spatial.gridmonitor.html#L65">view</a><span class="params">()</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.view" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GridMonitor.update" href="htmlsrc/spatial.gridmonitor.html#L69">update</a><span class="params">()</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.update" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Update monitored data.</div></div></dd>
+<dt class="decl"><span class="rettyp">uint</span> <a class="symbol _function" name="GridMonitor.outer_object_count" href="htmlsrc/spatial.gridmonitor.html#L87">outer_object_count</a><span class="params">()</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.outer_object_count" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get number of objects outside the grid.</div></div></dd>
+<dt class="decl"><span class="rettyp">uint</span> <a class="symbol _function" name="GridMonitor.grid_size" href="htmlsrc/spatial.gridmonitor.html#L90">grid_size</a><span class="params">()</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.grid_size" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get (x and y) grid size in cells.</div></div></dd>
+<dt class="decl"><span class="rettyp">Array2D!(uint)*</span> <a class="symbol _function" name="GridMonitor.object_counts" href="htmlsrc/spatial.gridmonitor.html#L93">object_counts</a><span class="params">()</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="spatial.gridmonitor.html#GridMonitor.object_counts" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Get a pointer to the array of object counts in the grid.</div></div></dd></dl></dd>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="GridMonitorView" href="htmlsrc/spatial.gridmonitor.html#L97">GridMonitorView</a><span class="tparams">(<em>GridMonitor</em>)</span> : <span class="bclass">SubMonitorView</span> <span class="attrs">[<span class="prot">package</span>, <span class="stc">final</span>]</span> <a href="spatial.gridmonitor.html#GridMonitorView" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Grid monitor GUI view.</div></div>
+<dl>
+<dt class="decl"><a class="symbol _ctor" name="GridMonitorView.this" href="htmlsrc/spatial.gridmonitor.html#L108">this</a><span class="params">(GridMonitor <em>monitor</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="spatial.gridmonitor.html#GridMonitorView.this" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Construct a GridView viewing specified GridMonitor.</div></div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="GridMonitorView.draw" href="htmlsrc/spatial.gridmonitor.html#L116">draw</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="stc">override</span>]</span> <a href="spatial.gridmonitor.html#GridMonitorView.draw" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Feb 24 22:14:45 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Apr 21 16:10:54 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

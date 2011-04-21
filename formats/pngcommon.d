@@ -35,7 +35,7 @@ enum PNGFilter : ubyte
     Sub = 1,
     Up = 2,
     Average = 3,
-    ///Paeth filter (usually best except for Dynamic).
+    ///Paeth filter (usually the best except for Dynamic).
     Paeth = 4,
     ///Separate filter for each line (best compresiion).
     Dynamic,
@@ -106,7 +106,7 @@ align(1)struct PNGImage
 /**
  * PNG file description.
  *
- * Stores image information as well as auxiliary data such as text, background color,
+ * Stores image information and auxiliary data such as text, background color,
  * palette, etc.
  */
 struct PNGInfo

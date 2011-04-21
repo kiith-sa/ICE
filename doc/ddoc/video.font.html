@@ -18,39 +18,46 @@
   <h1 class="module" id="m-video.font"><a href="htmlsrc/video.font.html" class="symbol">video.font</a></h1>
 
 <dl>
-<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="Glyph" href="htmlsrc/video.font.html#L28">Glyph</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="video.font.html#Glyph" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="FontException" href="htmlsrc/video.font.html#L29">FontException</a> : <span class="bclass">Exception</span> <a href="video.font.html#FontException" class="plink">¶</a></dt>
+<dd class="ddef">
+<div class="summary"><div class="cmnt">Exception thrown at font related errors.</div></div>
+<dl>
+<dt class="decl"><a class="symbol _ctor" name="FontException.this" href="htmlsrc/video.font.html#L29">this</a><span class="params">(string <em>msg</em>)</span> <a href="video.font.html#FontException.this" class="plink">¶</a></dt>
+<dd class="ddef"><div class="nocmnt"></div></dd></dl></dd>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="Glyph" href="htmlsrc/video.font.html#L34">Glyph</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="video.font.html#Glyph" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Immutable font glyph structure.</div></div>
 <dl>
-<dt class="decl">Texture <a class="symbol _variable" name="Glyph.texture" href="htmlsrc/video.font.html#L31">texture</a> <a href="video.font.html#Glyph.texture" class="plink">¶</a></dt>
+<dt class="decl">Texture <a class="symbol _variable" name="Glyph.texture" href="htmlsrc/video.font.html#L37">texture</a> <a href="video.font.html#Glyph.texture" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Texture handle of the glyph.</div></div></dd>
-<dt class="decl">uint <a class="symbol _variable" name="Glyph.freetype_index" href="htmlsrc/video.font.html#L33">freetype_index</a> <a href="video.font.html#Glyph.freetype_index" class="plink">¶</a></dt>
+<dt class="decl">uint <a class="symbol _variable" name="Glyph.freetype_index" href="htmlsrc/video.font.html#L39">freetype_index</a> <a href="video.font.html#Glyph.freetype_index" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Freetype glyph index.</div></div></dd>
-<dt class="decl">Vector2b <a class="symbol _variable" name="Glyph.offset" href="htmlsrc/video.font.html#L35">offset</a> <a href="video.font.html#Glyph.offset" class="plink">¶</a></dt>
+<dt class="decl">Vector2b <a class="symbol _variable" name="Glyph.offset" href="htmlsrc/video.font.html#L41">offset</a> <a href="video.font.html#Glyph.offset" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Offset from the pen to the bottom-left corner of glyph image.</div></div></dd>
-<dt class="decl">byte <a class="symbol _variable" name="Glyph.advance" href="htmlsrc/video.font.html#L37">advance</a> <a href="video.font.html#Glyph.advance" class="plink">¶</a></dt>
+<dt class="decl">byte <a class="symbol _variable" name="Glyph.advance" href="htmlsrc/video.font.html#L43">advance</a> <a href="video.font.html#Glyph.advance" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Pixels to advance the pen after drawing this glyph.</div></div></dd></dl></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="Font" href="htmlsrc/video.font.html#L41">Font</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="video.font.html#Font" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="Font" href="htmlsrc/video.font.html#L47">Font</a> <span class="attrs">[<span class="prot">package</span>]</span> <a href="video.font.html#Font" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Stores one font with one size (e.g. Inconsolata size 16 and 18 will be two Font objects).</div></div>
 <dl>
-<dt class="decl"><a class="symbol _ctor" name="Font.this" href="htmlsrc/video.font.html#L81">this</a><span class="params">(FT_Library <em>freetype_lib</em>, string <em>name</em>, uint <em>size</em>, uint <em>fast_glyphs</em>, bool <em>antialiasing</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.font.html#Font.this" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _ctor" name="Font.this" href="htmlsrc/video.font.html#L85">this</a><span class="params">(FT_Library <em>freetype_lib</em>,  <span class="k">ref</span> Vector!(ubyte) <em>font_data</em>, string <em>name</em>, uint <em>size</em>, uint <em>fast_glyphs</em>, bool <em>antialiasing</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.font.html#Font.this" class="plink">¶</a></dt>
 <dd class="ddef">
-<div class="summary"><div class="cmnt">Construct (load) a font.</div></div>
+<div class="summary"><div class="cmnt">Construct a font.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>freetype_lib</em></td><td>Handle to the freetype library used to work with fonts.</td></tr>
-<tr><td><em>name</em></td><td>Name of the font (file name in the fonts/ directory).</td></tr>
+<tr><td><em>font_data</em></td><td>Font data (loaded from a font file).</td></tr>
+<tr><td><em>name</em></td><td>Name of the font.</td></tr>
 <tr><td><em>size</em></td><td>Size of the font in points.</td></tr>
 <tr><td><em>fast_glyphs</em></td><td>Number of glyphs to store in fast access array,
                          from glyph 0. E.g. 128 means 0-127, i.e. ASCII.</td></tr>
 <tr><td><em>antialiasing</em></td><td>Should the font be antialiased?</td></tr></table>
-<p class="sec_header">Throws:</p><div class="cmnt">Exception if the font could not be loaded.</div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Font.die" href="htmlsrc/video.font.html#L125">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.font.html#Font.die" class="plink">¶</a></dt>
+<p class="sec_header">Throws:</p><div class="cmnt">FontException if the font could not be loaded.</div></dd>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Font.die" href="htmlsrc/video.font.html#L126">die</a><span class="params">()</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.font.html#Font.die" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Destroy the font and free its resources.
  To free all used resources, unload_textures() must be called before this.</div></div></dd>
@@ -77,14 +84,15 @@
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>driver</em></td><td>Video driver to delete textures from.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Font.reload_textures" href="htmlsrc/video.font.html#L198">reload_textures</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.font.html#Font.reload_textures" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Font.reload_textures" href="htmlsrc/video.font.html#L200">reload_textures</a><span class="params">(VideoDriver <em>driver</em>)</span> <span class="attrs">[<span class="prot">public</span>]</span> <a href="video.font.html#Font.reload_textures" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Load glyph textures back to video driver.</div></div>
 <div class="cmnt">Can only be used after textures were unloaded.</div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
-<tr><td><em>driver</em></td><td>Video driver to load textures to.</td></tr></table></dd>
-<dt class="decl"><span class="rettyp">uint</span> <a class="symbol _function" name="Font.text_width" href="htmlsrc/video.font.html#L217">text_width</a><span class="params">(string <em>str</em>, bool <em>use_kerning</em>)</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="video.font.html#Font.text_width" class="plink">¶</a></dt>
+<tr><td><em>driver</em></td><td>Video driver to load textures to.</td></tr></table>
+<p class="sec_header">Throws:</p><div class="cmnt">TextureException if the glyph textures could not be reloaded.</div></dd>
+<dt class="decl"><span class="rettyp">uint</span> <a class="symbol _function" name="Font.text_width" href="htmlsrc/video.font.html#L219">text_width</a><span class="params">(string <em>str</em>, bool <em>use_kerning</em>)</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="video.font.html#Font.text_width" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Returns width of text as it would be drawn.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -93,7 +101,7 @@
 <tr><td><em>use_kerning</em></td><td>Should kerning be used? 
                         Should only be true if the font supports kerning.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">Width of the text in pixels.</div></dd>
-<dt class="decl"><span class="rettyp">Glyph*</span> <a class="symbol _function" name="Font.get_glyph" href="htmlsrc/video.font.html#L262">get_glyph</a><span class="params">(dchar <em>c</em>)</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="video.font.html#Font.get_glyph" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">Glyph*</span> <a class="symbol _function" name="Font.get_glyph" href="htmlsrc/video.font.html#L264">get_glyph</a><span class="params">(dchar <em>c</em>)</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="video.font.html#Font.get_glyph" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Access glyph of a (UTF-32) character.
  
@@ -103,24 +111,25 @@
 <table class="params">
 <tr><td><em>c</em></td><td>Character to get glyph for.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">Pointer to glyph corresponding to the character.</div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="Font.has_glyph" href="htmlsrc/video.font.html#L274">has_glyph</a><span class="params">(dchar <em>c</em>)</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="video.font.html#Font.has_glyph" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="Font.has_glyph" href="htmlsrc/video.font.html#L276">has_glyph</a><span class="params">(dchar <em>c</em>)</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="video.font.html#Font.has_glyph" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Determines if the glyph of a character is loaded.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>c</em></td><td>Character to check for.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">True if the glyph is loaded, false otherwise.</div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Font.load_glyph" href="htmlsrc/video.font.html#L285">load_glyph</a><span class="params">(VideoDriver <em>driver</em>, dchar <em>c</em>)</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="video.font.html#Font.load_glyph" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="Font.load_glyph" href="htmlsrc/video.font.html#L289">load_glyph</a><span class="params">(VideoDriver <em>driver</em>, dchar <em>c</em>)</span> <span class="attrs">[<span class="prot">package</span>]</span> <a href="video.font.html#Font.load_glyph" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Load glyph of a character.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>driver</em></td><td>Video driver to use for texture creation.</td></tr>
-<tr><td><em>c</em></td><td>Character to load glyph for.</td></tr></table></dd></dl></dd></dl>
+<tr><td><em>c</em></td><td>Character to load glyph for.</td></tr></table>
+<p class="sec_header">Throws:</p><div class="cmnt">TextureException if the glyph texture could not be created.</div></dd></dl></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Feb 24 22:14:43 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Apr 21 16:10:55 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>
