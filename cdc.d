@@ -138,7 +138,6 @@ int main(string[] args)
     */
 
     string build = "debug";
-    bool no_sse = false;
 
     string[] extra_args = ["-w", "-wi"];
 
@@ -149,7 +148,6 @@ int main(string[] args)
         {
             switch(arg)
             {
-                case "--no-sse": no_sse = true; break;
                 case "--help", "-h": help(); return 0;
                 case "--dmd": compiler = "dmd"; break;
                 case "--gdc": compiler = "gdmd"; break;
@@ -159,10 +157,6 @@ int main(string[] args)
         }
     }
     if(args.length > 0 && args[$ - 1][0] != '-'){build = args[$ - 1];}
-
-    string[] sse3 = ["-version=sse3", "-version=sse2", "-version=sse1"];
-    //sse doesn't work on gdc for some reason
-    if(!no_sse && compiler != "gdmd" && compiler != "gdc"){extra_args ~= sse3;}
     
 
     string[] debug_args = ["-unittest", "-gc", "-ofpong-debug"];
@@ -234,11 +228,6 @@ void help()
         "\n"
         "Available options:\n"
         " -h --help          Show this help information.\n"
-        "    --no-sse        Don't use hand-coded SSE optimizations.\n"
-        "                    By default, custom SSE code requiring SSE 3 is included.\n"
-        "                    This is needed on old X86 or non-X86 platforms.\n"
-        "                    This code does not work on GDC, so it is automatically"
-        "                    disabled there.\n"
         "    --gdc           Use GDC for compilation.\n"
         "    --dmd           Use DMD for compilation.\n"
         "    --ldc           Use LDC for compilation. (not tested)\n"

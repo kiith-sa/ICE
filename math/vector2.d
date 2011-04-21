@@ -99,34 +99,7 @@ align(1) struct Vector2(T)
     T length_squared(){return x * x + y * y;}
     
     ///Get length of the vector fast at cost of some precision.
-    T length()
-    {
-        version(sse3)
-        {
-            static if(typeid(T) is typeid(float))
-            {
-                Vector2!(T) vector = *this;
-                asm
-                {                             
-                    //for some reason, movlps XMM0, [EAX]; segfaults.
-                    //copy vector to lower half of xmm0
-                    movlps XMM0, vector;
-                    //square all floats in xmm0 
-                    mulps XMM0, XMM0;        
-                    //xmm0.x = x*x + y*y //aka squared length
-                    //y,z,w don't matter
-                    haddps XMM0, XMM0;
-                    //square root of xmm0.x
-                    sqrtss XMM0, XMM0;
-                    //copy back to vector
-                    movlps vector, XMM0;
-                }
-                return vector.x;
-            }
-            else{return length_safe();}
-        }
-        else{return length_safe();}
-    }
+    T length(){return length_safe();}
 
     ///Get length of the vector with better precision.
     T length_safe(){return cast(T)(sqrt(cast(real)length_squared));}
@@ -150,49 +123,10 @@ align(1) struct Vector2(T)
      */
     void normalize()
     {
-        version(sse3)
-        {
-            static if(typeid(T) is typeid(float))
-            {
-                asm
-                {     
-                    //this pointer is passed in EAX
-
-                    //copy this vector to both low and high half of xmm0
-                    //this instruction is supposed to take a double and
-                    //duplicate it, but two floats works too
-                    movddup XMM0, [EAX];
-                    //copy vector to xmm2
-                    movaps XMM2, XMM0;       
-                    //square all floats in xmm0 
-                    mulps XMM0, XMM0;        
-                    //xmm0.x = xmm0.y = x*x + y*y //aka squared length
-                    //z,w don't matter
-                    haddps XMM0, XMM0;
-                    //reciprocal square root to get reciprocal lengths
-                    rsqrtps XMM0, XMM0 ;
-                    //multiply x and y with that and we have a normalized 2D vector
-                    mulps XMM2, XMM0;
-                    //copy xmm2.x, xmm2y into this vector.
-                    movlps [EAX], XMM2;
-                }
-                return;
-            }
-            else
-            {
-                T len = length();
-                x /= len;
-                y /= len;
-                return;
-            }
-        }
-        else
-        {
-            T len = length();
-            x /= len;
-            y /= len;
-            return;
-        }
+        T len = length();
+        x /= len;
+        y /= len;
+        return;
     }
 
     ///Normalize with better precision, or don't do anything if this is a zero vector.
