@@ -132,7 +132,7 @@ package struct GLRenderer
         }
 
         ///Get number of vertex groups created during the frame so far.
-        uint vertex_group_count(){return vertex_groups_.length;}
+        uint vertex_group_count(){return cast(uint)vertex_groups_.length;}
 
         ///Set draw mode. Should not be called during a frame.
         void draw_mode(GLDrawMode mode)

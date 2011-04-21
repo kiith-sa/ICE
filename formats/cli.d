@@ -486,7 +486,8 @@ class CLI
                                        {return a.help_left.length > b.help_left.length;});
 
             //left side width
-            uint left_width = clamp(widest.help_left.length + sep, line_width_ / 4, line_width_ / 2);
+            uint left_width = clamp(cast(uint)widest.help_left.length + sep, 
+                                    line_width_ / 4, line_width_ / 2);
             //right side width
             uint right_width = line_width_ - left_width;
 

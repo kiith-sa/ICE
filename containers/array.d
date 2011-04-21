@@ -113,7 +113,7 @@ void remove(T)(ref T[] array, bool delegate(ref T) deleg)
  * array.remove_index(0); //Removes element at index 0.
  * --------------------
  */
-void remove_index(T)(ref T[] array, uint index)
+void remove_index(T)(ref T[] array, size_t index)
 in{assert(index < array.length, "Array index to remove out of bounds");}
 body
 {
