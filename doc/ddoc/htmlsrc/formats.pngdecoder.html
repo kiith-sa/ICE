@@ -186,8 +186,8 @@ Authors: Lode Vandevenne (original version in C++), Lutger Blijdestijn (D versio
                         }</span></span></span>
                         <span class="s Break"><span class="k">break</span>;</span></span></span></span>
                     <span class="s Default"><span class="k">default</span>:
-                        <span class="lc">//size_t type = chunk.type;</span>
-                        <span class="s Scope"><span class="s Compound"><span class="s Expression"><span class="e Call"><span class="e TemplateInstance"><span class="i">enforceEx</span>!<span class="o TemplateArguments">(<span class="t Identifier"><span class="i">PNGException</span></span>)</span></span>((<span class="i">bt</span>(&amp;<span class="i">chunk</span>.<span class="i">type</span>, <span class="k">cast</span>(<span class="i">size_t</span>)<span class="n">6</span>) &lt; <span class="n">0</span>), 
+                        <span class="s Scope"><span class="s Compound"><span class="s Declaration"><span class="d Variables"><span class="t Identifier"><span class="i">size_t</span></span> <span class="i">type</span> = <span class="e Identifier"><span class="i">chunk</span></span>.<span class="e Identifier"><span class="i">type</span></span>;</span></span>
+                        <span class="s Expression"><span class="e Call"><span class="e TemplateInstance"><span class="i">enforceEx</span>!<span class="o TemplateArguments">(<span class="t Identifier"><span class="i">PNGException</span></span>)</span></span>((<span class="i">bt</span>(&amp;<span class="i">type</span>, <span class="k">cast</span>(<span class="i">size_t</span>)<span class="n">6</span>) &lt; <span class="n">0</span>), 
                                    <span class="sl">"Unrecognized critical chunk"</span>)</span>;</span>
                         <span class="s Break"><span class="k">break</span>;</span></span></span></span>
                 }</span></span></span>

@@ -116,22 +116,22 @@
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Use to implement your own custom build script, or pass args on to defaultBuild() 
  to use this file as a generic build script like bud or rebuild.</div></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="help" href="htmlsrc/cdc.html#L212">help</a><span class="params">()</span> <a href="cdc.html#help" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="help" href="htmlsrc/cdc.html#L206">help</a><span class="params">()</span> <a href="cdc.html#help" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Print help information.</div></div></dd>
-<dt class="decl">string[] <a class="symbol _variable" name="obj_ext" href="htmlsrc/cdc.html#L264">obj_ext</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="cdc.html#obj_ext" class="plink">¶</a></dt>
+<dt class="decl">string[] <a class="symbol _variable" name="obj_ext" href="htmlsrc/cdc.html#L253">obj_ext</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="cdc.html#obj_ext" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">An array of valid object file extensions for the current.</div></div></dd>
-<dt class="decl">string <a class="symbol _variable" name="lib_ext" href="htmlsrc/cdc.html#L265">lib_ext</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="cdc.html#lib_ext" class="plink">¶</a></dt>
+<dt class="decl">string <a class="symbol _variable" name="lib_ext" href="htmlsrc/cdc.html#L254">lib_ext</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="cdc.html#lib_ext" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Library extension for the current platform.</div></div></dd>
-<dt class="decl">string <a class="symbol _variable" name="bin_ext" href="htmlsrc/cdc.html#L266">bin_ext</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="cdc.html#bin_ext" class="plink">¶</a></dt>
+<dt class="decl">string <a class="symbol _variable" name="bin_ext" href="htmlsrc/cdc.html#L255">bin_ext</a> <span class="attrs">[<span class="stc">const</span>]</span> <a href="cdc.html#bin_ext" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Executable file extension for the current platform.</div></div></dd>
-<dt class="decl"><span class="rettyp">int</span> <a class="symbol _function" name="defaultBuild" href="htmlsrc/cdc.html#L271">defaultBuild</a><span class="params">(string[] <em>args</em>)</span> <a href="cdc.html#defaultBuild" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">int</span> <a class="symbol _function" name="defaultBuild" href="htmlsrc/cdc.html#L260">defaultBuild</a><span class="params">(string[] <em>args</em>)</span> <a href="cdc.html#defaultBuild" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Program entry point.  Parse args and run the compiler.</div></div></dd>
-<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="CDC" href="htmlsrc/cdc.html#L314">CDC</a> <a href="cdc.html#CDC" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">struct</span> <a class="symbol _struct" name="CDC" href="htmlsrc/cdc.html#L303">CDC</a> <a href="cdc.html#CDC" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">A library for compiling d code.</div></div>
 <p class="sec_header">Example:</p><div class="cmnt"><table class="d_code">
@@ -146,7 +146,7 @@
 </td></tr>
 </table></div>
 <dl>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="CDC.compile" href="htmlsrc/cdc.html#L326">compile</a><span class="params">(string[] <em>paths</em>, string[] <em>options</em> = <span class="defval"><span class="k">null</span></span>, string[] <em>run_args</em> = <span class="defval"><span class="k">null</span></span>, string <em>root</em> = <span class="defval"><span class="k">null</span></span>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#CDC.compile" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="CDC.compile" href="htmlsrc/cdc.html#L315">compile</a><span class="params">(string[] <em>paths</em>, string[] <em>options</em> = <span class="defval"><span class="k">null</span></span>, string[] <em>run_args</em> = <span class="defval"><span class="k">null</span></span>, string <em>root</em> = <span class="defval"><span class="k">null</span></span>)</span> <span class="attrs">[<span class="stc">static</span>]</span> <a href="cdc.html#CDC.compile" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Compile d code using the current compiler.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -158,11 +158,11 @@
 <tr><td><em>verbose</em></td><td>Print each command before it's executed.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt"></div>
 <p class="sec_header">TODO:</p><div class="cmnt">Add a dry run option to just return an array of commands to execute.</div></dd></dl></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="execute_compiler" href="htmlsrc/cdc.html#L617">execute_compiler</a><span class="params">(string <em>compiler</em>, string[] <em>arguments</em>)</span> <a href="cdc.html#execute_compiler" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="execute_compiler" href="htmlsrc/cdc.html#L606">execute_compiler</a><span class="params">(string <em>compiler</em>, string[] <em>arguments</em>)</span> <a href="cdc.html#execute_compiler" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl">bool <a class="symbol _variable" name="verbose" href="htmlsrc/cdc.html#L633">verbose</a> <a href="cdc.html#verbose" class="plink">¶</a></dt>
+<dt class="decl">bool <a class="symbol _variable" name="verbose" href="htmlsrc/cdc.html#L622">verbose</a> <a href="cdc.html#verbose" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="execute" href="htmlsrc/cdc.html#L643">execute</a><span class="params">(string <em>command</em>, string[] <em>args</em> = <span class="defval"><span class="k">null</span></span>)</span> <a href="cdc.html#execute" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">void</span> <a class="symbol _function" name="execute" href="htmlsrc/cdc.html#L632">execute</a><span class="params">(string <em>command</em>, string[] <em>args</em> = <span class="defval"><span class="k">null</span></span>)</span> <a href="cdc.html#execute" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Execute a command-line program and print its output.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -170,19 +170,19 @@
 <tr><td><em>command</em></td><td>The command to execute, e.g. "dmd".</td></tr>
 <tr><td><em>args</em></td><td>Arguments to pass to the command.</td></tr></table>
 <p class="sec_header">Throws:</p><div class="cmnt">ProcessException on failure or status code 1.</div></dd>
-<dt class="decl">char <a class="symbol _variable" name="file_separator" href="htmlsrc/cdc.html#L662">file_separator</a> <a href="cdc.html#file_separator" class="plink">¶</a></dt>
+<dt class="decl">char <a class="symbol _variable" name="file_separator" href="htmlsrc/cdc.html#L651">file_separator</a> <a href="cdc.html#file_separator" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd>
-<dt class="decl"><span class="kw">enum</span> <a class="symbol _enum" name="ScanMode" href="htmlsrc/cdc.html#L665">ScanMode</a> <a href="cdc.html#ScanMode" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">enum</span> <a class="symbol _enum" name="ScanMode" href="htmlsrc/cdc.html#L654">ScanMode</a> <a href="cdc.html#ScanMode" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Directory scan mode.</div></div>
 <dl>
-<dt class="decl"><a class="symbol _enummem" name="ScanMode.Files" href="htmlsrc/cdc.html#L668">Files</a> <a href="cdc.html#ScanMode.Files" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _enummem" name="ScanMode.Files" href="htmlsrc/cdc.html#L657">Files</a> <a href="cdc.html#ScanMode.Files" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Scan files.</div></div></dd>
-<dt class="decl"><a class="symbol _enummem" name="ScanMode.Directories" href="htmlsrc/cdc.html#L670">Directories</a> <a href="cdc.html#ScanMode.Directories" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _enummem" name="ScanMode.Directories" href="htmlsrc/cdc.html#L659">Directories</a> <a href="cdc.html#ScanMode.Directories" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Scan folders.</div></div></dd></dl></dd>
-<dt class="decl"><span class="rettyp">string[]</span> <a class="symbol _function" name="scan" href="htmlsrc/cdc.html#L684">scan</a><span class="params">(string <em>folder</em>, string[] <em>extensions</em> = <span class="defval">[<span class="sl">""</span>]</span>, ScanMode <em>mode</em> = <span class="defval"><span class="i">Files</span></span>)</span> <a href="cdc.html#scan" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">string[]</span> <a class="symbol _function" name="scan" href="htmlsrc/cdc.html#L673">scan</a><span class="params">(string <em>folder</em>, string[] <em>extensions</em> = <span class="defval">[<span class="sl">""</span>]</span>, ScanMode <em>mode</em> = <span class="defval"><span class="i">Files</span></span>)</span> <a href="cdc.html#scan" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Recursively get all files with specified extensions in directory and subdirectories.</div></div>
 <p class="sec_header">Parameters:</p>
@@ -192,7 +192,7 @@
 <tr><td><em>mode</em></td><td>Scan mode. Files or directories.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">An array of paths (including filename) relative to directory.</div>
 <p class="sec_header"><span class="red">Bugs:</span></p><div class="cmnt">LDC fails to return any results.</div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="starts_with" href="htmlsrc/cdc.html#L716">starts_with</a><span class="params">(string <em>str</em>, string <em>prefix</em>)</span> <a href="cdc.html#starts_with" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="starts_with" href="htmlsrc/cdc.html#L705">starts_with</a><span class="params">(string <em>str</em>, string <em>prefix</em>)</span> <a href="cdc.html#starts_with" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Does a string start with specified prefix?</div></div>
 <p class="sec_header">Parameters:</p>
@@ -200,22 +200,22 @@
 <tr><td><em>str</em></td><td>String to check.</td></tr>
 <tr><td><em>prefix</em></td><td>Prefix to look for.</td></tr></table>
 <p class="sec_header">Returns:</p><div class="cmnt">True if the string starts with specified prefix, false otherwise.</div></dd>
-<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="contains" href="htmlsrc/cdc.html#L727">contains</a><span class="tparams">(<em>T</em>)</span><span class="params">(T[] <em>array</em>, T <em>element</em>)</span> <a href="cdc.html#contains" class="plink">¶</a></dt>
+<dt class="decl"><span class="rettyp">bool</span> <a class="symbol _function" name="contains" href="htmlsrc/cdc.html#L716">contains</a><span class="tparams">(<em>T</em>)</span><span class="params">(T[] <em>array</em>, T <em>element</em>)</span> <a href="cdc.html#contains" class="plink">¶</a></dt>
 <dd class="ddef">
 <div class="summary"><div class="cmnt">Determine whether or not does an array contain an element.</div></div>
 <p class="sec_header">Parameters:</p>
 <table class="params">
 <tr><td><em>array</em></td><td>Array to check.</td></tr>
 <tr><td><em>elem</em></td><td>Element to look for.</td></tr></table></dd>
-<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="ProcessException" href="htmlsrc/cdc.html#L737">ProcessException</a> : <span class="bclass">Exception</span> <a href="cdc.html#ProcessException" class="plink">¶</a></dt>
+<dt class="decl"><span class="kw">class</span> <a class="symbol _class" name="ProcessException" href="htmlsrc/cdc.html#L726">ProcessException</a> : <span class="bclass">Exception</span> <a href="cdc.html#ProcessException" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div>
 <dl>
-<dt class="decl"><a class="symbol _ctor" name="ProcessException.this" href="htmlsrc/cdc.html#L737">this</a><span class="params">(string <em>message</em>)</span> <a href="cdc.html#ProcessException.this" class="plink">¶</a></dt>
+<dt class="decl"><a class="symbol _ctor" name="ProcessException.this" href="htmlsrc/cdc.html#L726">this</a><span class="params">(string <em>message</em>)</span> <a href="cdc.html#ProcessException.this" class="plink">¶</a></dt>
 <dd class="ddef"><div class="nocmnt"></div></dd></dl></dd></dl>
 </div>
 <div id="kandil-footer">
   <p></p>
-  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Thu Apr 21 16:10:54 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
+  <p>Page generated by <a href="http://code.google.com/p/dil">dil</a> on Fri Apr 22 23:31:44 2011. Rendered by <a href="http://code.google.com/p/dil/wiki/Kandil">kandil</a>.</p>
 </div>
 </div>
 </body>

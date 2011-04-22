@@ -5,11 +5,11 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- * $(BIG Pong engine 0.1.0 API documentation)
+ * $(BIG DPong API documentation)
  *
  * Introduction:
  * 
- * This is the complete API documentation for the Pong engine. It describes
+ * This is the complete API documentation for DPong. It describes
  * all classes, structs, interfaces, functions and so on.
  * This API documentation is intended to serve developers who want to
  * improve the Pong engine, as well as those who want to modify it for

@@ -146,7 +146,7 @@
         }</span></span></span>
 
         <span class="lc">///Get number of vertex groups created during the frame so far.</span>
-        <span class="d Function"><span class="t Integral"><span class="k">uint</span></span> <span class="i">vertex_group_count</span><span class="o Parameters">()</span><span class="s FuncBody"><span class="s Compound">{<span class="s Return"><span class="k">return</span> <span class="e Identifier"><span class="i">vertex_groups_</span></span>.<span class="e Identifier"><span class="i">length</span></span>;</span>}</span></span></span>
+        <span class="d Function"><span class="t Integral"><span class="k">uint</span></span> <span class="i">vertex_group_count</span><span class="o Parameters">()</span><span class="s FuncBody"><span class="s Compound">{<span class="s Return"><span class="k">return</span> <span class="e Cast"><span class="k">cast</span>(<span class="t Integral"><span class="k">uint</span></span>)<span class="e Identifier"><span class="i">vertex_groups_</span></span></span>.<span class="e Identifier"><span class="i">length</span></span>;</span>}</span></span></span>
 
         <span class="lc">///Set draw mode. Should not be called during a frame.</span>
         <span class="d Function"><span class="t Integral"><span class="k">void</span></span> <span class="i">draw_mode</span><span class="o Parameters">(<span class="o Parameter"><span class="t Identifier"><span class="i">GLDrawMode</span></span> <span class="i">mode</span></span>)</span>

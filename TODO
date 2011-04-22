@@ -1,35 +1,22 @@
-07:
-    Logo, and use it as background in docs in a non-intrusive, MiniINI-like way.
-07:
-    Simple site, don't upload yet 
-    (consider availability of CherryPy, Django, etc on TuxFamily)
 08:
-    Ensure everything is polished, create README and such and push, for the first time,
-    to gitorious or github. Not necessarily announcing it.
-
-    Do NOT forget that we have some LodePNG code and assign credit to that
-    in Credits, (and license? - see how others do it, e.g. Irrlicht also
-    includes libpng).
-    Also don't forget the same for Derelict as we're using it.
-
+    Push to GitHub.
+    
+19:
     Then: simple binary archive, both 32-bit and 64-bit if possible.
     At least Linux, but also Windows if possible. Maybe even Mac if we can find
     someone with one.
     And detailed installation instructions both from source and binary archive
-    on wiki (maybe a script to do the installation).
-
-    DO NOT ANNOUNCE!
+    on wiki, and in an article (maybe a script to do the installation).
+    Maybe also in README (at least a link)
 09:
     Write detailed tutorials on installing from source and test installing
-    according to this tutorial on other PC's with Linux as well as in VirtualBox 
+    according to these tutorials on other PC's with Linux as well as in VirtualBox 
+    pe
     with various distros
 
     Also, create a Xonotic-like package with 32bit and 64bit binaries
-    and all or most dependencies (not sure about SDL) - 
+    and all or most dependencies (not sure about SDL, FreeType) - 
     dependencies not present should be specified so users know what they need
-10:
-    Write developer docs with stuff like how to get started hacking
-    the engine, see Wesnoth, OGRE, other projects that do this well.
 11:
     Get the thing to compile on Windows (if it doesn't work already).
 
@@ -38,6 +25,8 @@
     If SDL is a problem, create SFML Platform implementation.
     Platform implementations to compile should be specified at compile time
     to prevent requiring all dependencies.
+
+    Update README, wiki, tuts, etc. with Windows installation instructions.
 12:
     Write these TODOs to an issue tracker of some kind.
 
@@ -49,6 +38,13 @@
 
     Alternatively, consider rewriting CDC in Python (3.x). That would allow us
     to split it into multiple files without complicated compiler commands.
+10:
+    Write developer docs with stuff like how to get started hacking
+    the engine, see Wesnoth, OGRE, other projects that do this well.
+    E.g.: how to read a file. how to create a widget doing something.
+    how to create a monitor. etc.
+5:
+    Profile and optimize.
 11:
     Drawing in separate thread:
     Both in GUI and in SceneManager, this thread works ONLY on const actors/elements,
@@ -142,6 +138,8 @@
     Whether or now we're at D2, move to Derelict2 (if we haven't moved to D2,
     we can only do this if Derelict2 is not D2 only.)
     Replace current use of GL_EXT_framebuffer_object with GL_ARB_framebuffer_object.
+15:
+    Options: ball speed.
 14:
     AI difficulty settings
 
