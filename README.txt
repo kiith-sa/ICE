@@ -53,7 +53,7 @@ to compile `cdc.d` by typing following commands, for dmd an gdc respectively:
 
     dmd cdc.d #dmd
 
-    gdc cdc.d cdc #gdc
+    gdc cdc.d -o cdc #gdc
 
 
 To compile dpong, use the following command, which will build the release build target.

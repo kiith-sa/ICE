@@ -1,22 +1,13 @@
-08:
-    Push to GitHub.
-    
 19:
-    Then: simple binary archive, both 32-bit and 64-bit if possible.
-    At least Linux, but also Windows if possible. Maybe even Mac if we can find
-    someone with one.
-    And detailed installation instructions both from source and binary archive
+    Test the package on other Linux PC's
+19:
+    Windows package. 32bit only, with SDL, FreeType DLLs, and anything else needed.
+    Try to reuse the Linux script.
+
+10:
+    Detailed installation instructions both from source and binary archive
     on wiki, and in an article (maybe a script to do the installation).
     Maybe also in README (at least a link)
-09:
-    Write detailed tutorials on installing from source and test installing
-    according to these tutorials on other PC's with Linux as well as in VirtualBox 
-    pe
-    with various distros
-
-    Also, create a Xonotic-like package with 32bit and 64bit binaries
-    and all or most dependencies (not sure about SDL, FreeType) - 
-    dependencies not present should be specified so users know what they need
 11:
     Get the thing to compile on Windows (if it doesn't work already).
 
@@ -27,133 +18,18 @@
     to prevent requiring all dependencies.
 
     Update README, wiki, tuts, etc. with Windows installation instructions.
+09:
+    Detailed tutorials on installing from source and test installing
+    according to these tutorials on other PC's with Linux as well as in VirtualBox 
+    with various distros
 12:
     Write these TODOs to an issue tracker of some kind.
 
---D2
-4:
-    Consider D2 (at this point it might be mature enough :p)
-    We'll need to port CDC first, look if there's a new CDC, if not,
-    port it, test with some small test project
 
-    Alternatively, consider rewriting CDC in Python (3.x). That would allow us
-    to split it into multiple files without complicated compiler commands.
-10:
-    Write developer docs with stuff like how to get started hacking
-    the engine, see Wesnoth, OGRE, other projects that do this well.
-    E.g.: how to read a file. how to create a widget doing something.
-    how to create a monitor. etc.
-5:
-    Profile and optimize.
-11:
-    Drawing in separate thread:
-    Both in GUI and in SceneManager, this thread works ONLY on const actors/elements,
-    just reading, never writing.
-    This should not cause problems even if it draws stuff during a physics update
-    (would draw some objects in e.g. physics update 1555, and some in 1556, not
-     a big deal) In the physics/game state thread, time not spent updating 
-    would be spent sleeping (first just use an infinite loop as a placeholder)
-
-    Only thing to keep an eye on: drawing thread must never read
-    data that is invalid at the moment, e.g. during some kind of update.
-    Might still need per-object locks for that.
-    Only acquired by non-const methods, though. Maybe D2 has something
-    like synchronized in D1 for that.
-
-    THis should completely remove time aliasing.
-5:
-    Memory usage: consider more
-    advanced recording and storage for GraphData
-    (monitor running in background, not measuring all the time, 
-     gradual data loss, gzipping in memory, dumping to file)
-    Also consider making GraphData time independent, supplying time
-    through methods.
-
-5:
-    Each file should have a documentation header, not just documentation
-    for classes/functions.
-05:
-    Weak singleton class handling time, updating actormanager and perhaps other
-    stuff. Pass this class when updating actors, instead of time_step, game_time.
-    This class will also allow timed delegates,
-    both delayed in real time and in game time. Use this in BallSpawner, ScoreScreen.
-    Might allow timers, which, when expired, call a delegate, as well as timed signals,
-    and signals that are fired at the beginning of the next frame.
-    However, that might require globally accessible singletons (no testability) 
-    -only do stuff that needs no singletons
-10: 
-    Background colors for GUI elements (nothing more, for now - just rects with color)
-11:                                    
-    Options start: player names (also, whether the player is AI or human-
-    so we can have AI/AI, AI/human, human/human)
-    Character count should be limited to fit to score statictexts.
-    Also time/score limit.
-
-    Also graphics settings (enable/disable certain particle systems, maybe more)
-
-    Screen size change
-
-    Video driver settings too (draw mode, line aa)
-
-    After that, keyboard settings for each player
-12:
-    Settings from ini files, also paddle, ball, wall properties
-    (possibility to add more walls from INI files, but hardcoded two paddles)
-    and paddle, ball graphics objects serialization (including line trail
-    particle system, maybe others of coded)
-    Among other things, time speed and update period of actormanager should
-    be in INI files.
-
-    GUI should also be serializable to/from INI
-    There should be default set of values (in INI), e.g. for buttons in general,
-    and every button could be customized with INI code that only mentions
-    differences.
-
-    Both GUI layout files and GUI skins/themes (just border widths/colors for now)
-
-    FontManager settings like FontAA and FastGlyphs should be set through INI
-    (also the default font?, etc.)
-
-    Alternatively, use YAML (or even WML?) from start.
-
-
-    Newest ideas:
-    We need to separate GUI content (element dimensions, text, etc)
-                    and GUI presentation (border color, font size, etc.)
-
-    Handle these in separate files.
-
-    It would help to have a GUIStyle class ahndling all presentation parameters
-    and pass that to GUIElement factories.
-    Maybe even move dimensions to style, but that would require each element
-    to have a name (or a CSS-like class/id?) and get its data according to that.
-
-    Actually, the CSS-like class/id might be the best idea.
-
-    Also, it would be good to have an option to reset, reload the GUI at run time.
-    That'd help modders changing GUI style.
-13:
-    Adjust graphics and GUI for various resolutions - particularly 640*480
-4:
-    Whether or now we're at D2, move to Derelict2 (if we haven't moved to D2,
-    we can only do this if Derelict2 is not D2 only.)
-    Replace current use of GL_EXT_framebuffer_object with GL_ARB_framebuffer_object.
-15:
-    Options: ball speed.
-14:
-    AI difficulty settings
-
-    Optional(user options) smarter AI that takes note of ray hints from BallSpawner
-    (only if those rays intersect with the goal - ignore if they're intersecting
-     the walls to prevent extra stupidity)
-26: 
-    Sounds
-27: 
-    Release #2, And announce it this time!
-
-AFTER RELEASE #2:
-17:
-    Multiplayer, with single PC and over a network (test with two computers)
+--0.5.0 release
+--0.6.0 release
+--0.7.0 release
+--0.8.0 release
 17: 
     Effects:
     when changing the gui, (e.g. moving from menu to pong, or between dialogs), 
@@ -420,7 +296,7 @@ it will remain memory resident for the entire l
     not.
     Would be used like e.g. time.delayed_call(function(args), delay);
 11:
-    A debug (ini, console and/or debug GUI controlled) option to draw wireframe.
+    A debug (yaml, console and/or debug GUI controlled) option to draw wireframe.
     Also might want pure white wireframe option (with a custom shader)
     Would be a good feature for GLMonitor.
 12:
@@ -441,7 +317,7 @@ it will remain memory resident for the entire l
 12:
     Shaders should be an optional argument to draw_x. If no shader is passed,
     default for fonts, lines, textures is used.
-    Just as images are passed to create textures, shader spec (ini) files
+    Just as images are passed to create textures, shader spec (yaml) files
     should be passed to create_shader. Both images and shader spec
     files should be managed outside videodriver.
     shader spec file should contain a spec for every videodriver supported.
@@ -450,8 +326,6 @@ it will remain memory resident for the entire l
     Actually, not necessarily spec per videodriver, but e.g. GLSL spec,
     fixed function spec, Cg spec etc. 
     E.g. any GLSL capable videodriver could use the GLSL spec.
-13:
-    resource manager, use that for font, shader, ini 
 24:
     Selecting GUI elements with keyboard:
     only certain element types can be selected (e.g. button)
@@ -490,7 +364,7 @@ it will remain memory resident for the entire l
     lines/sprites/meshes
 
     Serialization should go through a standardized interface so
-    we can change file format (INI, XML, binary, compressed...)
+    we can change file format (YAML, INI, XML, binary, compressed...)
 
     First just support lines, then add sprites, and _maybe_ add 3d
     stuff later.
@@ -569,11 +443,6 @@ Ohloh
 Packaging:
 
 OpenSUSE Build Service?
-
-licensing:
-derelict links to sdl dynamically. so we don't need to use lgpl
-we need to give credit to freetype based on its license (if used).
-see freetype.org
 
 
 Monitor:
@@ -712,7 +581,7 @@ Maybe:
     A special createtexture method would be needed.
     (taking multiple images).
 15:
-    (Arkanoid)Save games (ini?)
+    (Arkanoid)Save games (yaml?)
 22: 
     Try AI and/or file loading in a separate thread
 Bugs:
