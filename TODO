@@ -1,27 +1,3 @@
-19:
-    Test the package on other Linux PC's
-19:
-    Windows package. 32bit only, with SDL, FreeType DLLs, and anything else needed.
-    Try to reuse the Linux script.
-
-10:
-    Detailed installation instructions both from source and binary archive
-    on wiki, and in an article (maybe a script to do the installation).
-    Maybe also in README (at least a link)
-11:
-    Get the thing to compile on Windows (if it doesn't work already).
-
-    Probably use Cygwin, it might be easier that way.
-
-    If SDL is a problem, create SFML Platform implementation.
-    Platform implementations to compile should be specified at compile time
-    to prevent requiring all dependencies.
-
-    Update README, wiki, tuts, etc. with Windows installation instructions.
-09:
-    Detailed tutorials on installing from source and test installing
-    according to these tutorials on other PC's with Linux as well as in VirtualBox 
-    with various distros
 12:
     Write these TODOs to an issue tracker of some kind.
 

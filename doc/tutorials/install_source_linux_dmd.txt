@@ -1,0 +1,57 @@
+# Installing from source on Linux with dmd
+
+
+## 1: Install DMD dependencies.
+DMD depends on `gcc-multilib`, so you need to install it with your package manager. On Debian/Ubuntu, you can install it with:
+
+    sudo apt-get install gcc-multilib
+
+
+## 2: Download DMD
+Get the newest DMD 1.x binary package for your OS from here: 
+<http://www.digitalmars.com/d/download.html>
+
+
+## 3: Install DMD
+Install the package using your system's package manager.
+
+The deb package works fine on most (all?) Debian based distros, including Debian and Ubuntu.
+
+If you're using a 64-bit OS, you will need to force architecture as there is only a 32-bit package available. On Debian/Ubuntu, this can be done with:
+
+    sudo dpkg -i --force-architecture dmd_1.YOUR_VERSION_HERE_i386.deb
+
+
+## 4: Install DPong dependencies
+You will need SDL 1.2 and FreeType, so install them with your package manager. It's possible that you already have them, as many projects depend on them. On Debian/Ubuntu:
+
+    sudo apt-get install libsdl1.2debian libfreetype6
+
+
+## 5: Get DPong
+You can download DPong source tarball from its GitHub page:
+<https://github.com/kiith-sa/DPong>
+
+Or you can download the source repository using git:
+
+    git clone git://github.com/kiith-sa/DPong.git
+
+
+## 6: Compile and install DPong
+Move to to the directory where you downloaded DPong source (this is the directory that contains the `cdc.d` file).
+
+First, compile the CDC build script:
+
+    dmd cdc.d
+
+Now, you need to compile DPong release build target:
+
+    ./cdc release
+ 
+You can also compile a debug build, but the release build is the one that will get installed. For more info about DPong build targets, type `./cdc --help` .
+
+Now you can install DPong:
+
+    sudo ./install.sh
+
+DPong release build will be copied to `/usr/bin/dpong.bin` and a launcher script to `/usr/bin/dpong` so you can now launch dpong by typing `dpong` into the console. Game data files will be copied to `usr/local/share/dpong`. DPong will store user settings and similar data in  `/home/YOUR_USER_NAME/.dpong` .
