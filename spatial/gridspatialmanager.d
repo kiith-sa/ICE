@@ -4,8 +4,11 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module spatial.gridspatialmanager;
 
+
+import std.algorithm;
 
 import spatial.spatialmanager;
 import spatial.volume;
@@ -21,7 +24,6 @@ import math.vector2;
 import math.rectangle;
 import util.iterator;
 import memory.memory;
-import containers.array;
 import containers.array2d;
 import containers.vector;
 
@@ -29,7 +31,7 @@ import containers.vector;
 ///Implementation of spatial manager storing objects in a simple square grid.
 class GridSpatialManager(T) : SpatialManager!(T)
 {
-    invariant
+    invariant()
     {
         assert(cell_size_ > 0.0f, "Cell size must be greater than zero.");
         assert(grid_size_ > 0, "Grid size must be greater than zero.");
@@ -42,16 +44,8 @@ class GridSpatialManager(T) : SpatialManager!(T)
             ///Objects in the cell.
             Vector!(T) objects;
 
-            ///Construct a cell.
-            static Cell opCall()
-            {
-                Cell cell;
-                cell.objects = Vector!(T)();
-                return cell;
-            }
-
             ///Destroy the cell.
-            void die(){objects.die();}
+            ~this(){clear(objects);}
         }
 
         ///Cells of the grid.
@@ -65,30 +59,30 @@ class GridSpatialManager(T) : SpatialManager!(T)
         {
             public:
                 ///Used by foreach
-                int opApply(int delegate(ref T[]) dg)
+                @trusted override int opApply(int delegate(ref T[]) dg)
                 {
                     int result = 0;
 
                     T[] array;
                     foreach(ref cell; grid_)
                     {
-                        array = cell.objects.array;
+                        array = cell.objects.array_unsafe();
                         result = dg(array);
                         if(result){break;}
                     }
-                    array = outer_.objects.array;
-                    result = dg(array);
 
+                    array = outer_.objects.array_unsafe();
+                    result = dg(array);
                     return result;
                 }
         }
 
         ///Origin of the grid (top-left corner) in world space.
-        Vector2f origin_;
+        const Vector2f origin_;
         ///Size of a single cell (both x and y).
-        float cell_size_;
+        const float cell_size_;
         ///Size of the grid in cells (both x and y).
-        uint grid_size_;
+        const uint grid_size_;
 
     public:
         /**
@@ -98,7 +92,7 @@ class GridSpatialManager(T) : SpatialManager!(T)
          *          cell_size = Size of a grid cell (both x and y).
          *          grid_size = Size of the grid in cells (both x and y).
          */
-        this(Vector2f center, float cell_size, uint grid_size)
+        this(in Vector2f center, in float cell_size, in uint grid_size)
         {
             cell_size_ = cell_size;
             grid_size_ = grid_size;
@@ -114,8 +108,8 @@ class GridSpatialManager(T) : SpatialManager!(T)
 
         override void die()
         {
-            outer_.die();
-            grid_.die();
+            clear(outer_);
+            clear(grid_);
         }
 
         override void add_object(T object)
@@ -144,7 +138,7 @@ class GridSpatialManager(T) : SpatialManager!(T)
             }
         }
 
-        override void update_object(T object, Vector2f old_position)
+        override void update_object(T object, in Vector2f old_position)
         {
             assert(object.volume !is null, "Can't manage objects with null volumes");
             
@@ -161,14 +155,14 @@ class GridSpatialManager(T) : SpatialManager!(T)
         override Iterator!(T[]) iterator(){return new ObjectIterator!(T);}
 
         ///Get grid size (both X and Y) in cells.
-        uint grid_size(){return grid_size_;}
+        uint grid_size() const {return grid_size_;}
 
-        MonitorData monitor_data()
+        MonitorDataInterface monitor_data()
         {
             SubMonitor function(GridSpatialManager!(T))[string] ctors_;
             ctors_["Grid"] = function SubMonitor(GridSpatialManager!(T) m)
                                                  {return new GridMonitor!(T)(m);};
-            return new MonitorManager!(GridSpatialManager!(T))(this, ctors_);
+            return new MonitorData!(GridSpatialManager!(T))(this, ctors_);
         }
 
     private:
@@ -183,7 +177,7 @@ class GridSpatialManager(T) : SpatialManager!(T)
          *
          * Returns: Array of cells in which the volume is present.
          */
-        Cell*[] cells(Vector2f position, Volume volume)
+        Cell*[] cells(in Vector2f position, in Volume volume)
         {
             //determine volume type and use correct method based on that.
             if(volume.classinfo is VolumeAABBox.classinfo)
@@ -205,7 +199,7 @@ class GridSpatialManager(T) : SpatialManager!(T)
          *
          * Returns: Array of cells in which the box is present.
          */
-        Cell*[] cells_aabbox(Vector2f position, VolumeAABBox box)
+        Cell*[] cells_aabbox(in Vector2f position, in VolumeAABBox box)
         {
             return cells_rectangle(position, box.rectangle);
         }
@@ -218,12 +212,12 @@ class GridSpatialManager(T) : SpatialManager!(T)
          *
          * Returns: Array of cells in which the circle is present.
          */
-        Cell*[] cells_circle(Vector2f position, VolumeCircle circle)
+        Cell*[] cells_circle(in Vector2f position, in VolumeCircle circle)
         {
             //using rectangle test as it's faster and the overhead in
             //cells not significant.
-            Vector2f offset = Vector2f(circle.radius, circle.radius);
-            Rectanglef box = Rectanglef(-offset, offset);
+            const offset = Vector2f(circle.radius, circle.radius);
+            const box = Rectanglef(-offset, offset);
             return cells_rectangle(position + circle.offset, box);
         }
 
@@ -235,15 +229,12 @@ class GridSpatialManager(T) : SpatialManager!(T)
          *
          * Returns: Array of cells in which the rectangle is present.
          */
-        Cell*[] cells_rectangle(Vector2f position, ref Rectanglef rect)
+        Cell*[] cells_rectangle(in Vector2f position, const ref Rectanglef rect)
         {
-            alias math.math.min min;
-            alias math.math.max max;
-
             //translate relative to the grid.
-            Rectanglef translated = rect + (position - origin_);
+            const Rectanglef translated = rect + (position - origin_);
 
-            float mult = 1.0f / cell_size_;
+            const float mult = 1.0f / cell_size_;
 
             Cell*[] result;
             //get minimum and maximum cells containing the rectangle.
@@ -270,7 +261,7 @@ class GridSpatialManager(T) : SpatialManager!(T)
             {
                 for(uint y = cell_y_min; y <= cell_y_max; y++)
                 {
-                    result ~= grid_.ptr(x,y);
+                    result ~= grid_.ptr_unsafe(x,y);
                 }
             }
             return result;
@@ -289,6 +280,6 @@ class GridSpatialManager(T) : SpatialManager!(T)
             rectangle = Rectanglef(-15.0, -15.0, 15.0, 33.0);
             result = manager.cells_rectangle(zero, rectangle);
             assert(result.length == 7);
-            assert(result.contains(&manager.outer_, true));
+            assert(find!"a is b"(result, &manager.outer_) != []);
         }
 }

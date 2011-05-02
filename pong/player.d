@@ -3,7 +3,9 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module pong.player;
+@safe
 
 
 import pong.paddle;
@@ -20,7 +22,7 @@ abstract class Player
 {
     protected:
         ///Player name.
-        string name_;
+        const string name_;
         ///Current player score.
         uint score_ = 0;
 
@@ -29,13 +31,13 @@ abstract class Player
 
     public:
         ///Increase score of this player.
-        void score(BallBody ball_body){score_++;}
+        @property void score(BallBody ball_body){score_++;}
 
         ///Get score of this player.
-        int score(){return score_;}
+        @property int score() const {return score_;}
 
         ///Get name of this player.
-        string name(){return name_;}
+        @property string name() const {return name_;}
 
         /**
          * Update player state.
@@ -45,7 +47,7 @@ abstract class Player
         void update(Game game){}
 
         ///Destroy this player
-        void die(){delete this;}
+        void die(){}
 
     protected:
         /**
@@ -54,7 +56,7 @@ abstract class Player
          * Params:  name   = Player name.
          *          paddle = Paddle controlled by the player.
          */
-        this(string name, Paddle paddle)
+        this(in string name, Paddle paddle)
         {
             name_ = name;
             paddle_ = paddle;
@@ -78,7 +80,7 @@ final class AIPlayer : Player
          *          paddle        = Paddle controlled by the player.
          *          update_period = Time period of AI updates.
          */
-        this(string name, Paddle paddle, real update_period)
+        this(in string name, Paddle paddle, in real update_period)
         {
             super(name, paddle);
             update_timer_ = Timer(update_period);
@@ -91,7 +93,7 @@ final class AIPlayer : Player
                 update_timer_.reset();
 
                 //currently only support zero or one ball
-                Ball[] balls = game.balls;
+                const Ball[] balls = game.balls;
                 assert(balls.length <= 1, "AI supports only zero or one ball at the moment");
 
                 if(balls.length == 0)
@@ -102,10 +104,10 @@ final class AIPlayer : Player
                     move_to_center();
                     return;
                 }
-                Ball ball = balls[0];
+                const Ball ball = balls[0];
 
-                float distance = paddle_.limits.distance(ball.position);
-                float distance_last = paddle_.limits.distance(ball_last_);
+                const float distance = paddle_.limits.distance(ball.position);
+                const float distance_last = paddle_.limits.distance(ball_last_);
                 
                 //If the ball is closing to paddle movement area
                 if(distance_last >= distance){ball_closing(ball);}       
@@ -118,7 +120,7 @@ final class AIPlayer : Player
 
     protected:
         ///React to the ball closing in.
-        void ball_closing(Ball ball)
+        void ball_closing(in Ball ball)
         {
             //If paddle x position is roughly equal to ball, no need to move
             if(equals(paddle_.position.x, ball.position.x, 16.0f)){paddle_.stop();}
@@ -152,7 +154,7 @@ final class HumanPlayer : Player
          *          name     = Name of the player.
          *          paddle   = Paddle controlled by the player.
          */
-        this(Platform platform, string name, Paddle paddle)
+        this(Platform platform, in string name, Paddle paddle)
         {
             super(name, paddle);
             platform_ = platform;
@@ -160,7 +162,7 @@ final class HumanPlayer : Player
         }
         
         ///Destroy this HumanPlayer.
-        ~this(){platform_.key.disconnect(&key_handler);}
+        override void die(){platform_.key.disconnect(&key_handler);}
 
         /**
          * Process keyboard input.

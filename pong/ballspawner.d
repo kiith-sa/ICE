@@ -3,10 +3,13 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module pong.ballspawner;
+@safe
 
 
 import std.math;
+import std.random;
 
 import scene.actor;
 import scene.actorcontainer;
@@ -34,7 +37,7 @@ import color;
  */
 class BallSpawner : Actor
 {
-    invariant
+    invariant()
     {
         assert(min_angle_ < PI * 0.5, 
                "Ball spawn angle restriction larger or equal than PI / 2 "
@@ -52,6 +55,7 @@ class BallSpawner : Actor
         
         ///Speed to spawn balls at.
         real ball_speed_;
+
         /**
          * Minimum angle difference from 0.5*pi or 1.5*pi (from horizontal line).
          * Prevents the ball from being spawned too horizontally.
@@ -80,7 +84,7 @@ class BallSpawner : Actor
 
     protected:
         /**
-         * Construct a BallSpawner/
+         * Construct a BallSpawner.
          * 
          * Params:    container    = Actor container to manage this spawner.
          *            physics_body = Physics body of the spawner.
@@ -93,8 +97,8 @@ class BallSpawner : Actor
          *                           disallowed to prevent ball from getting stuck)
          *            ball_speed   = Speed to spawn the ball at.
          */
-        this(ActorContainer container, PhysicsBody physics_body, Timer timer, 
-             real spread, real ball_speed)
+        this(ActorContainer container, PhysicsBody physics_body, in Timer timer, 
+             in real spread, in real ball_speed)
         in{assert(spread >= 0.0, "Negative ball spawning spread");}
         body
         {                
@@ -114,13 +118,13 @@ class BallSpawner : Actor
             super.die();
         }
 
-        override void update(real time_step, real game_time)
+        override void update(in real time_step, in real game_time)
         {
             if(timer_.expired(game_time))
             {
                 //emit the ball in a random, previously generated direction
                 Vector2f direction = Vector2f(1.0f, 1.0f);
-                direction.angle = directions_[std.random.rand % directions_.length];
+                direction.angle = directions_[uniform(0, directions_.length)];
                 spawn_ball.emit(direction, ball_speed_);
                 die();
                 return;
@@ -138,11 +142,11 @@ class BallSpawner : Actor
 
             Vector2f center = physics_body_.position;
             //base color of the rays
-            Color base_color = Color(224, 224, 255, 128);
-            Color light_color = Color(224, 224, 255, 4);
-            Color light_color_end = Color(224, 224, 255, 0);
+            const base_color = Color(224, 224, 255, 128);
+            const light_color = Color(224, 224, 255, 4);
+            const light_color_end = Color(224, 224, 255, 0);
 
-            real ray_length = 600.0;
+            const real ray_length = 600.0;
 
             Vector2f direction = Vector2f(1.0f, 1.0f);
             if(!light_expired)
@@ -162,7 +166,7 @@ class BallSpawner : Actor
             //draw the rays in range of the light
             foreach(d; directions_)
             {
-                real distance = std.math.abs(d - light_);
+                const real distance = abs(d - light_);
                 if(distance > light_width_){continue;}
 
                 Color color = base_color;
@@ -186,20 +190,20 @@ class BallSpawner : Actor
         void generate_directions(real spread)
         {
             //base direction of all generated directions
-            real base = math.math.random(0.0, 1.0);
+            const real base = uniform(0.0, 1.0);
             //adjust spread according to how much of the circle is "allowed" 
             //directions - i.e. nearly horizontal directions are not allowed
             spread *= 1 - (2 * min_angle_) / PI; 
 
             for(uint d = 0; d < direction_count_; d++)
             {
-                real direction = math.math.random(base - spread, base + spread);
+                real direction = uniform(base - spread, base + spread);
                 //integer part of the direction is stripped so that
                 //it's in the 0.0 - 1.0 range
                 direction = std.math.abs(direction - cast(int)direction);
 
                 //"allowed" part of the circle in radians
-                real range = 2.0 * PI - 4.0 * min_angle_;
+                const real range = 2.0 * PI - 4.0 * min_angle_;
                                                    
                 //0.0 - 0.5 gets mapped to 0.5pi+min_angle - 1.5pi-min_angle range
                 if(direction < 0.5){direction = PI * 0.5 + min_angle_ + direction * range;}
@@ -241,7 +245,7 @@ final class BallSpawnerFactory : ActorFactory!(BallSpawner)
          *                      The time when the ball will be spawned
          *                      is relative to this time.
          */
-        this(real start_time){start_time_ = start_time;}
+        this(in real start_time){start_time_ = start_time;}
 
         override BallSpawner produce(ActorContainer container)
         {                          

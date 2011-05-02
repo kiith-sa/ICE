@@ -46,11 +46,11 @@ final class GUIMouseControllable : GUIElement
 {
     private:
         ///Mouse key used for panning (we're panning when dragging this key).
-        MouseKey pan_key_;
+        immutable MouseKey pan_key_;
         ///Is the panning key pressed?
         bool pan_key_pressed_;
         ///Mouse key used to return to default view.
-        MouseKey reset_view_key_;
+        immutable MouseKey reset_view_key_;
 
     public:
         /**
@@ -71,7 +71,8 @@ final class GUIMouseControllable : GUIElement
          * Params:  pan_key        = Mouse key to use for panning when dragged.
          *          reset_view_key = Mouse key to reset view when clicked.
          */
-        this(MouseKey pan_key = MouseKey.Left, MouseKey reset_view_key = MouseKey.Right)
+        this(in MouseKey pan_key = MouseKey.Left, 
+             in MouseKey reset_view_key = MouseKey.Right)
         {
             super(GUIElementParams("p_left", "p_top", "p_width", "p_height", false));
             pan_key_ = pan_key;
@@ -135,7 +136,7 @@ template MouseControl(real zoom_multiplier)
 {
     static assert(zoom_multiplier > 1.0, "Mouse control zoom multiplier must be greater than 1");
 
-    invariant{assert(zoom_ >= 0.0, "MouseControl zoom must be greater than 0");}
+    invariant(){assert(zoom_ >= 0.0, "MouseControl zoom must be greater than 0");}
 
     private:
         ///Current view offset.

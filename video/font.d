@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module video.font;
+@system
 
 
 import std.c.string;
@@ -82,8 +83,8 @@ package class Font
          *
          * Throws:  FontException if the font could not be loaded.
          */
-        this(FT_Library freetype_lib, ref Vector!(ubyte) font_data, string name, 
-             uint size, uint fast_glyphs, bool antialiasing)
+        this(FT_Library freetype_lib, ref Vector!(ubyte) font_data, in string name, 
+             in uint size, in uint fast_glyphs, in bool antialiasing)
         {
             scope(failure){writefln("Could not load font " ~ name);}
 
@@ -94,13 +95,13 @@ package class Font
             antialiasing_ = antialiasing;
 
             FT_Open_Args args;
-            args.memory_base = font_data.ptr;
+            args.memory_base = font_data.ptr_unsafe;
             args.memory_size = font_data.length;
             args.flags = FT_OPEN_MEMORY;
             args.driver = null;
             //we only support face 0 right now, so no bold, italic, etc. 
             //unless it is in a separate font file.
-            int face = 0;
+            const face = 0;
             
             //load face from memory buffer (font_data)
             if(FT_Open_Face(freetype_lib, &args, face, &font_face_) != 0) 
@@ -135,16 +136,16 @@ package class Font
         }
 
         ///Get size of the font in pixels.
-        uint size(){return height_;}
+        uint size() const {return height_;}
 
         ///Get height of the font in pixels (currently the same as size).
-        uint height(){return height_;}
+        uint height() const {return height_;}
 
         ///Get name of the font.
-        string name(){return name_;}
+        string name() const {return name_;}
 
         ///Does the font support kerning?
-        bool kerning(){return kerning_;}
+        bool kerning() const {return kerning_;}
 
         ///Get FreeType font face of the font.
         FT_Face font_face(){return font_face_;}
@@ -216,7 +217,7 @@ package class Font
          *
          * Returns: Width of the text in pixels.
          */
-        uint text_width(string str, bool use_kerning)
+        uint text_width(in string str, in bool use_kerning)
         in
         {
             assert(kerning_ ? true : !use_kerning, 
@@ -230,11 +231,10 @@ package class Font
             //current glyph index
             uint glyph_index;
             FT_Vector kerning;
-            Glyph * glyph;
             
             foreach(dchar chr; str) 
             {
-                glyph = get_glyph(chr);
+                auto glyph = get_glyph(chr);
                 glyph_index = glyph.freetype_index;
                 
                 if(use_kerning && previous_index != 0 && glyph_index != 0) 
@@ -250,7 +250,7 @@ package class Font
             return pen_x;
         }
 
-        //not asserting here as it'd result in too much slowdown
+        //not asserting glyph existence here as it'd result in too much slowdown
         /** 
          * Access glyph of a (UTF-32) character.
          * 
@@ -261,7 +261,7 @@ package class Font
          *
          * Returns: Pointer to glyph corresponding to the character. 
          */
-        Glyph* get_glyph(dchar c)
+        const(Glyph*) get_glyph(in dchar c) const
         {
             return c < fast_glyph_count_ ? fast_glyphs_[c] : c in glyphs_;
         }
@@ -273,7 +273,7 @@ package class Font
          *
          * Returns: True if the glyph is loaded, false otherwise.
          */
-        bool has_glyph(dchar c)
+        bool has_glyph(in dchar c) const
         {
             return c < fast_glyph_count_ ? fast_glyphs_[c] !is null : (c in glyphs_) !is null;
         }
@@ -286,7 +286,7 @@ package class Font
          *
          * Throws:  TextureException if the glyph texture could not be created.
          */
-        void load_glyph(VideoDriver driver, dchar c)
+        void load_glyph(VideoDriver driver, in dchar c)
         {
             if(c < fast_glyph_count_)
             {
@@ -313,7 +313,7 @@ package class Font
             if(default_glyph_ is null)
             {
                 //empty image is transparent
-                scope Image image = new Image(height_ / 2, height_, ColorFormat.GRAY_8);
+                auto image = Image(height_ / 2, height_, ColorFormat.GRAY_8);
                 default_glyph_ = alloc!(Glyph)();
                 default_glyph_.texture = driver.create_texture(image);
                 default_glyph_.offset = Vector2b(0, cast(byte)-height_);
@@ -334,13 +334,13 @@ package class Font
          *
          * Throws:  TextureException if default glyph texture could not be created.
          */
-        Glyph render_glyph(VideoDriver driver, dchar c)
+        Glyph render_glyph(VideoDriver driver, in dchar c)
         {
             Glyph glyph;
             glyph.freetype_index = FT_Get_Char_Index(font_face_, c);
             
             //load the glyph to font_face_.glyph
-            uint load_flags = FT_LOAD_TARGET_(render_mode()) | FT_LOAD_NO_BITMAP;
+            const uint load_flags = FT_LOAD_TARGET_(render_mode()) | FT_LOAD_NO_BITMAP;
             if(FT_Load_Glyph(font_face_, glyph.freetype_index, load_flags) != 0) 
             { 
                 return get_default_glyph(driver);
@@ -355,7 +355,7 @@ package class Font
                 glyph.offset.y = cast(byte)-slot.bitmap_top;
 
                 FT_Bitmap bitmap = slot.bitmap;
-                Vector2u size = Vector2u(bitmap.width, bitmap.rows);
+                const size = Vector2u(bitmap.width, bitmap.rows);
                 assert(size.x < 128 && size.y < 128, 
                        "Can't draw a glyph wider or taller than 127 pixels");
                 //we don't want to crash or cause bugs in optimized builds
@@ -366,7 +366,7 @@ package class Font
                 }
 
                 //image to create texture from
-                scope Image image = new Image(size.x, size.y, ColorFormat.GRAY_8);
+                auto image = Image(size.x, size.y, ColorFormat.GRAY_8);
 
                 //return 255 if the bit at (x,y) is set. 0 otherwise.
                 ubyte bitmap_color(uint x, uint y) 
@@ -378,7 +378,7 @@ package class Font
                 //copy freetype bitmap to our image
                 if(antialiasing_)
                 {
-                    memcpy(image.data.ptr, bitmap.buffer, size.x * size.y);
+                    memcpy(image.data_unsafe.ptr, bitmap.buffer, size.x * size.y);
                     //antialiasing makes the glyph appear darker so we make it lighter
                     image.gamma_correct(1.2);
                 }

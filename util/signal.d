@@ -4,10 +4,11 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module util.signal;
 
 
-import containers.array;
+import std.algorithm;
 
 
 /**
@@ -64,14 +65,14 @@ template Signal(Args ...)
         void disconnect(void delegate(Args) slot)
         in
         {
-            alias containers.array.contains contains;
-            assert(slots_.contains(slot, true), 
+            assert(std.algorithm.find!"a is b"(slots_, slot) != [],
                    "Can't disconnect a slot that is not connected");
         }
         body
         {
-            alias containers.array.remove_first remove_first;
-            slots_.remove_first(slot, true);
+            //removing element this way due to a bug in std.algorithm.remove
+            const uint i = std.algorithm.countUntil!("a is b", void delegate(Args)[], void delegate(Args))(slots_, slot);
+            slots_ = slots_[0 .. i] ~ slots_[i + 1 .. $];
         }
 
         ///Disconnect all connected slots.

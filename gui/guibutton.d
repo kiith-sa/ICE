@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module gui.guibutton;
+@safe
 
 
 import gui.guielement;
@@ -76,8 +77,8 @@ class GUIButton : GUIElement
          *          font_size = Font size of the button text.
          *          states    = Color data for each button state.
          */
-        this(GUIElementParams params, string text, 
-             uint font_size, State[ButtonState.max + 1] states)
+        this(in GUIElementParams params, in string text, 
+             in uint font_size, in State[ButtonState.max + 1] states)
         {
             super(params);
 
@@ -101,7 +102,7 @@ class GUIButton : GUIElement
             set_state(ButtonState.Normal);
         }
 
-        void mouse_key(KeyState state, MouseKey key, Vector2u position)
+        override void mouse_key(KeyState state, MouseKey key, Vector2u position)
         {
             super.mouse_key(state, key, position);
 
@@ -142,6 +143,8 @@ class GUIButton : GUIElement
 
         override void draw(VideoDriver driver)
         {
+            alias math.vector2.to to;
+
             if(!visible_){return;}
 
             //no need to draw the text here as it is a child
@@ -157,7 +160,7 @@ class GUIButton : GUIElement
 
     private:
         ///Change button state and update text element accordingly.
-        final void set_state(ButtonState state)
+        final void set_state(in ButtonState state)
         {
             state_ = state;
             text_.text_color = states_[state_].text_color;
@@ -182,6 +185,7 @@ final class GUIButtonFactory : GUIElementFactoryBase!(GUIButton)
     private:
         ///Properties for each button state.
         GUIButton.State[ButtonState.max + 1] states_;
+
     public:
         ///Construct a GUIButtonFactory.
         this()
@@ -195,8 +199,15 @@ final class GUIButtonFactory : GUIElementFactoryBase!(GUIButton)
             states_[ButtonState.Clicked].text_color = Color(224, 224, 255, 255);
         }
 
-        void text_color(ButtonState state, Color color){states_[state].text_color = color;}
-        void border_color(ButtonState state, Color color){states_[state].border_color = color;}
+        void text_color(in ButtonState state, in Color color)
+        {
+            states_[state].text_color = color;
+        }
+
+        void border_color(in ButtonState state, in Color color)
+        {
+            states_[state].border_color = color;
+        }
 
         ///Produce a GUIButton with parameters of the factory.
         override GUIButton produce()

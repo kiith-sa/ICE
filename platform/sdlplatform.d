@@ -7,10 +7,13 @@
 module platform.sdlplatform;
 
 
-import std.string;
+import std.conv;
 import std.stdio;
+import std.string;
+alias std.conv.to to;
 
 import derelict.sdl.sdl;
+import derelict.util.exception;
 
 import platform.key;
 import platform.platform;
@@ -30,22 +33,35 @@ class SDLPlatform : Platform
          */
         this()
         {
-            writefln("Initializing SDLPlatform");
-            scope(failure){writefln("SDLPlatform initialization failed");}
+            writeln("Initializing SDLPlatform");
+            scope(failure){writeln("SDLPlatform initialization failed");}
 
             super();
-            DerelictSDL.load();
+
+            try
+            {
+                DerelictSDL.load();
+            }
+            catch(SharedLibLoadException e)
+            {
+                throw new PlatformException("SDL library not found: " ~ e.msg);
+            }
+            catch(SymbolLoadException e)
+            {
+                throw new PlatformException("Unsupported SDL version: " ~ e.msg);
+            }
+
             if(SDL_Init(SDL_INIT_VIDEO) < 0)
             {
-                alias std.string.toString to_string;
                 throw new PlatformException("Could not initialize SDL: " 
-                                            ~ to_string(SDL_GetError()));
+                                            ~ to!string(SDL_GetError()));
             }
             SDL_EnableUNICODE(SDL_ENABLE);
         }
 
         override void die()
         {
+            writeln("Destroying SDLPlatform");
             SDL_Quit();
             DerelictSDL.unload();
             super.die();
@@ -80,7 +96,7 @@ class SDLPlatform : Platform
             return super.run();
         }
 
-        override void window_caption(string str)
+        override void window_caption(in string str)
         {
             SDL_WM_SetCaption(toStringz(str), null); 
         }
@@ -91,7 +107,7 @@ class SDLPlatform : Platform
 
     package:
         ///Process a keyboard event.
-        void process_key(SDL_KeyboardEvent event)
+        void process_key(in SDL_KeyboardEvent event)
         {
             KeyState state = KeyState.Pressed;
             keys_pressed_[event.keysym.sym] = true;
@@ -104,10 +120,10 @@ class SDLPlatform : Platform
         }
         
         ///Process a mouse button event.
-        void process_mouse_key(SDL_MouseButtonEvent event)
+        void process_mouse_key(in SDL_MouseButtonEvent event) 
         {
-            KeyState state = KeyState.Pressed;
-            if(event.type == SDL_MOUSEBUTTONUP){state = KeyState.Released;}
+            const state = event.type == SDL_MOUSEBUTTONUP ? KeyState.Released 
+                                                          : KeyState.Pressed;
 
             //Convert SDL button to MouseKey enum.
             MouseKey key;
@@ -132,16 +148,16 @@ class SDLPlatform : Platform
                     break;
             }
 
-            Vector2u position = Vector2u(event.x, event.y);
+            const position = Vector2u(event.x, event.y);
 
             mouse_key.emit(state, key, position);
         }
         
         ///Process a mouse motion event.
-        void process_mouse_motion(SDL_MouseMotionEvent event)
+        void process_mouse_motion(in SDL_MouseMotionEvent event) 
         {
-            Vector2u position = Vector2u(event.x, event.y);
-            Vector2i position_relative = Vector2i(event.xrel, event.yrel);
+            const position = Vector2u(event.x, event.y);
+            const position_relative = Vector2i(event.xrel, event.yrel);
             mouse_motion.emit(position, position_relative);
         }
 }

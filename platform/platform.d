@@ -7,8 +7,6 @@
 module platform.platform;
 
 
-import std.string;
-
 public import platform.key;
 import math.vector2;
 import util.weaksingleton;
@@ -80,7 +78,7 @@ abstract class Platform
         final void quit(){run_ = false;}
 
         ///Set window caption string to str.
-        void window_caption(string str);
+        void window_caption(in string str);
 
         ///Hide the mouse cursor.
         void hide_cursor();
@@ -89,5 +87,8 @@ abstract class Platform
         void show_cursor();
 
         ///Determine if specified key is pressed.
-        final bool is_key_pressed(Key key){return keys_pressed_[cast(uint)key];}
+        final bool is_key_pressed(in Key key) const 
+        {
+            return keys_pressed_[cast(uint)key];
+        }
 }

@@ -5,12 +5,14 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module graphdata;
+@trusted
 
+
+import std.algorithm;
 
 import math.math;
 import time.time;
 import time.timer;
-import containers.array;
 import containers.vector;
 
 
@@ -66,7 +68,7 @@ final class GraphData
                  * 
                  * Returns: Array of data points in specified time window.
                  */
-                real[] data_points(real start, real end, real period, GraphMode mode)
+                const(real)[] data_points(real start, real end, real period, GraphMode mode)
                 in
                 {
                     assert(start < end, 
@@ -75,7 +77,7 @@ final class GraphData
                 body
                 {
                     data_points_.length = cast(uint)((end - start) / period); 
-                    data_points_.array[] = 0.0;
+                    data_points_.array_unsafe[] = 0.0;
                     if(empty){return data_points_.array;}
 
                     if(mode == GraphMode.Sum){data_points_sum(start, period);}
@@ -91,14 +93,14 @@ final class GraphData
                  * Note that the graph is empty until the first accumulated
                  * value is added, which depends on time resolution.
                  */
-                bool empty(){return values_.length == 0;}
+                bool empty() const {return values_.length == 0;}
 
                 /**
                  * Get start time of the graph, i.e. time of the first value in the graph.
                  *
                  * Only makes sense if the graph is not empty.
                  */
-                real start_time()
+                real start_time() const
                 in{assert(!empty(), "Can't get start time of an empty graph");}
                 body{return values_[0].time;}
 
@@ -119,9 +121,9 @@ final class GraphData
                 ///Destroy this graph.
                 void die()
                 {
-                    values_.die();
-                    data_points_.die();
-                    value_counts_.die();
+                    clear(values_);
+                    clear(data_points_);
+                    clear(value_counts_);
                 }
 
                 /**
@@ -167,7 +169,7 @@ final class GraphData
                     uint value = clamp(floor_s32(age / time_resolution_) ,0 , 
                                        cast(int)values_.length - 1);
 
-                    Value* values_ptr = values_.ptr;
+                    Value* values_ptr = values_.ptr_unsafe;
                     Value* value_ptr = values_ptr + value;
                     Value* values_end = values_ptr + values_.length;
 
@@ -196,10 +198,10 @@ final class GraphData
                 {
                     //ugly, but optimized
                     auto num_points = data_points_.length;
-                    real* points_ptr = data_points_.ptr;
+                    real* points_ptr = data_points_.ptr_unsafe;
 
-                    Value* values_ptr = values_.ptr;
-                    Value* values_end = values_ptr + values_.length;
+                    Value* values_ptr = values_.ptr_unsafe;
+                    const Value* values_end = values_ptr + values_.length;
 
                     //index of data point to add current value to.
                     int index;
@@ -226,11 +228,11 @@ final class GraphData
                 {
                     //ugly, but optimized
                     auto num_points = data_points_.length;
-                    real* points_ptr = data_points_.ptr;
+                    real* points_ptr = data_points_.ptr_unsafe;
 
                     value_counts_.length = num_points;
-                    uint* value_counts_ptr = value_counts_.array.ptr;
-                    uint* value_counts_end = value_counts_ptr + num_points;
+                    uint* value_counts_ptr = value_counts_.ptr_unsafe;
+                    const uint* value_counts_end = value_counts_ptr + num_points;
                      
                     //zero all value counts. memset could make this even faster, but want to avoid cstdlib if I can
                     for(uint* count = value_counts_ptr; count < value_counts_end; count++)
@@ -238,8 +240,8 @@ final class GraphData
                         *count = 0;
                     }
 
-                    Value* values_ptr = values_.ptr;
-                    Value* values_end = values_ptr + values_.length;
+                    Value* values_ptr = values_.ptr_unsafe;
+                    const Value* values_end = values_ptr + values_.length;
 
                     //index of data point to add current value to.
                     int index;
@@ -313,14 +315,14 @@ final class GraphData
         final real time_resolution(){return time_resolution_;}
 
         ///Get time when this graph started to exist.
-        final real start_time(){return start_time_;}
+        final real start_time() const {return start_time_;}
 
         ///Get names of measured values.
-        final string[] graph_names(){return graphs_.keys;}
+        final const(string[]) graph_names() const {return graphs_.keys;}
 
         ///Add a value to the graph of value with specified name.
-        final void update_value(string name, real value)
-        in{assert(graphs_.keys.contains(name), "Adding unknown value to graph");}
+        final void update_value(in string name, in real value)
+        in{assert(find(graphs_.keys, name) != [], "Adding unknown value to graph");}
         body{graphs_[name].add_value(value);}
 
         /**
@@ -336,7 +338,8 @@ final class GraphData
          * 
          * Returns: Array of data points in the specified time window.
          */
-        real[] data_points(string name, real start, real end, real period, GraphMode mode)
+        const(real)[] data_points(in string name, in real start, 
+                                  in real end, in real period, in GraphMode mode)
         {
             return graphs_[name].data_points(start, end, period, mode);
         }
@@ -351,7 +354,7 @@ final class GraphData
          *
          * Returns: True if the graph is empty, false otherwise.
          */
-        bool empty(string name){return graphs_[name].empty;}
+        bool empty(in string name){return graphs_[name].empty;}
 
         /**
          * Get delay of graph of value with specified name relative to this GraphData.
@@ -360,7 +363,7 @@ final class GraphData
          *
          * Returns: Delay of the graph relative to this GraphData in seconds.
          */
-        real delay(string name){return graphs_[name].start_time - start_time_;}
+        real delay(in string name){return graphs_[name].start_time - start_time_;}
 
         ///Update graph data memory representation.
         void update()

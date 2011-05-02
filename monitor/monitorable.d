@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module monitor.monitorable;
+@safe
 
 
 import monitor.monitordata;
@@ -14,5 +15,5 @@ import monitor.monitordata;
 interface Monitorable
 {
     ///Get MonitorData to access submonitors of the monitorable.
-    MonitorData monitor_data();
+    MonitorDataInterface monitor_data();
 }

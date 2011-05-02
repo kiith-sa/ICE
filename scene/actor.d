@@ -4,7 +4,9 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module scene.actor;
+@safe
 
 
 import std.string;
@@ -34,20 +36,21 @@ abstract class Actor
 
     public:
         ///Get position of this actor.
-        final Vector2f position(){return physics_body_.position;}
+        @property final Vector2f position() const {return physics_body_.position;}
 
         ///Get velocity of this actor.
-        final Vector2f velocity(){return physics_body_.velocity;}
+        @property final Vector2f velocity() const {return physics_body_.velocity;}
 
-        ///Get a reference to physics body of this actor. Will return const after D2 move.
-        final PhysicsBody physics_body(){return physics_body_;}
+        ///Get a reference to physics body of this actor.
+        @property final PhysicsBody physics_body() {return physics_body_;}
 
         ///Destroy this actor.
         void die()
         {
             physics_body_.die();
             container_.remove_actor(this);
-            container_ = null;
+            //can't set this here due to a compiler bug (stuff gets reordered)
+            //container_ = null;
         }
 
     protected:
@@ -76,7 +79,7 @@ abstract class Actor
          * Params:  time_step = Update time step in seconds.
          *          game_time = Current game time.
          */
-        void update(real time_step, real game_time);
+        void update(in real time_step, in real game_time);
 
         ///Draw this actor.
         void draw(VideoDriver driver);
@@ -88,9 +91,9 @@ abstract class Actor
          * Params:  time_step = Time step in seconds.
          *          game_time = Current game time.
          */
-        final void update_actor(real game_time, real time_step)
+        final void update_actor(in real time_step, in real game_time)
         {
-            update(game_time, time_step);
+            update(time_step, game_time);
         }
 
         ///Interface used by SceneManager to draw the actor.
@@ -113,7 +116,7 @@ unittest
     class ActorTest : Actor
     {    
         public:
-            override void update(real time_step, real game_time){}
+            override void update(in real time_step, in real game_time){}
             override void draw(VideoDriver driver){}
             this(ActorContainer container)
             {

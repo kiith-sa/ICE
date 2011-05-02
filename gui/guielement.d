@@ -5,9 +5,11 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module gui.guielement;
+@safe
 
 
-import std.string;
+import std.algorithm;
+import std.conv;
 import std.stdio;
 
 import video.videodriver;
@@ -15,12 +17,9 @@ import math.vector2;
 import math.rectangle;
 import platform.platform;
 import formats.mathparser;
-import monitor.monitor;
 import color;
-import containers.array;
 import util.factory;
 import util.weaksingleton;
-import util.string;
 
 
 //In future, this should be rewritten to support background and border(?) textures,
@@ -29,7 +28,6 @@ import util.string;
 ///Base class for all GUI elements. Can be used directly to draw empty elements.
 class GUIElement
 {
-    alias std.string.toString to_string;
     protected:
         ///Parent element of this element.
         GUIElement parent_ = null;
@@ -72,16 +70,19 @@ class GUIElement
         }                 
 
         ///Get position in screen space.
-        final Vector2i position_global(){return bounds_.min;}
+        final Vector2i position_global() const {return bounds_.min;}
 
         ///Get position relative to parent element.
-        final Vector2i position_local(){return bounds_.min - parent_.bounds_.min;}
+        final Vector2i position_local() const
+        {
+            return bounds_.min - parent_.bounds_.min;
+        }
         
         ///Get size of this element in screen space.
-        final Vector2u size(){return to!(uint)(bounds_.size);}
+        final Vector2u size() const {return math.vector2.to!(uint)(bounds_.size);}
 
         ///Get bounding rectangle of this GUI element in screen space.
-        final Rectanglei bounds_global(){return bounds_;}
+        final Rectanglei bounds_global() const {return bounds_;}
 
         /**
          * Add a child element. 
@@ -94,7 +95,7 @@ class GUIElement
         final void add_child(GUIElement child)
         in
         {
-            assert(!children_.contains(child, true), 
+            assert(find!"a is b"(children_, child) == [], 
                    "Trying to add a child that is already a child of this GUI element.");
             assert(child.parent_ is null, "Trying to add a child that already has a parent");
         }
@@ -108,18 +109,19 @@ class GUIElement
         final void remove_child(GUIElement child)
         in
         {
-            assert(children_.contains(child, true) && child.parent_ is this,
+            assert(find!"a is b"(children_, child) != [] && child.parent_ is this,
                    "Trying to remove a child that is not a child of this GUI element.");
         }
         body
         {
-            alias containers.array.remove remove;
-            children_.remove(child, true);
+            //removing in this fashion fue to a bug in std.algorithm.remove
+            auto i = countUntil!"a is b"(children_, child);
+            children_ = children_[0 .. i] ~ children_[i + 1 .. $];
             child.parent_ = null;
         }
 
         ///Is this element visible?
-        final bool visible(){return visible_;}
+        final bool visible() const {return visible_;}
 
         ///Hide this element and its children.
         final void hide(){visible_ = false;}
@@ -159,7 +161,7 @@ class GUIElement
          *
          * Params:  params = Parameters for construction of the GUIElement.
          */
-        this(GUIElementParams params)
+        this(in GUIElementParams params)
         {
             with(params)
             {
@@ -186,6 +188,8 @@ class GUIElement
          */
         void draw(VideoDriver driver)
         {
+            alias math.vector2.to to;
+
             if(!visible_){return;}
 
             if(!aligned_){realign(driver);}
@@ -286,10 +290,10 @@ class GUIElement
             void fallback()
             {
                 width = height = 64;
-                writefln("Falling back to fixed dimensions: 64x64");
+                writeln("Falling back to fixed dimensions: 64x64");
             }
 
-            scope(failure){writefln("GUI dimension expression parsing failed: width: " 
+            scope(failure){writeln("GUI dimension expression parsing failed: width: " 
                                     ~ width_string_ ~ ", height: " ~ height_string_);}
 
             try
@@ -302,22 +306,25 @@ class GUIElement
 
                 if(height < 0 || width < 0)
                 {
-                    writefln("Negative width and/or height of a GUI element! "   
+                    writeln("Negative width and/or height of a GUI element! "   
                              "Probably caused by incorrect GUI math expressions.");
                     fallback();
                 }
             }
             catch(MathParserException e)
             {
-                writefln("Invalid GUI math expression.");
-                writefln(e.msg);
+                writeln("Invalid GUI math expression.");
+                writeln(e.msg);
                 fallback();
             }
 
             bounds_.max = bounds_.min + Vector2i(width, height);
 
             //realign children
-            foreach(ref child; children_){child.realign(driver);}
+            foreach(ref child; children_)
+            {
+                if(child.visible_){child.realign(driver);}
+            }
 
             aligned_ = true;
         }
@@ -366,9 +373,11 @@ final class GUIRoot
          */
         void draw(VideoDriver driver)
         {
+            scope(failure){writeln("Failure drawing GUI");}
+
             //save view zoom and offset
-            real zoom = driver.zoom;
-            auto offset = driver.view_offset; 
+            const zoom = driver.zoom;
+            const offset = driver.view_offset; 
 
             //set 1:1 zoom and zero offset for GUI drawing
             driver.zoom = 1.0;
@@ -412,7 +421,7 @@ final class GUIRoot
  */
 final class GUIElementFactory : GUIElementFactoryBase!(GUIElement)
 {
-    public GUIElement produce(){return new GUIElement(gui_element_params);}
+    public override GUIElement produce(){return new GUIElement(gui_element_params);}
 }
 
 /**
@@ -476,17 +485,17 @@ final class GUIElementFactory : GUIElementFactoryBase!(GUIElement)
  */
 abstract class GUIElementFactoryBase(T)
 {
-    alias std.string.toString to_string;
-
     mixin(generate_factory("string $ x $ \"p_left\"", 
                            "string $ y $ \"p_top\"", 
                            "string $ width $ \"64\"", 
                            "string $ height $ \"64\"",
                            "bool $ draw_border $ true"));
+    private:
+        alias std.conv.to to;
 
     protected:
         ///Return a struct containing factory parameters packaged for GUIElement ctor.
-        final GUIElementParams gui_element_params()
+        final GUIElementParams gui_element_params() const
         {
             return GUIElementParams(x_, y_, width_, height_, draw_border_);
         }
@@ -504,12 +513,12 @@ abstract class GUIElementFactoryBase(T)
          *          bottom = Width of bottom y margin relative to parent bottom y.
          *          left   = Width of left y margin relative to parent left y.
          */
-        final void margin(int top, int right, int bottom, int left)
+        final void margin(in int top, in int right, in int bottom, in int left)
         {
-            x = "p_left + " ~ to_string(left);
-            y = "p_top + " ~ to_string(top);
-            width = "p_width - " ~ to_string(left + right);
-            height = "p_height - " ~ to_string(top + bottom);
+            x = "p_left + " ~ to!string(left);
+            y = "p_top + " ~ to!string(top);
+            width = "p_width - " ~ to!string(left + right);
+            height = "p_height - " ~ to!string(top + bottom);
         }
 
 
@@ -518,7 +527,7 @@ abstract class GUIElementFactoryBase(T)
 }
 
 ///GUI element constructor parameters
-align(1) struct GUIElementParams
+align(1) immutable struct GUIElementParams
 {
     private:
         ///Coordinates' math expressions.

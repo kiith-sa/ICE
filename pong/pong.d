@@ -4,8 +4,11 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module pong.pong;
+@safe
 
 
+import std.algorithm;
+import std.conv;
 import std.stdio;
 import std.string;
 
@@ -18,12 +21,11 @@ import video.sdlglvideodriver;
 import video.videodrivercontainer;
 import platform.platform;
 import platform.sdlplatform;
-import monitor.monitor;
+import monitor.monitormanager;
 import memory.memorymonitorable;
 import file.fileio;
 import formats.image;
 import time.eventcounter;
-import math.math;
 import math.vector2;
 import math.rectangle;
 import util.signal;
@@ -65,7 +67,7 @@ class PongGUI
     private:
         ///Parent of all Pong GUI elements.
         GUIElement parent_;
-
+        ///Monitor view widget.
         MonitorView monitor_;
         ///Container of the main menu.
         GUIElement menu_container_;
@@ -92,7 +94,7 @@ class PongGUI
          * Params:  parent  = GUI element to use as parent for all pong GUI elements.
          *          monitor = Monitor subsystem, used to initialize monitor GUI view.
          */
-        this(GUIElement parent, Monitor monitor)
+        this(GUIElement parent, MonitorManager monitor)
         {
             parent_ = parent;
 
@@ -144,6 +146,7 @@ class PongGUI
                 credits_.die();
                 credits_ = null;
             }
+
             menu_container_.die();
             menu_container_ = null;
 
@@ -155,7 +158,7 @@ class PongGUI
         }
 
         ///Get the monitor widget.
-        MonitorView monitor(){return monitor_;}
+        const(MonitorView) monitor() const {return monitor_;}
 
         ///Toggle monitor display.
         void monitor_toggle()
@@ -194,6 +197,8 @@ class Pong
 {
     mixin WeakSingleton;
     private:
+        alias std.conv.to to;
+
         ///FPS counter.
         EventCounter fps_counter_;
         ///Continue running?
@@ -209,9 +214,10 @@ class Pong
 
         ///Root of the GUI.
         GUIRoot gui_root_;
+        
         ///Pong GUI.
         PongGUI gui_;
-
+       
         ///Used for memory monitoring.
         MemoryMonitorable memory_;
 
@@ -221,26 +227,26 @@ class Pong
         Game game_;
 
         ///Monitor subsystem, providing debugging and profiling info.
-        Monitor monitor_;
+        MonitorManager monitor_;
 
     public:
         ///Initialize Pong.
         this()
         {
-            writefln("Initializing Pong");
+            writeln("Initializing Pong");
+            scope(failure){writeln("Pong initialization failed");}
 
             singleton_ctor();
 
-            monitor_ = new Monitor();
-
+            monitor_ = new MonitorManager();
             memory_ = new MemoryMonitorable;
-
             scope(failure)
             {
                 monitor_.die();
                 memory_.die();
                 singleton_dtor();
             }
+
             monitor_.add_monitorable(memory_, "Memory");
             scope(failure){monitor_.remove_monitorable("Memory");}
 
@@ -273,15 +279,15 @@ class Pong
             game_container_ = new GameContainer();
 
             //Update FPS every second.
-            fps_counter_ = new EventCounter(1.0);
+            fps_counter_ = EventCounter(1.0);
             fps_counter_.update.connect(&fps_update);
         }
 
         ///Destroy Pong and all subsystems.
         void die()
         {
-            writefln("Destroying Pong");
-
+            writeln("Destroying Pong");
+         
             //game might still be running if we're quitting
             //because the platform stopped to run
             if(game_ !is null)
@@ -290,12 +296,12 @@ class Pong
                 game_container_.destroy();
                 game_ = null;
             }
-            fps_counter_.die();
+
+            clear(fps_counter_);
 
             monitor_.remove_monitorable("Memory");
             //video driver might be already destroyed in exceptional circumstances
             if(video_driver_ !is null){monitor_.remove_monitorable("Video");}
-
             monitor_.die();
 
             gui_.die();
@@ -308,14 +314,24 @@ class Pong
                 video_driver_container_.die();
                 video_driver_ = null;
             }
+
             platform_.die();
+
             memory_.die();
+
             singleton_dtor();
         }
 
         ///Update Pong.
         void run()
         {                           
+            ulong iterations = 0;
+
+            scope(failure)
+            {
+                writeln("Failure in Pong main loop, iteration ", iterations);
+            }
+
             platform_.key.connect(&key_handler_global);
             platform_.key.connect(&key_handler);
 
@@ -324,7 +340,7 @@ class Pong
                 //Count this frame
                 fps_counter_.event();
 
-                bool game_run = game_ !is null && game_.run();
+                const bool game_run = game_ !is null && game_.run();
                 if(game_ !is null && !game_run){game_end();}
 
                 //update game state
@@ -336,9 +352,12 @@ class Pong
 
                 gui_root_.draw(video_driver_);
                 video_driver_.end_frame();
+            
                 memory_.update();
+            
+                iterations++;
             }
-            writefln("FPS statistics:\n", fps_counter_.statistics, "\n");
+            writeln("FPS statistics:\n", fps_counter_.statistics, "\n");
         }
 
     private:
@@ -379,7 +398,7 @@ class Pong
         void key_handler(KeyState state, Key key, dchar unicode)
         {
             if(state == KeyState.Pressed)
-            {
+            {                   
                 switch(key)
                 {
                     case Key.Escape:
@@ -434,7 +453,7 @@ class Pong
         ///Update FPS display.
         void fps_update(real fps)
         {
-            platform_.window_caption = "FPS: " ~ std.string.toString(fps);
+            platform_.window_caption = "FPS: " ~ to!string(fps);
         }
 
         ///Reset video mode.
@@ -447,10 +466,11 @@ class Pong
          *          height = Window/screen height to use.
          *          format = Color format of video mode.
          */
-        void reset_video_driver(uint width, uint height, ColorFormat format)
+        void reset_video_driver(in uint width, in uint height, in ColorFormat format)
         {
+
             //game area
-            Rectanglef area = game_.game_area;
+            const Rectanglef area = game_.game_area;
 
             monitor_.remove_monitorable("Video");
 
@@ -463,15 +483,15 @@ class Pong
             }
             catch(VideoDriverException e)
             {
-                writefln("Video driver reset failed:", e.msg);
+                writeln("Video driver reset failed:", e.msg);
                 exit();
                 return;
             }
 
             //Zoom according to the new video mode.
-            real w_mult = width / area.width;
-            real h_mult = height / area.height;
-            real zoom = min(w_mult, h_mult);
+            const real w_mult = width / area.width;
+            const real h_mult = height / area.height;
+            const real zoom = min(w_mult, h_mult);
 
             //Center game area on screen.
             Vector2d offset;
@@ -487,8 +507,9 @@ class Pong
         ///Save screenshot (to data/main/screenshots).
         void save_screenshot()
         {
-            Image screenshot = video_driver_.screenshot();
-            scope(exit){delete screenshot;}
+            Image screenshot;
+
+            video_driver_.screenshot(screenshot);
 
             try
             {
@@ -504,9 +525,9 @@ class Pong
                         return;
                     }
                 }
-                writefln("Screenshot saving error: too many screenshots");
+                writeln("Screenshot saving error: too many screenshots");
             }
-            catch(FileIOException e){writefln("Screenshot saving error: " ~ e.msg);}
-            catch(ImageFileException e){writefln("Screenshot saving error: " ~ e.msg);}
+            catch(FileIOException e){writeln("Screenshot saving error: " ~ e.msg);}
+            catch(ImageFileException e){writeln("Screenshot saving error: " ~ e.msg);}
         }
 }

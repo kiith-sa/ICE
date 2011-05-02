@@ -3,10 +3,14 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module pong.paddle;
+@safe
 
 
+import std.algorithm;
 import std.math;
+import std.random;
 
 import pong.ball;
 import pong.wall;
@@ -38,10 +42,10 @@ class PaddleBody : PhysicsBody
          * and the ball gets reflected from the corner of the paddle, ratio of X and Y
          * components of reflected ball velocity will be 1:1.
         */
-        real max_xy_ratio_ = 1.0;
+        immutable real max_xy_ratio_ = 1.0;
 
         ///Limits of paddle body movement in world space.
-        Rectanglef limits_;
+        immutable Rectanglef limits_;
 
     public:
         /**
@@ -53,18 +57,18 @@ class PaddleBody : PhysicsBody
          *
          * Returns: Velocity the BallBody should be reflected at.
          */
-        Vector2f reflected_ball_velocity(BallBody ball)
+        Vector2f reflected_ball_velocity (in BallBody ball) const
         {
             //Translate the aabbox to world space
-            Rectanglef box = aabbox + position_;
+            const Rectanglef box = aabbox + position_;
 
-            Vector2f closest = box.clamp(ball.position);
+            const Vector2f closest = box.clamp(ball.position);
 
             Vector2f contact_direction = closest - ball.position;
 
             contact_direction.normalize_safe();
 
-            Vector2f contact_point = ball.position + ball.radius * contact_direction;
+            const Vector2f contact_point = ball.position + ball.radius * contact_direction;
 
             Vector2f velocity;
             
@@ -81,8 +85,8 @@ class PaddleBody : PhysicsBody
             if(velocity.y / velocity.x < 0.001)
             {
                 float y_mod = velocity.x / 1000.0;
-                //rand() % 2 means random bool 
-                y_mod *= std.random.rand() % 2 ? -1.0 : 1.0;
+                //random bool
+                y_mod *= uniform(-1.0, 1.0) > 0.0 ? -1.0 : 1.0;
                 velocity.y += y_mod;
             }
 
@@ -91,19 +95,19 @@ class PaddleBody : PhysicsBody
             return velocity * ball.velocity.length;
         }
 
-        override void update(real time_step, SpatialManager!(PhysicsBody) manager)
+        override void update(in real time_step, SpatialManager!(PhysicsBody) manager)
         {
             //keep the paddle within the limits
-            Rectanglef box = aabbox;
-            Rectanglef position_limits = Rectanglef(limits_.min - box.min,
-                                                    limits_.max - box.max);
+            const Rectanglef box = aabbox;
+            const Rectanglef position_limits = Rectanglef(limits_.min - box.min,
+                                                          limits_.max - box.max);
             position = position_limits.clamp(position);
 
             super.update(time_step, manager);
         }
 
         ///Get movement limits of this paddle body.
-        final Rectanglef limits(){return limits_;}
+        @property final Rectanglef limits() const {return limits_;}
 
     protected:
         /**
@@ -115,8 +119,8 @@ class PaddleBody : PhysicsBody
          *          mass     = Mass of the body.
          *          limits   = Limits of body's movement
          */
-        this(VolumeAABBox aabbox,Vector2f position, Vector2f velocity, real mass, 
-             ref Rectanglef limits)
+        this(VolumeAABBox aabbox, in Vector2f position, in Vector2f velocity, 
+             in real mass, const ref Rectanglef limits)
         {
             super(aabbox, position, velocity, mass);
             limits_ = limits;
@@ -124,20 +128,20 @@ class PaddleBody : PhysicsBody
 
     private:
         ///Return rectangle representing bounding box of this body in world space.
-        final Rectanglef aabbox()
+        @property final Rectanglef aabbox() const
         in
         {
             //checking here because invariant can't call public function members
             assert(volume.classinfo == VolumeAABBox.classinfo,
                    "Collision volume of a paddle must be an axis aligned bounding box");
         }
-        body{return(cast(VolumeAABBox)volume).bounding_box;}
+        body{return(cast(VolumeAABBox)volume).rectangle;}
 }
 
 ///A paddle controlled by a player or AI.
 class Paddle : Wall
 {
-    invariant
+    invariant()
     {
         //this could be done by keeping reference to aabbox of the physics body
         //and translating that by physicsbody's position
@@ -175,7 +179,10 @@ class Paddle : Wall
 
     public:
         ///Get movement limits of this paddle.
-        Rectanglef limits(){return (cast(PaddleBody)physics_body_).limits;}
+        @property Rectanglef limits() const 
+        {
+            return (cast(PaddleBody)physics_body_).limits;
+        }
 
         ///Control the paddle to move right (used by player or AI).
         void move_right(){physics_body_.velocity = speed_ * Vector2f(1.0, 0.0);}
@@ -205,8 +212,8 @@ class Paddle : Wall
          *          speed        = Speed of paddle movement.
          *          emitter      = Particle emitter of the paddle.
          */
-        this(ActorContainer container, PaddleBody physics_body, ref Rectanglef box,
-             real speed, ParticleEmitter emitter)
+        this(ActorContainer container, PaddleBody physics_body, const ref Rectanglef box,
+             in real speed, ParticleEmitter emitter)
         {
             default_color_ = Color(0, 0, 255, 32);
             super(container, physics_body, box);
@@ -216,7 +223,7 @@ class Paddle : Wall
             emitter.attach(this);
         }
 
-        override void update(real time_step, real game_time)
+        override void update(in real time_step, in real game_time)
         {
             energy_ = max(0.0L, energy_ - time_step * dissipate_rate_);
             foreach(collider; physics_body_.colliders)
@@ -227,7 +234,7 @@ class Paddle : Wall
                 }
             }
 
-            real energy_ratio = energy_ * energy_mult_;
+            const real energy_ratio = energy_ * energy_mult_;
 
             color_ = energy_color_.interpolated(default_color_, min(energy_ratio, 1.0L));
             speed_ = default_speed_ * (1.0 + 1.5 * energy_ratio);
@@ -273,6 +280,7 @@ class PaddleFactory : WallFactoryBase!(Paddle)
             emitter = produce(container);
         }
 
-        return new Paddle(container, physics_body, rectangle, speed_, emitter);
+        auto rect = rectangle();
+        return new Paddle(container, physics_body, rect, speed_, emitter);
     }
 }

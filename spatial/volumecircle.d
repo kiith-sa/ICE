@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module spatial.volumecircle;
+@safe
 
 
 import spatial.volume;
@@ -12,9 +13,9 @@ import math.vector2;
 
 
 ///Bounding circle.
-final class VolumeCircle : Volume
+final immutable class VolumeCircle : Volume
 {
-    invariant{assert(radius > 0.0f, "Collision circle radius must be positive");}
+    invariant(){assert(radius > 0.0f, "Collision circle radius must be positive");}
 
     public:
         ///Position of circle center in object space.
@@ -29,7 +30,7 @@ final class VolumeCircle : Volume
          * Params:  offset = Position of circle's center in object space.
          *          radius = Radius of the circle. Must be greater than 0.
          */
-        this(Vector2f offset, float radius)
+        this(in Vector2f offset, in float radius)
         {
             this.offset = offset;
             this.radius = radius;

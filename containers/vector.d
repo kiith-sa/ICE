@@ -5,12 +5,13 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module containers.vector;
+@trusted
 
 
+import std.algorithm;
 import std.c.string;
 
 import memory.memory;
-import math.math;
 
 
 /**
@@ -27,42 +28,45 @@ import math.math;
  */
 align(1) struct Vector(T)
 {
-    invariant(){assert(data_ !is null, "Vector data is null - probably not constructed");}
+    //commented out due to compiler bug
+    //invariant(){assert(data_ !is null, "Vector data is null - probably not constructed");}
+
     private:
+        //using dummy array for default initialization as we can't redefine default ctor
         ///Manually allocated data storage. More storage than used can be allocated.
-        T[] data_;
+        T[] data_ = [];
         ///Used storage (number of items in the vector).
-        size_t used_;
+        size_t used_ = 0;
 
     public:
-        ///Construct an empty vector.
-        static Vector opCall()
+        ///Construct an empty vector with allocated space for specified number of elements.
+        this(in uint reserve)
         out(result){assert(result.used_ == 0, "Constructed vector expected to be empty");}
         body
         {
-            Vector!(T) result;
-            result.data_ = alloc!(T)(2);
-            return result;
+            data_ = alloc_array!(T)(max(2, reserve));
         }
 
         ///Construct a vector from an array.
-        static Vector opCall(T[] array)
+        this(in T[] array)
         out(result){assert(result.used_ == array.length, "Unexpected vector length");}
         body
         {
-            Vector!(T) result;
-            result.data_ = alloc!(T)(max(cast(size_t)2, array.length));
+            data_ = alloc_array!(T)(max(cast(size_t)2, array.length));
             //copy array data
-            result.data_[] = array;
-            result.used_ = array.length;
-            return result;
+            data_[] = array;
+            used_ = array.length;
         }
 
         ///Destroy the vector.
-        void die()
+        ~this()
         {
             used_ = 0;
-            free(data_);
+            if(data_ != [] && data_ !is null)
+            {
+                free(data_);
+                data_ = null;
+            }
         }
 
         /**
@@ -115,7 +119,7 @@ align(1) struct Vector(T)
         }
 
         ///Append contents of an array to the vector. (~= operator)
-        void opCatAssign(T[] array)
+        void opCatAssign(in T[] array)
         in
         {
             assert(array.ptr + array.length <= data_.ptr || 
@@ -132,7 +136,7 @@ align(1) struct Vector(T)
         }
 
         ///Append contents of a vector to the vector. (~= operator)
-        void opCatAssign(Vector!(T) vector){opCatAssign(vector.array);}
+        void opCatAssign(ref Vector!(T) vector){opCatAssign(vector.array);}
 
         /**
          * Assign array to the vector. This will destroy any
@@ -140,7 +144,7 @@ align(1) struct Vector(T)
          *
          * Params:  array = Array to assign.
          */
-        void opAssign(T[] array)
+        void opAssign(in T[] array)
         {
             reserve(array.length);
             data_[0 .. array.length] = array;
@@ -154,7 +158,7 @@ align(1) struct Vector(T)
          *
          * Returns: Element at the specified index.
          */
-        T opIndex(size_t index)
+        const(T)opIndex(in size_t index) const
         in{assert(index < used_, "Vector index out of bounds");}
         body{return data_[index];}
 
@@ -163,7 +167,7 @@ align(1) struct Vector(T)
          *
          * Params:  index = Index of the element to set. Must be within bounds. 
          */
-        void opIndexAssign(T value, size_t index)
+        void opIndexAssign(T value, in size_t index)
         in{assert(index < used_, "Vector index out of bounds");}
         body{data_[index] = value;}
 
@@ -176,7 +180,7 @@ align(1) struct Vector(T)
          *          start = Start of the slice.
          *          end   = End of the slice.
          */
-        void opSliceAssign(T[] array, size_t start, size_t end)
+        void opSliceAssign(in T[] array, in size_t start, in size_t end)
         in
         {
             assert(array.length == end - start, "Slice lengths for assignment don't match");
@@ -191,7 +195,7 @@ align(1) struct Vector(T)
          * Params:  start = Start of the slice.
          *          end   = End of the slice.
          */
-        T[] opSlice(size_t start, size_t end)
+        T[] opSlice(in size_t start, in size_t end)
         in
         {
             assert(end <= used_, "Vector slice index out of bounds");
@@ -199,15 +203,14 @@ align(1) struct Vector(T)
         }
         body{return data_[start .. end];}
 
-        //In D2, this should return const if possible
         /**
-         * Get a pointer to element at the specified index.
+         * Get a const pointer to element at the specified index.
          *
          * Params:  index = Index of the element to get. Must be within bounds.  
          *
          * Returns: Pointer to the element at the specified index.
          */
-        T* ptr(size_t index)
+        const(T*) ptr(in size_t index) const
         in{assert(index < used_, "Vector index out of bounds");}
         out(result)
         {
@@ -216,11 +219,17 @@ align(1) struct Vector(T)
         }
         body{return &data_[index];}
 
-        ///Access vector contents as an array.
-        T[] array(){return data_[0 .. used_];}
+        ///Access vector contents as a const array.
+        const(T[]) array() const {return data_[0 .. used_];}
 
-        ///Access vector contents through a pointer.
-        T* ptr(){return data_.ptr;}
+        ///Access vector contents as a non-const array.
+        T[] array_unsafe(){return data_[0 .. used_];}
+        
+        ///Access vector contents through a const pointer.
+        const(T*) ptr() const {return data_.ptr;}
+        
+        ///Access vector contents through a non-const pointer.
+        T* ptr_unsafe(){return data_.ptr;}
 
         /**
          * Remove element from the vector.
@@ -232,7 +241,7 @@ align(1) struct Vector(T)
          *                    of anything equal to elem (== elem). 
          *                    Only makes sense for reference types.
          */
-        void remove(T element, bool ident = false)
+        void remove(in T element, in bool ident = false)
         {
             foreach_reverse(i, ref elem; data_[0 .. used_])
             {
@@ -246,7 +255,7 @@ align(1) struct Vector(T)
          * Params:  deleg = Function determining whether to remove an element.
          *                  Any element for which this function returns true is removed.
          */
-        void remove(bool delegate(ref T) deleg)
+        void remove(in bool delegate(ref T) deleg)
         {
             for(long i = cast(long)used_ - 1; i >= 0; i--)
             {
@@ -259,7 +268,7 @@ align(1) struct Vector(T)
          *
          * Params:  index = Index to remove at. Must be within bounds.
          */
-        void remove_at_index(size_t index)
+        void remove_at_index(in size_t index)
         in{assert(index < used_, "Index of element to remove from vector out of bounds");}
         body
         {
@@ -277,7 +286,7 @@ align(1) struct Vector(T)
          *
          * Returns: True if the vector contains the element, false otherwise.
          */
-        bool contains(T element, bool ident = false)
+        bool contains(in T element, in bool ident = false) const
         {
             for(uint i = 0; i < used_; i++)
             {
@@ -287,7 +296,7 @@ align(1) struct Vector(T)
         }
 
         ///Get number of elements in the vector.
-        size_t length(){return used_;}
+        size_t length() const {return used_;}
 
         /**
          * Change length of the vector.
@@ -298,30 +307,30 @@ align(1) struct Vector(T)
          *
          * Params:  length = length to set.
          */
-        void length(size_t length)
+        void length(in size_t length)
         {
             used_ = length;
             //awkward control flow due to optimization. we realloc if elements > data_.length
             if(length <= data_.length){return;}
-            data_ = realloc(data_, length);
+            data_ = (data_ != []) ? realloc(data_, length) : alloc_array!T(length);
         }
 
         ///Reserve space for at least specified number of elements.
-        void reserve(size_t elements)
+        void reserve(in size_t elements)
         {
             //awkward control flow due to optimization. we realloc if elements > data_.length
             if(elements <= data_.length){return;}
-            data_ = realloc(data_, elements);
+
+            data_ = (data_ != []) ? realloc(data_, elements) : alloc_array!T(elements);
         }
 
         ///Get currently allocated capacity.
-        size_t allocated(){return data_.length;}
+        size_t allocated() const {return data_.length;}
 }
 ///Unittest for Vector.
 unittest
 {
-    auto vector = Vector!(uint)();
-    scope(exit){vector.die();}
+    Vector!(uint) vector = Vector!(uint)();
     vector ~= 1;
     vector ~= 2;
     vector ~= 3;
@@ -374,6 +383,5 @@ unittest
     assert(vector.array == array);
 
     auto vector2 = Vector!(uint)(array);
-    scope(exit){vector2.die();}
     assert(vector2.array == array);
 }

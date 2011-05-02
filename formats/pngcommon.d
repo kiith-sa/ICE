@@ -14,18 +14,21 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 Authors: Lode Vandevenne (original version in C++), Lutger Blijdestijn (D version) : lutger dot blijdestijn at gmail dot com, Ferdinand Majerech (refactoring)
 */
 
-module formats.pngcommon;
 
+module formats.pngcommon;
+@system
+
+
+import std.algorithm;
+import std.exception;
 
 import formats.zlib;
-import util.exception;
-import containers.array;
 import color;
 
 
 package:
 ///Magic number at the start of a PNG file.
-const ubyte[] png_magic_number = [137, 80, 78, 71, 13, 10, 26, 10];
+immutable ubyte[] png_magic_number = [137, 80, 78, 71, 13, 10, 26, 10];
 
 ///PNG filter strategy.
 enum PNGFilter : ubyte
@@ -68,18 +71,18 @@ enum PNGColorType : ubyte
 uint num_channels(PNGColorType color_type){return [1, 0, 3, 1, 2, 0, 4][color_type];}
 
 ///PNG image description.
-align(1)struct PNGImage
+align(1) struct PNGImage
 {
     ///Image width in pixels.
-    uint width;
+    immutable uint width;
     ///Image height in pixels.
-    uint height;
+    immutable uint height;
     ///Color format.
-    PNGColorType color_type;
+    immutable PNGColorType color_type;
     ///Bits per color channel.
-    ubyte bit_depth;
+    immutable ubyte bit_depth;
     ///Bits per pixel
-    ubyte bpp;
+    immutable ubyte bpp;
 
     /**
      * Construct a PNGImage.
@@ -91,15 +94,13 @@ align(1)struct PNGImage
      *
      * Returns: Constructed PNGImage.
      */
-    static PNGImage opCall(uint width, uint height, ubyte bit_depth, PNGColorType type)
+    this(in uint width, in uint height, in ubyte bit_depth, in PNGColorType type)
     {
-        PNGImage result;
-        result.width = width;
-        result.height = height;
-        result.bit_depth = bit_depth;
-        result.color_type = type;
-        result.bpp = cast(ubyte)(bit_depth * num_channels(type));
-        return result;
+        this.width = width;
+        this.height = height;
+        this.bit_depth = bit_depth;
+        this.color_type = type;
+        this.bpp = cast(ubyte)(bit_depth * num_channels(type));
     }
 }
 
@@ -111,7 +112,7 @@ align(1)struct PNGImage
  */
 struct PNGInfo
 {
-    invariant
+    invariant()
     {
         assert(palette.length <= 256, "Too many colors in a palette (over 256)");
         assert(background.length == 0 || //nothing
@@ -165,15 +166,13 @@ struct PNGInfo
          *
          * Returns: Constructed PNGInfo.
          */
-        public static PNGInfo opCall(PNGImage image)
+        this(PNGImage image)
         {
-            PNGInfo result;
-            result.image_ = image;
-            return result;
+            image_ = image;
         }
 
         ///Get (a copy of) image information.
-        PNGImage image(){return image_;}
+        PNGImage image() const {return image_;}
 }
 
 ///Dictionary of key-value text metadata in utf-8 and / or latin-1 encoding.
@@ -181,32 +180,32 @@ struct PNGText
 {
     public:
         ///Latin-1 text data.
-        ubyte[][ubyte[]] latin;
+        immutable(ubyte)[][immutable(ubyte)[]] latin;
         ///Unicode text data.
         string[string] unicode;
 
         ///Is there no text?
-        bool empty(){return unicode.length == 0 && latin.length == 0;}
+        bool empty() const {return unicode.length + latin.length == 0;}
 }
 
 ///Header.
-const IHDR = get_uint(['I', 'H', 'D', 'R']);
+immutable IHDR = get_uint(['I', 'H', 'D', 'R']);
 ///Image data.
-const IDAT = get_uint(['I', 'D', 'A', 'T']);
+immutable IDAT = get_uint(['I', 'D', 'A', 'T']);
 ///Palette.
-const PLTE = get_uint(['P', 'L', 'T', 'E']);
+immutable PLTE = get_uint(['P', 'L', 'T', 'E']);
 ///Transparency.
-const tRNS = get_uint(['t', 'R', 'N', 'S']);
+immutable tRNS = get_uint(['t', 'R', 'N', 'S']);
 ///Background color.
-const bKGD = get_uint(['b', 'K', 'G', 'D']);
+immutable bKGD = get_uint(['b', 'K', 'G', 'D']);
 ///End.
-const IEND = get_uint(['I', 'E', 'N', 'D']);
+immutable IEND = get_uint(['I', 'E', 'N', 'D']);
 ///Latin-1 text.
-const tEXt = get_uint(['t', 'E', 'X', 't']);
+immutable tEXt = get_uint(['t', 'E', 'X', 't']);
 ///Unicode (utf-8) text.
-const iTXt = get_uint(['i', 'T', 'X', 't']);
+immutable iTXt = get_uint(['i', 'T', 'X', 't']);
 ///Compressed latin-1 text.
-const zTXt = get_uint(['z', 'T', 'X', 't']);
+immutable zTXt = get_uint(['z', 'T', 'X', 't']);
 
 /**
  * Determine if the specified color format is valid.
@@ -216,17 +215,17 @@ const zTXt = get_uint(['z', 'T', 'X', 't']);
  *   
  * Returns: True if the color format is valid, false otherwise.
  */
-bool validate_color(PNGColorType color_type, uint bit_depth)
+bool validate_color(in PNGColorType color_type, in uint bit_depth)
 {
-    int bd = bit_depth;
+    const int bd = bit_depth;
     switch(color_type)
     {
         case PNGColorType.Greyscale: 
-            return [1, 2, 4, 8, 16].contains(bd);
+            return find([1, 2, 4, 8, 16], bd) != [];
         case PNGColorType.Palette: 
-            return [1, 2, 4, 8].contains(bd);
+            return find([1, 2, 4, 8], bd) != [];
         case PNGColorType.RGB, PNGColorType.RGBA, PNGColorType.GreyscaleAlpha: 
-            return [8, 16].contains(bd);
+            return find([8, 16], bd) != [];
         default:
             assert(false, "Invalid PNG color type");
     }
@@ -239,13 +238,13 @@ bool validate_color(PNGColorType color_type, uint bit_depth)
  *          b = Pixel above the current pixel.
  *          c = Pixel to the left of pixel b.
  */
-int paeth_predictor(int a, int b, int c)
+int paeth_predictor(in int a, in int b, in int c) pure
 {
-    int p = a + b - c;
+    const int p = a + b - c;
 
-    int pa = p > a ? p - a : a - p;
-    int pb = p > b ? p - b : b - p;
-    int pc = p > c ? p - c : c - p;
+    const int pa = p > a ? p - a : a - p;
+    const int pb = p > b ? p - b : b - p;
+    const int pc = p > c ? p - c : c - p;
 
     if(pa <= pb && pa <= pc){return a;}
     else if(pb <= pc){return b;}
@@ -258,7 +257,7 @@ struct PNGChunk
     ///Chunk type.
     uint type;
     ///Raw chunk contents.
-    ubyte[] data;
+    const(ubyte)[] data;
 
     /**
      * Construct a chunk from a byte stream (probably loaded from a file).
@@ -267,18 +266,18 @@ struct PNGChunk
      *
      * Returns: Constructed chunk.
      */
-    static PNGChunk from_stream(ubyte[] stream)
+    static PNGChunk from_stream(in ubyte[] stream)
     in{assert(stream.length >= chunk_min_size, "Chunk too small");}
     body
     {
         PNGChunk result;
         //length of chunk data
-        uint data_length = get_uint(stream);
+        const uint data_length = get_uint(stream);
         //chunk type
         result.type = get_uint(stream[4 .. 8]);
         result.data = data_length ? stream[8 .. 8 + data_length] : null;
         //crc at the end of the chunk
-        uint crc = get_uint(stream[8 + data_length .. 12 + data_length]);
+        const uint crc = get_uint(stream[8 + data_length .. 12 + data_length]);
         enforceEx!(PNGException)(zlib_check_crc(crc, stream[4..8 + data_length]),
                                  "CRC does not match, probably corrupted file");
         return result;
@@ -306,11 +305,11 @@ struct PNGChunk
     }
 
     ///Get length of the chunk in bytes.
-    size_t length(){return data.length + chunk_min_size;}
+    size_t length() const {return data.length + chunk_min_size;}
 }
 
 ///Minimum chunk size, taken up by chunk length, type and crc uints.
-const uint chunk_min_size = 12;
+immutable uint chunk_min_size = 12;
 
 /**
  * Get an uint from the first 4 bytes of source buffer. 
@@ -319,6 +318,6 @@ const uint chunk_min_size = 12;
  *          
  * Returns: uint from the buffer. 
  */
-uint get_uint(ubyte[] source)
+uint get_uint(in ubyte[] source) pure
 in{assert(source.length >= 4, "Can't get an uint from a buffer smaller than 4 bytes");}
 body{return source[0] << 24 | source[1] << 16 | source[2] << 8 | source[3];}

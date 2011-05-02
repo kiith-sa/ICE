@@ -5,9 +5,10 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module formats.png;
+@system
 
 
-import std.stdio;
+import std.exception;
 
 import formats.zlib;
 import formats.pngcommon;
@@ -15,7 +16,6 @@ import formats.pngdecoder;
 import formats.pngencoder;
 import formats.image;
 import memory.memory;
-import util.exception;
 import color;
 
 
@@ -33,7 +33,7 @@ package:
  *
  * Throws:  ImageFileException in case of an encoding error.
  */
-ubyte[] encode_png(ubyte[] data, uint width, uint height, ColorFormat format)
+ubyte[] encode_png(const ubyte[] data, in uint width, in uint height, in ColorFormat format)
 in
 {
     assert(data.length == width * height * bytes_per_pixel(format),
@@ -43,8 +43,8 @@ in
 }
 body
 {
-    PNGInfo info = PNGInfo(PNGImage(width, height, cast(ubyte)bits_per_channel(format),
-                           png_color_type(format)));
+    const PNGInfo info = PNGInfo(PNGImage(width, height, cast(ubyte)bits_per_channel(format),
+                                 png_color_type(format)));
 
     PNGEncoder encoder;
     encoder.compression = CompressionStrategy.Filtered;
@@ -67,7 +67,7 @@ body
  *
  * Throws:  ImageFileException on failure.
  */
-ubyte[] decode_png(ubyte[] data, out uint width, out uint height, out ColorFormat format)
+ubyte[] decode_png(in ubyte[] data, out uint width, out uint height, out ColorFormat format)
 {
     PNGDecoder decoder;
     PNGInfo info;
@@ -101,7 +101,7 @@ private:
  *
  * Returns: Bits per channel of the format.
  */
-uint bits_per_channel(ColorFormat format)
+uint bits_per_channel(in ColorFormat format)
 {
     switch(format)
     {
@@ -119,7 +119,7 @@ uint bits_per_channel(ColorFormat format)
  *
  * Returns: PNGColorType corresponding to the format.
  */
-PNGColorType png_color_type(ColorFormat format)
+PNGColorType png_color_type(in ColorFormat format)
 {
     switch(format)
     {
@@ -142,7 +142,7 @@ PNGColorType png_color_type(ColorFormat format)
  *
  * Throws:  ImageFileException if the PNG color type/bitdepth is not supported.
  */
-ColorFormat color_format_from_png(PNGColorType type, ubyte bit_depth)
+ColorFormat color_format_from_png(in PNGColorType type, in ubyte bit_depth)
 {
     switch(type)
     {

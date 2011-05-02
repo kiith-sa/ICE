@@ -5,22 +5,23 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module formats.cli;
+@safe
 
 
-import std.string;
-import std.regexp : find;
-import std.stdio : writefln, writef;
+import std.algorithm;
 import std.conv;
+import std.exception;
+import std.regex;
+import std.stdio;
+import std.string;
+import std.traits;
+private alias std.string.indexOf indexOf;
+private alias std.string.split split;
 
-import math.math : equals, clamp;
-import containers.array;
-import util.string;
-import util.exception;
+import math.math;
 import util.traits;
 
 
-//We copy this around. A lot.
-//Doesn't matter, not performance critical, and we don't pollute the GC.
 /**
  * Command line option.
  *
@@ -34,12 +35,16 @@ struct CLIOption
         char short_ = '\0';
         ///Long version of the option.
         string long_;
-        ///Action to perform at this option.
-        Action action_ = null;
+
+        ///Action to execute at this option.
+        string[] delegate(string[]) action_ = null;
         ///Help string.
         string help_ = "";
         ///Default arguments to pass to action if the option is not specified.
         string[] default_args_ = null;
+
+        ///Argument name to write in help text.
+        string arg_name_;
                                                 
     public:
         /**
@@ -47,19 +52,16 @@ struct CLIOption
          *
          * Params:  name = Long name of the option. (Will automatically be prefixed with "--" .)
          *                 Must not be parsable as a number.
-         *
-         * Returns: Constructed option.
          */
-        static CLIOption opCall(string name)
+        this(in string name)
         in
         {
-            assert(!isNumeric(name), "CLI: Long option name parsable as a number:" ~ name);
+            assert(!std.string.isNumeric(name), 
+                   "CLI: Long option name parsable as a number:" ~ name);
         }
         body
         {
-            CLIOption option;                            
-            option.long_ = name;
-            return option;
+            long_ = name;
         }
 
         /**
@@ -67,45 +69,60 @@ struct CLIOption
          *
          * Params:  name = Short name (one character). Must be from the alphabet.
          */
-        CLIOption short_name(char name)
-        in{assert(letters.contains(name), "CLI: Unsupported short option name:" ~ name);}
-        body{short_ = name; return *this;}
+        ref CLIOption short_name(in char name)
+        in
+        {
+            assert((name >= 'a' && name <= 'z') || (name >= 'A' && name <= 'Z'), 
+                   "CLI: Unsupported short option name:" ~ name);
+        }
+        body{short_ = name; return this;}
 
         ///Set help string of the option.
-        CLIOption help(string help){help_ = help; return *this;}
+        ref CLIOption help(in string help){help_ = help; return this;}
 
         /**
          * Set value target.                       
          * 
          * Parse single argument of the option as target type and write it to the target.
          * 
-         * Target must be specified (by any of the target() methods).
+         * Target must be specified (by any of the target() methods) 
+         * 
+         * Target type must be a bool, number or a string.
          *
          * Params:  target = Target variable to write option argument to.
          */
-        CLIOption target(T)(T* target) 
+        ref CLIOption target(T)(T* target)
+            if(is_primitive!T)
         {
             assert(action_ is null, "Target of a CLIOption specified more than once");
-            ///Since global function pointers are just that, pointers, we must handle them here.
-            static if(is_global_function!(T*)){target_global_functon(target);}
-            else{action_ = new StoreAction!(T)(target);}
-            return *this;
+            action_ = (string[] args){return store_action(args, (T t){*target = t;});};
+            arg_name_ = "arg";
+            return this;
         }              
 
         /**
-         * Set setter target.                       
+         * Set setter function target.                       
          * 
-         * Parse single argument of the option as target type and pass it to specified setter.
+         * Parse single argument of the option as target type and pass it to specified function.
          * 
          * Target must be specified (by any of the target() methods).
+         * 
+         * Target type must be function taking single bool, number or a string.
          *
          * Params:  target = Target setter to pass option argument to.
          */
-        CLIOption target(T)(void delegate(T) target)
+        ref CLIOption target(T)(T target)
+            if(isSomeFunction!T && 
+               ParameterTypeTuple!T.length == 1 &&
+               is_primitive!(ParameterTypeTuple!T[0]) &&
+               (functionAttributes!T & FunctionAttribute.NOTHROW) &&
+               is(ReturnType!T == void))
         {
             assert(action_ is null, "Target of a CLIOption specified more than once");
-            action_ = new SetterStoreAction!(T)(target); 
-            return *this;
+            alias ParameterTypeTuple!T[0] A;
+            action_ = (string[] args){return store_action(args, (A t){target(t);});};
+            arg_name_ = "arg";
+            return this;
         }
 
         /**
@@ -116,14 +133,18 @@ struct CLIOption
          * of the option are written to the array.
          * 
          * Target must be specified (by any of the target() methods).
+         * 
+         * Target type must an arrao of bools, numbers, strings.
          *
          * Params:  target = Target array to write option arguments to.
          */
-        CLIOption target(T)(ref T[] target)
+        ref CLIOption target(T)(ref T[] target)
+            if(is_primitive!T)
         {
             assert(action_ is null, "Target of a CLIOption specified more than once");
-            action_ = new ArrayStoreAction!(T)(target); 
-            return *this;
+            action_ = (string[] args){return array_store_action(args, target);};
+            arg_name_ = "arg...";
+            return this;
         }
 
         /**
@@ -134,13 +155,22 @@ struct CLIOption
          * 
          * Target must be specified (by any of the target() methods).
          *
+         * Target must be a void function taking an array of strings as its parameter.
+         *
          * Params:  target = Target function to pass option arguments to.
          */
-        CLIOption target(T : void delegate(string[]))(T target, int arg_count = -1)
+        ref CLIOption target(T)(T target, in int arg_count = -1)
+            if(is(T == void delegate(string[]) nothrow))
         {
             assert(action_ is null, "Target of a CLIOption specified more than once");
-            action_ = new DelegateAction(target, arg_count);
-            return *this;
+            action_ = (string[] args){return delegate_action(args, target, arg_count);};
+            if(arg_count == -1){arg_name_ = "arg...";}
+            else if(arg_count > 0)
+            {
+                arg_name_ = "arg1";
+                foreach(a; 1 .. arg_count){arg_name_ ~= " arg" ~ to!string(a);}
+            }
+            return this;
         }
 
         /**
@@ -155,23 +185,9 @@ struct CLIOption
          *
          * Returns: Resulting CLIOption.
          */
-        CLIOption default_args(string[] args ...){default_args_ = args; return *this;}
+        ref CLIOption default_args(string[] args ...){default_args_ = args; return this;}
     
     private:
-        ///Ugly hack to make global functions targetable.
-        void target_global_functon(T : void function(U), U)(T target)
-        {
-            class Targeter
-            {
-                T target_;
-                this(T t){target_ = t;}
-                void target(U t){target_(t);}
-            }
-
-            Targeter t = new Targeter(target);
-            action_ = new SetterStoreAction!(U)(&t.target);
-        }
-
         ///Determine whether or not this option is valid.
         bool valid(){return action_ !is null;}
 
@@ -179,8 +195,7 @@ struct CLIOption
         string help_left()
         {
             string result = short_ == '\0' ? "     " : " -" ~ short_ ~ ", ";
-            string arg_name = action_.arg_name;
-            result ~= "--" ~ long_ ~ (arg_name.length == 0 ? "" : "=" ~ arg_name);
+            result ~= "--" ~ long_ ~ (arg_name_.length == 0 ? "" : "=" ~ arg_name_);
             return result;
         }
 }
@@ -226,7 +241,7 @@ struct CLIOption
  *     cli.add_option(CLIOption("array").target(array).short_name('a');
  *     //custom function
  *     cli.add_option(CLIOption("custom")
- *                        .target((string[] args){foreach(arg; args){writefln(arg);}})
+ *                        .target((string[] args){foreach(arg; args){writeln(arg);}})
  *                        .short_name('c');
  *     
  *     //parse arguments
@@ -240,10 +255,6 @@ struct CLIOption
 class CLI
 {
     private:
-        alias std.string.find strfind;
-        alias std.regexp.find refind;
-        alias containers.array.find find;
-
         ///Struct holding preprocessed (not yet parsed) option data.
         private static struct OptionData
         {                  
@@ -284,10 +295,10 @@ class CLI
         }
 
         ///Set program description (start of the help text).
-        void description(string text){description_ = text;}
+        void description(in string text){description_ = text;}
 
         ///Set epilog of the help text.
-        void epilog(string text){epilog_ = text;}
+        void epilog(in string text){epilog_ = text;}
 
         /**
          * Add a command line option.
@@ -299,14 +310,13 @@ class CLI
         void add_option(CLIOption option)
         in
         {
-            alias containers.array.find find;
             assert(option.valid, "CLI: Trying to add invalid option: " ~ option.long_);
-            bool conflict(ref CLIOption o)
+            static bool conflict(ref CLIOption a, ref CLIOption b)
             {
-                return (o.long_ == option.long_) || 
-                       (o.short_ != '\0' && (o.short_ == option.short_));
+                return (a.long_ == b.long_) || 
+                       (a.short_ != '\0' && (a.short_ == b.short_));
             }
-            assert(options_.find(&conflict) == -1, 
+            assert(find!conflict(options_, option) == [], 
                    "CLI: Adding option " ~ option.long_ ~ " twice.");
         }
         body
@@ -330,7 +340,7 @@ class CLI
             try{success = parse_(args);}
             catch(CLIException e)
             {
-                writefln(e.msg); 
+                writeln(e.msg); 
                 return false;
             }
             return success;
@@ -376,18 +386,20 @@ class CLI
                 {
                     bool match(ref OptionData o)
                     {
-                        return o.name == [option.short_] || 
-                               (abbrev.keys.contains(o.name) && abbrev[o.name] == option.long_);
+                        return o.name != [option.short_] &&
+                               ((find(abbrev.keys, o.name) == []) || abbrev[o.name] != option.long_);
                     }
 
-                    //get all option data matching this option
-                    auto data = option_data_.get_all(&match);
+                    //get option data that match this option
+                    auto data = partition!match(option_data_);
 
-                    //if no option data found
                     if(data.length == 0)
                     {
-                        //if we have default args
-                        if(option.default_args_ != null){option.action_(option.default_args_);}
+                        //execute action with default args, if any
+                        if(option.default_args_ != null)
+                        {
+                            option.action_(option.default_args_);
+                        }
                         continue;
                     }
 
@@ -395,15 +407,22 @@ class CLI
                     foreach(opt_data; data)
                     {
                         positional_ ~= option.action_(opt_data.arguments);
-                        option_data_.remove(opt_data);
                     }
+
+                    //remove the processed data (partition divided the array into two parts)
+                    option_data_ = option_data_[0 .. $ - data.length];
                 }
-                catch(ConvError e)
+                catch(ConvOverflowException e)
+                {
+                    throw new CLIException("CLI: Option argument out of range: --" ~ option.long_);
+                }
+                catch(ConvException e)
                 {
                     throw new CLIException("CLI: Incorrect input format: --" ~ option.long_);
                 }
                 catch(CLIException e){throw new CLIException(e.msg ~ " : --" ~ option.long_);}
             }
+            if(help_){help(); return false;}
 
             //unknown options left
             if(option_data_.length > 0)
@@ -424,7 +443,7 @@ class CLI
          * Throws:  CLIException when an invalid argument is detected.
          */
         void preprocess_args(string[] args)
-        {                               
+        {               
             void add_arg(string arg)
             {
                 //no options yet, so add to positional args
@@ -434,8 +453,9 @@ class CLI
 
             foreach(arg; args)
             {
+                auto number = regex(r"^-?\d*\.?\d*$");
                 //does not start with '-' or is a number
-                if(arg.strfind("-") < 0 || arg.refind("^-?\\d*\\.?\\d*$") >= 0)
+                if(indexOf(arg, '-') == -1 || !arg.match(number).empty)
                 {
                     //ignore '=' between whitespaces
                     if(arg == "="){continue;}
@@ -447,7 +467,7 @@ class CLI
                 enforceEx!(CLIException)(parts.length <= 2, 
                                          "CLI: Invalid argument (too many '='): " ~ arg);
                 //starts with "--"
-                if(arg.strfind("--") == 0)
+                if(indexOf(arg, "--") == 0)
                 {
                     //without the --
                     option_data_ ~= OptionData(parts[0][2 .. $], parts[1 .. $]);
@@ -458,8 +478,13 @@ class CLI
                     arg = parts[0][1 .. $];
                     foreach(i, c; arg)
                     {
+                        static bool short_match(ref CLIOption option, char sh)
+                        {
+                            return option.short_ == sh;
+                        }
+
                         //if this is not an option
-                        if(options_.find((ref CLIOption o){return o.short_ == c;}) < 0)
+                        if(find!short_match(options_, c) == [])
                         {
                             add_arg(arg[i .. $]);
                             break;
@@ -474,16 +499,20 @@ class CLI
         ///Display help information.
         void help()
         {
-            writefln(description_);
+            writeln(description_);
             //might change once positional args are implemented
-            writefln("Usage: " ~ program_name_ ~ " [OPTION]...\n");
+            writeln("Usage: " ~ program_name_ ~ " [OPTION]...\n");
                             
             //space between right and left sides
             uint sep = 2;
 
+            static CLIOption max(ref CLIOption a, ref CLIOption b)
+            {
+                return a.help_left.length > b.help_left.length ? a : b;
+            }
+
             //option with widest left side
-            auto widest = options_.max((ref CLIOption a, ref CLIOption b)
-                                       {return a.help_left.length > b.help_left.length;});
+            auto widest = reduce!max(options_);
 
             //left side width
             uint left_width = clamp(cast(uint)widest.help_left.length + sep, 
@@ -499,28 +528,36 @@ class CLI
                 //if option left side too wide, print it on a separate line
                 if(left.length + sep > left_width )
                 {
-                    writefln(left);
-                    writef(wrap(option.help_, line_width_, indent, indent));
+                    writeln(left);
+                    write(wrap(option.help_, line_width_, indent, indent));
                 }
                 else
                 {
-                    writef(ljustify(left, left_width));
-                    writef(wrap(option.help_, line_width_, null, indent));
+                    write(ljustify(left, left_width));
+                    write(wrap!string(option.help_, line_width_, null, indent));
                 }
-                //default args
-                writefln(wrap("Default: " ~ join(option.default_args_, ", "), 
-                              right_width, indent, indent));
+                if(option.default_args_.length > 0)
+                {
+                    //default args
+                    writeln(wrap("Default: " ~ join(option.default_args_, ", "), 
+                                 right_width, indent, indent));
+                }
             }
 
-            writefln("\n" ~ epilog_);
+            writeln("\n" ~ epilog_);
         }
 }
+
+
+private:
+//used in unittest
+int test_global;
 
 unittest
 {
     auto cli = new CLI();
     bool flag = false;
-    cli.add_option(CLIOption("flag").short_name('f').target(&flag).default_args("1"));
+    cli.add_option(CLIOption("flag").short_name('f').target(&flag).default_args("true"));
     //defaults
     cli.parse(["program_name"]);
     assert(flag == true);
@@ -546,10 +583,13 @@ unittest
     assert(equals(r, 4.2L) && i == -42 && u == 42 && s == "42");
 
     //setters
-    void setter(uint u_){u = u_;}
+    void setter(uint u_) nothrow {u = u_;}
+    static void global_setter(uint g) nothrow {test_global = g;}
     cli.add_option(CLIOption("setter").target(&setter));
-    cli.parse(["program_name", "--setter", "24"]);
+    cli.add_option(CLIOption("global_setter").target(&global_setter));
+    cli.parse(["program_name", "--setter", "24", "--global_setter", "42"]);
     assert(u == 24);
+    assert(test_global == 42);
 
     //arrays
     uint[] array;
@@ -559,158 +599,110 @@ unittest
 
     //custom functions
     string[] array_str;
-    void deleg(string[] args){array_str = args;}
+    void deleg(string[] args) nothrow {array_str = args;}
     cli.add_option(CLIOption("deleg").target(&deleg));
     cli.parse(["program_name", "--deleg", "4", "5", "6"]);
     assert(array_str == ["4", "5", "6"]);
 }
 
-private:
+///Convert a string to a bool lexically.
+bool lexical_bool(string str)
+{
+    if(find(["Yes", "yes", "YES", "On", "on", "ON", "True", "true", "TRUE", 
+        "Y", "y", "T", "t", "1"], str) != [])
+    {
+        return true;
+    }
+    else if(find(["No", "no", "NO", "Off", "off", "OFF", "False", "false", "FALSE", 
+             "N", "n", "F", "f", "0"], str) != [])
+    {
+        return false;
+    }
+
+    throw new ConvException("Could not parse string as bool: " ~ str);
+}
 
 ///Exception thrown at CLI errors.
 class CLIException : Exception{this(string msg){super(msg);}}
 
-///Action to be executed when an option is specified.
-private abstract class Action
+
+/**
+ * Action that parses the first argument and passes it to a delegate.
+ *
+ * Params:  args   = Option arguments.
+ *          target = Target delegate to pass parsed argument to.
+ *
+ * Returns: Arguments that were not parsed.
+ *
+ * Throws:  CLIException if there weren't enough arguments.
+ *          ConvOverflowException on a parsing overflow error (e.g. to large int).
+ *          ConvException on a parsing error.
+ */
+string[] store_action(T)(string[] args, void delegate(T) target)
 {
-    /**
-     * Execute the action.
-     *
-     * Params:  args = Command line arguments to process.
-     *
-     * Returns: Arguments that weren't processed.
-     *
-     * Throws:  ConvError on parsing error.
-     */
-    string[] opCall(string[] args);
-
-    ///Get argument name for this action.
-    string arg_name();
-}
-
-///Action that passes raw, unparsed option arguments to a delegate.
-class DelegateAction : Action
-{
-    private:
-        ///Delegate to pass option arguments to.
-        void delegate(string[]) action_;
-        ///Number of arguments of the command line option. -1 means any number.
-        int arg_count_;
-
-    public:
-        /**
-         * Construct a DelegateAction.
-         *
-         * Params:  action    = Delegate to pass option arguments to.
-         *          arg_count = Number of arguments of the option. -1 means any number.
-         */
-        this(void delegate(string[]) action, int arg_count)
+    static if(is(T == bool))
+    {
+        if(args.length == 0)
         {
-            action_ = action;
-            arg_count_ = arg_count;
-        }
-
-        override string[] opCall(string[] args)
-        {
-            enforceEx!(CLIException)(cast(int)args.length >= arg_count_, 
-                       "Not enough option arguments: need " ~ to_string(arg_count_));
-            if(arg_count_ == -1)     
-            {
-                action_(args);
-                return [];
-            }
-            action_(args[0 .. arg_count_]); 
-            return args[arg_count_ .. $];
-        }
-
-        override string arg_name()
-        {
-            if(arg_count_ == -1){return "args";}
-            string result;
-            if(arg_count_ >= 1){result ~= "arg0";}
-            for(uint a = 1;a < arg_count_; a++)
-            {
-                result ~= ",arg" ~ to_string(a);
-            }
-            return result;
-        }
-}
-
-///Action that parses a single option argument and stores it in a variable.
-class StoreAction(T) : Action
-{
-    private:
-        ///Variable to store the option argument in.
-        T* target_;
-    public:
-        ///Construct a StoreAction with specified target.
-        this(T* target){target_ = target;}
-
-        override string[] opCall(string[] args)
-        {
-            static if(is(T == bool))
-            {
-                if(args.length == 0){*target_ = true; return [];}
-            }
-            enforceEx!(CLIException)(args.length >= 1, "Not enough option arguments: need 1");
-            *target_ = to!(T)(args[0]); return args[1 .. $];
-        }
-
-        override string arg_name()
-        {
-            static if(is(T == bool)){return "";}
-            else{return "arg";}
-        }
-}
-
-///Action that parses a single option argument and passes it to a setter.
-class SetterStoreAction(T) : Action
-{
-    private:
-        ///Setter to pass the option argument to.
-        void delegate(T) target_;
-
-    public:
-        ///Construct a SetterStoreAction with specified target.
-        this(void delegate(T) target){target_ = target;}
-
-        override string[] opCall(string[] args)
-        {
-            static if(is(T == bool))
-            {
-                if(args.length == 0){target_(true); return [];}
-            }
-            enforceEx!(CLIException)(args.length >= 1, "Not enough option arguments: need 1");
-            target_(to!(T)(args[0])); return args[1 .. $];
-        }
-
-        override string arg_name()
-        {
-            static if(is(T == bool)){return "";}
-            else{return "arg";}
-        }
-}
-                
-///Action that parses all option arguments and stores them in an array.
-class ArrayStoreAction(T) : Action
-{
-    private:
-        ///Array to store option arguments in
-        T[]* target_;
-
-    public:
-        ///Construct an ArrayStoreAction with specified target.
-        this(ref T[] target){target_ = &target;}
-
-        override string[] opCall(string[] args)
-        {
-            foreach(arg; args)
-            {
-                //allow comma separated args
-                foreach(sub; arg.split(",")){*target_ ~= to!(T)(sub);}
-            }
+            target(true); 
             return [];
         }
+        target(lexical_bool(args[0])); 
+        return args[1 .. $];
+    }
+    else
+    {
+        enforceEx!(CLIException)(args.length >= 1, "Not enough option arguments: need 1");
+        target(to!(T)(args[0])); return args[1 .. $];
+    }
+}
 
-        override string arg_name(){return "args";}
+/**
+ * Action that parses any number of arguments and saves them in an array.
+ *
+ * Params:  args   = Option arguments.
+ *          target = Target array to add parsed arguments to.
+ *
+ * Returns: Empty array.
+ *
+ * Throws:  ConvOverflowException on a parsing overflow error (e.g. to large int).
+ *          ConvException on a parsing error.
+ */
+string[] array_store_action(T)(string[] args, ref T[] target)
+{
+    foreach(arg; args)
+    {
+        //allow comma separated args
+        foreach(sub; arg.split(","))
+        {
+            static if(is(T == bool)){target_ ~= lexical_bool(sub);}
+            else{target ~= to!(T)(sub);}
+        }
+    }
+    return [];
+}
+
+/**
+ * Action that passes a specified number of arguments to a delegate.
+ *                 
+ * Params:  args      = Option arguments.
+ *          target    = Target delegate to pass arguments to.
+ *          arg_count = Number of arguments to pass.
+ *                      If arg_count is -1 , all, if any, arguments will be passed. 
+ *
+ * Returns: Arguments that were not passed.
+ */
+string[] delegate_action(string[] args, void delegate(string[]) nothrow target, int arg_count)
+{
+    enforceEx!(CLIException)(cast(int)args.length >= arg_count, 
+               "Not enough option arguments: need " ~ to!string(arg_count));
+
+    // -1 means all, if any, args
+    if(arg_count == -1)     
+    {
+        target(args);
+        return [];
+    }
+    target(args[0 .. arg_count]); 
+    return args[arg_count .. $];
 }

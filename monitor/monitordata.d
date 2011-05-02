@@ -5,36 +5,38 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module monitor.monitordata;
+@safe
 
+
+import std.algorithm;
 
 import monitor.submonitor;
-import containers.array;
 
 
 //needs better naming
-///Interface passed by Monitorables to the Monitor to access SubMonitors.
-interface MonitorData
+///Interface passed by Monitorables to the MonitorManager to access SubMonitors.
+interface MonitorDataInterface
 {
     ///Destroy the MonitorData.
     void die();
 
     ///Get names of submonitors available.
-    string[] monitor_names();
+    const(string[]) monitor_names() const;
 
     ///Start monitor with specified name.
-    void start_monitor(string name);
+    void start_monitor(in string name);
 
     ///Stop monitor with specified name.
-    void stop_monitor(string name);
+    void stop_monitor(in string name);
 
-    ///Access monitor with specified name. Should return const in D2.
-    SubMonitor get_monitor(string name);
+    ///Access monitor with specified name.
+    SubMonitor get_monitor(in string name);
 }
 
 
 //needs better naming
 ///MonitorData implementation providing access to submonitors of monitorable of specified type.
-final class MonitorManager(M) : MonitorData
+final class MonitorData(M) : MonitorDataInterface
 {
     private:
         ///"Constructor" functions to get submonitors from.
@@ -66,17 +68,17 @@ final class MonitorManager(M) : MonitorData
             constructors_ = null;
         }
 
-        string[] monitor_names(){return constructors_.keys;}
+        const(string[]) monitor_names() const {return constructors_.keys;}
 
-        void start_monitor(string name)
+        void start_monitor(in string name)
         {
             monitors_[name] = constructors_[name](monitored_);
         }
 
-        void stop_monitor(string name)
+        void stop_monitor(in string name)
         in
         {
-            assert(monitors_.keys.contains(name), 
+            assert(find(monitors_.keys, name) != [], 
                    "Trying to stop a monitor that is not running");
         }
         body
@@ -85,10 +87,10 @@ final class MonitorManager(M) : MonitorData
             monitors_.remove(name);
         }
 
-        SubMonitor get_monitor(string name)
+        SubMonitor get_monitor(in string name)
         in
         {
-            assert(monitors_.keys.contains(name), "Trying to access a nonexistent monitor");
+            assert(find(monitors_.keys, name) != [], "Trying to access a nonexistent monitor");
         }
         body
         {

@@ -5,9 +5,9 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module spatial.spatialmanager;
+@safe
 
 
-import physics.physicsbody;
 import monitor.monitorable;
 import math.vector2;
 import math.rectangle;
@@ -58,7 +58,7 @@ abstract class SpatialManager(T) : Monitorable
          * Params:  object       = Object to update.
          *          old_position = Position of the object last time when it was updated or added.
          */
-        void update_object(T object, Vector2f old_position);
+        void update_object(T object, in Vector2f old_position);
 
         ///Return an iterator iterating over groups of spatially close objects.
         Iterator!(T[]) iterator();

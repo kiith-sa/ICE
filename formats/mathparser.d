@@ -7,12 +7,14 @@
 module formats.mathparser;
 
 
-import std.string;
+import std.algorithm;
+import std.array;
 import std.conv;
+import std.exception;
 import std.stdio;
-
-import containers.array;
-import util.exception;
+import std.string;
+import std.traits;
+alias std.algorithm.find find;
 
 
 ///Exception thrown at math parsing errors.
@@ -34,14 +36,15 @@ class MathParserException : Exception{this(string msg){super(msg);}}
  * Throws:  MathParserException if the expression is invalid 
  *          (e.g. parentheses mismatch or redundant operator)
  */
-T parse_math(T)(string expression, T[string] substitutions = null)
+T parse_math(T)(in string expression, in T[string] substitutions = null)
+    if(isNumeric!T)
 {
     enforceEx!(MathParserException)(expression.length > 0, 
                                     "Can't parse an empty string as a math expression");
 
     scope(failure){writefln("Parsing math expression failed: " ~ expression);}
-    string substituted = expression;
-    if(substitutions !is null){substituted = substitute(expression, substitutions);}
+    const substituted = substitutions is null ? expression 
+                                              : substitute(expression, substitutions);
     return parse_postfix!(T)(to_postfix(substituted));
 }
 ///Unittest for parse_math
@@ -87,16 +90,17 @@ private:
      *
      * Returns: Input string with substitutions applied.
      */
-    string substitute(T)(string input, T[string] substitutions)
+    string substitute(T)(in string input, in T[string] substitutions)
     {
-        alias std.string.toString to_string;
-        foreach(from, to; substitutions)
+        //ugly hack, could use rewriting
+        char[] mutable = input.dup;
+        foreach(from, to_; substitutions)
         {
-            string replacement = to >= cast(T)0 ? to_string(to) 
-                                                : "(0 " ~ to_string(to) ~ ")";
-            input = replace(input, from, replacement);
+            const replacement = to_ >= cast(T)0 ? to!string(to_) 
+                                               : "(0 " ~ to!string(to_) ~ ")";
+            mutable = replace(mutable, from.dup, replacement.dup);
         }
-        return input;
+        return cast(string)mutable;
     }
 
     /**
@@ -109,33 +113,36 @@ private:
      * Throws:  MathParserException if the expression is invalid 
      *          (e.g. parentheses mismatch or redundant operator)
      */
-    string to_postfix(string expression)
+    string to_postfix(in string expression)
     {
-        alias containers.array.contains contains;
         dchar[] stack;
 
         string output = "";
         bool last_was_space = false;
         dchar prev_c = 0;
 
-        dchar pop(){
-            if(stack.length > 0){
+        dchar pop()
+        {
+            if(stack.length > 0)
+            {
                 dchar c = stack[$ - 1];
                 stack = stack[0 .. $ - 1];
-                return c;}
-            return 0;}
+                return c;
+            }
+            return 0;
+        }
 
         foreach(dchar c; expression)
         {
             //ignore spaces
             if(iswhite(c)){continue;}
             //not an operator
-            if(!operators.contains(c)){output ~= c;}
+            if(operators.find(c) == []){output ~= c;}
             //operator
             else
             {
                 //if there are two operators in a row, we have an error.
-                if(arithmetic.contains(prev_c) && arithmetic.contains(c))
+                if(arithmetic.find(prev_c) != [] && arithmetic.find(c) != [])
                 {
                     throw new MathParserException("Redundant operator in math expression " 
                                                   ~ expression);
@@ -164,7 +171,7 @@ private:
 
                     while(tok != 0 && tok != '(')
                     {
-                        if(arithmetic.contains(c) && precedence[c] <= precedence[tok])
+                        if(arithmetic.find(c) != [] && precedence[c] <= precedence[tok])
                         {
                             tok = pop();
                             output ~= " ";
@@ -210,17 +217,19 @@ private:
      *
      * Throws:  MathParsetException if an invalid token is detected in the expression.
      */
-    T parse_postfix(T)(string postfix)
+    T parse_postfix(T)(in string postfix)
     {
         scope(failure){writefln("Parsing postfix notation failed: " ~ postfix);}
 
         T[] stack;
-        string[] tokens = split(postfix);
+        const string[] tokens = split(postfix);
 
-        void bin_operator(T function(T, T) operator){
+        void bin_operator(in T function(T, T) operator)
+        {
             T x = stack[$ - 1]; T y = stack[$ - 2];
             stack[$ - 2] = operator(x, y);
-            stack = stack[0 .. $ - 1];}
+            stack = stack[0 .. $ - 1];
+        }
 
         foreach(token; tokens)
         {
@@ -232,8 +241,9 @@ private:
                 case '/': bin_operator(function(T x, T y){return y / x;}); break; 
                 default:
                     enforceEx!(MathParserException)
-                              (isNumeric(token), "Invalid token a in math expression: " ~ token);
-                    stack ~= cast(T) toReal(token);
+                              (std.string.isNumeric(token), 
+                               "Invalid token a in math expression: " ~ token);
+                    stack ~= cast(T) to!real(token);
                     break;
             }
         }

@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module physics.contactdetect;
+@safe
 
 
 import std.math;
@@ -63,13 +64,13 @@ private:
  *
  * Returns: True if an intersection happened, false otherwise.
  */
-bool intersection(Vector2f position1, Vector2f position2,
-                  Volume volume1, Volume volume2, 
+bool intersection(in Vector2f position1, in Vector2f position2,
+                  in Volume volume1, in Volume volume2, 
                   ref Contact contact)
 in
 {
-    auto class_a = volume1.classinfo;
-    auto class_b = volume2.classinfo;
+    const class_a = volume1.classinfo;
+    const class_b = volume2.classinfo;
 
     static aabbox = VolumeAABBox.classinfo;
     static circle = VolumeCircle.classinfo;
@@ -81,8 +82,8 @@ in
 }
 body
 {
-    auto class_a = volume1.classinfo;
-    auto class_b = volume2.classinfo;
+    const class_a = volume1.classinfo;
+    const class_b = volume2.classinfo;
 
     static const aabbox = VolumeAABBox.classinfo;
     static const circle = VolumeCircle.classinfo;
@@ -140,20 +141,20 @@ body
  *
  * Returns: True if an intersection happened, false otherwise.
  */
-bool aabbox_aabbox(Vector2f box1_position, Vector2f box2_position,
-                   VolumeAABBox box1, VolumeAABBox box2, 
+bool aabbox_aabbox(in Vector2f box1_position, in Vector2f box2_position,
+                   in VolumeAABBox box1, in VolumeAABBox box2, 
                    ref Contact contact)
 {
     //combined half-widths/half-heights of the rectangles.
-    Vector2f combined = (box1.rectangle.size + box2.rectangle.size) * 0.5;
+    const Vector2f combined = (box1.rectangle.size + box2.rectangle.size) * 0.5;
 
     //distance between centers of the rectangles
-    Vector2f distance = (box2_position + box2.rectangle.center) - 
-                        (box1_position + box1.rectangle.center);
+    const Vector2f distance = (box2_position + box2.rectangle.center) - 
+                              (box1_position + box1.rectangle.center);
  
     //calculate absolute distance coords
     //this is used to determine collision
-    Vector2f distance_abs = Vector2f(abs(distance.x), abs(distance.y));
+    const distance_abs = Vector2f(abs(distance.x), abs(distance.y));
 
     //aabboxes are not intersecting if both of the following are false:
     //their x distance is less than their combined halfwidths
@@ -161,7 +162,7 @@ bool aabbox_aabbox(Vector2f box1_position, Vector2f box2_position,
     if(!((distance_abs.x < combined.x) && (distance_abs.y < combined.y))) {return false;}
 
     //magnitude of the normal vector is determined by the overlap of aabboxes
-    Vector2f normal_mag = combined - distance_abs;
+    const normal_mag = combined - distance_abs;
  
     contact.contact_normal.zero();
     //only adjust the contact normal in the direction of the smallest overlap
@@ -206,18 +207,18 @@ unittest
  *
  * Returns: True if an intersection happened, false otherwise.
  */
-bool circle_circle(Vector2f circle1_position, Vector2f circle2_position,
-                   VolumeCircle circle1, VolumeCircle circle2, 
+bool circle_circle(in Vector2f circle1_position, in Vector2f circle2_position,
+                   in VolumeCircle circle1, in VolumeCircle circle2, 
                    ref Contact contact)
 {
     //difference of circle positions in world space
     Vector2f difference = (circle2.offset + circle2_position) - 
                           (circle1.offset + circle1_position);
 
-    float radius_total = circle1.radius + circle2.radius;
+    const float radius_total = circle1.radius + circle2.radius;
 
     //will be positive if the objects are interpenetrating
-    float penetration_sq = radius_total * radius_total - difference.length_squared;
+    const float penetration_sq = radius_total * radius_total - difference.length_squared;
 
     if(penetration_sq < 0.0){return false;}
 
@@ -260,21 +261,21 @@ unittest
  *
  * Returns: True if an intersection happened, false otherwise.
  */
-bool aabbox_circle(Vector2f box_position, Vector2f circle_position,
-                   VolumeAABBox box, VolumeCircle circle, 
+bool aabbox_circle(in Vector2f box_position, in Vector2f circle_position,
+                   in VolumeAABBox box, in VolumeCircle circle, 
                    ref Contact contact)
 {
     //convert to box space
-    Vector2f circle_center = circle.offset + circle_position - box_position;
+    const Vector2f circle_center = circle.offset + circle_position - box_position;
 
     //closest point to the circle on the box 
-    Vector2f closest = box.rectangle.clamp(circle_center);
+    const Vector2f closest = box.rectangle.clamp(circle_center);
 
     //distance from the center of the circle to the box
     Vector2f difference = circle_center - closest;
 
     //will be positive if the objects are interpenetrating
-    float penetration_sq = circle.radius * circle.radius - difference.length_squared;
+    const float penetration_sq = circle.radius * circle.radius - difference.length_squared;
 
     if(penetration_sq < 0.0){return false;}
 

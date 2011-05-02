@@ -15,19 +15,19 @@ Authors: Lode Vandevenne (original version in C++), Lutger Blijdestijn (D versio
 */
 
 module formats.pngdecoder;
+@system
 
 
-import std.string;
+import std.algorithm;
+import std.exception;
 import std.intrinsic;
+import std.string;
 
 import formats.pngcommon;
 import formats.zlib;
 import math.vector2;
 import memory.memory;
 import containers.vector;
-import util.iterator;
-import util.exception;
-import util.swap;
 import color;
 
 
@@ -39,7 +39,6 @@ package:
  */
 struct PNGDecoder
 {
-    private:
     public:
         /**
          * Decode PNG file data.
@@ -52,20 +51,18 @@ struct PNGDecoder
          * Throws:  PNGException on decoding error.
          *          CompressionException on PNG data decompression error.
          */
-        ubyte[] decode(ubyte[] source, ref PNGInfo info)
+        ubyte[] decode(in ubyte[] source, out PNGInfo info)
         {
             ubyte interlace;
             info = PNGInfo(read_header(source, interlace));
             info.interlace = interlace;
 
-            uint expected_length = info.interlace 
-                                   ? buffer_size(info.image) + info.image.height * 2
-                                   : buffer_size(info.image) + info.image.height;
+            const expected_length = info.interlace 
+                                    ? buffer_size(info.image) + info.image.height * 2
+                                    : buffer_size(info.image) + info.image.height;
 
 
-            auto buffer = Vector!(ubyte)();
-            buffer.reserve(expected_length);
-            scope(exit){buffer.die();}
+            auto buffer = Vector!(ubyte)(expected_length);
 
             auto inflator = Inflator(buffer);
 
@@ -131,36 +128,43 @@ struct PNGDecoder
                         break;
                     //compressed text
                     case zTXt:
-                        auto sep = find(cast(string)chunk.data, 0);
+                        auto sep = countUntil(chunk.data, 0);
                         if(sep > 0)
                         {
                             if(chunk.data[sep + 1] == 0)
                             {
-                                info.text.latin[chunk.data[0 .. sep]] = 
-                                               chunk.data[sep + 2 .. $];
+                                info.text.latin[cast(immutable ubyte[])
+                                                chunk.data[0 .. sep]] = 
+                                                cast(immutable ubyte[])
+                                                chunk.data[sep + 2 .. $];
                             }
                             else
                             {
-                                info.text.latin[chunk.data[0 .. sep]] = 
+                                info.text.latin[cast(immutable ubyte[])
+                                                chunk.data[0 .. sep]] = 
+                                                cast(immutable ubyte[]) 
                                                 zlib_inflate(chunk.data[sep + 2 .. $]);
                             }
                         }
                         break;
                     //text
                     case tEXt:
-                        auto sep = find(cast(string)chunk.data, 0);
+                        auto sep = countUntil(chunk.data, 0);
                         if(sep > 0)
                         {
-                            info.text.latin[chunk.data[0 .. sep]] = chunk.data[sep + 1 .. $];
+                            info.text.latin[cast(immutable ubyte[])
+                                            chunk.data[0 .. sep]] = 
+                                            cast(immutable ubyte[]) 
+                                            chunk.data[sep + 1 .. $];
                         }
                         break;
                     //utf-8 text
                     case iTXt:
-                        auto sep = find(cast(string)chunk.data, 0);
-                        string keyword = cast(string)chunk.data[0 .. sep];
-                        bool compressed = cast(bool)chunk.data[sep + 1];
-                        sep += find(cast(string)chunk.data[sep + 3 .. $], 0) + 3;
-                        sep += find(cast(string)chunk.data[sep + 1 .. $], 0) + 1;
+                        auto sep = countUntil(chunk.data, 0);
+                        const keyword = cast(string)chunk.data[0 .. sep];
+                        const compressed = cast(bool)chunk.data[sep + 1];
+                        sep += countUntil(chunk.data[sep + 3 .. $], 0) + 3;
+                        sep += countUntil(chunk.data[sep + 1 .. $], 0) + 1;
                         if(!compressed)
                         {
                             info.text.unicode[keyword] = cast(string)chunk.data[sep + 1 .. $];
@@ -182,7 +186,7 @@ struct PNGDecoder
             if(info.interlace != 0){deinterlace(buffer, info.image);}
             else{reconstruct(buffer, info.image);}
 
-            ubyte[] output = alloc!(ubyte)(buffer.length);
+            ubyte[] output = alloc_array!(ubyte)(buffer.length);
             output[] = buffer.array;
 
             return output;
@@ -191,7 +195,7 @@ struct PNGDecoder
 
 private:
 ///Size of a PNG header.
-const uint header_size = 34;
+immutable uint header_size = 34;
 
 /**
  * Parse a PNG header.
@@ -203,7 +207,7 @@ const uint header_size = 34;
  *
  * Throws:  PNGException if the header is invalid.
  */
-PNGImage read_header(ubyte[] source, out ubyte interlace)
+PNGImage read_header(in ubyte[] source, out ubyte interlace)
 {
     //spec: http://www.w3.org/TR/PNG/#11IHDR
 
@@ -215,25 +219,21 @@ PNGImage read_header(ubyte[] source, out ubyte interlace)
     enforceEx!(PNGException)(zlib_check_crc(get_uint(source[29 .. 33]), source[12 .. 29]), 
                              "Invalid PNG CRC (file might be corrupted?)");
 
-    PNGImage result;
-    with(result)
-    {
-        width = get_uint(source[16 .. 20]);
-        height = get_uint(source[20 .. 24]);
-        bit_depth = source[24];
-        color_type = cast(PNGColorType) source[25];
-        enforceEx!(PNGException)(source[26] == 0, 
-                                 "Unsupported compression method in PNG header");
-        enforceEx!(PNGException)(source[27] == 0, 
-                                 "Unsupported filter method in PNG header");
-        enforceEx!(PNGException)(validate_color(color_type, bit_depth), 
-                                 "Invalid color format in PNG header");
-        interlace = source[28];
-        enforceEx!(PNGException)(interlace < 2, 
-                                 "Invalid  interlace method in PNG header");
-        bpp = cast(ubyte)(num_channels(color_type) * bit_depth);
-    }
-    return result;
+    const uint width = get_uint(source[16 .. 20]);
+    const uint height = get_uint(source[20 .. 24]);
+    const ubyte bit_depth = source[24];
+    const color_type = cast(PNGColorType) source[25];
+    enforceEx!(PNGException)(source[26] == 0, 
+                             "Unsupported compression method in PNG header");
+    enforceEx!(PNGException)(source[27] == 0, 
+                             "Unsupported filter method in PNG header");
+    enforceEx!(PNGException)(validate_color(color_type, bit_depth), 
+                             "Invalid color format in PNG header");
+    interlace = source[28];
+    enforceEx!(PNGException)(interlace < 2, 
+                             "Invalid  interlace method in PNG header");
+    const ubyte bpp = cast(ubyte)(num_channels(color_type) * bit_depth);
+    return PNGImage(width, height, bit_depth, color_type);
 }
 
 /**
@@ -243,21 +243,24 @@ PNGImage read_header(ubyte[] source, out ubyte interlace)
  *
  * Returns: Estimated buffer size. Not exact.
  */
-uint buffer_size(ref PNGImage image){return ((image.width * image.bpp + 7) / 8) * image.height;}
+uint buffer_size(in PNGImage image)
+{
+    return ((image.width * image.bpp + 7) / 8) * image.height;
+}
 
 ///Iterator over PNG chunks. 
-class PNGChunkIterator : Iterator!(PNGChunk)
+class PNGChunkIterator
 {
     private:
         ///PNG data stream (without header).
-        ubyte[] stream_;
+        const ubyte[] stream_;
 
     public:
         ///Construct a PNGChunkIterator over specified stream (without header).
-        this(ubyte[] stream){stream_ = stream;}
+        this(in ubyte[] stream){stream_ = stream;}
 
-        ///Iterate over chunks. Chunk will be destroyed after their respective iterations.
-        override int opApply(int delegate(ref PNGChunk chunk) visitor)
+        ///Iterate over chunks. Chunks will be destroyed after their respective iterations.
+        int opApply(int delegate(ref PNGChunk chunk) visitor)
         {
             int result = 0;
             uint pos = 0;
@@ -283,8 +286,8 @@ class PNGChunkIterator : Iterator!(PNGChunk)
  *          pixel_bytes = Pixel size in bytes (1 if actual pixel size is below 1 byte).
  *          filter      = Filter to unapply.
  */
-void unfilter_line(ubyte[] result, ubyte[] line, ubyte[] previous, uint pixel_bytes,
-                   PNGFilter filter)
+void unfilter_line(ubyte[] result, in ubyte[] line, in ubyte[] previous, 
+                   uint pixel_bytes, in PNGFilter filter)
 {
     switch(filter)
     {
@@ -319,7 +322,7 @@ void unfilter_line(ubyte[] result, ubyte[] line, ubyte[] previous, uint pixel_by
             //rest of the line
             for(uint i = pixel_bytes; i < line.length; i++)
             {
-                result[i] = line[i] + result[i - pixel_bytes];
+                result[i] = cast(ubyte)(line[i] + result[i - pixel_bytes]);
             }
             break;
         case PNGFilter.None:
@@ -337,11 +340,10 @@ void unfilter_line(ubyte[] result, ubyte[] line, ubyte[] previous, uint pixel_by
  *                   will be written here.
  *          image  = Image information.
  */
-void deinterlace(ref Vector!(ubyte) buffer, ref PNGImage image)
+void deinterlace(ref Vector!(ubyte) buffer, in PNGImage image)
 {
     //result buffer
-    auto result = Vector!(ubyte)();
-    scope(exit){result.die();}
+    auto result = Vector!(ubyte)(8);
     result.length = buffer_size(image);
 
     /**
@@ -355,30 +357,31 @@ void deinterlace(ref Vector!(ubyte) buffer, ref PNGImage image)
      *                   horizontally or vertically.
      *          dim    = Dimensions of interlaced data.
      */
-    void adam7_pass(ubyte[] source, Vector2u start, Vector2u dist, Vector2u dim)
+    void adam7_pass(in ubyte[] source, in Vector2u start, in Vector2u dist, in Vector2u dim)
     {
-        uint pixel_bytes = (image.bpp + 7) / 8; // pixel_bytes is used for filtering
+        const uint pixel_bytes = (image.bpp + 7) / 8; // pixel_bytes is used for filtering
         //previous line
         ubyte[] previous = new ubyte[image.width * pixel_bytes];
         //current line
         ubyte[] line = new ubyte[image.width * pixel_bytes];
 
         ///Place pixels from the current line to result. line_idx is index of the current line.
-        void place_pixels(uint line_idx)
+        void place_pixels(in uint line_idx)
         {
             //ineffective, but relatively readable
             //pixels of the line
             for(uint px = 0; px < dim.x; px++)
             {
                 //pixel offset in result without pixel size applied
-                uint offset = image.width * (start.y + dist.y * line_idx) + start.x + dist.x * px;
+                const uint offset = image.width * (start.y + dist.y * line_idx) 
+                                    + start.x + dist.x * px;
                 //working with bytes
                 if(image.bpp >= 8)
                 {
                     //offset of this pixel in result
-                    uint r = pixel_bytes * offset;
+                    const uint r = pixel_bytes * offset;
                     //offset of this pixel in line
-                    uint l = pixel_bytes * px;
+                    const uint l = pixel_bytes * px;
                     result[r .. r + pixel_bytes] = line[l .. l + pixel_bytes];
                 }
                 //untested, might not work
@@ -386,8 +389,8 @@ void deinterlace(ref Vector!(ubyte) buffer, ref PNGImage image)
                 else
                 {
                     //offset of this pixel in bits, not bytes, in result
-                    uint px_start = image.bpp * offset;
-                    uint px_end = image.bpp * (offset + 1);
+                    const uint px_start = image.bpp * offset;
+                    const uint px_end = image.bpp * (offset + 1);
                     //offset of this pixel in bits, not bytes, in line
                     uint px_start_line = image.bpp * px;
                     
@@ -395,13 +398,13 @@ void deinterlace(ref Vector!(ubyte) buffer, ref PNGImage image)
                     for(uint r = px_start, l = px_start_line; r < px_end; r++, l++)
                     {
                         //bit position in result - 0 is the LSB, 7 is MSB of a byte
-                        uint rbitpos = 7 - (r & 0x7);
+                        const uint rbitpos = 7 - (r & 0x7);
                         //bit position in line - 0 is the LSB, 7 is MSB of a byte
-                        uint lbitpos = 7 - (l & 0x7);
+                        const uint lbitpos = 7 - (l & 0x7);
                         //bit value
-                        uint _bit = (line[l / 8] >> lbitpos) & 1;
+                        const uint _bit = (line[l / 8] >> lbitpos) & 1;
                         //index of this byte in result
-                        uint byte_idx = r / 8;
+                        const uint byte_idx = r / 8;
                         //set the bit
                         result[byte_idx] = cast(ubyte)((result[byte_idx] & ~(1 << rbitpos)) 
                                                       | (_bit << rbitpos));
@@ -410,14 +413,14 @@ void deinterlace(ref Vector!(ubyte) buffer, ref PNGImage image)
             }
         }
 
-        uint line_length = 1 + ((image.bpp * dim.x + 7) / 8);
+        const uint line_length = 1 + ((image.bpp * dim.x + 7) / 8);
         //previous line to the first line is a zero line
         previous[] = 0;
         for(uint line_idx = 0; line_idx < dim.y; line_idx++)
         {
-            uint line_start = line_idx * line_length;
-            PNGFilter filter = cast(PNGFilter)source[line_start];
-            ubyte[] source_line = source[line_start + 1 .. line_start + line_length];
+            const uint line_start = line_idx * line_length;
+            const PNGFilter filter = cast(PNGFilter)source[line_start];
+            const ubyte[] source_line = source[line_start + 1 .. line_start + line_length];
 
             unfilter_line(line, source_line, previous, pixel_bytes, filter);
             place_pixels(line_idx);
@@ -426,31 +429,31 @@ void deinterlace(ref Vector!(ubyte) buffer, ref PNGImage image)
     }
 
     //dimensions of data for each pass
-    Vector2u[7] pass_dim = [Vector2u((image.width + 7) / 8, (image.height + 7) / 8),
-                            Vector2u((image.width + 3) / 8, (image.height + 7) / 8),
-                            Vector2u((image.width + 3) / 4, (image.height + 3) / 8),
-                            Vector2u((image.width + 1) / 4, (image.height + 3) / 4),
-                            Vector2u((image.width + 1) / 2, (image.height + 1) / 4),
-                            Vector2u((image.width + 0) / 2, (image.height + 1) / 2),
-                            Vector2u((image.width + 0) / 1, (image.height + 0) / 2)];
+    const Vector2u[7] pass_dim = [Vector2u((image.width + 7) / 8, (image.height + 7) / 8),
+                                  Vector2u((image.width + 3) / 8, (image.height + 7) / 8),
+                                  Vector2u((image.width + 3) / 4, (image.height + 3) / 8),
+                                  Vector2u((image.width + 1) / 4, (image.height + 3) / 4),
+                                  Vector2u((image.width + 1) / 2, (image.height + 1) / 4),
+                                  Vector2u((image.width + 0) / 2, (image.height + 1) / 2),
+                                  Vector2u((image.width + 0) / 1, (image.height + 0) / 2)];
 
     //starting pixel for each pass
-    const Vector2u[7] pass_start = [Vector2u(0, 0),
-                                    Vector2u(4, 0),
-                                    Vector2u(0, 4),
-                                    Vector2u(2, 0),
-                                    Vector2u(0, 2),
-                                    Vector2u(1, 0),
-                                    Vector2u(0, 1)];
+    static immutable Vector2u[7] pass_start = [Vector2u(0, 0),
+                                               Vector2u(4, 0),
+                                               Vector2u(0, 4),
+                                               Vector2u(2, 0),
+                                               Vector2u(0, 2),
+                                               Vector2u(1, 0),
+                                               Vector2u(0, 1)];
                     
     //distance between deinterlaced pixels for each pass
-    const Vector2u[7] pass_dist = [Vector2u(8, 8),
-                                   Vector2u(8, 8),
-                                   Vector2u(4, 8),
-                                   Vector2u(4, 4),
-                                   Vector2u(2, 4),
-                                   Vector2u(2, 2),
-                                   Vector2u(1, 2)]; 
+    static immutable Vector2u[7] pass_dist = [Vector2u(8, 8),
+                                              Vector2u(8, 8),
+                                              Vector2u(4, 8),
+                                              Vector2u(4, 4),
+                                              Vector2u(2, 4),
+                                              Vector2u(2, 2),
+                                              Vector2u(1, 2)]; 
 
     //adam7 passes. offset is start of the pass in source
     for(uint p = 0, offset = 0; p < 7; p++)
@@ -477,14 +480,14 @@ void deinterlace(ref Vector!(ubyte) buffer, ref PNGImage image)
  *                   This might be done in place.
  *          image  = Information about the image.
  */
-void reconstruct(ref Vector!(ubyte) buffer, ref PNGImage image)
+void reconstruct(ref Vector!(ubyte) buffer, in PNGImage image)
 {
     //we can work with the array directly as we do this in place
-    ubyte[] data = buffer.array;
+    ubyte[] data = buffer.array_unsafe;
 
-    uint pixel_bytes = (image.bpp + 7) / 8;
+    const uint pixel_bytes = (image.bpp + 7) / 8;
     //bits are tightly packed, but lines are always padded to 1 byte boundaries
-    uint line_length = ((image.width * image.bpp) + 7) / 8;
+    const uint line_length = ((image.width * image.bpp) + 7) / 8;
     enforceEx!(PNGException)(data.length >= (line_length + 1) * image.height, "Invalid size of source data");
 
     ubyte[] previous = new ubyte[line_length];
@@ -498,7 +501,7 @@ void reconstruct(ref Vector!(ubyte) buffer, ref PNGImage image)
         for(uint l = 0, line_start = 0; l < image.height; ++l)
         {
             //line is preceded by a byte specifying filter used
-            auto filter = cast(PNGFilter)data[line_start];
+            const auto filter = cast(PNGFilter)data[line_start];
             //copy from data to line to avoid sending overlapping arrays to unfilter_line
             line[] = data[line_start + 1 .. line_start + 1 + line_length];
             //line_start - 1 :in output, lines are packed together, we get rid of the filter bit
@@ -521,7 +524,7 @@ void reconstruct(ref Vector!(ubyte) buffer, ref PNGImage image)
         for(uint l = 0, line_start = 0; l < image.height; ++l)
         {
             //line is preceded by a byte specifying filter used
-            auto filter = cast(PNGFilter)data[line_start];
+            const auto filter = cast(PNGFilter)data[line_start];
             //copy from data to line to avoid sending overlapping arrays to unfilter_line
             line[] = data[line_start + 1 .. line_start + 1 + line_length];
             unfilter_line(temp, line, previous, pixel_bytes, filter);
@@ -530,13 +533,13 @@ void reconstruct(ref Vector!(ubyte) buffer, ref PNGImage image)
             for(uint tbit = 0; tbit < image.width * image.bpp; tbit++)
             {
                 //bit position in result - 0 is the LSB, 7 is MSB of a byte
-                uint obitpos = 7 - (obit & 0x7);
+                const uint obitpos = 7 - (obit & 0x7);
                 //bit position in temp line - 0 is the LSB, 7 is MSB of a byte
-                uint tbitpos = 7 - (tbit & 0x7);
+                const uint tbitpos = 7 - (tbit & 0x7);
                 //bit value
-                uint _bit = (temp[tbit / 8] >> tbitpos) & 1;
+                const uint _bit = (temp[tbit / 8] >> tbitpos) & 1;
                 //index of this byte in output
-                uint byte_idx = obit / 8;
+                const uint byte_idx = obit / 8;
                 //set the bit
                 data[byte_idx] = cast(ubyte)((data[byte_idx] & ~(1 << obitpos)) 
                                                | (_bit << obitpos));

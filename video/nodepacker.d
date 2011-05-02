@@ -5,9 +5,11 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module video.nodepacker;
+@system
 
 
-import std.string;
+import std.conv;
+alias std.conv.to to;
 
 import math.math;
 import math.vector2;
@@ -24,7 +26,6 @@ import memory.memory;
  */
 package align(1) struct NodePacker
 {
-    alias std.string.toString to_string;
     private:
         ///Node representing a rectangular area of space.
         static align(1) struct Node
@@ -45,14 +46,10 @@ package align(1) struct NodePacker
                  * Construct a Node representing specified area.
                  *
                  * Params:  area = Area of the node.
-                 *
-                 * Returns: Node with specified area.
                  */
-                static Node opCall(ref Rectangleu area)
+                this(const ref Rectangleu area)
                 {
-                    Node result;
-                    result.area = area;
-                    return result;
+                    this.area = area;
                 }
 
                 /**
@@ -62,7 +59,7 @@ package align(1) struct NodePacker
                  *
                  * Returns: Node with space for the texture on success, null on failure.
                  */
-                Node* insert(Vector2u size)
+                Node* insert(in Vector2u size)
                 in{assert(size != Vector2u(0, 0), "Can't pack a zero sized texture");}
                 body
                 {
@@ -78,21 +75,21 @@ package align(1) struct NodePacker
                     }
                     if(full_){return null;}
 
-                    Vector2u area_size = area.size;
+                    const Vector2u area_size = area.size;
                     //if this node is too small
                     if(area_size.x < size.x || area_size.y < size.y){return null;}
                     //if exact fit
                     if(area_size == size)
                     {
                         full_ = true;
-                        return this;
+                        return &this;
                     }
 
-                    child_a_ = alloc_struct!(Node)(area);
-                    child_b_ = alloc_struct!(Node)(area);
+                    child_a_ = alloc_struct!Node(area);
+                    child_b_ = alloc_struct!Node(area);
 
                     //decide which way to split
-                    Vector2u free_space = area_size - size;
+                    const Vector2u free_space = area_size - size;
                     //split with a vertical cut if more free space on the right
                     if(free_space.x > free_space.y)
                     {
@@ -117,7 +114,7 @@ package align(1) struct NodePacker
                  *
                  * Returns: True on success, false on failure.
                  */
-                bool remove(ref Rectangleu rect)
+                bool remove(const ref Rectangleu rect)
                 {
                     //exact fit, this is the area we want to free
                     if(rect == area && full_)
@@ -133,7 +130,7 @@ package align(1) struct NodePacker
                 }
                 
                 ///Determine if this node and all its subnodes are empty.
-                bool empty()
+                bool empty() const
                 {
                     if(full_){return false;}
                     if(child_a_ !is null && !child_a_.empty()){return false;}
@@ -142,7 +139,7 @@ package align(1) struct NodePacker
                 }
 
                 ///Destroy this node and its children.
-                void die()
+                ~this()
                 {
                     if(child_a_ !is null)
                     {
@@ -168,19 +165,15 @@ package align(1) struct NodePacker
          * Construct NodePacker.
          *
          * Params:  size = Size of texture area for the packer to manage.
-         * 
-         * Returns: NodePacker with specified size.
          */
-        static NodePacker opCall(Vector2u size)
+        this(in Vector2u size)
         {
-            NodePacker packer;
-            packer.size_ = size;
-            packer.root_ = alloc_struct!(Node)(Rectangleu(Vector2u(0, 0), size));
-            return packer;
+            size_ = size;
+            root_ = alloc_struct!Node(Rectangleu(Vector2u(0, 0), size));
         }
 
         ///Destroy this NodePacker and its nodes.
-        void die(){free(root_);}
+        ~this(){free(root_);}
 
         /**
          * Try to allocate space for a texture with given size.
@@ -191,13 +184,13 @@ package align(1) struct NodePacker
          *        
          * Returns: True if successful, false otherwise.
          */
-        bool allocate_space(Vector2u size, out Rectanglef texcoords, out Vector2u offset)
+        bool allocate_space(in Vector2u size, out Rectanglef texcoords, out Vector2u offset)
         {
-            Node* node = root_.insert(size);
+            const Node* node = root_.insert(size);
             if(node is null){return false;}
 
-            Vector2f min = to!(float)(node.area.min);
-            Vector2f max = to!(float)(node.area.max);
+            const Vector2f min = math.vector2.to!float(node.area.min);
+            const Vector2f max = math.vector2.to!float(node.area.max);
 
             texcoords.min = Vector2f(min.x / size_.x, min.y / size_.y);
             texcoords.max = Vector2f(max.x / size_.x, max.y / size_.y);
@@ -210,22 +203,22 @@ package align(1) struct NodePacker
          * 
          * Params:  area = Area of the texture to free.
          */
-        void free_space(ref Rectangleu area)
+        void free_space(const ref Rectangleu area)
         {
             bool removed = root_.remove(area);
             assert(removed, "Trying to remove unallocated space from NodePacker");
         }
 
         ///Determine if this NodePacker is empty.
-        bool empty(){return root_.empty();}
+        bool empty() const {return root_.empty();}
 
         ///Return a string containing information about the packer.
-        string info()
+        string info() const
         {
             uint nodes, leaves, full, full_area;
 
             //crawl nodes and get info about them.
-            void crawler(Node* n)
+            void crawler(const Node* n)
             {
                 ++nodes;
                 if(n.child_a_ !is null){crawler(n.child_a_);}
@@ -243,17 +236,16 @@ package align(1) struct NodePacker
 
             crawler(root_);
 
-            real total_area = size_.x * size_.y;
-            real full_percent = full_area / total_area * 100.0;
-            real empty_percent = 100.0 - full_percent;
+            const real total_area = size_.x * size_.y;
+            const real full_percent = full_area / total_area * 100.0;
+            const real empty_percent = 100.0 - full_percent;
             string output;
-            output ~= "nodes: " ~ to_string(nodes) ~ "\n";
-            output ~= "leaves: " ~ to_string(leaves) ~ "\n";
-            output ~= "full: " ~ to_string(full) ~ "\n";
-            output ~= "empty: " ~ to_string(leaves - full) ~ "\n";
-            output ~= "farea: " ~ to_string(full_percent) ~ "%\n";
-            output ~= "earea: " ~ to_string(empty_percent) ~ "%\n";
+            output ~= "nodes: " ~ to!string(nodes) ~ "\n";
+            output ~= "leaves: " ~ to!string(leaves) ~ "\n";
+            output ~= "full: " ~ to!string(full) ~ "\n";
+            output ~= "empty: " ~ to!string(leaves - full) ~ "\n";
+            output ~= "farea: " ~ to!string(full_percent) ~ "%\n";
+            output ~= "earea: " ~ to!string(empty_percent) ~ "%\n";
             return output;
         }
 }   
-

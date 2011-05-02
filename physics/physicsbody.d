@@ -4,8 +4,12 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
-module physics.physicsbody;
 
+module physics.physicsbody;
+@safe
+
+
+import std.algorithm;
 
 import spatial.volume;
 import physics.contact;
@@ -13,16 +17,14 @@ import physics.physicsengine;
 import spatial.spatialmanager;
 import math.vector2;
 import math.math;
-import containers.array;
 
 
 ///Body in physics simulation. Currently a (very) simple rigid body.
 class PhysicsBody
 {
     protected:
-        //Should be immutable or const in D2
         ///Collision volume of this body. If null, this body can't collide.
-        Volume volume_;
+        const Volume volume_;
 
         ///Position during previous update in world space, used for spatial management.
         Vector2f position_old_;
@@ -34,6 +36,7 @@ class PhysicsBody
         ///Inverse mass of this body. (0 means infinite mass)
         real inverse_mass_;
 
+        //we could use a set here, if this is too slow
         ///Bodies we've collided with this frame.
         PhysicsBody[] colliders_;
 
@@ -48,7 +51,7 @@ class PhysicsBody
          *            mass     = Mass of the body. Can be infinite (immovable object).
          *                       Can't be zero or negative.
          */
-        this(Volume volume, Vector2f position, Vector2f velocity, real mass)
+        this(in Volume volume, in Vector2f position, in Vector2f velocity, in real mass)
         {
             volume_ = volume;
             position_old_ = position_ = position;
@@ -60,37 +63,36 @@ class PhysicsBody
         void die(){}
 
         ///Get position of the body, in world space.
-        final Vector2f position(){return position_;}
+        @property final Vector2f position() const {return position_;}
 
         ///Set position of the body, in world space.
-        final void position(Vector2f p){position_ = p;}
+        @property final void position(in Vector2f p){position_ = p;}
 
         ///Get velocity of the body, in world space.
-        final Vector2f velocity(){return velocity_;}
+        @property final Vector2f velocity() const {return velocity_;}
 
         ///Set velocity of the body, in world space.
-        final void velocity(Vector2f v){velocity_ = v;}
+        @property final void velocity(in Vector2f v){velocity_ = v;}
 
         ///Set mass of the body. Mass must be positive and can be infinite.
-        final void mass(real mass)
+        @property final void mass(in real mass)
         in{assert(mass >= 0.0, "Can't set physics body mass to zero or negative.");}
         body
         {
-            if(mass == real.infinity){inverse_mass_ = 0.0;}
-            else{inverse_mass_ = 1.0 / mass;}
+            inverse_mass_ = (mass == real.infinity) ? 0.0 : 1.0 / mass;
         }
 
         ///Get inverse mass of the body.
-        final real inverse_mass(){return inverse_mass_;}
+        @property final real inverse_mass() const {return inverse_mass_;}
 
         ///Get a reference to collision volume of this body.
-        final Volume volume(){return volume_;}
+        @property final const(Volume) volume() const {return volume_;}
 
         ///Return an array of bodies this body has collided with during last update.
-        PhysicsBody[] colliders(){return colliders_;} 
+        @property PhysicsBody[] colliders(){return colliders_;} 
 
         ///Has the body collided with anything during the last update?
-        bool collided(){return colliders_.length > 0;}
+        @property bool collided() const {return colliders_.length > 0;}
 
         /**
          * Update physics state of the body.
@@ -98,7 +100,7 @@ class PhysicsBody
          * Params:  time_step = Time length of the update in seconds.
          *          manager   = Spatial manager managing the body.
          */
-        void update(real time_step, SpatialManager!(PhysicsBody) manager)
+        void update(in real time_step, SpatialManager!(PhysicsBody) manager)
         {
             assert(time_step >= 0.0, "Can't update a physics body with negative time step");
 
@@ -142,8 +144,9 @@ class PhysicsBody
         }
         body
         {
-            PhysicsBody other = this is contact.body_a ? contact.body_b : contact.body_a;
-            if(!colliders_.contains(other, true)){colliders_ ~= other;}
+            auto other = this is contact.body_a ? contact.body_b : contact.body_a;
+            //add this collider if we don't have it yet
+            if(find!"a is b"(colliders_, other) == []){colliders_ ~= other;}
             collision_response(contact);
         }
 

@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module video.glvertexbuffer;
+@system
 
 
 import derelict.opengl.gl;
@@ -26,14 +27,13 @@ import containers.vector;
  * 3 indices specify a triangle.
  */ 
 package struct GLVertexBuffer(Vertex)
+    if(is(Vertex == GLVertex2DColored) || is(Vertex == GLVertex2DTextured))
 {
-    static assert(is(Vertex == GLVertex2DColored) || is(Vertex == GLVertex2DTextured),
-                  "Unsupported vertex type");
     private:
         ///Vertex data.
-        Vector!(Vertex) vertices_;
+        Vector!Vertex vertices_;
         ///Index data.
-        Vector!(uint) indices_;
+        Vector!uint indices_;
 
         ///VBO handle, used in VBO mode.
         GLuint vbo_;
@@ -48,10 +48,8 @@ package struct GLVertexBuffer(Vertex)
          * Construct a GLVertexBuffer.
          *
          * Params:  mode = Draw mode of the buffer.
-         *
-         * Returns: Constructed GLVertexBuffer.
          */
-        static GLVertexBuffer!(Vertex) opCall(GLDrawMode mode)
+        this(in GLDrawMode mode)
         in
         {
             assert(mode == GLDrawMode.Immediate || 
@@ -60,22 +58,17 @@ package struct GLVertexBuffer(Vertex)
         }
         body
         {
-            GLVertexBuffer!(Vertex) buffer;
-            with(buffer)
-            {
-                vertices_ = Vector!(Vertex)();
-                indices_ = Vector!(uint)();
-                mode_ = mode;
-                if(mode == GLDrawMode.VertexBuffer){init_vbo();}
-            }
-            return buffer;
+            vertices_ = Vector!Vertex(8);
+            indices_ = Vector!uint(8);
+            mode_ = mode;
+            if(mode_ == GLDrawMode.VertexBuffer){init_vbo();}
         }
 
         ///Destroy the GLVertexBuffer.
-        void die()
+        ~this()
         {
-            vertices_.die();
-            indices_.die();
+            clear(vertices_);
+            clear(indices_);
             if(mode_ == GLDrawMode.VertexBuffer){destroy_vbo();}
         }
 
@@ -84,8 +77,8 @@ package struct GLVertexBuffer(Vertex)
         {
             if(mode_ == GLDrawMode.VertexBuffer)
             {
-                uint vertex_bytes = cast(uint)(Vertex.sizeof * vertices_.length);
-                uint index_bytes = cast(uint)(uint.sizeof * indices_.length);
+                const vertex_bytes = cast(uint)(Vertex.sizeof * vertices_.length);
+                const index_bytes = cast(uint)(uint.sizeof * indices_.length);
 
                 //bind the buffers
                 glBindBuffer(GL_ARRAY_BUFFER, vbo_);
@@ -112,22 +105,22 @@ package struct GLVertexBuffer(Vertex)
         }
 
         ///Access vertex data as an array.
-        Vertex[] vertices(){return vertices_.array;}
+        Vertex[] vertices(){return vertices_.array_unsafe;}
 
         ///Access index data as an array.
-        uint[] indices(){return indices_.array;}
+        uint[] indices(){return indices_.array_unsafe;}
 
         ///Get number of vertices in the buffer.
-        uint vertex_count(){return cast(uint)vertices_.length;}
+        uint vertex_count() const {return cast(uint)vertices_.length;}
 
         ///Get number of indices in the buffer.
-        uint index_count(){return cast(uint)indices_.length;}
+        uint index_count() const {return cast(uint)indices_.length;}
 
         ///Set number of vertices in the buffer (to add more vertices).
-        void vertex_count(size_t length){vertices_.length = length;}
+        void vertex_count(in size_t length){vertices_.length = length;}
 
         ///Set number of indices in the buffer (to add more indices).
-        void index_count(size_t length){indices_.length = length;}
+        void index_count(in size_t length){indices_.length = length;}
 
         /**
          * Draw a vertex group using data stored in this buffer.
@@ -143,7 +136,7 @@ package struct GLVertexBuffer(Vertex)
          * Returns: 0 if drawing was succesful.
          *          -1 if a required shader attribute was not found in group's shader.
          */
-        int draw(ref GLVertexGroup group)
+        int draw(const ref GLVertexGroup group)
         in
         {
             assert(group.vertex_type == Vertex.vertex_type, 
@@ -154,21 +147,21 @@ package struct GLVertexBuffer(Vertex)
             static const textured = is(Vertex == GLVertex2DTextured);
 
             //get vertex attribute handles
-            auto position = group.shader.get_attribute("in_position");
-            auto color = group.shader.get_attribute("in_color");
+            const position = group.shader.get_attribute("in_position");
+            const color = group.shader.get_attribute("in_color");
             if(position < 0 || color < 0 ){return -1;}
             static if(textured)
             {
-                auto texcoord = group.shader.get_attribute("in_texcoord");
+                const texcoord = group.shader.get_attribute("in_texcoord");
                 if(texcoord < 0){return -1;}
             }
 
             if(mode_ == GLDrawMode.Immediate)
             {
                 glBegin(GL_TRIANGLES);
-                foreach(ref i; indices_[group.offset ..  group.offset + group.vertices])
+                foreach(i; indices_[group.offset ..  group.offset + group.vertices])
                 {
-                    Vertex* v = vertices_.ptr(i);
+                    const Vertex* v = vertices_.ptr(i);
                     glVertexAttrib4Nubv(color, cast(ubyte*)&v.color);
                     static if(textured){glVertexAttrib2fv(texcoord, cast(float*)&v.texcoord);}
                     glVertexAttrib2fv(position, cast(float*)&v.vertex);
@@ -189,8 +182,9 @@ package struct GLVertexBuffer(Vertex)
                 }
 
                 //pointer to data for vertex arrays, offset in buffer for VBOs
-                void* data = mode_ == GLDrawMode.VertexArray ? cast(void*)vertices_.ptr
-                                                             : cast(void*)0;
+                const void* data = mode_ == GLDrawMode.VertexArray 
+                                            ? cast(void*)vertices_.ptr 
+                                            : cast(void*)0;
 
                 //specify data formats, locations
                 glVertexAttribPointer(position, 2, GL_FLOAT, GL_FALSE, Vertex.sizeof, 
@@ -251,8 +245,8 @@ package struct GLVertexBuffer(Vertex)
             //     Not deleting buffer names is unlikely to cause problems, though, as
             //     we only use few buffer names during the entire run time.
             //deallocate
-            glBufferData(GL_ARRAY_BUFFER, 0,  null, GL_STATIC_DRAW);
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0,  null, GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, 0, null, GL_STATIC_DRAW);
+            glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0, null, GL_STATIC_DRAW);
             //unbind
             glBindBuffer(GL_ARRAY_BUFFER, 0);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

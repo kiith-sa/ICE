@@ -3,10 +3,13 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module pong.hud;
+@safe
 
 
-import std.string;
+import std.algorithm;
+import std.conv;
 
 import pong.player;
 import gui.guielement;
@@ -20,8 +23,8 @@ import color;
 class HUD
 {
     private:
-        alias std.string.toString to_string;  
-     
+        alias std.conv.to to;
+
         ///Parent of all HUD elements.
         GUIElement parent_;
 
@@ -42,7 +45,7 @@ class HUD
          * Params:  parent     = Parent GUI element for all HUD elements.
          *          time_limit = Maximum time the game will take.
          */
-        this(GUIElement parent, real time_limit)
+        this(GUIElement parent, in real time_limit)
         {
             parent_ = parent;
             time_limit_ = time_limit;
@@ -78,25 +81,25 @@ class HUD
          *            player_1  = First player of the game.
          *            player_2  = Second player of the game. 
          */
-        void update(real time_left, Player player_1, Player player_2)
+        void update(real time_left, in Player player_1, in Player player_2)
         {
             //update time display
             time_left = max(time_left, 0.0L);
-            string time_str = time_string(time_left);
-            static Color color_start = Color(160, 160, 255, 160);
-            static Color color_end = Color.red;
+            const string time_str = time_string(time_left);
+            immutable Color color_start = Color(160, 160, 255, 160);
+            immutable Color color_end = Color.red;
             //only update if the text has changed
             if(time_str != time_text_.text)
             {
                 time_text_.text = time_str != "0:0" ? time_str : time_str ~ " !";
 
-                real t = max(time_left / time_limit_, 1.0L);
+                const real t = max(time_left / time_limit_, 1.0L);
                 time_text_.text_color = color_start.interpolated(color_end, t);
             }
 
             //update score displays
-            string score_str_1 = player_1.name ~ ": " ~ to_string(player_1.score);
-            string score_str_2 = player_2.name ~ ": " ~ to_string(player_2.score);
+            string score_str_1 = player_1.name ~ ": " ~ to!string(player_1.score);
+            string score_str_2 = player_2.name ~ ": " ~ to!string(player_2.score);
             //only update if the text has changed
             if(score_text_1_.text != score_str_1){score_text_1_.text = score_str_1;}
             if(score_text_2_.text != score_str_2){score_text_2_.text = score_str_2;}

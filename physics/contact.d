@@ -5,7 +5,10 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module physics.contact;
+@safe
 
+
+import std.algorithm;
 
 import physics.physicsbody;
 import math.vector2;
@@ -38,9 +41,7 @@ align(1) struct Contact
         void swap_bodies()
         {
             contact_normal *= -1.0f;
-            PhysicsBody temp = body_a;
-            body_a = body_b;
-            body_b = temp;
+            swap(body_a, body_b);
         }
         
         /**
@@ -60,17 +61,17 @@ align(1) struct Contact
         }
         body
         {
-            real inv_mass_a = body_a.inverse_mass;
-            real inv_mass_b = body_b.inverse_mass;
-            real inv_mass_total = inv_mass_a + inv_mass_b;
+            const real inv_mass_a = body_a.inverse_mass;
+            const real inv_mass_b = body_b.inverse_mass;
+            const real inv_mass_total = inv_mass_a + inv_mass_b;
 
             //if both inverse masses are 0 (masses are infinite),
             //don't move anything (degenerate case)
             //maybe handle this differently if bugs arise
-            if(equals(inv_mass_total, 0.0L)){return;}
+            if(equals(inv_mass_total, cast(const real)0.0L)){return;}
 
-            real move_a = penetration * (inv_mass_a / inv_mass_total) * -1.0;
-            real move_b = penetration * (inv_mass_b / inv_mass_total) * 1.0;
+            const real move_a = penetration * (inv_mass_a / inv_mass_total) * -1.0;
+            const real move_b = penetration * (inv_mass_b / inv_mass_total) * 1.0;
 
             change_a = contact_normal * move_a;
             change_b = contact_normal * move_b;
@@ -89,23 +90,25 @@ align(1) struct Contact
         }
         body
         {
-            body_a.collision_response_contract(*this);
-            body_b.collision_response_contract(*this);
+            body_a.collision_response_contract(this);
+            body_b.collision_response_contract(this);
         }
 
         ///Return desired change of velocity of the contact (total of both bodies) for collision response.
-        float desired_delta_velocity()
+        @property float desired_delta_velocity() const
         {
-            if(!resolved){return 2.0 * contact_velocity;}
-            return 0.0f;
+            return resolved ? 0.0f : 2.0 * contact_velocity;
         }
 
         ///Return sum of inverse masses of bodies involved in this contact.
-        real inverse_mass_total(){return body_a.inverse_mass + body_b.inverse_mass;}
+        @property real inverse_mass_total() const 
+        {
+            return body_a.inverse_mass + body_b.inverse_mass;
+        }
 
     private:
         ///Return total velocity of the contact (both bodies) in the direction of contact normal.
-        float contact_velocity()
+        @property float contact_velocity() const
         {
             return contact_normal.dot_product(body_a.velocity - body_b.velocity);
         }

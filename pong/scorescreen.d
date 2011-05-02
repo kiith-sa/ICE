@@ -3,10 +3,12 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module pong.scorescreen;
+@safe
 
 
-import std.string;
+import std.conv;
 
 import pong.player;
 import gui.guielement;
@@ -28,8 +30,6 @@ import color;
 class ScoreScreen
 {
     private:
-        alias std.string.toString to_string;  
-        
         ///Score screen ends when this timer expires.
         Timer timer_;
 
@@ -59,7 +59,7 @@ class ScoreScreen
          *         player_2  = Second player of the game.
          *         time      = Time the game took in seconds.
          */
-        this(GUIElement parent, Player player_1, Player player_2, real time)
+        this(GUIElement parent, in Player player_1, in Player player_2, in real time)
         in
         {
             assert(player_1.score != player_2.score, 
@@ -131,7 +131,7 @@ class ScoreScreen
         
     private:
         ///Initialize players/scores list.
-        void init_scores(Player player_1, Player player_2)
+        void init_scores(in Player player_1, in Player player_2)
         {
             with(new GUIStaticTextFactory)
             {
@@ -149,7 +149,7 @@ class ScoreScreen
                 width = "64";
                 text_color = Color(224, 224, 255, 160);
                 font = "orbitron-bold.ttf";
-                text = to_string(player_1.score) ~ "\n" ~ to_string(player_2.score);
+                text = to!string(player_1.score) ~ "\n" ~ to!string(player_2.score);
                 align_x = AlignX.Right;
                 scores_text_ = produce();
             }
@@ -158,4 +158,3 @@ class ScoreScreen
             container_.add_child(scores_text_);
         }
 }
-

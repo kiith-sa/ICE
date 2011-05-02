@@ -3,7 +3,9 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module pong.ball;
+@safe
 
 
 import std.math;
@@ -30,19 +32,19 @@ import color;
  */
 class BallBody : PhysicsBody
 {
-    invariant{assert(radius_ > 1.0f, "Ball radius must be at least 1.0");}
+    invariant(){assert(radius_ > 1.0f, "Ball radius must be at least 1.0");}
     private:
         ///Radius of the ball body.
-        float radius_;
+        immutable float radius_;
 
     public:
         override void collision_response(ref Contact contact)
         {
-            PhysicsBody other = this is contact.body_a ? contact.body_b : contact.body_a;
+            const PhysicsBody other = this is contact.body_a ? contact.body_b : contact.body_a;
             //handle paddle collisions separately
             if(other.classinfo == PaddleBody.classinfo)
             {
-                PaddleBody paddle = cast(PaddleBody)other;
+                const PaddleBody paddle = cast(PaddleBody)other;
                 //let paddle reflect this ball
                 velocity_ = paddle.reflected_ball_velocity(this);
                 //prevent any further resolving (since we're not doing precise physics)
@@ -53,7 +55,7 @@ class BallBody : PhysicsBody
         }
 
         ///Get radius of this ball body.
-        float radius(){return radius_;}
+        @property float radius() const {return radius_;}
 
     private:
         /**
@@ -66,7 +68,8 @@ class BallBody : PhysicsBody
          *          radius   = Radius of a circle representing bounding circle
          *                     of this body (centered at body's position).
          */
-        this(VolumeCircle circle, Vector2f position, Vector2f velocity, real mass, float radius)
+        this(VolumeCircle circle, in Vector2f position, in Vector2f velocity, 
+             in real mass, in float radius)
         {
             radius_ = radius;
             super(circle, position, velocity, mass);
@@ -86,7 +89,7 @@ class DummyBallBody : BallBody
         override void collision_response(ref Contact contact)
         {
             //keep the speed unchanged
-            float speed = velocity_.length_safe;
+            const float speed = velocity_.length_safe;
             super.collision_response(contact);
             velocity_.normalize_safe();
             velocity_ *= speed;
@@ -106,7 +109,8 @@ class DummyBallBody : BallBody
          *          radius   = Radius of a circle representing bounding circle
          *                     of this body (centered at body's position).
          */
-        this(VolumeCircle circle, Vector2f position, Vector2f velocity, real mass, float radius)
+        this(VolumeCircle circle, in Vector2f position, in Vector2f velocity, 
+             in real mass, in float radius)
         {
             super(circle, position, velocity, mass, radius);
         }
@@ -137,7 +141,7 @@ class Ball : Actor
         }
  
         ///Get the radius of this ball.
-        float radius(){return (cast(BallBody)physics_body_).radius;}
+        @property float radius() const {return (cast(BallBody)physics_body_).radius;}
 
     protected:
         /**
@@ -151,7 +155,7 @@ class Ball : Actor
          *          draw_ball      = Draw the ball itself or only particle effects?
          */
         this(ActorContainer container, BallBody physics_body, LineTrail trail,
-             ParticleEmitter emitter, float particle_speed, bool draw_ball)
+             ParticleEmitter emitter, in float particle_speed, in bool draw_ball)
         {
             super(container, physics_body);
             trail_ = trail;
@@ -162,7 +166,7 @@ class Ball : Actor
             draw_ball_ = draw_ball;
         }
 
-        override void update(real time_step, real game_time)
+        override void update(in real time_step, in real game_time)
         {
             //Ball can only change direction, not speed, after a collision
             if(physics_body_.collided())
@@ -174,10 +178,10 @@ class Ball : Actor
         override void draw(VideoDriver driver)
         {
             if(!draw_ball_){return;}
-            Vector2f position = physics_body_.position;
+            const Vector2f position = physics_body_.position;
             driver.line_aa = true;
             driver.line_width = 3;
-            driver.draw_circle(position, radius - 2, Color(240, 240, 255), 4);
+            driver.draw_circle(position, radius - 2, Color(240, 240, 255, 255), 4);
             driver.line_width = 1;
             driver.draw_circle(position, radius, Color(192, 192, 255, 192));
             driver.line_width = 1;                  
@@ -217,7 +221,7 @@ class BallFactory : ActorFactory!(Ball)
             {
                 particle_life = 0.5;
                 emit_frequency = 60;
-                start_color = Color(240, 240, 255);
+                start_color = Color(240, 240, 255, 255);
                 end_color = Color(240, 240, 255, 0);
             }
 
@@ -241,10 +245,16 @@ class BallFactory : ActorFactory!(Ball)
 
     protected:
         ///Construct a collision circle with factory parameters.
-        final VolumeCircle circle(){return new VolumeCircle(Vector2f(0.0f, 0.0f), radius_);}
+        final VolumeCircle circle() const 
+        {
+            return new VolumeCircle(Vector2f(0.0f, 0.0f), radius_);
+        }
 
         ///Construct a ball body with factory parameters.
-        BallBody ball_body(){return new BallBody(circle, position_, velocity_, 100.0, radius_);}
+        BallBody ball_body() const 
+        {
+            return new BallBody(circle, position_, velocity_, 100.0, radius_);
+        }
 
         ///Adjust particle effect factories. Used by derived classes.
         void adjust_factories(){};
@@ -257,7 +267,7 @@ class BallFactory : ActorFactory!(Ball)
 class DummyBallFactory : BallFactory
 {
     protected:
-        override BallBody ball_body()
+        override BallBody ball_body() const
         {
             return new DummyBallBody(circle, position_, velocity_, 4.0, radius_);
         }

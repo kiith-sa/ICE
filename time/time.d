@@ -7,6 +7,8 @@
 module time.time;
 
 
+import std.conv;
+
 import math.math;
 
 
@@ -38,29 +40,28 @@ real get_time()
  * Params:  time  = Time value to convert.
  *          hours = Show hours (as opposed to only minutes, seconds).
  */
-string time_string(real time, bool hours = false)
+string time_string(in real time, in bool hours = false)
 in
 {
     assert(time >= 0, "Can't convert negative time value to a string");
 }
 body
 {
-    alias std.string.toString to_string;  
-    uint total_s = round_s32(time);
-    uint s = total_s % 60;
+    const uint total_s = round_s32(time);
+    const uint s = total_s % 60;
     uint m = total_s / 60;
-    string s_str = to_string(s);
+    string s_str = to!string(s);
     if(!hours)
     {
         if(s_str.length == 1){s_str = "0" ~ s_str;}
-        return to_string(m) ~ ":" ~ s_str;
+        return to!string(m) ~ ":" ~ s_str;
     }
     else
     {
-        string m_str = to_string(m);
+        string m_str = to!string(m);
         if(m_str.length == 1){m_str = "0" ~ m_str;}
-        uint h = m / 60;
+        const uint h = m / 60;
         m %= 60;
-        return to_string(h) ~ ":" ~ m_str ~ ":" ~ s_str;
+        return to!string(h) ~ ":" ~ m_str ~ ":" ~ s_str;
     }
 }

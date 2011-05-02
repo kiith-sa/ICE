@@ -30,7 +30,7 @@ align(1) struct Matrix4(T)
         T* ptr(){return m_.ptr;}
 
         ///Multiplication with a matrix.
-        Matrix4!(T) opMul(ref Matrix4!(T) m)
+        Matrix4!(T) opMul(const ref Matrix4!(T) m) const
         {
             Matrix4!(T) r;
 
@@ -62,7 +62,7 @@ align(1) struct Matrix4(T)
  *
  * Returns: Resulting translation matrix.
  */
-Matrix4!(T) translation_matrix(T)(Vector2!(T) translate)
+Matrix4!(T) translation_matrix(T)(in Vector2!(T) translate)
 {
     Matrix4!(T) result;
     result.m_[12] = translate.x;
@@ -82,12 +82,13 @@ Matrix4!(T) translation_matrix(T)(Vector2!(T) translate)
  *
  * Returns: Resulting projection matrix.
  */
-Matrix4!(T) ortho_matrix(T)(T left, T right, T bottom, T top, T near, T far)
+Matrix4!(T) ortho_matrix(T)(in T left, in T right, in T bottom, 
+                            in T top, in T near, in T far)
 {
     Matrix4!(T) result;
-    T width = right - left;
-    T height = top - bottom;
-    T depth = far - near;
+    const T width = right - left;
+    const T height = top - bottom;
+    const T depth = far - near;
     with(result)
     {
         m_[0] = cast(T)2.0 / width;
@@ -102,4 +103,4 @@ Matrix4!(T) ortho_matrix(T)(T left, T right, T bottom, T top, T near, T far)
 }
 
 ///Matrix4 of floats.
-alias Matrix4!(float) Matrix4f;
+alias Matrix4!float Matrix4f;

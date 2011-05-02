@@ -5,9 +5,10 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module monitor.submonitor;
+@safe
 
 
-import monitor.monitor;
+import monitor.monitormanager;
 import gui.guielement;
 import gui.guimenu;
 import gui.guistatictext;
@@ -79,7 +80,7 @@ abstract class SubMonitorView : GUIElement
         }
 
         ///Update pinned text display.
-        void set_pinned(bool pinned)
+        void set_pinned(in bool pinned)
         {
             if(pinned_text_ !is null)
             {

@@ -4,7 +4,9 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module containers.array2d;
+@trusted
 
 
 import memory.memory;
@@ -38,7 +40,7 @@ align(1) struct Array2D(T)
 {
     private:
         ///Manually allocated data storage.
-        T[] data_;
+        T[] data_= null;
         ///Array width.
         uint x_;
         ///Array height.
@@ -53,29 +55,28 @@ align(1) struct Array2D(T)
          *
          * Params:  x = Array width.
          *          y = Array height.
-         *
-         * Returns: 2D Array with specified dimensions.
          */
-        static Array2D opCall(uint x, uint y)
+        this(in uint x, in uint y)
         out(result)
         {
-            assert(result.x_ == x && result.y == y && result.data_.length == x * y,
+            assert(x_ == x && y == y && data_.length == x * y,
                    "Error in Array2D construction");
         }
         body
         {
-            Array2D!(T) result;
-            result.x_ = x;
-            result.y_ = y;
-            result.data_ = alloc!(T)(x * y);
-            return result;
+            x_ = x;
+            y_ = y;
+            data_ = alloc_array!(T)(x * y);
         }
 
         ///Destroy the array.
-        void die()
+        ~this()
         {
-            x_ = y_ = 0;
-            free(data_);
+            if(data_ !is null)
+            {
+                x_ = y_ = 0;
+                free(data_);
+            }
         }
 
         /**
@@ -102,20 +103,36 @@ align(1) struct Array2D(T)
          *
          * Returns: Element at the specified coordinates.
          */
-        T opIndex(uint x, uint y)
+        const(T) opIndex(in uint x, in uint y) const
         in{assert(x < x_ && y < y_, "2D array access out of bounds");}
         body{return data_[y * x_ + x];}
 
-        //In D2, this should return const if possible
         /**
-         * Get a pointer to an element of the array.
+         * Get a const (read-only) pointer to an element of the array.
          * 
          * Params:  x = X coordinate of the element to get pointer to.
          *          y = Y coordinate of the element to get pointer to.
          *
          * Returns: Pointer to the element at the specified coordinates.
          */
-        T* ptr(uint x, uint y)
+        const(T*) ptr(in uint x, in uint y) const
+        in{assert(x < x_ && y < y_, "2D array access out of bounds");}
+        out(result)
+        {
+            assert(result >= data_.ptr && result < data_.ptr + data_.length,
+                   "Pointer returned by 2D array access is out of bounds");
+        }
+        body{return &(data_[y * x_ + x]);}
+
+        /**
+         * Get a non-const pointer to an element of the array.
+         * 
+         * Params:  x = X coordinate of the element to get pointer to.
+         *          y = Y coordinate of the element to get pointer to.
+         *
+         * Returns: Pointer to the element at the specified coordinates.
+         */
+        T* ptr_unsafe(in uint x, in uint y)
         in{assert(x < x_ && y < y_, "2D array access out of bounds");}
         out(result)
         {
@@ -130,21 +147,20 @@ align(1) struct Array2D(T)
          * Params:  x = X coordinate of the element.
          *          y = Y coordinate of the element.
          */
-        void opIndexAssign(T value, uint x, uint y)
+        void opIndexAssign(T value, in uint x, in uint y)
         in{assert(x < x_ && y < y_, "2D array access out of bounds");}
         body{data_[y * x_ + x] = value;}
 
         ///Get width of the array.
-        uint x(){return x_;}
+        uint x() const {return x_;}
 
         ///Get height of the array.
-        uint y(){return y_;}
+        uint y() const {return y_;}
 }
 ///Unittest for Array2D.
 unittest
 {
     auto array = Array2D!(uint)(4,4);
-    scope(exit){array.die();}
 
     //default initialization
     assert(array[0,0] == 0);

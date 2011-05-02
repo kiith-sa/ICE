@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module video.sdlglvideodriver;
+@trusted
 
 
 import derelict.sdl.sdl;
@@ -29,11 +30,18 @@ final class SDLGLVideoDriver : GLVideoDriver
          */
         this(FontManager font_manager)
         {
-            writefln("Initializing SDLGLVideoDriver");
+            writeln("Initializing SDLGLVideoDriver");
             super(font_manager);
         }
 
-        override void set_video_mode(uint width, uint height, ColorFormat format, bool fullscreen)
+        override void die()
+        {
+            writeln("Destroying SDLGLVideoDriver");
+            super.die();
+        }
+
+        override void set_video_mode(in uint width, in uint height, 
+                                     in ColorFormat format, in bool fullscreen)
         {
             assert(width >= 80 && width <= 65536, 
                    "Can't set video mode with such ridiculous width");
@@ -66,7 +74,7 @@ final class SDLGLVideoDriver : GLVideoDriver
             SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, alpha);
             SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-            uint bit_depth = red + green + blue + alpha;
+            const uint bit_depth = red + green + blue + alpha;
 
             uint flags = SDL_OPENGL;
             if(fullscreen){flags |= SDL_FULLSCREEN;}
@@ -75,7 +83,7 @@ final class SDLGLVideoDriver : GLVideoDriver
             {
                 string msg = std.string.format("Could not set video mode: %d %d %dbpp"
                                                , width, height, bit_depth);
-                writefln(msg);
+                writeln(msg);
                 throw new VideoDriverException(msg);
             }
 

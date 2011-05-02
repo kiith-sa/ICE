@@ -15,6 +15,7 @@ Authors: Lode Vandevenne (original version in C++), Lutger Blijdestijn (D versio
 */
 
 module formats.pngencoder;
+@system
 
 
 import std.c.string;
@@ -31,7 +32,7 @@ package:
 ///Encodes image data to PNG format.
 struct PNGEncoder
 {
-    invariant{assert(level_ >= 0 && level_ <= 9, "invalid zlib compression level");}
+    invariant(){assert(level_ >= 0 && level_ <= 9, "invalid zlib compression level");}
 
     private:
         ///Zlib compression level. Must be between 0 and 9.
@@ -48,16 +49,16 @@ struct PNGEncoder
 
     public:
         ///Set compression level. Can't be greater than 9.
-        void level(ubyte level){level_ = level;}
+        void level(in ubyte level){level_ = level;}
 
         ///Set Zlib compression strategy.
-        void compression(CompressionStrategy compression){compression_ = compression;}
+        void compression(in CompressionStrategy compression){compression_ = compression;}
 
         ///Set PNG filter strategy.
-        void filter(PNGFilter filter){filter_ = filter;}
+        void filter(in PNGFilter filter){filter_ = filter;}
 
         ///Compress text data? (on by default)
-        void compress_text(bool compress){compress_text_ = compress;}
+        void compress_text(in bool compress){compress_text_ = compress;}
 
         /**
          * Encode image data to PNG format.
@@ -72,7 +73,7 @@ struct PNGEncoder
          *
          * Throws:  PNGException on failure.
          */
-        ubyte[] encode(ref PNGInfo info, ubyte[] source)
+        ubyte[] encode(in PNGInfo info, in ubyte[] source)
         in
         {
             assert(info.image.color_type == PNGColorType.RGB || info.image.color_type == PNGColorType.RGBA,
@@ -85,25 +86,22 @@ struct PNGEncoder
             //header chunk
             chunks ~= PNGChunk(IHDR, header(info.image));
             //filter image data
-            auto filtered = Vector!(ubyte)();
-            scope(exit){filtered.die();}
+            auto filtered = Vector!(ubyte)(8);
             filter_data(filtered, source, info.image);
             //compress image data
-            auto compressed = Vector!(ubyte)();
-            scope(exit){compressed.die();}
+            auto compressed = Vector!(ubyte)(8);
             zlib_deflate(compressed, filtered.array, compression_, level_);
-            chunks ~= PNGChunk(IDAT, compressed.array);
+            chunks ~= PNGChunk(IDAT, compressed.array_unsafe);
             //auxiliary chunks from PNGInfo.
             chunks ~= auxiliary_chunks(info);
             chunks.sort;
             chunks ~= PNGChunk(IEND, []);
 
             auto buffer = Vector!(ubyte)(png_magic_number);
-            scope(exit){buffer.die();}
             //write chunks to buffer
             foreach(chunk; chunks){write_chunk(buffer, chunk);}
 
-            ubyte[] output = alloc!(ubyte)(buffer.length);
+            ubyte[] output = alloc_array!(ubyte)(buffer.length);
             output[] = buffer.array;
 
             return output;
@@ -119,7 +117,7 @@ struct PNGEncoder
          *
          * Returns: Auxiliary data chunks.
          */
-        PNGChunk[] auxiliary_chunks(ref PNGInfo info)
+        PNGChunk[] auxiliary_chunks(const ref PNGInfo info) const
         in
         {
             auto length = info.background.length;
@@ -133,9 +131,12 @@ struct PNGEncoder
             //color key (transparent color) chunk
             if(info.color_key)
             {
-                chunks ~= PNGChunk(tRNS, [info.color_key_r / 256, info.color_key_r % 256, 
-                                          info.color_key_g / 256, info.color_key_g % 256, 
-                                          info.color_key_b / 256, info.color_key_b % 256]);
+                chunks ~= PNGChunk(tRNS, [cast(ubyte)(info.color_key_r / 256), 
+                                          cast(ubyte)(info.color_key_r % 256), 
+                                          cast(ubyte)(info.color_key_g / 256), 
+                                          cast(ubyte)(info.color_key_g % 256), 
+                                          cast(ubyte)(info.color_key_b / 256), 
+                                          cast(ubyte)(info.color_key_b % 256)]);
             }
 
             //background color chunk
@@ -147,7 +148,7 @@ struct PNGEncoder
             }
             else if(info.background.length == 6)
             {
-                chunks ~= PNGChunk(bKGD, info.background);
+                chunks ~= PNGChunk(bKGD, info.background.dup);
             }
 
             //text chunks
@@ -163,24 +164,24 @@ struct PNGEncoder
          *
          * Returns: Text data chunks.
          */
-        PNGChunk[] chunkify_text(ref PNGText text)
+        PNGChunk[] chunkify_text(const ref PNGText text) const
         {
             PNGChunk[] result;
             //latin
-            foreach(ubyte[] keyword, ubyte[] value; text.latin)
+            foreach(immutable(ubyte)[] keyword, const immutable(ubyte)[] value; text.latin)
             {
                 result ~= PNGChunk(zTXt, keyword ~ 
-                                (compress_text_ ? cast(ubyte[])[0, 0] ~ zlib_deflate(value)
-                                                : cast(ubyte[])[0] ~ value));
+                                   (compress_text_ ? cast(ubyte[])[0, 0] ~ zlib_deflate(value)
+                                                   : cast(ubyte[])[0] ~ value));
             }
             //unicode
-            foreach(string keyword, string value; text.unicode)
+            foreach(string keyword, const string value; text.unicode)
             {
                 result ~= PNGChunk(iTXt, cast(ubyte[])keyword ~ 
-                                (compress_text_ ? cast(ubyte[])[0, 1, 0, 0, 0]
-                                                  ~ zlib_deflate(cast(ubyte[])value)
-                                                : cast(ubyte[])[0, 0, 0, 0, 0]
-                                                  ~ cast(ubyte[])value));
+                                   (compress_text_ ? cast(ubyte[])[0, 1, 0, 0, 0]
+                                                     ~ zlib_deflate(cast(ubyte[])value)
+                                                   : cast(ubyte[])[0, 0, 0, 0, 0]
+                                                     ~ cast(ubyte[])value));
             }
             return result;
         }
@@ -192,14 +193,15 @@ struct PNGEncoder
          *          source = Data to filter.
          *          image  = Image information.
          */
-        void filter_data(ref Vector!(ubyte) buffer, ubyte[] source, ref PNGImage image)
+        void filter_data(ref Vector!(ubyte) buffer, in ubyte[] source, in PNGImage image)
         {
-            uint pixel_bytes = (image.bpp + 7) / 8;
+            const uint pixel_bytes = (image.bpp + 7) / 8;
             //size of a line in bytes
-            uint pitch = image.width * pixel_bytes;
+            const uint pitch = image.width * pixel_bytes;
 
             //current and previous line
-            ubyte[] line, previous;
+            const(ubyte)[] line;
+            const(ubyte)[] previous;
             line = source[0 .. pitch];
 
             //line of zeroes used as previous line when we're filtering first line
@@ -207,8 +209,7 @@ struct PNGEncoder
             zero_line[] = cast(ubyte)0;
 
             //filtered line is written here
-            auto filtered = Vector!(ubyte)();
-            scope(exit){filtered.die();}
+            auto filtered = Vector!(ubyte)(8);
 
             //filter each line separately to get best results
             if(filter_ == PNGFilter.Dynamic)
@@ -270,7 +271,7 @@ private:
  *
  * Returns: Header chunk data.
  */
-ubyte[] header(PNGImage image)
+ubyte[] header(in PNGImage image)
 {
     ubyte[] header = new ubyte[13];
     header.length = 0;
@@ -295,7 +296,7 @@ ubyte[] header(PNGImage image)
  * Params:  buffer = Buffer to write to.
  *          chunk  = PNGChunk to write.
  */
-void write_chunk(ref Vector!(ubyte) buffer, ref PNGChunk chunk)
+void write_chunk(ref Vector!(ubyte) buffer, const ref PNGChunk chunk)
 {
     //chunk header
     add_uint(buffer, cast(uint)chunk.data.length);
@@ -315,10 +316,10 @@ void write_chunk(ref Vector!(ubyte) buffer, ref PNGChunk chunk)
  * Params:  buffer = Buffer to append to.
  *          i      = uint to append.
  */
-void add_uint(T)(ref T buffer, uint i)
+void add_uint(T)(ref T buffer, in uint i)
 {
     buffer.length = buffer.length + 4;
-    auto l = buffer.length;
+    const l = buffer.length;
     buffer[l - 4] = cast(ubyte)(i >> 24);
     buffer[l - 3] = cast(ubyte)(i >> 16);
     buffer[l - 2] = cast(ubyte)(i >> 8);
@@ -335,12 +336,13 @@ void add_uint(T)(ref T buffer, uint i)
  *          filter      = Filter function to use.
  *          pixel_bytes = Size of a pixel in bytes.
  */
-void filter_line(ref Vector!(ubyte) result, ubyte[] previous, ubyte[] line, 
-                 ubyte function(ubyte, ubyte, ubyte, ubyte) filter, uint pixel_bytes)
+void filter_line(ref Vector!(ubyte) result, const(ubyte)[] previous, const(ubyte)[] line, 
+                 ubyte function(in ubyte, in ubyte, in ubyte, in ubyte) pure filter, 
+                 in uint pixel_bytes)
 in{assert(previous.length == line.length, "Image line lengths don't match");}
 body
 {
-    auto b = pixel_bytes;
+    uint b = pixel_bytes;
     //first pixel has nothing before it
     while(b--){result[b] = filter(0, previous[b], 0, line[b]);}
     for(uint i = pixel_bytes; i < result.length; i++)
@@ -363,8 +365,23 @@ body
  * 3  Average  Filt(x) = Orig(x) - floor((Orig(a) + Orig(b)) / 2)              Recon(x) = Filt(x) + floor((Recon(a) + Recon(b)) / 2)
  * 4  Paeth    Filt(x) = Orig(x) - PaethPredictor(Orig(a), Orig(b), Orig(c))   Recon(x) = Filt(x) + PaethPredictor(Recon(a), Recon(b), Recon(c)
  */
-ubyte none   (ubyte c, ubyte b, ubyte a, ubyte x){return x;}
-ubyte sub    (ubyte c, ubyte b, ubyte a, ubyte x){return x - a;}
-ubyte up     (ubyte c, ubyte b, ubyte a, ubyte x){return x - b;}
-ubyte average(ubyte c, ubyte b, ubyte a, ubyte x){return x - (a + b) / 2;}
-ubyte paeth  (ubyte c, ubyte b, ubyte a, ubyte x){return x - paeth_predictor(a,b,c);}
+ubyte none(in ubyte c, in ubyte b, in ubyte a, in ubyte x) pure 
+{
+    return x;
+}
+ubyte sub(in ubyte c, in ubyte b, in ubyte a, in ubyte x) pure 
+{
+    return cast(ubyte)(x - a);
+}
+ubyte up(in ubyte c, in ubyte b, in ubyte a, in ubyte x) pure 
+{
+    return cast(ubyte)(x - b);
+}
+ubyte average(in ubyte c, in ubyte b, in ubyte a, in ubyte x) pure 
+{
+    return cast(ubyte)(x - (a + b) / 2);
+}
+ubyte paeth(in ubyte c, in ubyte b, in ubyte a, in ubyte x) pure 
+{
+    return cast(ubyte)(x - paeth_predictor(a,b,c));
+}

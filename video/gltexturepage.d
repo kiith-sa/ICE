@@ -5,9 +5,11 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module video.gltexturepage;
+@system
 
 
-import std.string;
+import std.conv;
+
 import derelict.opengl.gl;
 
 import video.gltexturepage;
@@ -28,7 +30,7 @@ import memory.memory;
  *          type            = GL data type (unsigned byte, etc) will be written here.
  *          internal_format = GL internal format (RGBA8, etc) will be written here.
  */
-package void gl_color_format(ColorFormat format, out GLenum gl_format,
+package void gl_color_format(in ColorFormat format, out GLenum gl_format,
                              out GLenum type, out GLint internal_format)
 {
     switch(format)
@@ -64,7 +66,7 @@ package void gl_color_format(ColorFormat format, out GLenum gl_format,
  *
  * Returns: Alignment for specified format.
  */
-package GLint pack_alignment(ColorFormat format)
+package GLint pack_alignment(in ColorFormat format)
 {
     switch(format)
     {
@@ -83,6 +85,8 @@ package GLint pack_alignment(ColorFormat format)
 package align(1) struct GLTexturePage(TexturePacker) 
 {
     private:
+        alias std.conv.to to;
+
         ///Texture packer, handles allocation of texture space.
         TexturePacker packer_;
         ///Size of the page in pixels.
@@ -98,20 +102,40 @@ package align(1) struct GLTexturePage(TexturePacker)
          *
          * Params:  size   = Dimensions of the page in pixels.
          *          format = Color format of the page.
-         *
-         * Returns: Constructed GLTexturePage.
          */
-        static GLTexturePage!(TexturePacker) opCall(Vector2u size, ColorFormat format)
+        this(in Vector2u size, in ColorFormat format)
+        in
         {
-            GLTexturePage!(TexturePacker) page;
-            page.ctor(size, format);
-            return page;
+            assert(is_pot(size.x) && is_pot(size.y), 
+                   "Non-power-of-two texture page size");
+        }
+        body
+        {
+            size_ = size;
+            format_ = format;
+            packer_ = TexturePacker(size);
+
+            //create blank image to use as initial texture data
+            auto image = Image(size.x, size.y, format);
+            glGenTextures(1, &texture_);
+            
+            glBindTexture(GL_TEXTURE_2D, texture_);
+
+            GLenum gl_format;
+            GLenum type;
+            GLint internal_format;
+            gl_color_format(format, gl_format, type, internal_format);
+            
+            glTexImage2D(GL_TEXTURE_2D, 0, internal_format, size_.x, size_.y, 
+                         0, gl_format, type, image.data_unsafe.ptr);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         }
         
         ///Destroy the page.
-        void die()
+        ~this()
         {
-            packer_.die();
+            clear(packer_);
             glDeleteTextures(1, &texture_);
         }
         
@@ -124,7 +148,8 @@ package align(1) struct GLTexturePage(TexturePacker)
          *
          * Returns: True on success, false on failure.
          */
-        bool insert_texture(ref Image image, out Rectanglef texcoords, out Vector2u offset)
+        bool insert_texture(const ref Image image, 
+                            out Rectanglef texcoords, out Vector2u offset)
         {
             //image format must match
             if(image.format != format_){return false;}
@@ -154,7 +179,7 @@ package align(1) struct GLTexturePage(TexturePacker)
         void start(){glBindTexture(GL_TEXTURE_2D, texture_);}
 
         ///Determine if the page is resident in the video memory.
-        bool resident()
+        bool resident() const
         {
             GLboolean resident;
             glAreTexturesResident(1, &texture_, &resident);
@@ -162,13 +187,13 @@ package align(1) struct GLTexturePage(TexturePacker)
         }
 
         ///Remove texture with specified bounds from this page.
-        void remove_texture(ref Rectangleu bounds){packer_.free_space(bounds);}
+        void remove_texture(const ref Rectangleu bounds){packer_.free_space(bounds);}
 
         ///Determine if this page is empty (i.e. there are no textures on it).
-        bool empty(){return packer_.empty();}
+        bool empty() const {return packer_.empty();}
 
         ///Get size of the page in pixels.
-        Vector2u size(){return size_;}
+        Vector2u size() const {return size_;}
 
         /**
          * Return a string containing information about the page.
@@ -178,49 +203,17 @@ package align(1) struct GLTexturePage(TexturePacker)
          *
          * Returns: String with information about the page.
          */
-        string info()
+        string info() const
         {
             string output;
-            output ~= "width: " ~ std.string.toString(size_.x) ~ "\n";
-            output ~= "height: " ~ std.string.toString(size_.y) ~ "\n";
-            output ~= "format: " ~ to_string(format_) ~ "\n";
+            output ~= "width: " ~ to!string(size_.x) ~ "\n";
+            output ~= "height: " ~ to!string(size_.y) ~ "\n";
+            output ~= "format: " ~ to!string(format_) ~ "\n";
             output ~= "packer:\n";
             output ~= packer_.info;
             return output;
         }
-
-    private:
-        /**
-         * Construct the page.
-         *
-         * Params:  size   = Dimensions of the page in pixels.
-         *          format = Color format of the page.
-         */
-        void ctor(Vector2u size, ColorFormat format)
-        in{assert(is_pot(size.x) && is_pot(size.y), "Non-power-of-two texture page size");}
-        body
-        {
-            size_ = size;
-            format_ = format;
-            packer_ = TexturePacker(size);
-
-            //create blank image to use as initial texture data
-            scope Image image = new Image(size.x, size.y, format);
-            glGenTextures(1, &texture_);
-            
-            glBindTexture(GL_TEXTURE_2D, texture_);
-
-            GLenum gl_format;
-            GLenum type;
-            GLint internal_format;
-            gl_color_format(format, gl_format, type, internal_format);
-            
-            glTexImage2D(GL_TEXTURE_2D, 0, internal_format, size_.x, size_.y, 
-                         0, gl_format, type, image.data.ptr);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        }
 }
 
 ///GLTexturePage using NodePacker for texture packing.
-alias GLTexturePage!(NodePacker) TexturePage;
+alias GLTexturePage!NodePacker TexturePage;

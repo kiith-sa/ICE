@@ -1,0 +1,140 @@
+<html lang="en">
+<head>
+	<title>Using the Derelict Bindings</title>
+	<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+
+<h2>Using Derelict</h2>
+
+After you have <a href="build.html">built Derelict</a>, you are ready to start using it in your applications. As with
+using any D library, this requires importing the modules you need and linking with the relevant library files.
+
+<h3>Importing</h3>
+In order to import a Derelict module, you need to make sure that either the Derelict source or the D Interface files (which
+are generated during the build process) are on your import path. In the original version of Derelict, it was necessary
+either to add multiple paths to your import path for each package you used or to copy the Derelict source for the packages
+you used into a different directory, consolidating everything in a single import hierarchy. This could be annoying.
+<p>
+Derelict2 improves on this situation by generating D Interface files during the build process and outputting them into an
+import-friendly hierarchy. By default, this is in the $(DERELICT)/import directory. Then, when building your application,
+you can simply add this directory's path to your compiler's command line. With DMD and LDC, this means using the -I
+command line option. You might instead add the path to your compiler's configuration file, such as DMD's sc.ini.
+</p>
+<p>
+It is also possible to configure Derelict's build system to output the D Interface files in a different location. Open the
+platform-specific config file in $(DERELICT)/inc and edit the IMPORT_DEST variable to the desired path. The D Interface files
+will be output to this directory and you can add it to your compiler's import path.
+</p>
+<p>
+See the package-specific documentation for the specific package and module names to use in your import statements.
+</p>
+
+<h3>Linking</h3>
+In order for your Derelict application to compile successfully, it needs to be linked with the libraries for every Derelict
+binding you use. Addtionally, all Derelict bindings have a dependency on the DerelictUtil package, so you will always need
+to additionally link DerelictUtil.lib (on Windows) or libDerelictUtil.a (on Posix platforms) with your application.
+<p>
+By default, all Derelict libraries are output to $(DERELICT)/lib during the build process. As with the D Interface files
+described above, this output path can be configured. Look in the platform-specific config file in $(DERELICT)/inc and
+edit the LIB_DEST variable to the desired path. See your compiler's documentation for information on how to set its
+library search path and how to tell it which libraries to link with.
+</p>
+<p>
+See the package-specific documentation for the names of each bindings library.
+</p>
+
+<h3>Loading</h3>
+All Derelict bindings provide a loader that is used to load a shared library and its symbols into memory. You can load and
+unload shared libraries as needed, and can even tell Derelict to ignore errors if certain symbols you don't need
+are missing. This is all done through a standard interface across each Derelict package, with special additions where necessary.
+
+<h4>The load Method</h4>
+All Derelict loaders derive from the class <tt>SharedLibLoader</tt>, which can be found in the module <tt>derelict.util.loader</tt>.
+This means that they all provide the same basic interface. In order to activate a Derelict binding, you simply call the <tt>load</tt>
+method on that binding's loader. The following example uses DerelictAL to demonstrate.
+
+<pre>
+<code>
+import derelict.openal.al;
+
+void main()
+{
+	DerelictAL.load();
+}
+</code>
+</pre>
+
+<p>
+This causes the DerelictAL loader to attempt to load the OpenAL shared library. Internally, each binding contains a platform-specific
+list of one or more possible shared library names. The loader attempts to load the shared library using each name in turn until it is successful.
+It is possible to override the default and provide one or more specific shared library names yourself. Pass a single string to the load method,
+where each shared library name is separated by a comma. Whitespace after commas is permitted. The following example uses DerelictAL and DerelictGL to
+show how to load shared libraries using both single and multiple names. It also takes into account different platform naming conventions.
+</p>
+
+<pre>
+<code>
+import derelict.openal.al;
+import derelict.opengl.gl;
+
+void main()
+{
+	version(Windows)
+	{
+		string alLibs = "MyAL1.dll, MyAL2.dll";
+		string glLibs = "MyGL.dll";
+	}
+	version(Posix)
+	{
+		string alLibs = "libMyAL1.so, libMyAL2.so";
+		string glLibs = "libMyGL.so";
+	}
+	DerelictAL.load(alLibs);
+	DerelictGL.load(glLibs);
+}
+</code>
+</pre>
+
+<p>
+Each operating system has a default shared library search path. Usually, the first path searched is the path of the executable. If you are shipping
+shared libraries with your application and keep them in the executable directory, you do not need to specify the shared library name unless it
+is different from one of the default names the loaded knows about. However, if you keep the shared libraries in a subdirectory, you will need to specify the
+shared library name along with the relative path. So, for example, if you have the shared library <tt>MyAL.dll</tt> in a <tt>lib</tt> subdirectory,
+you would do <tt>DerelictAL.load("lib/MyAL.dll")</tt>. This overloads both Derelict's default name list and the operating system's default
+search path -- no attempt will be made to load any other shared library names from any other locations.
+</p>
+<p>
+Note that these examples do not import any modules from DerelictUtil. Each loader uses DerelictUtil modules internally, but you do not have
+to import any of them unless you need any of the DerelictUtil functionality yourself. But you still need to link your executable with
+the DerelictUtil library.
+</p>
+
+<h4>Exceptions</h4>
+The module <tt>derelict.util.exception</tt> defines two exceptions that may be thrown from the <tt>load</tt> method: <tt>SharedLibLoadException</tt>
+and <tt>SymbolLoadException</tt>. Both of these derive from the base class <tt>DerelictException</tt>, so you can simply catch that
+if you want. But it is recommended that you catch the two derived exceptions so that you can report a more accurate message to the end user.
+<p>
+<tt>SharedLibLoadException</tt> is thrown when an attempt to load an OS-specific handle to a shared library fails. This normally means
+that the library could not be found on any of the default OS library search paths. In otherwords, either the library is not available on the
+user's system or it is in a non-standard location. Some of the libraries to which Derelict binds are universally installed on some operating
+systems, but others are not. In the latter case, it's best to ship the shared library file with your executable.
+</p>
+<p>
+<tt>SymbolLoadException</tt> is thrown when a function cannot be found in a shared library. This usually indicates one of two things. First, it's
+possible that the Derelict binding was created against a more recent version of the library than that which is present on the system. If the newer
+version adds functions to the publicly exported API, they won't be present in shared libraries compiled from older versions, causing this exception
+to be thrown. This generally won't happen if you ship the shared library with your application, but when relying on shared libraries installed on the
+user's system it is a real possibility. However, if you aren't intending to use the newer functionality, this case is recoverable if you take steps
+beforehand (see below). The second possibility is that the shared library is somehow corrupt, in which case you likely aren't going to be able to recover.
+</p>
+<p>
+In some specific cases, it can be desriable to ignore the <tt>SymbolLoadException</tt> for certain symbols. For example, there are some functions
+in SDL that did not exist in previous versions. If you aren't using these newer functions, it is possible to use an older version of the library
+that doesn't provide them. It would be silly to abort execution because functions you aren't using aren't available. Unfortunately, once the Derelict
+loader throws this exception, all loading of a shared library is halted. To get around this, Derelict provides a mechanism dubbed Selective Symbol Loading.
+This allows you to instruct the Derelict loader to ignore certain missing functions and continue loading instead of throwing an exception. You can read
+all about it in the Selective Symbol Loading documentation (TODO).
+</p>
+</body>
+</html>

@@ -17,9 +17,10 @@ import memory.memory;
 //will be an RAII struct in D2
 //could be optimized by adding a pitch data member (bytes per row)    
 ///Image object capable of storing images in various color formats.
-final class Image
+struct Image
 {
-    invariant{assert(data_ !is null, "Image with NULL data");}
+    //commented out due to a compiler bug
+    //invariant(){assert(data_ !is null, "Image with NULL data");}
 
     private:
         ///Image data. Manually allocated.
@@ -37,30 +38,34 @@ final class Image
          *          height = Height in pixels.
          *          format = Color format of the image.
          */
-        this(uint width, uint height, ColorFormat format = ColorFormat.RGBA_8)
+        this(in uint width, in uint height, 
+             in ColorFormat format = ColorFormat.RGBA_8)
         {
-            data_ = alloc!(ubyte)(width * height * bytes_per_pixel(format));
+            data_ = alloc_array!(ubyte)(width * height * bytes_per_pixel(format));
             size_ = Vector2u(width, height);
             format_ = format;
         }
 
         ///Destroy the image and free its memory.
-        ~this(){free(data_);}
+        ~this(){if(data !is null){free(data_);}}
         
         ///Get color format of the image.
-        ColorFormat format(){return format_;}
+        ColorFormat format() const {return format_;}
 
         ///Get size of the image in pixels.
-        Vector2u size(){return size_;}
+        Vector2u size() const {return size_;}
 
         ///Get image width in pixels.
-        uint width(){return size_.x;}
+        uint width() const {return size_.x;}
 
         ///Get image height in pixels.
-        uint height(){return size_.y;}
+        uint height() const {return size_.y;}
 
-        ///Get direct access to image data.
-        ubyte[] data(){return data_;}
+        ///Get direct read-only access to image data.
+        const(ubyte[]) data() const {return data_;}
+
+        ///Get direct read-write access to image data.
+        ubyte[] data_unsafe() {return data_;}
 
         /**
          * Set RGBA pixel color.
@@ -71,7 +76,7 @@ final class Image
          *          y     = Y coordinate of the pixel.
          *          color = Color to set.
          */
-        void set_pixel_rgba8(uint x, uint y, Color color)
+        void set_pixel_rgba8(in uint x, in uint y, in Color color)
         in
         {
             assert(x < size_.x && y < size_.y, "Pixel out of range");
@@ -79,7 +84,7 @@ final class Image
         }
         body
         {
-            uint offset = y * pitch + x * 4;
+            const uint offset = y * pitch + x * 4;
             data_[offset] = color.r;
             data_[offset + 1] = color.g;
             data_[offset + 2] = color.b;
@@ -95,7 +100,7 @@ final class Image
          *          y     = Y coordinate of the pixel.
          *          color = Color to set.
          */
-        void set_pixel_gray8(uint x, uint y, ubyte color)
+        void set_pixel_gray8(in uint x, in uint y, in ubyte color)
         in
         {
             assert(x < size_.x && y < size_.y, "Pixel out of range");
@@ -113,7 +118,7 @@ final class Image
          *
          * Returns: Color of the pixel.
          */
-        Color get_pixel(uint x, uint y)
+        Color get_pixel(in uint x, in uint y) const
         in
         {
             assert(x < size_.x && y < size_.y, "Pixel out of range");
@@ -122,7 +127,7 @@ final class Image
         }
         body
         {
-            uint offset = y * pitch + x * 4;
+            const uint offset = y * pitch + x * 4;
             return Color(data_[offset], 
                          data_[offset + 1], 
                          data_[offset + 2], 
@@ -135,7 +140,7 @@ final class Image
          *
          * Params:  size = Size of one checker square.
          */
-        void generate_checkers(uint size)
+        void generate_checkers(in uint size)
         {
             bool white;
             for(uint y = 0; y < size_.y; ++y)
@@ -177,7 +182,7 @@ final class Image
          *
          * Params:  distance = Distance between 1 pixel wide stripes.
          */
-        void generate_stripes(uint distance)
+        void generate_stripes(in uint distance)
         {
             for(uint y = 0; y < size_.y; ++y)
             {
@@ -211,7 +216,7 @@ final class Image
         }
 
         ///Gamma correct the image with specified factor.
-        void gamma_correct(real factor)
+        void gamma_correct(in real factor)
         in{assert(factor >= 0.0, "Gamma correction factor must not be negative");}
         body
         {
@@ -229,7 +234,7 @@ final class Image
                             break;
                         case ColorFormat.GRAY_8:
                             set_pixel_gray8(x, y, 
-                                            color.gamma_correct(data_[y * pitch + x], factor));
+                            color.gamma_correct(data_[y * pitch + x], factor));
                             break;
                         default:
                             assert(false, "Unsupported color format for gamma correction");
@@ -241,8 +246,8 @@ final class Image
         ///Flip the image vertically.
         void flip_vertical()
         {
-            uint pitch = pitch();
-            ubyte[] temp_row = alloc!(ubyte)(pitch);
+            const uint pitch = pitch();
+            ubyte[] temp_row = alloc_array!(ubyte)(pitch);
             for(uint row = 0; row < size_.y / 2; ++row)
             {
                 //swap row and size_.y - row
@@ -257,5 +262,5 @@ final class Image
 
     private:
         ///Get pitch (bytes per row) of the image.
-        uint pitch(){return bytes_per_pixel(format_) * size_.x;}
+        uint pitch() const {return bytes_per_pixel(format_) * size_.x;}
 }

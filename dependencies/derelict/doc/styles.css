@@ -1,0 +1,90 @@
+a:link, a:visited	{
+	color			: #0000FF;
+	text-decoration	: none;
+}
+
+a:hover 	{
+	color			: #808080;
+	text-decoration	: underline;
+}
+
+body{
+	font-family 	: Verdana, Helvetica, sans-serif;
+	font-size		: 11pt;
+	color 			: #404040;
+	line-height		: 14pt;
+}
+
+ul {
+	margin-top 		: 0.25em;
+}
+
+pre {
+	color			: #000080;
+	font-weight		: bold;
+}
+
+tt {
+	color: #000080;
+	font-weight: bold;
+	background-color: #F8F8FF;
+}
+
+h2 {
+	font-family 	: Verdana, Helvetica, sans-serif;
+	font-size		: 20pt;
+	color 			: #705030;
+	margin-top 		: .5em;
+	margin-bottom	: .5em;
+	border-bottom : 2px solid black;
+	padding-top : 4px;
+	padding-bottom : 4px;
+}
+
+h3 {
+	font-family 	: Verdana, Helvetica, sans-serif;
+	font-size		: 12pt;
+	color 			: #705030;
+	background-color: #FECCCC;
+	margin-bottom	: .5em;
+	border : 4px double black;
+}
+
+h4 {
+	text-decoration: underline;
+	margin-bottom: .5em;
+}
+
+blockquote {
+	font-style: italic;
+}
+
+.note {
+	font-weight: bold;
+	background-color: #EEEEEE;
+	margin-top: .5em;
+	margin-bottom: .5em;
+}
+
+.note tt {
+	background-color: #EEEEEE;
+}
+
+.important {
+	font-weight: bold;
+	color: #FF0000;
+	margin-top: .5em;
+	margin-bottom: .5em;
+}
+
+.bold {
+	font-weight: bold;
+}
+
+.emph {
+	font-style: italic;
+}
+
+td, th {
+	text-align: center;
+}

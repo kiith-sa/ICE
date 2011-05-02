@@ -4,7 +4,9 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module scene.linetrail;
+@safe
 
 
 import std.math;
@@ -48,16 +50,16 @@ final class LineTrail : LineEmitter
          *          angle_variation = Not valid (fix with particle system overhaul).
          */                          
         this(ActorContainer container, PhysicsBody physics_body, Actor owner, 
-             real life_time, real particle_life, real emit_frequency, 
-             Vector2f emit_velocity, real angle_variation, 
-             float line_width, Color start_color, Color end_color)
+             in real life_time, in real particle_life, in real emit_frequency, 
+             in Vector2f emit_velocity, in real angle_variation, 
+             in float line_width, in Color start_color, in Color end_color)
         {
             super(container, physics_body, owner, life_time, particle_life,
                   emit_frequency, emit_velocity, angle_variation,
                   1.0f, line_width, start_color, end_color);
         }
 
-        override void emit(real time_step)
+        override void emit(in real time_step)
         {
             if(update_timer_.expired(game_time_))
             {

@@ -1,0 +1,35 @@
+<html lang="en">
+<head>
+	<title>Front Page</title>
+	<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+
+
+<h2>Front Page</h2>
+<h3>Introduction</h3>
+Derelict is a collection of D bindings to C shared (dynamic) libraries which are
+useful for multimedia applications, with a heavy bias toward libraries commonly
+used in game development. Derelict can be used with both D1 and D2, as well as
+with both the Phobos standard library and the alternative, Tango. It is
+also a goal to ensure that Derelict is available on every platform where D is available
+and, ultimately, that it is compatibile with the main D compilers. Neither of those goals has
+been completely met yet, but Derelict 2 is currently usable out of the box on Windows
+and Linux, mostly Mac-ready, and has seen some use on FreeBSD.
+<p>
+What makes Derelict different from other D bindings to C libraries is in the method
+used to link. Most bindings are designed to be linked at compile time either with a
+static version of a C library, or with the dynamic version. Derelict does not support static
+linking in any form. Instead, it requires the bound libraries to always be in shared form. The shared
+libraries are loaded manually at runtime.
+</p>
+
+<h3>General Facts You Need to Know</h3>
+<ul>
+<li>How to <a href="build.html">build</a> Derelict</li>
+<li>How to <a href="use.html">use</a> Derelict</li>
+<li>How to make use of Derelict's selective loading mechanism</li>
+</ul>
+
+</body>
+</html>

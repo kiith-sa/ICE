@@ -5,9 +5,9 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module video.glmonitor;
+@trusted
 
-
-import std.string;
+import std.conv;
 import std.math;
 
 import video.videodriver;
@@ -17,7 +17,7 @@ import gui.guielement;
 import gui.guimenu;
 import gui.guistatictext;
 import gui.guimousecontrollable;
-import monitor.monitor;
+import monitor.monitormanager;
 import monitor.submonitor;
 import math.vector2;
 import math.rectangle;
@@ -50,6 +50,9 @@ package struct Statistics
 ///Provides access to information about texture pages in GLVideoDriver.
 final package class PageMonitor : SubMonitor
 {
+    private:
+        alias std.conv.to to;
+
     public:
         ///Allows iteration over and access to texture pages in GLVideoDriver.
         final class PageIterator
@@ -106,7 +109,7 @@ final package class PageMonitor : SubMonitor
 
                     while(driver_.pages[current_page_] == null){next();}
 
-                    string text = "page index: " ~ to_string(current_page_) ~ "\n" ~
+                    string text = "page index: " ~ to!string(current_page_) ~ "\n" ~
                                   driver_.pages[current_page_].info;
 
                     return text;
@@ -122,8 +125,10 @@ final package class PageMonitor : SubMonitor
                  *          offset = Offset into the page in texture pixels (wraps).
                  *          zoom   = Zoom factor.
                  */
-                void draw(Rectanglei bounds, Vector2f offset, real zoom)
+                void draw(Rectanglei bounds, in Vector2f offset, in real zoom)
                 {
+                    alias math.vector2.to to;
+
                     //no page to draw
                     if(driver_.pages.length == 0){return;}
                     //current page was deleted, change to another one
@@ -134,17 +139,15 @@ final package class PageMonitor : SubMonitor
 
                     //draw the page view
                     //texture area to draw
-                    auto area = Rectanglef(Vector2f(0, 0), 
-                                           to!(float)(bounds.size) / zoom) - offset; 
+                    const area = Rectanglef(Vector2f(0, 0), 
+                                            to!(float)(bounds.size) / zoom) - offset; 
                     //quad to map the texture area to
-                    auto quad = Rectanglef(to!(float)(bounds.min), to!(float)(bounds.max));
+                    const quad = Rectanglef(to!(float)(bounds.min), to!(float)(bounds.max));
                     driver_.draw_page(current_page_, area, quad);
                 }
         }
 
     private:
-        alias std.string.toString to_string;
-
         ///GLVideoDriver we're monitoring.
         GLVideoDriver driver_;
 
@@ -157,7 +160,10 @@ final package class PageMonitor : SubMonitor
         }
 
     protected:
-        override SubMonitorView view(){return new PageMonitorView(new PageIterator());}
+        override SubMonitorView view()
+        {
+            return new PageMonitorView(new PageIterator());
+        }
 }
 
 ///GUI view for the PageMonitor.

@@ -5,7 +5,11 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module color;
+@safe
 
+
+import std.algorithm;
+import std.traits;
 
 import math.math;
 
@@ -30,7 +34,7 @@ enum ColorFormat
  *
  * Returns: Bytes per pixel needed by specified color format.
  */
-uint bytes_per_pixel(ColorFormat format)
+uint bytes_per_pixel(in ColorFormat format)
 {
     switch(format)
     {
@@ -54,7 +58,8 @@ uint bytes_per_pixel(ColorFormat format)
  *
  * Returns: String representation of specified color format.
  */
-string to_string(ColorFormat format)
+T to(T)(in ColorFormat format)
+    if(isSomeString!T)
 {
     switch(format)
     {
@@ -84,20 +89,20 @@ align(1) struct Color
     ubyte a;
 
     ///Common color constants, identical to HTML.
-    static const Color white = Color(255, 255, 255);
-    static const Color grey = Color(128, 128, 128);
-    static const Color black = Color(0, 0, 0);
-
-    static const Color red = Color(255, 0, 0);
-    static const Color green = Color(0, 255, 0);
-    static const Color blue = Color(0, 0, 255);
-    static const Color burgundy = Color(128, 0, 0);
-
-    static const Color yellow = Color(255, 255, 0);
-    static const Color cyan = Color(0, 255, 255);
-    static const Color magenta = Color(255, 0, 255);
-    static const Color forest_green = Color(128, 128, 0);
-    static const Color dark_purple = Color(128, 0, 128);
+    static immutable Color white = Color(255, 255, 255, 255);
+    static immutable Color grey = Color(128, 128, 128, 255);
+    static immutable Color black = Color(0, 0, 0, 255);
+                    
+    static immutable Color red = Color(255, 0, 0, 255);
+    static immutable Color green = Color(0, 255, 0, 255);
+    static immutable Color blue = Color(0, 0, 255, 255);
+    static immutable Color burgundy = Color(128, 0, 0, 255);
+                    
+    static immutable Color yellow = Color(255, 255, 0, 255);
+    static immutable Color cyan = Color(0, 255, 255, 255);
+    static immutable Color magenta = Color(255, 0, 255, 255);
+    static immutable Color forest_green = Color(128, 128, 0, 255);
+    static immutable Color dark_purple = Color(128, 0, 128, 255);
 
     /**
      * Construct a color.
@@ -106,36 +111,19 @@ align(1) struct Color
      *          g = Green channel value.
      *          b = Blue channel value.
      *          a = Alpha channel value.
-     *
-     * Returns: Color with specified RGBA values.
      */
-    static Color opCall(ubyte r, ubyte g, ubyte b, ubyte a)
+    this(in ubyte r, in ubyte g, in ubyte b, in ubyte a)
     {
-        Color color;
-        color.r = r;
-        color.g = g;
-        color.b = b;
-        color.a = a;
-        return color;
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
     }
 
-    /**
-     * Construct a color (no alpha).
-     *
-     * Alpha is fully opague (255).
-     *
-     * Params:  r = Red channel value.
-     *          g = Green channel value.
-     *          b = Blue channel value.
-     *
-     * Returns: Color with specified RGB values.
-     */
-    static Color opCall(ubyte r, ubyte g, ubyte b){return Color(r, g, b, 255);}
-
     ///Return the average intensity of the color.
-    ubyte average()
+    ubyte average() const
     {
-        real average = (cast(real)r + cast(real)g + cast(real) b) / 3.0;
+        const real average = (r + g + b) / 3.0L;
         return cast(ubyte)round_s32(average);
     }
     ///Unittest for average().
@@ -154,14 +142,17 @@ align(1) struct Color
     }
 
     ///Return lightness of the color.
-    ubyte lightness()
+    ubyte lightness() const
     {
         uint d = max(r, g, b) + min(r, g, b);
         return cast(ubyte)round_s32(0.5f * d); 
     }
 
     ///Return luminance of the color.
-    ubyte luminance(){return cast(ubyte)round_s32(0.3 * r + 0.59 * g + 0.11 * b);}
+    ubyte luminance() const 
+    {
+        return cast(ubyte)round_s32(0.3 * r + 0.59 * g + 0.11 * b);
+    }
     ///Unittest for luminance().
     unittest
     {
@@ -176,7 +167,7 @@ align(1) struct Color
      *
      * Returns: Result of color addition.
      */
-    Color opAdd(Color c)
+    Color opAdd(in Color c)
     {
         return Color(cast(ubyte)min(255, r + c.r), 
                      cast(ubyte)min(255, g + c.g),
@@ -201,12 +192,12 @@ align(1) struct Color
      *          d = Interpolation ratio. 1 is this color, 0 other color, 0.5 half in between.
      *              Must be in 0.0 .. 1.0 range.
      */
-    Color interpolated(Color c, float d)
+    Color interpolated(in Color c, in float d) const
     in{assert(d >= 0.0 && d <= 1.0, "Color interpolation value must be between 0.0 and 1.0");}
     body
     {
-        ubyte d_byte = floor_u8(d * 255.0);
-        ubyte inv_byte = 255 - d_byte;
+        const ubyte d_byte = floor_u8(d * 255.0);
+        const ubyte inv_byte = cast(ubyte)(255 - d_byte);
 
         //ugly, but fast
         //colors are multiplied as ubytes from 0 to 255 and then divided by 256
@@ -217,18 +208,19 @@ align(1) struct Color
     }
 
     ///Set grayscale color.
-    void gray_8(ubyte gray){r = g = b = a = gray;}
+    void gray_8(in ubyte gray){r = g = b = a = gray;}
 
     ///Gamma correct the color with specified factor.
-    void gamma_correct(real factor)
+    void gamma_correct(in real factor) 
     in{assert(factor >= 0.0, "Can't gamma correct with a negative factor");}
     body
     {
-        real scale = 1.0, temp = 0.0;
+        real scale = 1.0;
+        real temp = 0.0;
         real R = cast(real)r;
         real G = cast(real)g;
         real B = cast(real)b;
-        real factor_inv = factor / 255.0;
+        const real factor_inv = factor / 255.0;
         R *= factor_inv;
         G *= factor_inv;
         B *= factor_inv;
@@ -253,6 +245,6 @@ align(1) struct Color
  *
  * Returns: Gamma corrected color.
  */
-ubyte gamma_correct(ubyte color, real factor)
+ubyte gamma_correct(in ubyte color, in real factor)
 in{assert(factor >= 0.0, "Can't gamma correct with a negative factor");}
 body{return cast(ubyte)min(cast(real)color * factor, 255.0L);}

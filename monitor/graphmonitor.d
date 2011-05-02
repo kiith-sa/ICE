@@ -5,11 +5,12 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module monitor.graphmonitor;
+@safe
 
 
 import std.math;
 
-import monitor.monitor;
+import monitor.monitormanager;
 import monitor.submonitor;
 import gui.guilinegraph;
 import gui.guielement;
@@ -20,9 +21,6 @@ import math.vector2;
 import math.rectangle;
 import platform.platform;
 import util.signal;
-import util.action;
-import util.string;
-import util.stringctfe;
 import graphdata;
 import color;
 
@@ -76,7 +74,7 @@ SubMonitor new_graph_monitor(Monitored, Statistics, Values ...)(Monitored monito
 {
     //copy V to an array of strings
     string[] values;
-    foreach(s; Values){values ~= s.dup;}
+    foreach(s; Values){values ~= s.idup;}
     return new GraphMonitor!(Monitored, Statistics, Values)(monitored, new GraphData(values));
 }
 
@@ -99,7 +97,7 @@ final package class GraphMonitor(Monitored, Statistics, Values ...) : SubMonitor
         GraphData data_;
 
         ///Disconnects the monitor from monitorable's send_statistics.
-        Action!(void delegate(Statistics)) disconnect_;
+        void delegate() disconnect_;
 
     public:
         override void die()
@@ -115,7 +113,7 @@ final package class GraphMonitor(Monitored, Statistics, Values ...) : SubMonitor
             return new GraphMonitorView!(typeof(this))(this);
         }
 
-        ///Get access to graph data. Should return const in D2.
+        ///Get access to graph data.
         GraphData data(){return data_;}
 
     protected:
@@ -129,8 +127,7 @@ final package class GraphMonitor(Monitored, Statistics, Values ...) : SubMonitor
         {
             super();
             monitored.send_statistics.connect(&receive_statistics); 
-            disconnect_ = new Action!(void delegate(Statistics))
-                          (&monitored.send_statistics.disconnect, &receive_statistics);
+            disconnect_ = {monitored.send_statistics.disconnect(&receive_statistics);};
             data_ = graph_data;
         }
 
@@ -166,20 +163,20 @@ final package class GraphMonitorView(GraphMonitor) : SubMonitorView
 {
     private:
         ///Palette of colors used by generated graph monitor code.
-        const Color[] palette = [Color.red,
-                                 Color.green,
-                                 Color.blue,
-                                 Color.yellow,
-                                 Color.cyan,
-                                 Color.magenta,
-                                 Color.burgundy,
-                                 Color(0, 128, 0, 255),
-                                 Color(0, 0, 128, 255),
-                                 Color.forest_green,
-                                 Color(0, 128, 128, 255),
-                                 Color.dark_purple];
+        static immutable Color[] palette = [Color.red,
+                                            Color.green,
+                                            Color.blue,
+                                            Color.yellow,
+                                            Color.cyan,
+                                            Color.magenta,
+                                            Color.burgundy,
+                                            Color(0, 128, 0, 255),
+                                            Color(0, 0, 128, 255),
+                                            Color.forest_green,
+                                            Color(0, 128, 128, 255),
+                                            Color.dark_purple];
 
-        ///Graph monitor viewed. Should be const in D2.
+        ///Graph monitor viewed.
         GraphMonitor monitor_;
 
         ///Graph widget.
@@ -187,9 +184,6 @@ final package class GraphMonitorView(GraphMonitor) : SubMonitorView
         //Not using menu since we need to control color of each button.
         ///Buttons used to toggle display of values on the graph.
         GUIButton[string] value_buttons_;
-
-        ///Actions that toggle display of values in the graph widget.
-        Action!(string)[] toggles_;
 
         ///Default graph X scale to return to after zooming.
         float scale_x_default_;
@@ -208,13 +202,6 @@ final package class GraphMonitorView(GraphMonitor) : SubMonitorView
             init_mouse();
             init_toggles();
             init_menu();
-        }
-
-        override void die()
-        {
-            toggles_ = [];
-            //will destroy all children as well
-            super.die();
         }
 
     private:
@@ -258,15 +245,13 @@ final package class GraphMonitorView(GraphMonitor) : SubMonitorView
                     width = "48";
                     height = "12";
                     font_size = 8;
-                    y = "p_top + " ~ to_string(2 + 14 * value_buttons_.keys.length);
+                    y = "p_top + " ~ to!string(2 + 14 * value_buttons_.keys.length);
                     font_size = MonitorView.font_size;
                     text_color(ButtonState.Normal, palette[color]);
                     text = name;
 
                     auto button = produce();
-                    auto action = new Action!(string)(&graph_.toggle_value, name);
-                    button.pressed.connect(&action.opCall);
-                    toggles_ ~= action;
+                    button.pressed.connect({graph_.toggle_value(name);});
                     value_buttons_[name] = button;
                     main_.add_child(button);
                 }
@@ -293,10 +278,16 @@ final package class GraphMonitorView(GraphMonitor) : SubMonitorView
         }
 
         ///Decrease graph data point time - used by resolution + button.
-        void resolution_increase(){graph_.data_point_time = graph_.data_point_time * 0.5;}
+        void resolution_increase()
+        {
+            graph_.data_point_time = graph_.data_point_time * 0.5;
+        }
 
         ///Increase graph data point time - used by resolution - button.
-        void resolution_decrease(){graph_.data_point_time = graph_.data_point_time * 2.0;}
+        void resolution_decrease()
+        {
+            graph_.data_point_time = graph_.data_point_time * 2.0;
+        }
 
         ///Set sum graph mode - used by sum button.
         void sum(){graph_.graph_mode = GraphMode.Sum;}

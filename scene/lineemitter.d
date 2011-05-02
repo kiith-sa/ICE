@@ -4,7 +4,9 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module scene.lineemitter;
+@safe
 
 
 import std.math;
@@ -27,7 +29,7 @@ import util.factory;
  */
 class LineEmitter : ParticleEmitter
 {
-    invariant
+    invariant()
     {
         assert(line_length_ > 0.0, "LineEmitter line length must be greater than 0");
         assert(line_width_ > 0.0, "LineEmitter line width must be greater than 0");
@@ -46,16 +48,16 @@ class LineEmitter : ParticleEmitter
 
     public:
         ///Set length of the line particles.
-        final void line_length(float length){line_length_ = length;}
+        final void line_length(in float length){line_length_ = length;}
 
         ///Set width of the line particles.
-        final void line_width(float width){line_width_ = width;}
+        final void line_width(in float width){line_width_ = width;}
 
         ///Set color the particles have at the beginning of their lifetimes.
-        final void start_color(Color color){start_color_ = color;}
+        final void start_color(in Color color){start_color_ = color;}
 
         ///Set color the particles have at the end of their lifetimes.
-        final void end_color(Color color){end_color_ = color;}
+        final void end_color(in Color color){end_color_ = color;}
 
     protected:
         /**
@@ -77,9 +79,9 @@ class LineEmitter : ParticleEmitter
          *          end_color       = Color at the end of particle lifetime.  
          */                          
         this(ActorContainer container, PhysicsBody physics_body, Actor owner, 
-             real life_time, real particle_life, real emit_frequency, 
-             Vector2f emit_velocity, real angle_variation, float line_length, 
-             float line_width, Color start_color, Color end_color)
+             in real life_time, in real particle_life, in real emit_frequency, 
+             in Vector2f emit_velocity, in real angle_variation, in float line_length, 
+             in float line_width, in Color start_color, in Color end_color)
         {
             line_length_ = line_length;
             line_width_ = line_width;

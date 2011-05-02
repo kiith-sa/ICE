@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module video.glvertex;
+@safe
 
 
 import math.vector2;
@@ -29,11 +30,11 @@ package align(1) struct GLVertex2DColored
     Color color;
 
     ///Offset of GLVertex2DColored.vertex relative to the struct in bytes.
-    static const vertex_offset = 0;
+    static immutable vertex_offset = 0;
     ///Offset of GLVertex2DColored.color relative to the struct in bytes.
-    static const color_offset = 8;
+    static immutable color_offset = 8;
     ///Enum value corresponding to this vertex type.
-    static const vertex_type = GLVertexType.Colored;
+    static immutable vertex_type = GLVertexType.Colored;
 }
 
 ///Vertex with position, color and texture coordinate.
@@ -47,12 +48,12 @@ package align(1) struct GLVertex2DTextured
     Color color;
 
     ///Offset of GLVertex2DTextured.vertex relative to the struct in bytes.
-    static const vertex_offset = 0;
+    static immutable vertex_offset = 0;
     ///Offset of GLVertex2DTextured.texcoord relative to the struct in bytes.
-    static const texcoord_offset = 8;
+    static immutable texcoord_offset = 8;
     ///Offset of GLVertex2DTextured.color relative to the struct in bytes.
-    static const color_offset = 16;
+    static immutable color_offset = 16;
     ///Enum value corresponding to this vertex type.
-    static const vertex_type = GLVertexType.Textured;
+    static immutable vertex_type = GLVertexType.Textured;
 }
 

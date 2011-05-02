@@ -4,8 +4,12 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
-module util.factory;
 
+module util.factory;
+@safe
+
+
+import std.string;
 
 import util.stringctfe;
 
@@ -35,7 +39,7 @@ string generate_factory(string parameter_strings []...)
     Parameter[] parameters;
     foreach(parameter; parameter_strings)
     { 
-        string[] p = parameter.split('$');
+        string[] p = parameter.split_ctfe('$');
         assert(p.length == 3, "Malformed parameter in generated factory code: " ~ parameter);
         parameters ~= Parameter(p[0].strip(), p[1].strip(), p[2].strip());
     }

@@ -3,7 +3,9 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module pong.game;
+@safe
 
 
 import pong.player;
@@ -18,6 +20,7 @@ import physics.physicsbody;
 import physics.physicsengine;
 import spatial.spatialmanager;
 import spatial.gridspatialmanager;
+
 import gui.guielement;
 import video.videodriver;
 import platform.platform;
@@ -25,7 +28,7 @@ import time.timer;
 import math.math;
 import math.vector2;
 import math.rectangle;
-import monitor.monitor;
+import monitor.monitormanager;
 import util.signal;
 import util.weaksingleton;
 
@@ -58,7 +61,7 @@ class GameGUI
          * Params:  parent     = GUI element to attach all game GUI elements to.
          *          time_limit = Time limit of the game.
          */
-        this(GUIElement parent, real time_limit)
+        this(GUIElement parent, in real time_limit)
         {
             parent_ = parent;
             hud_ = new HUD(parent, time_limit);
@@ -79,7 +82,7 @@ class GameGUI
          *          player_1   = First player of the game.
          *          player_2   = Second player of the game.
          */
-        void show_scores(real time_total, Player player_1, Player player_2)
+        void show_scores(in real time_total, in Player player_1, in Player player_2)
         in{assert(score_screen_ is null, "Can't show score screen twice");}
         body
         {
@@ -95,7 +98,7 @@ class GameGUI
          *          player_1  = First player of the game.
          *          player_2  = Second player of the game.
          */
-        void update(real time_left, Player player_1, Player player_2)
+        void update(in real time_left, in Player player_1, in Player player_2)
         {
             hud_.update(time_left, player_1, player_2);
             if(score_screen_ !is null){score_screen_.update();}
@@ -111,8 +114,8 @@ class GameGUI
                 score_screen_.die();
                 score_screen_ = null;
             }
-            parent_ = null;
             score_expired.disconnect_all();
+            parent_ = null;
         }
 }
 
@@ -126,7 +129,7 @@ class Game
         SceneManager scene_manager_;
 
         ///Game area in world space.
-        static Rectanglef game_area_ = Rectanglef(0.0f, 0.0f, 800.0f, 600.0f);
+        static immutable Rectanglef game_area_ = Rectanglef(0.0f, 0.0f, 800.0f, 600.0f);
         
         ///Current game ball.
         Ball ball_;
@@ -158,18 +161,19 @@ class Game
         Paddle paddle_1_;
         ///Player 2 paddle.
         Paddle paddle_2_;
+     
         ///Player 1.
         Player player_1_;
         ///Player 2.
         Player player_2_;
-
+     
         ///Continue running?
         bool continue_;
 
         ///Score limit.
-        uint score_limit_;
+        immutable uint score_limit_;
         ///Time limit in game time.
-        real time_limit_;
+        immutable real time_limit_;
         ///Timer determining when the game ends.
         Timer game_timer_;
 
@@ -192,7 +196,7 @@ class Game
          */
         bool run()
         {
-            real time = scene_manager_.game_time;
+            const real time = scene_manager_.game_time;
             if(playing_)
             {
                 //update player state
@@ -212,7 +216,7 @@ class Game
 
             if(continue_)
             {
-                real time_left = time_limit_ - game_timer_.age(time);
+                const real time_left = time_limit_ - game_timer_.age(time);
                 gui_.update(time_left, player_1_, player_2_);
             }
 
@@ -254,8 +258,8 @@ class Game
             }
 
             //construct paddles.
-            float limits_min_x = 152.0f + 2.0 * ball_radius_;
-            float limits_max_x = 648.0f - 2.0 * ball_radius_;
+            const float limits_min_x = 152.0f + 2.0 * ball_radius_;
+            const float limits_max_x = 648.0f - 2.0 * ball_radius_;
             with(new PaddleFactory)
             {
                 box_min = Vector2f(-32.0f, -4.0f);
@@ -271,7 +275,7 @@ class Game
                 limits_max = Vector2f(limits_max_x, 564.0f);
                 paddle_2_ = produce(scene_manager_);
             }
-            
+
             player_1_ = new AIPlayer("AI", paddle_1_, 0.15);
             player_2_ = new HumanPlayer(platform_, "Human", paddle_2_);
 
@@ -279,11 +283,9 @@ class Game
         }
 
         ///Returns an array of balls currently used in the game.
-        Ball[] balls()
+        @property Ball[] balls()
         {
-            Ball[] output;
-            if(ball_ !is null){output ~= ball_;}
-            return output;
+            return ball_ !is null ? [ball_] : [];
         }
 
         /**
@@ -294,7 +296,7 @@ class Game
         void draw(VideoDriver driver){scene_manager_.draw(driver);}
 
         ///Get game area.
-        static Rectanglef game_area(){return game_area_;}
+        @property static Rectanglef game_area(){return game_area_;}
 
         ///End the game, regardless of whether it has been won or not.
         void end_game()
@@ -321,7 +323,7 @@ class Game
          *          time_limit    = Time limit of the game in game time.
          */
         this(Platform platform, SceneManager scene_manager, GameGUI gui, 
-             uint score_limit, real time_limit)
+             in uint score_limit, in real time_limit)
         {
             singleton_ctor();
             gui_ = gui;
@@ -335,17 +337,17 @@ class Game
         void die(){singleton_dtor();}
 
         ///Start the game, at specified game time.
-        void start_game(real start_time)
+        void start_game(in real start_time)
         {
             //spawn dummy balls
             with(new DummyBallFactory)
             {
-                radius = 8.0;
+                radius = 6.0;
 
                 for(uint dummy = 0; dummy < dummy_count_; dummy++)
                 {
-                    position = random_position!(float)(game_area_.center, 24.0f);
-                    velocity = 2.5 * ball_speed_ * random_direction!(float)(); 
+                    position = random_position!(float)(game_area_.center, 26.0f);
+                    velocity = 2.4 * ball_speed_ * random_direction!(float)(); 
                     dummies_ ~= produce(scene_manager_);
                 }
             }
@@ -468,26 +470,26 @@ class GameContainer
         SpatialManager!(PhysicsBody) spatial_physics_;
         ///Physics engine used by the scene manager.
         PhysicsEngine physics_engine_;
-        ///Actor manager used by the game.
+        ///Scene manager used by the game.
         SceneManager scene_manager_;
         ///GUI of the game.
         GameGUI gui_;
         ///Game itself.
         Game game_;
-        ///Monitor monitoring game subsystems.
-        Monitor monitor_;
+        ///MonitorManager to add game subsystem monitors to.
+        MonitorManager monitor_;
 
     public:
         /**
          * Produce a Game and return a reference to it.
          *
          * Params:  platform   = Platform to use for user input.
-         *          monitor    = Monitor to monitor game subsystems.
+         *          monitor    = MonitorManager to monitor game subsystems.
          *          gui_parent = Parent for all GUI elements used by the game.
          *
          * Returns: Produced Game.
          */
-        Game produce(Platform platform, Monitor monitor, GUIElement gui_parent)
+        Game produce(Platform platform, MonitorManager monitor, GUIElement gui_parent)
         in
         {
             assert(spatial_physics_ is null &&

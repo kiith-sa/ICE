@@ -7,9 +7,6 @@
 module platform.key;
 
 
-import derelict.sdl.sdl;
-
-
 ///Possible key event states.
 enum KeyState
 {
@@ -281,4 +278,3 @@ enum MouseKey
     WheelUp,
     WheelDown
 }
-

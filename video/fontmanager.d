@@ -5,8 +5,10 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module video.fontmanager;
+@system
 
 
+import std.algorithm;
 import std.c.string;
 import std.stdio;
 
@@ -21,10 +23,10 @@ import file.fileio;
 import math.math;
 import math.vector2;
 import memory.memory;
-import containers.array;
 import containers.vector;
 import util.weaksingleton;
 import color;
+alias file.file.File File;
 
 
 package:
@@ -46,7 +48,7 @@ align(1) struct FontRenderer
 
     public:
         ///Get height of the font we're drawing.
-        uint height(){return draw_font_.height;}
+        uint height() const {return draw_font_.height;}
 
         ///Start drawing a string.
         void start()
@@ -63,7 +65,7 @@ align(1) struct FontRenderer
          *
          * Returns: True if the glyph is loaded, false otherwise.
          */
-        bool has_glyph(dchar c){return draw_font_.has_glyph(c);}
+        bool has_glyph(in dchar c) const {return draw_font_.has_glyph(c);}
 
         /**
          * Load glyph for a character.
@@ -75,7 +77,7 @@ align(1) struct FontRenderer
          *
          * Throws:  TextureException if the glyph texture could not be created.
          */
-        void load_glyph(VideoDriver driver, dchar c){draw_font_.load_glyph(driver, c);}
+        void load_glyph(VideoDriver driver, in dchar c){draw_font_.load_glyph(driver, c);}
 
         /**
          * Get glyph texture and offset to draw a glyph at.
@@ -86,10 +88,10 @@ align(1) struct FontRenderer
          *
          * Returns: Pointer to the texture of the glyph.
          */
-        Texture* glyph(dchar c, out Vector2u offset)
+        const(Texture*) glyph(in dchar c, out Vector2u offset)
         {
-            Glyph* glyph = draw_font_.get_glyph(c);
-            uint glyph_index = glyph.freetype_index;
+            const glyph = draw_font_.get_glyph(c);
+            const uint glyph_index = glyph.freetype_index;
 
             //adjust pen with kering information
             if(kerning_ && previous_index_ != 0 && glyph_index != 0)
@@ -116,7 +118,7 @@ align(1) struct FontRenderer
          *
          * Returns: Size of the text in X and Y. Y might be slightly imprecise.
          */
-        Vector2u text_size(string text)
+        Vector2u text_size(in string text)
         {
             //Y size could be determined more precisely by getting
             //minimum and maximum extents of the text.
@@ -171,8 +173,8 @@ final class FontManager
          */
         this()
         {
-            writefln("Initializing FontManager");
-            scope(failure){writefln("FontManager initialization failed");}
+            writeln("Initializing FontManager");
+            scope(failure){writeln("FontManager initialization failed");}
 
             singleton_ctor();
             try
@@ -244,8 +246,9 @@ final class FontManager
          */
         void die()
         {
+            writeln("Destroying FontManager");
             foreach(ref font; fonts_){font.die();}
-            foreach(ref file; font_files_){file.die();}
+            foreach(ref file; font_files_){clear(file);}
             fonts_ = [];
             font_files_ = null;
             FT_Done_FreeType(freetype_lib_);
@@ -260,7 +263,7 @@ final class FontManager
          *          force_load = Force the font to be set right now and loaded 
          *                       if it's not loaded yet.
          */
-        void font(string font_name, bool force_load = false)
+        void font(string font_name, in bool force_load = false)
         {
             //if "default", use default font
             if(font_name == "default"){font_name = default_font_name_;}
@@ -275,11 +278,10 @@ final class FontManager
          *          force_load = Force the font size to be set right now and font loaded
          *                       if it's not loaded yet.
          */
-        void font_size(uint size, bool force_load = false)
+        void font_size(uint size, in bool force_load = false)
         in{assert(size < 128, "Font sizes greater than 127 are not supported");}
         body
         {
-            alias math.math.min min;
             //In optimized build, we don't have the assert so force size to at most 127
             size = min(size, 127u);
             font_size_ = size;
@@ -294,10 +296,10 @@ final class FontManager
         }
 
         ///Is font antialiasing enabled?
-        bool antialiasing(){return antialiasing_;}
+        bool antialiasing() const {return antialiasing_;}
       
         ///Is kerning enabled?
-        bool kerning(){return kerning_;}
+        bool kerning() const {return kerning_;}
 
     private:
         //might be replaced by serious resource management.
@@ -308,14 +310,15 @@ final class FontManager
          * 
          * Throws:  FileIOException if the font file name is invalid or it could not be opened.
          */
-        void load_font_file(string name)
+        void load_font_file(in string name)
         {
-            scope(failure){writefln("Could not read from font file: " ~ name);}
+            scope(failure){writeln("Could not read from font file: " ~ name);}
 
-            if(font_files_.keys.contains(name)){return;}
-            File file = open_file("fonts/" ~ name, FileMode.Read);
+            //already loaded
+            if(find(font_files_.keys, name) != []){return;}
+
+            File file = File("fonts/" ~ name, FileMode.Read);
             font_files_[name] = Vector!(ubyte)(cast(ubyte[])file.data);
-            close_file(file);
         }
 
         /**
@@ -337,20 +340,20 @@ final class FontManager
             {
                 return font.name == font_name_ && font.size == font_size_;
             }
-            int index = fonts_.find(&find_font);
+            auto found = find!find_font(fonts_);
 
             //Font is already loaded, set it
-            if(index >= 0)
+            if(found.length > 0)
             {
-                current_font_ = fonts_[index];
+                current_font_ = found[0];
                 return;
             }
 
             //fallback scenario when the font could not be loaded 
-            void fallback(string error)
+            void fallback(in string error)
             {
-                writefln("Failed to load font: ", font_name_);
-                writefln(error);
+                writeln("Failed to load font: ", font_name_);
+                writeln(error);
 
                 //If we already have default font name and can't load it, 
                 //try font 0 (default with default size)

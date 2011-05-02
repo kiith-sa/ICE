@@ -7,11 +7,11 @@
 module gui.guistatictext;
 
 
+import std.algorithm;
 import std.string;
 
 import gui.guielement;
 import video.videodriver;
-import math.math;
 import math.vector2;
 import math.rectangle;
 import color;
@@ -78,13 +78,13 @@ class GUIStaticText : GUIElement
 
     public:
         ///Set text color.
-        void text_color(Color color){font_color_ = color;}
+        void text_color(in Color color){font_color_ = color;}
 
         ///Return displayed text.
-        string text(){return text_;}
+        string text() const {return text_;}
 
         ///Set text to display.
-        void text(string text)
+        void text(in string text)
         {
             text_ = expandtabs(text);
             aligned_ = false;
@@ -105,8 +105,8 @@ class GUIStaticText : GUIElement
          *          font_size   = Font size.
          *          font        = Name of the font to use.
          */
-        this(GUIElementParams params, Color text_color, string text, 
-             AlignX align_x, AlignY align_y, uint font_size, string font)
+        this(in GUIElementParams params, in Color text_color, in string text, 
+             in AlignX align_x, in AlignY align_y, in uint font_size, in string font)
         {
             super(params);
 
@@ -134,8 +134,7 @@ class GUIStaticText : GUIElement
             driver.font_size = font_size_;
             foreach(ref line; lines_)
             {
-                Vector2i offset = bounds_.min + line.offset;
-                driver.draw_text(offset, line.text, font_color_);
+                driver.draw_text(bounds_.min + line.offset, line.text, font_color_);
             }
         }
 
@@ -143,7 +142,7 @@ class GUIStaticText : GUIElement
         {
             super.realign(driver);
 
-            string text = text_.dup;
+            string text = text_.idup;
 
             //we need to set font to get information about drawn size of lines
             driver.font = font_;
@@ -153,6 +152,7 @@ class GUIStaticText : GUIElement
 
             //break text to lines and align them horizontally, then align vertically
             while(text.length > 0){text = add_line(driver, text, y_offset, y_offset);}
+
             align_vertical();
         }
 
@@ -168,7 +168,8 @@ class GUIStaticText : GUIElement
          *
          * Returns: Remaining text that isn't part of the newly added line.
          */
-        string add_line(VideoDriver driver, string text, uint y_offset_in, out uint y_offset_out)
+        string add_line(VideoDriver driver, string text, in 
+                        uint y_offset_in, out uint y_offset_out)
         {
             //get leading space, if any, and following word from text
             //also, break the line if (unix) newline found
@@ -205,7 +206,7 @@ class GUIStaticText : GUIElement
 
             //line we're constructing
             TextLine line;
-            uint width = size.x;
+            const uint width = size.x;
             bool end_line = false;
 
             while(text.length > 0)
@@ -255,7 +256,7 @@ class GUIStaticText : GUIElement
         {
             //if AlignY is Top, we're aligned as lines start at y == 0 by default
             if(lines_.length == 0 || align_y_ == AlignY.Top){return;}
-            auto text_height = font_size_ * lines_.length + line_gap_ * (lines_.length - 1);
+            const text_height = font_size_ * lines_.length + line_gap_ * (lines_.length - 1);
             auto offset_y = size.y - text_height;
             if(align_y_ == AlignY.Center){offset_y /= 2;}
             //move lines according to the offset

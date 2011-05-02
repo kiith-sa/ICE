@@ -7,15 +7,16 @@
 module math.vector2;
 
 
-import std.string;
 import std.math;
 import std.random;
+import std.traits;
 
 import math.math;
 
 
 ///2D vector or point.
 align(1) struct Vector2(T)
+    if(isNumeric!T)
 {
     //initialized to null vector by default
     ///X component of the vector.
@@ -24,53 +25,65 @@ align(1) struct Vector2(T)
     T y = 0;
 
     ///Negation.
-    Vector2!(T) opNeg(){return Vector2!(T)(-x, -y);}
+    Vector2!T opNeg() const {return Vector2!T(-x, -y);}
 
     ///Equality with a vector.
-    bool opEquals(Vector2!(T) v){return equals(x, v.x) && equals(y, v.y);}
+    bool opEquals(const ref Vector2!T v) const
+    {
+        return equals(x, v.x) && equals(y, v.y);
+    }
 
     ///Addition with a vector.
-    Vector2!(T) opAdd(Vector2!(T) v){return Vector2!(T)(cast(T)(x + v.x), cast(T)(y + v.y));}
+    Vector2!T opAdd (in Vector2!T v) const 
+    {
+        return Vector2!T(cast(T)(x + v.x), cast(T)(y + v.y));
+    }
 
     ///Subtraction with a vector.
-    Vector2!(T) opSub(Vector2!(T) v){return Vector2!(T)(cast(T)(x - v.x), cast(T)(y - v.y));}
+    Vector2!T opSub(in Vector2!T v) const
+    {
+        return Vector2!T(cast(T)(x - v.x), cast(T)(y - v.y));
+    }
 
     ///Multiplication with a scalar.
-    Vector2!(T) opMul(T m){return Vector2!(T)(cast(T)(x * m), cast(T)(y * m));}
+    Vector2!T opMul(in T m) const
+    {
+        return Vector2!T(cast(T)(x * m), cast(T)(y * m));
+    }
 
     ///Division by a scalar. 
-    Vector2!(T) opDiv(T d)
+    Vector2!T opDiv(in T d) const
     in{assert(d != 0, "Vector can not be divided by zero");}
-    body{return Vector2!(T)(cast(T)(x / d), cast(T)(y / d));}
+    body{return Vector2!T(cast(T)(x / d), cast(T)(y / d));}
 
     ///Division by a vector. 
-    Vector2!(T) opDiv(Vector2!(T) v)
+    Vector2!T opDiv(in Vector2!T v) const
     in{assert(v.x != 0 && v.y != 0, "Vector can not be divided by a vector with a zero component");}
-    body{return Vector2!(T)(cast(T)(x / v.x), cast(T)(y / v.y));}
+    body{return Vector2!T(cast(T)(x / v.x), cast(T)(y / v.y));}
 
     ///Addition-assignment with a vector.
-    void opAddAssign(Vector2!(T) v)
+    void opAddAssign(in Vector2!T v)
     {
         x += v.x;
         y += v.y;
     }
 
     ///Subtraction-assignment with a vector.
-    void opSubAssign(Vector2!(T) v)
+    void opSubAssign(in Vector2!T v)
     {
         x -= v.x;
         y -= v.y;
     }
 
     ///Multiplication-assignment by a scalar.
-    void opMulAssign(T m)
+    void opMulAssign(in T m)
     {
         x *= m;
         y *= m;
     }
 
     ///Division-assignment by a scalar. 
-    void opDivAssign(T d)
+    void opDivAssign(in T d)
     in{assert(d != 0.0, "Vector can not be divided by zero");}
     body
     {
@@ -79,30 +92,30 @@ align(1) struct Vector2(T)
     }
     
     ///Get angle of this vector in radians.
-    real angle()
+    real angle() const
     {
-        real angle = atan2(cast(double)x, cast(double)y);
+        const real angle = atan2(cast(double)x, cast(double)y);
         if(angle < 0.0){return angle + 2 * PI;}
         return angle;
     }
 
     ///Set angle of this vector in radians, preserving its length.
-    void angle(real angle)
+    void angle(in real angle)
     {
-        T length = length();
+        const length = length();
         y = cast(T)cos(cast(double)angle);
         x = cast(T)sin(cast(double)angle);
-        *this *= length;
+        this *= length;
     }
 
     ///Get squared length of the vector.
-    T length_squared(){return x * x + y * y;}
+    T length_squared() const {return cast(T)(x * x + y * y);}
     
     ///Get length of the vector fast at cost of some precision.
-    T length(){return length_safe();}
+    T length() const {return length_safe();}
 
     ///Get length of the vector with better precision.
-    T length_safe(){return cast(T)(sqrt(cast(real)length_squared));}
+    T length_safe() const {return cast(T)(sqrt(cast(real)length_squared));}
 
     /**
      * Dot (scalar) product with another vector.
@@ -111,10 +124,10 @@ align(1) struct Vector2(T)
      *
      * Returns: Dot product of this and the other vector.
      */
-    T dot_product(Vector2!(T) v){return x * v.x + y * v.y;}
+    T dot_product(in Vector2!T v) const {return cast(T)(x * v.x + y * v.y);}
 
     ///Get normal of this vector (a pependicular vector).
-    Vector2!(T) normal(){return Vector2!(T)(-y, x);}
+    Vector2!T normal() const {return Vector2!T(-y, x);}
 
     /**
      * Turns this into a unit vector fast at cost of some precision. 
@@ -123,7 +136,7 @@ align(1) struct Vector2(T)
      */
     void normalize()
     {
-        T len = length();
+        const len = length();
         x /= len;
         y /= len;
         return;
@@ -132,7 +145,7 @@ align(1) struct Vector2(T)
     ///Normalize with better precision, or don't do anything if this is a zero vector.
     void normalize_safe()
     {
-        T len = length_safe();
+        const len = length_safe();
         if(equals(length, cast(T)0)){return;}
         x /= len;
         y /= len;
@@ -140,9 +153,9 @@ align(1) struct Vector2(T)
     }
 
     ///Get unit vector of this vector. Result is undefined if this is a zero vector.
-    Vector2!(T) normalized()
+    Vector2!T normalized() const
     {
-        Vector2!(T) normalized = *this;
+        Vector2!T normalized = this;
         normalized.normalize();
         return normalized;
     }
@@ -152,13 +165,12 @@ align(1) struct Vector2(T)
 }
 
 ///Get a unit vector with a random direction.
-Vector2!(T)random_direction(T)()
+Vector2!T random_direction(T)()
+    if(isNumeric!T)
 {
-    long x_int = std.random.rand();
-    long y_int = std.random.rand();
-    T x = cast(T)(x_int % 2 ? x_int / 2 : -x_int / 2);
-    T y = cast(T)(y_int % 2 ? y_int / 2 : -y_int / 2);
-    return Vector2!(T)(x, y).normalized;
+    Vector2!T v = Vector2!T(cast(T)1, cast(T)0);
+    v.angle(uniform(0, 2 * PI));
+    return v;
 }
 
 /**
@@ -169,9 +181,10 @@ Vector2!(T)random_direction(T)()
  *
  * Returns: Random position in the specified circle.
  */
-Vector2!(T)random_position(T)(Vector2!(T) center, T radius)
+Vector2!T random_position(T)(Vector2!T  center, T radius)
+    if(isNumeric!T)
 {
-    return center + random_direction!(T) * random(0, radius);
+    return center + random_direction!T  * uniform(cast(T)0, radius);
 }
 
 /**
@@ -184,21 +197,29 @@ Vector2!(T)random_position(T)(Vector2!(T) center, T radius)
  * Vector2f V_float = to!(float)v_uint;
  * --------------------
  */                  
-Vector2!(T)to(T, U)(Vector2!(U)v){return Vector2!(T)(cast(T)v.x, cast(T)v.y);}
+Vector2!T to(T, U)(Vector2!U v)
+    if(isNumeric!T)
+{
+    return Vector2!T(cast(T)v.x, cast(T)v.y);
+}
+unittest
+{
+    assert(to!int(Vector2f(1.1f, 1.1f)) == Vector2i(1,1));
+}
 
 ///Vector2 of bytes.
-alias Vector2!(byte) Vector2b;
+alias Vector2!byte Vector2b;
 ///Vector2 of ubytes.
-alias Vector2!(ubyte) Vector2ub;
+alias Vector2!ubyte Vector2ub;
 ///Vector2 of shorts.
-alias Vector2!(short) Vector2s;
+alias Vector2!short Vector2s;
 ///Vector2 of ushorts.
-alias Vector2!(ushort) Vector2us;
+alias Vector2!ushort Vector2us;
 ///Vector2 of ints.
-alias Vector2!(int) Vector2i;
+alias Vector2!int Vector2i;
 ///Vector2 of uints.
-alias Vector2!(uint) Vector2u;
+alias Vector2!uint Vector2u;
 ///Vector2 of floats.
-alias Vector2!(float) Vector2f;
+alias Vector2!float Vector2f;
 ///Vector2 of doubles.
-alias Vector2!(double) Vector2d;
+alias Vector2!double Vector2d;

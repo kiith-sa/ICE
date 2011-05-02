@@ -19,12 +19,12 @@
 module main.pong;
 
 
-import std.stdio;
-import std.c.stdlib;     
+import std.stdio: writeln;
+import std.c.stdlib: exit;     
 
-import pong.pong;
 import file.fileio;
 import formats.cli;
+import pong.pong;
 
 
 ///Program entry point.
@@ -37,23 +37,27 @@ void main(string[] args)
                       "Copyright (C) 2010-2011 Ferdinand Majerech";
     cli.epilog = "Report errors at <kiithsacmp@gmail.com> (in English, Czech or Slovak).";
 
+    string root = "./data";
+    string user = "./user_data";
+
     //Root data and user data MUST be specified at startup
-    cli.add_option(CLIOption("root_data").short_name('R')
-                                         .target(&root_data).default_args("./data"));
-    cli.add_option(CLIOption("user_data").short_name('U')
-                                         .target(&user_data).default_args("./user_data"));
+    cli.add_option(CLIOption("root_data").short_name('R').target(&root));
+    cli.add_option(CLIOption("user_data").short_name('U').target(&user));
 
     if(!cli.parse(args)){return;}
 
     try
     {
-        Pong pong = new Pong;
+        root_data(root);
+        user_data(user);
+
+        Pong pong = new Pong();
         scope(exit){pong.die();}
         pong.run();
     }
     catch(Exception e)
     {
-        writefln("Unhandled exeption: ", e.toString(), " ", e.msg);
+        writeln("Unhandled exeption: ", e.toString(), " ", e.msg);
         exit(-1);
     }
 }                                     

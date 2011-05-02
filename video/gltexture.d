@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module video.gltexture;
+@safe
 
 
 import math.vector2;
@@ -20,5 +21,19 @@ package align(1) struct GLTexture
     Vector2u offset;
     ///Index of the page.
     uint page_index;
+
+    /**
+     * Construct a GLTexture.
+     *
+     * Params:  texcoords  = Texture coordinates on the texture page.
+     *          offset     = Offset from the origin of texture page.
+     *          page_index = Index if the texture page.
+     */
+    this(Rectanglef texcoords, Vector2u offset, uint page_index)
+    {
+        this.texcoords = texcoords;
+        this.offset = offset;
+        this.page_index = page_index;
+    }
 }
 

@@ -13,7 +13,7 @@ import time.time;
 ///A timer struct; handles timing of various delayed or periodic events.
 align(1) struct Timer
 {
-    invariant
+    invariant()
     {
         assert(delay_ >= 0.0, "Can't have a Timer with negative delay");
         assert(start_ >= 0.0, "Can't have a Timer with negative start");
@@ -32,7 +32,7 @@ align(1) struct Timer
          *
          * Params:  delay = Delay of the timer.
          */
-        static Timer opCall(real delay){return Timer(delay, get_time());}
+        this(in real delay){this(delay, get_time());}
 
         /**
          * Constructs a timer starting at specified time.
@@ -40,19 +40,17 @@ align(1) struct Timer
          * Params:  delay = Delay of the timer.
          *          time  = Start time of the timer.
          */
-        static Timer opCall(real delay, real start)
+        this(in real delay, in real start)
         {               
-            Timer t;
-            t.start_ = start;
-            t.delay_ = delay; 
-            return t;
+            start_ = start;
+            delay_ = delay; 
         }
 
         ///Get time when the timer was started.
-        real start(){return start_;}
+        real start() const {return start_;}
 
         ///Get delay of this timer.
-        real delay(){return delay_;}
+        real delay() const {return delay_;}
 
         /**
          * Returns time since start of the timer at specified time.
@@ -61,10 +59,10 @@ align(1) struct Timer
          *
          * Returns: Age of the timer relative to specified time.
          */
-        real age(real time){return time - start_;}
+        real age(in real time) const {return time - start_;}
 
         ///Returns time since start of the timer.
-        real age(){return age(get_time());}
+        real age() const {return age(get_time());}
 
         /**
          * Returns time since start of the timer at specified time divided by the timer's delay.
@@ -76,7 +74,7 @@ align(1) struct Timer
          *          so it can be used to get percentage of timer's delay that has elapsed.
          *
          */
-        real age_relative(real time){return age(time) / delay_;}
+        real age_relative(in real time) const {return age(time) / delay_;}
 
         /**
          * Returns time since start of the timer divided by the timer's delay. 
@@ -85,7 +83,7 @@ align(1) struct Timer
          *          This is 0.0 at the start of the timer, and 1.0 at its end, 
          *          so it can be used to get percentage of timer's delay that has elapsed.
          */
-        real age_relative(){return age_relative(get_time());}
+        real age_relative() const {return age_relative(get_time());}
 
         /**
          * Determines if the timer has expired at specified time.
@@ -94,13 +92,13 @@ align(1) struct Timer
          *
          * Returns: True if the timer has expired, false otherwise.
          */
-        bool expired(real time){return time - start_ > delay_;}
+        bool expired(in real time) const {return time - start_ > delay_;}
 
         ///Determines if the timer has expired.
-        bool expired(){return expired(get_time());}
+        bool expired() const {return expired(get_time());}
 
         ///Resets the timer with specified start time.
-        void reset(real start){start_ = start;}
+        void reset(in real start){start_ = start;}
 
         ///Resets the timer.
         void reset(){reset(get_time());}

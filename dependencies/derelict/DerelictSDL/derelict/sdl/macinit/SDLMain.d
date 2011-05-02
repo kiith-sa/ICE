@@ -8,7 +8,7 @@
  */
 module derelict.sdl.macinit.SDLMain;
 
-version(OSX) version = darwin;
+version(DigitalMars) version(OSX) version = darwin;
 
 version (darwin)
 {
@@ -27,11 +27,14 @@ private
         import std.c.linux.linux;
         import std.c.stdlib;
         import std.c.string;
+        
+        static import std.string;
     }
 
     import derelict.sdl.sdltypes;
     import derelict.sdl.sdlfuncs;
     import derelict.sdl.macinit.CoreFoundation;
+    import derelict.sdl.macinit.DerelictSDLMacLoader;
     import derelict.sdl.macinit.ID;
     import derelict.sdl.macinit.MacTypes;
     import derelict.sdl.macinit.NSApplication;
@@ -49,12 +52,16 @@ private
     import derelict.sdl.macinit.runtime;
     import derelict.sdl.macinit.selectors;
     import derelict.sdl.macinit.string;
+    import derelict.util.compat;
     import derelict.util.loader;
 }
 
 private:
 
-private const int MAXPATHLEN = 1024; // from sys/param.h
+enum
+{
+    MAXPATHLEN = 1024 // from sys/param.h
+}
 
 /* Use this flag to determine whether we use CPS (docking) or not */
 version = SDL_USE_CPS;
@@ -69,23 +76,17 @@ version (SDL_USE_CPS)
 
     extern (C)
     {
-        typedef OSErr function (CPSProcessSerNum *psn) pfCPSGetCurrentProcess;
-        pfCPSGetCurrentProcess CPSGetCurrentProcess;
-
-        typedef OSErr function (CPSProcessSerNum *psn, UInt32 _arg2, UInt32 _arg3, UInt32 _arg4, UInt32 _arg5) pfCPSEnableForegroundOperation;
-        pfCPSEnableForegroundOperation CPSEnableForegroundOperation;
-
-        typedef OSErr function (CPSProcessSerNum *psn) pfCPSSetFrontProcess;
-        pfCPSSetFrontProcess CPSSetFrontProcess;
+        mixin(gsharedString!() ~ "
+        OSErr function (CPSProcessSerNum *psn) CPSGetCurrentProcess;
+        OSErr function (CPSProcessSerNum *psn, UInt32 _arg2, UInt32 _arg3, UInt32 _arg4, UInt32 _arg5) CPSEnableForegroundOperation;
+        OSErr function (CPSProcessSerNum *psn) CPSSetFrontProcess;");
     }
 
-    static this ()
+    void load (void delegate(void**, string, bool doThrow = true) bindFunc)
     {
-        SharedLib coreServices = Derelict_LoadSharedLib("Cocoa.framework/Cocoa");
-
-        bindFunc(CPSGetCurrentProcess)("CPSGetCurrentProcess", coreServices);
-        bindFunc(CPSEnableForegroundOperation)("CPSEnableForegroundOperation", coreServices);
-        bindFunc(CPSSetFrontProcess)("CPSSetFrontProcess", coreServices);
+        bindFunc(cast(void**)&CPSGetCurrentProcess, "CPSGetCurrentProcess");
+        bindFunc(cast(void**)&CPSEnableForegroundOperation, "CPSEnableForegroundOperation");
+        bindFunc(cast(void**)&CPSSetFrontProcess, "CPSSetFrontProcess");
     }
 }
 
@@ -100,8 +101,11 @@ private
 
 static this ()
 {
-    registerSubclasses;
-    CustomApplicationMain;
+    version (SDL_USE_CPS)
+        load(&DerelictSDLMac.bindFunc);
+
+    registerSubclasses();
+    CustomApplicationMain();
 }
 
 static ~this()
@@ -111,14 +115,16 @@ static ~this()
 
     if(sdlMain !is null)
         sdlMain.release;
+
+    DerelictSDLMac.unload();
 }
 
 private void registerSubclasses ()
 {
     objc_method terminateMethod;
     terminateMethod.method_imp = cast(IMP) &terminate;
-    terminateMethod.method_name = sel_terminate.ptr;
-    terminateMethod.method_types = sel_registerName!("v@:").ptr;
+    terminateMethod.method_name = sel_terminate;
+    terminateMethod.method_types = "v@:";
 
     objc_method_list* terminateMethodList = cast(objc_method_list*) calloc(1, (objc_method_list).sizeof);
     terminateMethodList.method_count = 1;
@@ -128,8 +134,8 @@ private void registerSubclasses ()
 
     objc_method setupWorkingDirectoryMethod;
     setupWorkingDirectoryMethod.method_imp = cast(IMP) &setupWorkingDirectory;
-    setupWorkingDirectoryMethod.method_name = sel_setupWorkingDirectory.ptr;
-    setupWorkingDirectoryMethod.method_types = sel_registerName!("v@:B").ptr;
+    setupWorkingDirectoryMethod.method_name = sel_setupWorkingDirectory;
+    setupWorkingDirectoryMethod.method_types = "v@:B";
 
     objc_method_list* setupWorkingDirectoryMethodList = cast(objc_method_list*) calloc(1, (objc_method_list).sizeof);
     setupWorkingDirectoryMethodList.method_count = 1;
@@ -139,8 +145,8 @@ private void registerSubclasses ()
 
     objc_method applicationMethod;
     applicationMethod.method_imp = cast(IMP) &application;
-    applicationMethod.method_name = sel_application.ptr;
-    applicationMethod.method_types = sel_registerName!("B@:@@").ptr;
+    applicationMethod.method_name = sel_application;
+    applicationMethod.method_types = "B@:@@";
 
     objc_method_list* applicationMethodList = cast(objc_method_list*) calloc(1, (objc_method_list).sizeof);
     applicationMethodList.method_count = 1;
@@ -150,8 +156,8 @@ private void registerSubclasses ()
 
     objc_method applicationDidFinishLaunchingMethod;
     applicationDidFinishLaunchingMethod.method_imp = cast(IMP) &applicationDidFinishLaunching;
-    applicationDidFinishLaunchingMethod.method_name = sel_applicationDidFinishLaunching.ptr;
-    applicationDidFinishLaunchingMethod.method_types = sel_registerName!("v@:@").ptr;
+    applicationDidFinishLaunchingMethod.method_name = sel_applicationDidFinishLaunching;
+    applicationDidFinishLaunchingMethod.method_types = "v@:@";
 
     objc_method_list* applicationDidFinishLaunchingMethodList = cast(objc_method_list*) calloc(1, (objc_method_list).sizeof);
     applicationDidFinishLaunchingMethodList.method_count = 1;
@@ -177,8 +183,11 @@ private void registerClass (string className) (Class superClass, objc_method_lis
     {
         newClass = objc_allocateClassPair!(className)(cast(Class) superClass, 0);
 
-        foreach (method ; methodList)
-            class_addMethods(newClass, method);
+        foreach (m ; methodList)
+        {
+            auto method = m.method_list[0];            
+            class_addMethod(newClass, method.method_name, method.method_imp, method.method_types);
+        }
 
         objc_registerClassPair(newClass);
     }
@@ -214,7 +223,7 @@ private void registerClass (string className) (Class superClass, objc_method_lis
          * to share this copy of the name, but this is not a requirement
          * imposed by the runtime.
          */
-        newClass.name = ((className ~ '\0').dup).ptr;
+        newClass.name = toCString(className);
         metaClass.name = newClass.name;
 
         // Allocate method lists.
@@ -460,7 +469,7 @@ private void setupWindowMenu ()
 
     /* "Minimize" item */
     menuItem = NSMenuItem.alloc;
-    menuItem = menuItem.initWithTitle(NSString.stringWith("Minimize"), "performMiniaturize:", NSString.stringWith("m"));
+    menuItem = menuItem.initWithTitle(NSString.stringWith("Minimize"), sel_registerName!("performMiniaturize:"), NSString.stringWith("m"));
     windowMenu.addItem(menuItem);
     menuItem.release;
 

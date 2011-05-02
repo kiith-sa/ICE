@@ -5,8 +5,14 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module util.traits;
+@safe:
 
 
-///Is specified type a global or static function?
-template is_global_function(T){const bool is_global_function = false;}
-template is_global_function(T : void function(U), U){const bool is_global_function = true;}
+import std.traits;
+
+
+///Determine if T is a "primitive" type, i.e. a bool, builtin numeric or string type.
+template is_primitive(T)
+{
+    enum bool is_primitive = is(bool == T) || isNumeric!T || isSomeString!T;
+}

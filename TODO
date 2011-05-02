@@ -1,6 +1,25 @@
+
+02:
+    Thoroughly rewrite CDC .
+12:
+    Make all modules safe, trusted, system
+13:
+    Use @property for getters/setters everywhere
+14: 
+    glAreTexturesResident is used in GLTexturePage. Might be obsolete in GL 3.x.
+    If so, remove it, othrwise add info about residency to texturepage info string.
+16:
+    Through templates, pass __FILE__ and __LINE__ to allocation functions - 
+    should allow us to precisely record where we've done which allocation
 12:
     Write these TODOs to an issue tracker of some kind.
-
+13: 
+    to bugtracker: use Derelict selective symbol loading once it is documented
+14: 
+    to bugtracker: make our containers more like D std.container ones,
+    e.g. ranges so we support std.algorithm
+    Alternatively, just copy the Phobos containers (we need at least array and set),
+    and build them on top of memory.memory .
 
 --0.5.0 release
 --0.6.0 release

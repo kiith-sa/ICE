@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module video.glrenderer;
+@system
 
 
 import std.stdio;
@@ -78,26 +79,22 @@ package struct GLRenderer
          * Construct a GLRenderer.
          *
          * Params:  mode = Draw mode to use.
-         *  
-         * Returns: Constructed GLRenderer.
          */
-        static GLRenderer opCall(GLDrawMode mode)
+        this(in GLDrawMode mode)
         {
-            GLRenderer cache;
-            cache.vertex_groups_ = Vector!(GLVertexGroup)();
-            cache.scissor_areas_ = Vector!(Rectanglei)();
-            cache.flush_group_ = true;
-            cache.initialized_ = true;
-            cache.init_buffers(mode);
-            return cache;
+            vertex_groups_ = Vector!(GLVertexGroup)(8);
+            scissor_areas_ = Vector!(Rectanglei)(8);
+            flush_group_ = true;
+            initialized_ = true;
+            init_buffers(mode);
         }
 
         ///Destroy the GLRenderer.
-        void die()
+        ~this()
         {
-            vertex_groups_.die();
+            clear(vertex_groups_);
+            clear(scissor_areas_);
             destroy_buffers();
-            scissor_areas_.die();
         }
 
         ///Reset all frame state. (end the frame)
@@ -120,29 +117,29 @@ package struct GLRenderer
         }
 
         ///Get number of vertices used during the frame so far.
-        uint vertex_count()
+        uint vertex_count() const
         {
             return colored_buffer_.vertex_count + textured_buffer_.vertex_count;
         }
 
         ///Get number of indices used during the frame so far.
-        uint index_count()
+        uint index_count() const
         {
             return colored_buffer_.index_count + textured_buffer_.index_count;
         }
 
         ///Get number of vertex groups created during the frame so far.
-        uint vertex_group_count(){return cast(uint)vertex_groups_.length;}
+        uint vertex_group_count() const {return cast(uint)vertex_groups_.length;}
 
         ///Set draw mode. Should not be called during a frame.
-        void draw_mode(GLDrawMode mode)
+        void draw_mode(in GLDrawMode mode)
         {
             destroy_buffers();
             init_buffers(mode);
         }
 
         ///Is the GLRenderer initialized?
-        bool initialized(){return initialized_;}
+        bool initialized() const {return initialized_;}
 
         ///Set shader to use in following draw calls.
         void set_shader(GLShader* shader)
@@ -159,7 +156,7 @@ package struct GLRenderer
         }
 
         ///Set scissor area to use in following draw calls. Only this area will be drawn to.
-        void scissor(ref Rectanglei scissor_area)
+        void scissor(const ref Rectanglei scissor_area)
         {
             scissor_ = true;
             scissor_areas_ ~= scissor_area;
@@ -174,30 +171,30 @@ package struct GLRenderer
         }
 
         ///Set view zoom for following draw calls.
-        void view_zoom(float zoom)
+        void view_zoom(in float zoom)
         {
             view_zoom_ = zoom;
             flush_group_ = true;
         }
 
         ///Get view zoom.
-        real view_zoom(){return view_zoom_;}
+        real view_zoom() const {return view_zoom_;}
 
         ///Set view offset for following draw calls.
-        void view_offset(Vector2f offset)
+        void view_offset(in Vector2f offset)
         {
             view_offset_ = offset;
             flush_group_ = true;
         }
 
         ///Get view offset.
-        Vector2f view_offset(){return view_offset_;}
+        Vector2f view_offset() const {return view_offset_;}
 
         ///Set line width for following draw calls.
-        void line_width(real width){line_width_ = width;}
+        void line_width(in real width){line_width_ = width;}
 
         ///Set line antialiasing (on or off) for following draw calls.
-        void line_aa(bool aa){line_aa_ = aa;}
+        void line_aa(in bool aa){line_aa_ = aa;}
 
         /**
          * Draw a line.
@@ -212,7 +209,7 @@ package struct GLRenderer
          *          c1 = Color at the start point of the line.
          *          c2 = Color at the end point of the line.
          */
-        void draw_line(Vector2f v1, Vector2f v2, Color c1, Color c2)
+        void draw_line(in Vector2f v1, in Vector2f v2, in Color c1, in Color c2)
         {
             //The line is drawn as a rectangle with width slightly smaller than
             //line_width_ to prevent artifacts.
@@ -223,14 +220,13 @@ package struct GLRenderer
             update_group(Vertex.vertex_type);
 
             //equivalent to (v2 - v1).normal;
-            Vector2f offset_base = Vector2f(v1.y - v2.y, v2.x - v1.x); 
-            offset_base.normalize();
-            float half_width = line_width_ * 0.5;
+            const offset_base = Vector2f(v1.y - v2.y, v2.x - v1.x).normalized; 
+            const half_width = line_width_ * 0.5;
             //offset of line vertices from start and end point of the line
             Vector2f offset = offset_base * half_width;
 
             //get current vertex, index count in colored buffer
-            uint v = colored_buffer_.vertex_count;
+            const v = colored_buffer_.vertex_count;
             uint i = colored_buffer_.index_count;
             //enlarge colored buffer to fit new vertices, indices
             colored_buffer_.vertex_count = line_aa_ ? v + 8 : v + 4;
@@ -243,7 +239,7 @@ package struct GLRenderer
             if(line_aa_)
             {
                 //offsets of AA vertices from start and end point of the line
-                Vector2f offset_aa = offset_base * (half_width + 0.4);
+                const offset_aa = offset_base * (half_width + 0.4);
                 //colors of AA vertices
                 Color c3 = c1;
                 Color c4 = c2;
@@ -293,7 +289,7 @@ package struct GLRenderer
          *          max   = Maximum dimensions of the rectangle.
          *          color = Rectangle color.
          */
-        void draw_rectangle(Vector2f min, Vector2f max, Color color)
+        void draw_rectangle(in Vector2f min, in Vector2f max, in Color color)
         {
             alias GLVertex2DColored Vertex;
 
@@ -301,7 +297,7 @@ package struct GLRenderer
             update_group(Vertex.vertex_type);
 
             //get current vertex, index count in colored buffer
-            auto v = colored_buffer_.vertex_count;
+            const v = colored_buffer_.vertex_count;
             auto i = colored_buffer_.index_count;
             //enlarge colored buffer to fit new vertices, indices
             colored_buffer_.vertex_count = v + 4;
@@ -330,8 +326,9 @@ package struct GLRenderer
          *          t_max = Maximum texture coordinates of the rectangle.
          *          color = Base rectangle color.
          */
-        void draw_texture(Vector2f min, Vector2f max, Vector2f t_min, Vector2f t_max,
-                          Color color = Color(255, 255, 255, 255))
+        void draw_texture(in Vector2f min, in Vector2f max, 
+                          in Vector2f t_min, in Vector2f t_max,
+                          in Color color = Color(255, 255, 255, 255))
         {
             alias GLVertex2DTextured Vertex;
 
@@ -339,7 +336,7 @@ package struct GLRenderer
             update_group(Vertex.vertex_type);
 
             //get current vertex, index count in textured buffer
-            auto v = textured_buffer_.vertex_count;
+            const v = textured_buffer_.vertex_count;
             auto i = textured_buffer_.index_count;
             //enlarge textured buffer to fit new vertices, indices
             textured_buffer_.vertex_count = v + 4;
@@ -367,7 +364,7 @@ package struct GLRenderer
          * Params:  screen_width  = Video mode width.
          *          screen_height = Video mode height.
          */
-        void render(uint screen_width, uint screen_height)
+        void render(in uint screen_width, in uint screen_height)
         {
             //if we have an unfinished group, add it
             if(current_group_.vertices > 0){vertex_groups_ ~= current_group_;}
@@ -401,10 +398,10 @@ package struct GLRenderer
                                                -1.0f, 1.0f);
 
                 //model-view-projection
-                auto mvp = group.shader.get_uniform("mvp_matrix");
+                const mvp = group.shader.get_uniform("mvp_matrix");
                 if(mvp < 0)
                 {
-                    writefln("Missing uniform mvp_matrix in shader");
+                    writeln("Missing uniform mvp_matrix in shader");
                     continue;
                 }
 
@@ -416,14 +413,14 @@ package struct GLRenderer
                     case GLVertexType.Colored:
                         if(colored_buffer_.draw(group) < 0)
                         {
-                            writefln("Missing shader attribute");
+                            writeln("Missing shader attribute");
                         }
                         break;
                     case GLVertexType.Textured:
                         group.texture_page.start();  
                         if(textured_buffer_.draw(group) < 0)
                         {
-                            writefln("Missing shader attribute");
+                            writeln("Missing shader attribute");
                         }
                         break;
                     default:
@@ -442,7 +439,7 @@ package struct GLRenderer
          *
          * Params:  type = Vertex type we need.
          */
-        void update_group(GLVertexType type)
+        void update_group(in GLVertexType type)
         in
         {
             assert(type == GLVertexType.Colored || type == GLVertexType.Textured,
@@ -481,7 +478,7 @@ package struct GLRenderer
         }
 
         ///Initialize vertex buffers with specified draw mode.
-        void init_buffers(GLDrawMode draw_mode_)
+        void init_buffers(in GLDrawMode draw_mode_)
         {
             colored_buffer_ = GLVertexBuffer!(GLVertex2DColored)(draw_mode_);
             textured_buffer_ = GLVertexBuffer!(GLVertex2DTextured)(draw_mode_);
@@ -490,7 +487,7 @@ package struct GLRenderer
         ///Destroy vertex buffers.
         void destroy_buffers()
         {
-            colored_buffer_.die();
-            textured_buffer_.die();
+            clear(colored_buffer_);
+            clear(textured_buffer_);
         }
 }

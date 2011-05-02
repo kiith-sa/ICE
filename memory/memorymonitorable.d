@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module memory.memorymonitorable;
+@safe
 
 
 import memory.memory;
@@ -17,7 +18,6 @@ import util.weaksingleton;
 import util.signal;
 
 
-//Ugly, but must be here due to circular dependencies.
 /**
  * Used for monitoring manually allocated memory. 
  * 
@@ -55,10 +55,10 @@ final class MemoryMonitorable : Monitorable
             send_statistics.emit(statistics_);
         }
 
-        MonitorData monitor_data()
+        MonitorDataInterface monitor_data()
         {
             SubMonitor function(MemoryMonitorable)[string] ctors_;
             ctors_["Usage"] = &new_graph_monitor!(MemoryMonitorable, Statistics, "manual_MiB");
-            return new MonitorManager!(MemoryMonitorable)(this, ctors_);
+            return new MonitorData!(MemoryMonitorable)(this, ctors_);
         }
 }

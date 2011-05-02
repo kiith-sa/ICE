@@ -7,6 +7,7 @@
 module spatial.gridmonitor;
 
 
+import std.algorithm;
 import std.math;
 
 import spatial.gridspatialmanager;
@@ -37,7 +38,7 @@ final package class GridMonitor(T) : SubMonitor
         Timer update_timer_;
 
         ///Size of the grid (both X and Y).
-        uint grid_size_;
+        const uint grid_size_;
 
     public:
         /**
@@ -59,7 +60,7 @@ final package class GridMonitor(T) : SubMonitor
         override void die()
         {
             super.die();
-            object_counts_.die();
+            clear(object_counts_);
         }
 
         override SubMonitorView view(){return new GridMonitorView!(typeof(this))(this);}
@@ -84,19 +85,21 @@ final package class GridMonitor(T) : SubMonitor
         }
 
         ///Get number of objects outside the grid.
-        uint outer_object_count(){return outer_object_count_;}
+        uint outer_object_count() const {return outer_object_count_;}
 
         ///Get (x and y) grid size in cells.
-        uint grid_size(){return grid_size_;}
+        uint grid_size() const {return grid_size_;}
 
         ///Get a pointer to the array of object counts in the grid. 
-        Array2D!(uint)* object_counts(){return &object_counts_;} 
+        const(Array2D!(uint)*) object_counts() const {return &object_counts_;} 
 }
 
 ///Grid monitor GUI view.
 final package class GridMonitorView(GridMonitor) : SubMonitorView
 {
     private:
+        alias math.vector2.to to;
+
         ///GridMonitor viewed.
         GridMonitor monitor_;
 
@@ -120,12 +123,12 @@ final package class GridMonitorView(GridMonitor) : SubMonitorView
             if(!visible_){return;}
             super.draw(driver);
 
-            auto bounds = main_.bounds_global();
+            const bounds = main_.bounds_global();
 
             //convert bounds to float for drawing and slightly cut them to
             //prevent overdrawing border.
-            Vector2f bounds_min = to!(float)(bounds.min) + Vector2f(0.0f, 1.0f);
-            Vector2f bounds_max = to!(float)(bounds.max) + Vector2f(-1.0f, 0.0f); 
+            const Vector2f bounds_min = to!(float)(bounds.min) + Vector2f(0.0f, 1.0f);
+            const Vector2f bounds_max = to!(float)(bounds.max) + Vector2f(-1.0f, 0.0f); 
 
             //prevent drawing outside bounds.
             driver.scissor(Rectanglei(to!(int)(bounds_min), to!(int)(bounds_max)));
@@ -140,13 +143,13 @@ final package class GridMonitorView(GridMonitor) : SubMonitorView
             driver.draw_filled_rectangle(bounds_min, bounds_max, color);
 
             //grid size on screen.
-            Vector2f grid_size = Vector2f(256.0f, 256.0f) * zoom_;
-            Vector2f origin = to!(float)(bounds_.center) - 0.5f * grid_size + offset_;
+            const Vector2f grid_size = Vector2f(256.0f, 256.0f) * zoom_;
+            const Vector2f origin = to!(float)(bounds_.center) - 0.5f * grid_size + offset_;
 
             //draw background for the grid.
             driver.draw_filled_rectangle(origin, origin + grid_size, Color.black);
 
-            float cell_size = grid_size.x / monitor_.grid_size;
+            const float cell_size = grid_size.x / monitor_.grid_size;
 
             //coords of the current cell.
             Vector2f cell_min = origin;

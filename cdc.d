@@ -68,7 +68,6 @@
  * <dt>--dmd</dt>       <dd>Use dmd to compile</dd>
  * <dt>--gdc</dt>       <dd>Use gdc to compile</dd>
  * <dt>--ldc</dt>       <dd>Use ldc to compile</dd>
- * <dt>--verbose</dt>   <dd>Print all commands as they're executed.</dd>
  * <dt>--root</dt>      <dd>Set the root directory of all source files.
  *                 This is useful if CDC is run from a path outside the source folder.</dd>
  * </dl>
@@ -110,14 +109,18 @@
 module cdc;
 
 
-import std.string : join, find, replace, tolower, rfind, split, format;
-import std.stdio : writefln;
+import std.algorithm: find;
+import std.array: split;
+import std.range: retro;
+
+import std.string : join, replace, tolower, format;
+import std.stdio : writeln;
 import std.path : sep, getDirName, getName, addExt;
 import std.file : chdir, copy, isdir, isfile, listdir, mkdir, exists, getcwd, remove, write;
 import std.format;
 import std.traits;
 import std.c.process;
-import std.c.time : usleep;
+import std.c.time;
 import std.c.stdarg;
 
 
@@ -166,13 +169,16 @@ int main(string[] args)
     void compile(string[] arguments, string[] extra_files = [])
     {
         CDC.compile(extra_files ~ [
-                     "dependencies/", 
+                     "dependencies/derelict/DerelictSDL",
+                     "dependencies/derelict/DerelictGL",
+                     "dependencies/derelict/DerelictFT",
+                     "dependencies/derelict/DerelictUtil",
                      
-                     "physics/", "scene/", "file/", "formats/", "gui/", "math/", 
-                     "memory/", "monitor/", "platform/", "spatial/", 
+                     "physics/", "scene/", "file/", "formats/", "gui/", 
+                     "math/", "memory/", "monitor/", "platform/", "spatial/", 
                      "time/", "video/", "containers/", "util/", "pong/",
-
-                     "color.d", "graphdata.d", "image.d", "pong.d"
+                     "color.d", "graphdata.d", "image.d", "workarounds.d",
+                     "pong.d"
                      ],
                      arguments ~ extra_args);
     }
@@ -194,8 +200,8 @@ int main(string[] args)
             compile(release_args);
             break;
         default:
-            writefln("unknown build target: ", build);
-            writefln("available targets: 'debug', 'no-contracts', 'release', 'all'");
+            writeln("unknown build target: ", build);
+            writeln("available targets: 'debug', 'no-contracts', 'release', 'all'");
             break;
     }
 
@@ -232,7 +238,7 @@ void help()
         "    --dmd           Use DMD for compilation.\n"
         "    --ldc           Use LDC for compilation. (not tested)\n"
         ;
-    writefln(help);
+    writeln(help);
 }
 
 
@@ -269,7 +275,7 @@ int defaultBuild(string[] args)
     bool run;
     foreach (arg; args)
     {    switch (arg)
-        {    case "--verbose": verbose = true; break;
+        {   
             case "-run": run = true; options~="-run";  break;
             default:
                 if (starts_with(arg, "--root"))
@@ -309,7 +315,6 @@ struct CDC
      *     options = Compiler options.
      *     run_args = If -run is specified, pass these arguments to the generated executable.
      *     root = Use this folder as the root of all paths, instead of the current folder.  This can be relative or absolute.
-     *     verbose = Print each command before it's executed.
      * Returns:
      * TODO: Add a dry run option to just return an array of commands to execute. */
     static void compile(string[] paths, string[] options=null, string[] run_args=null, string root=null)
@@ -339,7 +344,8 @@ struct CDC
                     libs ~= scan(src, [lib_ext]);
                 } else if (isfile(src)) // a single file
                 {
-                    scope ext = src[rfind(src, ".")..$];
+                    string ext = '.' ~ split(src, ".")[$ - 1];
+
                     if (".d" == ext)
                         sources ~= src;
                     else if (lib_ext == ext)
@@ -355,9 +361,9 @@ struct CDC
         CompileOptions co = CompileOptions(options, sources);
         options = co.getOptions(compiler);
         if (compiler=="gdc")
-            foreach (inout d; ddocs)
+            foreach (ref d; ddocs)
                 d = "-fdoc-inc="~d;
-        else foreach (inout l; libs)
+        else foreach (ref l; libs)
             if(compiler=="gdc")// or should this only be version(!Windows)
                 l = `-L`~l; // TODO: Check in dmd and gdc
 
@@ -450,7 +456,8 @@ struct CDC
         }
 
         // Remove extra files
-        string basename = co.of[rfind(co.of, "/")+1..$];
+        string basename = split(co.of, "/")[$ - 1];
+
         if (co.D)
             remove("modules.ddoc");
         if (co.of && !(co.c || co.od))
@@ -529,8 +536,13 @@ struct CDC
                 result.options ~= ("-of" ~ result.of);
             }
             version (Windows)
-            {    if (find(result.of, ".") <= rfind(result.of, "/"))
-                    result.of ~= bin_ext;
+            //{    if (find(result.of, ".") <= rfind(result.of, "/"))
+            {    
+                // TODO TEST!
+                if (find(result.of, '.') <= retro(find(retro(result.of), '/')))
+                {
+                   result.of ~= bin_ext;
+                }
 
                 //Stdout(find(result.of, ".")).newline;
             }
@@ -550,7 +562,7 @@ struct CDC
             if (compiler != "gdc")
             {
             version(Windows)
-                foreach (inout option; result)
+                foreach (ref option; result)
                     if (starts_with(option, "-of")) // fix -of with / on Windows
                         option = replace(option, "/", "\\");
 
@@ -579,7 +591,7 @@ struct CDC
             translate["-gc"] = "-g";
 
             // Perform option translation
-            foreach (inout option; result)
+            foreach (ref option; result)
             {    if (starts_with(option, "-od")) // remove unsupported -od
                     option = "";
                 if (option =="-D")
@@ -615,11 +627,12 @@ void execute_compiler(string compiler, string[] arguments)
         } 
         else{execute(compiler, arguments);}
     } 
-    catch(ProcessException e){throw new Exception("Compiler failed: " ~ e.msg);}
+    catch(ProcessException e)
+    {
+        writeln("Compiler failed: " ~ e.msg);
+    }
 }
 
-
-bool verbose = false;
 
 /**
  * Execute a command-line program and print its output.
@@ -629,14 +642,14 @@ bool verbose = false;
  *
  * Throws: ProcessException on failure or status code 1.
  */
-void execute(string command, string[] args=null)
+void execute(string command, string[] args)
 {    
     version(Windows)
     {
         if(starts_with(command, "./")){command = command[2 .. $];}
     }
             
-    if(verbose){writefln("CDC:  " ~ command);}
+    writeln("CDC:  " ~ command ~ " " ~ join(args, " "));
 
     int status = !system((command ~ " " ~ join(args, " ") ~ "\0").ptr);
     if(!status)
@@ -684,7 +697,7 @@ string[] scan(string folder, string[] extensions = [""], ScanMode mode = ScanMod
             foreach(string ext; extensions)
             {
                 //if filename ends with ext
-                if(filename.length >= ext.length && filename[$ - ext.length .. length] == ext)
+                if(filename.length >= ext.length && filename[$ - ext.length .. $] == ext)
                 {
                     result ~= name;
                 }

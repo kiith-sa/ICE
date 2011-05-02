@@ -3,7 +3,9 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module pong.credits;
+@safe
 
 
 import gui.guielement;
@@ -24,24 +26,24 @@ class Credits
 {
     private:
         ///Credits text.
-        static credits_ = 
-        "Credits\n"
-        ".\n"
-        "Pong was written by Ferdinand Majerech aka Kiith-Sa in the D Programming language\n"
-        ".\n"
-        "Other tools used to create Pong:\n"
-        ".\n"
-        "OpenGL graphics programming API\n"
-        "SDL library\n"
-        "The Freetype Project\n"
-        "Derelict D bindings\n"
-        "CDC build script\n"
-        "Linux OS\n"
-        "Vim text editor\n"
-        "Valgrind debugging and profiling suite\n"
-        "Git revision control system\n"
-        ".\n"
-        "Pong is released under the terms of the Boost license.";
+        static immutable credits_ = 
+            "Credits\n"
+            ".\n"
+            "DPong was written by Ferdinand Majerech aka Kiith-Sa in the D Programming language\n"
+            ".\n"
+            "Other tools used to create Pong:\n"
+            ".\n"
+            "OpenGL graphics programming API\n"
+            "SDL library\n"
+            "The Freetype Project\n"
+            "Derelict D bindings\n"
+            "CDC build script\n"
+            "Linux OS\n"
+            "Vim the text editor\n"
+            "Valgrind debugging and profiling suite\n"
+            "Git revision control system\n"
+            ".\n"
+            "Pong is released under the terms of the Boost license.";
 
         ///Parent of the container.
         GUIElement parent_;

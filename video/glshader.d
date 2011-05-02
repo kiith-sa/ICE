@@ -5,25 +5,28 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module video.glshader;
+@system
 
 
-import std.string;
-import std.file;
+import std.exception;
 import std.stdio;
+import std.string;
 
 import derelict.opengl.gl;
 
 import video.shader;
 import file.fileio;
-import util.exception;
 
            
 ///OpenGL (GLSL only right now) shader.
 package struct GLShader
 {
-    invariant{assert(program_ != 0, "Shader program is null");}
+    //commented out due to compiler bug
+    //invariant(){assert(program_ != 0, "Shader program is null");}
 
     private:
+        alias file.file.File File;
+
         ///Linked GLSL shader program.
         GLuint program_ = 0;
 
@@ -33,26 +36,22 @@ package struct GLShader
          *
          * Params:  name = File name of the shader in the "shaders/" subdirectory.
          * 
-         * Returns: Loaded shader.
-         *
          * Throws:  ShaderException if the shader could not be loaded or was invalid.
          */
-        static GLShader opCall(string name)
+        this(in string name)
         {
             scope(failure){writefln("Shader initialization failed: " ~ name);}
 
-            GLShader shader;
-            try{shader.load_GLSL("shaders/" ~ name ~ ".vert", "shaders/" ~ name ~ ".frag");}
+            try{load_GLSL("shaders/" ~ name ~ ".vert", "shaders/" ~ name ~ ".frag");}
             catch(FileIOException e)
             {
                 throw new ShaderException("Shader could not be read: " ~ e.msg);
             }
             catch(ShaderException e){writefln(e.msg); throw e;}
-            return shader;
         }
 
         ///Destroy this shader.
-        void die(){glDeleteProgram(program_);}
+        ~this(){glDeleteProgram(program_);}
 
         ///Use this shader in following drawing commands.
         void start(){glUseProgram(program_);}
@@ -64,7 +63,7 @@ package struct GLShader
          * 
          * Returns: Handle to the attribute or -1 if not found in the shader.
          */
-        GLint get_attribute(string name)
+        GLint get_attribute(in string name) const
         {
             return glGetAttribLocation(program_, toStringz(name));
         }
@@ -76,7 +75,7 @@ package struct GLShader
          * 
          * Returns: Handle to the uniform or -1 if not found in the shader.
          */
-        GLint get_uniform(string name)
+        GLint get_uniform(in string name) const
         {
             return glGetUniformLocation(program_, toStringz(name));
         }
@@ -91,27 +90,22 @@ package struct GLShader
          * Throws:  FileIOException if a shader file could not be found or file name is invalid.
          *          ShaderException if the shader could not be loaded, compiled or linked.
          */
-        void load_GLSL(string vfname, string ffname)
+        void load_GLSL(in string vfname, in string ffname)
         {
             //opening and loading from files
-            File vfile;
-            File ffile;
+            File vfile = File(vfname, FileMode.Read);
+            File ffile = File(ffname, FileMode.Read);
 
-            vfile = open_file(vfname, FileMode.Read);
-            scope(exit){close_file(vfile);}
-            ffile = open_file(ffname, FileMode.Read);
-            scope(exit){close_file(ffile);}
-
-            string vsource = cast(string)vfile.data;
-            string fsource = cast(string)ffile.data;
-            int vlength = cast(int)vsource.length; 
-            int flength = cast(int)fsource.length; 
-            char* vptr = vsource.ptr;
-            char* fptr = fsource.ptr;
+            const vsource = cast(string)vfile.data;
+            const fsource = cast(string)ffile.data;
+            const vlength = cast(int)vsource.length; 
+            const flength = cast(int)fsource.length; 
+            const vptr = vsource.ptr;
+            const fptr = fsource.ptr;
             
             //creating OpenGL objects for shaders
-            GLuint vshader = glCreateShader(GL_VERTEX_SHADER);
-            GLuint fshader = glCreateShader(GL_FRAGMENT_SHADER);
+            const GLuint vshader = glCreateShader(GL_VERTEX_SHADER);
+            const GLuint fshader = glCreateShader(GL_FRAGMENT_SHADER);
 
             //passing shader code to OpenGL
             glShaderSource(vshader, 1, &vptr, &vlength);

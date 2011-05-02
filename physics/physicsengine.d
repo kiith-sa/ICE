@@ -4,8 +4,12 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
-module physics.physicsengine;
 
+module physics.physicsengine;
+@safe
+
+
+import std.algorithm;
 
 import physics.physicsbody;
 import physics.contact;
@@ -20,8 +24,8 @@ import monitor.graphmonitor;
 import math.vector2;
 import util.signal;
 import util.weaksingleton;
-import containers.array;
 import util.iterator;
+import workarounds;
 
 
 /**
@@ -39,7 +43,7 @@ final class PhysicsEngine : Monitorable
 {
     mixin WeakSingleton;
 
-    invariant
+    invariant()
     {
         assert(penetration_iteration_multiplier_ >= 1.0, 
                "Penetration iteration multiplier must be at least 1.0 to prevent "
@@ -117,7 +121,7 @@ final class PhysicsEngine : Monitorable
          *
          * Params:  time_step = Time length of the update in seconds.
          */
-        void update(real time_step)
+        void update(in real time_step)
         {
             updating_ = true;
 
@@ -148,7 +152,7 @@ final class PhysicsEngine : Monitorable
         void add_body(PhysicsBody physics_body)
         in
         {
-            assert(!bodies_.contains(physics_body, true), 
+            assert(find!"a is b"(bodies_, physics_body) == [],
                    "Adding the same physics body twice");
             assert(!updating_, "Can't add new physics bodies during a physics update");
         }
@@ -174,14 +178,12 @@ final class PhysicsEngine : Monitorable
         void remove_body(PhysicsBody physics_body)
         in
         {
-            assert(bodies_.contains(physics_body, true), 
+            assert(find!"a is b"(bodies_, physics_body) != [],
                    "Can't remove a physics body that is not in the PhysicsEngine");
             assert(!updating_, "Can't remove physics bodies during a physics update");
         }
         body
         {
-            alias containers.array.remove remove;
-
             statistics_.bodies--;
             if(physics_body.volume !is null)
             {
@@ -189,10 +191,10 @@ final class PhysicsEngine : Monitorable
                 physics_body.remove_from_spatial(spatial_manager_);
             }
 
-            bodies_.remove(physics_body, true);
+            workarounds.remove!(PhysicsBody, true)(bodies_, physics_body);
         }
 
-        MonitorData monitor_data()
+        MonitorDataInterface monitor_data()
         {
             SubMonitor function(PhysicsEngine)[string] ctors_;
             ctors_["Contacts"] = &new_graph_monitor!(PhysicsEngine, Statistics, 
@@ -201,7 +203,7 @@ final class PhysicsEngine : Monitorable
             ctors_["Bodies"] = &new_graph_monitor!(PhysicsEngine, Statistics, 
                                                    "bodies", "col_bodies"),
             ctors_["Coarse"] = &new_graph_monitor!(PhysicsEngine, Statistics, "tests");
-            return new MonitorManager!(PhysicsEngine)(this, ctors_);
+            return new MonitorData!(PhysicsEngine)(this, ctors_);
         }
     private:
         ///Detect collisions between bodies.
@@ -234,7 +236,8 @@ final class PhysicsEngine : Monitorable
             //number of iterations to process - penetration resolution might introduce
             //more penetrations so we need to have more iterations than contacts
 
-            uint iterations = cast(uint)(contacts_.length * penetration_iteration_multiplier_);
+            const iterations = cast(uint)(contacts_.length * 
+                                          penetration_iteration_multiplier_);
 
             //contact we're currently resolving
             Contact contact;
@@ -252,8 +255,9 @@ final class PhysicsEngine : Monitorable
                 //note: this is probably slow, but readable, will be changed only
                 //if slowdown is measurable
                 //find greatest penetration
-                contact = contacts_.max((ref Contact a, ref Contact b)
-                                        {return a.penetration > b.penetration;});
+                contact = minPos!((ref Contact a, ref Contact b)
+                                  {return a.penetration < b.penetration;})
+                                  (contacts_)[0];
 
                 //ignore insignificant penetrations
                 if(contact.penetration < acceptable_penetration){break;}
@@ -292,8 +296,8 @@ final class PhysicsEngine : Monitorable
             //number of iterations to process - collision response
             //might introduce more errors so we need to have more
             //iterations than contacts
-            uint iterations = cast(uint)(contacts_.length * 
-                                         response_iteration_multiplier_);
+            const iterations = cast(uint)(contacts_.length * 
+                                          response_iteration_multiplier_);
 
             Contact contact;
 
@@ -303,9 +307,9 @@ final class PhysicsEngine : Monitorable
             {
                 statistics_.response++;
                 //get the contact with maximum desired delta velocity
-                contact = contacts_.max((ref Contact a, ref Contact b)
-                                        {return a.desired_delta_velocity > 
-                                                b.desired_delta_velocity;});
+                contact = minPos!((ref Contact a, ref Contact b)
+                                  {return a.desired_delta_velocity > b.desired_delta_velocity;})
+                                  (contacts_)[0];
 
                 //ignore insignificant errors
                 if(contact.desired_delta_velocity < acceptable_velocity_error){break;}

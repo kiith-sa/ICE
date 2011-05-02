@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module video.videodrivercontainer;
+@trusted
 
 
 import std.stdio;
@@ -52,15 +53,16 @@ class VideoDriverContainer
          *
          * Throws:  VideoDriverException if the video driver could not be initialized.
          */
-        VideoDriver produce(T)(uint width, uint height, ColorFormat format, bool fullscreen)
+        VideoDriver produce(T)(in uint width, in uint height, 
+                               in ColorFormat format, in bool fullscreen)
+            if(is(T: VideoDriver))
         {
-            static assert(is(T : VideoDriver));
             video_driver_ = new T(font_manager_);
             scope(failure)
             {
                 video_driver_.die();
                 video_driver_ = null;
-                writefln("VideoDriver initialization failed");
+                writeln("VideoDriver initialization failed");
             }
             video_driver_.set_video_mode(width, height, format, fullscreen);
 
@@ -78,6 +80,7 @@ class VideoDriverContainer
         {
             font_manager_.unload_textures(video_driver_);
             video_driver_.die();
+
             video_driver_ = null;
         }
 

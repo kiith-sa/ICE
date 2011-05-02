@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module util.stringctfe;
+@safe
 
 
 /**
@@ -17,7 +18,7 @@ module util.stringctfe;
  *
  * Returns: Resulting array of substrings.
  */
-string[] split(string str, char delimiter)
+string[] split_ctfe(in string str, in char delimiter)
 {
     string current;
     string[] result;
@@ -39,25 +40,6 @@ string[] split(string str, char delimiter)
 }
 
 /**
- * Replacement for std.string.strip, which can't be evaluated at compile time.
- *
- * Returns a copy of string without leading and trailing whitespace.
- *
- * Params: str = String to strip.
- *
- * Returns: Stripped string.
- */
-string strip(string str)
-{
-    size_t left = 0;
-    while(str[left] == ' '){left++;}
-    if(left == str.length){return "";}
-    size_t right = str.length - 1;
-    while(str[right] == ' '){right--;}
-    return str[left .. right + 1];
-}
-
-/**
  * Replacement for std.string.join, which can't be evaluated at compile time.
  *
  * Joins all given strings into one string with specified separator.
@@ -67,7 +49,7 @@ string strip(string str)
  *
  * Returns: Joined string.
  */
-string join(string[] words, string sep)
+string join_ctfe(in string[] words, in string sep)
 {
     if(words.length == 0){return "";}
     string result = words[0];

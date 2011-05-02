@@ -5,13 +5,16 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module formats.zlib;
+@trusted
 
 
 import etc.c.zlib;
 
-import math.math;
+import std.algorithm;
+import std.exception;
+import std.traits;
+
 import containers.vector;
-import util.exception;
 
 
 ///Exception thrown at errors related to compression (such as zlib).
@@ -39,7 +42,7 @@ enum CompressionStrategy : ubyte
  *
  * Throws:  CompressionException if the data could not be decompressed.
  */
-ubyte[] zlib_inflate(ubyte[] input, uint reserve = 0)
+ubyte[] zlib_inflate(in ubyte[] input, in uint reserve = 0)
 {
     ubyte[] inflated = new ubyte[reserve == 0 ? max(cast(size_t)1, input.length * 4) : reserve];
 
@@ -49,7 +52,8 @@ ubyte[] zlib_inflate(ubyte[] input, uint reserve = 0)
         data_type = Z_BINARY;
         next_out = inflated.ptr;
         avail_out = cast(uint)inflated.length;
-        next_in = input.ptr;
+        //casting away const - but not writing, so we should be ok
+        next_in = cast(ubyte*)input.ptr;
         avail_in = cast(uint)input.length;
     }
 
@@ -59,14 +63,17 @@ ubyte[] zlib_inflate(ubyte[] input, uint reserve = 0)
 
     while(stream.avail_in)
     {
-        int message = inflate(&stream, Z_NO_FLUSH);
+        const message = inflate(&stream, Z_NO_FLUSH);
 
         if(message == Z_STREAM_END)
         {
             inflated.length = stream.total_out;
             return inflated;
         }
-        else if(message != Z_OK){throw new CompressionException("Zlib decompression error");}
+        else if(message != Z_OK)
+        {
+            throw new CompressionException("Zlib decompression error");
+        }
         else if(stream.avail_out == 0)
         {
             inflated.length = inflated.length * 2;
@@ -102,30 +109,27 @@ struct Inflator
          * Params:  inflated = Vector to write decompressed data to.
          *                     Any existing data in the vector will be overwritten.
          */
-        static Inflator opCall(ref Vector!(ubyte) inflated)
+        this(ref Vector!(ubyte) inflated)
         {
-            Inflator result;
+            inflated_ = &inflated;
+            inflated_.length = inflated.allocated;
 
-            inflated.length = inflated.allocated;
-
-            result.inflated_ = &inflated;
-            result.stream_.next_out = inflated.ptr;
+            stream_.next_out = inflated_.ptr_unsafe;
             //for some reason, this needs to be set twice (review in future)
-            result.stream_.avail_out = cast(uint)inflated.length;
-            result.stream_.avail_out = cast(uint)inflated.length;
-            result.stream_.data_type = Z_BINARY;
-
-            return result;
+            stream_.avail_out = cast(uint)inflated_.length;
+            stream_.avail_out = cast(uint)inflated_.length;
+            stream_.data_type = Z_BINARY;
         }
 
         /**
-         * Decompress a piece of the data.
+         * Decompress a piece of data.
          *
          * Throws:  CompressionException if the data could not be decompressed.
          */
-        void inflate(ubyte[] input)
+        void inflate(in ubyte[] input)
         {
-            stream_.next_in = input.ptr;
+            //casting away const - but not writing, so we should be ok
+            stream_.next_in = cast(ubyte*)input.ptr;
             stream_.avail_in = cast(uint)input.length;
 
             if(!started_)
@@ -137,7 +141,7 @@ struct Inflator
 
             while(stream_.avail_in)
             {
-                int message = .inflate(&stream_, Z_NO_FLUSH);
+                const message = .inflate(&stream_, Z_NO_FLUSH);
 
                 if(message == Z_STREAM_END)
                 {
@@ -154,7 +158,7 @@ struct Inflator
                 else if(stream_.avail_out == 0)
                 {
                     inflated_.length = inflated_.length * 2;
-                    stream_.next_out = inflated_.ptr + inflated_.length / 2;
+                    stream_.next_out = inflated_.ptr_unsafe + inflated_.length / 2;
                     stream_.avail_out = cast(uint)inflated_.length / 2;
                 }
             }
@@ -170,8 +174,9 @@ struct Inflator
  *
  * Returns: Compressed data.
  */
-ubyte[] zlib_deflate(ubyte[] source, CompressionStrategy strategy = CompressionStrategy.RLE,
-                     uint level = 9)
+ubyte[] zlib_deflate(const ubyte[] source, 
+                     in CompressionStrategy strategy = CompressionStrategy.RLE,
+                     in uint level = 9)
 {
     ubyte[] buffer;
     deflate_(buffer, source, strategy, level);
@@ -188,10 +193,12 @@ ubyte[] zlib_deflate(ubyte[] source, CompressionStrategy strategy = CompressionS
  *
  * Returns: Compressed data.
  */
-void zlib_deflate(ref Vector!(ubyte) result, ubyte[] source, 
-                  CompressionStrategy strategy = CompressionStrategy.RLE,
-                  uint level = 9)
-{deflate_(result, source, strategy, level);}
+void zlib_deflate(ref Vector!(ubyte) result, in ubyte[] source, 
+                  in CompressionStrategy strategy = CompressionStrategy.RLE,
+                  in uint level = 9)
+{
+    deflate_(result, source, strategy, level);
+}
 
 package:
 /**
@@ -202,9 +209,10 @@ package:
  *
  * Returns: True if CRC matches, false otherwise.
  */
-bool zlib_check_crc(uint crc, ubyte[] data)
+bool zlib_check_crc(in uint crc, in ubyte[] data)
 {
-    return crc == crc32(0, data.ptr, cast(uint)data.length);
+    //casting away const - but not writing, so we should be ok
+    return crc == crc32(0, cast(ubyte*)data.ptr, cast(uint)data.length);
 }
 
 /**
@@ -214,7 +222,11 @@ bool zlib_check_crc(uint crc, ubyte[] data)
  * 
  * Returns: Generated CRC32.
  */
-uint zlib_crc(ubyte[] data){return crc32(0, data.ptr, cast(uint)data.length);}
+uint zlib_crc(in ubyte[] data)
+{
+    //casting away const - but not writing, so we should be ok
+    return crc32(0, cast(ubyte*)data.ptr, cast(uint)data.length);
+}
 
 private:
 /**
@@ -227,8 +239,8 @@ private:
  *
  * Returns: Compressed data.
  */
-void deflate_(Buffer)(ref Buffer result, ubyte[] source, 
-                      CompressionStrategy strategy, uint level)
+void deflate_(Buffer)(ref Buffer result, in ubyte[] source, 
+                      in CompressionStrategy strategy, in uint level)
 in{assert(level <= 9, "Invalid zlib compression level");}
 body
 {
@@ -241,9 +253,10 @@ body
     z_stream stream;
     with(stream)
     {
-        next_in = source.ptr;
+        //casting away const - but not writing, so we should be ok
+        next_in = cast(ubyte*)source.ptr;
         avail_in = cast(uint)source.length;
-        next_out = result.ptr;
+        next_out = get_ptr(result);
         avail_out = cast(uint)result.length;
         data_type = Z_BINARY;
     }
@@ -255,7 +268,7 @@ body
     while(message != Z_STREAM_END)
     {
         result.length = result.length * 2;
-        stream.next_out = result.ptr + result.length / 2;
+        stream.next_out = get_ptr(result) + result.length / 2;
         stream.avail_out = cast(uint)result.length / 2;
         message = deflate(&stream, Z_FINISH);
     }
@@ -264,4 +277,11 @@ body
 
     result.length = stream.total_out;
     deflateEnd(&stream);
+}
+
+///Utility for deflate_ to access array and vector pointers uniformly
+ubyte* get_ptr(Buffer)(ref Buffer buf)
+{
+    static if(isArray!Buffer){return buf.ptr;}
+    else{return buf.ptr_unsafe;}
 }

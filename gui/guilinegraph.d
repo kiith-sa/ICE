@@ -7,8 +7,9 @@
 module gui.guilinegraph;
 
 
+import std.algorithm;
 import std.math;
-import std.string;
+import std.conv;
 
 import video.videodriver;
 import math.math;
@@ -19,7 +20,6 @@ import time.time;
 import time.timer;
 import containers.vector;
 import util.factory;     
-import util.string;
 import color;
 
 /**
@@ -29,7 +29,7 @@ import color;
  */
 final class GUILineGraph : GUIElement
 {
-    invariant
+    invariant()
     {
         assert(data_point_time_ > 0.0, "Graph data point time period must be more than 0");
         assert(scale_x_ > 0.0, "Graph X scale must be more than 0");
@@ -37,6 +37,8 @@ final class GUILineGraph : GUIElement
     }
 
     private:
+        alias std.conv.to to;
+
         ///Stores data used to display graph of one value.
         static class GraphDisplay
         {
@@ -48,9 +50,9 @@ final class GUILineGraph : GUIElement
             Vector!(Vector2f) line_strip;
 
             ///Construct a GraphDisplay.
-            this(){line_strip = Vector!(Vector2f)();}
+            this(){line_strip = Vector!(Vector2f)(8);}
             ///Destroy this GraphDisplay.
-            void die(){line_strip.die();}
+            void die(){clear(line_strip);}
         }
 
         ///Horizontal line on the graph, shown for visual comparison with graph values.
@@ -105,24 +107,24 @@ final class GUILineGraph : GUIElement
             data_point_time_ = clamp(time, data_.time_resolution, 64.0L);
         }
 
-        ///Return time between two graph data points.
-        real data_point_time(){return data_point_time_;}
+        ///Get time between two graph data points.
+        real data_point_time() const {return data_point_time_;}
 
         ///Toggle visibility of graph of specified value.
-        void toggle_value(string value)
+        void toggle_value(in string value)
         {
             auto graphics = graphics_[value];
             graphics.visible = !graphics.visible;
         }
 
         ///If true, Y axis of the graph will be scaled automatically according to highest value.
-        void auto_scale(bool scale){aligned_ = false; auto_scale_ = scale;}
+        void auto_scale(in bool scale){aligned_ = false; auto_scale_ = scale;}
 
         ///If true, the graph will automatically scroll to show newest data.
-        void auto_scroll(bool scroll){aligned_ = false; auto_scroll_ = scroll;}
+        void auto_scroll(in bool scroll){aligned_ = false; auto_scroll_ = scroll;}
 
         ///Set time offset of the graph. Used for manual scrolling.
-        void time_offset(float offset)
+        void time_offset(in float offset)
         {
             aligned_ = false; 
             //limiting to prevent absurd values
@@ -136,34 +138,42 @@ final class GUILineGraph : GUIElement
          *
          * Params:  offset = Screen space offset relative the start of graph.
          */
-        void scroll(float offset)
+        void scroll(in float offset)
         {
             auto_scroll = false;
 
             //convert time offset to screen space, modify it and convert back to time.
-            float conv = data_point_time_ / scale_x;
-            float space_offset = time_offset_ / conv + offset;
+            const conv = data_point_time_ / scale_x;
+            const space_offset = time_offset_ / conv + offset;
             time_offset(space_offset * conv);
         }
 
         ///Get X scale of the graph.
-        float scale_x(){return scale_x_;}
+        float scale_x() const {return scale_x_;}
         ///Set X scale of the graph. Used for manual zooming.
-        void scale_x(float scale_x){aligned_ = false; scale_x_ = clamp(scale_x, 0.01f, 200.0f);}
+        void scale_x(float scale_x)
+        {
+            aligned_ = false; 
+            scale_x_ = clamp(scale_x, 0.01f, 200.0f);
+        }
 
         ///Get Y scale of the graph. 
-        float scale_y(){return scale_y_;}
+        float scale_y() const {return scale_y_;}
         ///Set Y scale of the graph. Used for manual zooming.
-        void scale_y(float scale_y){aligned_ = false; scale_y_ = clamp(scale_y, 0.0005f, 10.0f);}
+        void scale_y(float scale_y)
+        {
+            aligned_ = false; 
+            scale_y_ = clamp(scale_y, 0.0005f, 10.0f);
+        }
 
         ///Set font size of the graph.
-        void font_size(uint size){font_size_ = size;}
+        void font_size(in uint size){font_size_ = size;}
 
         ///Set graph mode (data points are average per measurement or sums over time).
-        void graph_mode(GraphMode mode){mode_ = mode;}
+        void graph_mode(in GraphMode mode){mode_ = mode;}
 
         ///Destroy this GUILineGraph.
-        void die()
+        override void die()
         {
             foreach(display; graphics_.values){display.die();}
             super.die();
@@ -178,7 +188,7 @@ final class GUILineGraph : GUIElement
          *          data   = Reference to GraphData to display.
          *                   GUILineGraph just displays the GraphData, it doesn't manage it.
          */
-        this(GUIElementParams params, Color[string] colors, GraphData data)
+        this(in GUIElementParams params, in Color[string] colors, GraphData data)
         {
             super(params);
 
@@ -195,7 +205,7 @@ final class GUILineGraph : GUIElement
         {
             super.update();
 
-            real time = get_time();
+            const time = get_time();
             //time to update display
             if(display_timer_.expired(time))
             {
@@ -229,7 +239,7 @@ final class GUILineGraph : GUIElement
         }
 
         ///Returns age of this graph at last display timer reset.
-        real age(){return display_timer_.start - data_.start_time;}
+        real age() const {return display_timer_.start - data_.start_time;}
 
         ///Update graph display data such as graph line strips.
         void update_view()
@@ -237,7 +247,7 @@ final class GUILineGraph : GUIElement
             if(auto_scroll_){time_offset_ = age();}
 
             real maximum;
-            real[][string] data_points = get_data_points_and_maximum(maximum);
+            const(real)[][string] data_points = get_data_points_and_maximum(maximum);
 
             if(auto_scale_)
             {
@@ -249,16 +259,16 @@ final class GUILineGraph : GUIElement
             //generate line strips
             foreach(name; data_.graph_names)
             {
-                auto points = data_points[name];
+                const points = data_points[name];
                 auto graphics = graphics_[name];
 
-                //clearn the strip
+                //clear the strip
                 graphics.line_strip.length = 0;
                 if(data_.empty(name)){continue;}
 
                 float x = bounds_.max.x - scale_x_ * (points.length - 1);
                 x += data_.delay(name) * scale_x_;
-                float y = bounds_.max.y;
+                const float y = bounds_.max.y;
 
                 foreach(real point; points)
                 {
@@ -278,28 +288,28 @@ final class GUILineGraph : GUIElement
          *
          * Returns: Data points of every graph in an associative array indexed by graph name.
          */
-        real[][string] get_data_points_and_maximum(out real maximum)
+        const(real)[][string] get_data_points_and_maximum(out real maximum)
         {
             //calculate the time window we want to get data points for
             //why +3 : get a few more points so the graph is always full if there's enough data
-            real time_width = (bounds_.width / scale_x_ + 3) * data_point_time_;
+            const real time_width = (bounds_.width / scale_x_ + 3) * data_point_time_;
 
-            real end_time = data_.start_time + time_offset_;
-            real start_time = end_time - time_width;
+            const real end_time = data_.start_time + time_offset_;
+            const real start_time = end_time - time_width;
 
             maximum = 0.0;
-            real[][string] data_points;
+            const(real)[][string] data_points;
 
             //getting all data points and the maximum
             foreach(name; data_.graph_names)
             {
-                real[] points = data_.data_points(name, start_time, end_time, 
-                                                  data_point_time_, mode_);
+                const(real)[] points = data_.data_points(name, start_time, end_time, 
+                                                         data_point_time_, mode_);
 
                 data_points[name] = points;
                 if(points.length <= 1){continue;}
 
-                real graph_maximum = max(points);
+                const real graph_maximum = reduce!max(points);
                 if(graph_maximum > maximum){maximum = graph_maximum;}
             }
 
@@ -311,7 +321,7 @@ final class GUILineGraph : GUIElement
         {
             lines_.length = 0;
 
-            real graph_height = bounds_.height / scale_y_;
+            const real graph_height = bounds_.height / scale_y_;
             uint spacing = cast(uint)pow(cast(real)10.0, cast(uint)log10(graph_height));
             if(spacing == 0){spacing = 1;}
 
@@ -324,7 +334,7 @@ final class GUILineGraph : GUIElement
             do
             {
                 line.y = bounds_.max.y - scale_y_ * line_height;
-                line.text = to_string(line_height);
+                line.text = to!string(line_height);
                 line.color = Color(255, 128, 0, 192);
                 lines_ ~= line;
 
@@ -339,9 +349,9 @@ final class GUILineGraph : GUIElement
          * Params:  driver = Video driver to draw with.
          *          name   = Name of the graph to draw.
          */
-        void draw_graph(VideoDriver driver, string name)
+        void draw_graph(VideoDriver driver, in string name) const
         {
-            auto graphics = graphics_[name];
+            const graphics = graphics_[name];
 
             if(!graphics.visible || graphics.line_strip.length <= 1){return;}
 
@@ -362,10 +372,10 @@ final class GUILineGraph : GUIElement
          *
          * Params:  driver = VideoDriver to draw with.
          */
-        void draw_info(VideoDriver driver)
+        void draw_info(VideoDriver driver) const
         {
-            static data_time_color = Color(255, 0, 0, 192);
-            static data_time_offset = Vector2i(-32, 4);
+            immutable data_time_color = Color(255, 0, 0, 192);
+            immutable data_time_offset = Vector2i(-32, 4);
 
             Vector2f start;
             start.x = bounds_.min.x;
@@ -389,7 +399,7 @@ final class GUILineGraph : GUIElement
 
             //data point time
             driver.draw_text(bounds_.max_min() + data_time_offset,
-                             to_string(data_point_time_) ~ "s", data_time_color);
+                             to!string(data_point_time_) ~ "s", data_time_color);
 
             driver.disable_scissor();
         }
@@ -409,11 +419,12 @@ final class GUILineGraphFactory : GUIElementFactoryBase!(GUILineGraph)
         mixin(generate_factory("GraphData $ data $ null"));
         ///Name and color of graph for each value.
         Color[string] graphs_;
+
     public:
-        void graph_color(string name, Color color){graphs_[name] = color;}
+        void graph_color(in string name, in Color color){graphs_[name] = color;}
 
         ///Produce a GUILineGraph with parameters of the factory.
-        GUILineGraph produce()
+        override GUILineGraph produce()
         in{assert(data_ !is null, "GUI line graph needs to be linked to graph data");}
         body{return new GUILineGraph(gui_element_params, graphs_, data_);}
 }

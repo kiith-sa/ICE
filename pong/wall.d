@@ -4,6 +4,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module pong.wall;
+@safe
 
 
 import pong.ball;
@@ -46,7 +47,7 @@ class Wall : Actor
         mixin Signal!(BallBody) ball_hit;
 
         ///Set wall velocity.
-        void velocity(Vector2f v){physics_body_.velocity = v;}
+        @property void velocity(in Vector2f v){physics_body_.velocity = v;}
 
         override void die()
         {
@@ -62,7 +63,7 @@ class Wall : Actor
          *          physics_body = Physics body of the wall.
          *          box          = Rectangle used for graphical representation of the wall.
          */
-        this(ActorContainer container, PhysicsBody physics_body, ref Rectanglef box)
+        this(ActorContainer container, PhysicsBody physics_body, const ref Rectanglef box)
         {
             super(container, physics_body);
             box_ = box;
@@ -72,12 +73,12 @@ class Wall : Actor
 
         override void draw(VideoDriver driver)
         {
-            Vector2f position = physics_body_.position;
+            const Vector2f position = physics_body_.position;
             driver.draw_rectangle(position + box_.min, position + box_.max, color_border_);
             driver.draw_filled_rectangle(position + box_.min, position + box_.max, color_);
         }
 
-        override void update(real time_step, real game_time)
+        override void update(in real time_step, in real game_time)
         {
             foreach(collider; physics_body_.colliders)
             {
@@ -114,6 +115,7 @@ class WallFactory : WallFactoryBase!(Wall)
     public override Wall produce(ActorContainer container)
     {
         auto physics_body = new PhysicsBody(bbox, position_, velocity_, real.infinity);
-        return new Wall(container, physics_body, rectangle);
+        auto rect = rectangle();
+        return new Wall(container, physics_body, rect);
     }
 }

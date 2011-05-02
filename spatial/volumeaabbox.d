@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 module spatial.volumeaabbox;
+@safe
 
 
 import spatial.volume;
@@ -13,7 +14,7 @@ import math.rectangle;
 
 
 ///2D axis aligned bounding box (aka rectangle).
-final class VolumeAABBox : Volume
+final immutable class VolumeAABBox : Volume
 {
     public:
         ///Bounding box rectangle in object space.
@@ -26,12 +27,8 @@ final class VolumeAABBox : Volume
          * Params:  offset = Position of the top-left corner of the box in object space.
          *          size   = Size of the bounding box.
          */
-        this(Vector2f offset, Vector2f size)
+        this(in Vector2f offset, in Vector2f size)
         {
-            rectangle.min = offset;
-            rectangle.max = offset + size;
+            rectangle = Rectanglef(offset, offset + size);
         }
-
-        ///Returns bounding box rectangle in object space - used by non-physics code.
-        Rectanglef bounding_box(){return rectangle;}
 }

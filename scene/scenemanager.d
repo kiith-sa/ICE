@@ -4,11 +4,15 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module scene.scenemanager;
+@safe
 
 
-import std.string;
+import workarounds;
+import std.algorithm;
 import std.stdio;
+import std.string;
 
 import scene.actor;
 import scene.actorcontainer;
@@ -22,7 +26,6 @@ import monitor.monitorable;
 import monitor.monitordata;
 import monitor.submonitor;
 import monitor.graphmonitor;
-import containers.array;
 import util.weaksingleton;
 import util.signal;
 
@@ -39,7 +42,7 @@ final class SceneManager : ActorContainer, Monitorable
 {
     mixin WeakSingleton;
 
-    invariant
+    invariant()
     {
         assert(time_step_ >= 0.0, "Time step can't be negative");
         assert(game_time_ >= 0.0, "Frame time can't be negative");
@@ -59,7 +62,7 @@ final class SceneManager : ActorContainer, Monitorable
         Actor[] actors_to_remove_;
 
         ///Time taken by single game update.
-        real time_step_ = 1.0 / 90.0; 
+        const real time_step_ = 1.0 / 90.0; 
         ///Time this update started, in game time.
         real game_time_;
         ///Time this frame (which can have multiple updates) started, in absolute time.
@@ -97,32 +100,32 @@ final class SceneManager : ActorContainer, Monitorable
         ///Destroy the SceneManager.
         void die()
         {
-            clear();
+            this.clear();
             singleton_dtor();
         }
 
         ///Get update length in seconds, i.e. "update frame" length, not graphics.
-        real time_step(){return time_step_;}
+        real time_step() const {return time_step_;}
 
         ///Get time when the current update started, in game time.
-        real game_time(){return game_time_;}
+        real game_time() const {return game_time_;}
 
         ///Set time speed multiplier (0 for pause, 1 for normal speed).
-        void time_speed(real speed){time_speed_ = speed;}
+        void time_speed(in real speed){time_speed_ = speed;}
 
         ///Get time speed multiplier.
-        real time_speed(){return time_speed_;}
+        real time_speed() const {return time_speed_;}
         
         ///Update the actor manager.
         void update()
         {
-            real time = get_time();
+            const real time = get_time();
             //time since last frame
-            real frame_length = math.math.max(time - frame_start_, 0.0L);
+            real frame_length = max(time - frame_start_, 0.0L);
             frame_start_ = time;
 
             //preventing spiral of death - if we can't keep up updating, slow down the game
-            frame_length = math.math.min(frame_length * time_speed_, 0.25L);
+            frame_length = min(frame_length * time_speed_, 0.25L);
 
             accumulated_time_ += frame_length;
 
@@ -151,8 +154,7 @@ final class SceneManager : ActorContainer, Monitorable
             //these actors are already dead, so remove them first
             foreach(actor; actors_to_remove_)
             {
-                alias containers.array.remove remove;
-                actors_.remove(actor, true);
+                workarounds.remove!(Actor, true)(actors_, actor);
                 physics_engine_.remove_body(actor.physics_body);
             }
 
@@ -173,8 +175,8 @@ final class SceneManager : ActorContainer, Monitorable
         void add_actor(Actor actor)
         in
         {
-            assert(!actors_to_add_.contains(actor, true) && 
-                   !actors_.contains(actor, true), 
+            assert(find!"a is b"(actors_to_add_, actor) == [] &&
+                   find!"a is b"(actors_, actor) == [],
                    "Adding the same actor twice");
         }
         body{actors_to_add_ ~= actor;}
@@ -189,23 +191,23 @@ final class SceneManager : ActorContainer, Monitorable
         void remove_actor(Actor actor)
         in
         {
-            assert(actors_.contains(actor, true), 
+            assert(find!"a is b"(actors_, actor) != [],
                    "Can't remove an actor that is not in the SceneManager");
         }
         body{actors_to_remove_ ~= actor;}
 
-        MonitorData monitor_data()
+        MonitorDataInterface monitor_data()
         {
             SubMonitor function(SceneManager)[string] ctors_;
             ctors_["UPS"] = &new_graph_monitor!(SceneManager, Statistics, "ups");
-            return new MonitorManager!(SceneManager)(this, ctors_);
+            return new MonitorData!(SceneManager)(this, ctors_);
         }
 
     package:
         ///Update all actors.
         void update_actors()
         {
-            real age = ups_timer_.age();
+            const real age = ups_timer_.age();
             ups_timer_.reset();
             //avoid divide by zero
             statistics_.ups = age == 0.0L ? 0.0 : 1.0 / age;
@@ -214,8 +216,7 @@ final class SceneManager : ActorContainer, Monitorable
             //Add or remove any actors requested
             foreach(actor; actors_to_remove_)
             {
-                alias containers.array.remove remove;
-                actors_.remove(actor, true);
+                workarounds.remove!(Actor, true)(actors_, actor);
                 physics_engine_.remove_body(actor.physics_body);
             }
 
