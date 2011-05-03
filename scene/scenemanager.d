@@ -105,16 +105,16 @@ final class SceneManager : ActorContainer, Monitorable
         }
 
         ///Get update length in seconds, i.e. "update frame" length, not graphics.
-        real time_step() const {return time_step_;}
+        @property real time_step() const {return time_step_;}
 
         ///Get time when the current update started, in game time.
-        real game_time() const {return game_time_;}
+        @property real game_time() const {return game_time_;}
 
         ///Set time speed multiplier (0 for pause, 1 for normal speed).
-        void time_speed(in real speed){time_speed_ = speed;}
+        @property void time_speed(in real speed){time_speed_ = speed;}
 
         ///Get time speed multiplier.
-        real time_speed() const {return time_speed_;}
+        @property real time_speed() const {return time_speed_;}
         
         ///Update the actor manager.
         void update()

@@ -4,8 +4,10 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module video.glmonitor;
 @trusted
+
 
 import std.conv;
 import std.math;
@@ -103,7 +105,7 @@ final package class PageMonitor : SubMonitor
                 }
 
                 ///Get information text about the current page.
-                string text()
+                @property string text()
                 {
                     if(driver_.pages.length == 0){return "No pages";}
 
@@ -160,7 +162,7 @@ final package class PageMonitor : SubMonitor
         }
 
     protected:
-        override SubMonitorView view()
+        @property override SubMonitorView view()
         {
             return new PageMonitorView(new PageIterator());
         }

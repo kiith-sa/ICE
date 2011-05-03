@@ -152,10 +152,10 @@ align(1) struct Array2D(T)
         body{data_[y * x_ + x] = value;}
 
         ///Get width of the array.
-        uint x() const {return x_;}
+        @property uint x() const {return x_;}
 
         ///Get height of the array.
-        uint y() const {return y_;}
+        @property uint y() const {return y_;}
 }
 ///Unittest for Array2D.
 unittest

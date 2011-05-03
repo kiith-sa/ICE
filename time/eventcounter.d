@@ -4,6 +4,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module time.eventcounter;
 @safe
 
@@ -73,10 +74,10 @@ struct EventCounter
         }
 
         ///Get number of events counted so far.
-        uint events() const {return events_total_;}
+        @property uint events() const {return events_total_;}
 
         ///Return a string containing statistics about events counted.
-        string statistics() const
+        @property string statistics() const
         {
             const real time_total = get_time() - start_time_;
             const real events_second = events_total_ / time_total;

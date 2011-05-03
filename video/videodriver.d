@@ -4,6 +4,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module video.videodriver;
 @trusted
 
@@ -274,34 +275,34 @@ abstract class VideoDriver : Monitorable
         Vector2u text_size(in string text);
 
         ///Set line antialiasing.
-        void line_aa(in bool aa);
+        @property void line_aa(in bool aa);
         
         ///Set line width.
-        void line_width(in float width);
+        @property void line_width(in float width);
         
         ///Set font to draw text with. If font_name is "default", default font will be used.
-        void font(in string font_name);
+        @property void font(in string font_name);
 
         ///Set font size to draw text with.
-        void font_size(in uint size);
+        @property void font_size(in uint size);
         
         ///Set view zoom.
-        void zoom(in real zoom);
+        @property void zoom(in real zoom);
         
         ///Get view zoom.
-        real zoom() const;
+        @property real zoom() const;
 
         ///Set view offset.
-        void view_offset(in Vector2d offset);
+        @property void view_offset(in Vector2d offset);
 
         ///Get view offset.
-        Vector2d view_offset() const;
+        @property Vector2d view_offset() const;
 
         ///Get screen width.
-        uint screen_width() const;
+        @property uint screen_width() const;
 
         ///Get screen height.
-        uint screen_height() const;
+        @property uint screen_height() const;
 
         /**
          * Get maximum square texture size supported with specified color format.
@@ -342,7 +343,7 @@ abstract class VideoDriver : Monitorable
          */
         void screenshot(ref Image image);
 
-        MonitorDataInterface monitor_data()
+        @property MonitorDataInterface monitor_data()
         {
             //This exists due to what appears to be a linker bug - linker
             //doesn't work if this is not implemented even for abstract class

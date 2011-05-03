@@ -4,6 +4,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module video.fontmanager;
 @system
 
@@ -48,7 +49,7 @@ align(1) struct FontRenderer
 
     public:
         ///Get height of the font we're drawing.
-        uint height() const {return draw_font_.height;}
+        @property uint height() const {return draw_font_.height;}
 
         ///Start drawing a string.
         void start()
@@ -296,10 +297,10 @@ final class FontManager
         }
 
         ///Is font antialiasing enabled?
-        bool antialiasing() const {return antialiasing_;}
+        @property bool antialiasing() const {return antialiasing_;}
       
         ///Is kerning enabled?
-        bool kerning() const {return kerning_;}
+        @property bool kerning() const {return kerning_;}
 
     private:
         //might be replaced by serious resource management.

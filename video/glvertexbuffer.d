@@ -4,6 +4,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module video.glvertexbuffer;
 @system
 
@@ -105,22 +106,22 @@ package struct GLVertexBuffer(Vertex)
         }
 
         ///Access vertex data as an array.
-        Vertex[] vertices(){return vertices_.array_unsafe;}
+        @property Vertex[] vertices(){return vertices_.array_unsafe;}
 
         ///Access index data as an array.
-        uint[] indices(){return indices_.array_unsafe;}
+        @property uint[] indices(){return indices_.array_unsafe;}
 
         ///Get number of vertices in the buffer.
-        uint vertex_count() const {return cast(uint)vertices_.length;}
+        @property uint vertex_count() const {return cast(uint)vertices_.length;}
 
         ///Get number of indices in the buffer.
-        uint index_count() const {return cast(uint)indices_.length;}
+        @property uint index_count() const {return cast(uint)indices_.length;}
 
         ///Set number of vertices in the buffer (to add more vertices).
-        void vertex_count(in size_t length){vertices_.length = length;}
+        @property void vertex_count(in size_t length){vertices_.length = length;}
 
         ///Set number of indices in the buffer (to add more indices).
-        void index_count(in size_t length){indices_.length = length;}
+        @property void index_count(in size_t length){indices_.length = length;}
 
         /**
          * Draw a vertex group using data stored in this buffer.

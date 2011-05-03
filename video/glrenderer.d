@@ -4,6 +4,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module video.glrenderer;
 @system
 
@@ -117,29 +118,32 @@ package struct GLRenderer
         }
 
         ///Get number of vertices used during the frame so far.
-        uint vertex_count() const
+        @property uint vertex_count() const
         {
             return colored_buffer_.vertex_count + textured_buffer_.vertex_count;
         }
 
         ///Get number of indices used during the frame so far.
-        uint index_count() const
+        @property uint index_count() const
         {
             return colored_buffer_.index_count + textured_buffer_.index_count;
         }
 
         ///Get number of vertex groups created during the frame so far.
-        uint vertex_group_count() const {return cast(uint)vertex_groups_.length;}
+        @property uint vertex_group_count() const 
+        {
+            return cast(uint)vertex_groups_.length;
+        }
 
         ///Set draw mode. Should not be called during a frame.
-        void draw_mode(in GLDrawMode mode)
+        @property void draw_mode(in GLDrawMode mode)
         {
             destroy_buffers();
             init_buffers(mode);
         }
 
         ///Is the GLRenderer initialized?
-        bool initialized() const {return initialized_;}
+        @property bool initialized() const {return initialized_;}
 
         ///Set shader to use in following draw calls.
         void set_shader(GLShader* shader)
@@ -171,30 +175,30 @@ package struct GLRenderer
         }
 
         ///Set view zoom for following draw calls.
-        void view_zoom(in float zoom)
+        @property void view_zoom(in float zoom)
         {
             view_zoom_ = zoom;
             flush_group_ = true;
         }
 
         ///Get view zoom.
-        real view_zoom() const {return view_zoom_;}
+        @property real view_zoom() const {return view_zoom_;}
 
         ///Set view offset for following draw calls.
-        void view_offset(in Vector2f offset)
+        @property void view_offset(in Vector2f offset)
         {
             view_offset_ = offset;
             flush_group_ = true;
         }
 
         ///Get view offset.
-        Vector2f view_offset() const {return view_offset_;}
+        @property Vector2f view_offset() const {return view_offset_;}
 
         ///Set line width for following draw calls.
-        void line_width(in real width){line_width_ = width;}
+        @property void line_width(in real width){line_width_ = width;}
 
         ///Set line antialiasing (on or off) for following draw calls.
-        void line_aa(in bool aa){line_aa_ = aa;}
+        @property void line_aa(in bool aa){line_aa_ = aa;}
 
         /**
          * Draw a line.

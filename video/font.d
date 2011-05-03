@@ -4,6 +4,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module video.font;
 @system
 
@@ -136,19 +137,19 @@ package class Font
         }
 
         ///Get size of the font in pixels.
-        uint size() const {return height_;}
+        @property uint size() const {return height_;}
 
         ///Get height of the font in pixels (currently the same as size).
-        uint height() const {return height_;}
+        @property uint height() const {return height_;}
 
         ///Get name of the font.
-        string name() const {return name_;}
+        @property string name() const {return name_;}
 
         ///Does the font support kerning?
-        bool kerning() const {return kerning_;}
+        @property bool kerning() const {return kerning_;}
 
         ///Get FreeType font face of the font.
-        FT_Face font_face(){return font_face_;}
+        @property FT_Face font_face(){return font_face_;}
 
         /**
          * Delete glyph textures.
@@ -406,7 +407,7 @@ package class Font
         }
         
         ///Get freetype render mode (antialiased or bitmap)
-        FT_Render_Mode render_mode() 
+        @property FT_Render_Mode render_mode() 
         {
             return antialiasing_ ? FT_Render_Mode.FT_RENDER_MODE_NORMAL 
                                  : FT_Render_Mode.FT_RENDER_MODE_MONO;

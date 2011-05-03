@@ -4,7 +4,9 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module platform.platform;
+@safe
 
 
 public import platform.key;
@@ -78,7 +80,7 @@ abstract class Platform
         final void quit(){run_ = false;}
 
         ///Set window caption string to str.
-        void window_caption(in string str);
+        @property void window_caption(in string str);
 
         ///Hide the mouse cursor.
         void hide_cursor();

@@ -4,6 +4,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module containers.vector;
 @trusted
 
@@ -220,10 +221,10 @@ align(1) struct Vector(T)
         body{return &data_[index];}
 
         ///Access vector contents as a const array.
-        const(T[]) array() const {return data_[0 .. used_];}
+        @property const(T[]) array() const {return data_[0 .. used_];}
 
         ///Access vector contents as a non-const array.
-        T[] array_unsafe(){return data_[0 .. used_];}
+        @property T[] array_unsafe(){return data_[0 .. used_];}
         
         ///Access vector contents through a const pointer.
         const(T*) ptr() const {return data_.ptr;}
@@ -296,7 +297,7 @@ align(1) struct Vector(T)
         }
 
         ///Get number of elements in the vector.
-        size_t length() const {return used_;}
+        @property size_t length() const {return used_;}
 
         /**
          * Change length of the vector.
@@ -307,7 +308,7 @@ align(1) struct Vector(T)
          *
          * Params:  length = length to set.
          */
-        void length(in size_t length)
+        @property void length(in size_t length)
         {
             used_ = length;
             //awkward control flow due to optimization. we realloc if elements > data_.length
@@ -325,7 +326,7 @@ align(1) struct Vector(T)
         }
 
         ///Get currently allocated capacity.
-        size_t allocated() const {return data_.length;}
+        @property size_t allocated() const {return data_.length;}
 }
 ///Unittest for Vector.
 unittest

@@ -72,22 +72,22 @@ abstract class ParticleEmitter : ParticleSystem
 
     public:
         ///Set life time of particles emitted.
-        final void particle_life(in real life){particle_life_ = life;}
+        @property final void particle_life(in real life){particle_life_ = life;}
         
         ///Get life time of particles emitted.
-        final real particle_life() const {return particle_life_;}
+        @property final real particle_life() const {return particle_life_;}
 
         ///Set number of particles to emit per second.
-        void emit_frequency(in real frequency){emit_frequency_ = frequency;}
+        @property void emit_frequency(in real frequency){emit_frequency_ = frequency;}
         
         ///Get number of particles emitted per second.
-        final real emit_frequency() const {return emit_frequency_;}
+        @property final real emit_frequency() const {return emit_frequency_;}
 
         ///Set velocity to emit particles at.
-        final void emit_velocity(in Vector2f velocity){emit_velocity_ = velocity;}
+        @property final void emit_velocity(in Vector2f velocity){emit_velocity_ = velocity;}
 
         ///Set angle variation of particles emitted in radians.
-        final void angle_variation(in real variation){angle_variation_ = variation;}
+        @property final void angle_variation(in real variation){angle_variation_ = variation;}
 
         override void die()
         {

@@ -4,7 +4,9 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module math.matrix4;
+@safe
 
 
 import std.math;
@@ -27,7 +29,7 @@ align(1) struct Matrix4(T)
 
     public:
         ///Get a pointer to matrix data. Useful for passing to OpenGL functions.
-        T* ptr(){return m_.ptr;}
+        @property T* ptr(){return m_.ptr;}
 
         ///Multiplication with a matrix.
         Matrix4!(T) opMul(const ref Matrix4!(T) m) const

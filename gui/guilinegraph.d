@@ -4,7 +4,9 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module gui.guilinegraph;
+@safe
 
 
 import std.algorithm;
@@ -21,6 +23,7 @@ import time.timer;
 import containers.vector;
 import util.factory;     
 import color;
+
 
 /**
  * Line graph widget, showing graphs for multiple changing values system monitor style.
@@ -100,7 +103,7 @@ final class GUILineGraph : GUIElement
 
     public:
         ///Set time difference between two graph data points.
-        void data_point_time(real time)
+        @property void data_point_time(real time)
         {
             aligned_ = false;
             //limiting to prevent absurd values
@@ -108,7 +111,7 @@ final class GUILineGraph : GUIElement
         }
 
         ///Get time between two graph data points.
-        real data_point_time() const {return data_point_time_;}
+        @property real data_point_time() const {return data_point_time_;}
 
         ///Toggle visibility of graph of specified value.
         void toggle_value(in string value)
@@ -118,13 +121,13 @@ final class GUILineGraph : GUIElement
         }
 
         ///If true, Y axis of the graph will be scaled automatically according to highest value.
-        void auto_scale(in bool scale){aligned_ = false; auto_scale_ = scale;}
+        @property void auto_scale(in bool scale){aligned_ = false; auto_scale_ = scale;}
 
         ///If true, the graph will automatically scroll to show newest data.
-        void auto_scroll(in bool scroll){aligned_ = false; auto_scroll_ = scroll;}
+        @property void auto_scroll(in bool scroll){aligned_ = false; auto_scroll_ = scroll;}
 
         ///Set time offset of the graph. Used for manual scrolling.
-        void time_offset(in float offset)
+        @property void time_offset(in float offset)
         {
             aligned_ = false; 
             //limiting to prevent absurd values
@@ -149,28 +152,28 @@ final class GUILineGraph : GUIElement
         }
 
         ///Get X scale of the graph.
-        float scale_x() const {return scale_x_;}
+        @property float scale_x() const {return scale_x_;}
         ///Set X scale of the graph. Used for manual zooming.
-        void scale_x(float scale_x)
+        @property void scale_x(float scale_x)
         {
             aligned_ = false; 
             scale_x_ = clamp(scale_x, 0.01f, 200.0f);
         }
 
         ///Get Y scale of the graph. 
-        float scale_y() const {return scale_y_;}
+        @property float scale_y() const {return scale_y_;}
         ///Set Y scale of the graph. Used for manual zooming.
-        void scale_y(float scale_y)
+        @property void scale_y(float scale_y)
         {
             aligned_ = false; 
             scale_y_ = clamp(scale_y, 0.0005f, 10.0f);
         }
 
         ///Set font size of the graph.
-        void font_size(in uint size){font_size_ = size;}
+        @property void font_size(in uint size){font_size_ = size;}
 
         ///Set graph mode (data points are average per measurement or sums over time).
-        void graph_mode(in GraphMode mode){mode_ = mode;}
+        @property void graph_mode(in GraphMode mode){mode_ = mode;}
 
         ///Destroy this GUILineGraph.
         override void die()
@@ -239,7 +242,7 @@ final class GUILineGraph : GUIElement
         }
 
         ///Returns age of this graph at last display timer reset.
-        real age() const {return display_timer_.start - data_.start_time;}
+        @property real age() const {return display_timer_.start - data_.start_time;}
 
         ///Update graph display data such as graph line strips.
         void update_view()
@@ -421,7 +424,10 @@ final class GUILineGraphFactory : GUIElementFactoryBase!(GUILineGraph)
         Color[string] graphs_;
 
     public:
-        void graph_color(in string name, in Color color){graphs_[name] = color;}
+        void graph_color(in string name, in Color color)
+        {
+            graphs_[name] = color;
+        }
 
         ///Produce a GUILineGraph with parameters of the factory.
         override GUILineGraph produce()

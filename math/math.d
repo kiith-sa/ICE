@@ -6,6 +6,8 @@
 
 
 module math.math;
+@safe
+
 
 import std.algorithm;
 import std.math;

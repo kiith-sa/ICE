@@ -101,10 +101,10 @@ final class MonitorManager
         mixin Signal!() update_views;
 
         ///Get names of monitored objects.
-        const(string[]) monitored_names() const {return monitored_.keys;}
+        @property const(string[]) monitored_names() const {return monitored_.keys;}
 
         ///Get names of monitors of the specified monitored object.
-        const(string[]) monitor_names(in string monitored) const
+        @property const(string[]) monitor_names(in string monitored) const
         in
         {
             assert(find(monitored_.keys, monitored) != [], 
@@ -342,7 +342,7 @@ private struct MonitorID
     ///Set this submonitor to "null" (no submonitor).
     void set_null(){monitored = monitor = null;}
     ///Is the submonitor "null"?
-    bool is_null() const {return monitored is null;}
+    @property bool is_null() const {return monitored is null;}
 }
 
 ///Factory producing MonitorViews.

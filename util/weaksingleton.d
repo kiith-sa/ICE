@@ -4,7 +4,10 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module util.weaksingleton;
+@safe
+
 
 /**
  * Singleton template mixin with support for polymorphism, without global access.

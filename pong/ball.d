@@ -245,13 +245,13 @@ class BallFactory : ActorFactory!(Ball)
 
     protected:
         ///Construct a collision circle with factory parameters.
-        final VolumeCircle circle() const 
+        @property final VolumeCircle circle() const 
         {
             return new VolumeCircle(Vector2f(0.0f, 0.0f), radius_);
         }
 
         ///Construct a ball body with factory parameters.
-        BallBody ball_body() const 
+        @property BallBody ball_body() const 
         {
             return new BallBody(circle, position_, velocity_, 100.0, radius_);
         }
@@ -267,7 +267,7 @@ class BallFactory : ActorFactory!(Ball)
 class DummyBallFactory : BallFactory
 {
     protected:
-        override BallBody ball_body() const
+        @property override BallBody ball_body() const
         {
             return new DummyBallBody(circle, position_, velocity_, 4.0, radius_);
         }

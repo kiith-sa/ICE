@@ -4,6 +4,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module formats.cli;
 @safe
 
@@ -15,8 +16,6 @@ import std.regex;
 import std.stdio;
 import std.string;
 import std.traits;
-private alias std.string.indexOf indexOf;
-private alias std.string.split split;
 
 import math.math;
 import util.traits;
@@ -69,7 +68,7 @@ struct CLIOption
          *
          * Params:  name = Short name (one character). Must be from the alphabet.
          */
-        ref CLIOption short_name(in char name)
+        @property ref CLIOption short_name(in char name)
         in
         {
             assert((name >= 'a' && name <= 'z') || (name >= 'A' && name <= 'Z'), 
@@ -78,7 +77,7 @@ struct CLIOption
         body{short_ = name; return this;}
 
         ///Set help string of the option.
-        ref CLIOption help(in string help){help_ = help; return this;}
+        @property ref CLIOption help(in string help){help_ = help; return this;}
 
         /**
          * Set value target.                       
@@ -91,7 +90,7 @@ struct CLIOption
          *
          * Params:  target = Target variable to write option argument to.
          */
-        ref CLIOption target(T)(T* target)
+        @property ref CLIOption target(T)(T* target)
             if(is_primitive!T)
         {
             assert(action_ is null, "Target of a CLIOption specified more than once");
@@ -111,7 +110,7 @@ struct CLIOption
          *
          * Params:  target = Target setter to pass option argument to.
          */
-        ref CLIOption target(T)(T target)
+        @property ref CLIOption target(T)(T target)
             if(isSomeFunction!T && 
                ParameterTypeTuple!T.length == 1 &&
                is_primitive!(ParameterTypeTuple!T[0]) &&
@@ -138,7 +137,7 @@ struct CLIOption
          *
          * Params:  target = Target array to write option arguments to.
          */
-        ref CLIOption target(T)(ref T[] target)
+        @property ref CLIOption target(T)(ref T[] target)
             if(is_primitive!T)
         {
             assert(action_ is null, "Target of a CLIOption specified more than once");
@@ -185,14 +184,18 @@ struct CLIOption
          *
          * Returns: Resulting CLIOption.
          */
-        ref CLIOption default_args(string[] args ...){default_args_ = args; return this;}
+        ref CLIOption default_args(string[] args ...)
+        {
+            default_args_ = args; 
+            return this;
+        }
     
     private:
         ///Determine whether or not this option is valid.
-        bool valid(){return action_ !is null;}
+        @property bool valid(){return action_ !is null;}
 
         ///Get left part of the help string for this option. (used by CLI.help())
-        string help_left()
+        @property string help_left()
         {
             string result = short_ == '\0' ? "     " : " -" ~ short_ ~ ", ";
             result ~= "--" ~ long_ ~ (arg_name_.length == 0 ? "" : "=" ~ arg_name_);
@@ -255,6 +258,8 @@ struct CLIOption
 class CLI
 {
     private:
+        alias std.string.indexOf indexOf;
+
         ///Struct holding preprocessed (not yet parsed) option data.
         private static struct OptionData
         {                  
@@ -295,10 +300,10 @@ class CLI
         }
 
         ///Set program description (start of the help text).
-        void description(in string text){description_ = text;}
+        @property void description(in string text){description_ = text;}
 
         ///Set epilog of the help text.
-        void epilog(in string text){epilog_ = text;}
+        @property void epilog(in string text){epilog_ = text;}
 
         /**
          * Add a command line option.
@@ -463,7 +468,7 @@ class CLI
                     continue;
                 }
 
-                string[] parts = arg.split("=");
+                string[] parts = std.string.split(arg, "=");
                 enforceEx!(CLIException)(parts.length <= 2, 
                                          "CLI: Invalid argument (too many '='): " ~ arg);
                 //starts with "--"
@@ -673,7 +678,7 @@ string[] array_store_action(T)(string[] args, ref T[] target)
     foreach(arg; args)
     {
         //allow comma separated args
-        foreach(sub; arg.split(","))
+        foreach(sub; std.string.split(arg, ","))
         {
             static if(is(T == bool)){target_ ~= lexical_bool(sub);}
             else{target ~= to!(T)(sub);}

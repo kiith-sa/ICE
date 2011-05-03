@@ -14,6 +14,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND 
 Authors: Lode Vandevenne (original version in C++), Lutger Blijdestijn (D version) : lutger dot blijdestijn at gmail dot com, Ferdinand Majerech (Refactoring)
 */
 
+
 module formats.pngencoder;
 @system
 
@@ -49,16 +50,19 @@ struct PNGEncoder
 
     public:
         ///Set compression level. Can't be greater than 9.
-        void level(in ubyte level){level_ = level;}
+        @property void level(in ubyte level){level_ = level;}
 
         ///Set Zlib compression strategy.
-        void compression(in CompressionStrategy compression){compression_ = compression;}
+        @property void compression(in CompressionStrategy compression)
+        {
+            compression_ = compression;
+        }
 
         ///Set PNG filter strategy.
-        void filter(in PNGFilter filter){filter_ = filter;}
+        @property void filter(in PNGFilter filter){filter_ = filter;}
 
         ///Compress text data? (on by default)
-        void compress_text(in bool compress){compress_text_ = compress;}
+        @property void compress_text(in bool compress){compress_text_ = compress;}
 
         /**
          * Encode image data to PNG format.

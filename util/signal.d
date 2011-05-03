@@ -6,6 +6,7 @@
 
 
 module util.signal;
+@safe
 
 
 import std.algorithm;

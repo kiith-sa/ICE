@@ -4,7 +4,9 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module math.rectangle;
+@safe
 
 
 import std.algorithm;
@@ -69,25 +71,25 @@ align(1) struct Rectangle(T)
     }
 
     ///Returns center of the rectangle.
-    Vector2!T center() const {return (min + max) / cast(T)2;}
+    @property Vector2!T center() const {return (min + max) / cast(T)2;}
     
     ///Returns width of the rectangle.
-    T width() const {return max.x - min.x;}
+    @property T width() const {return max.x - min.x;}
 
     ///Returns height of the rectangle.
-    T height() const {return max.y - min.y;}
+    @property T height() const {return max.y - min.y;}
     
     ///Returns size of the rectangle.
-    Vector2!T size() const {return max - min;}
+    @property Vector2!T size() const {return max - min;}
 
     ///Returns area of the rectangle.
-    T area() const {return size.x * size.y;}
+    @property T area() const {return size.x * size.y;}
 
     ///Returns the lower-left corner of the rectangle.
-    Vector2!T min_max() const {return Vector2!T(min.x, max.y);}
+    @property Vector2!T min_max() const {return Vector2!T(min.x, max.y);}
 
     ///Returns the upper-right corner of the rectangle.
-    Vector2!T max_min() const {return Vector2!T(max.x, min.y);}
+    @property Vector2!T max_min() const {return Vector2!T(max.x, min.y);}
 
     /**
      * Clamps point to be within the rectangle. (Returns the closest point in the rectangle)

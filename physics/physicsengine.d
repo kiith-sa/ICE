@@ -194,7 +194,7 @@ final class PhysicsEngine : Monitorable
             workarounds.remove!(PhysicsBody, true)(bodies_, physics_body);
         }
 
-        MonitorDataInterface monitor_data()
+        @property MonitorDataInterface monitor_data()
         {
             SubMonitor function(PhysicsEngine)[string] ctors_;
             ctors_["Contacts"] = &new_graph_monitor!(PhysicsEngine, Statistics, 
@@ -205,6 +205,7 @@ final class PhysicsEngine : Monitorable
             ctors_["Coarse"] = &new_graph_monitor!(PhysicsEngine, Statistics, "tests");
             return new MonitorData!(PhysicsEngine)(this, ctors_);
         }
+
     private:
         ///Detect collisions between bodies.
         void detect_contacts()

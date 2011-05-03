@@ -48,16 +48,16 @@ class LineEmitter : ParticleEmitter
 
     public:
         ///Set length of the line particles.
-        final void line_length(in float length){line_length_ = length;}
+        @property final void line_length(in float length){line_length_ = length;}
 
         ///Set width of the line particles.
-        final void line_width(in float width){line_width_ = width;}
+        @property final void line_width(in float width){line_width_ = width;}
 
         ///Set color the particles have at the beginning of their lifetimes.
-        final void start_color(in Color color){start_color_ = color;}
+        @property final void start_color(in Color color){start_color_ = color;}
 
         ///Set color the particles have at the end of their lifetimes.
-        final void end_color(in Color color){end_color_ = color;}
+        @property final void end_color(in Color color){end_color_ = color;}
 
     protected:
         /**

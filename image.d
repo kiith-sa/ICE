@@ -4,6 +4,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module image;
 
 
@@ -50,22 +51,22 @@ struct Image
         ~this(){if(data !is null){free(data_);}}
         
         ///Get color format of the image.
-        ColorFormat format() const {return format_;}
+        @property ColorFormat format() const {return format_;}
 
         ///Get size of the image in pixels.
-        Vector2u size() const {return size_;}
+        @property Vector2u size() const {return size_;}
 
         ///Get image width in pixels.
-        uint width() const {return size_.x;}
+        @property uint width() const {return size_.x;}
 
         ///Get image height in pixels.
-        uint height() const {return size_.y;}
+        @property uint height() const {return size_.y;}
 
         ///Get direct read-only access to image data.
-        const(ubyte[]) data() const {return data_;}
+        @property const(ubyte[]) data() const {return data_;}
 
         ///Get direct read-write access to image data.
-        ubyte[] data_unsafe() {return data_;}
+        @property ubyte[] data_unsafe() {return data_;}
 
         /**
          * Set RGBA pixel color.
@@ -262,5 +263,5 @@ struct Image
 
     private:
         ///Get pitch (bytes per row) of the image.
-        uint pitch() const {return bytes_per_pixel(format_) * size_.x;}
+        @property uint pitch() const {return bytes_per_pixel(format_) * size_.x;}
 }

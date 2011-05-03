@@ -4,6 +4,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module monitor.monitordata;
 @safe
 
@@ -21,7 +22,7 @@ interface MonitorDataInterface
     void die();
 
     ///Get names of submonitors available.
-    const(string[]) monitor_names() const;
+    @property const(string[]) monitor_names() const;
 
     ///Start monitor with specified name.
     void start_monitor(in string name);
@@ -68,7 +69,7 @@ final class MonitorData(M) : MonitorDataInterface
             constructors_ = null;
         }
 
-        const(string[]) monitor_names() const {return constructors_.keys;}
+        @property const(string[]) monitor_names() const {return constructors_.keys;}
 
         void start_monitor(in string name)
         {

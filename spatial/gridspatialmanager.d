@@ -6,6 +6,7 @@
 
 
 module spatial.gridspatialmanager;
+@safe
 
 
 import std.algorithm;
@@ -152,12 +153,12 @@ class GridSpatialManager(T) : SpatialManager!(T)
             add_object(object);
         }
 
-        override Iterator!(T[]) iterator(){return new ObjectIterator!(T);}
+        @property override Iterator!(T[]) iterator(){return new ObjectIterator!(T);}
 
         ///Get grid size (both X and Y) in cells.
-        uint grid_size() const {return grid_size_;}
+        @property uint grid_size() const {return grid_size_;}
 
-        MonitorDataInterface monitor_data()
+        @property MonitorDataInterface monitor_data()
         {
             SubMonitor function(GridSpatialManager!(T))[string] ctors_;
             ctors_["Grid"] = function SubMonitor(GridSpatialManager!(T) m)

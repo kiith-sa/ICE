@@ -4,6 +4,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module gui.guielement;
 @safe
 
@@ -70,19 +71,22 @@ class GUIElement
         }                 
 
         ///Get position in screen space.
-        final Vector2i position_global() const {return bounds_.min;}
+        @property final Vector2i position_global() const {return bounds_.min;}
 
         ///Get position relative to parent element.
-        final Vector2i position_local() const
+        @property final Vector2i position_local() const
         {
             return bounds_.min - parent_.bounds_.min;
         }
         
         ///Get size of this element in screen space.
-        final Vector2u size() const {return math.vector2.to!(uint)(bounds_.size);}
+        @property final Vector2u size() const 
+        {
+            return math.vector2.to!(uint)(bounds_.size);
+        }
 
         ///Get bounding rectangle of this GUI element in screen space.
-        final Rectanglei bounds_global() const {return bounds_;}
+        @property final Rectanglei bounds_global() const {return bounds_;}
 
         /**
          * Add a child element. 
@@ -121,13 +125,13 @@ class GUIElement
         }
 
         ///Is this element visible?
-        final bool visible() const {return visible_;}
+        @property final bool visible() const {return visible_;}
 
         ///Hide this element and its children.
-        final void hide(){visible_ = false;}
+        @property final void hide(){visible_ = false;}
 
         ///Make this element and its children visible.
-        final void show(){visible_ = true;}
+        @property final void show(){visible_ = true;}
 
     protected:
         /**
@@ -392,7 +396,7 @@ final class GUIRoot
         }
 
         ///Get the root element of the GUI.
-        GUIElement root(){return root_;}
+        @property GUIElement root(){return root_;}
 
         ///Update the GUI.
         void update(){root_.update_children();}

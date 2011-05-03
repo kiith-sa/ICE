@@ -4,6 +4,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module monitor.graphmonitor;
 @safe
 
@@ -108,13 +109,13 @@ final package class GraphMonitor(Monitored, Statistics, Values ...) : SubMonitor
             super.die();
         }
 
-        override SubMonitorView view()
+        @property override SubMonitorView view()
         {
             return new GraphMonitorView!(typeof(this))(this);
         }
 
         ///Get access to graph data.
-        GraphData data(){return data_;}
+        @property GraphData data(){return data_;}
 
     protected:
         /**

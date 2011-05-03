@@ -4,6 +4,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module video.glvertex;
 @safe
 
@@ -56,4 +57,3 @@ package align(1) struct GLVertex2DTextured
     ///Enum value corresponding to this vertex type.
     static immutable vertex_type = GLVertexType.Textured;
 }
-

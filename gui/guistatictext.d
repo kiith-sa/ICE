@@ -4,7 +4,9 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module gui.guistatictext;
+@safe
 
 
 import std.algorithm;
@@ -78,20 +80,20 @@ class GUIStaticText : GUIElement
 
     public:
         ///Set text color.
-        void text_color(in Color color){font_color_ = color;}
+        @property void text_color(in Color color){font_color_ = color;}
 
         ///Return displayed text.
-        string text() const {return text_;}
+        @property string text() const {return text_;}
 
         ///Set text to display.
-        void text(in string text)
+        @property void text(in string text)
         {
             text_ = expandtabs(text);
             aligned_ = false;
         }
 
         ///Get default font size of GUIStaticText instances.
-        static uint default_font_size(){return 12;}
+        @property static uint default_font_size(){return 12;}
 
     protected:
         /**

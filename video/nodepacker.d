@@ -4,6 +4,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module video.nodepacker;
 @system
 
@@ -130,7 +131,7 @@ package align(1) struct NodePacker
                 }
                 
                 ///Determine if this node and all its subnodes are empty.
-                bool empty() const
+                @property bool empty() const
                 {
                     if(full_){return false;}
                     if(child_a_ !is null && !child_a_.empty()){return false;}
@@ -210,10 +211,10 @@ package align(1) struct NodePacker
         }
 
         ///Determine if this NodePacker is empty.
-        bool empty() const {return root_.empty();}
+        @property bool empty() const {return root_.empty();}
 
         ///Return a string containing information about the packer.
-        string info() const
+        @property string info() const
         {
             uint nodes, leaves, full, full_area;
 

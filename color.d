@@ -4,6 +4,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module color;
 @safe
 
@@ -121,7 +122,7 @@ align(1) struct Color
     }
 
     ///Return the average intensity of the color.
-    ubyte average() const
+    @property ubyte average() const
     {
         const real average = (r + g + b) / 3.0L;
         return cast(ubyte)round_s32(average);
@@ -142,14 +143,14 @@ align(1) struct Color
     }
 
     ///Return lightness of the color.
-    ubyte lightness() const
+    @property ubyte lightness() const
     {
         uint d = max(r, g, b) + min(r, g, b);
         return cast(ubyte)round_s32(0.5f * d); 
     }
 
     ///Return luminance of the color.
-    ubyte luminance() const 
+    @property ubyte luminance() const 
     {
         return cast(ubyte)round_s32(0.3 * r + 0.59 * g + 0.11 * b);
     }
@@ -208,7 +209,7 @@ align(1) struct Color
     }
 
     ///Set grayscale color.
-    void gray_8(in ubyte gray){r = g = b = a = gray;}
+    @property void gray_8(in ubyte gray){r = g = b = a = gray;}
 
     ///Gamma correct the color with specified factor.
     void gamma_correct(in real factor) 

@@ -4,12 +4,14 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module formats.mathparser;
+@trusted
 
 
 import std.algorithm;
 import std.array;
-import std.conv;
+import std.conv;                  
 import std.exception;
 import std.stdio;
 import std.string;

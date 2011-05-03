@@ -4,6 +4,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module spatial.gridmonitor;
 
 
@@ -63,7 +64,10 @@ final package class GridMonitor(T) : SubMonitor
             clear(object_counts_);
         }
 
-        override SubMonitorView view(){return new GridMonitorView!(typeof(this))(this);}
+        @property override SubMonitorView view()
+        {
+            return new GridMonitorView!(typeof(this))(this);
+        }
 
     package:
         ///Update monitored data.
@@ -85,13 +89,13 @@ final package class GridMonitor(T) : SubMonitor
         }
 
         ///Get number of objects outside the grid.
-        uint outer_object_count() const {return outer_object_count_;}
+        @property uint outer_object_count() const {return outer_object_count_;}
 
         ///Get (x and y) grid size in cells.
-        uint grid_size() const {return grid_size_;}
+        @property uint grid_size() const {return grid_size_;}
 
         ///Get a pointer to the array of object counts in the grid. 
-        const(Array2D!(uint)*) object_counts() const {return &object_counts_;} 
+        @property const(Array2D!(uint)*) object_counts() const {return &object_counts_;} 
 }
 
 ///Grid monitor GUI view.

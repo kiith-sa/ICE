@@ -4,6 +4,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module memory.memory;
 @system:
 
@@ -143,7 +144,7 @@ private:
         ulong objects;
 
         ///Get allocation data in string format.
-        string statistics() const
+        @property string statistics() const
         {
             return to!string(bytes) ~ " bytes, " ~ to!string(allocations) ~
                    " allocations, " ~ to!string(objects) ~ " objects";                     

@@ -4,7 +4,9 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module file.file;
+@trusted
 
 
 import std.c.stdio;
@@ -13,7 +15,6 @@ import std.algorithm;
 import std.exception;
 import std.file;
 import std.string;
-private alias std.string.indexOf indexOf;
 
 import file.fileio;
 import memory.memory;
@@ -38,6 +39,8 @@ enum FileMode
  */
 struct File
 {
+    private:
+        alias std.string.indexOf indexOf;
     package:
         ///In-engine file name, such as fonts/font.ttf or mod::fonts/font.ttf .
         string name_;
@@ -139,7 +142,7 @@ struct File
         }
 
         ///Access data of a loaded file (only applicable in Read mode).
-        const void[] data() const
+        @property const void[] data() const
         in
         {
             assert(mode_ == FileMode.Read, 
@@ -148,10 +151,10 @@ struct File
         body{return cast(void[])data_;}
 
         ///Get OS filesystem path of the file.
-        string path() const {return path_;}
+        @property string path() const {return path_;}
 
         ///Get file mode.
-        FileMode mode() const {return mode_;}
+        @property FileMode mode() const {return mode_;}
 
         /**
          * Write data to file (only applicable in Write, Append modes).

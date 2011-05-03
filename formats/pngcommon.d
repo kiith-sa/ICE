@@ -172,7 +172,7 @@ struct PNGInfo
         }
 
         ///Get (a copy of) image information.
-        PNGImage image() const {return image_;}
+        @property PNGImage image() const {return image_;}
 }
 
 ///Dictionary of key-value text metadata in utf-8 and / or latin-1 encoding.
@@ -185,7 +185,7 @@ struct PNGText
         string[string] unicode;
 
         ///Is there no text?
-        bool empty() const {return unicode.length + latin.length == 0;}
+        @property bool empty() const {return unicode.length + latin.length == 0;}
 }
 
 ///Header.
@@ -305,7 +305,7 @@ struct PNGChunk
     }
 
     ///Get length of the chunk in bytes.
-    size_t length() const {return data.length + chunk_min_size;}
+    @property size_t length() const {return data.length + chunk_min_size;}
 }
 
 ///Minimum chunk size, taken up by chunk length, type and crc uints.

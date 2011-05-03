@@ -4,6 +4,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module spatial.spatialmanager;
 @safe
 
@@ -61,5 +62,5 @@ abstract class SpatialManager(T) : Monitorable
         void update_object(T object, in Vector2f old_position);
 
         ///Return an iterator iterating over groups of spatially close objects.
-        Iterator!(T[]) iterator();
+        @property Iterator!(T[]) iterator();
 }

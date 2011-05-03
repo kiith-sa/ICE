@@ -3,6 +3,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module pong.pong;
 @safe
 
@@ -158,7 +159,7 @@ class PongGUI
         }
 
         ///Get the monitor widget.
-        const(MonitorView) monitor() const {return monitor_;}
+        @property const(MonitorView) monitor() const {return monitor_;}
 
         ///Toggle monitor display.
         void monitor_toggle()

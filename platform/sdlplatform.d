@@ -4,7 +4,9 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module platform.sdlplatform;
+@trusted
 
 
 import std.conv;
@@ -96,7 +98,7 @@ class SDLPlatform : Platform
             return super.run();
         }
 
-        override void window_caption(in string str)
+        @property override void window_caption(in string str)
         {
             SDL_WM_SetCaption(toStringz(str), null); 
         }

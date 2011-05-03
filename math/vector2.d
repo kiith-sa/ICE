@@ -4,7 +4,9 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module math.vector2;
+@safe
 
 
 import std.math;
@@ -92,7 +94,7 @@ align(1) struct Vector2(T)
     }
     
     ///Get angle of this vector in radians.
-    real angle() const
+    @property real angle() const
     {
         const real angle = atan2(cast(double)x, cast(double)y);
         if(angle < 0.0){return angle + 2 * PI;}
@@ -100,7 +102,7 @@ align(1) struct Vector2(T)
     }
 
     ///Set angle of this vector in radians, preserving its length.
-    void angle(in real angle)
+    @property void angle(in real angle)
     {
         const length = length();
         y = cast(T)cos(cast(double)angle);
@@ -109,13 +111,13 @@ align(1) struct Vector2(T)
     }
 
     ///Get squared length of the vector.
-    T length_squared() const {return cast(T)(x * x + y * y);}
+    @property T length_squared() const {return cast(T)(x * x + y * y);}
     
     ///Get length of the vector fast at cost of some precision.
-    T length() const {return length_safe();}
+    @property T length() const {return length_safe();}
 
     ///Get length of the vector with better precision.
-    T length_safe() const {return cast(T)(sqrt(cast(real)length_squared));}
+    @property T length_safe() const {return cast(T)(sqrt(cast(real)length_squared));}
 
     /**
      * Dot (scalar) product with another vector.
@@ -127,7 +129,7 @@ align(1) struct Vector2(T)
     T dot_product(in Vector2!T v) const {return cast(T)(x * v.x + y * v.y);}
 
     ///Get normal of this vector (a pependicular vector).
-    Vector2!T normal() const {return Vector2!T(-y, x);}
+    @property Vector2!T normal() const {return Vector2!T(-y, x);}
 
     /**
      * Turns this into a unit vector fast at cost of some precision. 
@@ -153,7 +155,7 @@ align(1) struct Vector2(T)
     }
 
     ///Get unit vector of this vector. Result is undefined if this is a zero vector.
-    Vector2!T normalized() const
+    @property Vector2!T normalized() const
     {
         Vector2!T normalized = this;
         normalized.normalize();

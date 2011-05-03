@@ -4,7 +4,9 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module time.timer;
+@safe
 
 
 import time.time;
@@ -47,10 +49,10 @@ align(1) struct Timer
         }
 
         ///Get time when the timer was started.
-        real start() const {return start_;}
+        @property real start() const {return start_;}
 
         ///Get delay of this timer.
-        real delay() const {return delay_;}
+        @property real delay() const {return delay_;}
 
         /**
          * Returns time since start of the timer at specified time.
@@ -59,10 +61,10 @@ align(1) struct Timer
          *
          * Returns: Age of the timer relative to specified time.
          */
-        real age(in real time) const {return time - start_;}
+        @property real age(in real time) const {return time - start_;}
 
         ///Returns time since start of the timer.
-        real age() const {return age(get_time());}
+        @property real age() const {return age(get_time());}
 
         /**
          * Returns time since start of the timer at specified time divided by the timer's delay.
@@ -74,7 +76,7 @@ align(1) struct Timer
          *          so it can be used to get percentage of timer's delay that has elapsed.
          *
          */
-        real age_relative(in real time) const {return age(time) / delay_;}
+        @property real age_relative(in real time) const {return age(time) / delay_;}
 
         /**
          * Returns time since start of the timer divided by the timer's delay. 
@@ -83,7 +85,7 @@ align(1) struct Timer
          *          This is 0.0 at the start of the timer, and 1.0 at its end, 
          *          so it can be used to get percentage of timer's delay that has elapsed.
          */
-        real age_relative() const {return age_relative(get_time());}
+        @property real age_relative() const {return age_relative(get_time());}
 
         /**
          * Determines if the timer has expired at specified time.

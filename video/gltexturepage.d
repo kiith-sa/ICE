@@ -4,6 +4,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module video.gltexturepage;
 @system
 
@@ -179,7 +180,7 @@ package align(1) struct GLTexturePage(TexturePacker)
         void start(){glBindTexture(GL_TEXTURE_2D, texture_);}
 
         ///Determine if the page is resident in the video memory.
-        bool resident() const
+        @property bool resident() const
         {
             GLboolean resident;
             glAreTexturesResident(1, &texture_, &resident);
@@ -190,10 +191,10 @@ package align(1) struct GLTexturePage(TexturePacker)
         void remove_texture(const ref Rectangleu bounds){packer_.free_space(bounds);}
 
         ///Determine if this page is empty (i.e. there are no textures on it).
-        bool empty() const {return packer_.empty();}
+        @property bool empty() const {return packer_.empty();}
 
         ///Get size of the page in pixels.
-        Vector2u size() const {return size_;}
+        @property Vector2u size() const {return size_;}
 
         /**
          * Return a string containing information about the page.
@@ -203,7 +204,7 @@ package align(1) struct GLTexturePage(TexturePacker)
          *
          * Returns: String with information about the page.
          */
-        string info() const
+        @property string info() const
         {
             string output;
             output ~= "width: " ~ to!string(size_.x) ~ "\n";

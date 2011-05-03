@@ -4,6 +4,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module video.glvideodriver;
 @system
 
@@ -394,35 +395,44 @@ abstract class GLVideoDriver : VideoDriver
             return renderer.text_size(text);
         }
 
-        final override void line_aa(in bool aa){renderer_.line_aa = aa;}
+        @property final override void line_aa(in bool aa){renderer_.line_aa = aa;}
         
-        final override void line_width(in float width)
+        @property final override void line_width(in float width)
         {
             assert(width >= 0.0, "Can't set negative line width");
             renderer_.line_width = width;
         }
 
-        final override void font(in string font_name){font_manager_.font = font_name;}
+        @property final override void font(in string font_name)
+        {
+            font_manager_.font = font_name;
+        }
 
-        final override void font_size(in uint size){font_manager_.font_size = size;}
+        @property final override void font_size(in uint size)
+        {
+            font_manager_.font_size = size;
+        }
         
-        final override void zoom(in real zoom){renderer_.view_zoom = cast(float)zoom;}
+        @property final override void zoom(in real zoom)
+        {
+            renderer_.view_zoom = cast(float)zoom;
+        }
         
-        final override real zoom() const {return renderer_.view_zoom;}
+        @property final override real zoom() const {return renderer_.view_zoom;}
 
-        final override void view_offset(in Vector2d offset)
+        @property final override void view_offset(in Vector2d offset)
         {
             renderer_.view_offset = to_v2!float(offset);
         }
 
-        final override Vector2d view_offset() const
+        @property final override Vector2d view_offset() const
         {
             return to_v2!double(renderer_.view_offset);
         }
 
-        final override uint screen_width() const {return screen_width_;}
+        @property final override uint screen_width() const {return screen_width_;}
 
-        final override uint screen_height() const {return screen_height_;}
+        @property final override uint screen_height() const {return screen_height_;}
 
         final override uint max_texture_size(in ColorFormat format) const
         {
@@ -599,7 +609,7 @@ abstract class GLVideoDriver : VideoDriver
             image.flip_vertical();
         }
 
-        override MonitorDataInterface monitor_data()
+        @property override MonitorDataInterface monitor_data()
         {
             SubMonitor function(GLVideoDriver)[string] ctors_;
             ctors_["FPS"] = &new_graph_monitor!(GLVideoDriver, Statistics, "fps");
@@ -641,7 +651,7 @@ abstract class GLVideoDriver : VideoDriver
             renderer_.draw_texture(quad.min, quad.max, tmin, tmax);
         }
 
-        TexturePage*[] pages() {return pages_;}
+        @property TexturePage*[] pages() {return pages_;}
 
     protected:
         /**
@@ -689,7 +699,6 @@ abstract class GLVideoDriver : VideoDriver
 
             gl_initialized_ = true;
         }
-
 
     private:
         //not ready for public interface yet- will take shader spec file in future

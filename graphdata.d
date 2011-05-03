@@ -4,6 +4,7 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
+
 module graphdata;
 @trusted
 
@@ -93,14 +94,14 @@ final class GraphData
                  * Note that the graph is empty until the first accumulated
                  * value is added, which depends on time resolution.
                  */
-                bool empty() const {return values_.length == 0;}
+                @property bool empty() const {return values_.length == 0;}
 
                 /**
                  * Get start time of the graph, i.e. time of the first value in the graph.
                  *
                  * Only makes sense if the graph is not empty.
                  */
-                real start_time() const
+                @property real start_time() const
                 in{assert(!empty(), "Can't get start time of an empty graph");}
                 body{return values_[0].time;}
 
@@ -312,13 +313,13 @@ final class GraphData
         }
 
         ///Get time resolution of the graph.
-        final real time_resolution(){return time_resolution_;}
+        @property final real time_resolution(){return time_resolution_;}
 
         ///Get time when this graph started to exist.
-        final real start_time() const {return start_time_;}
+        @property final real start_time() const {return start_time_;}
 
         ///Get names of measured values.
-        final const(string[]) graph_names() const {return graphs_.keys;}
+        @property final const(string[]) graph_names() const {return graphs_.keys;}
 
         ///Add a value to the graph of value with specified name.
         final void update_value(in string name, in real value)
