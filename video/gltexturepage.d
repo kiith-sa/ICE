@@ -179,14 +179,6 @@ package align(1) struct GLTexturePage(TexturePacker)
         ///Use this page to draw textured geometry from now on.
         void start(){glBindTexture(GL_TEXTURE_2D, texture_);}
 
-        ///Determine if the page is resident in the video memory.
-        @property bool resident() const
-        {
-            GLboolean resident;
-            glAreTexturesResident(1, &texture_, &resident);
-            return cast(bool) resident;
-        }
-
         ///Remove texture with specified bounds from this page.
         void remove_texture(const ref Rectangleu bounds){packer_.free_space(bounds);}
 
