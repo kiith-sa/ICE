@@ -323,7 +323,7 @@ class CLI
                 return (a.long_ == b.long_) || 
                        (a.short_ != '\0' && (a.short_ == b.short_));
             }
-            assert(find!conflict(options_, option) == [], 
+            assert(!canFind!conflict(options_, option), 
                    "CLI: Adding option " ~ option.long_ ~ " twice.");
             }
         }
@@ -395,7 +395,7 @@ class CLI
                     bool match(ref OptionData o)
                     {
                         return o.name != [option.short_] &&
-                               ((find(abbrev.keys, o.name) == []) || abbrev[o.name] != option.long_);
+                               (!canFind(abbrev.keys, o.name) || abbrev[o.name] != option.long_);
                     }
 
                     //get option data that match this option
@@ -492,7 +492,7 @@ class CLI
                         }
 
                         //if this is not an option
-                        if(find!short_match(options_, c) == [])
+                        if(!canFind!short_match(options_, c))
                         {
                             add_arg(arg[i .. $]);
                             break;
@@ -616,13 +616,13 @@ unittest
 ///Convert a string to a bool lexically.
 bool lexical_bool(string str)
 {
-    if(find(["Yes", "yes", "YES", "On", "on", "ON", "True", "true", "TRUE", 
-        "Y", "y", "T", "t", "1"], str) != [])
+    if(canFind(["Yes", "yes", "YES", "On", "on", "ON", "True", "true", "TRUE", 
+                "Y", "y", "T", "t", "1"], str))
     {
         return true;
     }
-    else if(find(["No", "no", "NO", "Off", "off", "OFF", "False", "false", "FALSE", 
-             "N", "n", "F", "f", "0"], str) != [])
+    else if(canFind(["No", "no", "NO", "Off", "off", "OFF", "False", "false", "FALSE", 
+                     "N", "n", "F", "f", "0"], str))
     {
         return false;
     }

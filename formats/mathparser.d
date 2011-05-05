@@ -139,12 +139,12 @@ private:
             //ignore spaces
             if(iswhite(c)){continue;}
             //not an operator
-            if(operators.find(c) == []){output ~= c;}
+            if(!operators.canFind(c)){output ~= c;}
             //operator
             else
             {
                 //if there are two operators in a row, we have an error.
-                if(arithmetic.find(prev_c) != [] && arithmetic.find(c) != [])
+                if(arithmetic.canFind(prev_c) && arithmetic.canFind(c))
                 {
                     throw new MathParserException("Redundant operator in math expression " 
                                                   ~ expression);
@@ -173,7 +173,7 @@ private:
 
                     while(tok != 0 && tok != '(')
                     {
-                        if(arithmetic.find(c) != [] && precedence[c] <= precedence[tok])
+                        if(arithmetic.canFind(c) && precedence[c] <= precedence[tok])
                         {
                             tok = pop();
                             output ~= " ";

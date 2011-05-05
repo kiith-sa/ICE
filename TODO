@@ -1,8 +1,3 @@
-01:
-    Use remove as specified in docs - it behavior is not a bug -
-    we can also remove workarounds.d
-
-    Also replace use of find as contains with canFind
 02:
     Thoroughly rewrite CDC .
 13: 

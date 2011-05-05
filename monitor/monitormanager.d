@@ -71,8 +71,8 @@ final class MonitorManager
         void add_monitorable(Monitorable monitorable, in string name)
         in
         {
-            assert(find(monitored_.keys, name) == [], 
-                    "Trying to add a monitorable with name that is already used");
+            assert(!canFind(monitored_.keys, name),
+                   "Trying to add a monitorable with name that is already used");
         }
         body
         {
@@ -84,7 +84,7 @@ final class MonitorManager
         void remove_monitorable(in string name)
         in
         {
-            assert(find(monitored_.keys, name) != [], 
+            assert(canFind(monitored_.keys, name), 
                    "Trying to remove a monitorable that is not present");
         }
         body
@@ -107,7 +107,7 @@ final class MonitorManager
         @property const(string[]) monitor_names(in string monitored) const
         in
         {
-            assert(find(monitored_.keys, monitored) != [], 
+            assert(canFind(monitored_.keys, monitored), 
                    "Trying to get monitor names of a monitorable that is not present");
         }
         body
@@ -119,7 +119,7 @@ final class MonitorManager
         void start(in MonitorID id)
         in
         {
-            assert(find(monitored_.keys, id.monitored) != [], 
+            assert(canFind(monitored_.keys, id.monitored),
                    "Trying to start monitor of a monitorable that is not present");
         }
         body
@@ -131,7 +131,7 @@ final class MonitorManager
         void stop(in MonitorID id)
         in
         {
-            assert(find(monitored_.keys, id.monitored) != [], 
+            assert(canFind(monitored_.keys, id.monitored),
                    "trying to stop monitor of a monitorable that is not present");
         }
         body
@@ -143,7 +143,7 @@ final class MonitorManager
         SubMonitor get(in MonitorID id)
         in
         {
-            assert(find(monitored_.keys, id.monitored) != [], 
+            assert(canFind(monitored_.keys, id.monitored),
                    "trying to get monitor of a monitorable that is not present");
         }
         body{return monitored_[id.monitored].get_monitor(id.monitor);}
@@ -153,7 +153,7 @@ final class MonitorManager
         in
         {
             assert(!pinned(id), "Trying to pin a monitor that is already pinned");
-            assert(find(monitored_.keys, id.monitored) != [], 
+            assert(canFind(monitored_.keys, id.monitored),
                    "Trying to pin monitor of a monitorable that is not present");
         }
         body{pinned_ ~= id;}
@@ -167,7 +167,7 @@ final class MonitorManager
         }
 
         ///Is a submonitor pinned?
-        bool pinned(in MonitorID id){return pinned_.find(id) != [];}
+        bool pinned(in MonitorID id){return pinned_.canFind(id);}
 }
 
 
@@ -230,7 +230,7 @@ final class MonitorView : GUIElement
             //current monitored might have been removed by the monitor, so check for that
             //copying due to phobos not yet working correctly with const/immutable
             string[] monitored_names = monitor_.monitored_names.dup;
-            if(monitored_names.find(current_monitored_) == [])
+            if(!monitored_names.canFind(current_monitored_))
             {
                 if(current_monitor_.monitored == current_monitored_)
                 {

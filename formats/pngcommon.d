@@ -221,11 +221,11 @@ bool validate_color(in PNGColorType color_type, in uint bit_depth)
     switch(color_type)
     {
         case PNGColorType.Greyscale: 
-            return find([1, 2, 4, 8, 16], bd) != [];
+            return canFind([1, 2, 4, 8, 16], bd);
         case PNGColorType.Palette: 
-            return find([1, 2, 4, 8], bd) != [];
+            return canFind([1, 2, 4, 8], bd);
         case PNGColorType.RGB, PNGColorType.RGBA, PNGColorType.GreyscaleAlpha: 
-            return find([8, 16], bd) != [];
+            return canFind([8, 16], bd);
         default:
             assert(false, "Invalid PNG color type");
     }

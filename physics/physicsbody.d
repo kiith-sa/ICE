@@ -146,7 +146,7 @@ class PhysicsBody
         {
             auto other = this is contact.body_a ? contact.body_b : contact.body_a;
             //add this collider if we don't have it yet
-            if(find!"a is b"(colliders_, other) == []){colliders_ ~= other;}
+            if(!canFind!"a is b"(colliders_, other)){colliders_ ~= other;}
             collision_response(contact);
         }
 

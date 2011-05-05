@@ -281,6 +281,6 @@ class GridSpatialManager(T) : SpatialManager!(T)
             rectangle = Rectanglef(-15.0, -15.0, 15.0, 33.0);
             result = manager.cells_rectangle(zero, rectangle);
             assert(result.length == 7);
-            assert(find!"a is b"(result, &manager.outer_) != []);
+            assert(canFind!"a is b"(result, &manager.outer_));
         }
 }

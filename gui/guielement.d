@@ -99,7 +99,7 @@ class GUIElement
         final void add_child(GUIElement child)
         in
         {
-            assert(find!"a is b"(children_, child) == [], 
+            assert(!canFind!"a is b"(children_, child),
                    "Trying to add a child that is already a child of this GUI element.");
             assert(child.parent_ is null, "Trying to add a child that already has a parent");
         }
@@ -113,7 +113,7 @@ class GUIElement
         final void remove_child(GUIElement child)
         in
         {
-            assert(find!"a is b"(children_, child) != [] && child.parent_ is this,
+            assert(canFind!"a is b"(children_, child) && child.parent_ is this,
                    "Trying to remove a child that is not a child of this GUI element.");
         }
         body

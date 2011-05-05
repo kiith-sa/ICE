@@ -316,7 +316,7 @@ final class FontManager
             scope(failure){writeln("Could not read from font file: " ~ name);}
 
             //already loaded
-            if(find(font_files_.keys, name) != []){return;}
+            if(canFind(font_files_.keys, name)){return;}
 
             File file = File("fonts/" ~ name, FileMode.Read);
             font_files_[name] = Vector!(ubyte)(cast(ubyte[])file.data);

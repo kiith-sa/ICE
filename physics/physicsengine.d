@@ -152,7 +152,7 @@ final class PhysicsEngine : Monitorable
         void add_body(PhysicsBody physics_body)
         in
         {
-            assert(find!"a is b"(bodies_, physics_body) == [],
+            assert(!canFind!"a is b"(bodies_, physics_body),
                    "Adding the same physics body twice");
             assert(!updating_, "Can't add new physics bodies during a physics update");
         }
@@ -178,7 +178,7 @@ final class PhysicsEngine : Monitorable
         void remove_body(PhysicsBody physics_body)
         in
         {
-            assert(find!"a is b"(bodies_, physics_body) != [],
+            assert(canFind!"a is b"(bodies_, physics_body),
                    "Can't remove a physics body that is not in the PhysicsEngine");
             assert(!updating_, "Can't remove physics bodies during a physics update");
         }

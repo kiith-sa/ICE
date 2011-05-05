@@ -79,7 +79,7 @@ final class MonitorData(M) : MonitorDataInterface
         void stop_monitor(in string name)
         in
         {
-            assert(find(monitors_.keys, name) != [], 
+            assert(canFind(monitors_.keys, name), 
                    "Trying to stop a monitor that is not running");
         }
         body
@@ -91,7 +91,7 @@ final class MonitorData(M) : MonitorDataInterface
         SubMonitor get_monitor(in string name)
         in
         {
-            assert(find(monitors_.keys, name) != [], "Trying to access a nonexistent monitor");
+            assert(canFind(monitors_.keys, name), "Trying to access a nonexistent monitor");
         }
         body
         {

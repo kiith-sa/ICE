@@ -323,7 +323,7 @@ final class GraphData
 
         ///Add a value to the graph of value with specified name.
         final void update_value(in string name, in real value)
-        in{assert(find(graphs_.keys, name) != [], "Adding unknown value to graph");}
+        in{assert(canFind(graphs_.keys, name), "Adding unknown value to graph");}
         body{graphs_[name].add_value(value);}
 
         /**

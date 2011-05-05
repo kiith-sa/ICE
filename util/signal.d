@@ -66,7 +66,7 @@ template Signal(Args ...)
         void disconnect(void delegate(Args) slot)
         in
         {
-            assert(std.algorithm.find!"a is b"(slots_, slot) != [],
+            assert(std.algorithm.canFind!"a is b"(slots_, slot),
                    "Can't disconnect a slot that is not connected");
         }
         body

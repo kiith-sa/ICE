@@ -175,8 +175,8 @@ final class SceneManager : ActorContainer, Monitorable
         void add_actor(Actor actor)
         in
         {
-            assert(find!"a is b"(actors_to_add_, actor) == [] &&
-                   find!"a is b"(actors_, actor) == [],
+            assert(!canFind!"a is b"(actors_to_add_, actor) &&
+                   !canFind!"a is b"(actors_, actor),
                    "Adding the same actor twice");
         }
         body{actors_to_add_ ~= actor;}
@@ -191,7 +191,7 @@ final class SceneManager : ActorContainer, Monitorable
         void remove_actor(Actor actor)
         in
         {
-            assert(find!"a is b"(actors_, actor) != [],
+            assert(canFind!"a is b"(actors_, actor),
                    "Can't remove an actor that is not in the SceneManager");
         }
         body{actors_to_remove_ ~= actor;}
