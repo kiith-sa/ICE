@@ -118,10 +118,24 @@ package struct GLVertexBuffer(Vertex)
         @property uint index_count() const {return cast(uint)indices_.length;}
 
         ///Set number of vertices in the buffer (to add more vertices).
-        @property void vertex_count(in size_t length){vertices_.length = length;}
+        @property void vertex_count(in size_t length)
+        {
+            if(vertices_.allocated < length)
+            {
+                vertices_.reserve(cast(size_t)(length * 1.5));
+            }
+            vertices_.length = length;
+        }
 
         ///Set number of indices in the buffer (to add more indices).
-        @property void index_count(in size_t length){indices_.length = length;}
+        @property void index_count(in size_t length)
+        {
+            if(indices_.allocated < length)
+            {
+                indices_.reserve(cast(size_t)(length * 1.5));
+            }
+            indices_.length = length;
+        }
 
         /**
          * Draw a vertex group using data stored in this buffer.

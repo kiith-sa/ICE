@@ -1,13 +1,10 @@
-14: 
-    glAreTexturesResident is used in GLTexturePage. Might be obsolete in GL 3.x.
-    REMOVE IT, DEPRECATED
+01:
+    Use remove as specified in docs - it behavior is not a bug -
+    we can also remove workarounds.d
+
+    Also replace use of find as contains with canFind
 02:
     Thoroughly rewrite CDC .
-16:
-    Through templates, pass __FILE__ and __LINE__ to allocation functions - 
-    should allow us to precisely record where we've done which allocation
-17:
-    Regenerate docs (need D2 dil support)
 13: 
     to bugtracker: use Derelict selective symbol loading once it is documented
 14: 
@@ -18,8 +15,12 @@
 15:
     bugtracker: Once new DMD is released, replace die() with dtor where possible
     (clear() will not call default ctor anymore)
+16:
+    test if install tutorials still work, add new binaries
 12:
     Write these TODOs in bugtracker
+17:
+    Regenerate docs (need D2 dil support)
 
 --0.5.0 release
 --0.6.0 release

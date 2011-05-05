@@ -15,28 +15,36 @@ import std.c.string;
 import std.algorithm;
 import std.conv;
 import std.stdio;
+import std.string;
 import std.traits;
 
 import file.fileio;
+debug{import time.time;}
 private alias file.file.File File;
 
 
 
 public:
     ///Allocate an object of a basic type, or a struct with default values.
-    T* alloc(T)() if(!is(T == class)) {return allocate!(T)();}
-
-    /**
-     * Allocate a struct with specified parameters to the structs' constructor.
-     *
-     * Params:  args = Arguments to structs' constructor.
-     *
-     * Returns: Pointer to allocated struct.
-     */
-    T* alloc_struct(T)(ParameterTypeTuple!(T.__ctor) args)
-        if(is(T == struct))
+    T* alloc(T, string file = __FILE__, uint line = __LINE__)() 
+        if(!is(T == class)) 
     {
-        return allocate_struct!(T)(args);
+        return allocate!(T, file, line)();
+    }
+
+    template alloc_struct(T) if(is(T == struct))
+    {
+        /**
+         * Allocate a struct with specified parameters to the structs' constructor.
+         *
+         * Params:  args = Arguments to structs' constructor.
+         *
+         * Returns: Pointer to allocated struct.
+         */
+        T* alloc_struct(string file = __FILE__, uint line = __LINE__, Args ...)(Args args)
+        {
+            return allocate_struct!(T, file, line)(args);
+        }
     }
 
     ///Free an object (struct) allocated by alloc(). Will clear the object.
@@ -77,9 +85,9 @@ public:
      *
      * Returns: Allocated array.
      */
-    T[] alloc_array(T)(in uint elems)
+    T[] alloc_array(T, string file = __FILE__, uint line = __LINE__)(in uint elems)
     {
-        return allocate!(T)(elems);
+        return allocate!(T, file, line)(elems);
     }
 
     /**
@@ -96,7 +104,10 @@ public:
      *
      * Returns: Reallocated array.
      */
-    T[] realloc(T)(T[] array, in uint elems){return reallocate!(T)(array, elems);}
+    T[] realloc(T, string file = __FILE__, uint line = __LINE__)(T[] array, in uint elems)
+    {
+        return reallocate!(T, file, line)(array, elems);
+    }
 
     /**
      * Free an array of objects allocated by alloc(). 
@@ -133,40 +144,112 @@ private:
     ///Currently allocated memory, in bytes.
     ulong currently_allocated_ = 0;
 
-    ///Struct holding allocation data for one object type.
-    struct Stats
+    ///48 bytes on 64-bit, 40 bytes on 23-bit
+    /**
+     * Struct holding information about a memory allocation.
+     *
+     * In release mode, this is simply a pointer to the allocated memory.
+     * In debug mode, it holds detailed information about the allocation
+     * and takes 48 bytes on 64-bit, 40 bytes on 32-bit.
+     */
+    align(1) struct Allocation
     {
-        ///Total bytes allocated or freed.
-        ulong bytes;
-        ///Total allocations or deallocations.
-        uint allocations;
-        ///Total objects allocated.
-        ulong objects;
-
-        ///Get allocation data in string format.
-        @property string statistics() const
+        private:
+        debug
         {
-            return to!string(bytes) ~ " bytes, " ~ to!string(allocations) ~
-                   " allocations, " ~ to!string(objects) ~ " objects";                     
-        }                
-    }                    
-    
-    ///Statistics about allocations of types.
-    Stats[string] alloc_stats_;
-    ///Statistics about deallocations of types.
-    Stats[string] dealloc_stats_;
-    ///Pointers to currently allocated buffers.
-    void*[] alloc_pointers_;
+            ///Time when the program started.
+            static real start_time_;
+            ///Information about allocated type.
+            TypeInfo type_; 
+            ///Number of objects allocated.
+            uint objects_;
+            ///Line number where the allocation happened.
+            ushort line_;
+            ///Time, in seconds since start, when the allocation happened.
+            ushort time_;
+            ///Last characters of the file name where the allocation happened.
+            char[24] file_ = "                        ";
+        }
+
+        public:
+            ///Pointer to the allocated memory.
+            void* ptr;
+
+        public:
+            /**
+             * Construct an Allocation info object.
+             *
+             * Template parameters specify data type allocated,
+             * file and line where the allocation happened.
+             *
+             * Params:
+             *      ptr     = Pointer to allocated memory.
+             *      objects = Number of objects allocated.
+             *
+             * Returns: Constructed Allocation.
+             */
+            static Allocation construct(T, string file, uint line) 
+                                       (in T* ptr, in uint objects)
+            {
+                Allocation a;
+
+                debug
+                {
+                    static if(file.length > 26){a.file_[0 .. 26] = file[$ - 26 .. $];}
+                    else{a.file_[0 .. file.length] = file[];}
+                    a.line_ = line;
+                    a.type_ = typeid(T);
+                    a.objects_ = objects;
+                    a.time_ = cast(ushort)(get_time() - start_time_);
+                }
+
+                a.ptr = cast(void*)ptr;
+
+                return a;
+            }
+
+            ///Get information string about the allocation.
+            @property string info()
+            {
+                string meta = "";
+                debug
+                {
+                    meta ~= "__FILE__: " ~ strip(cast(char[])file_) ~ "\n";
+                    meta ~= "__LINE__: " ~ to!string(line_) ~ "\n";
+                    meta ~= "type    : " ~ type_.toString() ~ "\n";
+                    meta ~= "objects : " ~ to!string(objects_) ~ "\n";
+                    meta ~= "bytes   : " ~ to!string(objects_ * type_.tsize) ~ "\n";
+                    meta ~= "time    : " ~ to!string(time_) ~ "\n";
+                    meta ~= "ptr     : ";
+                }
+                return meta ~ to!string(ptr);
+            }
+
+        private:
+        debug
+        {
+            ///Static constructor - set start time.
+            static this(){start_time_ = get_time();}
+        }
+    }
+
+    debug
+    {
+        ///Information about allocations that have been freed.
+        Allocation[] past_allocations_;
+    }
+
+    //set (RB tree) might work better if there are performance problems
+    ///Information about current allocations.
+    Allocation[] allocations_;
 
     ///Allocate one object and default-initialize it.
-    T* allocate(T)()
+    T* allocate(T, string file, uint line)()
     {
         const bytes = T.sizeof;
         T* ptr = cast(T*)malloc(bytes);
-        total_allocated_ += bytes;
-        currently_allocated_ += bytes;
 
-        debug_allocate(ptr, 1);
+        debug_allocate!(T, file, line)(ptr, 1);
 
         //default-initialize the object.
         *ptr = T.init;
@@ -180,12 +263,9 @@ private:
      *
      * Returns: Pointer to the allocated struct.
      */
-    T* allocate_struct(T)(ParameterTypeTuple!(T.__ctor) args)
+    T* allocate_struct(T, string file, uint line)(ParameterTypeTuple!(T.__ctor) args)
     {
         const bytes = T.sizeof;
-
-        total_allocated_ += bytes;
-        currently_allocated_ += bytes;
 
         scope(failure){writeln("struct allocation failed");}
 
@@ -193,9 +273,7 @@ private:
         *ptr = T.init;
         ptr.__ctor(args);
 
-        debug_allocate(ptr, 1); 
-
-        //writeln("returning ptr");
+        debug_allocate!(T, file, line)(ptr, 1); 
 
         return ptr;
     }
@@ -209,7 +287,7 @@ private:
      * 
      * Returns: Allocated array.
      */
-    T[] allocate(T)(in uint elems)
+    T[] allocate(T, string file, uint line)(in uint elems)
     out(result)
     {
         assert(result.length == elems, "Failed to allocate space for "
@@ -220,10 +298,8 @@ private:
         const bytes = T.sizeof * elems;
         //only 4G elems supported for now
         T[] array = (cast(T*)malloc(bytes))[0 .. elems];
-        total_allocated_ += bytes;
-        currently_allocated_ += bytes;
 
-        debug_allocate(array.ptr, elems); 
+        debug_allocate!(T, file, line)(array.ptr, elems); 
 
         //default-initialize the array.
         //using memset for ubytes as it's faster and ubytes are often used for large arrays.
@@ -242,11 +318,16 @@ private:
      *
      * Returns: Reallocated array.
      */
-    T[] reallocate(T)(T[] array, in uint elems)
+    T[] reallocate(T, string file, uint line)(T[] array, in uint elems)
     in
     {
-        assert(alloc_pointers_.find(cast(void*)array.ptr) != [], 
-               "Trying to reallocate a pointer that isn't allocated (or was freed)");
+        debug
+        {
+        //must be in a separate function due to a compiler bug
+        bool match(ref Allocation a){return a.ptr == cast(void*)array.ptr;}
+        assert(canFind!match(allocations_),
+               "Trying to free a pointer that isn't allocated (or has been freed)");
+        }
     }
     body
     {
@@ -254,7 +335,7 @@ private:
         const new_bytes = T.sizeof * elems;
         T* old_ptr = array.ptr;
         const old_length = array.length;
-
+                  
         //if we're shrinking, destroy extra elements unless this is 
         //an array of pointers or reference types.
         static if (!is(typeof(cast(T*)T))) 
@@ -267,11 +348,7 @@ private:
 
         array = (cast(T*)std.c.stdlib.realloc(cast(void*)array.ptr, new_bytes))[0 .. elems];
 
-        const int diff = new_bytes - old_bytes;
-        total_allocated_ += diff;
-        currently_allocated_ += diff;
-
-        debug_reallocate(array.ptr, array.length, old_ptr, old_length); 
+        debug_reallocate!(T, file, line)(array.ptr, array.length, old_ptr, old_length); 
 
         //default-initialize new elements, if any
         if(array.length > old_length)
@@ -296,14 +373,16 @@ private:
     void deallocate(T)(ref T* ptr)
     in
     {
-        assert(alloc_pointers_.find(cast(void*)ptr) != [], 
-               "Trying to free a pointer that isn't allocated (or is already freed?)");
+        debug
+        {
+        //must be in a separate function due to a compiler bug
+        bool match(ref Allocation a){return a.ptr == cast(void*)ptr;}
+        assert(canFind!match(allocations_),
+               "Trying to free a pointer that isn't allocated (or has been freed)");
+        }
     }
     body
     {
-        total_freed_ += T.sizeof;
-        currently_allocated_ -= T.sizeof;
-
         //call dtor for structs
         clear(*ptr);
 
@@ -323,14 +402,17 @@ private:
     void deallocate(T)(ref T[] array)
     in
     {
-        assert(alloc_pointers_.find(cast(void*)array.ptr) != [], 
-               "Trying to free a pointer that isn't allocated (or is already freed)");
+        //must be in a separate function due to a compiler bug
+        debug
+        {
+        bool match(ref Allocation a){return a.ptr == cast(void*)array.ptr;}
+        assert(canFind!match(allocations_),
+               "Trying to free a pointer that isn't allocated (or has been freed)");
+        }
     }
     body
     {
         const bytes = T.sizeof * array.length;
-        total_freed_ += bytes;
-        currently_allocated_ -= bytes;
 
         //destroy the elements unless this is an array of pointers or reference types.
         static if (!is(typeof(cast(T*)(T))))
@@ -349,19 +431,28 @@ private:
         string stats = "Memory allocator statistics:";
         stats ~= "\nTotal allocated (bytes): " ~ to!string(total_allocated_);
         stats ~= "\nTotal freed (bytes): " ~ to!string(total_freed_);
-        
-        stats ~= "\nAllocated pointers that were not freed: " ~
-                 to!string(alloc_pointers_.length);
 
-        stats ~= "\n\nAllocation statistics:\n";
-        foreach(type_name, stat; alloc_stats_)
+        const non_freed = allocations_.length;
+        stats ~= non_freed ? "\nLEAK: " ~ to!string(non_freed) ~ " pointers were not freed."
+                           : "\nAll pointers have been freed, no memory leaks detected.";
+        stats ~= "\n\n\n";
+
+        if(non_freed)
         {
-            stats ~= type_name ~ " - " ~ stat.statistics ~ "\n";
+            stats ~= "Non-freed allocations (LEAKS):";
+            foreach(ref allocation; allocations_)
+            {
+                stats ~= "\n\n" ~ allocation.info;
+            }
+            stats ~= "\n\n\n";
         }
-        stats ~= "\nDeallocation statistics:\n";
-        foreach(type_name, stat; dealloc_stats_)
+        debug
         {
-            stats ~= type_name ~ " - " ~ stat.statistics ~ "\n";
+            stats ~= "Freed allocations:";
+            foreach(ref allocation; past_allocations_)
+            {
+                stats ~= "\n\n" ~ allocation.info;
+            }
         }
 
         return stats;
@@ -380,7 +471,7 @@ private:
             file.write(stats);
         }
 
-        if(alloc_pointers_.length > 0)
+        if(allocations_.length > 0)
         {
             writeln("WARNING: MEMORY LEAK DETECTED, FOR MORE INFO SEE:\n"
                      "userdata::main::logs/memory.log");
@@ -393,20 +484,13 @@ private:
      * Params:  ptr     = Pointer to the allocated memory.
      *          objects = Number of objects allocated.
      */
-    void debug_allocate(T)(in T* ptr, in uint objects)
+    void debug_allocate(T, string file, uint line)(in T* ptr, in uint objects)
     {
-        const type = typeid(T).toString;
-        Stats* stats = type in alloc_stats_;
-        //If this type was not yet allocated, add an entry
-        if(stats is null){alloc_stats_[type] = Stats(objects * T.sizeof, 1, objects);}
-        else
-        {
-            stats.bytes += objects * T.sizeof;
-            stats.allocations += 1;
-            stats.objects += objects;
-        }
-        //add the pointer to array of allocated pointers
-        alloc_pointers_ ~= cast(void*)ptr;
+        allocations_ ~= Allocation.construct!(T, file, line)(ptr, objects);
+
+        const uint bytes = objects * T.sizeof;
+        total_allocated_ += bytes;
+        currently_allocated_ += bytes;
     }
 
     //not the best way to go about recording reallocs, but sufficient for now
@@ -418,25 +502,30 @@ private:
      *          old_ptr     = Pointer to original memory.
      *          old_objects = Number of objects in original memory.
      */
-    void debug_reallocate(T)(in T* new_ptr, in uint new_objects,
-                             in T* old_ptr, in uint old_objects)
+    void debug_reallocate(T, string file, uint line)
+                         (in T* new_ptr, in uint new_objects,
+                          in T* old_ptr, in uint old_objects)
     {
-        const type = typeid(T).toString;
-        Stats* stats = type in alloc_stats_;
-
-        assert(stats !is null, "Allocation stats for a reallocated type are empty");
-
-        const change = cast(long)new_objects - cast(long) old_objects;
-        stats.bytes += change * T.sizeof;
-        stats.allocations += 1;
-        stats.objects += change;
-
-        if(new_ptr != old_ptr)
+        //find and replace allocation info corresponding to reallocated data
+        bool found = false;
+        foreach(ref allocation; allocations_)
         {
-            uint index = alloc_pointers_.countUntil(cast(void*) old_ptr);
-            //replace the pointer
-            alloc_pointers_[index] = cast(void*) new_ptr;
+            if(allocation.ptr == old_ptr)
+            {
+                debug{past_allocations_ ~= allocation;}
+                //replace allocation info
+                allocation = Allocation.construct!(T, file, line)(new_ptr, new_objects);
+                found = true;
+                break;
+            }
         }
+        assert(found, "No match found for a pointer to reallocate");
+
+        const uint old_bytes = old_objects * T.sizeof;
+        const uint new_bytes = new_objects * T.sizeof;
+        const int diff = new_bytes - old_bytes;
+        total_allocated_ += diff;
+        currently_allocated_ += diff;
     }
 
     /**
@@ -447,18 +536,23 @@ private:
      */
     void debug_free(T)(in T* ptr, in uint objects)
     {
-        const type = typeid(T).toString;
-        Stats* stats = type in dealloc_stats_;
-        //If this type was not yet deallocated, add an entry
-        if(stats is null){dealloc_stats_[type] = Stats(objects * T.sizeof, 1, objects);}
-        else
+        //remove allocation info
+        bool found = false;
+        foreach(ref allocation; allocations_)
         {
-            stats.bytes += objects * T.sizeof;
-            stats.allocations += 1;
-            stats.objects += objects;
+            if(allocation.ptr == ptr)
+            {
+                debug{past_allocations_ ~= allocation;}
+                //remove by rewriting by the last allocation
+                allocation = allocations_[$ - 1];
+                found = true;
+                break;
+            }
         }
+        assert(found, "No match found for pointer to free");
+        allocations_ = allocations_[0 .. $ - 1];
 
-        //using this weird method of removing due to a bug in std.algorithm.remove
-        uint i = alloc_pointers_.countUntil(cast(void*) ptr);
-        alloc_pointers_ = alloc_pointers_[0 .. i] ~ alloc_pointers_[i + 1 .. $];
+        const uint bytes = objects * T.sizeof;
+        total_freed_ += bytes;
+        currently_allocated_ -= bytes;
     }

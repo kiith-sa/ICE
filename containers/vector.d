@@ -114,7 +114,7 @@ align(1) struct Vector(T)
         body
         {
             //if out of space, reallocate.
-            reserve(used_ + 1);
+            if(data_.length == used_){reserve((data_.length + 1) * 2);}
             data_[used_] = element;
             used_++;
         }

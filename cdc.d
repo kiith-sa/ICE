@@ -162,7 +162,7 @@ int main(string[] args)
     if(args.length > 0 && args[$ - 1][0] != '-'){build = args[$ - 1];}
     
 
-    string[] debug_args = ["-unittest", "-gc", "-ofpong-debug"];
+    string[] debug_args = ["-unittest", "-gc", "-debug", "-ofpong-debug"];
     string[] no_contracts_args = ["-release", "-gc", "-ofpong-no-contracts"];
     string[] release_args = ["-O", "-inline", "-release", "-gc", "-ofpong-release"];
 

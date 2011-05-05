@@ -147,6 +147,14 @@ public:
         extLoadAll();
     }
 
+    ///DPong
+    void loadExtensionsCustom()
+    {
+        if(!hasValidContext())
+            throw new DerelictException("An OpenGL context must be created and activated before attempting to load extensions.");
+        extLoadCustom();
+    }
+
     string[] loadedExtensionNames()
     {
         return getLoadedExtensionNames();

@@ -667,13 +667,15 @@ abstract class GLVideoDriver : VideoDriver
             {
                 //Loads the newest available OpenGL version
                 version_ = DerelictGL.loadClassicVersions(GLVersion.GL20);
+
+                //replace with selective symbol loading if possible and remove
+                //the custom function from Derelict
+                DerelictGL.loadExtensionsCustom();
             }
             catch(DerelictException e)
             {
                 throw new VideoDriverException("Could not load OpenGL: " ~ e.msg);
             } 
-
-            DerelictGL.loadExtensions();
 
             glEnable(GL_CULL_FACE);
             glCullFace(GL_BACK);

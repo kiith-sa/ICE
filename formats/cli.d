@@ -315,6 +315,8 @@ class CLI
         void add_option(CLIOption option)
         in
         {
+            debug
+            {
             assert(option.valid, "CLI: Trying to add invalid option: " ~ option.long_);
             static bool conflict(ref CLIOption a, ref CLIOption b)
             {
@@ -323,6 +325,7 @@ class CLI
             }
             assert(find!conflict(options_, option) == [], 
                    "CLI: Adding option " ~ option.long_ ~ " twice.");
+            }
         }
         body
         {

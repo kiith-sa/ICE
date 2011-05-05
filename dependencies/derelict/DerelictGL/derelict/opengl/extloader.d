@@ -107,6 +107,12 @@ package
         extLoadPlatform();
     }
 
+    ///DPong
+    void extLoadCustom()
+    {
+        loaded["GL_EXT_framebuffer_object"] = load_GL_EXT_framebuffer_object;
+    }
+
     string[] getLoadedExtensionNames()
     {
         auto keys = loaded.keys;
