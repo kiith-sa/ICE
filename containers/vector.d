@@ -41,11 +41,11 @@ align(1) struct Vector(T)
 
     public:
         ///Construct an empty vector with allocated space for specified number of elements.
-        this(in uint reserve)
+        this(in size_t reserve)
         out(result){assert(result.used_ == 0, "Constructed vector expected to be empty");}
         body
         {
-            data_ = alloc_array!(T)(max(2, reserve));
+            data_ = alloc_array!(T)(cast(uint)max(2, reserve));
         }
 
         ///Construct a vector from an array.
@@ -53,7 +53,7 @@ align(1) struct Vector(T)
         out(result){assert(result.used_ == array.length, "Unexpected vector length");}
         body
         {
-            data_ = alloc_array!(T)(max(cast(size_t)2, array.length));
+            data_ = alloc_array!(T)(cast(uint)max(2, array.length));
             //copy array data
             data_[] = array;
             used_ = array.length;
@@ -313,7 +313,8 @@ align(1) struct Vector(T)
             used_ = length;
             //awkward control flow due to optimization. we realloc if elements > data_.length
             if(length <= data_.length){return;}
-            data_ = (data_ != []) ? realloc(data_, length) : alloc_array!T(length);
+            data_ = (data_ != []) ? realloc(data_, cast(uint)length) 
+                                  : alloc_array!T(cast(uint)length);
         }
 
         ///Reserve space for at least specified number of elements.
@@ -322,7 +323,8 @@ align(1) struct Vector(T)
             //awkward control flow due to optimization. we realloc if elements > data_.length
             if(elements <= data_.length){return;}
 
-            data_ = (data_ != []) ? realloc(data_, elements) : alloc_array!T(elements);
+            data_ = (data_ != []) ? realloc(data_, cast(uint)elements) 
+                                  : alloc_array!T(cast(uint)elements);
         }
 
         ///Get currently allocated capacity.

@@ -177,11 +177,11 @@ struct File
             //reallocate if not enough space
             if(needed > allocated)
             {
-                write_data_ = realloc(write_data_, max(needed, allocated * 2));
+                write_data_ = realloc(write_data_, cast(uint)max(needed, allocated * 2));
             }
 
             write_data_[cast(uint)write_used_ .. cast(uint)needed] = data_bytes[];
-            write_used_ = needed;
+            write_used_ = cast(uint)needed;
         }
 
     private:

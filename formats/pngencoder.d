@@ -105,7 +105,7 @@ struct PNGEncoder
             //write chunks to buffer
             foreach(chunk; chunks){write_chunk(buffer, chunk);}
 
-            ubyte[] output = alloc_array!(ubyte)(buffer.length);
+            ubyte[] output = alloc_array!(ubyte)(cast(uint)buffer.length);
             output[] = buffer.array;
 
             return output;

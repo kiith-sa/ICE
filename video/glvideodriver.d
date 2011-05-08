@@ -476,7 +476,7 @@ abstract class GLVideoDriver : VideoDriver
             //create new GLTexture with specified parameters.
             void new_texture(in size_t page_index)
             {
-                textures_ ~= alloc_struct!(GLTexture)(texcoords, offset, page_index);
+                textures_ ~= alloc_struct!(GLTexture)(texcoords, offset, cast(uint)page_index);
             }
 
             //if the texture needs its own page

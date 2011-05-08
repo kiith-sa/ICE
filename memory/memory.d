@@ -334,7 +334,7 @@ private:
         const old_bytes = T.sizeof * array.length;
         const new_bytes = T.sizeof * elems;
         T* old_ptr = array.ptr;
-        const old_length = array.length;
+        const uint old_length = cast(uint)array.length;
                   
         //if we're shrinking, destroy extra elements unless this is 
         //an array of pointers or reference types.
@@ -348,7 +348,7 @@ private:
 
         array = (cast(T*)std.c.stdlib.realloc(cast(void*)array.ptr, new_bytes))[0 .. elems];
 
-        debug_reallocate!(T, file, line)(array.ptr, array.length, old_ptr, old_length); 
+        debug_reallocate!(T, file, line)(array.ptr, cast(uint)array.length, old_ptr, old_length); 
 
         //default-initialize new elements, if any
         if(array.length > old_length)
@@ -420,7 +420,7 @@ private:
             foreach(ref T elem; array){clear(elem);}
         }
 
-        debug_free(array.ptr, array.length); 
+        debug_free(array.ptr, cast(uint)array.length); 
 
         std.c.stdlib.free(array.ptr);
     }
@@ -488,7 +488,7 @@ private:
     {
         allocations_ ~= Allocation.construct!(T, file, line)(ptr, objects);
 
-        const uint bytes = objects * T.sizeof;
+        const bytes = objects * T.sizeof;
         total_allocated_ += bytes;
         currently_allocated_ += bytes;
     }
@@ -521,9 +521,9 @@ private:
         }
         assert(found, "No match found for a pointer to reallocate");
 
-        const uint old_bytes = old_objects * T.sizeof;
-        const uint new_bytes = new_objects * T.sizeof;
-        const int diff = new_bytes - old_bytes;
+        const old_bytes = old_objects * T.sizeof;
+        const new_bytes = new_objects * T.sizeof;
+        const diff = new_bytes - old_bytes;
         total_allocated_ += diff;
         currently_allocated_ += diff;
     }
@@ -552,7 +552,7 @@ private:
         assert(found, "No match found for pointer to free");
         allocations_ = allocations_[0 .. $ - 1];
 
-        const uint bytes = objects * T.sizeof;
+        const bytes = objects * T.sizeof;
         total_freed_ += bytes;
         currently_allocated_ -= bytes;
     }

@@ -187,7 +187,7 @@ struct PNGDecoder
             if(info.interlace != 0){deinterlace(buffer, info.image);}
             else{reconstruct(buffer, info.image);}
 
-            ubyte[] output = alloc_array!(ubyte)(buffer.length);
+            ubyte[] output = alloc_array!(ubyte)(cast(uint)buffer.length);
             output[] = buffer.array;
 
             return output;
