@@ -69,7 +69,8 @@ import color;
  *             //get a graph monitor monitoring this object
  *             return new_graph_monitor!(MonitoredExample, StatisticsExample, "a")(this);
  *         }
- *}
+ * }
+ * --------------------
  */
 SubMonitor new_graph_monitor(Monitored, Statistics, Values ...)(Monitored monitored)
 {

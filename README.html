@@ -17,7 +17,7 @@
 
 
 
-<h1>DPong version 0.5.0</h1>
+<h1>DPong version 0.6.0</h1>
 
 <h2>Introduction</h2>
 
@@ -33,6 +33,14 @@ These should be added in the coming releases.</p>
 player's paddle. You control your paddle with directional arrows.
 You can take screenshots using the Scroll Lock button. Screenshots
 can be found in <code>.dpong/main/screenshots</code> in your home directory.</p>
+
+<h2>New in this release</h2>
+
+<p>DPong has been rewritten in D2.
+Much of the code has been simplified thanks to improvements in D2 and its standard 
+library.</p>
+
+<p>CDC build script and memory debugging code have been completely rewritten.</p>
 
 <h2>Compiling/Installing</h2>
 
@@ -55,7 +63,7 @@ Other directories: DPong source files.</p></li>
 
 <h3>Requirements</h3>
 
-<p>DPong is written in D1, so it requires a working D1 compiler such as dmd or gdc.
+<p>DPong is written in D2, so it requires a working D2 compiler such as dmd or gdc.
 DPong also depends on SDL 1.2, FreeType, OpenGL, and Derelict, 
 source of which is included for convenience,</p>
 
@@ -108,8 +116,9 @@ Any derived works, source code or binary, must preserve lodepng copyright notice
 which can be found in lodepng bases files (e.g. <code>./png/pngdecoder.d</code>).</p>
 
 <p>Source distributions and repositiories of DGames also include source code
-of the Derelict multimedia D bindings for convenience. Any derived works, 
-source code or binary, must preserve derelict copyright notices,
+of the Derelict multimedia D bindings for convenience.
+Derelict is also released under the Boost Software License.
+Source distributions of any derived works must preserve derelict copyright notices,
 which can be found in the <code>./dependencies/</code> directory.</p>
 
 <p>Full text of the license can be found in file <code>LICENSE_1_0.txt</code> and is also

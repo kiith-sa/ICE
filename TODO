@@ -1,16 +1,7 @@
-04:
-    Vector construction/reallocation methods can receive __FILE__ and __LINE__
-    and pass that to memory functions, so we can locate leaks easier.
-    Same for Array2D.
-17:
-    Regenerate docs (need D2 dil support or maybe look at dmd/phobos DDoc macros)
-    Also consider CDC DDOC capability - seems like it generates a module index -
-    that could be used by CanDyDoc or our own tool that would
-    merge the generated doc files into a hyperlinked whole.
 17:
     add new binaries. If no 64-bit ones, update installation tutorials
 18: 
-    0.5.0 release
+    0.6.0 release
 19:
     Write these TODOs in bugtracker
 

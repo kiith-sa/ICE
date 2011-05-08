@@ -1,4 +1,4 @@
-# DPong version 0.5.0 #
+# DPong version 0.6.0 #
 
 
 ## Introduction ##
@@ -15,6 +15,14 @@ The goal of the game is to use your paddle to throw the ball behind the other
 player's paddle. You control your paddle with directional arrows.
 You can take screenshots using the Scroll Lock button. Screenshots
 can be found in `.dpong/main/screenshots` in your home directory.
+
+
+## New in this release ##
+DPong has been rewritten in D2.
+Much of the code has been simplified thanks to improvements in D2 and its standard 
+library.
+
+CDC build script and memory debugging code have been completely rewritten.
 
 
 ## Compiling/Installing ##
@@ -40,7 +48,7 @@ can be found in `.dpong/main/screenshots` in your home directory.
 
 
 ### Requirements ###
-DPong is written in D1, so it requires a working D1 compiler such as dmd or gdc.
+DPong is written in D2, so it requires a working D2 compiler such as dmd or gdc.
 DPong also depends on SDL 1.2, FreeType, OpenGL, and Derelict, 
 source of which is included for convenience,
 
@@ -91,8 +99,9 @@ Any derived works, source code or binary, must preserve lodepng copyright notice
 which can be found in lodepng bases files (e.g. `./png/pngdecoder.d`).
 
 Source distributions and repositiories of DGames also include source code
-of the Derelict multimedia D bindings for convenience. Any derived works, 
-source code or binary, must preserve derelict copyright notices,
+of the Derelict multimedia D bindings for convenience.
+Derelict is also released under the Boost Software License.
+Source distributions of any derived works must preserve derelict copyright notices,
 which can be found in the `./dependencies/` directory.
 
 Full text of the license can be found in file `LICENSE_1_0.txt` and is also

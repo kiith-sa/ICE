@@ -1,0 +1,12 @@
+0.6.0
+
+- FEATURES/IMPROVEMENTS:
+
+ - Rewrote in D2.
+
+ - Rewrote the CDC build script.
+
+ - In debug mode, detailed information is now stored about every memory 
+   allocation, including source file and line, and time of allocation.
+
+ - Fixed some bugs with excessive memory allocation.
