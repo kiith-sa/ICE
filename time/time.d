@@ -10,27 +10,19 @@ module time.time;
 
 
 import std.conv;
+import std.datetime;
 
 import math.math;
 
 
-version(linux){import std.c.linux.linux;}
-else{import std.date;}
+///Time when the program started in tenths of microseconds since 00:00 1.1.1 AD.
+private immutable long start_time_;
 
-///Returns time since start of epoch in seconds.
-real get_time()
-{
-    //high-resolution posix clock - microsecond precision
-    version(linux)
-    {
-        timeval tv;
-        gettimeofday(&tv, null);
-        return tv.tv_sec + tv.tv_usec / 1000000.0;
-    }
-    //portable D standard library clock - usually millisecond precision
-    else{return getUTCtime() / cast(real)TicksPerSecond;}
-}
+///Static ctor - initialize program start time.
+private static this(){start_time_ = Clock.currStdTime();}
 
+///Returns time since program start in seconds.
+real get_time(){return (Clock.currStdTime() - start_time_) / 1_000_000_0.0L;}
 
 /**
  * Converts a time value to a string in format mm:ss, or hh:mm:ss if hours is true.

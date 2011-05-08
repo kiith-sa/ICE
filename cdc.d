@@ -1,4 +1,4 @@
-#!dmd -run
+#!/usr/bin/rdmd
 /**
  * License: Boost 1.0
  *
@@ -31,8 +31,8 @@
  * tools are required.  The main() function can be utilized to turn
  * CDC into a custom build script for your project.
  *
- * CDC's only requirement is a D compiler.  It is/will be supported on any 
- * operating system supported by the language.  It works with dmd, ldc (soon), 
+ * CDC's only requirement is a D compiler. It is/will be supported on any 
+ * operating system supported by the language. It works with dmd, ldc (soon), 
  * and gdc.
  *
  * CDC can be used just like dmd, except for the following improvements.
@@ -41,11 +41,11 @@
  *    Each path is recursively searched for source, library, object, and ddoc files.</li>
  *   <li>CDC automatically creates a modules.ddoc file for use with CandyDoc and
  *    similar documentation utilities.</li>
- *   <li>CDC defaults to use the compiler that was used to build itself.  Compiler
+ *   <li>CDC defaults to use the compiler that was used to build itself. Compiler
  *    flags are passed straight through to that compiler.</li>
  *   <li>The -op flag is always used, to prevent name conflicts in object and doc files.</li>
  *   <li>Documentation files are all placed in the same folder with their full package
- *    names.  This makes relative links between documents easier.</li>
+ *    names. This makes relative links between documents easier.</li>
  * </ul>
 
  * These DMD/LDC options are automatically translated to the correct GDC
@@ -56,7 +56,6 @@
  * <dt>-Dddocdir</dt>  <dd>write fully-qualified documentation files to docdir directory</dd>
  * <dt>-Dfdocfile</dt> <dd>write fully-qualified documentation files to docfile file</dd>
  * <dt>-lib</dt>       <dd>Generate library rather than object files</dd>
- * <dt>-run</dt>       <dd>run resulting program, passing args</dd>
  * <dt>-Ipath</dt>     <dd>where to look for imports</dd>
  * <dt>-o-</dt>        <dd>do not write object file.</dd>
  * <dt>-offilename</dt><dd>name output file to filename</dd>
@@ -68,8 +67,6 @@
  * <dt>--dmd</dt>       <dd>Use dmd to compile</dd>
  * <dt>--gdc</dt>       <dd>Use gdc to compile</dd>
  * <dt>--ldc</dt>       <dd>Use ldc to compile</dd>
- * <dt>--root</dt>      <dd>Set the root directory of all source files.
- *                 This is useful if CDC is run from a path outside the source folder.</dd>
  * </dl>
  *
  * Bugs:
@@ -79,25 +76,12 @@
  * <li>Dmd fails to write object files when -od is an absolute path.</li>
  * </ul>
  *
- * Test_Matrix:
- * <ul>
- * <li>pass - DMD/phobos/Win32</li>
- * <li>pass - GDC/phobos/Win32</li>
- * <li>pass - GDC/phobos/Linux32</li>
- * <li>pass - GDC/phobos/OSX</li>
- * <li>? - DMD/OSX</li>
- * <li>? - BSD</li>
- * <li>? - DMD2</li>
- * </ul>
- *
  * TODO:
  * <ul>
  * <li>Add support for a --script argument to accept another .d file that calls cdc's functions.</li>
- * <li>Print help or at least info on run.</li>
  * <li>-Df option</li>
  * <li>GDC - Remove dependancy on "ar" on windows? </li>
  * <li>LDC - Scanning a folder for files is broken. </li>
- * <li>Test with D2</li>
  * <li>Unittests</li>
  * <li>More testing on paths with spaces. </li>
  * </ul>
@@ -106,43 +90,67 @@
  * Use any of these functions in your own build script.
  */
 
+
 module cdc;
 
 
-import std.algorithm: find;
-import std.array: split;
-import std.range: retro;
-
-import std.string : join, replace, tolower, format;
+import std.algorithm;
+import std.array;
+import std.conv;
+import std.string;
 import std.stdio : writeln;
-import std.path : sep, getDirName, getName, addExt;
-import std.file : chdir, copy, isdir, isfile, listdir, mkdir, exists, getcwd, remove, write;
-import std.format;
-import std.traits;
+import std.path;
+import std.file;
+import std.exception;
 import std.c.process;
-import std.c.time;
-import std.c.stdarg;
 
+
+///Name of the default compiler, which is the compiler used to build cdc.
+version(DigitalMars){string compiler = "dmd";}
+version(GNU){string compiler = "gdmd";}
+version(LDC){string compiler = "ldmd";}
+
+version(Windows)
+{   
+    ///Valid object file extensions. 
+    const string[] obj_ext = ["obj", "o"]; 
+    ///Library extension.
+    const string lib_ext = "lib";
+    ///Binary executable extension.
+    const string bin_ext = "exe";
+    ///Path separator character.
+    char file_separator ='\\';
+}
+else
+{    
+    ///Valid object file extensions. 
+    const string[] obj_ext = ["o"];
+    ///Library extension.
+    const string lib_ext = "a";
+    ///Binary executable extension.
+    const string bin_ext = "";
+    ///Path separator character.
+    char file_separator ='/';
+}
 
 /**
- * Use to implement your own custom build script, or pass args on to defaultBuild() 
- * to use this file as a generic build script like bud or rebuild. */
-int main(string[] args)
+ * Main function. Uses other CDC function for building.
+ *
+ * Example:
+ * --------------------
+ * if(!exists("bar.lib")
+ * {
+ *     compile(["foo"], ["-lib", "-offoo.lib"]);
+ * }
+ * compile(["bar", "main.d", "foo.lib"], ["-D", "-ofbar"]);
+ * --------------------
+ */
+void main(string[] args)
 {
-    // Operate cdc as a generic build script
-    //return defaultBuild(args);
-
-    /*
-    // This is an example of a custom build script.
-    if (!exists("bar.lib")
-        CDC.compile(["foo"], ["-lib", "-offoo.lib"]);
-    CDC.compile(["bar", "main.d", "foo.lib"], ["-D", "-ofbar"]);
-    return 0;
-    */
-
     string build = "debug";
 
     string[] extra_args = ["-w", "-wi"];
+    scope(failure){help(); exit(-1);}
 
     args = args[1 .. $];
     foreach(arg; args)
@@ -151,7 +159,7 @@ int main(string[] args)
         {
             switch(arg)
             {
-                case "--help", "-h": help(); return 0;
+                case "--help", "-h": help(); return;
                 case "--dmd": compiler = "dmd"; break;
                 case "--gdc": compiler = "gdmd"; break;
                 case "--ldc": compiler = "ldmd"; break;
@@ -166,9 +174,9 @@ int main(string[] args)
     string[] no_contracts_args = ["-release", "-gc", "-ofpong-no-contracts"];
     string[] release_args = ["-O", "-inline", "-release", "-gc", "-ofpong-release"];
 
-    void compile(string[] arguments, string[] extra_files = [])
+    void compile_wrapper(string[] arguments, string[] extra_files = [])
     {
-        CDC.compile(extra_files ~ [
+        compile(extra_files ~ [
                      "dependencies/derelict/DerelictSDL",
                      "dependencies/derelict/DerelictGL",
                      "dependencies/derelict/DerelictFT",
@@ -183,29 +191,38 @@ int main(string[] args)
                      arguments ~ extra_args);
     }
 
-    switch(build)
+    try
     {
-        case "debug":
-            compile(debug_args);
-            break;
-        case "no-contracts":
-            compile(no_contracts_args);
-            break;
-        case "release":
-            compile(release_args);
-            break;
-        case "all":
-            compile(debug_args);
-            compile(no_contracts_args);
-            compile(release_args);
-            break;
-        default:
-            writeln("unknown build target: ", build);
-            writeln("available targets: 'debug', 'no-contracts', 'release', 'all'");
-            break;
+        switch(build)
+        {
+            case "debug":
+                compile_wrapper(debug_args);
+                break;
+            case "no-contracts":
+                compile_wrapper(no_contracts_args);
+                break;
+            case "release":
+                compile_wrapper(release_args);
+                break;
+            case "all":
+                compile_wrapper(debug_args);
+                compile_wrapper(no_contracts_args);
+                compile_wrapper(release_args);
+                break;
+            default:
+                writeln("unknown build target: ", build);
+                writeln("available targets: 'debug', 'no-contracts', 'release', 'all'");
+                break;
+        }
     }
-
-    return 0;
+    catch(CompileException e)
+    {
+        writeln("Could not compile: " ~ e.msg);
+    }
+    catch(ProcessException e)
+    {
+        writeln("Compilation failed: " ~ e.msg);
+    }
 }
 
 ///Print help information.
@@ -241,385 +258,350 @@ void help()
     writeln(help);
 }
 
-
-/// This is always set to the name of the default compiler, which is the compiler used to build cdc.
-version (DigitalMars)
-    string compiler = "dmd";
-version (GNU)
-    string compiler = "gdmd"; /// ditto
-version (LDC)
-    string compiler = "ldmd";  /// ditto
-
-version (Windows)
-{    const string[] obj_ext = ["obj", "o"]; /// An array of valid object file extensions for the current.
-    const string lib_ext = "lib"; /// Library extension for the current platform.
-    const string bin_ext = "exe"; /// executable file extension for the current platform.
-}
-else
-{    const string[] obj_ext = ["o"]; /// An array of valid object file extensions for the current.
-    const string lib_ext = "a"; /// Library extension for the current platform.
-    const string bin_ext = ""; /// Executable file extension for the current platform.
-}
-
 /**
- * Program entry point.  Parse args and run the compiler.*/
-int defaultBuild(string[] args)
-{    args = args[1..$];// remove self-name from args
-
-    string root;
-    string[] options;
-    string[] paths;
-    string[] run_args;
-
-    // Populate options, paths, and run_args from args
-    bool run;
-    foreach (arg; args)
-    {    switch (arg)
-        {   
-            case "-run": run = true; options~="-run";  break;
-            default:
-                if (starts_with(arg, "--root"))
-                {    root = arg[6..$];
-                    continue;
-                }
-
-                if (arg[0] == '-' && (!run || !paths.length))
-                    options ~= arg;
-                else if (!run || exists(arg))
-                    paths ~= arg;
-                else if (run && paths.length)
-                    run_args ~= arg;
-    }    }
-
-    // Compile
-    CDC.compile(paths, options, run_args, root);
-
-    return 0; // success
-}
-
-/**
- * A library for compiling d code.
+ * Compile D code using the current compiler.
+ *
+ * Params:  paths = Source and library files/directories. Directories are recursively searched.
+ *          options = Compiler options.
+ *
  * Example:
  * --------
- * // Compile all source files in src/core along with src/main.d, link with all library files in the libs folder,
- * // generate documentation in the docs folder, and then run the resulting executable.
- * CDC.compile(["src/core", "src/main.d", "libs"], ["-D", "-Dddocs", "-run"]);
+ * //Compile all source files in src/core along with src/main.d, 
+ * //link with all library files in the libs folder
+ * //and generate documentation in the docs folder.
+ * compile(["src/core", "src/main.d", "libs"], ["-D", "-Dddocs"]);
  * --------
+ *
+ * TODO Add a dry run option to just return an array of commands to execute. 
  */
-struct CDC
-{
-    /**
-     * Compile d code using the current compiler.
-     * Params:
-     *     paths = Array of source and library files and folders.  Directories are recursively searched.
-     *     options = Compiler options.
-     *     run_args = If -run is specified, pass these arguments to the generated executable.
-     *     root = Use this folder as the root of all paths, instead of the current folder.  This can be relative or absolute.
-     * Returns:
-     * TODO: Add a dry run option to just return an array of commands to execute. */
-    static void compile(string[] paths, string[] options=null, string[] run_args=null, string root=null)
-    {    
-        // Change to root directory and back again when done.
-        string cwd = getcwd();
-        if (root.length)
-        {    if (!exists(root))
-                throw new Exception(`Directory specified for --root "` ~ root ~ `" doesn't exist.`);
-            chdir(root);
-        }
-        scope(exit)
-            if (root.length)
-                chdir(cwd);
-
-        // Convert src and lib paths to files
-        string[] sources;
-        string[] libs;
-        string[] ddocs;
-        foreach (src; paths)
-            if (src.length)
-            {    if (!exists(src))
-                    throw new Exception(`Source file/folder "` ~ src ~ `" does not exist.`);
-                if (isdir(src)) // a directory of source or lib files
-                {    sources ~= scan(src, [".d"]);
-                    ddocs ~= scan(src, [".ddoc"]);
-                    libs ~= scan(src, [lib_ext]);
-                } else if (isfile(src)) // a single file
-                {
-                    string ext = '.' ~ split(src, ".")[$ - 1];
-
-                    if (".d" == ext)
-                        sources ~= src;
-                    else if (lib_ext == ext)
-                        libs ~= src;
-                }
-            }
-
-        // Add dl.a for dynamic linking on linux
-        version (linux)
-            libs ~= ["-L-ldl"];
-
-        // Combine all options, sources, ddocs, and libs
-        CompileOptions co = CompileOptions(options, sources);
-        options = co.getOptions(compiler);
-        if (compiler=="gdc")
-            foreach (ref d; ddocs)
-                d = "-fdoc-inc="~d;
-        else foreach (ref l; libs)
-            if(compiler=="gdc")// or should this only be version(!Windows)
-                l = `-L`~l; // TODO: Check in dmd and gdc
-
-        // Create modules.ddoc and add it to array of ddoc's
-        if (co.D)
-        {    string modules = "MODULES = \r\n";
-            sources.sort;
-            foreach(string src; sources)
-            {    src = split(src, "\\.")[0]; // get filename
-                src = replace(replace(src, "/", "."), "\\", ".");
-                modules ~= "\t$(MODULE "~src~")\r\n";
-            }
-            write("modules.ddoc", modules);
-            ddocs ~= "modules.ddoc";
-            scope(failure) remove("modules.ddoc");
-        }
-        
-        string[] arguments = options ~ sources ~ ddocs ~ libs;
-
-        // Compile
-        if (compiler=="gdc")
-        {
-            // Add support for building libraries to gdc.
-            if (co.lib || co.D || co.c) // GDC must build incrementally if creating documentation or a lib.
-            {
-                // Remove options that we don't want to pass to gcd when building files incrementally.
-                string[] incremental_options;
-                foreach (option; options)
-                    if (option!="-lib" && !starts_with(option, "-o"))
-                        incremental_options ~= option;
-
-                // Compile files individually, outputting full path names
-                string[] obj_files;
-                foreach(source; sources)
-                {    string obj = replace(source, "/", ".")[0..$-2]~".o";
-                    string ddoc = obj[0..$-2];
-                    if (co.od)
-                        obj = co.od ~ file_separator ~ obj;
-                    obj_files ~= obj;
-                    string[] exec = incremental_options ~ ["-o"~obj, "-c"] ~ [source];
-                    if (co.D) // ensure doc files are always fully qualified.
-                        exec ~= ddocs ~ ["-fdoc-file="~ddoc~".html"];
-                    execute(compiler, exec); // throws ProcessException on compile failure
-                }
-
-                // use ar to join the .o files into a lib and cleanup obj files (TODO: how to join on GDC windows?)
-                if (co.lib)
-                {    remove(co.of); // since ar refuses to overwrite it.
-                    execute("ar", "cq "~ co.of ~ obj_files);
-                }
-
-                // Remove obj files if -c or -od not were supplied.
-                if (!co.od && !co.c)
-                    foreach (o; obj_files)
-                        remove(o);
-            }
-
-            if (!co.lib && !co.c)
-            {
-                // Remove documentation arguments since they were handled above
-                string[] nondoc_args;
-                foreach (arg; arguments)
-                    if (!starts_with(arg, "-fdoc") && !starts_with(arg, "-od"))
-                        nondoc_args ~= arg;
-
-                execute_compiler(compiler, nondoc_args);
-            }
-        }
-        else // (compiler=="dmd" || compiler=="ldc")
+static void compile(string[] paths, string[] options = null)
+{    
+    //Convert src and lib paths to files
+    string[] sources, libs, ddocs;
+    foreach(src; paths)
+    {
+        enforceEx!CompileException(exists(src), 
+                  "Source file/folder \"" ~ src ~ "\" does not exist.");
+        //Directory of source or lib files 
+        if(isdir(src))
         {    
-            execute_compiler(compiler, arguments);        
-            // Move all html files in doc_path to the doc output folder and rename with the "package.module" naming convention.
-            if (co.D)
-            {    foreach (string src; sources)
-                {    
-                    if (src[$-2..$] != ".d")
-                        continue;
-
-                    string html = src[0..$-2] ~ ".html";
-                    string dest = replace(replace(html, "/", "."), "\\", ".");
-                    if (co.Dd.length)
-                    {    
-                        dest = co.Dd ~ file_separator ~ dest;
-                        html = co.Dd ~ file_separator ~ html;
-                    }
-                    if (html != dest) // TODO: Delete remaining folders where source files were placed.
-                    {    copy(html, dest);
-                        remove(html);
-            }    }    }
+            sources ~= scan(src, ".d");
+            ddocs ~= scan(src, ".ddoc");
+            libs ~= scan(src, lib_ext);
+        } 
+        //File
+        else if(isfile(src))
+        {
+            string ext = "." ~ src.getExt();
+            if(ext == ".d"){sources ~= src;}
+            else if(ext == lib_ext){libs ~= src;}
         }
-
-        // Remove extra files
-        string basename = split(co.of, "/")[$ - 1];
-
-        if (co.D)
-            remove("modules.ddoc");
-        if (co.of && !(co.c || co.od))
-            foreach (ext; obj_ext)
-                try{remove(addExt(co.of, ext));}// delete object files with same name as output file that dmd sometimes leaves.
-                catch(Exception e){continue;}
-
-        // If -run is set.
-        if (co.run)
-        {    execute("./" ~ co.of, run_args);
-            version(Windows) // give dmd windows time to release the lock.
-                if (compiler=="dmd")
-                    usleep(100000);
-            remove(co.of); // just like dmd
-        }
-
     }
 
-    /*
-     * Store compilation options that must be handled differently between compilers
-     * This also implicitly enables -of and -op for easier handling. */
-    private struct CompileOptions
+    //Add dl.a for dynamic linking on linux
+    version(linux){libs ~= ["-L-ldl"];}
+
+    //Combine all options, sources, ddocs, and libs
+    CompileOptions co = CompileOptions(options, sources);
+    options = co.get_options(compiler);
+
+    if(compiler == "gdc")
     {
-        bool c;                // do not link
-        bool D;                // generate documentation
-        string Dd;            // write documentation file to this directory
-        string Df;            // write documentation file to this filename
-        bool lib;            // generate library rather than object files
-        bool o;                // do not write object file
-        string od;            // write object & library files to this directory
-        string of;            // name of output file.
-        bool run;
-        string[] run_args;    // run immediately afterward with these arguments.
+        foreach(ref d; ddocs){d = "-fdoc-inc=" ~ d;}
+        //or should this only be version(Windows) ?
+        //TODO: Check in dmd and gdc 
+        foreach(ref l; libs){l = "-L" ~ l;}
+    }
 
-        private string[] options; // stores modified options.
+    //Create modules.ddoc and add it to array of ddocs
+    if(co.generate_doc)
+    {    
+        string modules = "MODULES = \r\n";
+        sources.sort;
+        foreach(src; sources)
+        {    
+            //get filename 
+            src = split(src, "\\.")[0];
+            src = replace(replace(src, "/", "."), "\\", ".");
+            modules ~= "\t$(MODULE " ~ src ~ ")\r\n";
+        }
+        scope(failure){remove("modules.ddoc");}
+        write("modules.ddoc", modules);
+        ddocs ~= "modules.ddoc";
+    }
+    
+    string[] arguments = options ~ sources ~ ddocs ~ libs;
 
-        /*
-         * Constructor */
-        static CompileOptions opCall(string[] options, string[] sources)
-        {    CompileOptions result;
-            foreach (i, option; options)
+    //Compile
+    if(compiler == "gdc")
+    {
+        //Add support for building libraries to gdc.
+        //GDC must build incrementally if creating documentation or a lib. 
+        if(co.generate_lib || co.generate_doc || co.no_linking)
+        {
+            //Remove options we don't want to pass to gdc when building incrementally.
+            string[] incremental_options;
+            foreach(option; options)
             {
-                if (option == "-c")
-                    result.c = true;
-                else if (option == "-D" || option == "-fdoc")
-                    result.D = true;
-                else if (starts_with(option, "-Dd"))
-                    result.Dd = option[3..$];
-                else if (starts_with(option, "-fdoc-dir="))
-                    result.Df = option[10..$];
-                else if (starts_with(option, "-Df"))
-                    result.Df = option[3..$];
-                else if (starts_with(option, "-fdoc-file="))
-                    result.Df = option[11..$];
-                else if (option == "-lib")
-                    result.lib = true;
-                else if (option == "-o-" || option=="-fsyntax-only")
-                    result.o = true;
-                else if (starts_with(option, "-of"))
-                    result.of = option[3..$];
-                else if (starts_with(option, "-od"))
-                    result.od = option[3..$];
-                else if (starts_with(option, "-o") && option != "-op")
-                    result.of = option[2..$];
-                else if (option == "-run")
-                    result.run = true;
-
-                if (option != "-run") // run will be handled specially to allow for it to be used w/ multiple source files.
-                    result.options ~= option;
-            }
-
-            // Set the -o (output filename) flag to the first source file, if not already set.
-            string ext = result.lib ? lib_ext : bin_ext; // This matches the default behavior of dmd.
-            if (!result.of.length && !result.c && !result.o && sources.length)
-            {    result.of = split(split(sources[0], "/")[$-1], "\\.")[0] ~ ext;
-                result.options ~= ("-of" ~ result.of);
-            }
-            version (Windows)
-            //{    if (find(result.of, ".") <= rfind(result.of, "/"))
-            {    
-                // TODO TEST!
-                if (find(result.of, '.') <= retro(find(retro(result.of), '/')))
+                if(option != "-lib" && !startsWith(option, "-o"))
                 {
-                   result.of ~= bin_ext;
+                    incremental_options ~= option;
                 }
-
-                //Stdout(find(result.of, ".")).newline;
             }
-            // Exception for conflicting flags
-            if (result.run && (result.c || result.o))
-                throw new Exception("flags '-c', '-o-', and '-fsyntax-only' conflict with -run");
 
-            return result;
-        }
+            //Compile files individually, outputting full path names
+            string[] obj_files;
+            foreach(source; sources)
+            {    
+                string obj = replace(source, "/", ".")[0 .. $ - 2] ~ ".o";
+                string ddoc = obj[0 .. $ - 2];
+                if(co.obj_directory !is null)
+                {
+                    obj = co.obj_directory ~ file_separator ~ obj;
+                }
+                obj_files ~= obj;
+                string[] exec = incremental_options ~ ["-o" ~ obj, "-c"] ~ [source];
+                //ensure doc files are always fully qualified. 
+                if(co.generate_doc){exec ~= ddocs ~ ["-fdoc-file=" ~ ddoc ~ ".html"];}
+                //throws ProcessException on compile failure
+                execute(compiler, exec);
+            }
 
-        /*
-        * Translate DMD/LDC compiler options to GDC options.
-        * This function is incomplete. (what about -L? )*/
-        string[] getOptions(string compiler)
-        {    string[] result = options.dup;
+            //use ar to join the .o files into a lib and cleanup obj files
+            //TODO: how to join on GDC windows?
+            if(co.generate_lib)
+            {    
+                //since ar refuses to overwrite it. 
+                remove(co.out_file);
+                execute("ar", "cq " ~ co.out_file ~ obj_files);
+            }
 
-            if (compiler != "gdc")
+            //Remove obj files if -c or -od not were supplied.
+            if(!co.obj_directory && !co.no_linking)
             {
-            version(Windows)
-                foreach (ref option; result)
-                    if (starts_with(option, "-of")) // fix -of with / on Windows
-                        option = replace(option, "/", "\\");
-
-            if (!contains(result, "-op"))
-                return result ~ ["-op"]; // this ensures ddocs don't overwrite one another.
-            return result;
+                foreach (o; obj_files){remove(o);}
             }
-
-            // is gdc
-            string[string] translate;
-            translate["-Dd"] = "-fdoc-dir=";
-            translate["-Df"] = "-fdoc-file=";
-            translate["-debug="] = "-fdebug=";
-            translate["-debug"] = "-fdebug"; // will this still get selected?
-            translate["-inline"] = "-finline-functions";
-            translate["-L"] = "-Wl";
-            translate["-lib"] = "";
-            translate["-O"] = "-O3";
-            translate["-o-"] = "-fsyntax-only";
-            translate["-of"] = "-o ";
-            translate["-unittest"] = "-funittest";
-            translate["-version"] = "-fversion=";
-            translate["-version="] = "-fversion=";
-            translate["-wi"] = "-Wextra";
-            translate["-w"] = "-Wall";
-            translate["-gc"] = "-g";
-
-            // Perform option translation
-            foreach (ref option; result)
-            {    if (starts_with(option, "-od")) // remove unsupported -od
-                    option = "";
-                if (option =="-D")
-                    option = "-fdoc";
-                else
-                    foreach (before, after; translate) // Options with a direct translation
-                        if (option.length >= before.length && option[0..before.length] == before)
-                        {    option = after ~ option[before.length..$];
-                            break;
-                        }
-            }
-            return result;
         }
-        unittest {
-            string[] sources = [cast(string)"foo.d"];
-            string[] options = [cast(string)"-D", "-inline", "-offoo"];
-            scope result = CompileOptions(options, sources).getOptions("gdc");
-            assert(result[0..3] == [cast(string)"-fdoc", "-finline-functions", "-o foo"]);
+
+        if (!co.generate_lib && !co.no_linking)
+        {
+            //Remove documentation arguments since they were handled above
+            string[] nondoc_args;
+            foreach(arg; arguments)
+            {
+                if(!startsWith(arg, "-fdoc", "-od")){nondoc_args ~= arg;}
+            }
+
+            execute_compiler(compiler, nondoc_args);
+        }
+    }
+    //Compilers other than gdc 
+    else
+    {    
+        execute_compiler(compiler, arguments);        
+        //Move all html files in doc_path to the doc output folder 
+        //and rename them with the "package.module" naming convention.
+        if(co.generate_doc)
+        {    
+            foreach(src; sources)
+            {    
+                if(src.getExt != "d"){continue;}
+
+                string html = src[0 .. $ - 2] ~ ".html";
+                string dest = replace(replace(html, "/", "."), "\\", ".");
+                if(co.doc_directory.length > 0)
+                {    
+                    dest = co.doc_directory ~ file_separator ~ dest;
+                    html = co.doc_directory ~ file_separator ~ html;
+                }
+                //TODO: Delete remaining folders where source files were placed.
+                if(html != dest)
+                {    
+                    copy(html, dest);
+                    remove(html);
+                }    
+            }    
+        }
+    }
+
+    //Remove extra files
+    string basename = split(co.out_file, "/")[$ - 1];
+
+    if(co.generate_doc){remove("modules.ddoc");}
+    if(co.out_file && !(co.no_linking || co.obj_directory))
+    {
+        foreach(ext; obj_ext)
+        {
+            //Delete object files with same name as output file that dmd sometimes leaves. 
+            try{remove(addExt(co.out_file, ext));}
+            catch(FileException e){continue;}
         }
     }
 }
 
-// A wrapper around execute to write compile options to a file, to get around max arg lenghts on Windows.
-void execute_compiler(string compiler, string[] arguments)
+/**
+ * Stores compiler options and translates them between compilers.
+ *
+ * Also enables -of and -op for easier handling. 
+ */
+struct CompileOptions
+{
+    public:
+        ///Do not link.
+        bool no_linking;                
+        ///Generate documentation.
+        bool generate_doc;
+        ///Write documentation to this directory.
+        string doc_directory;
+        ///Write documentation to this file.
+        string doc_file;            
+        ///Generate library rather than object files.
+        bool generate_lib;            
+        ///Do not write object files.
+        bool no_objects;                
+        ///write object, library files to this directory.
+        string obj_directory;            
+        ///Name of output file.
+        string out_file;
+
+    private:
+        ///Compiler options.
+        string[] options_;
+
+    public:
+        /**
+         * Construct CompileOptions from command line options.
+         *
+         * Params:  options = Compiler command line options.
+         *          sources = Source files to compile.
+         */
+        this(string[] options, in string[] sources)
+        {   
+            foreach (i, option; options)
+            {
+                if(option == "-c"){no_linking = true;}
+                else if(option == "-D" || option == "-fdoc"){generate_doc = true;}
+                else if(startsWith(option, "-Dd")){doc_directory = option[3..$];}
+                else if(startsWith(option, "-fdoc-dir=")){doc_directory = option[10..$];}
+                else if(startsWith(option, "-Df")){doc_file = option[3..$];}
+                else if(startsWith(option, "-fdoc-file=")){doc_file = option[11..$];}
+                else if(option == "-lib"){generate_lib = true;}
+                else if(option == "-o-" || option=="-fsyntax-only"){no_objects = true;}
+                else if(startsWith(option, "-of")){out_file = option[3..$];}
+                else if(startsWith(option, "-od")){obj_directory = option[3..$];}
+                else if(startsWith(option, "-o") && option != "-op"){out_file = option[2..$];}
+                options_ ~= option;
+            }
+
+            //Set the -o (output filename) flag to the first source file if not already set.
+            //This matches the default behavior of dmd.
+            string ext = generate_lib ? lib_ext : bin_ext; 
+            if(out_file.length == 0 && !no_linking && !no_objects && sources.length > 0)
+            {    
+                out_file = split(split(sources[0], "/")[$ - 1], "\\.")[0] ~ ext;
+                options_ ~= ("-of" ~ out_file);
+            }
+            version (Windows)
+            {    
+                //TODO needs testing
+                //{    if (find(this.out_file, ".") <= rfind(this.out_file, "/"))
+                if(find(out_file, '.') <= retro(find(retro(out_file), '/')))
+                {
+                   out_file ~= bin_ext;
+                }
+            }
+        }
+
+        /**
+         * Translate DMD compiler options to options of the target compiler.
+         *
+         * This function is incomplete. (what about -L? )
+         *
+         * Params:  compiler = Compiler to translate to.
+         *
+         * Returns: Translated options.
+         */
+        string[] get_options(in string compiler)
+        {    
+            string[] result = options_.dup;
+
+            if(compiler != "gdc")
+            {
+                version(Windows)
+                {
+                    foreach(ref option; result)
+                    {
+                        option = startsWith(option, "-of") ? replace(option, "/", "\\") : option;
+                    }
+                }
+
+                //ensure ddocs don't overwrite one another.
+                return canFind(result, "-op") ? result : result ~ "-op";
+            }
+
+            //is gdc
+            string[string] translate;
+            translate["-Dd"]       = "-fdoc-dir=";
+            translate["-Df"]       = "-fdoc-file=";
+            translate["-debug="]   = "-fdebug=";
+            translate["-debug"]    = "-fdebug"; // will this still get selected?
+            translate["-inline"]   = "-finline-functions";
+            translate["-L"]        = "-Wl";
+            translate["-lib"]      = "";
+            translate["-O"]        = "-O3";
+            translate["-o-"]       = "-fsyntax-only";
+            translate["-of"]       = "-o ";
+            translate["-unittest"] = "-funittest";
+            translate["-version"]  = "-fversion=";
+            translate["-version="] = "-fversion=";
+            translate["-wi"]       = "-Wextra";
+            translate["-w"]        = "-Wall";
+            translate["-gc"]       = "-g";
+
+            //Perform option translation
+            foreach(ref option; result)
+            {    
+                //remove unsupported -od
+                if(startsWith(option, "-od")){option = "";}
+                if(option =="-D"){option = "-fdoc";}
+                else
+                {
+                    //Options with a direct translation 
+                    foreach(before, after; translate) 
+                    {
+                        if(startsWith(option, before))
+                        {    
+                            option = after ~ option[before.length..$];
+                            break;
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+        unittest
+        {
+            auto sources = ["foo.d"];
+            auto options = ["-D", "-inline", "-offoo"];
+            auto result = CompileOptions(options, sources).get_options("gdc");
+            assert(result[0 .. 3] == ["-fdoc", "-finline-functions", "-o foo"]);
+        }
+}
+
+///Thrown at errors in execution of other processes (e.g. compiler commands).
+class CompileException : Exception {this(in string message){super(message);}};
+
+/**
+ * Wrapper around execute to write compile options to a file to get around max arg lenghts on Windows.
+ *
+ * Params:  compiler  = Compiler to execute.
+ *          arguments = Compiler arguments.
+ */
+void execute_compiler(in string compiler, string[] arguments)
 {    
     try
     {
-        version (Windows)
+        version(Windows)
         {    
             write("compile", join(arguments, " "));
             scope(exit){remove("compile");}
@@ -633,6 +615,8 @@ void execute_compiler(string compiler, string[] arguments)
     }
 }
 
+///Thrown at errors in execution of other processes (e.g. compiler commands).
+class ProcessException : Exception {this(in string message){super(message);}};
 
 /**
  * Execute a command-line program and print its output.
@@ -642,98 +626,38 @@ void execute_compiler(string compiler, string[] arguments)
  *
  * Throws: ProcessException on failure or status code 1.
  */
-void execute(string command, string[] args)
+void execute(in string command, string[] args)
 {    
     version(Windows)
     {
-        if(starts_with(command, "./")){command = command[2 .. $];}
+        if(startsWith(command, "./")){command = command[2 .. $];}
     }
-            
-    writeln("CDC:  " ~ command ~ " " ~ join(args, " "));
 
-    int status = !system((command ~ " " ~ join(args, " ") ~ "\0").ptr);
-    if(!status)
+    string full = command ~ " " ~ join(args, " ");
+    writeln("CDC:  " ~ full);
+    if(int status = system(toStringz(full)) != 0)
     {
-        throw new ProcessException(format("Process '%s' exited with status %d", 
-                                          command, status));
+        throw new ProcessException("Process " ~ command ~ " exited with status " ~ 
+                                   to!string(status));
     }
-}
-
-///Path separator character for the current platform.
-version(Windows){char file_separator ='\\';}
-else{char file_separator ='/';}
-
-///Directory scan mode. 
-enum ScanMode
-{    
-    ///Scan files.
-    Files = 1,
-    ///Scan folders.
-    Directories = 2,
 }
 
 /**
  * Recursively get all files with specified extensions in directory and subdirectories.
  *
- * Params:  directory  = Absolute or relative path to the current directory
- *          extensions = Array of extensions to match
- *          mode       = Scan mode. Files or directories.
+ * Params:  directory  = Absolute or relative path to the current directory.
+ *          extensions = Extensions to match.
  *
  * Returns: An array of paths (including filename) relative to directory.
  *
  * Bugs:    LDC fails to return any results. 
  */
-string[] scan(string folder, string[] extensions = [""], ScanMode mode = ScanMode.Files)
+string[] scan(in string directory, in string extensions ...)
 {    
     string[] result;
-    foreach(string filename; listdir(folder))
-    {    
-        //file_separator breaks gdc windows.
-        string name = folder ~ "/" ~ filename; 
-        if(isdir(name)){result ~= scan(name, extensions, mode);}
-        if((mode == ScanMode.Files && isfile(name)) || 
-           (mode == ScanMode.Directories && isdir(name)))
-        {    
-            foreach(string ext; extensions)
-            {
-                //if filename ends with ext
-                if(filename.length >= ext.length && filename[$ - ext.length .. $] == ext)
-                {
-                    result ~= name;
-                }
-            }
-        }    
+    foreach(string name; dirEntries(directory, SpanMode.depth))
+    {
+        if(isfile(name) && endsWith(name, extensions)){result ~= name;}
     }
     return result;
 }
-
-/**
- * Does a string start with specified prefix?
- *
- * Params:  str    = String to check.
- *          prefix = Prefix to look for.
- *
- * Returns: True if the string starts with specified prefix, false otherwise.
- */
-bool starts_with(string str, string prefix)
-{
-    return str.length >= prefix.length && str[0 .. prefix.length] == prefix;
-}
-
-/**
- * Determine whether or not does an array contain an element.
- *
- * Params:  array = Array to check.
- *          elem  = Element to look for.
- */
-bool contains(T)(T[] array, T element)
-{
-    foreach(array_element; array)
-    {
-        if(array_element == element){return true;}
-    }
-    return false;
-}
-
-// Define ProcessException in Phobos
-class ProcessException : Exception {this(string message){super(message);}};

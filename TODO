@@ -1,21 +1,32 @@
-02:
-    Thoroughly rewrite CDC .
+03:
+    Rename Iterator to Foreachable
+04:
+    Vector construction/reallocation methods can receive __FILE__ and __LINE__
+    and pass that to memory functions, so we can locate leaks easier.
+    Same for Array2D.
 13: 
     to bugtracker: use Derelict selective symbol loading once it is documented
 14: 
     to bugtracker: make our containers more like D std.container ones,
     e.g. ranges so we support std.algorithm
-    Alternatively, just copy the Phobos containers (we need at least array and set),
+    Alternatively, just copy the Phobos containers 
+    (we need at least array and maybe set/RB tree),
     and build them on top of memory.memory .
 15:
     bugtracker: Once new DMD is released, replace die() with dtor where possible
     (clear() will not call default ctor anymore)
 16:
+    bugtracker: optional: rewrite file, fileio using D file functions instead
+    of fopen/fwrite/fread
+16:
     test if install tutorials still work, add new binaries
 12:
     Write these TODOs in bugtracker
 17:
-    Regenerate docs (need D2 dil support)
+    Regenerate docs (need D2 dil support or maybe look at dmd/phobos DDoc macros)
+    Also consider CDC DDOC capability - seems like it generates a module index -
+    that could be used by CanDyDoc or our own tool that would
+    merge the generated doc files into a hyperlinked whole.
 
 --0.5.0 release
 --0.6.0 release
