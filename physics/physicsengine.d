@@ -24,7 +24,7 @@ import monitor.graphmonitor;
 import math.vector2;
 import util.signal;
 import util.weaksingleton;
-import util.iterator;
+import util.iterable;
 import workarounds;
 
 
@@ -212,7 +212,7 @@ final class PhysicsEngine : Monitorable
         {
             Contact current_contact;
             //use spatial manager for coarse collision detection
-            foreach(bodies; spatial_manager_.iterator)
+            foreach(bodies; spatial_manager_.iterable)
             {
                 foreach(uint a, body_a; bodies)
                 {

@@ -8,7 +8,7 @@ DMD depends on `gcc-multilib`, so you need to install it with your package manag
 
 
 ## 2: Download DMD
-Get the newest DMD 1.x binary package for your OS from here: 
+Get the newest DMD 2.x binary package for your OS from here: 
 <http://www.digitalmars.com/d/download.html>
 
 
@@ -19,7 +19,7 @@ The deb package works fine on most (all?) Debian based distros, including Debian
 
 If you're using a 64-bit OS, you will need to force architecture as there is only a 32-bit package available. On Debian/Ubuntu, this can be done with:
 
-    sudo dpkg -i --force-architecture dmd_1.YOUR_VERSION_HERE_i386.deb
+    sudo dpkg -i --force-architecture dmd_2.YOUR_VERSION_HERE_i386.deb
 
 
 ## 4: Install DPong dependencies

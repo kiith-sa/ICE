@@ -5,15 +5,12 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
-module util.iterator;
+module util.iterable;
 @trusted
 
 
-/**
- * Not really an iterator in C++ or Java sense, rather just a base 
- * for classes that allow iterating over something with foreach.
- */
-abstract class Iterator(T)
+///Base for classes that support iteration over objects of specified type with foreach.
+abstract class Iterable(T)
 {
     public:
         ///Used by foreach.

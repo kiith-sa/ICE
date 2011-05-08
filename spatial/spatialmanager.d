@@ -12,7 +12,7 @@ module spatial.spatialmanager;
 import monitor.monitorable;
 import math.vector2;
 import math.rectangle;
-import util.iterator;
+import util.iterable;
 
 
 /**
@@ -62,5 +62,5 @@ abstract class SpatialManager(T) : Monitorable
         void update_object(T object, in Vector2f old_position);
 
         ///Return an iterator iterating over groups of spatially close objects.
-        @property Iterator!(T[]) iterator();
+        @property Iterable!(T[]) iterable();
 }

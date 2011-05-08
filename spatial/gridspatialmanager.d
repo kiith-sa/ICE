@@ -23,7 +23,7 @@ import monitor.submonitor;
 import math.math;
 import math.vector2;
 import math.rectangle;
-import util.iterator;
+import util.iterable;
 import memory.memory;
 import containers.array2d;
 import containers.vector;
@@ -55,8 +55,8 @@ class GridSpatialManager(T) : SpatialManager!(T)
         Cell outer_;
 
     private:
-        ///Iterator used to iterate over groups of spatially close objects (cells).
-        class ObjectIterator(T) : Iterator!(T[])
+        ///Iterable used to iterate over groups of spatially close objects (cells).
+        class ObjectIterable(T) : Iterable!(T[])
         {
             public:
                 ///Used by foreach
@@ -153,7 +153,7 @@ class GridSpatialManager(T) : SpatialManager!(T)
             add_object(object);
         }
 
-        @property override Iterator!(T[]) iterator(){return new ObjectIterator!(T);}
+        @property override Iterable!(T[]) iterable(){return new ObjectIterable!(T);}
 
         ///Get grid size (both X and Y) in cells.
         @property uint grid_size() const {return grid_size_;}
