@@ -15,7 +15,7 @@ import std.conv;
 import derelict.opengl.gl;
 
 import video.gltexturepage;
-import video.nodepacker;
+import video.binarytexturepacker;
 import math.math;
 import math.vector2;
 import math.rectangle;
@@ -209,5 +209,5 @@ package align(1) struct GLTexturePage(TexturePacker)
         }
 }
 
-///GLTexturePage using NodePacker for texture packing.
-alias GLTexturePage!NodePacker TexturePage;
+///GLTexturePage using BinaryTexturePacker for texture packing.
+alias GLTexturePage!BinaryTexturePacker TexturePage;

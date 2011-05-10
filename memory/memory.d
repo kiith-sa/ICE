@@ -196,7 +196,7 @@ private:
 
                 debug
                 {
-                    static if(file.length > 26){a.file_[0 .. 26] = file[$ - 26 .. $];}
+                    static if(file.length > 24){a.file_[0 .. 24] = file[$ - 24 .. $];}
                     else{a.file_[0 .. file.length] = file[];}
                     a.line_ = line;
                     a.type_ = typeid(T);

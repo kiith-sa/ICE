@@ -6,7 +6,7 @@
 
 
 ///Binary tree based texture packer.
-module video.nodepacker;
+module video.binarytexturepacker;
 @system
 
 
@@ -26,7 +26,7 @@ import memory.memory;
  * fitting texture width/height, try to fit the texture to that area, if it doesn't
  * fit, subdivide again, repeat.
  */
-package align(1) struct NodePacker
+package align(1) struct BinaryTexturePacker
 {
     private:
         ///Node representing a rectangular area of space.
@@ -164,7 +164,7 @@ package align(1) struct NodePacker
 
     public:
         /**
-         * Construct NodePacker.
+         * Construct BinaryTexturePacker.
          *
          * Params:  size = Size of texture area for the packer to manage.
          */
@@ -174,7 +174,7 @@ package align(1) struct NodePacker
             root_ = alloc_struct!Node(Rectangleu(Vector2u(0, 0), size));
         }
 
-        ///Destroy this NodePacker and its nodes.
+        ///Destroy this BinaryTexturePacker and its nodes.
         ~this(){free(root_);}
 
         /**
@@ -208,10 +208,10 @@ package align(1) struct NodePacker
         void free_space(const ref Rectangleu area)
         {
             bool removed = root_.remove(area);
-            assert(removed, "Trying to remove unallocated space from NodePacker");
+            assert(removed, "Trying to remove unallocated space from BinaryTexturePacker");
         }
 
-        ///Determine if this NodePacker is empty.
+        ///Determine if this BinaryTexturePacker is empty.
         @property bool empty() const {return root_.empty();}
 
         ///Return a string containing information about the packer.

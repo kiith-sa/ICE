@@ -1,9 +1,5 @@
 GUI:
 Implement background colors for GUI elements (nothing more for now, just colored rects).
-
-
-18:
-    Rename NodePacker to BinaryPacker
 19:
     Write these TODOs in bugtracker
 
