@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///2D vector struct.
 module math.vector2;
 @safe
 

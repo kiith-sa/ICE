@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Interface for monitorable classes.
 module monitor.monitorable;
 @safe
 

@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///4x4 matrix struct.
 module math.matrix4;
 @safe
 

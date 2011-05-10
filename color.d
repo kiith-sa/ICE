@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///RGBA Color struct and utility functions.
 module color;
 @safe
 

@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Line graph (like system monitor) widget.
 module gui.guilinegraph;
 @safe
 

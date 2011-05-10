@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Base class for spatial managers.
 module spatial.spatialmanager;
 @safe
 

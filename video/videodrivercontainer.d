@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Class managing video driver dependencies.
 module video.videodrivercontainer;
 @trusted
 

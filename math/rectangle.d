@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Rectangle struct.
 module math.rectangle;
 @safe
 
@@ -12,7 +13,7 @@ module math.rectangle;
 import std.algorithm;
 import math.vector2;
 
-///Rectangle defined by its limit points.
+///Rectangle defined by its extents.
 align(1) struct Rectangle(T)
 {
     invariant()

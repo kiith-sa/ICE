@@ -15,6 +15,7 @@ Authors: Lode Vandevenne (original version in C++), Lutger Blijdestijn (D versio
 */
 
 
+///Structs and functions shared by PNG encoder and decoder.
 module formats.pngcommon;
 @system
 

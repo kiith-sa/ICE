@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///OpenGL 2 video driver.
 module video.glvideodriver;
 @system
 
@@ -44,7 +45,7 @@ import image;
 
 
 /**
- * OpenGL (currently a mix of 1.x and 2.x, planning to be purely 2.x) based video driver.
+ * OpenGL 2.x based video driver.
  *
  * Most of the actual drawing is done by GLRenderer, GLVideoDriver basically
  * manages other GL video classes.

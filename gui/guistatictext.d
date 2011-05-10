@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Static text widget.
 module gui.guistatictext;
 @safe
 

@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Line trail particle system.
 module scene.linetrail;
 @safe
 

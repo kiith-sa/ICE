@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Monitor viewing physics engine.
 module physics.physicsmonitor;
 @safe
 

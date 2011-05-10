@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Base class for all widgets.
 module gui.guielement;
 @safe
 

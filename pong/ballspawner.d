@@ -4,6 +4,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Ball spawning actor.
 module pong.ballspawner;
 @safe
 

@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Image encoding/decoding.
 module formats.image;
 @trusted
 

@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Binary tree based texture packer.
 module video.nodepacker;
 @system
 

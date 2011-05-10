@@ -4,6 +4,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Game class.
 module pong.game;
 @safe
 
@@ -119,6 +120,7 @@ class GameGUI
         }
 }
 
+///Class managing a single game between players.
 class Game
 {
     mixin WeakSingleton;

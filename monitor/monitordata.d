@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Interface providing access to submonitors (returned by a monitorable).
 module monitor.monitordata;
 @safe
 

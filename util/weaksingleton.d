@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Singleton with no global access.
 module util.weaksingleton;
 @safe
 

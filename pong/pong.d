@@ -4,6 +4,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Main pong program class.
 module pong.pong;
 @safe
 

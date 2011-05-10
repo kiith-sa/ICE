@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Mouse zooming/panning support for GUI elements.
 module gui.guimousecontrollable;
 @safe
 

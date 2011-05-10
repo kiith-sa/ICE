@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Base class for graph (system monitor style) monitors.
 module monitor.graphmonitor;
 @safe
 

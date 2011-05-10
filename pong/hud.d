@@ -4,6 +4,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///In game HUD.
 module pong.hud;
 @safe
 

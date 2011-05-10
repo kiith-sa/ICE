@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Spatial manager based on a simple grid.
 module spatial.gridspatialmanager;
 @safe
 

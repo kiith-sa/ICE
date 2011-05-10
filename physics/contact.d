@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Physics body contact struct.
 module physics.contact;
 @safe
 

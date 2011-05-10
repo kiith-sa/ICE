@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Monitorable used to view memory.
 module memory.memorymonitorable;
 @safe
 
@@ -14,7 +15,6 @@ import monitor.monitordata;
 import monitor.submonitor;
 import monitor.graphmonitor;
 import monitor.monitorable;
-import memory.memorymonitor;
 import util.weaksingleton;
 import util.signal;
 
@@ -62,4 +62,11 @@ final class MemoryMonitorable : Monitorable
             ctors_["Usage"] = &new_graph_monitor!(MemoryMonitorable, Statistics, "manual_MiB");
             return new MonitorData!(MemoryMonitorable)(this, ctors_);
         }
+}
+
+///Statistics passed by MemoryMonitorable to memory monitors.
+package struct Statistics
+{
+    ///Total manually allocated memory at the moment, in MiB.
+    real manual_MiB;
 }

@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///PNG encoding/decoding interface.
 module formats.png;
 @system
 

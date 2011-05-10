@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Base class for all particle systems.
 module scene.particlesystem;
 @safe
 

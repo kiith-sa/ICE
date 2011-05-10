@@ -1,11 +1,12 @@
-17:
-    add new binaries. If no 64-bit ones, update installation tutorials
-18: 
-    0.6.0 release
+GUI:
+Implement background colors for GUI elements (nothing more for now, just colored rects).
+
+
+18:
+    Rename NodePacker to BinaryPacker
 19:
     Write these TODOs in bugtracker
 
---0.6.0 release
 --0.7.0 release
 --0.8.0 release
 17: 
@@ -193,10 +194,6 @@ it will remain memory resident for the entire l
     so we might have a special function supplying old volume at update/remove.
     Write that as a future TODO. 
 15:
-    Command line parser: implement positional arguments, subparsers (e.g. git commit),
-    equivalents of choices= and required= paramters of argparse in Python
-    (if needed)
-15:
     Consider tree-based math parser. Advantage is:
     GUI elements can keep the tree and just change the vaues of substitution,
     tree can be evaluated w/o being regenerated. If this is not needed, move it to 
@@ -263,12 +260,9 @@ it will remain memory resident for the entire l
     or physics, or maybe OpenMP style (or just 2-4 threads)
     for collision detection (not penetration resolution or response,
     at least for now)
-10:
-    Test mod directories with a simple Pong "mod" that replaces shaders
-    and/or fonts (say, with negative or black/white colors or something)
 8:
     timer calling a given function at expiration,
-    and some kind of singleton or module to update these timers to
+    and a weak singleton or module to update these timers to
     check for expiration - that update would be called by whole
     pong, not game. maybe later it could be updated from separate thread, but probably
     not.
@@ -289,9 +283,6 @@ it will remain memory resident for the entire l
     Also write an import tool for RA2/TS voxels.
     For drawing, we need to use point sprites as plain points are deprecated.
     Also look up marching cubes algorithm.
-14:
-    Could also look at the source of the Diamond memory debugger and
-    use the ideas there to measure memory usage
 12:
     Shaders should be an optional argument to draw_x. If no shader is passed,
     default for fonts, lines, textures is used.
@@ -320,9 +311,6 @@ it will remain memory resident for the entire l
     implementation and stable interface so we can replace internals
     with matrices, quaternions, euler angles or whatever (of course, 2D
     rotation doesn't need this- just use a float for that)
-35:
-    Logging messages (e.g. initializing GL, etc.)- not necessarily a logging
-    system yet
 33?:
     Might be left for later (e.g. before map editor):
     GUI: more advanced, moving/resizing (can be enabled/disabled),
@@ -365,11 +353,8 @@ it will remain memory resident for the entire l
     move to GPU; when again adding textures to a page, use
     glGetTexImage to get it back to cpu side, repeat.
     Also profile all the other GL stuff, like texture drawing, shaders.
-    Might consider the NVidia profiling driver for this.
     Also consider various page sizes - something like 512x512
     might have better cache performance than 4096x4096.
-38: 
-    Culling at videodriver level
 38:
     Remapping should be done with shaders using colors with alpha 0 
     as remap colors. Only RGBA 0,0,0,0 should be a valid totally transparent color.
@@ -378,9 +363,7 @@ it will remain memory resident for the entire l
     and G 1-255 (255 values) as its alpha colors 
     (0 is fully transparent and should be RGBA 0,0,0,0).
 39:
-    Custom exception class/es, should add the message to the log.
-    Better: Java-style descriptive exceptions, maybe derived from 
-    a parent class handling logging.
+    Exceptions should have a common parent class that would log the exception's message
 36: 
     Console        
 15:
@@ -416,6 +399,7 @@ Ubuntu Forums (when packaged... or before?),
 libsdl.org,
 Freshmeat,
 Ohloh
+Reddit
 
 
 Packaging:
@@ -442,11 +426,7 @@ Monitor:
     2:need listbox: detailed look on an object, i.e. select object and see all its parameters
 
 Optimizations:
-1:
-    Allocator alloc/dealloc recording could be done using
-    an associative array with typeid as index instead of a string.
-    Typeid would be converted to string when writing to output.
-2?:
+1?:
     Textures could be made smaller by using Vector2s for size
     instead of Vector2u. This has proven to speed up font drawing
     by ~15%. However, would probably result in a bit uglier code
@@ -455,19 +435,19 @@ Optimizations:
 
     Also, GLTextures could store texcoords as unnormalized shorts, but
     that would probably be overkill
-3?: 
+2?: 
     Alpha testing could be used in combination with blending. I.e.
     a fragment with 0 alpha would automatically be discarded.
     This would break our remap plans, though.
     However, if we culd do this in shader (need to learn how to discard
     a fragment in shader), everything would work right.
-4?:
+3?:
     If color interpolation is a problem, we can create a ColorInterpolator class,
     which is basically a lookup table constructed with color a, color b, 
     and an integer specifying number of colors in the table. Any call to interpolate()
     method of that class would then return the closest table value for
     float given as ann interpolation value.
-5?
+4?
     fast sqrt in math.math using a lookup table
     like, if the input is between 0-1, look it up in table #1 with 100 (float)
     results for 0.00, ... 0.99
@@ -478,11 +458,11 @@ Optimizations:
     alternatively: look at how opensource 3D engines do sqrt and google for other 
     methods, maybe try using carmacks' reciprocal sqrt 
     (1/sqrt, so 1/reciprocal is sqrt)
-6?:
+5?:
     If drawing text is too slow, we can cache glyph offsets for strings
     somewhere in videodriver (or a member class/struct of videodriver)
     We can search for cached strings quickly using simple bucket sort/search.
-7: 
+6: 
     PNG:
     Decoding time is 45% zlib decoding, 45% unfiltering and 10% array copying.
 
@@ -496,7 +476,7 @@ Optimizations:
 
     We could fix that by rolling our own zlib clone, maybe using SSE and/or 
     multithreading.
-8:
+7:
     If GLVideoDriver vertex cache is too slow, we could use mapped VBO
     in the GLVertexBuffer instead of a vector.
     Alternatively, we could double buffer
@@ -504,9 +484,6 @@ Optimizations:
     or even combine mapped VBO with double buffering.
     This could significantly improve performance at high loads where
     OpenGL can take as much as 40% time stalling buffer data uploads.
-9:
-    RGBA4 (converted from RGBA8 in VideoDriver implementation) 
-    could be a switch for low-memory systems
 GUI:
 1:
     Progress bars should be a simple animation with frame depending
@@ -524,7 +501,7 @@ GL1:
 Maybe:
 1:
     Paddle acceleration
-4:
+2:
     Consider writing a tool like 3DtoSprite seen at 
     http://irrlicht.sourceforge.net/phpBB2/viewtopic.php?t=25397
     Use OpenGL to render frames of a sprite, based on some settings
@@ -540,27 +517,27 @@ Maybe:
     could be used for high quality AA, and per pixel lighting
     could be used as well. In future, even normals used for 3D lighting could be 
     drawn.
-13:
+3:
     (Arkanoid) High scores
-14:
+4:
     This might not be needed if we draw stuff in the right order:
     A draw order/layer argument passed to videodriver draw methods, 
     should be a real value (so in isometric games we can base it on object height) 
     - every frame, a bucket sort or something might be used to sort objects to depth 
     groups.
-15:
+5:
     Proper time_string function supporting any time format,
     like /usr/bin/time
-16:
+6:
     If multitextures will be supported in future, their data should
     be stored in pairs/triplets/quadruplets/etc of pages.
     We'd only have to change GLTexture, not Texture:
     GLTexture would contain indices of the pages.
     A special createtexture method would be needed.
     (taking multiple images).
-15:
+7:
     (Arkanoid)Save games (yaml?)
-22: 
+8: 
     Try AI and/or file loading in a separate thread
 Bugs:
 1:

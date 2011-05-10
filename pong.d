@@ -17,6 +17,7 @@
  */
 
 
+///Program entry point.
 module main.pong;
 
 

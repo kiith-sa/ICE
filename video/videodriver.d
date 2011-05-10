@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Video driver base class.
 module video.videodriver;
 @trusted
 

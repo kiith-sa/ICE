@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///2D axis aligned bounding box.
 module spatial.volumeaabbox;
 @safe
 

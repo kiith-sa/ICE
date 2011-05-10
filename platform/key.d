@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Keyboard/mouse key related enums.
 module platform.key;
 @safe
 

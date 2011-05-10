@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Font manager and text drawing code abstracted from the video driver.
 module video.fontmanager;
 @system
 

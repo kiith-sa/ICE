@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Manual memory management functions.
 module memory.memory;
 @system:
 

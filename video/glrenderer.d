@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///OpenGL draw cache/renderer.
 module video.glrenderer;
 @system
 

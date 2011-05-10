@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///GLVideoDriver using SDL to set up video mode.
 module video.sdlglvideodriver;
 @trusted
 

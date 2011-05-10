@@ -15,6 +15,7 @@ Authors: Lode Vandevenne (original version in C++), Lutger Blijdestijn (D versio
 */
 
 
+///PNG encoder.
 module formats.pngencoder;
 @system
 

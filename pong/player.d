@@ -4,6 +4,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///AI and human player classes.
 module pong.player;
 @safe
 

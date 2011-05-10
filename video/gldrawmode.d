@@ -5,8 +5,10 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///OpenGL draw mode.
 module video.gldrawmode;
 @safe
+
 
 ///OpenGL draw mode.
 enum GLDrawMode

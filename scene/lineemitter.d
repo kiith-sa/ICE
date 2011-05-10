@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Line emitter particle system.
 module scene.lineemitter;
 @safe
 

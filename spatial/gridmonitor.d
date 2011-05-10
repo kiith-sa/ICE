@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Monitor viewing the grid spatial manager.
 module spatial.gridmonitor;
 
 

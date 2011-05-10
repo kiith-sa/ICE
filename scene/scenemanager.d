@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Scene manager subsystem.
 module scene.scenemanager;
 @safe
 

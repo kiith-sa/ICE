@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Struct counting occurences of an event over time.
 module time.eventcounter;
 @safe
 

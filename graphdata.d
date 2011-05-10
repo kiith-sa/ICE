@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///Struct managing statistics displayed by graphs.
 module graphdata;
 @trusted
 

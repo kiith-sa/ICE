@@ -5,6 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
+///File I/O utility functions.
 module file.fileio;
 @trusted
 
