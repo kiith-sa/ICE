@@ -145,19 +145,13 @@ class GUIButton : GUIElement
 
         override void draw(VideoDriver driver)
         {
-            alias math.vector2.to to;
-
             if(!visible_){return;}
 
+            border_color_ = states_[state_].border_color;
+
+            super.draw(driver);
+
             //no need to draw the text here as it is a child
-
-            if(draw_border_)
-            {
-                driver.draw_rectangle(to!(float)(bounds_.min), to!(float)(bounds_.max), 
-                                      states_[state_].border_color);
-            }
-
-            draw_children(driver);
         }
 
     private:

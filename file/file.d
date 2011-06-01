@@ -4,7 +4,6 @@
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
 
-
 ///File I/O struct.
 module file.file;
 @trusted
@@ -33,6 +32,17 @@ enum FileMode
     Append
 }
 
+///Seek positions.
+enum Seek
+{
+    ///Beginning of file.
+    Set,
+    ///Current file position.
+    Current,
+    ///End of file.
+    End
+}
+
 /**
  * Used to read from and write to files.
  *
@@ -42,6 +52,7 @@ struct File
 {
     private:
         alias std.string.indexOf indexOf;
+
     package:
         ///In-engine file name, such as fonts/font.ttf or mod::fonts/font.ttf .
         string name_;
@@ -53,9 +64,12 @@ struct File
         ubyte[] data_;
 
         ///Number of used bytes in write_data_ .
-        uint write_used_;
+        size_t write_used_;
         ///Data to write to file: manually allocated, reallocated if not sufficient.
         ubyte[] write_data_;
+
+        ///Current position in the file.
+        size_t seek_position_ = 0;
 
     public:
         /**
@@ -136,7 +150,11 @@ struct File
         ///Close the file.
         ~this()
         {
-            if(mode_ == FileMode.Write || mode_ == FileMode.Append){write_out();}
+            //dummy unittest files have empty names, don't need to be written out
+            if(name_ != "" && (mode_ == FileMode.Write || mode_ == FileMode.Append))
+            {
+                write_out();
+            }
             if(data_ !is null){free(data_);}
             if(write_data_ !is null){free(write_data_);}
             data_ = write_data_ = null;
@@ -158,10 +176,38 @@ struct File
         @property FileMode mode() const {return mode_;}
 
         /**
+         * Read data from file (only applicable in Read mode).
+         *
+         * Will change file position to the end of read data, stopping at EOF.
+         *
+         * Params:  target = Buffer to read to. At most target.length bytes will be read.
+         *
+         * Returns: Number of bytes read.
+         */
+        size_t read(ref void[] target)
+        in
+        {
+            assert(mode_ == FileMode.Read, 
+                   "Can only read data from a file opened for reading");
+        }
+        body
+        {
+            const read_size = clamp(cast(int)target.length, 0, 
+                                    cast(int)data_.length - cast(int)seek_position_);
+            target[0 .. read_size] = data[seek_position_ .. seek_position_ + read_size];
+            seek_position_ += read_size;
+            return read_size;
+        }
+
+        /**
          * Write data to file (only applicable in Write, Append modes).
          * 
          * This does not necessarily write data out to the file,
          * data might be buffered until the file is closed.
+         *
+         * Will change file position to the end of written data.
+         *
+         * Params:  data = Data to write.
          */
         void write(in void[] data)
         in
@@ -172,7 +218,7 @@ struct File
         body
         {
             const data_bytes = cast(ubyte[])data;
-            const needed = write_used_ + data_bytes.length;
+            const needed = seek_position_ + data_bytes.length;
             const allocated = write_data_.length;
 
             //reallocate if not enough space
@@ -181,8 +227,33 @@ struct File
                 write_data_ = realloc(write_data_, cast(uint)max(needed, allocated * 2));
             }
 
-            write_data_[cast(uint)write_used_ .. cast(uint)needed] = data_bytes[];
-            write_used_ = cast(uint)needed;
+            write_data_[cast(uint)seek_position_ .. cast(uint)needed] = data_bytes[];
+            write_used_ = max(write_used_, cast(uint)needed);
+
+            seek_position_ += data_bytes.length;
+        }
+        
+        /**
+         * Set file position.
+         *
+         * File position can be set beyond file end but not before file start.
+         *
+         * Params:  offset = Offset, in bytes, relative to origin.
+         *          origin = Position to which offset is added. 
+         *                   Can be the beginning of file, end of file, or
+         *                   current file position.
+         *
+         * Returns: Resulting file position in bytes from the beginning of the file.
+         */
+        ulong seek(long offset, Seek origin)
+        {
+            const long base = origin == Seek.Set     ? 0 :
+                              origin == Seek.Current ? seek_position_ :
+                                                       write_used_;
+            const long position = base + offset;
+            assert(position >= 0, "Can't seek before the beginning of a file");
+            seek_position_ = cast(size_t)position;
+            return seek_position_;
         }
 
     private:
@@ -256,4 +327,43 @@ struct File
                       (blocks_written == 1, "Couldn't write to file " ~ path_ ~ " Maybe you " ~ 
                                             "don't have sufficient rights");
         }
+}
+
+package:
+
+/**
+ * Create a dummy file for reading for unittest purposes.
+ *
+ * Params: file     = File struct to write to.
+ *         contents = Contents of the dummy file.
+ */
+void file_dummy_read(T)(out File file, T[] contents)
+{
+    file.mode_ = FileMode.Read;
+    const bytes = contents.length * T.sizeof;
+    file.data_ = alloc_array!(ubyte)(bytes);
+    file.data_[] = (cast(ubyte*)contents.ptr)[0 .. bytes].dup;
+}
+
+/**
+ * Create a dummy file for writing for unittest purposes.
+ *
+ * Params: file = File struct to write to.
+ */
+void file_dummy_write(out File file)
+{
+    file.mode_ = FileMode.Write;
+    file.write_data_ = alloc_array!(ubyte)(write_reserve_);
+}
+
+/**
+ * Create a dummy file for appending for unittest purposes.
+ *
+ * Params: file = File struct to write to.
+ */
+void file_dummy_append(out File file)
+{
+    file.mode_ = FileMode.Append;
+    file.data_ = alloc_array!(ubyte)(0);
+    file.write_data_ = alloc_array!(ubyte)(write_reserve_);
 }

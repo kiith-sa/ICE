@@ -172,7 +172,11 @@ abstract class GLVideoDriver : VideoDriver
 
             send_statistics.disconnect_all();
 
-            if(gl_initialized_){DerelictGL.unload();}
+            if(gl_initialized_)
+            {
+                DerelictGL.unload();
+                gl_initialized_ = false;
+            }
         }
 
         override void start_frame()
