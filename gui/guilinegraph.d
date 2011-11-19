@@ -51,10 +51,10 @@ final class GUILineGraph : GUIElement
             ///Color of the graph.
             Color color = Color.grey;
             ///Vertices of the line strip used to display the graph, in screen space.
-            Vector!(Vector2f) line_strip;
+            Vector!Vector2f line_strip;
 
             ///Construct a GraphDisplay.
-            this(){line_strip = Vector!(Vector2f)(8);}
+            this(){line_strip.reserve(8);}
             ///Destroy this GraphDisplay.
             void die(){clear(line_strip);}
         }

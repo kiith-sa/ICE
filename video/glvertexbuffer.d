@@ -60,8 +60,8 @@ package struct GLVertexBuffer(Vertex)
         }
         body
         {
-            vertices_ = Vector!Vertex(8);
-            indices_ = Vector!uint(8);
+            vertices_.reserve(8);
+            indices_.reserve(8);
             mode_ = mode;
             if(mode_ == GLDrawMode.VertexBuffer){init_vbo();}
         }

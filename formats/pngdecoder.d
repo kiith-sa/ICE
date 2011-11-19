@@ -64,7 +64,8 @@ struct PNGDecoder
                                     : buffer_size(info.image) + info.image.height;
 
 
-            auto buffer = Vector!(ubyte)(expected_length);
+            Vector!ubyte buffer;
+            buffer.reserve(expected_length);
 
             auto inflator = Inflator(buffer);
 
@@ -345,7 +346,8 @@ void unfilter_line(ubyte[] result, in ubyte[] line, in ubyte[] previous,
 void deinterlace(ref Vector!(ubyte) buffer, in PNGImage image)
 {
     //result buffer
-    auto result = Vector!(ubyte)(8);
+    Vector!ubyte result;
+    result.reserve(8);
     result.length = buffer_size(image);
 
     /**

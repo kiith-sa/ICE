@@ -119,7 +119,7 @@ abstract class ParticleEmitter : ParticleSystem
             emit_frequency_ = emit_frequency;
             angle_variation_ = angle_variation;
             emit_velocity_ = emit_velocity;
-            particles_ = Vector!(Particle)(8);
+            particles_.reserve(8);
 
             super(container, physics_body, owner, life_time);
         }

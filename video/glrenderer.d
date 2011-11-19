@@ -84,8 +84,8 @@ package struct GLRenderer
          */
         this(in GLDrawMode mode)
         {
-            vertex_groups_ = Vector!(GLVertexGroup)(8);
-            scissor_areas_ = Vector!(Rectanglei)(8);
+            vertex_groups_.reserve(8);
+            scissor_areas_.reserve(8);
             flush_group_ = true;
             initialized_ = true;
             init_buffers(mode);

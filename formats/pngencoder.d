@@ -91,10 +91,11 @@ struct PNGEncoder
             //header chunk
             chunks ~= PNGChunk(IHDR, header(info.image));
             //filter image data
-            auto filtered = Vector!(ubyte)(8);
+            Vector!ubyte filtered, compressed;
+            filtered.reserve(8);
             filter_data(filtered, source, info.image);
             //compress image data
-            auto compressed = Vector!(ubyte)(8);
+            compressed.reserve(8);
             zlib_deflate(compressed, filtered.array, compression_, level_);
             chunks ~= PNGChunk(IDAT, compressed.array_unsafe);
             //auxiliary chunks from PNGInfo.
@@ -214,7 +215,8 @@ struct PNGEncoder
             zero_line[] = cast(ubyte)0;
 
             //filtered line is written here
-            auto filtered = Vector!(ubyte)(8);
+            Vector!ubyte filtered;
+            filtered.reserve(8);
 
             //filter each line separately to get best results
             if(filter_ == PNGFilter.Dynamic)

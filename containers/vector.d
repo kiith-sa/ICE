@@ -34,20 +34,17 @@ align(1) struct Vector(T)
     //invariant(){assert(data_ !is null, "Vector data is null - probably not constructed");}
 
     private:
-        //using dummy array for default initialization as we can't redefine default ctor
+        static enum T[] dummy_data_ = [];
+        //using dummy array for default initialization as we can't redefine
+        //default ctor
         ///Manually allocated data storage. More storage than used can be allocated.
-        T[] data_ = [];
+        T[] data_ = dummy_data_;
         ///Used storage (number of items in the vector).
         size_t used_ = 0;
 
     public:
-        ///Construct an empty vector with allocated space for specified number of elements.
-        this(in size_t reserve)
-        out(result){assert(result.used_ == 0, "Constructed vector expected to be empty");}
-        body
-        {
-            data_ = alloc_array!(T)(cast(uint)max(2, reserve));
-        }
+        //TODO
+        //@disable void opAssign(ref Vector v);
 
         ///Construct a vector from an array.
         this(in T[] array)
@@ -64,10 +61,10 @@ align(1) struct Vector(T)
         ~this()
         {
             used_ = 0;
-            if(data_ != [] && data_ !is null)
+            if(data_ !is dummy_data_ && data_ !is null)
             {
                 free(data_);
-                data_ = null;
+                data_ = dummy_data_;
             }
         }
 
@@ -87,7 +84,7 @@ align(1) struct Vector(T)
         int opApply(int delegate(ref T) dg)
         {
             int result = 0;
-            for(uint i = 0; i < used_; i++)
+            foreach(i; 0 .. used_)
             {
                 result = dg(data_[i]);
                 if(result){break;}
@@ -101,10 +98,10 @@ align(1) struct Vector(T)
          * Foreach will iterate over all elements of the vector in linear order
          * from start to end.
          */
-        int opApply(int delegate(ref uint, ref T) dg)
+        int opApply(int delegate(ref size_t, ref T) dg)
         {
             int result = 0;
-            for(uint i = 0; i < used_; i++)
+            foreach(i; 0 .. used_)
             {
                 result = dg(i, data_[i]);
                 if(result){break;}
@@ -112,7 +109,7 @@ align(1) struct Vector(T)
             return result;
         }
 
-        ///Append an element to the vector. (~= operator)
+        ///Append an element to the vector. (operator ~=)
         void opCatAssign(T element)
         out
         {
@@ -156,6 +153,7 @@ align(1) struct Vector(T)
         void opAssign(in T[] array)
         {
             reserve(array.length);
+            //TODO destroy the overwritten objects
             data_[0 .. array.length] = cast(T[])array;
             used_ = array.length;
         }
@@ -167,6 +165,7 @@ align(1) struct Vector(T)
          *
          * Returns: Element at the specified index.
          */
+        //TODO ref
         const(T)opIndex(in size_t index) const
         in{assert(index < used_, "Vector index out of bounds");}
         body{return data_[index];}
@@ -189,6 +188,7 @@ align(1) struct Vector(T)
          *          start = Start of the slice.
          *          end   = End of the slice.
          */
+        //TODO destroy the overwritten objects
         void opSliceAssign(in T[] array, in size_t start, in size_t end)
         in
         {
@@ -204,6 +204,7 @@ align(1) struct Vector(T)
          * Params:  start = Start of the slice.
          *          end   = End of the slice.
          */
+        //TODO const
         T[] opSlice(in size_t start, in size_t end)
         in
         {
@@ -297,7 +298,7 @@ align(1) struct Vector(T)
          */
         bool contains(in T element, in bool ident = false) const
         {
-            for(uint i = 0; i < used_; i++)
+            foreach(i; 0 .. used_)
             {
                 if(ident ? data_[i] is element : data_[i] == element){return true;}
             }
@@ -331,8 +332,8 @@ align(1) struct Vector(T)
             //awkward control flow due to optimization. we realloc if elements > data_.length
             if(elements <= data_.length){return;}
 
-            data_ = (data_ != []) ? realloc(data_, cast(uint)elements) 
-                                  : alloc_array!T(cast(uint)elements);
+            data_ = (data_ !is dummy_data_) ? realloc(data_, cast(uint)elements) 
+                                            : alloc_array!T(cast(uint)elements);
         }
 
         ///Get currently allocated capacity.
