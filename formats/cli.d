@@ -11,6 +11,7 @@ module formats.cli;
 
 
 import std.algorithm;
+import std.array;
 import std.conv;
 import std.exception;
 import std.regex;
@@ -115,7 +116,7 @@ struct CLIOption
             if(isSomeFunction!T && 
                ParameterTypeTuple!T.length == 1 &&
                is_primitive!(ParameterTypeTuple!T[0]) &&
-               (functionAttributes!T & FunctionAttribute.NOTHROW) &&
+               (functionAttributes!T & FunctionAttribute.nothrow_) &&
                is(ReturnType!T == void))
         {
             assert(action_ is null, "Target of a CLIOption specified more than once");
@@ -532,7 +533,7 @@ class CLI
             foreach(option; options_)
             {
                 string left = option.help_left;
-                string indent = repeat(" ", left_width);
+                string indent = replicate(" ", left_width);
 
                 //if option left side too wide, print it on a separate line
                 if(left.length + sep > left_width )

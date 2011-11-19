@@ -86,7 +86,7 @@ public:
      *
      * Returns: Allocated array.
      */
-    T[] alloc_array(T, string file = __FILE__, uint line = __LINE__)(in uint elems)
+    T[] alloc_array(T, string file = __FILE__, uint line = __LINE__)(in size_t elems)
     {
         return allocate!(T, file, line)(elems);
     }
@@ -145,7 +145,7 @@ private:
     ///Currently allocated memory, in bytes.
     ulong currently_allocated_ = 0;
 
-    ///48 bytes on 64-bit, 40 bytes on 23-bit
+    ///48 bytes on 64-bit, 40 bytes on 32-bit
     /**
      * Struct holding information about a memory allocation.
      *
@@ -190,7 +190,7 @@ private:
              * Returns: Constructed Allocation.
              */
             static Allocation construct(T, string file, uint line) 
-                                       (in T* ptr, in uint objects)
+                                       (in T* ptr, in size_t objects)
             {
                 Allocation a;
 
@@ -200,7 +200,7 @@ private:
                     else{a.file_[0 .. file.length] = file[];}
                     a.line_ = line;
                     a.type_ = typeid(T);
-                    a.objects_ = objects;
+                    a.objects_ = objects > uint.max ? uint.max : cast(uint)objects;
                     a.time_ = cast(ushort)(get_time() - start_time_);
                 }
 
@@ -288,7 +288,7 @@ private:
      * 
      * Returns: Allocated array.
      */
-    T[] allocate(T, string file, uint line)(in uint elems)
+    T[] allocate(T, string file, uint line)(in size_t elems)
     out(result)
     {
         assert(result.length == elems, "Failed to allocate space for "
@@ -485,7 +485,7 @@ private:
      * Params:  ptr     = Pointer to the allocated memory.
      *          objects = Number of objects allocated.
      */
-    void debug_allocate(T, string file, uint line)(in T* ptr, in uint objects)
+    void debug_allocate(T, string file, uint line)(in T* ptr, in size_t objects)
     {
         allocations_ ~= Allocation.construct!(T, file, line)(ptr, objects);
 
@@ -504,8 +504,8 @@ private:
      *          old_objects = Number of objects in original memory.
      */
     void debug_reallocate(T, string file, uint line)
-                         (in T* new_ptr, in uint new_objects,
-                          in T* old_ptr, in uint old_objects)
+                         (in T* new_ptr, in size_t new_objects,
+                          in T* old_ptr, in size_t old_objects)
     {
         //find and replace allocation info corresponding to reallocated data
         bool found = false;
@@ -535,7 +535,7 @@ private:
      * Params:  ptr     = Pointer to deallocated memory.
      *          objects = Number of objects deallocated.
      */
-    void debug_free(T)(in T* ptr, in uint objects)
+    void debug_free(T)(in T* ptr, in size_t objects)
     {
         //remove allocation info
         bool found = false;

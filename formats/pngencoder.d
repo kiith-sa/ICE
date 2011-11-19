@@ -102,7 +102,7 @@ struct PNGEncoder
             chunks.sort;
             chunks ~= PNGChunk(IEND, []);
 
-            auto buffer = Vector!(ubyte)(png_magic_number);
+            auto buffer = Vector!(ubyte)(png_magic_number.dup);
             //write chunks to buffer
             foreach(chunk; chunks){write_chunk(buffer, chunk);}
 
@@ -248,7 +248,7 @@ struct PNGEncoder
 
                     buffer ~= cast(ubyte)best_filter;
                     filter_line(filtered, previous, line, filters_[best_filter], pixel_bytes);
-                    buffer ~= filtered.array;
+                    buffer ~= filtered;
                 }
             }
             //one filter for the whole image
@@ -262,7 +262,7 @@ struct PNGEncoder
 
                     buffer ~= cast(ubyte)filter_;
                     filter_line(filtered, previous, line, filters_[filter_], pixel_bytes);
-                    buffer ~= filtered.array;
+                    buffer ~= filtered;
                 }
             }
         }

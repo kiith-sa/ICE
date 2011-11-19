@@ -74,7 +74,7 @@ T to(T)(in ColorFormat format)
         case ColorFormat.GRAY_8:
             return "GRAY_8";
         default:
-            assert(false, "Unsupported image color format!");
+            assert(false, "Unsupported image color format");
     }
 }
 

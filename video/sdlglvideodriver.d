@@ -83,8 +83,8 @@ final class SDLGLVideoDriver : GLVideoDriver
 
             if(SDL_SetVideoMode(width, height, bit_depth, flags) is null)
             {
-                string msg = std.string.format("Could not set video mode: %d %d %dbpp"
-                                               , width, height, bit_depth);
+                string msg = std.string.format("Could not set video mode: %d %d %dbpp",
+                                               width, height, bit_depth);
                 writeln(msg);
                 throw new VideoDriverException(msg);
             }

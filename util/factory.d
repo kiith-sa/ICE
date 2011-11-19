@@ -42,7 +42,7 @@ string generate_factory(string parameter_strings []...)
     { 
         string[] p = parameter.split_ctfe('$');
         assert(p.length == 3, "Malformed parameter in generated factory code: " ~ parameter);
-        parameters ~= Parameter(p[0].strip(), p[1].strip(), p[2].strip());
+        parameters ~= Parameter(p[0].strip_ctfe(), p[1].strip_ctfe(), p[2].strip_ctfe());
     }
 
     string data;

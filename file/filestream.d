@@ -15,7 +15,7 @@ import std.algorithm;
 import file.file;
 
 
-///Stream implementation based on File.
+///Stream wrapper of File.
 class FileStream : Stream
 {
     private:

@@ -10,9 +10,10 @@ module video.fontmanager;
 @system
 
 
-import std.algorithm;
 import std.c.string;
+import std.algorithm;
 import std.stdio;
+import std.typecons;
 
 import derelict.freetype.ft;
 import derelict.util.loader;
@@ -140,7 +141,9 @@ final class FontManager
         Font[] fonts_;
 
         ///Buffers storing font file data indexed by file names.
-        Vector!(ubyte)[string] font_files_;
+        //Vector!(ubyte)[string] font_files_; //can't use this due to compiler bug
+        alias Tuple!(string, "name", Vector!ubyte, "data") FontData;
+        FontData[] font_files_;
         
         ///Fallback font name.
         string default_font_name_ = "DejaVuSans.ttf";
@@ -197,7 +200,7 @@ final class FontManager
                 {
                     load_font_file(default_font_name_);
                     //load default font.
-                    fonts_ ~= new Font(freetype_lib_, font_files_[default_font_name_],
+                    fonts_ ~= new Font(freetype_lib_, get_font(default_font_name_),
                                        default_font_name_, default_font_size_, 
                                        fast_glyphs_, antialiasing_);
                     current_font_ = fonts_[$ - 1];
@@ -250,9 +253,9 @@ final class FontManager
         {
             writeln("Destroying FontManager");
             foreach(ref font; fonts_){font.die();}
-            foreach(ref file; font_files_){clear(file);}
-            fonts_ = [];
-            font_files_ = null;
+            foreach(ref pair; font_files_){clear(pair.data);}
+            clear(fonts_);
+            clear(font_files_);
             FT_Done_FreeType(freetype_lib_);
             DerelictFT.unload(); 
             singleton_dtor();
@@ -317,10 +320,20 @@ final class FontManager
             scope(failure){writeln("Could not read from font file: " ~ name);}
 
             //already loaded
-            if(canFind(font_files_.keys, name)){return;}
+            foreach(ref pair; font_files_) if(pair.name == name)
+            {
+                return;
+            }
 
+
+            //TODO Get rid of Vector or improve it to be usable here
+            // (according to std.container.array) 
+            // - either use refcounting or disable copying/assignment
             File file = File("fonts/" ~ name, FileMode.Read);
-            font_files_[name] = Vector!(ubyte)(cast(ubyte[])file.data);
+            auto bytes = cast(ubyte[])file.data;
+            font_files_ ~= FontData(name, Vector!ubyte());
+            clear(font_files_[$ - 1].data);
+            font_files_[$ - 1].data = Vector!ubyte(bytes);
         }
 
         /**
@@ -374,7 +387,7 @@ final class FontManager
             try
             {
                 load_font_file(font_name_);
-                new_font = new Font(freetype_lib_, font_files_[font_name_], font_name_, 
+                new_font = new Font(freetype_lib_, get_font(font_name_), font_name_, 
                                     font_size_, fast_glyphs_, antialiasing_);
                 //Font was succesfully loaded, set it
                 fonts_ ~= new_font;
@@ -382,5 +395,15 @@ final class FontManager
             }
             catch(FileIOException e){fallback("Font file could not be read: " ~ e.msg);}
             catch(FontException e){fallback("FreeType error: " ~ e.msg);}
+        }
+
+        ///Get data of font with specified name.
+        ref Vector!ubyte get_font(string name)
+        {
+            foreach(ref pair; font_files_)
+            {
+                if(name == pair.name){return pair.data;}
+            }
+            assert(false, "No font with name " ~ name);
         }
 }

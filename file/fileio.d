@@ -72,7 +72,7 @@ void ensure_directory_user(in string name)
             return;
         }
         enforceEx!(FileIOException)
-                  (isdir(path), 
+                  (isDir(path), 
                    "File with specified name exists but is not a directory");
     }
     catch(FileException e)
@@ -107,7 +107,7 @@ void root_data(in string root_data)
     root_ = root_data;
     const path = root_ ~ "/main";
     enforceEx!(FileIOException)
-              (exists(path) && isdir(path), "Root data directory doesn't exist");
+              (exists(path) && isDir(path), "Root data directory doesn't exist");
 }
 
 /**
@@ -133,7 +133,7 @@ void user_data(in string user_data)
     {
         throw new FileIOException("Could not create directory: " ~ path ~ " " ~ e.msg);
     }
-    enforceEx!(FileIOException)(isdir(path), "User data directory is not a directory");
+    enforceEx!(FileIOException)(isDir(path), "User data directory is not a directory");
 }
 
 package:

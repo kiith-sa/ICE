@@ -344,7 +344,7 @@ final class GUILineGraph : GUIElement
 
                 line_height += spacing;
             }
-            while(line_height <= graph_height)
+            while(line_height <= graph_height);
         }
 
         /**

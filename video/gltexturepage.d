@@ -137,7 +137,6 @@ package align(1) struct GLTexturePage(TexturePacker)
         ///Destroy the page.
         ~this()
         {
-            clear(packer_);
             glDeleteTextures(1, &texture_);
         }
         

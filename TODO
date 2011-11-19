@@ -1,5 +1,126 @@
-GUI:
-Implement background colors for GUI elements (nothing more for now, just colored rects).
+ASAP:
+Either stop using Vector or make it more like std.container.array.
+Currently, we're doing dangerous stuff there (const cast)
+
+Stop using die() - use dtors, clear.
+
+Other changes to adapt to current DMD as more D functionality works without 
+bugs now.
+
+
+
+
+serialized GUI: we want:
+bgcolor
+fgcolor 
+(used by text and such - formatted text elements will be their own subelements)
+border width, color - 4 sides, and make it look well with thick borders
+(might need triangles)
+background image - tiled and fixed (no scaling support, but maybe svg later?)
+maybe also border images?
+
+All this in style files.
+
+Write some style and GUI files befre implementing GUI serialization,
+to get an idea about look and feel.
+
+Also take ideas from OpenRA. E.g. some GUI elements have a
+Delegate property there that probably specifies some logic specific
+to the element. We could do the same, e.g:
+OnKeyDelegate
+OnMouseKeyDelegate
+OnMouseMoveDelegate
+ButtonClickedDelegate
+etc.
+
+These delegates would be named callable objects available to all 
+GUI elements, essentially logic blocks. But delegates for e.g.
+MouseMove would have to be different type from e.g. ButtonClicked ones.
+
+See how other games do this (OpenRA?)
+
+Maybe name them Actions instead of Delegates, that would make more sense.
+
+
+Buttons need mouseover, etc styles, like hover links in CSS.
+
+
+12:
+    Idea: move from actors to a component based system
+
+    ComponentManager - builds objects. 
+    Wires together components with pointers or signals, if needed
+    Registers Components with services, e.g. registers PhysicsComponent with PhysicsEngine
+    Decomposes the components when they are destroyed.
+    Object - array of Components - NOT A CLASS! JUST A SIMPLE ARRAY/LIST/WHATEVER!
+
+    Component types:
+    Spatial
+    Physics
+    Graphics
+    ParticleSystem(same interface as Graphics)
+    GameLogic
+    maybe more
+
+    E.g. a ball would be composed of:
+    BallLogicComponent    : Component parent/interface       wired to Position, Physics
+    PositionComponent     : Component parent/interface
+    BallPhysicsComponent  : PhysicsComponent parent          wired to Position
+    LineTrailComponent    : LineEmitterComponent parent      wired to Position
+    LineEmitterComponent  : ParticleEmitterComponent parent  wired to Position 
+    BallGraphicsComponent : GraphicsComponent parent         wired to Position, Physics 
+
+
+    How rendering could work:
+    Instead of objects storing or being passed references to video driver,
+    their drawable components are registered at videodriver which
+    visits each drawable, and calls its draw() method, passing itself.
+    
+    Same could work for spatial, physics, scene(current actor update() method)
+
+    Don't think about accessing this from YAML yet, but it might be possible later.
+    First just get it working with a custom Ball factory function passed to
+    ComponentManager. That function could be replaced by YAML/Lua/whatever
+    in the future.
+
+
+    Possibly, the components could be collections and form a tree.
+    Not sure about that.
+    Each component should have a ptr or reference to the ComponentManager.
+    Possibly, each component could be tupled together with a name, 
+    and any object as well, so we could easily access any object/component through
+    the manager. That might not be needed, though.
+
+    Anyway, look at the Gear2D engine to get a better idea.
+    This might take a while and be a large change, but better early than never.
+13:
+    Either stop using @safe/@trusted/@system or use it everywhere (check new files)
+    - it is not implemented correctly at the moment.
+14:
+    If possible, stop using xxx.init - might be marked for deprecation
+15:
+    Use enum to!string where we're using custom enum to string 
+    (e.g. in color.d, or was it texturepage?)
+16:
+    Replace std.c with core.stdc
+17:
+    Replace overloaded operators with opUnary, opBinary
+18:
+    Rename user/root data subdirectories to packages - makes sense
+19:
+    GUI: add width, height substitutions to GUI referring
+    to this element's width and height - this means width/height must be
+    parsed before position
+20:
+    bugtracker: use size_t in file handling and memory code
+    where possible
+21:
+    bugtracker:
+    for spritesheets, we'll need big images with accompanying YAML files
+    specifying coords of frames on the image (in pixels, not in texcoords) -
+    then, we'll need code to load this sheet directly to videodriver,
+    put the whole sheet on a texture page, and convert to float texcoords.
+
 19:
     Write these TODOs in bugtracker
 
@@ -143,8 +264,15 @@ it will remain memory resident for the entire l
     (with defaults) - this might require a shader spec format 
 6:
   FPS benchmark
+8:
+    Timer calling a given function at expiration,
+    Manager of these timers with a worker thread.
+    Look at ../timeout.d for ideas.
 6:
-  Save screenshots in a separate thread.
+    Save screenshots in a separate thread.
+    Alternatively, for any file writing job, have a "lazy" argument.
+    If lazy, do it in a separate thread. Need to make sure to finish 
+    these at exit (or force exit if too much time)
 6:
     Logic change: when ball collides with anything, emit a signal
     with its body of the other collider and check that for
@@ -256,13 +384,6 @@ it will remain memory resident for the entire l
     or physics, or maybe OpenMP style (or just 2-4 threads)
     for collision detection (not penetration resolution or response,
     at least for now)
-8:
-    timer calling a given function at expiration,
-    and a weak singleton or module to update these timers to
-    check for expiration - that update would be called by whole
-    pong, not game. maybe later it could be updated from separate thread, but probably
-    not.
-    Would be used like e.g. time.delayed_call(function(args), delay);
 11:
     A debug (yaml, console and/or debug GUI controlled) option to draw wireframe.
     Also might want pure white wireframe option (with a custom shader)

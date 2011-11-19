@@ -341,7 +341,7 @@ void file_dummy_read(T)(out File file, T[] contents)
 {
     file.mode_ = FileMode.Read;
     const bytes = contents.length * T.sizeof;
-    file.data_ = alloc_array!(ubyte)(bytes);
+    file.data_ = alloc_array!ubyte(bytes);
     file.data_[] = (cast(ubyte*)contents.ptr)[0 .. bytes].dup;
 }
 

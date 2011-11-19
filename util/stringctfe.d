@@ -58,3 +58,25 @@ string join_ctfe(in string[] words, in string sep)
     foreach(word; words[1 .. $]){result ~= sep ~ word;}
     return result;
 }
+
+/**
+ * Replacement for std.string.strip, which can't be evaluated at compile time.
+ *
+ * Removes all leading and trailing spaces and returns resulting string.
+ *
+ * Params:  str = String to strip.
+ *
+ * Returns: Stripped string.
+ */
+string strip_ctfe(string str)
+{
+    while(str.length && str[0] == ' ')
+    {
+        str = str[1 .. $];
+    }
+    while(str.length && str[$ - 1] == ' ')
+    {
+        str = str[0 .. $ - 1];
+    }
+    return str;
+}

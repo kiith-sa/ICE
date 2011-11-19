@@ -75,15 +75,15 @@ uint num_channels(PNGColorType color_type){return [1, 0, 3, 1, 2, 0, 4][color_ty
 align(1) struct PNGImage
 {
     ///Image width in pixels.
-    immutable uint width;
+    uint width;
     ///Image height in pixels.
-    immutable uint height;
+    uint height;
     ///Color format.
-    immutable PNGColorType color_type;
+    PNGColorType color_type;
     ///Bits per color channel.
-    immutable ubyte bit_depth;
+    ubyte bit_depth;
     ///Bits per pixel
-    immutable ubyte bpp;
+    ubyte bpp;
 
     /**
      * Construct a PNGImage.

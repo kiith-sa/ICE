@@ -56,7 +56,7 @@ align(1) struct Vector(T)
         {
             data_ = alloc_array!(T)(cast(uint)max(2, array.length));
             //copy array data
-            data_[] = array;
+            data_[] = cast(T[])array;
             used_ = array.length;
         }
 
@@ -69,6 +69,13 @@ align(1) struct Vector(T)
                 free(data_);
                 data_ = null;
             }
+        }
+
+        ///Compute a hash.
+        hash_t toHash() const
+        {
+            static type = typeid(T);
+            return type.getHash(&data_[0 .. used_]);
         }
 
         /**
@@ -133,7 +140,7 @@ align(1) struct Vector(T)
             //if out of space, reallocate.
             reserve(used_ + array.length);
             //copy array data
-            data_[used_ .. used_ + array.length] = array;
+            data_[used_ .. used_ + array.length] = cast(T[])array;
             used_ += array.length;
         }
 
@@ -149,7 +156,7 @@ align(1) struct Vector(T)
         void opAssign(in T[] array)
         {
             reserve(array.length);
-            data_[0 .. array.length] = array;
+            data_[0 .. array.length] = cast(T[])array;
             used_ = array.length;
         }
 
@@ -189,7 +196,7 @@ align(1) struct Vector(T)
             assert(end <= used_, "Vector slice index out of bounds");
             assert(start <= end, "Slice start greater than slice end");
         }
-        body{data_[start .. end] = array;}
+        body{data_[start .. end] = cast(T[])array;}
 
         /**
          * Get a slice of the vector as a D array.
