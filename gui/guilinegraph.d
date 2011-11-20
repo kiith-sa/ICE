@@ -364,7 +364,7 @@ final class GUILineGraph : GUIElement
             driver.line_aa = true;
             driver.line_width = 0.65;
 
-            driver.draw_line_strip(graphics.line_strip.array, graphics.color);
+            driver.draw_line_strip((graphics.line_strip)[], graphics.color);
 
             driver.line_width = 1;                  
             driver.line_aa = false;

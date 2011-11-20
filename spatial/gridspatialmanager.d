@@ -68,12 +68,12 @@ class GridSpatialManager(T) : SpatialManager!(T)
                     T[] array;
                     foreach(ref cell; grid_)
                     {
-                        array = cell.objects.array_unsafe();
+                        array = cell.objects.ptr_unsafe[0 .. cell.objects.length];
                         result = dg(array);
                         if(result){break;}
                     }
 
-                    array = outer_.objects.array_unsafe();
+                    array = outer_.objects.ptr_unsafe[0 .. outer_.objects.length];
                     result = dg(array);
                     return result;
                 }

@@ -79,14 +79,14 @@ final class GraphData
                 body
                 {
                     data_points_.length = cast(uint)((end - start) / period); 
-                    data_points_.array_unsafe[] = 0.0;
-                    if(empty){return data_points_.array;}
+                    (data_points_.ptr_unsafe[0 .. data_points_.length])[] = 0.0;
+                    if(empty){return data_points_[];}
 
                     if(mode == GraphMode.Sum){data_points_sum(start, period);}
                     else if(mode == GraphMode.Average){data_points_average(start, period);}
                     else{assert(false, "Unsupported graph mode");}
 
-                    return data_points_.array;
+                    return data_points_[];
                 }
 
                 /**

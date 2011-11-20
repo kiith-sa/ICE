@@ -105,7 +105,7 @@ public:
      *
      * Returns: Reallocated array.
      */
-    T[] realloc(T, string file = __FILE__, uint line = __LINE__)(T[] array, in uint elems)
+    T[] realloc(T, string file = __FILE__, uint line = __LINE__)(T[] array, in size_t elems)
     {
         return reallocate!(T, file, line)(array, elems);
     }
@@ -319,7 +319,7 @@ private:
      *
      * Returns: Reallocated array.
      */
-    T[] reallocate(T, string file, uint line)(T[] array, in uint elems)
+    T[] reallocate(T, string file, uint line)(T[] array, in size_t elems)
     in
     {
         debug
@@ -335,7 +335,7 @@ private:
         const old_bytes = T.sizeof * array.length;
         const new_bytes = T.sizeof * elems;
         T* old_ptr = array.ptr;
-        const uint old_length = cast(uint)array.length;
+        const old_length = array.length;
                   
         //if we're shrinking, destroy extra elements unless this is 
         //an array of pointers or reference types.
@@ -349,7 +349,7 @@ private:
 
         array = (cast(T*)std.c.stdlib.realloc(cast(void*)array.ptr, new_bytes))[0 .. elems];
 
-        debug_reallocate!(T, file, line)(array.ptr, cast(uint)array.length, old_ptr, old_length); 
+        debug_reallocate!(T, file, line)(array.ptr, array.length, old_ptr, old_length); 
 
         //default-initialize new elements, if any
         if(array.length > old_length)
@@ -357,7 +357,7 @@ private:
             //using memset for ubytes as it's faster and ubytes are often used for large arrays.
             static if (is(T == ubyte))
             {
-                memset(array.ptr + old_length, 0, cast(uint)(new_bytes - old_bytes));
+                memset(array.ptr + old_length, 0, new_bytes - old_bytes);
             }
             else if (is(typeof(T.init))) 
             {

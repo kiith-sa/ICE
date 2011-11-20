@@ -190,7 +190,7 @@ struct PNGDecoder
             else{reconstruct(buffer, info.image);}
 
             ubyte[] output = alloc_array!(ubyte)(cast(uint)buffer.length);
-            output[] = buffer.array;
+            output[] = buffer[];
 
             return output;
         }
@@ -470,7 +470,7 @@ void deinterlace(ref Vector!(ubyte) buffer, in PNGImage image)
         offset += (pass_dim[p].y * (1 + (pass_dim[p].x * image.bpp + 7) / 8));
     }
 
-    buffer = result.array;
+    buffer = result;
 }
 
 /**
@@ -487,7 +487,7 @@ void deinterlace(ref Vector!(ubyte) buffer, in PNGImage image)
 void reconstruct(ref Vector!(ubyte) buffer, in PNGImage image)
 {
     //we can work with the array directly as we do this in place
-    ubyte[] data = buffer.array_unsafe;
+    ubyte[] data = buffer.ptr_unsafe[0 .. buffer.length];
 
     const uint pixel_bytes = (image.bpp + 7) / 8;
     //bits are tightly packed, but lines are always padded to 1 byte boundaries

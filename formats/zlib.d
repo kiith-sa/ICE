@@ -111,7 +111,7 @@ struct Inflator
          * Params:  inflated = Vector to write decompressed data to.
          *                     Any existing data in the vector will be overwritten.
          */
-        this(ref Vector!(ubyte) inflated)
+        this(ref Vector!ubyte inflated)
         {
             inflated_ = &inflated;
             inflated_.length = inflated.allocated;

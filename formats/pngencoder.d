@@ -96,8 +96,8 @@ struct PNGEncoder
             filter_data(filtered, source, info.image);
             //compress image data
             compressed.reserve(8);
-            zlib_deflate(compressed, filtered.array, compression_, level_);
-            chunks ~= PNGChunk(IDAT, compressed.array_unsafe);
+            zlib_deflate(compressed, filtered[], compression_, level_);
+            chunks ~= PNGChunk(IDAT, compressed.ptr_unsafe[0 .. compressed.length]);
             //auxiliary chunks from PNGInfo.
             chunks ~= auxiliary_chunks(info);
             chunks.sort;
@@ -108,7 +108,7 @@ struct PNGEncoder
             foreach(chunk; chunks){write_chunk(buffer, chunk);}
 
             ubyte[] output = alloc_array!(ubyte)(cast(uint)buffer.length);
-            output[] = buffer.array;
+            output[] = buffer[];
 
             return output;
         }
@@ -303,7 +303,7 @@ ubyte[] header(in PNGImage image)
  * Params:  buffer = Buffer to write to.
  *          chunk  = PNGChunk to write.
  */
-void write_chunk(ref Vector!(ubyte) buffer, const ref PNGChunk chunk)
+void write_chunk(ref Vector!(ubyte) buffer, ref PNGChunk chunk)
 {
     //chunk header
     add_uint(buffer, cast(uint)chunk.data.length);
@@ -343,7 +343,7 @@ void add_uint(T)(ref T buffer, in uint i)
  *          filter      = Filter function to use.
  *          pixel_bytes = Size of a pixel in bytes.
  */
-void filter_line(ref Vector!(ubyte) result, const(ubyte)[] previous, const(ubyte)[] line, 
+void filter_line(ref Vector!ubyte result, const(ubyte)[] previous, const(ubyte)[] line, 
                  ubyte function(in ubyte, in ubyte, in ubyte, in ubyte) pure filter, 
                  in uint pixel_bytes)
 in{assert(previous.length == line.length, "Image line lengths don't match");}

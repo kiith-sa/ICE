@@ -107,10 +107,10 @@ package struct GLVertexBuffer(Vertex)
         }
 
         ///Access vertex data as an array.
-        @property Vertex[] vertices(){return vertices_.array_unsafe;}
+        @property Vertex[] vertices(){return vertices_.ptr_unsafe[0 .. vertices_.length];}
 
         ///Access index data as an array.
-        @property uint[] indices(){return indices_.array_unsafe;}
+        @property uint[] indices(){return indices_.ptr_unsafe[0 .. vertices_.length];}
 
         ///Get number of vertices in the buffer.
         @property uint vertex_count() const {return cast(uint)vertices_.length;}
