@@ -32,10 +32,6 @@ import memory.memory;
  */
 align(1) struct Vector(T)
 {
-    //TODO fix copyconstruction/assignment, etc in memory/memory.d
-    //TODO handle GC ranges here or in memory/memory.h
-    //TODO fix docs (we're using ranges now)
-
     private:
         static enum T[] dummy_data_ = [];
         //using dummy array for default initialization as we can't redefine

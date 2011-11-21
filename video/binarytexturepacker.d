@@ -87,8 +87,8 @@ package align(1) struct BinaryTexturePacker
                         return &this;
                     }
 
-                    child_a_ = alloc_struct!Node(area);
-                    child_b_ = alloc_struct!Node(area);
+                    child_a_ = alloc!Node(area);
+                    child_b_ = alloc!Node(area);
 
                     //decide which way to split
                     const Vector2u free_space = area_size - size;
@@ -171,7 +171,7 @@ package align(1) struct BinaryTexturePacker
         this(in Vector2u size)
         {
             size_ = size;
-            root_ = alloc_struct!Node(Rectangleu(Vector2u(0, 0), size));
+            root_ = alloc!Node(Rectangleu(Vector2u(0, 0), size));
         }
 
         ///Destroy this BinaryTexturePacker and its nodes.

@@ -481,7 +481,7 @@ abstract class GLVideoDriver : VideoDriver
             //create new GLTexture with specified parameters.
             void new_texture(in size_t page_index)
             {
-                textures_ ~= alloc_struct!(GLTexture)(texcoords, offset, cast(uint)page_index);
+                textures_ ~= alloc!GLTexture(texcoords, offset, cast(uint)page_index);
             }
 
             //if the texture needs its own page
@@ -716,7 +716,7 @@ abstract class GLVideoDriver : VideoDriver
          */
         final Shader create_shader(in string name)
         {
-            shaders_ ~= alloc_struct!(GLShader)(name);
+            shaders_ ~= alloc!GLShader(name);
             return Shader(cast(uint)shaders_.length - 1);
         }
 
@@ -805,12 +805,12 @@ abstract class GLVideoDriver : VideoDriver
                 if(page is null)
                 {
                     page_size(index);
-                    page = alloc_struct!(TexturePage)(size, format);
+                    page = alloc!TexturePage(size, format);
                     return;
                 }
             }
             page_size(pages_.length);
-            pages_ ~= alloc_struct!(TexturePage)(size, format);
+            pages_ ~= alloc!TexturePage(size, format);
         }
 
         ///Set up OpenGL viewport.

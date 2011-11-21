@@ -24,38 +24,33 @@ debug{import time.time;}
 private alias file.file.File File;
 
 
-
 public:
-    ///Allocate an object of a basic type, or a struct with default values.
-    T* alloc(T, string file = __FILE__, uint line = __LINE__)() 
+    //TODO Find other ways to simplify memory.d api, and see other todos (such as GC.addRange()).
+    /**
+     * Allocate space for and optionally initialize a primitive value or struct.
+     *
+     * For now, if allocating a struct, that struct must not have its empty 
+     * constructor disabled.
+     *
+     * Params:  args = Arguments to value's initializer/constructor.
+     *                 If no arguments are specified, the value is default-initialized.
+     *
+     * Returns: Pointer to allocated struct.
+     */
+    T* alloc(T, string file = __FILE__, uint line = __LINE__, Args ...)(Args args) 
         if(!is(T == class)) 
     {
-        return allocate!(T, file, line)();
-    }
-
-    template alloc_struct(T) if(is(T == struct))
-    {
-        /**
-         * Allocate a struct with specified parameters to the structs' constructor.
-         *
-         * Params:  args = Arguments to structs' constructor.
-         *
-         * Returns: Pointer to allocated struct.
-         */
-        T* alloc_struct(string file = __FILE__, uint line = __LINE__, Args ...)(Args args)
-        {
-            return allocate_struct!(T, file, line)(args);
-        }
+        return allocate_single!(T, file, line, Args)(args);
     }
 
     ///Free an object (struct) allocated by alloc(). Will clear the object.
     void free(T)(T* ptr)
-        if(is(T == struct))
+        if(!is(T == class))
     {
         deallocate(ptr);
     }
 
-    ///Unittest for alloc_struct() and free calling dtor.
+    ///Unittest for alloc() and free calling dtor.
     unittest
     {
         static struct Test
@@ -71,9 +66,17 @@ public:
 
             ~this(){dead = true;}
         }
-        Test* test = alloc_struct!(Test)(12, 13);
-        assert(*test == Test(12,13));
+        int* integer = alloc!int;
+        int* integer2 = alloc!int(8);
+        free(integer);
+        free(integer2);
+        Test* test = alloc!Test(12, 13);
+        Test* test2 = alloc!Test;
+        assert(*test == Test(12,13) && *test2 == Test(0, 0));
         free(test);
+        assert(Test.dead == true);
+        Test.dead = false;
+        free(test2);
         assert(Test.dead == true);
     }
 
@@ -244,35 +247,29 @@ private:
     ///Information about current allocations.
     Allocation[] allocations_;
 
-    ///Allocate one object and default-initialize it.
-    T* allocate(T, string file, uint line)()
-    {
-        const bytes = T.sizeof;
-        T* ptr = cast(T*)malloc(bytes);
-
-        debug_allocate!(T, file, line)(ptr, 1);
-
-        //default-initialize the object.
-        *ptr = T.init;
-        return ptr;
-    }
-
     /**
-     * Allocate a struct with specified parameters for the structs' constructor.
+     * Allocate and initialize a primitive value or struct.
      *
-     * Params:  args = Parameters for the structs' constructor.
+     * Params:  args = Parameters for the values' constructor/initializer.
+     *                 If not specified, the value is default-initialized.
      *
      * Returns: Pointer to the allocated struct.
      */
-    T* allocate_struct(T, string file, uint line)(ParameterTypeTuple!(T.__ctor) args)
+    T* allocate_single(T, string file, uint line, Args ...)(Args args)
     {
         const bytes = T.sizeof;
 
         scope(failure){writeln("struct allocation failed");}
 
         T* ptr = cast(T*)malloc(bytes);
-        *ptr = T.init;
-        ptr.__ctor(args);
+        static if(args.length == 0)
+        {
+            *ptr = T.init;
+        }
+        else 
+        {
+            emplace(ptr, args);
+        }
 
         debug_allocate!(T, file, line)(ptr, 1); 
 
