@@ -1,7 +1,7 @@
 ASAP:
 //TODO fix copyconstruction/assignment, etc in memory/memory.d
 //TODO handle GC ranges here or in memory/memory.d (and update doc of this struct)
-//TODO fix docs (we're using ranges now)
+//TODO fix vector docs (we're using ranges now)
 
 Stop using die() - use dtors, clear.
 

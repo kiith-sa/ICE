@@ -25,7 +25,7 @@ private alias file.file.File File;
 
 
 public:
-    //TODO Find other ways to simplify memory.d api, and see other todos (such as GC.addRange()).
+    //TODO Find other ways to simplify memory.d api, and see other TODOs (such as GC.addRange()).
     /**
      * Allocate space for and optionally initialize a primitive value or struct.
      *
@@ -81,13 +81,13 @@ public:
     }
 
     /**
-     * Allocate an array of objects. 
+     * Allocate an array of specified type. 
      *
      * Arrays allocated with alloc must NOT be resized.
      *
      * Params:  elems = Number of objects to allocate space for.
      *
-     * Returns: Allocated array.
+     * Returns: Allocated array. Values in the array are default-initialized.
      */
     T[] alloc_array(T, string file = __FILE__, uint line = __LINE__)(in size_t elems)
     {
@@ -100,8 +100,8 @@ public:
      * Contents of the array are preserved but array itself might be moved in memory,
      * invalidating any pointers pointing to it.
      *
-     * If the array is shrunk, any extra elements defining a die() method that
-     * are not pointers or reference types (classes) will have that method called.
+     * If the array is shrunk and of non-reference type (e.g. not a class), 
+     * any extra elements are cleared (if they have destructors, they're called).
      *
      * Params:  array = Array to reallocate.
      *          elems = Number of objects for the reallocated array to hold.
@@ -116,8 +116,8 @@ public:
     /**
      * Free an array of objects allocated by alloc(). 
      *
-     * If the type defines a die() method and is not a pointer or reference type
-     * (e.g. class), that method will be called for all elements of the array.
+     * If the array is of non-reference type (e.g. not a class), array elements 
+     * are cleared (if they have destructors, they're called).
      *
      * Params: array = Array to free.
      */
@@ -262,14 +262,9 @@ private:
         scope(failure){writeln("struct allocation failed");}
 
         T* ptr = cast(T*)malloc(bytes);
-        static if(args.length == 0)
-        {
-            *ptr = T.init;
-        }
-        else 
-        {
-            emplace(ptr, args);
-        }
+
+        static if(args.length == 0){*ptr = T.init;}
+        else                       {emplace(ptr, args);}
 
         debug_allocate!(T, file, line)(ptr, 1); 
 
@@ -277,7 +272,7 @@ private:
     }
 
     /**
-     * Allocate an array with given number of elements.
+     * Allocate and default-initialize an array with given number of elements.
      *
      * Arrays returned by allocate() must NOT be resized.
      *
@@ -294,7 +289,6 @@ private:
     body
     {
         const bytes = T.sizeof * elems;
-        //only 4G elems supported for now
         T[] array = (cast(T*)malloc(bytes))[0 .. elems];
 
         debug_allocate!(T, file, line)(array.ptr, elems); 
@@ -310,6 +304,7 @@ private:
      * Reallocate an array allocated with allocate().
      *
      * Array data might move around the memory, invalidating any pointers to it.
+     * Any added elements are default-initialized. Any removed elements are cleared.
      *
      * Params:  array = Array to reallocate.
      *          elems = Number of elements for the reallocated array to hold.
@@ -336,11 +331,11 @@ private:
                   
         //if we're shrinking, destroy extra elements unless this is 
         //an array of pointers or reference types.
-        static if (!is(typeof(cast(T*)T))) 
+        static if(hasElaborateDestructor!T) 
         {
-            if(old_length > elems)
+            if(old_length > elems) foreach(ref T elem; array[elems .. $])
             {
-                foreach(ref T elem; array[elems .. $]){clear(elem);}
+                clear(elem);
             }
         }
 
@@ -356,7 +351,7 @@ private:
             {
                 memset(array.ptr + old_length, 0, new_bytes - old_bytes);
             }
-            else if (is(typeof(T.init))) 
+            else
             {
                 if(array.length > old_length)
                 {
@@ -413,9 +408,9 @@ private:
         const bytes = T.sizeof * array.length;
 
         //destroy the elements unless this is an array of pointers or reference types.
-        static if (!is(typeof(cast(T*)(T))))
+        static if (hasElaborateDestructor!T) foreach(ref T elem; array)
         {
-            foreach(ref T elem; array){clear(elem);}
+            clear(elem);
         }
 
         debug_free(array.ptr, cast(uint)array.length); 
@@ -506,16 +501,13 @@ private:
     {
         //find and replace allocation info corresponding to reallocated data
         bool found = false;
-        foreach(ref allocation; allocations_)
+        foreach(ref allocation; allocations_) if(allocation.ptr == old_ptr)
         {
-            if(allocation.ptr == old_ptr)
-            {
-                debug{past_allocations_ ~= allocation;}
-                //replace allocation info
-                allocation = Allocation.construct!(T, file, line)(new_ptr, new_objects);
-                found = true;
-                break;
-            }
+            debug{past_allocations_ ~= allocation;}
+            //replace allocation info
+            allocation = Allocation.construct!(T, file, line)(new_ptr, new_objects);
+            found = true;
+            break;
         }
         assert(found, "No match found for a pointer to reallocate");
 
@@ -536,16 +528,13 @@ private:
     {
         //remove allocation info
         bool found = false;
-        foreach(ref allocation; allocations_)
+        foreach(ref allocation; allocations_) if(allocation.ptr == ptr)
         {
-            if(allocation.ptr == ptr)
-            {
-                debug{past_allocations_ ~= allocation;}
-                //remove by rewriting by the last allocation
-                allocation = allocations_[$ - 1];
-                found = true;
-                break;
-            }
+            debug{past_allocations_ ~= allocation;}
+            //remove by rewriting by the last allocation
+            allocation = allocations_[$ - 1];
+            found = true;
+            break;
         }
         assert(found, "No match found for pointer to free");
         allocations_ = allocations_[0 .. $ - 1];
