@@ -13,6 +13,8 @@ module memory.memory;
 import std.c.stdlib;
 import std.c.string;
 
+import core.memory;
+
 import std.algorithm;
 import std.conv;
 import std.stdio;
@@ -263,10 +265,12 @@ private:
 
         T* ptr = cast(T*)malloc(bytes);
 
+        debug_allocate!(T, file, line)(ptr, 1); 
+
         static if(args.length == 0){*ptr = T.init;}
         else                       {emplace(ptr, args);}
 
-        debug_allocate!(T, file, line)(ptr, 1); 
+        static if(hasIndirections!T){GC.addRange(cast(void*)ptr, T.sizeof);}
 
         return ptr;
     }
@@ -297,6 +301,12 @@ private:
         //using memset for ubytes as it's faster and ubytes are often used for large arrays.
         static if (is(T == ubyte)){memset(array.ptr, 0, bytes);}
         else{array[] = T.init;}
+
+        static if(hasIndirections!T)
+        {
+            GC.addRange(cast(void*)array.ptr, T.sizeof * array.length);
+        }
+
         return array;
     }
 
@@ -339,7 +349,15 @@ private:
             }
         }
 
+        static if(hasIndirections!T)
+        {
+            GC.removeRange(cast(void*)array.ptr);
+        }
         array = (cast(T*)std.c.stdlib.realloc(cast(void*)array.ptr, new_bytes))[0 .. elems];
+        static if(hasIndirections!T)
+        {
+            GC.addRange(cast(void*)array.ptr, T.sizeof * array.length);
+        }
 
         debug_reallocate!(T, file, line)(array.ptr, array.length, old_ptr, old_length); 
 
@@ -381,6 +399,8 @@ private:
 
         debug_free(ptr, 1); 
 
+        static if(hasIndirections!T){GC.removeRange(cast(void*)ptr);}
+
         std.c.stdlib.free(ptr);
     }
 
@@ -414,6 +434,11 @@ private:
         }
 
         debug_free(array.ptr, cast(uint)array.length); 
+
+        static if(hasIndirections!T)
+        {
+            GC.removeRange(cast(void*)array.ptr);
+        }
 
         std.c.stdlib.free(array.ptr);
     }
