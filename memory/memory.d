@@ -261,7 +261,11 @@ private:
     {
         const bytes = T.sizeof;
 
-        scope(failure){writeln("struct allocation failed");}
+        scope(failure)
+        {
+            writeln("allocate_single!" ~ typeid(T).toString ~ " at " ~ file ~
+                    " : " ~ to!string(line) ~ " failed");
+        }
 
         T* ptr = cast(T*)malloc(bytes);
 
@@ -293,6 +297,13 @@ private:
     body
     {
         const bytes = T.sizeof * elems;
+
+        scope(failure)
+        {
+            writeln("allocate!" ~ typeid(T).toString ~ " at " ~ file ~
+                    " : " ~ to!string(line) ~ " failed");
+        }
+
         T[] array = (cast(T*)malloc(bytes))[0 .. elems];
 
         debug_allocate!(T, file, line)(array.ptr, elems); 

@@ -160,7 +160,7 @@ package align(1) struct BinaryTexturePacker
         Vector2u size_;
 
         ///Root node of the packer tree.
-        Node* root_;
+        Node* root_ = null;
 
     public:
         /**
@@ -175,7 +175,11 @@ package align(1) struct BinaryTexturePacker
         }
 
         ///Destroy this BinaryTexturePacker and its nodes.
-        ~this(){free(root_);}
+        ~this()
+        {
+            //if default-initialized but not constructed, don't free anything
+            if(root_ !is null){free(root_);}
+        }
 
         /**
          * Try to allocate space for a texture with given size.
