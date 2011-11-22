@@ -65,8 +65,10 @@ abstract class Platform
         this(){singleton_ctor();}
 
         ///Destroy the Platform.
-        void die()
+        ~this()
         {
+            import std.stdio;
+            writeln("Destroying Platform");
             key.disconnect_all();
             mouse_key.disconnect_all();
             mouse_motion.disconnect_all();

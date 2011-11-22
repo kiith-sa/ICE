@@ -252,7 +252,11 @@ class Pong
             scope(failure){monitor_.remove_monitorable("Memory");}
             monitor_.add_monitorable(memory_, "Memory");
 
-            scope(failure){platform_.die();}
+            scope(failure)
+            {
+                clear(platform_);
+                platform_ = null;
+            }
             platform_ = new SDLPlatform;
 
             scope(failure)
@@ -316,7 +320,8 @@ class Pong
                 video_driver_ = null;
             }
 
-            platform_.die();
+            clear(platform_);
+            platform_ = null;
 
             memory_.die();
 

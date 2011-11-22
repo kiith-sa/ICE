@@ -62,12 +62,11 @@ class SDLPlatform : Platform
             SDL_EnableUNICODE(SDL_ENABLE);
         }
 
-        override void die()
+        ~this()
         {
             writeln("Destroying SDLPlatform");
             SDL_Quit();
             DerelictSDL.unload();
-            super.die();
         }
         
         override bool run()
