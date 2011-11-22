@@ -1,6 +1,4 @@
 ASAP:
-//TODO fix vector docs (we're using ranges now)
-
 Stop using die() - use dtors, clear.
 
 Other changes to adapt to current DMD as more D functionality works without 

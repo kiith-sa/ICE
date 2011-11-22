@@ -42,17 +42,17 @@ align(1) struct Vector(T)
         size_t used_ = 0;
 
     public:
-        ///Construct a vector from an array.
-        this(R)(R array)
-            if(isRandomAccessRange!R && 
+        ///Construct a vector from a range.
+        this(R)(R range)
+            if(is(typeof(R.init.ptr)) && is(typeof(R.init.length)) &&
                isImplicitlyConvertible!(T, ElementType!R))
-        out(result){assert(result.used_ == array.length, "Unexpected vector length");}
+        out(result){assert(result.used_ == range.length, "Unexpected vector length");}
         body
         {
-            data_ = alloc_array!(T)(max(2, array.length));
+            data_ = alloc_array!T(max(2, range.length));
             //copy array data
-            data_[] = array;
-            used_ = array.length;
+            data_[] = range.ptr[0 .. range.length];
+            used_ = range.length;
         }
 
         ///Destroy the vector.
@@ -109,6 +109,7 @@ align(1) struct Vector(T)
 
         ///Append an element to the vector. (operator ~=)
         void opCatAssign(U : T)(U element) 
+               if(isImplicitlyConvertible!(T, U))
         out
         {
             assert(opIndex(length - 1) == element, 
@@ -122,29 +123,23 @@ align(1) struct Vector(T)
             used_++;
         }
 
-        ///Append contents of an array to the vector. (~= operator)
-        void opCatAssign(R)(ref R array)
-            if(isRandomAccessRange!R && 
+        ///Append contents of a range to the vector. (~= operator)
+        void opCatAssign(R)(ref R range)
+            if(is(typeof(R.init.ptr)) && is(typeof(R.init.length)) &&
                isImplicitlyConvertible!(T, ElementType!R))
         in
         {
-            assert(array.ptr + array.length <= data_.ptr || 
-                   array.ptr >= data_.ptr + data_.length,
+            assert(range.ptr + range.length <= data_.ptr || 
+                   range.ptr >= data_.ptr + data_.length,
                    "Can't append an overlapping array to a vector.");
         }
         body
         {
             //if out of space, reallocate.
-            reserve(used_ + array.length);
+            reserve(used_ + range.length);
             //copy array data
-            data_[used_ .. used_ + array.length] = array;
-            used_ += array.length;
-        }
-
-        ///Append contents of a vector to the vector. (~= operator)
-        void opCatAssign(R : Vector)(ref R vector)
-        {
-            this ~= vector.data_[0 .. vector.used_];
+            data_[used_ .. used_ + range.length] = range.ptr[0 .. range.length];
+            used_ += range.length;
         }
 
         /**
@@ -189,25 +184,26 @@ align(1) struct Vector(T)
         }
 
         /**
-         * Copy array to specified slice of the vector.
+         * Copy range to specified slice of the vector.
          *
-         * Array and slice length must match.
+         * Range and slice length must match.
          *
-         * Params:  array = Array to copy.
+         * Params:  range = Range to copy.
          *          start = Start of the slice.
          *          end   = End of the slice.
          */
-        void opSliceAssign(R)(R array, in size_t start, in size_t end) 
-            if(isRandomAccessRange!R && isImplicitlyConvertible!(T, ElementType!R))
+        void opSliceAssign(R)(R range, in size_t start, in size_t end) 
+            if(is(typeof(R.init.ptr)) && is(typeof(R.init.length)) &&
+               isImplicitlyConvertible!(T, ElementType!R))
         in
         {
-            assert(array.length == end - start, "Slice lengths for assignment don't match");
+            assert(range.length == end - start, "Slice lengths for assignment don't match");
             assert(end <= used_, "Vector slice index out of bounds");
             assert(start <= end, "Slice start greater than slice end");
         }
         body
         {
-            data_[start .. end] = array;
+            data_[start .. end] = range.ptr[0 .. range.length];
         }
 
         /**
@@ -226,6 +222,15 @@ align(1) struct Vector(T)
 
         ///Get a slice of the whole vector as a D array.
         const(T[]) opSlice() const {return this[0 .. used_];}
+
+        ///Access the first element of the vector.
+        ref const(T) front() const {return this[0];}
+
+        ///Access the last element of the vector.
+        ref const(T) back() const {return this[length - 1];}
+
+        ///Remove the last element of the vector.
+        void popBack() {length = length - 1;}
 
         /**
          * Get a const pointer to element at the specified index.
@@ -318,6 +323,9 @@ align(1) struct Vector(T)
 
         ///Get number of elements in the vector.
         @property size_t length() const {return used_;}
+
+        ///Is the vector empty?
+        @property bool empty() const {return length == 0;}
 
         /**
          * Change length of the vector.
