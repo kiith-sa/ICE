@@ -121,12 +121,9 @@ abstract class GLVideoDriver : VideoDriver
             DerelictGL.load();
         }
 
-        ~this(){}
-
-        override void die()
+        ~this()
         {
-            super.die();
-
+            writeln("Destroying GLVideoDriver");
             if(gl_initialized_)
             {
                 clear(renderer_);

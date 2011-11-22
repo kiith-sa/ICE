@@ -65,10 +65,13 @@ abstract class VideoDriver : Monitorable
             font_manager_ = font_manager;
         }
 
-        ~this(){}
-
         ///Destroy the VideoDriver.
-        void die(){singleton_dtor();}
+        ~this()
+        {
+            import std.stdio;
+            writeln("Destroying VideoDriver");
+            singleton_dtor();
+        }
 
         /**
          * Sets video mode.

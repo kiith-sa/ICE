@@ -59,13 +59,13 @@ class VideoDriverContainer
                                in ColorFormat format, in bool fullscreen)
             if(is(T: VideoDriver))
         {
-            video_driver_ = new T(font_manager_);
             scope(failure)
             {
-                video_driver_.die();
+                clear(video_driver_);
                 video_driver_ = null;
                 writeln("VideoDriver initialization failed");
             }
+            video_driver_ = new T(font_manager_);
             video_driver_.set_video_mode(width, height, format, fullscreen);
 
             try{font_manager_.reload_textures(video_driver_);}
@@ -81,8 +81,7 @@ class VideoDriverContainer
         void destroy()
         {
             font_manager_.unload_textures(video_driver_);
-            video_driver_.die();
-
+            clear(video_driver_);
             video_driver_ = null;
         }
 

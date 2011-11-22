@@ -261,14 +261,16 @@ private:
     {
         const bytes = T.sizeof;
 
+        T* ptr;
+
         scope(failure)
         {
             writeln("allocate_single!" ~ typeid(T).toString ~ " at " ~ file ~
                     " : " ~ to!string(line) ~ " failed");
+            deallocate(ptr);
         }
 
-        T* ptr = cast(T*)malloc(bytes);
-
+        ptr = cast(T*)malloc(bytes);
         debug_allocate!(T, file, line)(ptr, 1); 
 
         static if(args.length == 0){*ptr = T.init;}
@@ -298,25 +300,27 @@ private:
     {
         const bytes = T.sizeof * elems;
 
+        T[] array;
+
         scope(failure)
         {
             writeln("allocate!" ~ typeid(T).toString ~ " at " ~ file ~
                     " : " ~ to!string(line) ~ " failed");
+            deallocate(array);
         }
 
-        T[] array = (cast(T*)malloc(bytes))[0 .. elems];
+        array = (cast(T*)malloc(bytes))[0 .. elems];
 
         debug_allocate!(T, file, line)(array.ptr, elems); 
+        static if(hasIndirections!T)
+        {
+            GC.addRange(cast(void*)array.ptr, T.sizeof * array.length);
+        }
 
         //default-initialize the array.
         //using memset for ubytes as it's faster and ubytes are often used for large arrays.
         static if (is(T == ubyte)){memset(array.ptr, 0, bytes);}
         else{array[] = T.init;}
-
-        static if(hasIndirections!T)
-        {
-            GC.addRange(cast(void*)array.ptr, T.sizeof * array.length);
-        }
 
         return array;
     }

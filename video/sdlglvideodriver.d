@@ -36,10 +36,9 @@ final class SDLGLVideoDriver : GLVideoDriver
             super(font_manager);
         }
 
-        override void die()
+        ~this()
         {
             writeln("Destroying SDLGLVideoDriver");
-            super.die();
         }
 
         override void set_video_mode(in uint width, in uint height, 

@@ -240,38 +240,37 @@ class Pong
 
             singleton_ctor();
 
-            monitor_ = new MonitorManager();
-            memory_ = new MemoryMonitorable;
             scope(failure)
             {
                 monitor_.die();
                 memory_.die();
                 singleton_dtor();
             }
+            monitor_ = new MonitorManager();
+            memory_ = new MemoryMonitorable;
 
-            monitor_.add_monitorable(memory_, "Memory");
             scope(failure){monitor_.remove_monitorable("Memory");}
+            monitor_.add_monitorable(memory_, "Memory");
 
-            platform_ = new SDLPlatform;
             scope(failure){platform_.die();}
+            platform_ = new SDLPlatform;
 
+            scope(failure)
+            {
+                video_driver_container_.die();
+            }
             video_driver_container_ = new VideoDriverContainer;
             video_driver_ = video_driver_container_.produce!(SDLGLVideoDriver)
                             (800, 600, ColorFormat.RGBA_8, false);
-            scope(failure)
-            {
-                video_driver_.die();
-                video_driver_container_.die();
-            }
-            monitor_.add_monitorable(video_driver_, "Video");
             scope(failure){monitor_.remove_monitorable("Video");}
+            monitor_.add_monitorable(video_driver_, "Video");
 
             //initialize GUI
-            gui_root_ = new GUIRoot(platform_);
             scope(failure){gui_root_.die();}
+            gui_root_ = new GUIRoot(platform_);
 
-            gui_ = new PongGUI(gui_root_.root, monitor_);
             scope(failure){gui_.die();}
+            gui_ = new PongGUI(gui_root_.root, monitor_);
             gui_.credits_start.connect(&credits_start);
             gui_.credits_end.connect(&credits_end);
             gui_.game_start.connect(&game_start);
