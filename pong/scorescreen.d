@@ -70,10 +70,10 @@ class ScoreScreen
         {
             with(new GUIElementFactory)
             {
-                x = "p_right / 2 - 192";
-                y = "p_bottom / 2 - 128";
-                width = "384";
-                height = "256";
+                x          = "p_right / 2 - 192";
+                y          = "p_bottom / 2 - 128";
+                width      = "384";
+                height     = "256";
                 container_ = produce();
             }
 
@@ -85,27 +85,25 @@ class ScoreScreen
 
             with(new GUIStaticTextFactory)
             {
-                x = "p_left + 48";
-                y = "p_top + 96";
-                width = "128";
-                height = "16";
-                font_size = 14;
-                text_color = Color(224, 224, 255, 160);
-                font = "orbitron-light.ttf";
-                text = "Time: " ~ time_string(time);
-                //text showing time the game took
-                time_text_ = produce();
+                x            = "p_left + 48";
+                y            = "p_top + 96";
+                width        = "128";
+                height       = "16";
+                font_size    = 14;
+                text_color   = Color(224, 224, 255, 160);
+                font         = "orbitron-light.ttf";
+                text         = "Time: " ~ time_string(time);
+                time_text_   = produce();
 
-                x = "p_left";
-                y = "p_top + 16";
-                width = "p_width";
-                height = "32";
-                font_size = 24;
-                text_color = Color(192, 192, 255, 128);
-                align_x = AlignX.Center;
-                font = "orbitron-bold.ttf";
-                text = "WINNER: " ~ winner;
-                //text showing the winner of the game
+                x            = "p_left";
+                y            = "p_top + 16";
+                width        = "p_width";
+                height       = "32";
+                font_size    = 24;
+                text_color   = Color(192, 192, 255, 128);
+                align_x      = AlignX.Center;
+                font         = "orbitron-bold.ttf";
+                text         = "WINNER: " ~ winner;
                 winner_text_ = produce();
             }
 
@@ -117,17 +115,17 @@ class ScoreScreen
             timer_ = Timer(8);
         }
 
+        ///Destroy the score screen.
+        ~this()
+        {
+            container_.die();
+            expired.disconnect_all();
+        }
+
         ///Update the score screen (and check for expiration).
         void update()
         {
             if(timer_.expired){expired.emit();}
-        }
-
-        ///Destroy the score screen.
-        void die()
-        {
-            container_.die();
-            expired.disconnect_all();
         }
         
     private:
@@ -136,22 +134,22 @@ class ScoreScreen
         {
             with(new GUIStaticTextFactory)
             {
-                x = "p_left + 48";
-                y = "p_top + 48";
-                width = "128";
-                height = "32";
-                font_size = 14;
-                text_color = Color(160, 160, 255, 128);
-                font = "orbitron-light.ttf";
-                text = player_1.name ~ "\n" ~ player_2.name;
-                names_text_ = produce();
+                x            = "p_left + 48";
+                y            = "p_top + 48";
+                width        = "128";
+                height       = "32";
+                font_size    = 14;
+                text_color   = Color(160, 160, 255, 128);
+                font         = "orbitron-light.ttf";
+                text         = player_1.name ~ "\n" ~ player_2.name;
+                names_text_  = produce();
 
-                x = "p_right - 128";
-                width = "64";
-                text_color = Color(224, 224, 255, 160);
-                font = "orbitron-bold.ttf";
-                text = to!string(player_1.score) ~ "\n" ~ to!string(player_2.score);
-                align_x = AlignX.Right;
+                x            = "p_right - 128";
+                width        = "64";
+                text_color   = Color(224, 224, 255, 160);
+                font         = "orbitron-bold.ttf";
+                text         = to!string(player_1.score) ~ "\n" ~ to!string(player_2.score);
+                align_x      = AlignX.Right;
                 scores_text_ = produce();
             }
 

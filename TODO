@@ -1,6 +1,9 @@
 ASAP:
 Stop using die() - use dtors, clear.
 
+Color literals:
+color!"FF8008"
+
  
 Other changes to adapt to current DMD as more D functionality works without 
 bugs now.

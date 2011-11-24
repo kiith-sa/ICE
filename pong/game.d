@@ -108,11 +108,11 @@ class GameGUI
         ///Destroy the game GUI.
         ~this()
         {
-            hud_.die();
+            clear(hud_);
             hud_ = null;
             if(score_screen_ !is null)
             {
-                score_screen_.die();
+                clear(score_screen_);
                 score_screen_ = null;
             }
             score_expired.disconnect_all();
@@ -210,9 +210,9 @@ class Game
                 {
                     game_won();
                 }
-                if(game_timer_.expired(time))
+                if(game_timer_.expired(time) && player_1_.score != player_2_.score)
                 {
-                    if(player_1_.score != player_2_.score){game_won();}
+                    game_won();
                 }
             }
 
@@ -239,23 +239,23 @@ class Game
             //construct walls and goals
             with(new WallFactory)
             {
-                box_max = Vector2f(32.0f, 536.0f);
+                box_max    = Vector2f(32.0f, 536.0f);
                 //walls slowly move into place when game starts
-                velocity = Vector2f(73.6f, 0.0f);
-                position = Vector2f(-64.0f, 32.0f);
+                velocity   = Vector2f(73.6f, 0.0f);
+                position   = Vector2f(-64.0f, 32.0f);
                 wall_left_ = produce(scene_manager_);
 
-                velocity = Vector2f(-73.6f, 0.0f);
-                position = Vector2f(832.0, 32.0f);
+                velocity    = Vector2f(-73.6f, 0.0f);
+                position    = Vector2f(832.0, 32.0f);
                 wall_right_ = produce(scene_manager_);
 
-                box_max = Vector2f(560.0f, 28.0f);
+                box_max  = Vector2f(560.0f, 28.0f);
                 velocity = Vector2f(320.0f, 0.0f);
                 position = Vector2f(-680.0f, 4.0f);
                 goal_up_ = produce(scene_manager_);
 
-                velocity = Vector2f(-320.0f, 0.0f);
-                position = Vector2f(920.0f, 568.0f);
+                velocity   = Vector2f(-320.0f, 0.0f);
+                position   = Vector2f(920.0f, 568.0f);
                 goal_down_ = produce(scene_manager_);
             }
 
@@ -264,18 +264,18 @@ class Game
             const float limits_max_x = 648.0f - 2.0 * ball_radius_;
             with(new PaddleFactory)
             {
-                box_min = Vector2f(-32.0f, -4.0f);
-                box_max = Vector2f(32.0f, 4.0f);
-                position = Vector2f(400.0f, 56.0f);
+                box_min    = Vector2f(-32.0f, -4.0f);
+                box_max    = Vector2f(32.0f, 4.0f);
+                position   = Vector2f(400.0f, 56.0f);
                 limits_min = Vector2f(limits_min_x, 36.0f);
                 limits_max = Vector2f(limits_max_x, 76.0f);
-                speed = 135.0;
-                paddle_1_ = produce(scene_manager_);
+                speed      = 135.0;
+                paddle_1_  = produce(scene_manager_);
 
-                position = Vector2f(400.0f, 544.0f);
+                position   = Vector2f(400.0f, 544.0f);
                 limits_min = Vector2f(limits_min_x, 524.0f);
                 limits_max = Vector2f(limits_max_x, 564.0f);
-                paddle_2_ = produce(scene_manager_);
+                paddle_2_  = produce(scene_manager_);
             }
 
             player_1_ = new AIPlayer("AI", paddle_1_, 0.15);
@@ -328,11 +328,11 @@ class Game
              in uint score_limit, in real time_limit)
         {
             singleton_ctor();
-            gui_ = gui;
-            platform_ = platform;
+            gui_           = gui;
+            platform_      = platform;
             scene_manager_ = scene_manager;
-            score_limit_ = score_limit;
-            time_limit_ = time_limit;
+            score_limit_   = score_limit;
+            time_limit_    = time_limit;
         }
 
         ///Destroy the Game.
@@ -346,7 +346,7 @@ class Game
             {
                 radius = 6.0;
 
-                for(uint dummy = 0; dummy < dummy_count_; dummy++)
+                foreach(dummy; 0 .. dummy_count_)
                 {
                     position = random_position!(float)(game_area_.center, 26.0f);
                     velocity = 2.4 * ball_speed_ * random_direction!(float)(); 
@@ -357,17 +357,17 @@ class Game
             //should be set from options and INI when that is implemented.
             started_ = playing_ = true;
 
-            wall_left_.velocity = Vector2f(0.0, 0.0);
+            wall_left_.velocity  = Vector2f(0.0, 0.0);
             wall_right_.velocity = Vector2f(0.0, 0.0);
-            goal_up_.velocity = Vector2f(0.0, 0.0);
-            goal_down_.velocity = Vector2f(0.0, 0.0);
+            goal_up_.velocity    = Vector2f(0.0, 0.0);
+            goal_down_.velocity  = Vector2f(0.0, 0.0);
             
             with(new BallSpawnerFactory(start_time))
             {
-                time = spawn_time_;
-                spread = spawn_spread_;
-                ball_speed = this.ball_speed_;
-                position = game_area_.center;
+                time         = spawn_time_;
+                spread       = spawn_spread_;
+                ball_speed   = this.ball_speed_;
+                position     = game_area_.center;
                 auto spawner = produce(scene_manager_);
                 spawner.spawn_ball.connect(&spawn_ball);
             }
@@ -397,10 +397,10 @@ class Game
 
             with(new BallSpawnerFactory(scene_manager_.game_time))
             {
-                time = spawn_time_;
-                spread = spawn_spread_;
-                ball_speed = this.ball_speed_;
-                position = game_area_.center;
+                time         = spawn_time_;
+                spread       = spawn_spread_;
+                ball_speed   = this.ball_speed_;
+                position     = game_area_.center;
                 auto spawner = produce(scene_manager_);
                 spawner.spawn_ball.connect(&spawn_ball);
             }
@@ -418,8 +418,8 @@ class Game
             {
                 position = game_area_.center;
                 velocity = direction * speed;
-                radius = ball_radius_;
-                ball_ = produce(scene_manager_);
+                radius   = ball_radius_;
+                ball_    = produce(scene_manager_);
             }
         }
 
@@ -443,23 +443,17 @@ class Game
          */
         void key_handler(KeyState state, Key key, dchar unicode)
         {
-            if(state == KeyState.Pressed)
+            if(state == KeyState.Pressed) switch(key)
             {
-                switch(key)
-                {
-                    case Key.Escape:
-                        end_game();
-                        break;
-                    case Key.K_P: //pause
-                        if(equals(scene_manager_.time_speed, cast(real)0.0))
-                        {
-                            scene_manager_.time_speed = 1.0;
-                        }
-                        else{scene_manager_.time_speed = 0.0;}
-                        break;
-                    default:
-                        break;
-                }
+                case Key.Escape:
+                    end_game();
+                    break;
+                case Key.K_P: //pause
+                    const paused = equals(scene_manager_.time_speed, cast(real)0.0);
+                    scene_manager_.time_speed = paused ? 1.0 : 0.0;
+                    break;
+                default:
+                    break;
             }
         }
 }
@@ -494,10 +488,8 @@ class GameContainer
         Game produce(Platform platform, MonitorManager monitor, GUIElement gui_parent)
         in
         {
-            assert(spatial_physics_ is null &&
-                   physics_engine_ is null && 
-                   scene_manager_ is null &&
-                   game_ is null,
+            assert(spatial_physics_ is null && physics_engine_ is null && 
+                   scene_manager_ is null && game_ is null,
                    "Can't produce two games at once with GameContainer");
         }
         body
@@ -505,13 +497,13 @@ class GameContainer
             monitor_ = monitor;
             spatial_physics_ = new GridSpatialManager!(PhysicsBody)
                                    (Vector2f(400.0f, 300.0f), 25.0f, 32);
+            physics_engine_  = new PhysicsEngine(spatial_physics_);
+            scene_manager_   = new SceneManager(physics_engine_);
+            gui_             = new GameGUI(gui_parent, 300.0);
+            game_            = new Game(platform, scene_manager_, gui_, 10, 300.0);
             monitor_.add_monitorable(spatial_physics_, "Spatial(P)");
-            physics_engine_ = new PhysicsEngine(spatial_physics_);
             monitor_.add_monitorable(physics_engine_, "Physics");
-            scene_manager_ = new SceneManager(physics_engine_);
             monitor_.add_monitorable(scene_manager_, "Scene");
-            gui_ = new GameGUI(gui_parent, 300.0);
-            game_ = new Game(platform, scene_manager_, gui_, 10, 300.0);
             return game_;
         }
 
@@ -526,10 +518,10 @@ class GameContainer
             physics_engine_.die();
             monitor_.remove_monitorable("Spatial(P)");
             clear(spatial_physics_);
-            game_ = null;
-            scene_manager_ = null;
-            physics_engine_ = null;
+            game_            = null;
+            scene_manager_   = null;
+            physics_engine_  = null;
             spatial_physics_ = null;
-            monitor_ = null;
+            monitor_         = null;
         }
 }

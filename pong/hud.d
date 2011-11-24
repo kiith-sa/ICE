@@ -53,26 +53,35 @@ class HUD
 
             with(new GUIStaticTextFactory)
             {
-                x = "p_left + 8";
-                y = "p_top + 8";
-                width = "96";
-                height = "16";
-                font_size = 16;
-                font = "orbitron-light.ttf";
-                align_x = AlignX.Right;
+                x             = "p_left + 8";
+                y             = "p_top + 8";
+                width         = "96";
+                height        = "16";
+                font_size     = 16;
+                font          = "orbitron-light.ttf";
+                align_x       = AlignX.Right;
                 score_text_1_ = produce();
 
-                y = "p_bottom - 24";
+                y             = "p_bottom - 24";
                 score_text_2_ = produce();
 
-                x = "p_right - 112";
-                font = "orbitron-bold.ttf";
-                time_text_ = produce();
+                x             = "p_right - 112";
+                font          = "orbitron-bold.ttf";
+                time_text_    = produce();
             }
 
             parent_.add_child(score_text_1_);
             parent_.add_child(score_text_2_);
             parent_.add_child(time_text_);
+        }
+
+        ///Destroy the HUD.
+        ~this()
+        {
+            score_text_1_.die();
+            score_text_2_.die();
+            time_text_.die();
+            score_text_1_ = score_text_2_ = time_text_ = null;
         }
 
         /**
@@ -86,9 +95,9 @@ class HUD
         {
             //update time display
             time_left = max(time_left, 0.0L);
-            const string time_str = time_string(time_left);
-            immutable Color color_start = Color(160, 160, 255, 160);
-            immutable Color color_end = Color.red;
+            const time_str = time_string(time_left);
+            immutable color_start = Color(160, 160, 255, 160);
+            immutable color_end = Color.red;
             //only update if the text has changed
             if(time_str != time_text_.text)
             {
@@ -99,11 +108,8 @@ class HUD
             }
 
             //update score displays
-            string score_str_1 = player_1.name ~ ": " ~ to!string(player_1.score);
-            string score_str_2 = player_2.name ~ ": " ~ to!string(player_2.score);
-            //only update if the text has changed
-            if(score_text_1_.text != score_str_1){score_text_1_.text = score_str_1;}
-            if(score_text_2_.text != score_str_2){score_text_2_.text = score_str_2;}
+            score_text_1_.text = player_1.name ~ ": " ~ to!string(player_1.score);
+            score_text_2_.text = player_2.name ~ ": " ~ to!string(player_2.score); 
         }
 
         ///Hide the HUD.
@@ -120,18 +126,5 @@ class HUD
             score_text_1_.show();
             score_text_2_.show();
             time_text_.show();
-        }
-
-        ///Destroy the HUD.
-        void die()
-        {
-            score_text_1_.die();
-            score_text_1_ = null;
-
-            score_text_2_.die();
-            score_text_2_ = null;
-
-            time_text_.die();
-            time_text_ = null;
         }
 }

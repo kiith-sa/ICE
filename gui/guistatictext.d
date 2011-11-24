@@ -89,6 +89,7 @@ class GUIStaticText : GUIElement
         ///Set text to display.
         @property void text(in string text)
         {
+            if(text == text_){return;}
             text_ = expandtabs(text);
             aligned_ = false;
         }
