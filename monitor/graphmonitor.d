@@ -106,7 +106,7 @@ final package class GraphMonitor(Monitored, Statistics, Values ...) : SubMonitor
         override void die()
         {
             disconnect_();
-            data_.die();
+            clear(data_);
             data_ = null;
             super.die();
         }

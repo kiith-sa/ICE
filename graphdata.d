@@ -121,7 +121,7 @@ final class GraphData
                 }
 
                 ///Destroy this graph.
-                void die()
+                ~this()
                 {
                     clear(values_);
                     clear(data_points_);
@@ -308,9 +308,10 @@ final class GraphData
         }
 
         ///Destroy this GraphData.
-        void die()
+        ~this()
         {
-            foreach(graph; graphs_.values){graph.die();}
+            foreach(graph; graphs_.values){clear(graph);}
+            clear(graphs_);
         }
 
         ///Get time resolution of the graph.
