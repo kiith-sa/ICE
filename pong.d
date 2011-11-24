@@ -34,7 +34,7 @@ void main(string[] args)
 {
     //will add -h/--help and generate usage info by itself
     auto cli = new CLI();
-    cli.description = "DPong 0.1.0\n"
+    cli.description = "DPong 0.6.0\n"
                       "Pong game written in D.\n"
                       "Copyright (C) 2010-2011 Ferdinand Majerech";
     cli.epilog = "Report errors at <kiithsacmp@gmail.com> (in English, Czech or Slovak).";
@@ -54,7 +54,7 @@ void main(string[] args)
         user_data(user);
 
         Pong pong = new Pong();
-        scope(exit){pong.die();}
+        scope(exit){clear(pong);}
         pong.run();
     }
     catch(Exception e)
