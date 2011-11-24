@@ -59,9 +59,8 @@ final package class GridMonitor(T) : SubMonitor
             update_timer_ = Timer(0.02);
         }
 
-        override void die()
+        ~this()
         {
-            super.die();
             clear(object_counts_);
         }
 

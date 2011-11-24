@@ -25,7 +25,7 @@ abstract class SubMonitor
         this(){}
 
         ///Destroy the SubMonitor.
-        void die(){};
+        ~this(){};
 
         ///Get a GUI view viewing this monitor.
         @property SubMonitorView view();

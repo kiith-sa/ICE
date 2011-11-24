@@ -103,12 +103,11 @@ final package class GraphMonitor(Monitored, Statistics, Values ...) : SubMonitor
         void delegate() disconnect_;
 
     public:
-        override void die()
+        ~this()
         {
             disconnect_();
             clear(data_);
             data_ = null;
-            super.die();
         }
 
         @property override SubMonitorView view()

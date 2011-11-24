@@ -47,9 +47,6 @@ abstract class Player
          */
         void update(Game game){}
 
-        ///Destroy this player
-        void die(){}
-
     protected:
         /**
          * Construct a player.
@@ -105,8 +102,8 @@ final class AIPlayer : Player
                     move_to_center();
                     return;
                 }
-                const Ball ball = balls[0];
 
+                const Ball ball = balls[0];
                 const float distance = paddle_.limits.distance(ball.position);
                 const float distance_last = paddle_.limits.distance(ball_last_);
                 
@@ -163,7 +160,7 @@ final class HumanPlayer : Player
         }
         
         ///Destroy this HumanPlayer.
-        override void die(){platform_.key.disconnect(&key_handler);}
+        ~this(){platform_.key.disconnect(&key_handler);}
 
         /**
          * Process keyboard input.

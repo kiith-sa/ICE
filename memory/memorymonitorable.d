@@ -43,7 +43,7 @@ final class MemoryMonitorable : Monitorable
         this(){singleton_ctor();}
 
         ///Destroy this MemoryMonitorable.
-        void die()
+        ~this()
         {
             singleton_dtor();
             send_statistics.disconnect_all();

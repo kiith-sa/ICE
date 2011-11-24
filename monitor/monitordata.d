@@ -19,9 +19,6 @@ import monitor.submonitor;
 ///Interface passed by Monitorables to the MonitorManager to access SubMonitors.
 interface MonitorDataInterface
 {
-    ///Destroy the MonitorData.
-    void die();
-
     ///Get names of submonitors available.
     @property const(string[]) monitor_names() const;
 
@@ -63,9 +60,9 @@ final class MonitorData(M) : MonitorDataInterface
             constructors_ = constructors;
         }
 
-        void die()
+        ~this()
         {
-            foreach(monitor; monitors_){monitor.die();}
+            foreach(monitor; monitors_){clear(monitor);}
             monitors_ = null;
             constructors_ = null;
         }
@@ -85,7 +82,7 @@ final class MonitorData(M) : MonitorDataInterface
         }
         body
         {
-            monitors_[name].die();
+            clear(monitors_[name]);
             monitors_.remove(name);
         }
 

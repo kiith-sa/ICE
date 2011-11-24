@@ -306,8 +306,8 @@ class Game
             if(started_){scene_manager_.time_speed = 1.0;}
 
             scene_manager_.clear();
-            player_1_.die();
-            player_2_.die();
+            clear(player_1_);
+            clear(player_2_);
 
             playing_ = continue_ = false;
 

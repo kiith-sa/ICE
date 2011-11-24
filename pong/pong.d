@@ -140,7 +140,7 @@ class PongGUI
         ///Destroy the PongGUI.
         ~this()
         {
-            monitor_.die();
+            clear(monitor_);
             monitor_ = null;
 
             if(credits_ !is null)
@@ -242,8 +242,8 @@ class Pong
 
             scope(failure)
             {
-                monitor_.die();
-                memory_.die();
+                clear(monitor_);
+                clear(memory_);
                 singleton_dtor();
             }
             monitor_ = new MonitorManager();
@@ -307,7 +307,7 @@ class Pong
             monitor_.remove_monitorable("Memory");
             //video driver might be already destroyed in exceptional circumstances
             if(video_driver_ !is null){monitor_.remove_monitorable("Video");}
-            monitor_.die();
+            clear(monitor_);
 
             clear(gui_);
             gui_root_.die();
@@ -323,7 +323,7 @@ class Pong
             clear(platform_);
             platform_ = null;
 
-            memory_.die();
+            clear(memory_);
 
             singleton_dtor();
         }

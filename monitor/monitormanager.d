@@ -54,7 +54,7 @@ final class MonitorManager
         this(){singleton_ctor();}
 
         ///Destroy the MonitorManager.
-        void die()
+        ~this()
         in
         {
             assert(monitored_.length == 0, 
@@ -92,7 +92,7 @@ final class MonitorManager
         {
             //unpin all pinned monitors
             workarounds.remove(pinned_, (ref MonitorID id){return id.monitored == name;});
-            monitored_[name].die();
+            clear(monitored_[name]);
             monitored_.remove(name);
             update_views.emit();
         }
