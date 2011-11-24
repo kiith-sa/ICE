@@ -30,7 +30,7 @@ abstract class SpatialManager(T) : Monitorable
 {
     public:
         ///Destroy the manager.
-        void die();
+        ~this(){};
 
         /**
          * Add an object.

@@ -108,7 +108,7 @@ class GridSpatialManager(T) : SpatialManager!(T)
             outer_ = Cell();
         }
 
-        override void die()
+        ~this()
         {
             clear(outer_);
             clear(grid_);
@@ -273,7 +273,7 @@ class GridSpatialManager(T) : SpatialManager!(T)
         {
             auto zero = Vector2f(0.0f, 0.0f);
             auto manager = new GridSpatialManager!(PhysicsBody)(zero, 16.0f, 4);
-            scope(exit){manager.die();}
+            scope(exit){clear(manager);}
 
             auto rectangle = Rectanglef(-15.0, -17.0, 15.0, 15.0);
             Cell*[] result = manager.cells_rectangle(zero, rectangle);
