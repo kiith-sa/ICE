@@ -55,9 +55,9 @@ class VideoDriverContainer
          *
          * Throws:  VideoDriverException if the video driver could not be initialized.
          */
-        VideoDriver produce(T)(in uint width, in uint height, 
-                               in ColorFormat format, in bool fullscreen)
-            if(is(T: VideoDriver))
+        VideoDriver produce(Driver)(in uint width, in uint height, 
+                                    in ColorFormat format, in bool fullscreen)
+            if(is(Driver: VideoDriver))
         {
             scope(failure)
             {
@@ -65,7 +65,7 @@ class VideoDriverContainer
                 video_driver_ = null;
                 writeln("VideoDriver initialization failed");
             }
-            video_driver_ = new T(font_manager_);
+            video_driver_ = new Driver(font_manager_);
             video_driver_.set_video_mode(width, height, format, fullscreen);
 
             try{font_manager_.reload_textures(video_driver_);}
@@ -93,5 +93,5 @@ class VideoDriverContainer
          */
         void die()
         in{assert(video_driver_ is null, "VideoDriver must be destroyed before its container");}
-        body{font_manager_.die();}
+        body{clear(font_manager_);}
 }

@@ -47,7 +47,7 @@ package align(4) struct Glyph
 }
 
 ///Stores one font with one size (e.g. Inconsolata size 16 and 18 will be two Font objects).
-package class Font
+package final class Font
 {
     private:
         ///Default glyph to use when there is no glyph for a character.
@@ -124,17 +124,18 @@ package class Font
 
         /**
          * Destroy the font and free its resources.
+         *
          * To free all used resources, unload_textures() must be called before this.
          */
-        void die()
+        ~this()
         {    
-            foreach(glyph; fast_glyphs_)
+            foreach(glyph; fast_glyphs_) if(glyph !is null)
             {
-                if(glyph !is null){free(glyph);}
+                free(glyph);
             }
             FT_Done_Face(font_face_);
             fast_glyphs_ = [];
-            glyphs_ = null;
+            clear(glyphs_);
         }
 
         ///Get size of the font in pixels.

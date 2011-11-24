@@ -249,10 +249,10 @@ final class FontManager
          *
          * To destroy all FontManager resources, unload_textures must be called first.
          */
-        void die()
+        ~this()
         {
             writeln("Destroying FontManager");
-            foreach(ref font; fonts_){font.die();}
+            foreach(ref font; fonts_){clear(font);}
             foreach(ref pair; font_files_){clear(pair.data);}
             clear(fonts_);
             clear(font_files_);

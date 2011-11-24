@@ -1,8 +1,18 @@
 ASAP:
 Stop using die() - use dtors, clear.
 
+ 
 Other changes to adapt to current DMD as more D functionality works without 
 bugs now.
+
+See Hybrid - esp. it's virtual file system and other h3r3tic code,
+and see what we can change/improve (esp. GUI, VFS) 
+    The VFS API looks good: 
+ gui.vfs.mount(new ZipFolder("gui.zip"));
+
+Also its themes - might be better than my idea
+
+Everything can use YAML instead of Hybrid DSLs
 
 
 
