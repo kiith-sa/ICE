@@ -263,7 +263,7 @@ class GridSpatialManager(T) : SpatialManager!(T)
             {
                 for(uint y = cell_y_min; y <= cell_y_max; y++)
                 {
-                    result ~= grid_.ptr_unsafe(x,y);
+                    result ~= &grid_[x,y];
                 }
             }
             return result;

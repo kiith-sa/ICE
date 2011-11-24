@@ -28,7 +28,6 @@ import memory.memory;
  * //i.e. 0 for uints.
  * Array2D array = Array2D!(uint)(4, 4);
  * //Destroy the array at exit.
- * scope(exit){array.die();}
  *
  * //Set element at coords X1,Y1 to 1
  * array[1, 1] = 1;
@@ -40,12 +39,14 @@ import memory.memory;
 align(1) struct Array2D(T)
 {
     private:
+        static enum T[] dummy_data_ = [];
+
         ///Manually allocated data storage.
-        T[] data_= null;
+        T[] data_ = dummy_data_;
         ///Array width.
-        uint x_;
+        uint x_ = 0;
         ///Array height.
-        uint y_;
+        uint y_ = 0;
 
     public:
         /**
@@ -97,50 +98,16 @@ align(1) struct Array2D(T)
         }
 
         /**
-         * Get an element of the array.
+         * Get a reference to an element of the array.
          * 
          * Params:  x = X coordinate of the element.
          *          y = Y coordinate of the element.
          *
          * Returns: Element at the specified coordinates.
          */
-        const(T) opIndex(in uint x, in uint y) const
+        ref inout(T) opIndex(in uint x, in uint y) inout
         in{assert(x < x_ && y < y_, "2D array access out of bounds");}
         body{return data_[y * x_ + x];}
-
-        /**
-         * Get a const (read-only) pointer to an element of the array.
-         * 
-         * Params:  x = X coordinate of the element to get pointer to.
-         *          y = Y coordinate of the element to get pointer to.
-         *
-         * Returns: Pointer to the element at the specified coordinates.
-         */
-        const(T*) ptr(in uint x, in uint y) const
-        in{assert(x < x_ && y < y_, "2D array access out of bounds");}
-        out(result)
-        {
-            assert(result >= data_.ptr && result < data_.ptr + data_.length,
-                   "Pointer returned by 2D array access is out of bounds");
-        }
-        body{return &(data_[y * x_ + x]);}
-
-        /**
-         * Get a non-const pointer to an element of the array.
-         * 
-         * Params:  x = X coordinate of the element to get pointer to.
-         *          y = Y coordinate of the element to get pointer to.
-         *
-         * Returns: Pointer to the element at the specified coordinates.
-         */
-        T* ptr_unsafe(in uint x, in uint y)
-        in{assert(x < x_ && y < y_, "2D array access out of bounds");}
-        out(result)
-        {
-            assert(result >= data_.ptr && result < data_.ptr + data_.length,
-                   "Pointer returned by 2D array access is out of bounds");
-        }
-        body{return &(data_[y * x_ + x]);}
 
         /**
          * Set an element of the array.
@@ -169,7 +136,6 @@ unittest
     //setting and getting of elements
     array[1,1] = 1;
     assert(array[1,1] == 1);
-    assert(*array.ptr(1,1) == 1);
 
     //iteration over all the elements
     uint elems = 0;
