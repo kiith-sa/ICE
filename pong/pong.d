@@ -307,9 +307,9 @@ class Pong
             monitor_.remove_monitorable("Memory");
             //video driver might be already destroyed in exceptional circumstances
             if(video_driver_ !is null){monitor_.remove_monitorable("Video");}
-            clear(monitor_);
 
             clear(gui_);
+            clear(monitor_);
             gui_root_.die();
 
             //video driver might be already destroyed in exceptional circumstances
