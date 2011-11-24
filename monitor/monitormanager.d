@@ -92,7 +92,7 @@ final class MonitorManager
         {
             //unpin all pinned monitors
             workarounds.remove(pinned_, (ref MonitorID id){return id.monitored == name;});
-            clear(monitored_[name]);
+            monitored_[name].die();
             monitored_.remove(name);
             update_views.emit();
         }

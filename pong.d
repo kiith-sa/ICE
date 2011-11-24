@@ -48,6 +48,7 @@ void main(string[] args)
 
     if(!cli.parse(args)){return;}
 
+    scope(exit) writeln("Main exit");
     try
     {
         root_data(root);
