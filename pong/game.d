@@ -106,7 +106,7 @@ class GameGUI
         }
 
         ///Destroy the game GUI.
-        void die()
+        ~this()
         {
             hud_.die();
             hud_ = null;
@@ -336,7 +336,7 @@ class Game
         }
 
         ///Destroy the Game.
-        void die(){singleton_dtor();}
+        ~this(){singleton_dtor();}
 
         ///Start the game, at specified game time.
         void start_game(in real start_time)
@@ -518,8 +518,8 @@ class GameContainer
         ///Destroy the contained Game.
         void destroy()
         {
-            game_.die();
-            gui_.die();
+            clear(game_);
+            clear(gui_);
             monitor_.remove_monitorable("Scene");
             scene_manager_.die();
             monitor_.remove_monitorable("Physics");
