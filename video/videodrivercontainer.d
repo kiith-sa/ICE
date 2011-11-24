@@ -91,7 +91,7 @@ class VideoDriverContainer
          * Destroys any video driver dependencies.
          * Video driver must be destroyed first by calling destroy().
          */
-        void die()
+        ~this()
         in{assert(video_driver_ is null, "VideoDriver must be destroyed before its container");}
         body{clear(font_manager_);}
 }

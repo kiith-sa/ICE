@@ -261,7 +261,7 @@ class Pong
 
             scope(failure)
             {
-                video_driver_container_.die();
+                clear(video_driver_container_);
             }
             video_driver_container_ = new VideoDriverContainer;
             video_driver_ = video_driver_container_.produce!(SDLGLVideoDriver)
@@ -316,7 +316,7 @@ class Pong
             if(video_driver_ !is null)
             {
                 video_driver_container_.destroy();
-                video_driver_container_.die();
+                clear(video_driver_container_);
                 video_driver_ = null;
             }
 
