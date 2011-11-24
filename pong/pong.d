@@ -140,7 +140,7 @@ class PongGUI
         ///Destroy the PongGUI.
         ~this()
         {
-            clear(monitor_);
+            monitor_.die();
             monitor_ = null;
 
             if(credits_ !is null)
