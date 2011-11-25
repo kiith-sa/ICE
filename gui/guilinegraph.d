@@ -324,7 +324,7 @@ final class GUILineGraph : GUIElement
             lines_.length = 0;
 
             const real graph_height = bounds_.height / scale_y_;
-            uint spacing = min(1, cast(uint)pow(10.0L, cast(uint)log10(graph_height)));
+            uint spacing = max(1, cast(uint)pow(10.0L, cast(uint)log10(graph_height)));
             //always have at least two horizontal lines.
             if(graph_height / spacing < 2){spacing /= 2;}
 
