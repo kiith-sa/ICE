@@ -145,7 +145,7 @@ class PongGUI
 
             if(credits_ !is null)
             {
-                credits_.die();
+                clear(credits_);
                 credits_ = null;
             }
 
@@ -188,7 +188,7 @@ class PongGUI
         ///Hide credits screen (and show main menu).
         void credits_hide()
         {
-            credits_.die();
+            clear(credits_);
             credits_ = null;
             menu_show();
             credits_end.emit();
@@ -270,7 +270,7 @@ class Pong
             monitor_.add_monitorable(video_driver_, "Video");
 
             //initialize GUI
-            scope(failure){gui_root_.die();}
+            scope(failure){clear(gui_root_);}
             gui_root_ = new GUIRoot(platform_);
 
             scope(failure){clear(gui_);}
@@ -310,7 +310,7 @@ class Pong
 
             clear(gui_);
             clear(monitor_);
-            gui_root_.die();
+            clear(gui_root_);
 
             //video driver might be already destroyed in exceptional circumstances
             if(video_driver_ !is null)

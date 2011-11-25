@@ -108,7 +108,7 @@ final class PhysicsEngine : Monitorable
         }
 
         ///Destroy the PhysicsEngine.
-        void die()
+        ~this()
         {
             //destroy any remaining bodies
             foreach(physics_body; bodies_){physics_body.die();}

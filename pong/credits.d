@@ -85,11 +85,11 @@ class Credits
 
             with(new GUIButtonFactory)
             {
-                x = "p_left + p_width / 2 - 72";
-                y = "p_bottom - 32";
-                width = "144";
+                x      = "p_left + p_width / 2 - 72";
+                y      = "p_bottom - 32";
+                width  = "144";
                 height = "24";
-                text = "Close";
+                text   = "Close";
                 close_button_ = produce();
             }
 
@@ -99,7 +99,7 @@ class Credits
         }
 
         ///Destroy this credits screen.
-        void die()
+        ~this()
         {
             container_.die();
             closed.disconnect_all();

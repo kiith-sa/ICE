@@ -99,7 +99,7 @@ final class SceneManager : ActorContainer, Monitorable
         }
 
         ///Destroy the SceneManager.
-        void die()
+        ~this()
         {
             this.clear();
             singleton_dtor();

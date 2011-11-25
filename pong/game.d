@@ -513,9 +513,9 @@ class GameContainer
             clear(game_);
             clear(gui_);
             monitor_.remove_monitorable("Scene");
-            scene_manager_.die();
+            clear(scene_manager_);
             monitor_.remove_monitorable("Physics");
-            physics_engine_.die();
+            clear(physics_engine_);
             monitor_.remove_monitorable("Spatial(P)");
             clear(spatial_physics_);
             game_            = null;

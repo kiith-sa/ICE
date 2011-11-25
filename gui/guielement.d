@@ -371,6 +371,13 @@ final class GUIRoot
             platform.mouse_key.connect(&root_.mouse_key);
         }
 
+        ///Destroy the GUIRoot.
+        ~this()
+        {
+            root_.die();
+            singleton_dtor();
+        }
+
         /**
          * Draw the GUI.
          *
@@ -407,13 +414,6 @@ final class GUIRoot
 
         ///Remove a child element.
         void remove_child(GUIElement child){root_.remove_child(child);}
-
-        ///Destroy the GUIRoot.
-        void die()
-        {
-            root_.die();
-            singleton_dtor();
-        }
 
         ///Realign the GUI.
         void realign(VideoDriver driver){root_.realign(driver);}
