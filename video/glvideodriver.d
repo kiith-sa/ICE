@@ -626,7 +626,7 @@ abstract class GLVideoDriver : VideoDriver
                                                     "shader", "page");
             ctors_["Pages"] = function SubMonitor(GLVideoDriver v)
                                                   {return new PageMonitor(v);};
-            return new MonitorData!(GLVideoDriver)(this, ctors_);
+            return new MonitorData!GLVideoDriver(this, ctors_);
         }
 
     package:

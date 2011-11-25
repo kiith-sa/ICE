@@ -347,7 +347,7 @@ private struct MonitorID
 }
 
 ///Factory producing MonitorViews.
-final class MonitorViewFactory : GUIElementFactoryBase!(MonitorView)
+final class MonitorViewFactory : GUIElementFactoryBase!MonitorView
 {
     private:
         ///MonitorManager to be viewed by produced view/s.

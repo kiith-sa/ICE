@@ -56,7 +56,7 @@ final class GUILineGraph : GUIElement
             ///Construct a GraphDisplay.
             this(){line_strip.reserve(8);}
             ///Destroy this GraphDisplay.
-            void die(){clear(line_strip);}
+            ~this(){clear(line_strip);}
         }
 
         ///Horizontal line on the graph, shown for visual comparison with graph values.
@@ -117,7 +117,7 @@ final class GUILineGraph : GUIElement
         ///Toggle visibility of graph of specified value.
         void toggle_value(in string value)
         {
-            auto graphics = graphics_[value];
+            auto graphics   = graphics_[value];
             graphics.visible = !graphics.visible;
         }
 
@@ -147,7 +147,7 @@ final class GUILineGraph : GUIElement
             auto_scroll = false;
 
             //convert time offset to screen space, modify it and convert back to time.
-            const conv = data_point_time_ / scale_x;
+            const conv         = data_point_time_ / scale_x;
             const space_offset = time_offset_ / conv + offset;
             time_offset(space_offset * conv);
         }
@@ -179,7 +179,7 @@ final class GUILineGraph : GUIElement
         ///Destroy this GUILineGraph.
         override void die()
         {
-            foreach(display; graphics_.values){display.die();}
+            foreach(display; graphics_.values){clear(display);}
             super.die();
         }
 
@@ -200,7 +200,7 @@ final class GUILineGraph : GUIElement
             reset_timer(get_time());
             foreach(name, color; colors)
             {
-                graphics_[name] = new GraphDisplay;
+                graphics_[name]      = new GraphDisplay;
                 graphics_[name].color = color;
             }
         }
@@ -236,7 +236,7 @@ final class GUILineGraph : GUIElement
 
     private:
         ///Resets update timer according to data point time, starting at specified time.
-        void reset_timer(real time)
+        void reset_timer(in real time)
         {
             //limiting to prevent absurd values (and lag)
             display_timer_ = Timer(clamp(data_point_time_, 0.125L, 8.0L), time);
@@ -253,9 +253,9 @@ final class GUILineGraph : GUIElement
             real maximum;
             const(real)[][string] data_points = get_data_points_and_maximum(maximum);
 
-            if(auto_scale_)
+            if(auto_scale_ && !equals(maximum, 0.0L))
             {
-                if(!equals(maximum, 0.0L)){scale_y = (bounds_.height * 0.8) / maximum;}
+                scale_y = (bounds_.height * 0.8) / maximum;
             }
 
             update_lines();
@@ -263,7 +263,7 @@ final class GUILineGraph : GUIElement
             //generate line strips
             foreach(name; data_.graph_names)
             {
-                const points = data_points[name];
+                const points  = data_points[name];
                 auto graphics = graphics_[name];
 
                 //clear the strip
@@ -297,8 +297,7 @@ final class GUILineGraph : GUIElement
             //calculate the time window we want to get data points for
             //why +3 : get a few more points so the graph is always full if there's enough data
             const real time_width = (bounds_.width / scale_x_ + 3) * data_point_time_;
-
-            const real end_time = data_.start_time + time_offset_;
+            const real end_time   = data_.start_time + time_offset_;
             const real start_time = end_time - time_width;
 
             maximum = 0.0;
@@ -313,8 +312,7 @@ final class GUILineGraph : GUIElement
                 data_points[name] = points;
                 if(points.length <= 1){continue;}
 
-                const real graph_maximum = reduce!max(points);
-                if(graph_maximum > maximum){maximum = graph_maximum;}
+                maximum = max(maximum, reduce!max(points));
             }
 
             return data_points;
@@ -326,9 +324,7 @@ final class GUILineGraph : GUIElement
             lines_.length = 0;
 
             const real graph_height = bounds_.height / scale_y_;
-            uint spacing = cast(uint)pow(cast(real)10.0, cast(uint)log10(graph_height));
-            if(spacing == 0){spacing = 1;}
-
+            uint spacing = min(1, cast(uint)pow(10.0L, cast(uint)log10(graph_height)));
             //always have at least two horizontal lines.
             if(graph_height / spacing < 2){spacing /= 2;}
 
@@ -337,8 +333,8 @@ final class GUILineGraph : GUIElement
             Line line;
             do
             {
-                line.y = bounds_.max.y - scale_y_ * line_height;
-                line.text = to!string(line_height);
+                line.y     = bounds_.max.y - scale_y_ * line_height;
+                line.text  = to!string(line_height);
                 line.color = Color(255, 128, 0, 192);
                 lines_ ~= line;
 
@@ -361,13 +357,13 @@ final class GUILineGraph : GUIElement
 
             //Use scissor test to only draw within bounds of the graph.
             driver.scissor(bounds_);
-            driver.line_aa = true;
+            driver.line_aa    = true;
             driver.line_width = 0.65;
 
             driver.draw_line_strip((graphics.line_strip)[], graphics.color);
 
             driver.line_width = 1;                  
-            driver.line_aa = false;
+            driver.line_aa    = false;
             driver.disable_scissor();
         }
 
@@ -378,17 +374,17 @@ final class GUILineGraph : GUIElement
          */
         void draw_info(VideoDriver driver) const
         {
-            immutable data_time_color = Color(255, 0, 0, 192);
+            immutable data_time_color  = Color(255, 0, 0, 192);
             immutable data_time_offset = Vector2i(-32, 4);
 
-            Vector2f start;
+            Vector2f start, end;
             start.x = bounds_.min.x;
-            Vector2f end;
-            end.x = bounds_.max.x;
+            end.x   = bounds_.max.x;
+
             Vector2i text_start;
             text_start.x = bounds_.min.x;
 
-            driver.font = "default";
+            driver.font      = "default";
             driver.font_size = 8;
             driver.scissor(bounds_);
 
