@@ -48,7 +48,7 @@ abstract class Actor
         ///Destroy this actor.
         void die()
         {
-            physics_body_.die();
+            clear(physics_body_);
             container_.remove_actor(this);
             //can't set this here due to a compiler bug (stuff gets reordered)
             //container_ = null;

@@ -56,7 +56,7 @@ final class PhysicsEngine : Monitorable
 
     private:
         ///Spatial manager used for coarse collision detection.
-        SpatialManager!(PhysicsBody) spatial_manager_;
+        SpatialManager!PhysicsBody spatial_manager_;
 
         ///Are we updating (running the simulation) right now?
         bool updating_;
@@ -93,7 +93,7 @@ final class PhysicsEngine : Monitorable
 
     package:
         ///Used to send statistics data to physics monitors.
-        mixin Signal!(Statistics) send_statistics;
+        mixin Signal!Statistics send_statistics;
 
     public:
         /**
@@ -101,7 +101,7 @@ final class PhysicsEngine : Monitorable
          *
          * Params:  spatial_manager = Spatial manager to use for coarse collision detection.
          */
-        this(SpatialManager!(PhysicsBody) spatial_manager)
+        this(SpatialManager!PhysicsBody spatial_manager)
         {
             singleton_ctor();
             spatial_manager_ = spatial_manager;
@@ -111,8 +111,8 @@ final class PhysicsEngine : Monitorable
         ~this()
         {
             //destroy any remaining bodies
-            foreach(physics_body; bodies_){physics_body.die();}
-            bodies_ = [];
+            foreach(physics_body; bodies_){clear(physics_body);}
+            clear(bodies_);
             send_statistics.disconnect_all();
             singleton_dtor();
         }
@@ -204,7 +204,7 @@ final class PhysicsEngine : Monitorable
             ctors_["Bodies"] = &new_graph_monitor!(PhysicsEngine, Statistics, 
                                                    "bodies", "col_bodies"),
             ctors_["Coarse"] = &new_graph_monitor!(PhysicsEngine, Statistics, "tests");
-            return new MonitorData!(PhysicsEngine)(this, ctors_);
+            return new MonitorData!PhysicsEngine(this, ctors_);
         }
 
     private:
@@ -215,18 +215,15 @@ final class PhysicsEngine : Monitorable
             //use spatial manager for coarse collision detection
             foreach(bodies; spatial_manager_.iterable)
             {
-                foreach(uint a, body_a; bodies)
+                //we only need to check a subrange of bodies_
+                //since we'd get the same pairs of objects checked anyway
+                foreach(a, body_a; bodies) foreach(b; a + 1 .. bodies.length)
                 {
-                    //we only need to check a subrange of bodies_
-                    //since we'd get the same pairs of objects checked anyway
-                    for(uint b = a + 1; b < bodies.length; b++)
+                    statistics_.tests++;
+                    //fine collision detection
+                    if(detect_contact(body_a, bodies[b], current_contact))
                     {
-                        statistics_.tests++;
-                        //fine collision detection
-                        if(detect_contact(body_a, bodies[b], current_contact))
-                        {
-                            contacts_ ~= current_contact;
-                        }
+                        contacts_ ~= current_contact;
                     }
                 }
             }
@@ -250,7 +247,7 @@ final class PhysicsEngine : Monitorable
             Vector2f change_b;
 
             //resolve penetrations from greatest to smallest
-            for(uint iteration = 0; iteration < iterations; iteration++)
+            foreach(iteration; 0 .. iterations)
             {
                 statistics_.penetration++;
 
@@ -267,27 +264,15 @@ final class PhysicsEngine : Monitorable
                 contact.resolve_penetration(change_a, change_b);
 
                 //adjust other contacts where adjusted bodies are involved
-                foreach(ref contact_b; contacts_)
+                foreach(ref contact_b; contacts_) with(contact_b)
                 {
-                    float adjust_a(){return change_a.dot_product(contact_b.contact_normal);}
-                    float adjust_b(){return change_b.dot_product(contact_b.contact_normal);}
+                    float adjust_a(){return change_a.dot_product(contact_normal);}
+                    float adjust_b(){return change_b.dot_product(contact_normal);}
 
-                    if(contact_b.body_a is contact.body_a)
-                    {
-                        contact_b.penetration += adjust_a();
-                    }
-                    else if(contact_b.body_a is contact.body_b)
-                    {
-                        contact_b.penetration += adjust_b();
-                    }
-                    if(contact_b.body_b is contact.body_a)
-                    {
-                        contact_b.penetration -= adjust_a();
-                    }
-                    else if(contact_b.body_b is contact.body_b)
-                    {
-                        contact_b.penetration -= adjust_b();
-                    }
+                    if(body_a is contact.body_a)     {penetration += adjust_a();}
+                    else if(body_a is contact.body_b){penetration += adjust_b();}
+                    if(body_b is contact.body_a)     {penetration -= adjust_a();}
+                    else if(body_b is contact.body_b){penetration -= adjust_b();}
                 }
             }
         }
@@ -298,14 +283,14 @@ final class PhysicsEngine : Monitorable
             //number of iterations to process - collision response
             //might introduce more errors so we need to have more
             //iterations than contacts
-            const iterations = cast(uint)(contacts_.length * 
-                                          response_iteration_multiplier_);
+            const iterations = cast(size_t)(contacts_.length * 
+                                            response_iteration_multiplier_);
 
             Contact contact;
 
             //resolve collision response from greatest to smallest desired 
             //velocity change
-            for(uint iteration = 0; iteration < iterations; iteration++)
+            foreach(iteration;  0 .. iterations)
             {
                 statistics_.response++;
                 //get the contact with maximum desired delta velocity

@@ -60,9 +60,6 @@ class PhysicsBody
             this.mass = mass;
         }
 
-        ///Destroy the body.
-        void die(){}
-
         ///Get position of the body, in world space.
         @property final Vector2f position() const {return position_;}
 
