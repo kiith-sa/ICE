@@ -54,10 +54,10 @@ class PhysicsBody
          */
         this(in Volume volume, in Vector2f position, in Vector2f velocity, in real mass)
         {
-            volume_ = volume;
+            volume_       = volume;
             position_old_ = position_ = position;
-            velocity_ = velocity;
-            this.mass = mass;
+            velocity_     = velocity;
+            this.mass     = mass;
         }
 
         ///Get position of the body, in world space.
@@ -96,9 +96,9 @@ class PhysicsBody
          * Update physics state of the body.
          *
          * Params:  time_step = Time length of the update in seconds.
-         *          manager   = Spatial manager managing the body.
+         *          spatial   = Spatial manager managing the body.
          */
-        void update(in real time_step, SpatialManager!(PhysicsBody) manager)
+        void update(in real time_step, SpatialManager!PhysicsBody spatial)
         {
             assert(time_step >= 0.0, "Can't update a physics body with negative time step");
 
@@ -107,7 +107,7 @@ class PhysicsBody
             //spatial manager does not manage bodies without volumes.
             if(position_ != position_old_ && volume_ !is null)
             {
-                manager.update_object(this, position_old_);
+                spatial.update_object(this, position_old_);
             }
             position_old_ = position_;
         }
@@ -151,21 +151,21 @@ class PhysicsBody
         /**
          * Add the body to a spatial manager (and save old position).
          *
-         * Params:  manager = Spatial manager to add to.
+         * Params:  spatial = Spatial manager to add to.
          */
-        void add_to_spatial(SpatialManager!(PhysicsBody) manager)
+        void add_to_spatial(SpatialManager!PhysicsBody spatial)
         {
             position_old_ = position_;
-            manager.add_object(this);
+            spatial.add_object(this);
         }
 
         /**
          * Remove the body from a spatial manager.
          *
-         * Params:  manager = Spatial manager to remove from.
+         * Params:  spatial = Spatial manager to remove from.
          */
-        void remove_from_spatial(SpatialManager!(PhysicsBody) manager)
+        void remove_from_spatial(SpatialManager!PhysicsBody spatial)
         {
-            manager.remove_object(this);
+            spatial.remove_object(this);
         }
 }

@@ -42,13 +42,8 @@ body
     contact.body_b = body_b;
 
     //determine types of collision volumes and test for intersection
-    if(!intersection(body_a.position, body_b.position, 
-       body_a.volume, body_b.volume, contact))
-    {
-        return false;
-    }
-
-    return true;
+    return intersection(body_a.position, body_b.position, 
+                        body_a.volume, body_b.volume, contact);
 }
 
 

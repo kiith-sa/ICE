@@ -63,17 +63,17 @@ align(1) struct Contact
         }
         body
         {
-            const real inv_mass_a = body_a.inverse_mass;
-            const real inv_mass_b = body_b.inverse_mass;
-            const real inv_mass_total = inv_mass_a + inv_mass_b;
+            const inv_mass_a = body_a.inverse_mass;
+            const inv_mass_b = body_b.inverse_mass;
+            const inv_mass_total = inv_mass_a + inv_mass_b;
 
             //if both inverse masses are 0 (masses are infinite),
             //don't move anything (degenerate case)
             //maybe handle this differently if bugs arise
             if(equals(inv_mass_total, cast(const real)0.0L)){return;}
 
-            const real move_a = penetration * (inv_mass_a / inv_mass_total) * -1.0;
-            const real move_b = penetration * (inv_mass_b / inv_mass_total) * 1.0;
+            const move_a = penetration * (inv_mass_a / inv_mass_total) * -1.0;
+            const move_b = penetration * (inv_mass_b / inv_mass_total) * 1.0;
 
             change_a = contact_normal * move_a;
             change_b = contact_normal * move_b;
