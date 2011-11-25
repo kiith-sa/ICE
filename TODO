@@ -1,9 +1,29 @@
 ASAP:
 
-Stop using die() - use dtors, clear.
+
+GUIElement - Use die(), and maybe do it same way we plan to handle
+Actors.
+die() could work similarly to Swing's setVisible(false) - just 
+a flag, and next update, GUIRoot or parent element clears (with dtor)
+the elements dead at this frame. 
+(or rather - does a separate crawl to delete dead elements-
+ no frame number, just a bool)
+
+Still use die() for Actors (and PhysicsBodies - see below) 
+
+Actor.die(), PhysicsBody.die() 
+    Each Actor has a uint or ulong value: dead_at_frame_
+    When die() is called, set this to next frame index -
+    when traversing next time, nodes with dead_at_frame_ == current_frame 
+    are removed.
+    TO fix this, the manager must traverse the graph, 
+    (no recursion in update () - graph updates node, gets children, updates them)
+This way, Actor needs no reference to SceneManager - even for adding new actors
+by the actor, that reference can be passed on update.
 
 Color literals:
 color!"FF8008"
+
 
  
 Other changes to adapt to current DMD as more D functionality works without 
@@ -17,6 +37,11 @@ and see what we can change/improve (esp. GUI, VFS)
 Also its themes - might be better than my idea
 
 Everything can use YAML instead of Hybrid DSLs
+
+See Pitfalls of OOP for info on how to improve Scene, Physics, ParticleSystem hierarchy
+(maybe a single hierarchy using component approach? - 
+ or rather, don't use the component idea below - just try to copy ideas from 
+ that paper for now.)
 
 
 

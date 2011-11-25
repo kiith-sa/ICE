@@ -66,6 +66,7 @@ class GUIElement
                 child.die();
                 child = null;
             }
+            clear(children_);
             children_ = null;
             if(parent_ !is null){parent_.remove_child(this);}
             parent_ = null;
@@ -145,7 +146,7 @@ class GUIElement
             foreach(ref child; children_)
             {
                 //children can be null if we've just destroyed this element.
-                if(child is null){continue;}
+                if(children_ is null){continue;}
                 child.draw(driver);
             }
         }
@@ -156,7 +157,7 @@ class GUIElement
             foreach(ref child; children_)
             {
                 //children can be null if we've just destroyed this element.
-                if(child is null){continue;}
+                if(children_ is null){continue;}
                 child.update();
             }
         }
@@ -227,7 +228,7 @@ class GUIElement
             foreach_reverse(ref child; children_)
             {
                 //children can be null if we've just destroyed this element.
-                if(child is null){continue;}
+                if(children_ is null){continue;}
                 child.key(state, key, unicode);
             }
         }
@@ -248,7 +249,7 @@ class GUIElement
             foreach_reverse(ref child; children_)
             {
                 //children can be null if we've just destroyed this element.
-                if(child is null){continue;}
+                if(children_ is null){continue;}
                 child.mouse_key(state, key, position);
             }
         }
@@ -268,7 +269,7 @@ class GUIElement
             foreach_reverse(ref child; children_)
             {
                 //children can be null if we've just destroyed this element.
-                if(child is null){continue;}
+                if(children_ is null){continue;}
                 child.mouse_move(position, relative);
             }
         }

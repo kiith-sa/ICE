@@ -111,7 +111,7 @@ final class PhysicsEngine : Monitorable
         ~this()
         {
             //destroy any remaining bodies
-            foreach(physics_body; bodies_){clear(physics_body);}
+            foreach(physics_body; bodies_){physics_body.die();}
             clear(bodies_);
             send_statistics.disconnect_all();
             singleton_dtor();
