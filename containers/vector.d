@@ -368,7 +368,7 @@ align(1) struct Vector(T)
 ///Unittest for Vector.
 unittest
 {
-    Vector!(uint) vector = Vector!(uint)();
+    auto vector = Vector!uint();
     vector ~= 1;
     vector ~= 2;
     vector ~= 3;

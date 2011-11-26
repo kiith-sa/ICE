@@ -171,11 +171,11 @@ class GUIElement
         {
             with(params)
             {
-                x_string_ = x;
-                y_string_ = y;
-                width_string_ = width;
+                x_string_      = x;
+                y_string_      = y;
+                width_string_  = width;
                 height_string_ = height;
-                draw_border_ = draw_border;
+                draw_border_   = draw_border;
             }
             aligned_ = false;
         }
@@ -202,7 +202,7 @@ class GUIElement
 
             if(draw_border_)
             {
-                driver.draw_rectangle(to!(float)(bounds_.min), to!(float)(bounds_.max), 
+                driver.draw_rectangle(to!float(bounds_.min), to!float(bounds_.max), 
                                       border_color_);
             }
 
@@ -281,13 +281,13 @@ class GUIElement
             int[string] substitutions;
 
             //substitutions for window and parents' coordinates.
-            substitutions["w_right"] = driver.screen_width;
+            substitutions["w_right"]  = driver.screen_width;
             substitutions["w_bottom"] = driver.screen_height;
-            substitutions["p_left"] = parent_ is null ? 0 : parent_.bounds_.min.x;
-            substitutions["p_right"] = parent_ is null ? 0 : parent_.bounds_.max.x;
-            substitutions["p_top"] = parent_ is null ? 0 : parent_.bounds_.min.y;
+            substitutions["p_left"]   = parent_ is null ? 0 : parent_.bounds_.min.x;
+            substitutions["p_right"]  = parent_ is null ? 0 : parent_.bounds_.max.x;
+            substitutions["p_top"]    = parent_ is null ? 0 : parent_.bounds_.min.y;
             substitutions["p_bottom"] = parent_ is null ? 0 : parent_.bounds_.max.y;
-            substitutions["p_width"] = parent_ is null ? 0 : parent_.bounds_.width;
+            substitutions["p_width"]  = parent_ is null ? 0 : parent_.bounds_.width;
             substitutions["p_height"] = parent_ is null ? 0 : parent_.bounds_.height;
 
             int width, height;
@@ -307,13 +307,13 @@ class GUIElement
                 bounds_.min = Vector2i(parse_math(x_string_, substitutions), 
                                        parse_math(y_string_, substitutions));
 
-                width = parse_math(width_string_, substitutions);
+                width  = parse_math(width_string_, substitutions);
                 height = parse_math(height_string_, substitutions);
 
                 if(height < 0 || width < 0)
                 {
                     writeln("Negative width and/or height of a GUI element! "   
-                             "Probably caused by incorrect GUI math expressions.");
+                            "Probably caused by incorrect GUI math expressions.");
                     fallback();
                 }
             }
@@ -327,9 +327,9 @@ class GUIElement
             bounds_.max = bounds_.min + Vector2i(width, height);
 
             //realign children
-            foreach(ref child; children_)
+            foreach(ref child; children_) if(child.visible_)
             {
-                if(child.visible_){child.realign(driver);}
+                child.realign(driver);
             }
 
             aligned_ = true;
@@ -359,11 +359,11 @@ final class GUIRoot
             //construct the root element.
             with(new GUIElementFactory)
             {
-                x = "0";
-                y = "0";
-                width = "w_right";
+                x      = "0";
+                y      = "0";
+                width  = "w_right";
                 height = "w_bottom";
-                root_ = produce();
+                root_  = produce();
             }
             root_.draw_border_ = false;
 
@@ -389,18 +389,16 @@ final class GUIRoot
             scope(failure){writeln("Failure drawing GUI");}
 
             //save view zoom and offset
-            const zoom = driver.zoom;
+            const zoom   = driver.zoom;
             const offset = driver.view_offset; 
 
             //set 1:1 zoom and zero offset for GUI drawing
-            driver.zoom = 1.0;
+            driver.zoom        = 1.0;
             driver.view_offset = Vector2d(0.0, 0.0);
-
             //draw the elements
             root_.draw(driver);
-
             //restore zoom and offset
-            driver.zoom = zoom;
+            driver.zoom        = zoom;
             driver.view_offset = offset;
         }
 
@@ -425,7 +423,7 @@ final class GUIRoot
  *
  * See_Also: GUIElementFactoryBase
  */
-final class GUIElementFactory : GUIElementFactoryBase!(GUIElement)
+final class GUIElementFactory : GUIElementFactoryBase!GUIElement
 {
     public override GUIElement produce(){return new GUIElement(gui_element_params);}
 }
@@ -491,11 +489,11 @@ final class GUIElementFactory : GUIElementFactoryBase!(GUIElement)
  */
 abstract class GUIElementFactoryBase(T)
 {
-    mixin(generate_factory("string $ x $ \"p_left\"", 
-                           "string $ y $ \"p_top\"", 
-                           "string $ width $ \"64\"", 
-                           "string $ height $ \"64\"",
-                           "bool $ draw_border $ true"));
+    mixin(generate_factory(`string $ x           $ "p_left"`, 
+                           `string $ y           $ "p_top"`, 
+                           `string $ width       $ "64"`, 
+                           `string $ height      $ "64"`,
+                           `bool   $ draw_border $ true`));
     private:
         alias std.conv.to to;
 
@@ -521,9 +519,9 @@ abstract class GUIElementFactoryBase(T)
          */
         final void margin(in int top, in int right, in int bottom, in int left)
         {
-            x = "p_left + " ~ to!string(left);
-            y = "p_top + " ~ to!string(top);
-            width = "p_width - " ~ to!string(left + right);
+            x      = "p_left + "   ~ to!string(left);
+            y      = "p_top + "    ~ to!string(top);
+            width  = "p_width - "  ~ to!string(left + right);
             height = "p_height - " ~ to!string(top + bottom);
         }
 
@@ -533,7 +531,7 @@ abstract class GUIElementFactoryBase(T)
 }
 
 ///GUI element constructor parameters
-align(1) immutable struct GUIElementParams
+immutable struct GUIElementParams
 {
     private:
         ///Coordinates' math expressions.

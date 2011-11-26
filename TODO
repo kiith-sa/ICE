@@ -1,14 +1,5 @@
 ASAP:
 
-
-GUIElement - Use die(), and maybe do it same way we plan to handle
-Actors.
-die() could work similarly to Swing's setVisible(false) - just 
-a flag, and next update, GUIRoot or parent element clears (with dtor)
-the elements dead at this frame. 
-(or rather - does a separate crawl to delete dead elements-
- no frame number, just a bool)
-
 Still use die() for Actors (and PhysicsBodies - see below) 
 
 Actor.die(), PhysicsBody.die() 
@@ -24,7 +15,8 @@ by the actor, that reference can be passed on update.
 Color literals:
 color!"FF8008"
 
-
+GUIElement text dimensions could be separated into a struct or class 
+for reuse. 
  
 Other changes to adapt to current DMD as more D functionality works without 
 bugs now.

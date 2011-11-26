@@ -43,7 +43,7 @@ class GUIButton : GUIElement
 {
     private:
         ///Struct for properties that vary between button states.
-        static align(1) struct State
+        static struct State
         {
             ///Color of button border.
             Color border_color;
@@ -87,13 +87,13 @@ class GUIButton : GUIElement
             //initialize button text
             auto factory = new GUIStaticTextFactory;
             factory.font_size = font_size;
-            factory.text = text;
+            factory.text      = text;
             with(factory)
             {
-                x = "p_left";
-                y = "p_top";
-                width = "p_width";
-                height = "p_height";
+                x       = "p_left";
+                y       = "p_top";
+                width   = "p_width";
+                height  = "p_height";
                 align_x = AlignX.Center;
                 align_y = AlignY.Center;
                 this.text_ = produce();
@@ -134,13 +134,10 @@ class GUIButton : GUIElement
 
             //if clicked, keep that state so that we can drag mouse after clicking a button.
             if(state_ == ButtonState.Clicked){return;}
-            //if the mouse is above the element and not clicked, set mouseover
-            if(bounds_.intersect(Vector2i(position.x, position.y)))
-            {
-                set_state(ButtonState.MouseOver);
-            }
-            //if mouse is outside the element and not clicked, return to normal
-            else{set_state(ButtonState.Normal);}
+            //if mouse above the element and not clicked, set mouseover
+            //if mouse outside the element and not clicked, return to normal
+            set_state(bounds_.intersect(math.vector2.to!int(position)) 
+                      ? ButtonState.MouseOver : ButtonState.Normal);
         }
 
         override void draw(VideoDriver driver)
@@ -174,10 +171,10 @@ class GUIButton : GUIElement
  *          text_color   = Text color for specified button state.
  *          border_color = Border color for specified button state.
  */
-final class GUIButtonFactory : GUIElementFactoryBase!(GUIButton)
+final class GUIButtonFactory : GUIElementFactoryBase!GUIButton
 {
-    mixin(generate_factory("string $ text $ \"\"", 
-                           "uint $ font_size $ GUIStaticText.default_font_size()"));
+    mixin(generate_factory(`string $ text      $ ""`, 
+                           `uint   $ font_size $ GUIStaticText.default_font_size()`));
     private:
         ///Properties for each button state.
         GUIButton.State[ButtonState.max + 1] states_;
@@ -187,12 +184,12 @@ final class GUIButtonFactory : GUIElementFactoryBase!(GUIButton)
         this()
         {
             //Initialize default values for button colors.
-            states_[ButtonState.Normal].border_color = Color(192, 192, 255, 96);
-            states_[ButtonState.Normal].text_color = Color(160, 160, 255, 192);
+            states_[ButtonState.Normal].border_color    = Color(192, 192, 255, 96);
+            states_[ButtonState.Normal].text_color      = Color(160, 160, 255, 192);
             states_[ButtonState.MouseOver].border_color = Color(192, 192, 255, 160);
-            states_[ButtonState.MouseOver].text_color = Color(192, 192, 255, 192);
-            states_[ButtonState.Clicked].border_color = Color(192, 192, 255, 255);
-            states_[ButtonState.Clicked].text_color = Color(224, 224, 255, 255);
+            states_[ButtonState.MouseOver].text_color   = Color(192, 192, 255, 192);
+            states_[ButtonState.Clicked].border_color   = Color(192, 192, 255, 255);
+            states_[ButtonState.Clicked].text_color     = Color(224, 224, 255, 255);
         }
 
         void text_color(in ButtonState state, in Color color)

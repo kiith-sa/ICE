@@ -60,10 +60,10 @@ final class GUIMouseControllable : GUIElement
          * Emitted when zooming. Float passed specifies zoom level change
          * (-1 : zoom out 1 level, +1 : zoom in 1 level)
          */
-        mixin Signal!(float) zoom;
+        mixin Signal!float zoom;
 
         ///Emitted when panning. Vector2f passed specifies relative change of panning.
-        mixin Signal!(Vector2f) pan;
+        mixin Signal!Vector2f pan;
 
         ///Emitted user presses a button to return to default view.
         mixin Signal!() reset_view;
@@ -100,19 +100,14 @@ final class GUIMouseControllable : GUIElement
             switch(key)
             {
                 //mouse wheel handles zooming
-                case MouseKey.WheelUp:
-                    zoom.emit(1.0f);
-                    break;
-                case MouseKey.WheelDown:
-                    zoom.emit(-1.0f);
-                    break;
-                default:
-                    break;
+                case MouseKey.WheelUp:   zoom.emit(1.0f);  break;
+                case MouseKey.WheelDown: zoom.emit(-1.0f); break;
+                default: break;
             }
             if(key == pan_key_)
             {
                 //can be either pressed or released
-                pan_key_pressed_ = state == KeyState.Pressed ? true : false;
+                pan_key_pressed_ = state == KeyState.Pressed;
             }
             if(key == reset_view_key_ && state == KeyState.Pressed){reset_view.emit();}
         }
@@ -130,7 +125,7 @@ final class GUIMouseControllable : GUIElement
             }
 
             //panning 
-            if(pan_key_pressed_){pan.emit(to!(float)(relative));}
+            if(pan_key_pressed_){pan.emit(to!float(relative));}
         }
 }
 

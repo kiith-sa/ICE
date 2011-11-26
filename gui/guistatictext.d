@@ -117,8 +117,8 @@ class GUIStaticText : GUIElement
             text_ = expandtabs(text);
 
             font_color_ = text_color;
-            font_size_ = font_size;
-            font_ = font;
+            font_size_  = font_size;
+            font_       = font;
 
             align_x_ = align_x;
             align_y_ = align_y;
@@ -242,14 +242,11 @@ class GUIStaticText : GUIElement
 
             //align the line horizontally
             line.offset = Vector2i(0, y_offset_in);
-            if(align_x_ == AlignX.Right)
-            {
-                line.offset.x = width - driver.text_size(line.text).x;
-            }
-            if(align_x_ == AlignX.Center)
-            {
-                line.offset.x = (width - driver.text_size(line.text).x) / 2;
-            }
+            const text_width = driver.text_size(line.text).x;
+            line.offset.x  = align_x_ == AlignX.Right  ? width - text_width :
+                             align_x_ == AlignX.Center ? (width - text_width) / 2
+                             : line.offset.x;
+                                           
             lines_ ~= line;
             //strip leading space so the next line doesn't start with space
             return stripl(text);
@@ -287,14 +284,14 @@ class GUIStaticText : GUIElement
  *          font        = Name of the font to use.
  *                        Default; "default"
  */
-final class GUIStaticTextFactory : GUIElementFactoryBase!(GUIStaticText)
+final class GUIStaticTextFactory : GUIElementFactoryBase!GUIStaticText
 {
-    mixin(generate_factory("Color $ text_color $ Color.white", 
-                           "string $ text $ \"\"", 
-                           "AlignX $ align_x $ AlignX.Left", 
-                           "AlignY $ align_y $ AlignY.Top", 
-                           "uint $ font_size $ GUIStaticText.default_font_size()",
-                           "string $ font $ \"default\""));
+    mixin(generate_factory(`Color  $ text_color $ Color.white`, 
+                           `string $ text       $ ""`, 
+                           `AlignX $ align_x    $ AlignX.Left`, 
+                           `AlignY $ align_y    $ AlignY.Top`, 
+                           `uint   $ font_size  $ GUIStaticText.default_font_size()`,
+                           `string $ font       $ "default"`));
 
     ///Construct a GUIStaticTextFactory and initialize defaults.
     this(){draw_border_ = false;}

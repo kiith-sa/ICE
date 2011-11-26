@@ -54,11 +54,11 @@ abstract class GUIMenu : GUIElement
         {
             super(params);
             //parentheses prevent unwanted operator precedence, simplify realigning code
-            item_width_ = "(" ~ item_width ~ ")";
-            item_height_ = "(" ~ item_height ~ ")";
+            item_width_   = "(" ~ item_width ~ ")";
+            item_height_  = "(" ~ item_height ~ ")";
             item_spacing_ = "(" ~ item_spacing ~ ")";
-            font_size_ = item_font_size;
-            aligned_ = false;
+            font_size_    = item_font_size;
+            aligned_      = false;
 
             foreach(ref item; items)
             {
@@ -88,10 +88,10 @@ abstract class GUIMenu : GUIElement
             factory.text = text;
             with(factory)
             {
-                x = new_item_x();
-                y = new_item_y();
-                width = item_width_;
-                height = item_height_;
+                x         = new_item_x();
+                y         = new_item_y();
+                width     = item_width_;
+                height    = item_height_;
                 font_size = this.font_size_;
             }
             auto button = factory.produce();
@@ -175,7 +175,7 @@ class GUIMenuVertical : GUIMenu
         override void realign(VideoDriver driver)
         {
             //offset = item_height_ + item_spacing_
-            const string offset = "(" ~ item_height_ ~ " + " ~ item_spacing_ ~ ")";
+            const offset = "(" ~ item_height_ ~ " + " ~ item_spacing_ ~ ")";
             //width = item_spacing_ * 2 + item_width_
             width_string_ = item_spacing_ ~ " * 2 + " ~ item_width_;
             //height = item_spacing_ + offset * items_.length
@@ -192,7 +192,7 @@ class GUIMenuVertical : GUIMenu
         override string new_item_y() const
         {
             //offset = item_height_ + item_spacing_
-            const string offset = "(" ~ item_height_ ~ " + " ~ item_spacing_ ~ ")";
+            const offset = "(" ~ item_height_ ~ " + " ~ item_spacing_ ~ ")";
             //return item_spacing_ + parent_.bounds_.min.y + offset * items_.length
             return item_spacing_ ~ " + p_top + " ~ offset ~ " * " ~ to!string(items_.length);
         }
@@ -219,12 +219,12 @@ class GUIMenuVertical : GUIMenu
  *          add_item       = Add a menu item with specified text and callback
  *                           to be called when the item is clicked.
  */
-class GUIMenuFactory(T) : GUIElementFactoryBase!(T)
+class GUIMenuFactory(T) : GUIElementFactoryBase!T
 {
-    mixin(generate_factory("string $ item_width $ \"128\"", 
-                           "string $ item_height $ \"24\"",
-                           "string $ item_spacing $ \"4\"",
-                           "uint $ item_font_size $ GUIStaticText.default_font_size()"));
+    mixin(generate_factory(`string $ item_width     $ "128"`, 
+                           `string $ item_height    $ "24"`,
+                           `string $ item_spacing   $ "4"`,
+                           `uint   $ item_font_size $ GUIStaticText.default_font_size()`));
     private:
         ///Text and callback for each menu item.
         MenuItemData[] items_;
@@ -249,14 +249,14 @@ class GUIMenuFactory(T) : GUIElementFactoryBase!(T)
  *
  * See_Also: GUIMenuFactory
  */
-alias GUIMenuFactory!(GUIMenuHorizontal) GUIMenuHorizontalFactory;
+alias GUIMenuFactory!GUIMenuHorizontal GUIMenuHorizontalFactory;
 
 /**
  * Factory used for vertical menu construction.
  *
  * See_Also: GUIMenuFactory
  */
-alias GUIMenuFactory!(GUIMenuVertical) GUIMenuVerticalFactory;
+alias GUIMenuFactory!GUIMenuVertical GUIMenuVerticalFactory;
 
 private:
 ///Data structure holding data needed to create a menu item.
