@@ -69,7 +69,7 @@ class GUIElement
             foreach(ref child; children_)
             {
                 child.die();
-                child = null;
+                clear(child);
             }
             clear(children_);
             children_ = null;
