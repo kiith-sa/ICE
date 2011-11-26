@@ -129,9 +129,7 @@ class GUIElement
         }
         body
         {
-            //children_ = remove!((GUIElement a){return a == child;})(children_);
-            auto i = countUntil!"a is b"(children_, child);
-            children_ = children_[0 .. i] ~ children_[i + 1 .. $];
+            children_ = remove!((GUIElement a){return a is child;})(children_);
             child.parent_ = null;
         }
 
@@ -316,31 +314,13 @@ class GUIElement
         ///Remove dead GUI elements.
         final void collect_dead()
         {
-            /*
-            foreach(child; children_) if(child.dead_)
+            static bool dead(GUIElement e)
             {
-                clear(child);
+                if(e.dead_){clear(e);}
+                else{e.collect_dead();}
+                return e.dead_;
             }
-            children_ = remove!((GUIElement a){return a.dead_;})(children_);
-            */
-            auto l = 0;
-            for(size_t child_from = 0; child_from < children_.length; ++child_from)
-            {
-                auto child = children_[child_from];
-                if(child.dead_)
-                {
-                    clear(child);
-                    continue;
-                }
-                children_[l] = children_[child_from];
-                ++l;
-            } 
-            children_.length = l;
-
-            foreach(child; children_)
-            {
-                child.collect_dead();
-            }
+            children_ = remove!dead(children_);
         }
 }
 
