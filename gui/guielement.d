@@ -30,6 +30,10 @@ import util.weaksingleton;
 ///Base class for all GUI elements. Can be used directly to draw empty elements.
 class GUIElement
 {
+    private:
+        ///Is this element dead (to be destroyed next update)?
+        bool dead_ = false;
+
     protected:
         ///Parent element of this element.
         GUIElement parent_ = null;
@@ -61,6 +65,7 @@ class GUIElement
         ///Destroy this element and all its children.
         void die()
         {
+            dead_ = true;
             foreach(ref child; children_)
             {
                 child.die();
@@ -71,6 +76,14 @@ class GUIElement
             if(parent_ !is null){parent_.remove_child(this);}
             parent_ = null;
         }                 
+
+        ///Destructor. Used to assert that the element was correctly destroyed using die().
+        ~this()
+        {
+            assert(dead_ == true,
+                   "Destroying a GUIElement that is not dead - "
+                   "maybe die() wasn't called before the element was collected by GC");
+        }
 
         ///Get position in screen space.
         @property final Vector2i position_global() const {return bounds_.min;}
@@ -178,13 +191,6 @@ class GUIElement
                 draw_border_   = draw_border;
             }
             aligned_ = false;
-        }
-
-        ///Destructor. Used to assert that the element was correctly destroyed using die().
-        ~this()
-        {
-            assert(parent_ is null && children_ is null,
-                   "GUIElement must be cleared before it is destroyed");
         }
         
         /**
