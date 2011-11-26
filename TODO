@@ -30,6 +30,9 @@ Also its themes - might be better than my idea
 
 Everything can use YAML instead of Hybrid DSLs
 
+If not using Hybrid-style GUI, we can still rename GUIElement to Widget,
+GUIMenu to MenuWidget, etc
+
 See Pitfalls of OOP for info on how to improve Scene, Physics, ParticleSystem hierarchy
 (maybe a single hierarchy using component approach? - 
  or rather, don't use the component idea below - just try to copy ideas from 

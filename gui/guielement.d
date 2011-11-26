@@ -66,6 +66,7 @@ class GUIElement
         final void die()
         {
             dead_ = true;
+            foreach(child; children_){child.die();}
         }                 
 
         ///Destructor. Used to assert that the element was correctly destroyed using die().
@@ -75,10 +76,7 @@ class GUIElement
                    "Destroying a GUIElement that is not dead - "
                    "maybe die() wasn't called before the element was collected by GC");
 
-            foreach(ref child; children_)
-            {
-                clear(child);
-            }
+            foreach(ref child; children_){clear(child);}
             clear(children_);
             parent_ = null;
         }
@@ -131,7 +129,7 @@ class GUIElement
         }
         body
         {
-            //removing in this fashion fue to a bug in std.algorithm.remove
+            //children_ = remove!((GUIElement a){return a == child;})(children_);
             auto i = countUntil!"a is b"(children_, child);
             children_ = children_[0 .. i] ~ children_[i + 1 .. $];
             child.parent_ = null;
@@ -203,11 +201,7 @@ class GUIElement
             if(!visible_){return;}
 
             //pass input to the children
-            foreach_reverse(ref child; children_)
-            {
-                if(dead_){return;}
-                child.key(state, key, unicode);
-            }
+            foreach_reverse(ref child; children_){child.key(state, key, unicode);}
         }
 
         /**
@@ -223,11 +217,7 @@ class GUIElement
             if(!visible_){return;}
 
             //pass input to the children
-            foreach_reverse(ref child; children_)
-            {
-                if(dead_){return;}
-                child.mouse_key(state, key, position);
-            }
+            foreach_reverse(ref child; children_){child.mouse_key(state, key, position);}
         }
 
         /**
@@ -242,11 +232,7 @@ class GUIElement
             if(!visible_){return;}
 
             //pass input to the children
-            foreach_reverse(ref child; children_)
-            {
-                if(dead_){return;}
-                child.mouse_move(position, relative);
-            }
+            foreach_reverse(ref child; children_){child.mouse_move(position, relative);}
         }
 
         ///Realign contents of this element according to its dimensions.

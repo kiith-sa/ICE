@@ -309,8 +309,8 @@ class Pong
             if(video_driver_ !is null){monitor_.remove_monitorable("Video");}
 
             clear(gui_);
-            clear(monitor_);
             clear(gui_root_);
+            clear(monitor_);
 
             //video driver might be already destroyed in exceptional circumstances
             if(video_driver_ !is null)
