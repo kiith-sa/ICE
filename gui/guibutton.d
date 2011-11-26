@@ -63,9 +63,8 @@ class GUIButton : GUIElement
         ///Emitted when this button is pressed.
         mixin Signal!() pressed;
 
-        override void die()
+        ~this()
         {
-            super.die();
             pressed.disconnect_all();
             text_ = null;
         }

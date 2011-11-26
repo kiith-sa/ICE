@@ -63,13 +63,9 @@ class GUIElement
 
     public:
         ///Destroy this element and all its children.
-        void die()
+        final void die()
         {
             dead_ = true;
-            foreach(ref child; children_)
-            {
-                if(!child.dead_){child.die();}
-            }
         }                 
 
         ///Destructor. Used to assert that the element was correctly destroyed using die().

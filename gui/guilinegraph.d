@@ -176,11 +176,9 @@ final class GUILineGraph : GUIElement
         ///Set graph mode (data points are average per measurement or sums over time).
         @property void graph_mode(in GraphMode mode){mode_ = mode;}
 
-        ///Destroy this GUILineGraph.
-        override void die()
+        ~this()
         {
             foreach(display; graphics_.values){clear(display);}
-            super.die();
         }
 
     protected:

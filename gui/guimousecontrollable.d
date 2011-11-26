@@ -82,13 +82,11 @@ final class GUIMouseControllable : GUIElement
             reset_view_key_ = reset_view_key;
         }
 
-        override void die()
+        ~this()
         {
             zoom.disconnect_all();
             pan.disconnect_all();
             reset_view.disconnect_all();
-
-            super.die();
         }
 
     protected:

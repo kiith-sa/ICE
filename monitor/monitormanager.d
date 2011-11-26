@@ -194,10 +194,9 @@ final class MonitorView : GUIElement
         ///Return font size for monitor widgets to use.
         static uint font_size(){return 8;}
 
-        override void die()
+        ~this()
         {
             monitor_.update_views.disconnect(&regenerate);
-            super.die();
         }
 
     protected:
