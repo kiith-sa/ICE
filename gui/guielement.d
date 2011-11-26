@@ -68,13 +68,8 @@ class GUIElement
             dead_ = true;
             foreach(ref child; children_)
             {
-                child.die();
-                clear(child);
+                if(!child.dead_){child.die();}
             }
-            clear(children_);
-            children_ = null;
-            if(parent_ !is null){parent_.remove_child(this);}
-            parent_ = null;
         }                 
 
         ///Destructor. Used to assert that the element was correctly destroyed using die().
@@ -83,6 +78,13 @@ class GUIElement
             assert(dead_ == true,
                    "Destroying a GUIElement that is not dead - "
                    "maybe die() wasn't called before the element was collected by GC");
+
+            foreach(ref child; children_)
+            {
+                clear(child);
+            }
+            clear(children_);
+            parent_ = null;
         }
 
         ///Get position in screen space.
@@ -207,8 +209,7 @@ class GUIElement
             //pass input to the children
             foreach_reverse(ref child; children_)
             {
-                //children can be null if we've just destroyed this element.
-                if(children_ is null){continue;}
+                if(dead_){return;}
                 child.key(state, key, unicode);
             }
         }
@@ -228,8 +229,7 @@ class GUIElement
             //pass input to the children
             foreach_reverse(ref child; children_)
             {
-                //children can be null if we've just destroyed this element.
-                if(children_ is null){continue;}
+                if(dead_){return;}
                 child.mouse_key(state, key, position);
             }
         }
@@ -248,8 +248,7 @@ class GUIElement
             //pass input to the children
             foreach_reverse(ref child; children_)
             {
-                //children can be null if we've just destroyed this element.
-                if(children_ is null){continue;}
+                if(dead_){return;}
                 child.mouse_move(position, relative);
             }
         }
