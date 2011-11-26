@@ -150,32 +150,6 @@ class GUIElement
 
     protected:
         /**
-         * Draw children of this element.
-         *
-         * Params:  driver = VideoDriver to draw with.
-         */
-        final void draw_children(VideoDriver driver)
-        {
-            foreach(ref child; children_)
-            {
-                //children can be null if we've just destroyed this element.
-                if(children_ is null){continue;}
-                child.draw(driver);
-            }
-        }
-
-        ///Update children of this element.
-        final void update_children()
-        {
-            foreach(ref child; children_)
-            {
-                //children can be null if we've just destroyed this element.
-                if(children_ is null){continue;}
-                child.update();
-            }
-        }
-
-        /**
          * Construct a GUIElement with specified parameters.
          *
          * Params:  params = Parameters for construction of the GUIElement.
@@ -340,6 +314,53 @@ class GUIElement
 
             aligned_ = true;
         }
+
+    private:
+        /**
+         * Draw children of this element.
+         *
+         * Params:  driver = VideoDriver to draw with.
+         */
+        final void draw_children(VideoDriver driver)
+        {
+            foreach(ref child; children_){child.draw(driver);}
+        }
+
+        ///Update children of this element.
+        final void update_children()
+        {
+            foreach(ref child; children_){child.update();}
+        }
+
+        ///Remove dead GUI elements.
+        final void collect_dead()
+        {
+            /*
+            foreach(child; children_) if(child.dead_)
+            {
+                clear(child);
+            }
+            children_ = remove!((GUIElement a){return a.dead_;})(children_);
+            */
+            auto l = 0;
+            for(size_t child_from = 0; child_from < children_.length; ++child_from)
+            {
+                auto child = children_[child_from];
+                if(child.dead_)
+                {
+                    clear(child);
+                    continue;
+                }
+                children_[l] = children_[child_from];
+                ++l;
+            } 
+            children_.length = l;
+
+            foreach(child; children_)
+            {
+                child.collect_dead();
+            }
+        }
 }
 
 ///GUI root container. Contains drawing and input handling methods.
@@ -382,6 +403,7 @@ final class GUIRoot
         ~this()
         {
             root_.die();
+            clear(root_);
             singleton_dtor();
         }
 
@@ -412,7 +434,11 @@ final class GUIRoot
         @property GUIElement root(){return root_;}
 
         ///Update the GUI.
-        void update(){root_.update_children();}
+        void update()
+        {
+            root_.collect_dead();
+            root_.update_children();
+        }
 
         ///Add a child element.
         void add_child(GUIElement child){root_.add_child(child);}
