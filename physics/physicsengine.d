@@ -26,7 +26,6 @@ import math.vector2;
 import util.signal;
 import util.weaksingleton;
 import util.iterable;
-import workarounds;
 
 
 /**
@@ -192,7 +191,7 @@ final class PhysicsEngine : Monitorable
                 physics_body.remove_from_spatial(spatial_manager_);
             }
 
-            workarounds.remove!(PhysicsBody, true)(bodies_, physics_body);
+            remove!((PhysicsBody a){return a is physics_body;})(bodies_);
         }
 
         @property MonitorDataInterface monitor_data()

@@ -23,7 +23,6 @@ import monitor.submonitor;
 import monitor.monitorable;
 import monitor.monitordata;
 import util.signal;
-import workarounds;
 
 
 /**
@@ -91,7 +90,7 @@ final class MonitorManager
         body
         {
             //unpin all pinned monitors
-            workarounds.remove(pinned_, (ref MonitorID id){return id.monitored == name;});
+            remove!((ref MonitorID id){return id.monitored == name;})(pinned_);
             monitored_[name].die();
             monitored_.remove(name);
             update_views.emit();
@@ -164,7 +163,7 @@ final class MonitorManager
         in{assert(pinned(id), "Trying to unpin a monitor that is not pinned");}
         body
         {
-            workarounds.remove(pinned_, id);
+            remove!((ref MonitorID a){return a == id;})(pinned_);
         }
 
         ///Is a submonitor pinned?

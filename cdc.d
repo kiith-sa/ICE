@@ -169,7 +169,7 @@ void main(string[] args)
                          "math/", "memory/", "monitor/", "platform/", 
                          "spatial/", "time/", "video/", "containers/", "util/",
                          "pong/", "color.d", "graphdata.d", "image.d", 
-                         "workarounds.d", "pong.d"];
+                         "pong.d"];
 
     void compile_(string[] args, string[] files)
     {

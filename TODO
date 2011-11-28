@@ -1,6 +1,6 @@
 ASAP:
 
-Still use die() for Actors (and PhysicsBodies - see below) 
+Check what can we remove from stringctfe.
 
 Actor.die(), PhysicsBody.die() 
     Each Actor has a uint or ulong value: dead_at_frame_

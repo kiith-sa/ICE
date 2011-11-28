@@ -10,7 +10,6 @@ module scene.scenemanager;
 @safe
 
 
-import workarounds;
 import std.algorithm;
 import std.stdio;
 import std.string;
@@ -155,7 +154,7 @@ final class SceneManager : ActorContainer, Monitorable
             //these actors are already dead, so remove them first
             foreach(actor; actors_to_remove_)
             {
-                workarounds.remove!(Actor, true)(actors_, actor);
+                remove!((Actor a){return a is actor;})(actors_);
                 physics_engine_.remove_body(actor.physics_body);
             }
 
@@ -217,7 +216,7 @@ final class SceneManager : ActorContainer, Monitorable
             //Add or remove any actors requested
             foreach(actor; actors_to_remove_)
             {
-                workarounds.remove!(Actor, true)(actors_, actor);
+                remove!((Actor a){return a is actor;})(actors_);
                 physics_engine_.remove_body(actor.physics_body);
             }
 
