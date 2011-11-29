@@ -191,7 +191,7 @@ final class PhysicsEngine : Monitorable
                 physics_body.remove_from_spatial(spatial_manager_);
             }
 
-            remove!((PhysicsBody a){return a is physics_body;})(bodies_);
+            bodies_ = remove!((PhysicsBody a){return a is physics_body;})(bodies_);
         }
 
         @property MonitorDataInterface monitor_data()

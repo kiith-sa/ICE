@@ -314,13 +314,20 @@ class GUIElement
         ///Remove dead GUI elements.
         final void collect_dead()
         {
-            static bool dead(GUIElement e)
+            auto l = 0;
+            for(size_t child_from = 0; child_from < children_.length; ++child_from)
             {
-                if(e.dead_){clear(e);}
-                else{e.collect_dead();}
-                return e.dead_;
-            }
-            children_ = remove!dead(children_);
+                auto child = children_[child_from];
+                if(child.dead_)
+                {
+                    clear(child);
+                    continue;
+                }
+                children_[l] = children_[child_from];
+                children_[l].collect_dead();
+                ++l;
+            } 
+            children_.length = l;
         }
 }
 
