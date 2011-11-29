@@ -11,6 +11,7 @@ module util.factory;
 
 
 import std.string;
+import std.typecons;
 
 import util.stringctfe;
 
@@ -23,8 +24,8 @@ import util.stringctfe;
  * --------------------
  * "string $ width $ \"64\""
  * --------------------
- * will result in generation of data member width_ (notice trailing underscore)
- * of type string with default value of "64", and a setter for it, like this:
+ * will generate data member "width_" (notice trailing underscore)
+ * of type string with default value of "64", and a setter "width", like this:
  * --------------------
  * protected string width_ = \"64\";
  * public void width(string width){width_ = width};
@@ -35,29 +36,28 @@ import util.stringctfe;
  *
  * Returns: Generated code ready to be inserted into a factory class definition.
  */
-string generate_factory(string parameter_strings []...)
+string generate_factory(string[] parameter_strings ...)
 {
-    Parameter[] parameters;
-    foreach(parameter; parameter_strings)
+    alias Tuple!(string, "type", string, "name", string, "def_value") Parameter;
+
+    Parameter[] params;
+    foreach(param; parameter_strings)
     { 
-        string[] p = parameter.split_ctfe('$');
-        assert(p.length == 3, "Malformed parameter in generated factory code: " ~ parameter);
-        parameters ~= Parameter(p[0].strip_ctfe(), p[1].strip_ctfe(), p[2].strip_ctfe());
+        string[] p = param.split("$");
+        assert(p.length == 3, "Malformed parameter to generate factory code: " ~ param);
+        params ~= Parameter(p[0].strip_ctfe(), p[1].strip_ctfe(), p[2].strip_ctfe());
     }
 
-    string data;
-    foreach(p; parameters){data ~= p.type ~ " " ~ p.name ~ "_ = " ~ p.def_value ~ ";\n";}
-
-    string setters;
-    foreach(p; parameters)
+    string data, setters;
+    foreach(p; params)
     {
+        data    ~= p.type ~ " " ~ p.name ~ "_ = " ~ p.def_value ~ ";\n";
         setters ~= "void " ~ p.name ~ "(" ~ p.type ~ " " ~ p.name ~ "){" ~
                    p.name ~ "_ = " ~ p.name ~ ";}\n";
     }
 
     return "protected:\n" ~ data ~ "public:\n" ~ setters;
 }
-///Unittest for generate_factory().
 unittest
 {
     string expected =
@@ -69,17 +69,4 @@ unittest
         "void b(int b){b_ = b;}\n";
     assert(expected == generate_factory("string $ a $ \"default\"", "int $ b $ 42"),
            "Unexpected factory code generated");
-}
-
-private: 
-
-///Used in parameter string parsing, stores parameter data.
-struct Parameter
-{
-    ///Type of the parameter.
-    string type;
-    ///Name of the parameter.
-    string name;
-    ///Default value of the parameter.
-    string def_value;
 }

@@ -18,7 +18,7 @@ import std.algorithm;
  *
  * Signals should always be documented in header class documentation,
  * and always disconnect all their slots (disconnect_all) at their
- * owner class destructor or die() method.
+ * owner classes' destructor or die() method.
  * 
  * Examples:
  * --------------------
@@ -31,8 +31,10 @@ import std.algorithm;
 template Signal(Args ...)    
 {
     private:
+        alias void delegate(Args) Slot;
+
         ///Slots of this signal.
-        void delegate(Args)[] slots_;
+        Slot[] slots_;
 
     public:
         ///Emit the signal (call all slots with specified arguments).
@@ -52,7 +54,7 @@ template Signal(Args ...)
          *
          * Params:  slot = Slot to connect.
          */
-        void connect(void delegate(Args) slot)
+        void connect(Slot slot)
         in{assert(slot !is null, "Can't connect a null function to a signal");}
         body{slots_ ~= slot;}
 
@@ -64,7 +66,7 @@ template Signal(Args ...)
          *
          * Params:  slot = Slot to disconnect. Must already be connected.
          */
-        void disconnect(void delegate(Args) slot)
+        void disconnect(Slot slot)
         in
         {
             assert(std.algorithm.canFind!"a is b"(slots_, slot),
@@ -72,9 +74,7 @@ template Signal(Args ...)
         }
         body
         {
-            //removing element this way due to a bug in std.algorithm.remove
-            const i = std.algorithm.countUntil!("a is b", void delegate(Args)[], void delegate(Args))(slots_, slot);
-            slots_ = slots_[0 .. i] ~ slots_[i + 1 .. $];
+            slots_ = std.algorithm.remove!((Slot a){return a is slot;})(slots_); 
         }
 
         ///Disconnect all connected slots.

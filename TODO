@@ -1,7 +1,5 @@
 ASAP:
 
-Check what can we remove from stringctfe.
-
 Graph drawing: Use the idea from neural_networks_02 project 
 for drawing graphs - skipping data points when more of them than width 
 (or more than width*2 for good detail with AA)
@@ -37,10 +35,14 @@ Everything can use YAML instead of Hybrid DSLs
 If not using Hybrid-style GUI, we can still rename GUIElement to Widget,
 GUIMenu to MenuWidget, etc
 
+API docs: use AutoDDoc
+
 See Pitfalls of OOP for info on how to improve Scene, Physics, ParticleSystem hierarchy
 (maybe a single hierarchy using component approach? - 
  or rather, don't use the component idea below - just try to copy ideas from 
  that paper for now.)
+
+
 
 
 
