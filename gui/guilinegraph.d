@@ -13,6 +13,7 @@ module gui.guilinegraph;
 import std.algorithm;
 import std.math;
 import std.conv;
+import std.range;
 
 import video.videodriver;
 import math.math;
@@ -60,7 +61,7 @@ final class GUILineGraph : GUIElement
         }
 
         ///Horizontal line on the graph, shown for visual comparison with graph values.
-        static align(1) struct Line
+        static struct Line
         {
             ///Info text of the line (i.e. number represented by the line).
             string text;
@@ -198,7 +199,7 @@ final class GUILineGraph : GUIElement
             reset_timer(get_time());
             foreach(name, color; colors)
             {
-                graphics_[name]      = new GraphDisplay;
+                graphics_[name]       = new GraphDisplay;
                 graphics_[name].color = color;
             }
         }
@@ -249,7 +250,7 @@ final class GUILineGraph : GUIElement
             if(auto_scroll_){time_offset_ = age();}
 
             real maximum;
-            const(real)[][string] data_points = get_data_points_and_maximum(maximum);
+            auto data_points = get_data_points_and_maximum(maximum);
 
             if(auto_scale_ && !equals(maximum, 0.0L))
             {
@@ -259,9 +260,8 @@ final class GUILineGraph : GUIElement
             update_lines();
 
             //generate line strips
-            foreach(name; data_.graph_names)
+            foreach(name, points; lockstep(data_.graph_names, data_points))
             {
-                const points  = data_points[name];
                 auto graphics = graphics_[name];
 
                 //clear the strip
@@ -290,7 +290,7 @@ final class GUILineGraph : GUIElement
          *
          * Returns: Data points of every graph in an associative array indexed by graph name.
          */
-        const(real)[][string] get_data_points_and_maximum(out real maximum)
+        const(real)[][] get_data_points_and_maximum(out real maximum)
         {
             //calculate the time window we want to get data points for
             //why +3 : get a few more points so the graph is always full if there's enough data
@@ -299,17 +299,14 @@ final class GUILineGraph : GUIElement
             const real start_time = end_time - time_width;
 
             maximum = 0.0;
-            const(real)[][string] data_points;
+            const(real)[][] data_points;
 
             //getting all data points and the maximum
             foreach(name; data_.graph_names)
             {
-                const(real)[] points = data_.data_points(name, start_time, end_time, 
-                                                         data_point_time_, mode_);
-
-                data_points[name] = points;
+                auto points = data_.data_points(name, start_time, end_time, data_point_time_, mode_); 
+                data_points ~= points;
                 if(points.length <= 1){continue;}
-
                 maximum = max(maximum, reduce!max(points));
             }
 
@@ -411,7 +408,7 @@ final class GUILineGraph : GUIElement
  * Params:  data        = Graph data to display. Must be specified.
  *          graph_color = Set color for graph of measured value with specified name.
  */
-final class GUILineGraphFactory : GUIElementFactoryBase!(GUILineGraph)
+final class GUILineGraphFactory : GUIElementFactoryBase!GUILineGraph
 {
     private:
         mixin(generate_factory("GraphData $ data $ null"));
