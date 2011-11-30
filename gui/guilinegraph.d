@@ -274,7 +274,6 @@ final class GUILineGraph : GUIElement
                 if(data_.empty(idx)){continue;}
 
                 float x = bounds_.max.x - scale_x_ * (points.length - 1);
-                x += data_.delay(idx) * scale_x_;
                 const float y = bounds_.max.y;
 
                 foreach(point; points)

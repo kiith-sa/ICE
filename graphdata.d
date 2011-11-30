@@ -36,7 +36,7 @@ final class GraphData
         ///Stores values accumulated over a time period set by GraphData's time_resolution.
         static align(4) struct Value
         {
-            ///Time point of the value (set to the middle of measurement).
+            ///Time point of the value (set to the start of measurement).
             real time;
             ///Sum of the values measured.
             real value = 0.0;
@@ -114,7 +114,7 @@ final class GraphData
                  */
                 this(real time)
                 {
-                    current_value_.time = time + time_resolution * 0.5; 
+                    current_value_.time = time;
                 }
 
                 /**
@@ -126,7 +126,7 @@ final class GraphData
                 {
                     values_ ~= current_value_;
                     clear(current_value_);
-                    current_value_.time  = time + time_resolution * 0.5;
+                    current_value_.time = time;
                 }
 
                 /**
@@ -328,15 +328,6 @@ final class GraphData
          * Returns: True if the graph is empty, false otherwise.
          */
         bool empty(in size_t idx){return graphs_[idx].empty;}
-
-        /**
-         * Get delay of graph with specified index relative to this GraphData.
-         *
-         * Params:  idx = Index of the graph to check.
-         *
-         * Returns: Delay of the graph relative to this GraphData in seconds.
-         */
-        real delay(in size_t idx){return graphs_[idx].start_time - start_time_;}
 
         ///Update graph data memory representation.
         void update()
