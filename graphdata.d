@@ -34,7 +34,7 @@ final class GraphData
 {
     private:
         ///Stores values accumulated over a time period set by GraphData's time_resolution.
-        static align(1) struct Value
+        static align(4) struct Value
         {
             ///Time point of the value (set to the middle of measurement).
             real time;
@@ -51,16 +51,16 @@ final class GraphData
                 ///Value we're currently accumulating to.
                 Value current_value_;
                 ///Recorded values sorted from earliest to latest.
-                Vector!(Value) values_;
+                Vector!Value values_;
                 ///Memory for arrays returned by data_points().
-                Vector!(real) data_points_;
+                Vector!real data_points_;
                 ///Memory for value counts array used to compute data points in average mode.
-                Vector!(uint) value_counts_;
+                Vector!uint value_counts_;
 
             public:
                 /**
                  * Accumulate values recorded over a time window to data points, one 
-                 * point per period specified, each data point is an sum or average of 
+                 * point per period specified, each data point is a sum or average of 
                  * values over the period, depending on graph mode. 
                  * 
                  * Params:  start  = Start of the time window.
@@ -78,7 +78,7 @@ final class GraphData
                 }
                 body
                 {
-                    data_points_.length = cast(uint)((end - start) / period); 
+                    data_points_.length = cast(size_t)((end - start) / period); 
                     (data_points_.ptr_unsafe[0 .. data_points_.length])[] = 0.0;
                     if(empty){return data_points_[];}
 
@@ -114,18 +114,7 @@ final class GraphData
                  */
                 this(real time)
                 {
-                    values_ = Vector!(Value)();
-                    data_points_ = Vector!(real)();
-                    value_counts_ = Vector!(uint)();
                     current_value_.time = time + time_resolution * 0.5; 
-                }
-
-                ///Destroy this graph.
-                ~this()
-                {
-                    clear(values_);
-                    clear(data_points_);
-                    clear(value_counts_);
                 }
 
                 /**
@@ -136,9 +125,8 @@ final class GraphData
                 void update(real time)
                 {
                     values_ ~= current_value_;
-                    current_value_.time = time + time_resolution * 0.5;
-                    current_value_.value = 0.0;
-                    current_value_.value_count = 0;
+                    clear(current_value_);
+                    current_value_.time  = time + time_resolution * 0.5;
                 }
 
                 /**
@@ -148,35 +136,33 @@ final class GraphData
                  */
                 void add_value(real value)
                 {
-                    //accumulate the value
+                    //accumulate to current_value_
                     current_value_.value += value;
                     current_value_.value_count++;
                 }
 
                 /**
-                 * Get the index of the first value to be aggregated to data points
-                 * with specified start time and period.
+                 * Get the index of the first value in a time window starting at start.
                  *
                  * Params:  start  = Start time to get data points from.
-                 *          period = Length of time to represent by single data point.
                  *
                  * Returns: Index of the first value to aggregate.
                  */
-                uint first_value_index(real start, real period)
+                size_t first_value_index(real start)
                 {
                     //ugly, but optimized
 
                     //guess the first value based on time resolution.
-                    real age = start - start_time;
-                    uint value = clamp(floor_s32(age / time_resolution_) ,0 , 
-                                       cast(int)values_.length - 1);
+                    const real age = start - start_time;
+                    const size_t value_idx = clamp(floor_s32(age / time_resolution_),
+                                                   0 , cast(int)values_.length - 1);
 
-                    Value* values_ptr = values_.ptr_unsafe;
-                    Value* value_ptr = values_ptr + value;
-                    Value* values_end = values_ptr + values_.length;
+                    const(Value)* values_start = values_.ptr_unsafe;
+                    const Value* values_end = values_start + values_.length;
+                    const(Value)* value_ptr = values_start + value_idx;
 
                     //move linearly to the desired value
-                    while(value_ptr.time >= start && value_ptr > values_ptr)
+                    while(value_ptr.time >= start && value_ptr > values_start)
                     {
                         value_ptr--;
                     }
@@ -185,7 +171,7 @@ final class GraphData
                         value_ptr++;
                     }
 
-                    return cast(uint)(value_ptr - values_ptr);
+                    return cast(size_t)(value_ptr - values_start);
                 }
 
                 /**
@@ -199,18 +185,18 @@ final class GraphData
                 void data_points_sum(real start, real period)
                 {
                     //ugly, but optimized
-                    auto num_points = data_points_.length;
+                    const num_points = data_points_.length;
                     real* points_ptr = data_points_.ptr_unsafe;
 
-                    Value* values_ptr = values_.ptr_unsafe;
-                    const Value* values_end = values_ptr + values_.length;
+                    const(Value)* values_start = values_.ptr_unsafe;
+                    const Value* values_end = values_start + values_.length;
 
                     //index of data point to add current value to.
                     int index;
 
+                    const(Value)* value = values_start + first_value_index(start);  
                     //iterate over values and aggregate data points
-                    for(Value* value = values_ptr + first_value_index(start, period); 
-                        value < values_end; value++)
+                    for(; value < values_end; value++)
                     {
                         index = floor_s32((value.time - start) / period);
                         if(index >= num_points){return;}
@@ -229,39 +215,35 @@ final class GraphData
                 void data_points_average(real start, real period)
                 {
                     //ugly, but optimized
-                    auto num_points = data_points_.length;
+                    const num_points = data_points_.length;
                     real* points_ptr = data_points_.ptr_unsafe;
 
                     value_counts_.length = num_points;
-                    uint* value_counts_ptr = value_counts_.ptr_unsafe;
-                    const uint* value_counts_end = value_counts_ptr + num_points;
+                    uint* value_counts_start = value_counts_.ptr_unsafe;
+                    const uint* value_counts_end = value_counts_start + num_points;
                      
-                    //zero all value counts. memset could make this even faster, but want to avoid cstdlib if I can
-                    for(uint* count = value_counts_ptr; count < value_counts_end; count++)
-                    {
-                        *count = 0;
-                    }
+                    //zero all value counts.
+                    value_counts_[] = 0; 
 
-                    Value* values_ptr = values_.ptr_unsafe;
-                    const Value* values_end = values_ptr + values_.length;
+                    const(Value)* values_start = values_.ptr_unsafe;
+                    const Value* values_end = values_start + values_.length;
 
                     //index of data point to add current value to.
                     int index;
-
                     //iterate over values and aggregate data points, value counts
-                    for(Value* value = values_ptr + first_value_index(start, period);
-                        value < values_end; value++)
+                    const(Value)* value = values_start + first_value_index(start); 
+                    for(; value < values_end; value++)
                     {
                         index = floor_s32((value.time - start) / period);
                         if(index >= num_points){break;}
                         *(points_ptr + index) += value.value;
-                        *(value_counts_ptr + index) += value.value_count;
+                        *(value_counts_start + index) += value.value_count;
                     }
 
                     //divide data points by value counts to get averages.
                     real* point = points_ptr;
-                    for(uint* count = value_counts_ptr; 
-                        count < value_counts_end; count++, point++)
+                    const(uint)* count = value_counts_start; 
+                    for(; count < value_counts_end; count++, point++)
                     {
                         if(*count == 0){continue;}
                         *point /= *count;
@@ -269,9 +251,8 @@ final class GraphData
                 }
         }
                   
-
-        ///Graphs of measured values, indexed by values' names.
-        Graph[string] graphs_;
+        ///Graphs of measured values.
+        Graph[] graphs_;
 
         ///Time when this GraphData was created
         real start_time_;
@@ -282,27 +263,15 @@ final class GraphData
 
     public:
         /**
-         * Construct graph data with specified names of measured values.
+         * Construct graph data with specified number of graphs.
          *
-         * Params:  graph_names = Names of measured values.
+         * Params:  graph_count = Number of graphs to store.
          */
-        this(string[] graph_names ...)
-        in
-        {
-            foreach(index_a, name_a; graph_names)
-            {
-                foreach(index_b, name_b; graph_names)
-                {
-                    assert(!(name_a == name_b && index_a != index_b),
-                           "GUIGraph can't show multiple values with identical names");
-                }
-            }
-        }
-        body
+        this(size_t graph_count)
         {
             start_time_ = get_time();
 
-            foreach(name; graph_names){graphs_[name] = new Graph(start_time_);}
+            foreach(idx; 0 .. graph_count){graphs_ ~= new Graph(start_time_);}
 
             update_timer_ = Timer(time_resolution_, start_time_);
         }
@@ -310,7 +279,7 @@ final class GraphData
         ///Destroy this GraphData.
         ~this()
         {
-            foreach(graph; graphs_.values){clear(graph);}
+            foreach(graph; graphs_){clear(graph);}
             clear(graphs_);
         }
 
@@ -320,20 +289,21 @@ final class GraphData
         ///Get time when this graph started to exist.
         @property final real start_time() const {return start_time_;}
 
-        ///Get names of measured values.
-        @property final const(string[]) graph_names() const {return graphs_.keys;}
+        ///Get number of graphs.
+        @property final size_t graph_count() const {return graphs_.length;}
 
-        ///Add a value to the graph of value with specified name.
-        final void update_value(in string name, in real value)
-        in{assert(canFind(graphs_.keys, name), "Adding unknown value to graph");}
-        body{graphs_[name].add_value(value);}
+        ///Add a value to the graph specified index.
+        final void update_value(in size_t idx, in real value)
+        {
+            graphs_[idx].add_value(value);
+        }
 
         /**
          * Accumulate values recorded over a time window to data points, one 
          * point per specified period, each data point is a sum or average of 
          * values over the period, depending on graph mode. 
          * 
-         * Params:  name   = Name of the value to get data points for.
+         * Params:  idx    = Index of the graph to get data points for.
          *          start  = Start of the time window.
          *          end    = End of the time window.
          *          period = Time period to represent by single data point.
@@ -341,32 +311,32 @@ final class GraphData
          * 
          * Returns: Array of data points in the specified time window.
          */
-        const(real)[] data_points(in string name, in real start, 
+        const(real)[] data_points(in size_t idx, in real start, 
                                   in real end, in real period, in GraphMode mode)
         {
-            return graphs_[name].data_points(start, end, period, mode);
+            return graphs_[idx].data_points(start, end, period, mode);
         }
 
         /**
-         * Determine if graph of value with specified name is empty.
+         * Determine if graph with specified index is empty.
          *
          * Note that the graph is empty for a while until first accumulated
          * value is added, which depends on time resolution.
          *
-         * Params:  name = Name of the value to check.
+         * Params:  idx = Index of the graph to check.
          *
          * Returns: True if the graph is empty, false otherwise.
          */
-        bool empty(in string name){return graphs_[name].empty;}
+        bool empty(in size_t idx){return graphs_[idx].empty;}
 
         /**
-         * Get delay of graph of value with specified name relative to this GraphData.
+         * Get delay of graph with specified index relative to this GraphData.
          *
-         * Params:  name = Name of the value to check.
+         * Params:  idx = Index of the graph to check.
          *
          * Returns: Delay of the graph relative to this GraphData in seconds.
          */
-        real delay(in string name){return graphs_[name].start_time - start_time_;}
+        real delay(in size_t idx){return graphs_[idx].start_time - start_time_;}
 
         ///Update graph data memory representation.
         void update()
@@ -374,7 +344,7 @@ final class GraphData
             if(update_timer_.expired)
             {
                 real time = get_time();
-                foreach(graph; graphs_.values){graph.update(time);}
+                foreach(graph; graphs_){graph.update(time);}
             }
         }
 }

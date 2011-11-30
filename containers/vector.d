@@ -206,6 +206,12 @@ align(1) struct Vector(T)
             data_[start .. end] = range.ptr[0 .. range.length];
         }
 
+        ///Set all elements in the vector to specified value.
+        void opSliceAssign()(T value)
+        {
+            data_[0 .. used_] = value;
+        }
+
         /**
          * Get a slice of the vector as a D array.
          *

@@ -1,5 +1,10 @@
 ASAP:
 
+Turn gamma_correct into a static method of Color.
+
+Then: try reducing GraphData to a single graph class, making GraphMonitor and GUILineGraph
+using arrays of GraphData (basically, the current Graph class).
+
 Graph drawing: Use the idea from neural_networks_02 project 
 for drawing graphs - skipping data points when more of them than width 
 (or more than width*2 for good detail with AA)

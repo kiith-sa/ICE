@@ -50,14 +50,12 @@ final class GUILineGraph : GUIElement
             ///Is this graph visible?.
             bool visible = true;
             ///Color of the graph.
-            Color color = Color.grey;
+            Color color;
             ///Vertices of the line strip used to display the graph, in screen space.
             Vector!Vector2f line_strip;
 
             ///Construct a GraphDisplay.
             this(){line_strip.reserve(8);}
-            ///Destroy this GraphDisplay.
-            ~this(){clear(line_strip);}
         }
 
         ///Horizontal line on the graph, shown for visual comparison with graph values.
@@ -86,40 +84,44 @@ final class GUILineGraph : GUIElement
         float scale_x_ = 2.0;
         ///Distance between values differing by 1, e.g. 1.0 and 0.0 on Y axis.
         float scale_y_ = 0.1;
-        ///If true, the graph is automatically scrolled as new data is added.
+        ///If true, the graph automatically scrolls as new data is added.
         bool auto_scroll_ = true;
         ///If true, graph is automatically scaled on Y axis according to the highest value.
         bool auto_scale_ = true;
 
-        ///Display data for graph of every value.
-        GraphDisplay[string] graphics_;
+        ///Display data for graph of each value.
+        GraphDisplay[] graphics_;
         ///Horizontal lines on the graph, shown for visual comparison with graph values.
         Line[] lines_;
         ///Font size used for numbers describing values represented by the lines.
         uint font_size_ = 8;
 
-        ///Time difference between two data points displayed on the graph, in seconds,
+        ///Seconds between two data points displayed on the graph.
         real data_point_time_ = 1.0;
         ///Timer used to time graph display updates.
         Timer display_timer_;
 
     public:
-        ///Set time difference between two graph data points.
+        ///Get color of graph with specified index.
+        @property Color graph_color(size_t idx) const
+        {
+            return graphics_[idx].color;
+        }
+
+        ///Set time difference between two graph data points in seconds.
         @property void data_point_time(real time)
         {
             aligned_ = false;
             //limiting to prevent absurd values
             data_point_time_ = clamp(time, data_.time_resolution, 64.0L);
         }
-
         ///Get time between two graph data points.
         @property real data_point_time() const {return data_point_time_;}
 
         ///Toggle visibility of graph of specified value.
-        void toggle_value(in string value)
+        void toggle_graph_visibility(in size_t value)
         {
-            auto graphics   = graphics_[value];
-            graphics.visible = !graphics.visible;
+            graphics_[value].visible = !graphics_[value].visible;
         }
 
         ///If true, Y axis of the graph will be scaled automatically according to highest value.
@@ -139,7 +141,7 @@ final class GUILineGraph : GUIElement
         /**
          * Manually scroll the graph horizontally.
          *
-         * Disables automatic scrolling, if enabled.
+         * Disables automatic scrolling.
          *
          * Params:  offset = Screen space offset relative the start of graph.
          */
@@ -179,28 +181,30 @@ final class GUILineGraph : GUIElement
 
         ~this()
         {
-            foreach(display; graphics_.values){clear(display);}
+            foreach(display; graphics_){clear(display);}
+            clear(graphics_);
+            clear(lines_);
         }
 
     protected:
         /**
-         * Construct a GUILineGraph with specified parameters.
+         * Construct a GUILineGraph.
          *
          * Params:  params = Parameters for GUIElement constructor.
-         *          colors = Colors of graphs of measured values.
+         *          colors = Colors of graphs displayed.
          *          data   = Reference to GraphData to display.
          *                   GUILineGraph just displays the GraphData, it doesn't manage it.
          */
-        this(in GUIElementParams params, in Color[string] colors, GraphData data)
+        this(in GUIElementParams params, in Color[] colors, GraphData data)
         {
             super(params);
 
             data_ = data;
             reset_timer(get_time());
-            foreach(name, color; colors)
+            foreach(color; colors)
             {
-                graphics_[name]       = new GraphDisplay;
-                graphics_[name].color = color;
+                graphics_ ~= new GraphDisplay;
+                graphics_[$ - 1].color = color;
             }
         }
 
@@ -223,7 +227,7 @@ final class GUILineGraph : GUIElement
 
             super.draw(driver);
 
-            foreach(graph; data_.graph_names){draw_graph(driver, graph);}
+            foreach(graph; 0 .. data_.graph_count){draw_graph(driver, graph);}
             draw_info(driver);
         }
 
@@ -241,7 +245,7 @@ final class GUILineGraph : GUIElement
             display_timer_ = Timer(clamp(data_point_time_, 0.125L, 8.0L), time);
         }
 
-        ///Returns age of this graph at last display timer reset.
+        ///Returns age of this graph in seconds at last display timer reset.
         @property real age() const {return display_timer_.start - data_.start_time;}
 
         ///Update graph display data such as graph line strips.
@@ -250,29 +254,29 @@ final class GUILineGraph : GUIElement
             if(auto_scroll_){time_offset_ = age();}
 
             real maximum;
-            auto data_points = get_data_points_and_maximum(maximum);
+            const data_points = get_data_points_and_maximum(maximum);
 
             if(auto_scale_ && !equals(maximum, 0.0L))
             {
+                //only use 80% of total height.
                 scale_y = (bounds_.height * 0.8) / maximum;
             }
 
             update_lines();
 
-            //generate line strips
-            foreach(name, points; lockstep(data_.graph_names, data_points))
+            //generate line strips for each graph
+            foreach(idx, points, graphics; 
+                    lockstep(iota(data_.graph_count), data_points, graphics_))
             {
-                auto graphics = graphics_[name];
-
                 //clear the strip
                 graphics.line_strip.length = 0;
-                if(data_.empty(name)){continue;}
+                if(data_.empty(idx)){continue;}
 
                 float x = bounds_.max.x - scale_x_ * (points.length - 1);
-                x += data_.delay(name) * scale_x_;
+                x += data_.delay(idx) * scale_x_;
                 const float y = bounds_.max.y;
 
-                foreach(real point; points)
+                foreach(point; points)
                 {
                     graphics.line_strip ~= Vector2f(x, y - point * scale_y);
                     x += scale_x_;
@@ -283,28 +287,28 @@ final class GUILineGraph : GUIElement
         /*
          * Gets data points to draw from graph of each value, and a maximum of all data points.
          * 
-         * Officially the worst named method in this entire project.
+         * Officially the worst named method in this project.
          * Used by update_view.
          *
          * Params:  maximum = Maximum of all data points will be written here.
          *
          * Returns: Data points of every graph in an associative array indexed by graph name.
          */
-        const(real)[][] get_data_points_and_maximum(out real maximum)
+        const(real[][]) get_data_points_and_maximum(out real maximum)
         {
             //calculate the time window we want to get data points for
             //why +3 : get a few more points so the graph is always full if there's enough data
-            const real time_width = (bounds_.width / scale_x_ + 3) * data_point_time_;
-            const real end_time   = data_.start_time + time_offset_;
-            const real start_time = end_time - time_width;
+            const time_width = (bounds_.width / scale_x_ + 3) * data_point_time_;
+            const end_time   = data_.start_time + time_offset_;
+            const start_time = end_time - time_width;
 
             maximum = 0.0;
             const(real)[][] data_points;
 
             //getting all data points and the maximum
-            foreach(name; data_.graph_names)
+            foreach(idx; 0 .. data_.graph_count)
             {
-                auto points = data_.data_points(name, start_time, end_time, data_point_time_, mode_); 
+                auto points = data_.data_points(idx, start_time, end_time, data_point_time_, mode_); 
                 data_points ~= points;
                 if(points.length <= 1){continue;}
                 maximum = max(maximum, reduce!max(points));
@@ -342,11 +346,11 @@ final class GUILineGraph : GUIElement
          * Draw specified graph.
          *
          * Params:  driver = Video driver to draw with.
-         *          name   = Name of the graph to draw.
+         *          idx    = Index of the graph to draw.
          */
-        void draw_graph(VideoDriver driver, in string name) const
+        void draw_graph(VideoDriver driver, in size_t idx) const
         {
-            const graphics = graphics_[name];
+            const graphics = graphics_[idx];
 
             if(!graphics.visible || graphics.line_strip.length <= 1){return;}
 
@@ -405,24 +409,58 @@ final class GUILineGraph : GUIElement
  *
  * See_Also: GUIElementFactoryBase
  *
- * Params:  data        = Graph data to display. Must be specified.
- *          graph_color = Set color for graph of measured value with specified name.
+ * Params:  graph_colors = Colors of graphs (length must be equal to number of graphs.)
  */
 final class GUILineGraphFactory : GUIElementFactoryBase!GUILineGraph
 {
     private:
-        mixin(generate_factory("GraphData $ data $ null"));
-        ///Name and color of graph for each value.
-        Color[string] graphs_;
+        ///Palette of colors used by generated graph monitor code.
+        static Color[] palette = [Color.red,
+                                  Color.green,
+                                  Color.blue,
+                                  Color.yellow,
+                                  Color.cyan,
+                                  Color.magenta,
+                                  Color.burgundy,
+                                  Color(0, 128, 0, 255),
+                                  Color(0, 0, 128, 255),
+                                  Color.forest_green,
+                                  Color(0, 128, 128, 255),
+                                  Color.dark_purple];
+
+        ///GraphData to display.
+        GraphData data_;
+
+        ///Color of graph for each value.
+        Color[] graph_colors_;
 
     public:
-        void graph_color(in string name, in Color color)
+        ///Construct a factory to produce a GUILineGraph displaying specified GraphData.
+        this(GraphData data)
         {
-            graphs_[name] = color;
+            data_ = data;
+            if(data_.graph_count > palette.length)
+            {
+                foreach(c; 0 .. data_.graph_count)
+                {
+                    graph_colors_ ~= Color.random_rgb();
+                }
+                return;
+            }
+            graph_colors_ = palette[0 .. data_.graph_count];
+        }
+
+        void graph_colors(Color[] colors)
+        in
+        {
+            assert(colors.length == data_.graph_count);
+        }
+        body
+        {
+            graph_colors_ = colors;
         }
 
         ///Produce a GUILineGraph with parameters of the factory.
         override GUILineGraph produce()
-        in{assert(data_ !is null, "GUI line graph needs to be linked to graph data");}
-        body{return new GUILineGraph(gui_element_params, graphs_, data_);}
+        body{return new GUILineGraph(gui_element_params, graph_colors_, data_);}
 }

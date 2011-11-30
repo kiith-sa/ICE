@@ -78,7 +78,8 @@ SubMonitor new_graph_monitor(Monitored, Statistics, Values ...)(Monitored monito
     //copy V to an array of strings
     string[] values;
     foreach(s; Values){values ~= s.idup;}
-    return new GraphMonitor!(Monitored, Statistics, Values)(monitored, new GraphData(values));
+    return new GraphMonitor!(Monitored, Statistics, Values)
+                            (monitored, new GraphData(values.length), values);
 }
 
 private:
@@ -99,6 +100,9 @@ final package class GraphMonitor(Monitored, Statistics, Values ...) : SubMonitor
         ///Graph data.
         GraphData data_;
 
+        ///Names of the graphs.
+        string[] graph_names_;
+
         ///Disconnects the monitor from monitorable's send_statistics.
         void delegate() disconnect_;
 
@@ -118,18 +122,29 @@ final package class GraphMonitor(Monitored, Statistics, Values ...) : SubMonitor
         ///Get access to graph data.
         @property GraphData data(){return data_;}
 
+        ///Get names of the graphs.
+        @property string[] graph_names(){return graph_names_;} 
+
     protected:
         /**
          * Construct a GraphMonitor.
          *
-         * Params:  monitored  = Object to monitor.
-         *          graph_data = Graph data to store statistics in.
+         * Params:  monitored   = Object to monitor.
+         *          graph_data  = Graph data to store statistics in.
+         *          graph_names = Names of graphs in graph_data.
          */
-        this(Monitored monitored, GraphData graph_data)
+        this(Monitored monitored, GraphData graph_data, string[] graph_names)
+        in
+        {
+            assert(graph_names.length == graph_data.graph_count,
+                   "Numbers of graphs and graph names passed to GraphMonitor do not match");
+        }
+        body
         {
             super();
             monitored.send_statistics.connect(&receive_statistics); 
             disconnect_ = {monitored.send_statistics.disconnect(&receive_statistics);};
+            graph_names_ = graph_names;
             data_ = graph_data;
         }
 
@@ -140,9 +155,9 @@ final package class GraphMonitor(Monitored, Statistics, Values ...) : SubMonitor
             string update_values()
             {
                 string result;
-                foreach(value; Values)
+                foreach(idx, value; Values)
                 {
-                    result ~= "data_.update_value(\"" ~ value ~ "\", statistics." ~ value ~ ");\n";
+                    result ~= "data_.update_value(" ~ std.conv.to!string(idx) ~ ", statistics." ~ value ~ ");\n";
                 }
                 return result;
             }
@@ -164,20 +179,6 @@ final package class GraphMonitor(Monitored, Statistics, Values ...) : SubMonitor
 final package class GraphMonitorView(GraphMonitor) : SubMonitorView
 {
     private:
-        ///Palette of colors used by generated graph monitor code.
-        static immutable Color[] palette = [Color.red,
-                                            Color.green,
-                                            Color.blue,
-                                            Color.yellow,
-                                            Color.cyan,
-                                            Color.magenta,
-                                            Color.burgundy,
-                                            Color(0, 128, 0, 255),
-                                            Color(0, 0, 128, 255),
-                                            Color.forest_green,
-                                            Color(0, 128, 128, 255),
-                                            Color.dark_purple];
-
         ///Graph monitor viewed.
         GraphMonitor monitor_;
 
@@ -211,14 +212,9 @@ final package class GraphMonitorView(GraphMonitor) : SubMonitorView
         void init_graph()
         {
             //construct the graph widget
-            with(new GUILineGraphFactory)
+            with(new GUILineGraphFactory(monitor_.data))
             {
-                foreach(color, value; monitor_.data.graph_names)
-                {
-                    graph_color(value, palette[color]);
-                }
                 margin(2, 2, 24, 52);
-                data = monitor_.data;
                 graph_ = produce();
             }
             main_.add_child(graph_);
@@ -229,7 +225,7 @@ final package class GraphMonitorView(GraphMonitor) : SubMonitorView
         void init_mouse()
         {
             //provides zooming/panning functionality
-            auto mouse= new GUIMouseControllable;
+            auto mouse = new GUIMouseControllable;
             mouse.zoom.connect(&zoom);
             mouse.pan.connect(&pan);
             mouse.reset_view.connect(&reset_view);
@@ -239,24 +235,33 @@ final package class GraphMonitorView(GraphMonitor) : SubMonitorView
         ///Initialize buttons that toggle values' graph display.
         void init_toggles()
         {
-            foreach(color, name; monitor_.data.graph_names)
+            void delegate() workaround(size_t graph)
             {
-                with(new GUIButtonFactory)
-                {
-                    x = "p_left + 2";
-                    width = "48";
-                    height = "12";
-                    font_size = 8;
-                    y = "p_top + " ~ to!string(2 + 14 * value_buttons_.keys.length);
-                    font_size = MonitorView.font_size;
-                    text_color(ButtonState.Normal, palette[color]);
-                    text = name;
+                return {graph_.toggle_graph_visibility(graph);};
+            }
 
-                    auto button = produce();
-                    button.pressed.connect({graph_.toggle_value(name);});
-                    value_buttons_[name] = button;
-                    main_.add_child(button);
-                }
+            foreach(graph; 0 .. monitor_.data.graph_count) with(new GUIButtonFactory)
+            {
+                auto name = monitor_.graph_names[graph];
+
+                x         = "p_left + 2";
+                width     = "48";
+                height    = "12";
+                font_size = 8;
+                y         = "p_top + " ~ to!string(2 + 14 * value_buttons_.keys.length);
+                font_size = MonitorView.font_size;
+                text      = name;
+                text_color(ButtonState.Normal, graph_.graph_color(graph));
+
+                auto button = produce();
+
+                //DMD bug workaround:
+                //delegate here can't remember its context correctly
+                //(or rather, all iterations remember the same context - at the end of loop)
+                //so we have to construct the delegate in a separate function.
+                button.pressed.connect(workaround(graph));
+                value_buttons_[name] = button;
+                main_.add_child(button);
             }
         }     
 
@@ -265,10 +270,10 @@ final package class GraphMonitorView(GraphMonitor) : SubMonitorView
         {
             with(new GUIMenuHorizontalFactory)
             {
-                x = "p_left + 50";
-                y = "p_bottom - 24";
-                item_width = "48";
-                item_height = "20";
+                x            = "p_left + 50";
+                y            = "p_bottom - 24";
+                item_width   = "48";
+                item_height  = "20";
                 item_spacing = "2";
                 item_font_size = MonitorView.font_size;
                 add_item("res +", &resolution_increase);
@@ -301,8 +306,8 @@ final package class GraphMonitorView(GraphMonitor) : SubMonitorView
         void zoom(float relative)
         {
             graph_.auto_scale = false;
-            graph_.scale_x = graph_.scale_x * pow(zoom_mult_, relative);
-            graph_.scale_y = graph_.scale_y * pow(zoom_mult_, relative); 
+            graph_.scale_x    = graph_.scale_x * pow(zoom_mult_, relative);
+            graph_.scale_y    = graph_.scale_y * pow(zoom_mult_, relative); 
         }
 
         ///Pan view with specified offset.
@@ -311,8 +316,8 @@ final package class GraphMonitorView(GraphMonitor) : SubMonitorView
         ///Restore default view.
         void reset_view()
         {
-            graph_.scale_x = scale_x_default_;
-            graph_.auto_scale = true;
+            graph_.scale_x     = scale_x_default_;
+            graph_.auto_scale  = true;
             graph_.auto_scroll = true;
         }
 }

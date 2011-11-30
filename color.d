@@ -12,6 +12,7 @@ module color;
 
 import std.algorithm;
 import std.traits;
+import std.random;
 
 import math.math;
 
@@ -63,7 +64,7 @@ uint bytes_per_pixel(in ColorFormat format)
 T to(T)(in ColorFormat format)
     if(isSomeString!T)
 {
-    switch(format)
+    final switch(format)
     {
         case ColorFormat.RGB_565:
             return "RGB_565";
@@ -73,8 +74,6 @@ T to(T)(in ColorFormat format)
             return "RGBA_8";
         case ColorFormat.GRAY_8:
             return "GRAY_8";
-        default:
-            assert(false, "Unsupported image color format");
     }
 }
 
@@ -88,7 +87,7 @@ align(1) struct Color
     ///Blue channel.
     ubyte b;
     ///Alpha channel.
-    ubyte a;
+    ubyte a = 255;
 
     ///Common color constants, identical to HTML.
     static immutable Color white = Color(255, 255, 255, 255);
@@ -236,6 +235,17 @@ align(1) struct Color
         r = cast(ubyte)R;
         g = cast(ubyte)G;
         b = cast(ubyte)B;
+    }
+
+    ///Return a random color with full opacity.
+    static Color random_rgb()
+    {
+        Color result;
+        result.r = cast(ubyte)uniform(0, 256);
+        result.g = cast(ubyte)uniform(0, 256);
+        result.b = cast(ubyte)uniform(0, 256);
+        result.a = 255;
+        return result;
     }
 }
 
