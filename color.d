@@ -31,7 +31,7 @@ enum ColorFormat
 }
 
 /**
- * Return number of bytes per pixel specified color format uses.
+ * Return number of bytes specified color format uses per pixel.
  *
  * Params:  format = Color format to check.
  *
@@ -39,18 +39,12 @@ enum ColorFormat
  */
 uint bytes_per_pixel(in ColorFormat format)
 {
-    switch(format)
+    final switch(format)
     {
-        case ColorFormat.RGB_565:
-            return 2;
-        case ColorFormat.RGB_8:
-            return 3;
-        case ColorFormat.RGBA_8:
-            return 4;
-        case ColorFormat.GRAY_8:
-            return 1;
-        default:
-            assert(false, "Unsupported image color format!");
+        case ColorFormat.RGB_565: return 2;
+        case ColorFormat.RGB_8:   return 3;
+        case ColorFormat.RGBA_8:  return 4;
+        case ColorFormat.GRAY_8:  return 1;
     }
 }
 
@@ -66,14 +60,10 @@ T to(T)(in ColorFormat format)
 {
     final switch(format)
     {
-        case ColorFormat.RGB_565:
-            return "RGB_565";
-        case ColorFormat.RGB_8:
-            return "RGB_8";
-        case ColorFormat.RGBA_8:
-            return "RGBA_8";
-        case ColorFormat.GRAY_8:
-            return "GRAY_8";
+        case ColorFormat.RGB_565: return "RGB_565";
+        case ColorFormat.RGB_8:   return "RGB_8";
+        case ColorFormat.RGBA_8:  return "RGBA_8";
+        case ColorFormat.GRAY_8:  return "GRAY_8";
     }
 }
 
@@ -90,20 +80,20 @@ align(1) struct Color
     ubyte a = 255;
 
     ///Common color constants, identical to HTML.
-    static immutable Color white = Color(255, 255, 255, 255);
-    static immutable Color grey = Color(128, 128, 128, 255);
-    static immutable Color black = Color(0, 0, 0, 255);
+    static immutable Color white        = Color(255, 255, 255, 255);
+    static immutable Color grey         = Color(128, 128, 128, 255);
+    static immutable Color black        = Color(0, 0, 0, 255);
+                                        
+    static immutable Color red          = Color(255, 0, 0, 255);
+    static immutable Color green        = Color(0, 255, 0, 255);
+    static immutable Color blue         = Color(0, 0, 255, 255);
+    static immutable Color burgundy     = Color(128, 0, 0, 255);
                     
-    static immutable Color red = Color(255, 0, 0, 255);
-    static immutable Color green = Color(0, 255, 0, 255);
-    static immutable Color blue = Color(0, 0, 255, 255);
-    static immutable Color burgundy = Color(128, 0, 0, 255);
-                    
-    static immutable Color yellow = Color(255, 255, 0, 255);
-    static immutable Color cyan = Color(0, 255, 255, 255);
-    static immutable Color magenta = Color(255, 0, 255, 255);
+    static immutable Color yellow       = Color(255, 255, 0, 255);
+    static immutable Color cyan         = Color(0, 255, 255, 255);
+    static immutable Color magenta      = Color(255, 0, 255, 255);
     static immutable Color forest_green = Color(128, 128, 0, 255);
-    static immutable Color dark_purple = Color(128, 0, 128, 255);
+    static immutable Color dark_purple  = Color(128, 0, 128, 255);
 
     /**
      * Construct a color.
@@ -121,7 +111,7 @@ align(1) struct Color
         this.a = a;
     }
 
-    ///Return the average intensity of the color.
+    ///Return the average RGB intensity of the color.
     @property ubyte average() const
     {
         const real average = (r + g + b) / 3.0L;
@@ -247,16 +237,22 @@ align(1) struct Color
         result.a = 255;
         return result;
     }
-}
 
-/**
- * Gamma correct a GRAY_8 color.
- *
- * Params:  color  = Color (grayscale) to gamma correct.
- *          factor = Gamma correction factor.
- *
- * Returns: Gamma corrected color.
- */
-ubyte gamma_correct(in ubyte color, in real factor)
-in{assert(factor >= 0.0, "Can't gamma correct with a negative factor");}
-body{return cast(ubyte)min(cast(real)color * factor, 255.0L);}
+    /**
+     * Gamma correct a GRAY_8 color.
+     *
+     * Params:  color  = Color (grayscale) to gamma correct.
+     *          factor = Gamma correction factor.
+     *
+     * Returns: Gamma corrected color.
+     */
+    static ubyte gamma_correct(in ubyte color, in real factor) pure
+    in
+    {
+        assert(factor >= 0.0, "Can't gamma correct with a negative factor");
+    }
+    body
+    {
+        return cast(ubyte)min(cast(real)color * factor, 255.0L);
+    }
+}

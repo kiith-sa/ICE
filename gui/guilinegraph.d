@@ -11,6 +11,7 @@ module gui.guilinegraph;
 
 
 import std.algorithm;
+import std.array;
 import std.math;
 import std.conv;
 import std.range;
@@ -308,7 +309,8 @@ final class GUILineGraph : GUIElement
             //getting all data points and the maximum
             foreach(idx; 0 .. data_.graph_count)
             {
-                auto points = data_.data_points(idx, start_time, end_time, data_point_time_, mode_); 
+                auto points = data_.data_points(idx, start_time, end_time, 
+                                                data_point_time_, mode_); 
                 data_points ~= points;
                 if(points.length <= 1){continue;}
                 maximum = max(maximum, reduce!max(points));
@@ -441,10 +443,7 @@ final class GUILineGraphFactory : GUIElementFactoryBase!GUILineGraph
             data_ = data;
             if(data_.graph_count > palette.length)
             {
-                foreach(c; 0 .. data_.graph_count)
-                {
-                    graph_colors_ ~= Color.random_rgb();
-                }
+                foreach(c; 0 .. data_.graph_count){graph_colors_ ~= Color.random_rgb();}
                 return;
             }
             graph_colors_ = palette[0 .. data_.graph_count];

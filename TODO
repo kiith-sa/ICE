@@ -1,7 +1,5 @@
 ASAP:
 
-Turn gamma_correct into a static method of Color.
-
 Then: try reducing GraphData to a single graph class, making GraphMonitor and GUILineGraph
 using arrays of GraphData (basically, the current Graph class).
 

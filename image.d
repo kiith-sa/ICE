@@ -236,7 +236,7 @@ struct Image
                             break;
                         case ColorFormat.GRAY_8:
                             set_pixel_gray8(x, y, 
-                            color.gamma_correct(data_[y * pitch + x], factor));
+                            Color.gamma_correct(data_[y * pitch + x], factor));
                             break;
                         default:
                             assert(false, "Unsupported color format for gamma correction");
