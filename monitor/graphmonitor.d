@@ -136,7 +136,7 @@ final package class GraphMonitor(Monitored, Statistics, Values ...) : SubMonitor
         this(Monitored monitored, GraphData graph_data, string[] graph_names)
         in
         {
-            assert(graph_names.length == graph_data.graph_count,
+            assert(graph_names.length == graph_data.graphs.length,
                    "Numbers of graphs and graph names passed to GraphMonitor do not match");
         }
         body
@@ -157,7 +157,8 @@ final package class GraphMonitor(Monitored, Statistics, Values ...) : SubMonitor
                 string result;
                 foreach(idx, value; Values)
                 {
-                    result ~= "data_.update_value(" ~ std.conv.to!string(idx) ~ ", statistics." ~ value ~ ");\n";
+                    result ~= "data_.graphs[" ~ std.conv.to!string(idx) ~ 
+                              "].update_value(statistics." ~ value ~ ");\n";
                 }
                 return result;
             }
@@ -240,7 +241,7 @@ final package class GraphMonitorView(GraphMonitor) : SubMonitorView
                 return {graph_.toggle_graph_visibility(graph);};
             }
 
-            foreach(graph; 0 .. monitor_.data.graph_count) with(new GUIButtonFactory)
+            foreach(graph; 0 .. monitor_.data.graphs.length) with(new GUIButtonFactory)
             {
                 auto name = monitor_.graph_names[graph];
 

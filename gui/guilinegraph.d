@@ -228,7 +228,7 @@ final class GUILineGraph : GUIElement
 
             super.draw(driver);
 
-            foreach(graph; 0 .. data_.graph_count){draw_graph(driver, graph);}
+            foreach(graph; 0 .. data_.graphs.length){draw_graph(driver, graph);}
             draw_info(driver);
         }
 
@@ -267,11 +267,11 @@ final class GUILineGraph : GUIElement
 
             //generate line strips for each graph
             foreach(idx, points, graphics; 
-                    lockstep(iota(data_.graph_count), data_points, graphics_))
+                    lockstep(iota(data_.graphs.length), data_points, graphics_))
             {
                 //clear the strip
                 graphics.line_strip.length = 0;
-                if(data_.empty(idx)){continue;}
+                if(data_.graphs[idx].empty){continue;}
 
                 float x = bounds_.max.x - scale_x_ * (points.length - 1);
                 const float y = bounds_.max.y;
@@ -306,10 +306,10 @@ final class GUILineGraph : GUIElement
             const(real)[][] data_points;
 
             //getting all data points and the maximum
-            foreach(idx; 0 .. data_.graph_count)
+            foreach(idx; 0 .. data_.graphs.length)
             {
-                auto points = data_.data_points(idx, start_time, end_time, 
-                                                data_point_time_, mode_); 
+                auto points = data_.graphs[idx].data_points(start_time, end_time, 
+                                                            data_point_time_, mode_); 
                 data_points ~= points;
                 if(points.length <= 1){continue;}
                 maximum = max(maximum, reduce!max(points));
@@ -440,18 +440,18 @@ final class GUILineGraphFactory : GUIElementFactoryBase!GUILineGraph
         this(GraphData data)
         {
             data_ = data;
-            if(data_.graph_count > palette.length)
+            if(data_.graphs.length > palette.length)
             {
-                foreach(c; 0 .. data_.graph_count){graph_colors_ ~= Color.random_rgb();}
+                foreach(c; 0 .. data_.graphs.length){graph_colors_ ~= Color.random_rgb();}
                 return;
             }
-            graph_colors_ = palette[0 .. data_.graph_count];
+            graph_colors_ = palette[0 .. data_.graphs.length];
         }
 
         void graph_colors(Color[] colors)
         in
         {
-            assert(colors.length == data_.graph_count);
+            assert(colors.length == data_.graphs.length);
         }
         body
         {

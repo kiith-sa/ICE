@@ -33,21 +33,32 @@ enum GraphMode
 final class GraphData
 {
     private:
-        ///Stores values accumulated over a time period set by GraphData's time_resolution.
-        static align(4) struct Value
-        {
-            ///Time point of the value (set to the start of measurement).
-            real time;
-            ///Sum of the values measured.
-            real value = 0.0;
-            ///Number of values accumulated.
-            uint value_count = 0;
-        }                 
+        ///Graphs of measured values.
+        Graph[] graphs_;
 
+        ///Time when this GraphData was created
+        real start_time_;
+        ///Shortest time period to accumulate values for.
+        real time_resolution_ = 0.0625;
+        ///Timer used to time graph updates.
+        Timer update_timer_;
+
+    public:
         ///Graph data related to measurement of single value over time.
         class Graph
         {
             private:
+                ///Stores values accumulated over a time period set by GraphData's time_resolution.
+                static align(4) struct Value
+                {
+                    ///Time point of the value (set to the start of measurement).
+                    real time;
+                    ///Sum of the values measured.
+                    real value = 0.0;
+                    ///Number of values accumulated.
+                    uint value_count = 0;
+                }                 
+
                 ///Value we're currently accumulating to.
                 Value current_value_;
                 ///Recorded values sorted from earliest to latest.
@@ -106,6 +117,18 @@ final class GraphData
                 in{assert(!empty(), "Can't get start time of an empty graph");}
                 body{return values_[0].time;}
 
+                /**
+                 * Add a value to the graph. 
+                 * 
+                 * Params:  value = Value to add. 
+                 */
+                void update_value(real value)
+                {
+                    //accumulate to current_value_
+                    current_value_.value += value;
+                    current_value_.value_count++;
+                }
+
             private:
                 /**
                  * Construct a graph with specified starting time.
@@ -127,18 +150,6 @@ final class GraphData
                     values_ ~= current_value_;
                     clear(current_value_);
                     current_value_.time = time;
-                }
-
-                /**
-                 * Add a value to the graph. 
-                 * 
-                 * Params:  value = Value to add. 
-                 */
-                void add_value(real value)
-                {
-                    //accumulate to current_value_
-                    current_value_.value += value;
-                    current_value_.value_count++;
                 }
 
                 /**
@@ -251,17 +262,6 @@ final class GraphData
                 }
         }
                   
-        ///Graphs of measured values.
-        Graph[] graphs_;
-
-        ///Time when this GraphData was created
-        real start_time_;
-        ///Shortest time period to accumulate values for.
-        real time_resolution_ = 0.0625;
-        ///Timer used to time graph updates.
-        Timer update_timer_;
-
-    public:
         /**
          * Construct graph data with specified number of graphs.
          *
@@ -289,45 +289,11 @@ final class GraphData
         ///Get time when this graph started to exist.
         @property final real start_time() const {return start_time_;}
 
-        ///Get number of graphs.
-        @property final size_t graph_count() const {return graphs_.length;}
-
-        ///Add a value to the graph specified index.
-        final void update_value(in size_t idx, in real value)
+        ///Get (non-const) access to graphs stored.
+        @property Graph[] graphs()
         {
-            graphs_[idx].add_value(value);
+            return graphs_;
         }
-
-        /**
-         * Accumulate values recorded over a time window to data points, one 
-         * point per specified period, each data point is a sum or average of 
-         * values over the period, depending on graph mode. 
-         * 
-         * Params:  idx    = Index of the graph to get data points for.
-         *          start  = Start of the time window.
-         *          end    = End of the time window.
-         *          period = Time period to represent by single data point.
-         *          mode   = Graph mode (average per measurement or sums over time).
-         * 
-         * Returns: Array of data points in the specified time window.
-         */
-        const(real)[] data_points(in size_t idx, in real start, 
-                                  in real end, in real period, in GraphMode mode)
-        {
-            return graphs_[idx].data_points(start, end, period, mode);
-        }
-
-        /**
-         * Determine if graph with specified index is empty.
-         *
-         * Note that the graph is empty for a while until first accumulated
-         * value is added, which depends on time resolution.
-         *
-         * Params:  idx = Index of the graph to check.
-         *
-         * Returns: True if the graph is empty, false otherwise.
-         */
-        bool empty(in size_t idx){return graphs_[idx].empty;}
 
         ///Update graph data memory representation.
         void update()

@@ -1,26 +1,13 @@
 ASAP:
 
-Then: try reducing GraphData to a single graph class, making GraphMonitor and GUILineGraph
-using arrays of GraphData (basically, the current Graph class).
-
 Graph drawing: Use the idea from neural_networks_02 project 
 for drawing graphs - skipping data points when more of them than width 
 (or more than width*2 for good detail with AA)
 
+We don't need to change how many data points we get. 
+Just skip them when building the line strip if there are too many.
+This will solve problems when drastically zooming out.
 
-Just about everything is wrong about GUILineGraph.
-So first:
-Colors should be specified as an array of tuples.
-Each graph in graphData should have a color. If we can't guarantee that, use fallback color.
-Factory ctor should take GraphData - since it's required.
-It should define colors for each graph in graphdata in ctor (with default color) - 
-graph_color setter should override that.
-Instead of graph_color, use graph_colors - which provides an array of colors, checked for size in the setter.
-    
-Then: New idea for graph drawing:
-Get exactly one data point per pixel - GraphData figures out what to return
-(interpolating when in between)
-    
 
 Actor.die(), PhysicsBody.die() 
     Each Actor has a uint or ulong value: dead_at_frame_
