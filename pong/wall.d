@@ -48,14 +48,13 @@ class Wall : Actor
         ///Emitted when a ball hits the wall. Will emit const BallBody after D2 move.
         mixin Signal!(BallBody) ball_hit;
 
-        ///Set wall velocity.
-        @property void velocity(in Vector2f v){physics_body_.velocity = v;}
-
-        override void die(size_t frame)
+        ~this()
         {
             ball_hit.disconnect_all();
-            super.die(frame);
         }
+
+        ///Set wall velocity.
+        @property void velocity(in Vector2f v){physics_body_.velocity = v;}
 
     protected:
         /**

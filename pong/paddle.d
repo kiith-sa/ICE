@@ -179,6 +179,13 @@ class Paddle : Wall
         Color energy_color_ = Color(224, 224, 255, 192);
 
     public:
+        ~this()
+        {
+            emitter_.life_time = 1.0;
+            emitter_.emit_frequency = 0.0;
+            emitter_.detach();
+        }
+
         ///Get movement limits of this paddle.
         @property Rectanglef limits() const 
         {
@@ -193,15 +200,6 @@ class Paddle : Wall
 
         ///Control the paddle to stop (used by player or AI).
         void stop(){physics_body_.velocity = Vector2f(0.0, 0.0);}
-
-        ///Destroy the paddle.
-        override void die(size_t frame)
-        {
-            emitter_.life_time = 1.0;
-            emitter_.emit_frequency = 0.0;
-            emitter_.detach();
-            super.die(frame);
-        }
 
     protected:
         /**

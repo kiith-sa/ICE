@@ -131,14 +131,13 @@ class Ball : Actor
         bool draw_ball_;
 
     public:
-        override void die(size_t frame)
+        ~this()
         {
             trail_.life_time = 0.5;
             trail_.detach();
             emitter_.life_time = 2.0;
             emitter_.emit_frequency = 0.0;
             emitter_.detach();
-            super.die(frame);
         }
  
         ///Get the radius of this ball.

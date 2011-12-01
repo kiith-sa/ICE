@@ -90,12 +90,6 @@ abstract class ParticleEmitter : ParticleSystem
         ///Set angle variation of particles emitted in radians.
         @property final void angle_variation(in real variation){angle_variation_ = variation;}
 
-        override void die(size_t frame)
-        {
-            clear(particles_);
-            super.die(frame);
-        }
-
     protected:
         /**
          * Construct a ParticleEmitter with specified parameters.

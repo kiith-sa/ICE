@@ -111,10 +111,9 @@ class BallSpawner : Actor
             generate_directions(spread);
         }
 
-        override void die(size_t frame)
+        ~this()
         {
             spawn_ball.disconnect_all();
-            super.die(frame);
         }
 
         override void update(SceneManager manager)

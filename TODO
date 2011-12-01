@@ -1,10 +1,5 @@
 ASAP:
 
-Now:
-Move destruction to dtor.
-And make die() final (and rename its frame param to update_index).
-PhysicsBody.die() should still probably be called at Actor.die().
-
 THEN fix the docs based on previous commits.
 
 And THEN do PhysicsBody.die()

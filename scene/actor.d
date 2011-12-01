@@ -47,7 +47,7 @@ abstract class Actor
 
         //TODO DOC
         ///Destroy this actor.
-        void die(size_t frame)
+        final void die(size_t frame)
         {
             physics_body_.die();
             dead_at_frame_ = frame + 1;
