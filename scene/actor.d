@@ -45,8 +45,9 @@ abstract class Actor
         ///Get a reference to physics body of this actor.
         @property final PhysicsBody physics_body() {return physics_body_;}
 
+        //TODO DOC, AND dead_at_frame_ MEMBER
         ///Destroy this actor.
-        void die()
+        void die(size_t frame)
         {
             physics_body_.die();
             container_.remove_actor(this);
@@ -74,13 +75,14 @@ abstract class Actor
             container_ = container;
         };
 
+        //TODO DOC
         /**
          * Update this Actor.
          *
          * Params:  time_step = Update time step in seconds.
          *          game_time = Current game time.
          */
-        void update(in real time_step, in real game_time);
+        void update(in real time_step, in real game_time, in size_t frame);
 
         ///Draw this actor.
         void draw(VideoDriver driver);
@@ -92,9 +94,9 @@ abstract class Actor
          * Params:  time_step = Time step in seconds.
          *          game_time = Current game time.
          */
-        final void update_actor(in real time_step, in real game_time)
+        final void update_actor(in real time_step, in real game_time, in size_t frame)
         {
-            update(time_step, game_time);
+            update(time_step, game_time, frame);
         }
 
         ///Interface used by SceneManager to draw the actor.
@@ -117,7 +119,7 @@ unittest
     class ActorTest : Actor
     {    
         public:
-            override void update(in real time_step, in real game_time){}
+            override void update(in real time_step, in real game_time, in size_t frame){}
             override void draw(VideoDriver driver){}
             this(ActorContainer container)
             {
@@ -128,7 +130,7 @@ unittest
 
     auto container = new ActorContainerTest;
     auto test = new ActorTest(container);
-    test.die();
+    test.die(0);
 
     assert(container.ok, "Error in actor registration with ActorContainer");
 }

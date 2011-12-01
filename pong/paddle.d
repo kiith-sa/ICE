@@ -195,12 +195,12 @@ class Paddle : Wall
         void stop(){physics_body_.velocity = Vector2f(0.0, 0.0);}
 
         ///Destroy the paddle.
-        override void die()
+        override void die(size_t frame)
         {
             emitter_.life_time = 1.0;
             emitter_.emit_frequency = 0.0;
             emitter_.detach();
-            super.die();
+            super.die(frame);
         }
 
     protected:
@@ -224,7 +224,7 @@ class Paddle : Wall
             emitter.attach(this);
         }
 
-        override void update(in real time_step, in real game_time)
+        override void update(in real time_step, in real game_time, in size_t frame)
         {
             energy_ = max(0.0L, energy_ - time_step * dissipate_rate_);
             foreach(collider; physics_body_.colliders)
@@ -241,7 +241,7 @@ class Paddle : Wall
             speed_ = default_speed_ * (1.0 + 1.5 * energy_ratio);
             emitter_.emit_frequency = default_emit_frequency_ * (1.0 + 10.0 * energy_ratio);
 
-            super.update(time_step, game_time);
+            super.update(time_step, game_time, frame);
         }
 }
 

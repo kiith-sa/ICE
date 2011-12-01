@@ -60,10 +60,10 @@ abstract class ParticleSystem : Actor
             super(container, physics_body);
         }
 
-        override void update(in real time_step, in real game_time)
+        override void update(in real time_step, in real game_time, in size_t frame)
         {
             //If life_time_ reaches zero, destroy the system
-            if(life_time_ >= 0.0 && life_time_ - time_step <= 0.0){die();}
+            if(life_time_ >= 0.0 && life_time_ - time_step <= 0.0){die(frame);}
             life_time_ -= time_step;
         }
 }

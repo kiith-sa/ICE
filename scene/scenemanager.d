@@ -29,6 +29,7 @@ import monitor.graphmonitor;
 import util.weaksingleton;
 import util.signal;
 
+//TODO DOCS
 
 ///Stores monitoring statistics about the scene manager.
 private struct Statistics
@@ -71,6 +72,8 @@ final class SceneManager : ActorContainer, Monitorable
         real accumulated_time_ = 0.0;
         ///Time speed multiplier. Zero means pause (stopped time).
         real time_speed_ = 1.0;
+        ///Number of the current update.
+        size_t update_index_ = 0;
 
         ///Statistics data for monitoring.
         Statistics statistics_;
@@ -110,13 +113,16 @@ final class SceneManager : ActorContainer, Monitorable
         ///Get time when the current update started, in game time.
         @property real game_time() const {return game_time_;}
 
+        //TODO DOC
+        @property size_t update_index() const {return update_index_;}
+
         ///Set time speed multiplier (0 for pause, 1 for normal speed).
         @property void time_speed(in real speed){time_speed_ = speed;}
 
         ///Get time speed multiplier.
         @property real time_speed() const {return time_speed_;}
         
-        ///Update the actor manager.
+        ///Update the scene manager.
         void update()
         {
             const real time = get_time();
@@ -135,6 +141,7 @@ final class SceneManager : ActorContainer, Monitorable
                 accumulated_time_ -= time_step_;
                 physics_engine_.update(time_step_);
                 update_actors();
+                ++update_index_;
             }
         }
 
@@ -159,7 +166,11 @@ final class SceneManager : ActorContainer, Monitorable
             }
 
             //kill all actors still alive
-            foreach(actor; actors_){actor.die();}
+            foreach(actor; actors_)
+            {
+                actor.die(update_index_);
+                //TODO CLEAR ACTOR
+            }
             actors_ = [];
             actors_to_add_ = [];
             actors_to_remove_ = [];
@@ -232,7 +243,7 @@ final class SceneManager : ActorContainer, Monitorable
             //Update actors' states
             foreach(actor; actors_)
             {
-                actor.update_actor(time_step_, game_time_);
+                actor.update_actor(time_step_, game_time_, update_index_);
             }
         }
 }

@@ -392,7 +392,7 @@ class Game
         }
         body
         {
-            ball_.die();
+            ball_.die(scene_manager_.update_index);
             ball_ = null;
 
             with(new BallSpawnerFactory(scene_manager_.game_time))

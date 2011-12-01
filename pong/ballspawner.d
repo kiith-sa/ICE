@@ -113,13 +113,13 @@ class BallSpawner : Actor
             generate_directions(spread);
         }
 
-        override void die()
+        override void die(size_t frame)
         {
             spawn_ball.disconnect_all();
-            super.die();
+            super.die(frame);
         }
 
-        override void update(in real time_step, in real game_time)
+        override void update(in real time_step, in real game_time, in size_t frame)
         {
             if(timer_.expired(game_time))
             {
@@ -127,7 +127,7 @@ class BallSpawner : Actor
                 Vector2f direction = Vector2f(1.0f, 1.0f);
                 direction.angle = directions_[uniform(0, directions_.length)];
                 spawn_ball.emit(direction, ball_speed_);
-                die();
+                die(frame);
                 return;
             }
             if(!light_expired && light_ >= (2 * PI)){light_expired = true;}

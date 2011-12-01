@@ -131,14 +131,14 @@ class Ball : Actor
         bool draw_ball_;
 
     public:
-        override void die()
+        override void die(size_t frame)
         {
             trail_.life_time = 0.5;
             trail_.detach();
             emitter_.life_time = 2.0;
             emitter_.emit_frequency = 0.0;
             emitter_.detach();
-            super.die();
+            super.die(frame);
         }
  
         ///Get the radius of this ball.
@@ -167,7 +167,7 @@ class Ball : Actor
             draw_ball_ = draw_ball;
         }
 
-        override void update(in real time_step, in real game_time)
+        override void update(in real time_step, in real game_time, in size_t frame)
         {
             //Ball can only change direction, not speed, after a collision
             if(physics_body_.collided())

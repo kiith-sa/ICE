@@ -51,10 +51,10 @@ class Wall : Actor
         ///Set wall velocity.
         @property void velocity(in Vector2f v){physics_body_.velocity = v;}
 
-        override void die()
+        override void die(size_t frame)
         {
             ball_hit.disconnect_all();
-            super.die();
+            super.die(frame);
         }
 
     protected:
@@ -80,7 +80,7 @@ class Wall : Actor
             driver.draw_filled_rectangle(position + box_.min, position + box_.max, color_);
         }
 
-        override void update(in real time_step, in real game_time)
+        override void update(in real time_step, in real game_time, in size_t frame)
         {
             foreach(collider; physics_body_.colliders)
             {

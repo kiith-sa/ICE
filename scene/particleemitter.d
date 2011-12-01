@@ -90,10 +90,10 @@ abstract class ParticleEmitter : ParticleSystem
         ///Set angle variation of particles emitted in radians.
         @property final void angle_variation(in real variation){angle_variation_ = variation;}
 
-        override void die()
+        override void die(size_t frame)
         {
             clear(particles_);
-            super.die();
+            super.die(frame);
         }
 
     protected:
@@ -124,7 +124,7 @@ abstract class ParticleEmitter : ParticleSystem
             super(container, physics_body, owner, life_time);
         }
 
-        override void update(in real time_step, in real game_time)
+        override void update(in real time_step, in real game_time, in size_t frame)
         {
             //if attached, get position from the owner.
             if(owner_ !is null){physics_body_.position = owner_.position;}
@@ -142,7 +142,7 @@ abstract class ParticleEmitter : ParticleSystem
             //update particles
             foreach(ref particle; particles_){particle.update(time_step);}
 
-            super.update(time_step, game_time);
+            super.update(time_step, game_time, frame);
         }
 
         /**

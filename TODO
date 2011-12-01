@@ -11,7 +11,13 @@ This way, Actor needs no reference to SceneManager - even for adding new actors
 by the actor, that reference can be passed on update.
 
 Color literals:
+RGB:
 color!"FF8008"
+color!"FFF"
+RGBA:
+color!"FF8008FF"
+color!"FFFF"
+
 
 GUIElement text dimensions could be separated into a struct or class 
 for reuse. 
