@@ -122,17 +122,18 @@ abstract class ActorFactory(T)
                            "Vector2f $ velocity $ Vector2f(0.0f, 0.0f)"));
 
     //TODO DOC
-    protected final T new_actor(ActorContainer container, T actor)
+    protected final T new_actor(SceneManager manager, T actor)
     {
-        container.add_actor(actor);
+        manager.add_actor(actor);
         return actor;
     }
 
+    //TODO DOC
     /**
      * Return a new instance of the actor type produced with factory parameters.
      *
      * Params:  container = Container to manage the actor and any actors it creates. 
      *                      Should probably be the SceneManager.
      */
-    public T produce(ActorContainer container);
+    public T produce(SceneManager manager);
 }

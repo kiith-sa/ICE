@@ -1,7 +1,6 @@
 ASAP:
 
 Now:
-pass SceneManager to factory
 get rid of ActorContainer member (and interface)
 Only then move destruction to dtor.
 And make die() final (and rename its frame param to update_index).

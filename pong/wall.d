@@ -11,7 +11,6 @@ module pong.wall;
 
 import pong.ball;
 import scene.actor;
-import scene.actorcontainer;
 import scene.scenemanager;
 import physics.physicsbody;
 import spatial.volumeaabbox;
@@ -114,10 +113,10 @@ abstract class WallFactoryBase(T) : ActorFactory!(T)
 ///Factory used to construct walls.
 class WallFactory : WallFactoryBase!(Wall)
 {
-    public override Wall produce(ActorContainer container)
+    public override Wall produce(SceneManager manager)
     {
         auto physics_body = new PhysicsBody(bbox, position_, velocity_, real.infinity);
         auto rect = rectangle();
-        return new_actor(container, new Wall(physics_body, rect));
+        return new_actor(manager, new Wall(physics_body, rect));
     }
 }

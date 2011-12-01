@@ -13,7 +13,6 @@ import std.math;
 
 import pong.paddle;
 import scene.actor;
-import scene.actorcontainer;
 import scene.scenemanager;
 import scene.particleemitter;
 import scene.lineemitter;
@@ -214,7 +213,7 @@ class BallFactory : ActorFactory!(Ball)
             emitter_factory_ = new LineEmitterFactory;
         }
 
-        override Ball produce(ActorContainer container)
+        override Ball produce(SceneManager manager)
         {
             with(trail_factory_)
             {
@@ -236,10 +235,10 @@ class BallFactory : ActorFactory!(Ball)
             }
 
             adjust_factories();
-            return new_actor(container, 
+            return new_actor(manager, 
                              new Ball(ball_body, 
-                             trail_factory_.produce(container),
-                             emitter_factory_.produce(container),
+                             trail_factory_.produce(manager),
+                             emitter_factory_.produce(manager),
                              particle_speed_, draw_ball));
         }
 

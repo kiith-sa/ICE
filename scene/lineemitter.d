@@ -13,8 +13,8 @@ module scene.lineemitter;
 import std.math;
 
 import scene.actor;
-import scene.actorcontainer;
 import scene.particleemitter;
+import scene.scenemanager;
 import physics.physicsbody;
 import video.videodriver;
 import math.vector2;
@@ -143,9 +143,9 @@ class LineEmitterFactory : LineEmitterFactoryBase!(LineEmitter)
 {
     mixin(generate_factory("float $ line_length $ 5.0"));
 
-    public override LineEmitter produce(ActorContainer container)
+    public override LineEmitter produce(SceneManager manager)
     {
-        return new_actor(container, 
+        return new_actor(manager, 
                          new LineEmitter(physics_body, owner_, life_time_,
                                          particle_life_, emit_frequency_, emit_velocity_, 
                                          angle_variation_, line_length_, line_width_, 

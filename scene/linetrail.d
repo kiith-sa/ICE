@@ -13,9 +13,9 @@ module scene.linetrail;
 import std.math;
 
 import scene.actor;
-import scene.actorcontainer;
-import scene.particleemitter;
 import scene.lineemitter;
+import scene.particleemitter;
+import scene.scenemanager;
 import physics.physicsbody;
 import video.videodriver;
 import math.math;
@@ -108,9 +108,9 @@ final class LineTrail : LineEmitter
 ///Factory used to produce line trails.
 class LineTrailFactory : LineEmitterFactoryBase!LineTrail
 {
-    public override LineTrail produce(ActorContainer container)
+    public override LineTrail produce(SceneManager manager)
     {                                                      
-        return new_actor(container, 
+        return new_actor(manager, 
                          new LineTrail(physics_body, owner_, life_time_, particle_life_,
                                        emit_frequency_, emit_velocity_, angle_variation_, 
                                        line_width_, start_color_, end_color_));

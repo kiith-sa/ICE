@@ -16,7 +16,6 @@ import std.random;
 import pong.ball;
 import pong.wall;
 import scene.actor;
-import scene.actorcontainer;
 import scene.lineemitter;
 import scene.particleemitter;
 import scene.scenemanager;
@@ -261,7 +260,7 @@ class PaddleFactory : WallFactoryBase!(Paddle)
                            "Vector2f $ limits_max $ Vector2f(2.0f, 2.0f)",
                            "real $ speed $ 135.0"));
 
-    public override Paddle produce(ActorContainer container)
+    public override Paddle produce(SceneManager manager)
     {
         auto limits = Rectanglef(limits_min_, limits_max_);
         auto physics_body = new PaddleBody(bbox, position_, velocity_, real.infinity, limits);
@@ -278,10 +277,10 @@ class PaddleFactory : WallFactoryBase!(Paddle)
             line_width = 1;
             start_color = Color(255, 255, 255, 64);
             end_color = Color(64, 64, 255, 0);
-            emitter = produce(container);
+            emitter = produce(manager);
         }
 
         auto rect = rectangle();
-        return new_actor(container, new Paddle(physics_body, rect, speed_, emitter));
+        return new_actor(manager, new Paddle(physics_body, rect, speed_, emitter));
     }
 }

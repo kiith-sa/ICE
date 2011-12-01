@@ -13,7 +13,6 @@ import std.math;
 import std.random;
 
 import scene.actor;
-import scene.actorcontainer;
 import scene.scenemanager;
 import physics.physicsbody;
 import video.videodriver;
@@ -247,10 +246,10 @@ final class BallSpawnerFactory : ActorFactory!(BallSpawner)
          */
         this(in real start_time){start_time_ = start_time;}
 
-        override BallSpawner produce(ActorContainer container)
+        override BallSpawner produce(SceneManager manager)
         {                          
             auto physics_body = new PhysicsBody(null, position_, velocity_, real.infinity);
-            return new_actor(container, 
+            return new_actor(manager, 
                              new BallSpawner(physics_body, Timer(time_, start_time_),
                                              spread_, ball_speed_));
         }
