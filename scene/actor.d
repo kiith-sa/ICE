@@ -13,7 +13,6 @@ module scene.actor;
 import std.string;
 import std.stdio;
 
-import scene.actorcontainer;
 import scene.scenemanager;
 import physics.physicsbody;
 import video.videodriver;
@@ -30,9 +29,6 @@ import util.factory;
 abstract class Actor
 {
     protected:
-        ///Container owning this actor, with ability to add more actors. (most likely SceneManager)
-        ActorContainer container_;
-
         ///Physics body of this actor.
         PhysicsBody physics_body_;
 
@@ -132,8 +128,7 @@ abstract class ActorFactory(T)
     /**
      * Return a new instance of the actor type produced with factory parameters.
      *
-     * Params:  container = Container to manage the actor and any actors it creates. 
-     *                      Should probably be the SceneManager.
+     * Params:  manager = Scene manager to manage the actor and any actors it creates. 
      */
     public T produce(SceneManager manager);
 }

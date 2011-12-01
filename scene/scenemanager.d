@@ -15,7 +15,6 @@ import std.stdio;
 import std.string;
 
 import scene.actor;
-import scene.actorcontainer;
 import physics.physicsengine;
 import spatial.spatialmanager;
 import video.videodriver;
@@ -39,7 +38,7 @@ private struct Statistics
 }
 
 ///Stores and manages all Actors.
-final class SceneManager : ActorContainer, Monitorable
+final class SceneManager : Monitorable
 {
     mixin WeakSingleton;
 

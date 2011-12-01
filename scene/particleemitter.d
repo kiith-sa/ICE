@@ -14,7 +14,6 @@ import std.math;
 import std.random;
 
 import scene.actor;
-import scene.actorcontainer;
 import scene.scenemanager;
 import scene.particlesystem;
 import physics.physicsbody;

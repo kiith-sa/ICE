@@ -11,7 +11,6 @@ module scene.particlesystem;
 
 
 import scene.actor;
-import scene.actorcontainer;
 import scene.scenemanager;
 import physics.physicsbody;
 import math.vector2;
