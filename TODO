@@ -1,8 +1,7 @@
 ASAP:
 
 Now:
-get rid of ActorContainer member (and interface)
-Only then move destruction to dtor.
+Move destruction to dtor.
 And make die() final (and rename its frame param to update_index).
 PhysicsBody.die() should still probably be called at Actor.die().
 

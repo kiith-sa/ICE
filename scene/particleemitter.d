@@ -64,7 +64,7 @@ abstract class ParticleEmitter : ParticleSystem
 
     protected:
         ///Particles in the system.
-        Vector!(Particle) particles_;
+        Vector!Particle particles_;
 
         ///Velocity to emit particles at.
         Vector2f emit_velocity_ = Vector2f(1.0, 0.0);

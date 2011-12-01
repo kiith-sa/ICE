@@ -45,7 +45,7 @@ abstract class Actor
         ///Get a reference to physics body of this actor.
         @property final PhysicsBody physics_body() {return physics_body_;}
 
-        //TODO DOC, AND dead_at_frame_ MEMBER
+        //TODO DOC
         ///Destroy this actor.
         void die(size_t frame)
         {

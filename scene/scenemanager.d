@@ -210,6 +210,7 @@ final class SceneManager : Monitorable
             foreach(actor; actors_) if(actor.dead(update_index_))
             {
                 physics_engine_.remove_body(actor.physics_body);
+                .clear(actor);
             }
             actors_ = remove!((Actor a){return a.dead(update_index_);})(actors_);
 
