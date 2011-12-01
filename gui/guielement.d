@@ -323,8 +323,8 @@ class GUIElement
                     clear(child);
                     continue;
                 }
-                children_[l] = children_[child_from];
-                children_[l].collect_dead();
+                child.collect_dead();
+                children_[l] = child;
                 ++l;
             } 
             children_.length = l;
