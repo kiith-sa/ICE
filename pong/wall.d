@@ -62,13 +62,12 @@ class Wall : Actor
         /**
          * Construct a wall with specified parameters.
          *
-         * Params:  container    = Actor container to manage the wall.
-         *          physics_body = Physics body of the wall.
+         * Params:  physics_body = Physics body of the wall.
          *          box          = Rectangle used for graphical representation of the wall.
          */
-        this(ActorContainer container, PhysicsBody physics_body, const ref Rectanglef box)
+        this(PhysicsBody physics_body, const ref Rectanglef box)
         {
-            super(container, physics_body);
+            super(physics_body);
             box_ = box;
             color_ = default_color_;
             color_border_ = default_color_border_;
@@ -119,6 +118,8 @@ class WallFactory : WallFactoryBase!(Wall)
     {
         auto physics_body = new PhysicsBody(bbox, position_, velocity_, real.infinity);
         auto rect = rectangle();
-        return new Wall(container, physics_body, rect);
+        auto wall = new Wall(physics_body, rect);
+        container.add_actor(wall);
+        return wall;
     }
 }

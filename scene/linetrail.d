@@ -36,8 +36,7 @@ final class LineTrail : LineEmitter
         /**
          * Construct a LineTrail with specified parameters.
          *
-         * Params:  container       = Actor container to manage the trail.
-         *          physics_body    = Physics body of the trail.
+         * Params:  physics_body    = Physics body of the trail.
          *          owner           = Class to attach the trail to. 
          *                            If null, the trail is independent.
          *          life_time       = Life time of the trail in seconds. 
@@ -50,12 +49,12 @@ final class LineTrail : LineEmitter
          *          emit_velocity   = Not valid (fix with particle system overhaul).
          *          angle_variation = Not valid (fix with particle system overhaul).
          */                          
-        this(ActorContainer container, PhysicsBody physics_body, Actor owner, 
+        this(PhysicsBody physics_body, Actor owner, 
              in real life_time, in real particle_life, in real emit_frequency, 
              in Vector2f emit_velocity, in real angle_variation, 
              in float line_width, in Color start_color, in Color end_color)
         {
-            super(container, physics_body, owner, life_time, particle_life,
+            super(physics_body, owner, life_time, particle_life,
                   emit_frequency, emit_velocity, angle_variation,
                   1.0f, line_width, start_color, end_color);
         }
@@ -91,7 +90,7 @@ final class LineTrail : LineEmitter
                 driver.line_width = line_width_;
 
                 //using for instead of foreach for performance reasons
-                for(uint p = 1; p < particles_.length; p++)
+                foreach(p; 1 .. particles_.length)
                 {
                     v2 = particles_[p].position;
                     c2 = end_color_.interpolated(start_color_, 
@@ -107,12 +106,14 @@ final class LineTrail : LineEmitter
 }      
 
 ///Factory used to produce line trails.
-class LineTrailFactory : LineEmitterFactoryBase!(LineTrail)
+class LineTrailFactory : LineEmitterFactoryBase!LineTrail
 {
     public override LineTrail produce(ActorContainer container)
     {                                                      
-        return new LineTrail(container, physics_body, owner_, life_time_,
-                             particle_life_, emit_frequency_, emit_velocity_, 
-                             angle_variation_, line_width_, start_color_, end_color_);
+        auto trail = new LineTrail(physics_body, owner_, life_time_, particle_life_,
+                                   emit_frequency_, emit_velocity_, angle_variation_, 
+                                   line_width_, start_color_, end_color_);
+        container.add_actor(trail);
+        return trail;
     }
 }

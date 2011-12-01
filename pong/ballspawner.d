@@ -88,8 +88,7 @@ class BallSpawner : Actor
         /**
          * Construct a BallSpawner.
          * 
-         * Params:    container    = Actor container to manage this spawner.
-         *            physics_body = Physics body of the spawner.
+         * Params:    physics_body = Physics body of the spawner.
          *            timer        = Ball will be spawned when this timer (game time) expires.
          *                           70% of the time will be taken by the rays effect.
          *            spread       = "Randomness" of the spawn directions.
@@ -99,12 +98,11 @@ class BallSpawner : Actor
          *                           disallowed to prevent ball from getting stuck)
          *            ball_speed   = Speed to spawn the ball at.
          */
-        this(ActorContainer container, PhysicsBody physics_body, in Timer timer, 
-             in real spread, in real ball_speed)
+        this(PhysicsBody physics_body, in Timer timer, in real spread, in real ball_speed)
         in{assert(spread >= 0.0, "Negative ball spawning spread");}
         body
         {                
-            super(container, physics_body);
+            super(physics_body);
 
             ball_speed_ = ball_speed;
             timer_ = timer;
@@ -252,7 +250,9 @@ final class BallSpawnerFactory : ActorFactory!(BallSpawner)
         override BallSpawner produce(ActorContainer container)
         {                          
             auto physics_body = new PhysicsBody(null, position_, velocity_, real.infinity);
-            return new BallSpawner(container, physics_body, Timer(time_, start_time_),
-                                   spread_, ball_speed_);
+            auto spawner = new BallSpawner(physics_body, Timer(time_, start_time_),
+                                           spread_, ball_speed_);
+            container.add_actor(spawner);
+            return spawner;
         }
 }

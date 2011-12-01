@@ -61,20 +61,16 @@ abstract class Actor
         /**
          * Construct an Actor.
          *
-         * Params:  container    = Container to manage the actor and any actors it creates.
-         *          physics_body = Physics body of the actor.
+         * Params:  physics_body = Physics body of the actor.
          */
-        this(ActorContainer container, PhysicsBody physics_body) 
+        this(PhysicsBody physics_body) 
         in
         {
-            assert(container !is null, "Actor must have a non-null container");
             assert(physics_body !is null, "Can't construct an actor without a physics body");
         }
         body
         {
             physics_body_ = physics_body;
-            container.add_actor(this);
-            container_ = container;
         };
 
         //TODO DOC

@@ -47,18 +47,17 @@ abstract class ParticleSystem : Actor
         /**
          * Construct a ParticleSystem with specified parameters.
          *
-         * Params:  container       = Actor container to manage the system.
-         *          physics_body    = Physics body of the system.
+         * Params:  physics_body    = Physics body of the system.
          *          owner           = Class to attach the system to. 
          *                            If null, the system is independent.
          *          life_time       = Life time of the system. 
          *                            If negative, lifetime is indefinite.
          */                          
-        this(ActorContainer container, PhysicsBody physics_body, Actor owner, in real life_time)
+        this(PhysicsBody physics_body, Actor owner, in real life_time)
         {
             life_time_ = life_time;
             owner_ = owner;
-            super(container, physics_body);
+            super(physics_body);
         }
 
         override void update(SceneManager manager)
@@ -82,7 +81,7 @@ abstract class ParticleSystem : Actor
  *                            If negative, lifetime is indefinite.
  *                            Default; -1.0
  */                          
-abstract class ParticleSystemFactory(T) : ActorFactory!(T)
+abstract class ParticleSystemFactory(T) : ActorFactory!T
 {
     mixin(generate_factory("Actor $ owner $ null",
                            "real $ life_time $ -1.0"));

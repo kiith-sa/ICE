@@ -64,8 +64,7 @@ class LineEmitter : ParticleEmitter
         /**
          * Construct a LineEmitter with specified parameters.
          *
-         * Params:  container       = Actor container to manage the emitter.
-         *          physics_body    = Physics body of the emitter.
+         * Params:  physics_body    = Physics body of the emitter.
          *          owner           = Actor to attach the emitter to. 
          *                            If null, the emitter is independent.
          *          life_time       = Life time of the emitter in seconds. 
@@ -79,7 +78,7 @@ class LineEmitter : ParticleEmitter
          *          start_color     = Color at the beginning of particle lifetime.
          *          end_color       = Color at the end of particle lifetime.  
          */                          
-        this(ActorContainer container, PhysicsBody physics_body, Actor owner, 
+        this(PhysicsBody physics_body, Actor owner, 
              in real life_time, in real particle_life, in real emit_frequency, 
              in Vector2f emit_velocity, in real angle_variation, in float line_length, 
              in float line_width, in Color start_color, in Color end_color)
@@ -88,7 +87,7 @@ class LineEmitter : ParticleEmitter
             line_width_ = line_width;
             start_color_ = start_color;
             end_color_ = end_color;
-            super(container, physics_body, owner, life_time, particle_life,
+            super(physics_body, owner, life_time, particle_life,
                   emit_frequency, emit_velocity, angle_variation);
         }
 
@@ -122,7 +121,7 @@ class LineEmitter : ParticleEmitter
  *          end_color   = Color at the end of particle lifetime. 
  *                        Default; Color.black
  */
-abstract class LineEmitterFactoryBase(T) : ParticleEmitterFactory!(T)
+abstract class LineEmitterFactoryBase(T) : ParticleEmitterFactory!T
 {
     mixin(generate_factory("float $ line_width $ 1",
                            "Color $ start_color $ Color.white",
@@ -146,9 +145,11 @@ class LineEmitterFactory : LineEmitterFactoryBase!(LineEmitter)
 
     public override LineEmitter produce(ActorContainer container)
     {
-        return new LineEmitter(container, physics_body, owner_, life_time_,
-                               particle_life_, emit_frequency_, emit_velocity_, 
-                               angle_variation_, line_length_, line_width_, 
-                               start_color_, end_color_);
+        auto emitter = new LineEmitter(physics_body, owner_, life_time_,
+                                       particle_life_, emit_frequency_, emit_velocity_, 
+                                       angle_variation_, line_length_, line_width_, 
+                                       start_color_, end_color_);
+        container.add_actor(emitter);
+        return emitter;
     }
 }

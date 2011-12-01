@@ -149,17 +149,16 @@ class Ball : Actor
         /**
          * Construct a ball with specified parameters.
          *
-         * Params:  container      = Actor container to manage this ball.
-         *          physics_body   = Physics body of the ball.
+         * Params:  physics_body   = Physics body of the ball.
          *          trail          = Line trail of the ball.
          *          emitter        = Particle trail of the ball.
          *          particle_speed = Speed of particles in the particle trail.
          *          draw_ball      = Draw the ball itself or only particle effects?
          */
-        this(ActorContainer container, BallBody physics_body, LineTrail trail,
+        this(BallBody physics_body, LineTrail trail,
              ParticleEmitter emitter, in float particle_speed, in bool draw_ball)
         {
-            super(container, physics_body);
+            super(physics_body);
             trail_ = trail;
             trail.attach(this);
             emitter_ = emitter;
@@ -237,10 +236,12 @@ class BallFactory : ActorFactory!(Ball)
             }
 
             adjust_factories();
-            return new Ball(container, ball_body, 
-                            trail_factory_.produce(container),
-                            emitter_factory_.produce(container),
-                            particle_speed_, draw_ball);
+            auto ball = new Ball(ball_body, 
+                                 trail_factory_.produce(container),
+                                 emitter_factory_.produce(container),
+                                 particle_speed_, draw_ball);
+            container.add_actor(ball);
+            return ball;
         }
 
     protected:

@@ -101,8 +101,7 @@ abstract class ParticleEmitter : ParticleSystem
         /**
          * Construct a ParticleEmitter with specified parameters.
          *
-         * Params:  container       = Actor container to manage the emitter.
-         *          physics_body    = Physics body of the emitter.
+         * Params:  physics_body    = Physics body of the emitter.
          *          owner           = Class to attach the emitter to. 
          *                            If null, the emitter is independent.
          *          life_time       = Life time of the emitter. 
@@ -112,7 +111,7 @@ abstract class ParticleEmitter : ParticleSystem
          *          emit_velocity   = Base velocity of particles emitted.
          *          angle_variation = Variation of angle of emit velocity in radians.
          */                          
-        this(ActorContainer container, PhysicsBody physics_body, Actor owner, 
+        this(PhysicsBody physics_body, Actor owner, 
              in real life_time, in real particle_life, in real emit_frequency, 
              in Vector2f emit_velocity, in real angle_variation)
         {
@@ -122,7 +121,7 @@ abstract class ParticleEmitter : ParticleSystem
             emit_velocity_ = emit_velocity;
             particles_.reserve(8);
 
-            super(container, physics_body, owner, life_time);
+            super(physics_body, owner, life_time);
         }
 
         override void update(SceneManager manager)
@@ -186,7 +185,7 @@ abstract class ParticleEmitter : ParticleSystem
  *          angle_variation = Variation of angle of emit velocity in radians.
  *                            Default; PI / 2
  */                          
-abstract class ParticleEmitterFactory(T) : ParticleSystemFactory!(T)
+abstract class ParticleEmitterFactory(T) : ParticleSystemFactory!T
 {
     mixin(generate_factory("real $ particle_life $ 5.0",
                            "real $ emit_frequency $ 10.0",

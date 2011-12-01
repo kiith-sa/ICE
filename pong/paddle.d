@@ -208,8 +208,7 @@ class Paddle : Wall
         /**
          * Construct a paddle with specified parameters.
          *
-         * Params:  container    = Actor container to manage this paddle.
-         *          physics_body = Physics body of the paddle.
+         * Params:  physics_body = Physics body of the paddle.
          *          box          = Rectangle used for graphics representation of the paddle.
          *          speed        = Speed of paddle movement.
          *          emitter      = Particle emitter of the paddle.
@@ -218,7 +217,7 @@ class Paddle : Wall
              in real speed, ParticleEmitter emitter)
         {
             default_color_ = Color(0, 0, 255, 32);
-            super(container, physics_body, box);
+            super(physics_body, box);
             speed_ = default_speed_ = speed;
             emitter_ = emitter;
             default_emit_frequency_ = emitter_.emit_frequency;

@@ -2,7 +2,10 @@ ASAP:
 
 Now:
 Don't pass ActorContainer to Actor ctor 
-- factory constructs Actor and adds it to SceneManager
+- factory constructs Actor and adds it to SceneManager 
+Either pass SceneManager to factory or add produced actor to manager manually after producing.
+   Alternatively write a produce_implementation method that is overridden, called by produce()
+   that is final and adds the actor produced by implementation to scene manager.
 get rid of ActorContainer member (and interface)
 Only then move destruction to dtor.
 And make die() final (and rename its frame param to update_index).
