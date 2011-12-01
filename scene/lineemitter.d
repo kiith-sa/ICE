@@ -145,11 +145,10 @@ class LineEmitterFactory : LineEmitterFactoryBase!(LineEmitter)
 
     public override LineEmitter produce(ActorContainer container)
     {
-        auto emitter = new LineEmitter(physics_body, owner_, life_time_,
-                                       particle_life_, emit_frequency_, emit_velocity_, 
-                                       angle_variation_, line_length_, line_width_, 
-                                       start_color_, end_color_);
-        container.add_actor(emitter);
-        return emitter;
+        return new_actor(container, 
+                         new LineEmitter(physics_body, owner_, life_time_,
+                                         particle_life_, emit_frequency_, emit_velocity_, 
+                                         angle_variation_, line_length_, line_width_, 
+                                         start_color_, end_color_));
     }
 }

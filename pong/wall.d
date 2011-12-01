@@ -118,8 +118,6 @@ class WallFactory : WallFactoryBase!(Wall)
     {
         auto physics_body = new PhysicsBody(bbox, position_, velocity_, real.infinity);
         auto rect = rectangle();
-        auto wall = new Wall(physics_body, rect);
-        container.add_actor(wall);
-        return wall;
+        return new_actor(container, new Wall(physics_body, rect));
     }
 }

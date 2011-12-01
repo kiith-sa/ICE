@@ -236,12 +236,11 @@ class BallFactory : ActorFactory!(Ball)
             }
 
             adjust_factories();
-            auto ball = new Ball(ball_body, 
-                                 trail_factory_.produce(container),
-                                 emitter_factory_.produce(container),
-                                 particle_speed_, draw_ball);
-            container.add_actor(ball);
-            return ball;
+            return new_actor(container, 
+                             new Ball(ball_body, 
+                             trail_factory_.produce(container),
+                             emitter_factory_.produce(container),
+                             particle_speed_, draw_ball));
         }
 
     protected:

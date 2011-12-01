@@ -213,7 +213,7 @@ class Paddle : Wall
          *          speed        = Speed of paddle movement.
          *          emitter      = Particle emitter of the paddle.
          */
-        this(ActorContainer container, PaddleBody physics_body, const ref Rectanglef box,
+        this(PaddleBody physics_body, const ref Rectanglef box,
              in real speed, ParticleEmitter emitter)
         {
             default_color_ = Color(0, 0, 255, 32);
@@ -282,6 +282,6 @@ class PaddleFactory : WallFactoryBase!(Paddle)
         }
 
         auto rect = rectangle();
-        return new Paddle(container, physics_body, rect, speed_, emitter);
+        return new_actor(container, new Paddle(physics_body, rect, speed_, emitter));
     }
 }

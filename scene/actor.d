@@ -121,6 +121,13 @@ abstract class ActorFactory(T)
     mixin(generate_factory("Vector2f $ position $ Vector2f(0.0f, 0.0f)", 
                            "Vector2f $ velocity $ Vector2f(0.0f, 0.0f)"));
 
+    //TODO DOC
+    protected final T new_actor(ActorContainer container, T actor)
+    {
+        container.add_actor(actor);
+        return actor;
+    }
+
     /**
      * Return a new instance of the actor type produced with factory parameters.
      *

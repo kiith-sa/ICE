@@ -110,10 +110,9 @@ class LineTrailFactory : LineEmitterFactoryBase!LineTrail
 {
     public override LineTrail produce(ActorContainer container)
     {                                                      
-        auto trail = new LineTrail(physics_body, owner_, life_time_, particle_life_,
-                                   emit_frequency_, emit_velocity_, angle_variation_, 
-                                   line_width_, start_color_, end_color_);
-        container.add_actor(trail);
-        return trail;
+        return new_actor(container, 
+                         new LineTrail(physics_body, owner_, life_time_, particle_life_,
+                                       emit_frequency_, emit_velocity_, angle_variation_, 
+                                       line_width_, start_color_, end_color_));
     }
 }

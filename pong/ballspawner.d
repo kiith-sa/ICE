@@ -250,9 +250,8 @@ final class BallSpawnerFactory : ActorFactory!(BallSpawner)
         override BallSpawner produce(ActorContainer container)
         {                          
             auto physics_body = new PhysicsBody(null, position_, velocity_, real.infinity);
-            auto spawner = new BallSpawner(physics_body, Timer(time_, start_time_),
-                                           spread_, ball_speed_);
-            container.add_actor(spawner);
-            return spawner;
+            return new_actor(container, 
+                             new BallSpawner(physics_body, Timer(time_, start_time_),
+                                             spread_, ball_speed_));
         }
 }
