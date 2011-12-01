@@ -161,7 +161,7 @@ final class SceneManager : ActorContainer, Monitorable
             {
                 if(!actor.dead(update_index_)){actor.die(update_index_);}
                 physics_engine_.remove_body(actor.physics_body);
-                clear(actor);
+                .clear(actor);
             }
             actors_.length = 0;
             actors_to_add_.length = 0;
@@ -215,9 +215,6 @@ final class SceneManager : ActorContainer, Monitorable
             actors_ = remove!((Actor a){return a.dead(update_index_);})(actors_);
 
             //Update actors' states
-            foreach(actor; actors_)
-            {
-                actor.update_actor(time_step_, game_time_, update_index_);
-            }
+            foreach(actor; actors_){actor.update_actor(this);}
         }
 }

@@ -15,6 +15,7 @@ import std.random;
 
 import scene.actor;
 import scene.actorcontainer;
+import scene.scenemanager;
 import scene.particlesystem;
 import physics.physicsbody;
 import math.math;
@@ -124,25 +125,24 @@ abstract class ParticleEmitter : ParticleSystem
             super(container, physics_body, owner, life_time);
         }
 
-        override void update(in real time_step, in real game_time, in size_t frame)
+        override void update(SceneManager manager)
         {
             //if attached, get position from the owner.
             if(owner_ !is null){physics_body_.position = owner_.position;}
 
-            game_time_ = game_time;
+            game_time_ = manager.game_time;
 
-            bool expired(ref Particle particle){return particle.timer.expired(game_time);};
+            bool expired(ref Particle p){return p.timer.expired(manager.game_time);};
             //remove expired particles
             particles_.remove(&expired);
                               
-
             //emit new particles
-            emit(time_step);
+            emit(manager.time_step);
 
             //update particles
-            foreach(ref particle; particles_){particle.update(time_step);}
+            foreach(ref particle; particles_){particle.update(manager.time_step);}
 
-            super.update(time_step, game_time, frame);
+            super.update(manager);
         }
 
         /**

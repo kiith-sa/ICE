@@ -14,6 +14,7 @@ import std.math;
 import pong.paddle;
 import scene.actor;
 import scene.actorcontainer;
+import scene.scenemanager;
 import scene.particleemitter;
 import scene.lineemitter;
 import scene.linetrail;
@@ -167,13 +168,11 @@ class Ball : Actor
             draw_ball_ = draw_ball;
         }
 
-        override void update(in real time_step, in real game_time, in size_t frame)
+        override void update(SceneManager manager)
         {
             //Ball can only change direction, not speed, after a collision
-            if(physics_body_.collided())
-            {
-                emitter_.emit_velocity = -physics_body_.velocity.normalized * particle_speed_;
-            }
+            if(!physics_body_.collided()){return;}
+            emitter_.emit_velocity = -physics_body_.velocity.normalized * particle_speed_;
         }
 
         override void draw(VideoDriver driver)

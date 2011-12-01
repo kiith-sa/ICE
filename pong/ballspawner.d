@@ -14,6 +14,7 @@ import std.random;
 
 import scene.actor;
 import scene.actorcontainer;
+import scene.scenemanager;
 import physics.physicsbody;
 import video.videodriver;
 import time.timer;
@@ -119,21 +120,21 @@ class BallSpawner : Actor
             super.die(frame);
         }
 
-        override void update(in real time_step, in real game_time, in size_t frame)
+        override void update(SceneManager manager)
         {
-            if(timer_.expired(game_time))
+            if(timer_.expired(manager.game_time))
             {
                 //emit the ball in a random, previously generated direction
                 Vector2f direction = Vector2f(1.0f, 1.0f);
                 direction.angle = directions_[uniform(0, directions_.length)];
                 spawn_ball.emit(direction, ball_speed_);
-                die(frame);
+                die(manager.update_index);
                 return;
             }
             if(!light_expired && light_ >= (2 * PI)){light_expired = true;}
 
             //update light direction
-            light_ += light_speed_ * time_step;
+            light_ += light_speed_ * manager.time_step;
         }
 
         override void draw(VideoDriver driver)

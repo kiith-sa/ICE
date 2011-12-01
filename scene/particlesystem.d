@@ -12,6 +12,7 @@ module scene.particlesystem;
 
 import scene.actor;
 import scene.actorcontainer;
+import scene.scenemanager;
 import physics.physicsbody;
 import math.vector2;
 import util.factory;
@@ -60,11 +61,14 @@ abstract class ParticleSystem : Actor
             super(container, physics_body);
         }
 
-        override void update(in real time_step, in real game_time, in size_t frame)
+        override void update(SceneManager manager)
         {
             //If life_time_ reaches zero, destroy the system
-            if(life_time_ >= 0.0 && life_time_ - time_step <= 0.0){die(frame);}
-            life_time_ -= time_step;
+            if(life_time_ >= 0.0 && life_time_ - manager.time_step <= 0.0)
+            {
+                die(manager.update_index);
+            }
+            life_time_ -= manager.time_step;
         }
 }
 

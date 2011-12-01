@@ -17,8 +17,9 @@ import pong.ball;
 import pong.wall;
 import scene.actor;
 import scene.actorcontainer;
-import scene.particleemitter;
 import scene.lineemitter;
+import scene.particleemitter;
+import scene.scenemanager;
 import math.math;
 import math.vector2;
 import math.rectangle;
@@ -224,9 +225,9 @@ class Paddle : Wall
             emitter.attach(this);
         }
 
-        override void update(in real time_step, in real game_time, in size_t frame)
+        override void update(SceneManager manager)
         {
-            energy_ = max(0.0L, energy_ - time_step * dissipate_rate_);
+            energy_ = max(0.0L, energy_ - manager.time_step * dissipate_rate_);
             foreach(collider; physics_body_.colliders)
             {
                 if(!equals(collider.inverse_mass, 0.0L))
@@ -241,7 +242,7 @@ class Paddle : Wall
             speed_ = default_speed_ * (1.0 + 1.5 * energy_ratio);
             emitter_.emit_frequency = default_emit_frequency_ * (1.0 + 10.0 * energy_ratio);
 
-            super.update(time_step, game_time, frame);
+            super.update(manager);
         }
 }
 

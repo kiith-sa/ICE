@@ -12,6 +12,7 @@ module pong.wall;
 import pong.ball;
 import scene.actor;
 import scene.actorcontainer;
+import scene.scenemanager;
 import physics.physicsbody;
 import spatial.volumeaabbox;
 import video.videodriver;
@@ -80,7 +81,7 @@ class Wall : Actor
             driver.draw_filled_rectangle(position + box_.min, position + box_.max, color_);
         }
 
-        override void update(in real time_step, in real game_time, in size_t frame)
+        override void update(SceneManager manager)
         {
             foreach(collider; physics_body_.colliders)
             {

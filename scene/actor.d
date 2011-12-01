@@ -14,6 +14,7 @@ import std.string;
 import std.stdio;
 
 import scene.actorcontainer;
+import scene.scenemanager;
 import physics.physicsbody;
 import video.videodriver;
 import math.vector2;
@@ -83,7 +84,7 @@ abstract class Actor
          * Params:  time_step = Update time step in seconds.
          *          game_time = Current game time.
          */
-        void update(in real time_step, in real game_time, in size_t frame);
+        void update(SceneManager manager);
 
         ///Draw this actor.
         void draw(VideoDriver driver);
@@ -95,15 +96,16 @@ abstract class Actor
             return frame >= dead_at_frame_;
         }
 
+        //TODO DOC
         /**
          * Interface used by SceneManager to update the actor.
          *
          * Params:  time_step = Time step in seconds.
          *          game_time = Current game time.
          */
-        final void update_actor(in real time_step, in real game_time, in size_t frame)
+        final void update_actor(SceneManager manager)
         {
-            update(time_step, game_time, frame);
+            update(manager);
         }
 
         ///Interface used by SceneManager to draw the actor.

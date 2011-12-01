@@ -1,13 +1,11 @@
 ASAP:
 
 Now:
-get rid of ActorContainer member (and interface)
-    and pass SceneManager at update (instead of all the params passed now)
-(to add actors, not remove them)
 Don't pass ActorContainer to Actor ctor 
 - factory constructs Actor and adds it to SceneManager
+get rid of ActorContainer member (and interface)
 Only then move destruction to dtor.
-And make die() final.
+And make die() final (and rename its frame param to update_index).
 PhysicsBody.die() should still probably be called at Actor.die().
 
 THEN fix the docs based on previous commits.
