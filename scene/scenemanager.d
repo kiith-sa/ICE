@@ -59,8 +59,6 @@ final class SceneManager : ActorContainer, Monitorable
         Actor[] actors_;
         ///Actors to be added at the beginning of the next update.
         Actor[] actors_to_add_;
-        ///Actors to be removed at the beginning of the next update.
-        Actor[] actors_to_remove_;
 
         ///Time taken by single game update.
         const real time_step_ = 1.0 / 90.0; 
@@ -158,22 +156,15 @@ final class SceneManager : ActorContainer, Monitorable
         ///Remove all actors.
         void clear()
         {
-            //these actors are already dead, so remove them first
-            foreach(actor; actors_to_remove_)
-            {
-                actors_ = remove!((Actor a){return a is actor;})(actors_);
-                physics_engine_.remove_body(actor.physics_body);
-            }
-
             //kill all actors still alive
             foreach(actor; actors_)
             {
-                actor.die(update_index_);
-                //TODO CLEAR ACTOR
+                if(!actor.dead(update_index_)){actor.die(update_index_);}
+                physics_engine_.remove_body(actor.physics_body);
+                clear(actor);
             }
-            actors_ = [];
-            actors_to_add_ = [];
-            actors_to_remove_ = [];
+            actors_.length = 0;
+            actors_to_add_.length = 0;
         }
 
         /**
@@ -192,21 +183,6 @@ final class SceneManager : ActorContainer, Monitorable
         }
         body{actors_to_add_ ~= actor;}
 
-        /**
-         * Remove an actor. Will be removed at the beginning of next frame.
-         * 
-         * Note: This should only be used by actor die() or destructor.
-         *
-         * Params:  actor = Actor to remove. Must be in the SceneManager.
-         */
-        void remove_actor(Actor actor)
-        in
-        {
-            assert(canFind!"a is b"(actors_, actor),
-                   "Can't remove an actor that is not in the SceneManager");
-        }
-        body{actors_to_remove_ ~= actor;}
-
         MonitorDataInterface monitor_data()
         {
             SubMonitor function(SceneManager)[string] ctors_;
@@ -224,21 +200,19 @@ final class SceneManager : ActorContainer, Monitorable
             statistics_.ups = age == 0.0L ? 0.0 : 1.0 / age;
             send_statistics.emit(statistics_);
 
-            //Add or remove any actors requested
-            foreach(actor; actors_to_remove_)
-            {
-                actors_ = remove!((Actor a){return a is actor;})(actors_);
-                physics_engine_.remove_body(actor.physics_body);
-            }
-
             actors_ ~= actors_to_add_;
             foreach(actor; actors_to_add_)
             {
                 physics_engine_.add_body(actor.physics_body);
             }
 
-            actors_to_add_ = [];
-            actors_to_remove_ = [];
+            actors_to_add_.length = 0;
+
+            foreach(actor; actors_) if(actor.dead(update_index_))
+            {
+                physics_engine_.remove_body(actor.physics_body);
+            }
+            actors_ = remove!((Actor a){return a.dead(update_index_);})(actors_);
 
             //Update actors' states
             foreach(actor; actors_)

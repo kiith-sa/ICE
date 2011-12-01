@@ -35,6 +35,9 @@ abstract class Actor
         ///Physics body of this actor.
         PhysicsBody physics_body_;
 
+        //TODO DOC
+        size_t dead_at_frame_ = size_t.max;
+
     public:
         ///Get position of this actor.
         @property final Vector2f position() const {return physics_body_.position;}
@@ -50,9 +53,7 @@ abstract class Actor
         void die(size_t frame)
         {
             physics_body_.die();
-            container_.remove_actor(this);
-            //can't set this here due to a compiler bug (stuff gets reordered)
-            //container_ = null;
+            dead_at_frame_ = frame + 1;
         }
 
     protected:
@@ -88,6 +89,12 @@ abstract class Actor
         void draw(VideoDriver driver);
 
     package:
+        //TODO DOC
+        @property final bool dead (in size_t frame) const
+        {
+            return frame >= dead_at_frame_;
+        }
+
         /**
          * Interface used by SceneManager to update the actor.
          *
@@ -101,38 +108,6 @@ abstract class Actor
 
         ///Interface used by SceneManager to draw the actor.
         final void draw_actor(VideoDriver driver){draw(driver);}
-}
-///Unittest for Actor.
-unittest
-{
-    class ActorContainerTest : ActorContainer
-    {
-        private:
-            uint add_counter;
-            uint remove_counter;
-        public:
-            override void add_actor(Actor actor){add_counter++;}
-            override void remove_actor(Actor actor){remove_counter++;}
-            bool ok(){return add_counter == 1 && remove_counter == 1;}
-    }
-
-    class ActorTest : Actor
-    {    
-        public:
-            override void update(in real time_step, in real game_time, in size_t frame){}
-            override void draw(VideoDriver driver){}
-            this(ActorContainer container)
-            {
-                auto zero = Vector2f(0.0f, 0.0f);
-                super(container, new PhysicsBody(null, zero, zero, 10.0));
-            }
-    }
-
-    auto container = new ActorContainerTest;
-    auto test = new ActorTest(container);
-    test.die(0);
-
-    assert(container.ok, "Error in actor registration with ActorContainer");
 }
 
 /**
