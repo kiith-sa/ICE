@@ -1,14 +1,5 @@
 ASAP:
 
-Graph drawing: Use the idea from neural_networks_02 project 
-for drawing graphs - skipping data points when more of them than width 
-(or more than width*2 for good detail with AA)
-
-We don't need to change how many data points we get. 
-Just skip them when building the line strip if there are too many.
-This will solve problems when drastically zooming out.
-
-
 Actor.die(), PhysicsBody.die() 
     Each Actor has a uint or ulong value: dead_at_frame_
     When die() is called, set this to next frame index -

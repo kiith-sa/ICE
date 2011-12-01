@@ -276,10 +276,13 @@ final class GUILineGraph : GUIElement
                 float x = bounds_.max.x - scale_x_ * (points.length - 1);
                 const float y = bounds_.max.y;
 
-                foreach(point; points)
+                //Skip data points if too many.
+                const skip = min(1, points.length / (bounds_.width * 4));
+
+                foreach(point; stride(points, skip))
                 {
                     graphics.line_strip ~= Vector2f(x, y - point * scale_y);
-                    x += scale_x_;
+                    x += scale_x_ * skip;
                 }
             }
         }
