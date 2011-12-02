@@ -179,7 +179,7 @@ class Paddle : Wall
         Color energy_color_ = Color(224, 224, 255, 192);
 
     public:
-        override void on_die()
+        override void on_die(SceneManager manager)
         {
             emitter_.life_time = 1.0;
             emitter_.emit_frequency = 0.0;

@@ -161,6 +161,7 @@ final class SceneManager : Monitorable
             foreach(actor; actors_) if(!actor.dead(update_index_))
             {
                 actor.die(update_index_);
+                actor.on_die_package(this);
             }
             foreach(actor; actors_)
             {
@@ -212,6 +213,11 @@ final class SceneManager : Monitorable
 
             actors_to_add_.length = 0;
 
+            foreach(actor; actors_) if(actor.dead(update_index_))
+            {
+                actor.on_die_package(this);
+            }
+
             auto l = 0;
             for(size_t actor_from = 0; actor_from < actors_.length; ++actor_from)
             {
@@ -222,7 +228,7 @@ final class SceneManager : Monitorable
                     .clear(actor);
                     continue;
                 }
-                actor.update_actor(this);
+                actor.update_package(this);
                 actors_[l] = actor;
                 ++l;
             } 

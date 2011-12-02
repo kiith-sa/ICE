@@ -49,7 +49,6 @@ abstract class Actor
         ///Destroy this actor.
         final void die(size_t frame)
         {
-            on_die();
             physics_body_.die();
             dead_at_frame_ = frame + 1;
         }
@@ -71,7 +70,16 @@ abstract class Actor
         };
         //TODO DOC
 
-        void on_die(){};
+        /**
+         * Called at the first update after the actors' die() method is called.
+         *
+         * This is used to handle any game logic that needs to happen when an 
+         * actor dies, for instance detaching particle systems from an actor or
+         * spawning new actors.
+         *
+         * Params:  manager = SceneManager to get time information and add new actors.
+         */
+        void on_die(SceneManager manager){};
 
         //TODO DOC
         /**
@@ -92,17 +100,20 @@ abstract class Actor
             return frame >= dead_at_frame_;
         }
 
-        //TODO DOC
         /**
-         * Interface used by SceneManager to update the actor.
+         * Used by SceneManager to update the actor.
          *
-         * Params:  time_step = Time step in seconds.
-         *          game_time = Current game time.
+         * Params:  manager   = SceneManager to get time information from and/or add new actors.
          */
-        final void update_actor(SceneManager manager)
-        {
-            update(manager);
-        }
+        final void update_package(SceneManager manager){update(manager);}
+
+        /**
+         * Used by SceneManager to call on_die() of the actor.
+         *
+         * Params:  manager   = SceneManager to get time information from and/or add new actors.
+         */
+        final void on_die_package(SceneManager manager){on_die(manager);}
+
 
         ///Interface used by SceneManager to draw the actor.
         final void draw_actor(VideoDriver driver){draw(driver);}

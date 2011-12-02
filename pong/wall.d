@@ -48,7 +48,7 @@ class Wall : Actor
         ///Emitted when a ball hits the wall. Will emit const BallBody after D2 move.
         mixin Signal!(const BallBody) ball_hit;
 
-        override void on_die()
+        override void on_die(SceneManager manager)
         {
             ball_hit.disconnect_all();
         }

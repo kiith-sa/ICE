@@ -131,7 +131,7 @@ class Ball : Actor
         bool draw_ball_;
 
     public:
-        override void on_die()
+        override void on_die(SceneManager manager)
         {
             trail_.life_time = 0.5;
             trail_.detach();
