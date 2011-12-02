@@ -71,7 +71,7 @@ abstract class Actor
         //TODO DOC
 
         /**
-         * Called at the first update after the actors' die() method is called.
+         * Called at the end of the update after the actors' die() method is called.
          *
          * This is used to handle any game logic that needs to happen when an 
          * actor dies, for instance detaching particle systems from an actor or

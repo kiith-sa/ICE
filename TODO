@@ -4,10 +4,7 @@ fix the docs based on previous commits.
 
 Then do PhysicsBody.die()
 PhysicsBody.on_die() should be called after Actor.on_die(),
-so we'll need a PhysicsEngine.collect_dead() after SceneManager.update_actors().
-
-Maybe also ActorManager.collect_dead() right after that calling on_die() and then clearing dead
-(that would need an update to Actor.on_die() docs).
+so we'll need a PhysicsEngine.collect_dead() after SceneManager.collect_dead()
 
 Actor.die(), PhysicsBody.die() 
     Each Actor has a uint or ulong value: dead_at_frame_

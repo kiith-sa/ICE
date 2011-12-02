@@ -138,6 +138,7 @@ final class SceneManager : Monitorable
                 accumulated_time_ -= time_step_;
                 physics_engine_.update(time_step_);
                 update_actors();
+                collect_dead();
                 ++update_index_;
             }
         }
@@ -196,6 +197,30 @@ final class SceneManager : Monitorable
         }
 
     package:
+        ///Call on_die() of all dead actors and remove them.
+        void collect_dead()
+        {
+            foreach(actor; actors_) if(actor.dead(update_index_))
+            {
+                actor.on_die_package(this);
+            }
+
+            auto l = 0;
+            for(size_t actor_from = 0; actor_from < actors_.length; ++actor_from)
+            {
+                auto actor = actors_[actor_from];
+                if(actor.dead(update_index_))
+                {
+                    physics_engine_.remove_body(actor.physics_body);
+                    .clear(actor);
+                    continue;
+                }
+                actors_[l] = actor;
+                ++l;
+            } 
+            actors_.length = l;
+        }
+
         ///Update all actors.
         void update_actors()
         {
@@ -213,25 +238,6 @@ final class SceneManager : Monitorable
 
             actors_to_add_.length = 0;
 
-            foreach(actor; actors_) if(actor.dead(update_index_))
-            {
-                actor.on_die_package(this);
-            }
-
-            auto l = 0;
-            for(size_t actor_from = 0; actor_from < actors_.length; ++actor_from)
-            {
-                auto actor = actors_[actor_from];
-                if(actor.dead(update_index_))
-                {
-                    physics_engine_.remove_body(actor.physics_body);
-                    .clear(actor);
-                    continue;
-                }
-                actor.update_package(this);
-                actors_[l] = actor;
-                ++l;
-            } 
-            actors_.length = l;
+            foreach(actor; actors_){actor.update_package(this);}
         }
 }
