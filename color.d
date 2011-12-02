@@ -11,8 +11,9 @@ module color;
 
 
 import std.algorithm;
-import std.traits;
 import std.random;
+import std.string;
+import std.traits;
 
 import math.math;
 
@@ -255,4 +256,54 @@ align(1) struct Color
     {
         return cast(ubyte)min(cast(real)color * factor, 255.0L);
     }
+}
+
+///RGB color from a hexadecimal string (CSS style), e.g. FFFFFF for white.
+template rgb(string c) if(c.length == 6)
+{
+    enum auto rgb = rgba!(c ~ "FF");
+}
+
+///RGBA color from a hexadecimal string (CSS style), e.g. FFFFFF80 for half-transparent white.
+template rgba(string c) if(c.length == 8) 
+{
+    enum auto rgba = Color(hex_color(c[0 .. 2]), hex_color(c[2 .. 4]), 
+                           hex_color(c[4 .. 6]), hex_color(c[6 .. 8]));
+}
+
+///RGB color from a short hexadecimal string (CSS style), e.g. FFF for white.
+template rgb(string c) if(c.length == 3)
+{
+    enum auto rgb = rgb!(c[0] ~ "0" ~ c[1] ~ "0" ~ c[2] ~ "0");
+}
+
+///RGBA color from a short hexadecimal string (CSS style), e.g. FFF8 for half-transparent white.
+template rgba(string c) if(c.length == 4) 
+{
+    enum auto rgba = rgba!(c[0] ~ "0" ~ c[1] ~ "0" ~ c[2] ~ "0" ~ c[3] ~ "0");
+}
+
+unittest
+{
+    assert(rgba!"f0F0F0F0" == rgba!"FFFF"  &&
+           rgb!"FFF"       == rgb!"F0F0F0" &&
+           rgb!"FFF"       == rgba!"F0F0F0FF" &&
+           rgb!"FFF"       == Color(240, 240, 240, 255));
+}
+
+private:
+///Get value of a 2-character hexadecimal sequence corresponding to single color channel.
+ubyte hex_color(string hex) pure
+{
+    assert(hex.length == 2, "Hex string to get color from must have 2 chars");
+    hex = toUpper(hex);
+    return cast(ubyte)(16 * hex_digit(hex[0]) + hex_digit(hex[1]));
+}
+
+///Convert a hexadecimal digit to integer.
+auto hex_digit(const char hex) pure
+{
+    if(hex >= '0' && hex <= '9')     {return hex - '0';}
+    else if(hex >= 'A' && hex <= 'F'){return 10 + hex - 'A';}
+    assert(false, "'" ~ hex ~ "' is not a hexadecimal digit");
 }
