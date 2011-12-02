@@ -98,7 +98,7 @@ class Wall : Actor
  *          box_max = Maximum extent of the wall relative to its position.
  *                    Default; Vector2f(1.0f, 1.0f)
  */
-abstract class WallFactoryBase(T) : ActorFactory!(T)
+abstract class WallFactoryBase(T) : ActorFactory!T
 {
     mixin(generate_factory("Vector2f $ box_min $ Vector2f(0.0f, 0.0f)", 
                            "Vector2f $ box_max $ Vector2f(1.0f, 1.0f)"));
@@ -110,7 +110,7 @@ abstract class WallFactoryBase(T) : ActorFactory!(T)
 }
 
 ///Factory used to construct walls.
-class WallFactory : WallFactoryBase!(Wall)
+class WallFactory : WallFactoryBase!Wall
 {
     public override Wall produce(SceneManager manager)
     {

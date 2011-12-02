@@ -96,17 +96,6 @@ class PaddleBody : PhysicsBody
             return velocity * ball.velocity.length;
         }
 
-        override void update(in real time_step, SpatialManager!PhysicsBody manager)
-        {
-            //keep the paddle within the limits
-            const Rectanglef box = aabbox;
-            const position_limits = Rectanglef(limits_.min - box.min,
-                                               limits_.max - box.max);
-            position = position_limits.clamp(position);
-
-            super.update(time_step, manager);
-        }
-
         ///Get movement limits of this paddle body.
         @property final Rectanglef limits() const {return limits_;}
 
@@ -125,6 +114,17 @@ class PaddleBody : PhysicsBody
         {
             super(aabbox, position, velocity, mass);
             limits_ = limits;
+        }
+
+        override void update(in real time_step, SpatialManager!PhysicsBody manager)
+        {
+            //keep the paddle within the limits
+            const Rectanglef box = aabbox;
+            const position_limits = Rectanglef(limits_.min - box.min,
+                                               limits_.max - box.max);
+            position = position_limits.clamp(position);
+
+            super.update(time_step, manager);
         }
 
     private:

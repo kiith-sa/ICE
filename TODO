@@ -1,31 +1,16 @@
 ASAP:
 
+Replace std.c with core.stdc
 
-then PhysicsBody.die()
-PhysicsBody.on_die() should be called after Actor.on_die(),
-so we'll need a PhysicsEngine.collect_dead() after SceneManager.collect_dead()
+Replace overloaded operators with opUnary, opBinary
 
+bugtracker: use size_t in file handling and memory code
+where possible
 
-Make PhysicsBody.update a protected method only callable through
-a package method - like Actor.
-
-
-Actor.die(), PhysicsBody.die() 
-    Each Actor has a uint or ulong value: dead_at_frame_
-    When die() is called, set this to next frame index -
-    when traversing next time, nodes with dead_at_frame_ == current_frame 
-    are removed.
-    TO fix this, the manager must traverse the graph, 
-    (no recursion in update () - graph updates node, gets children, updates them)
-This way, Actor needs no reference to SceneManager - even for adding new actors
-by the actor, that reference can be passed on update.
-
-
-GUIElement text dimensions could be separated into a struct or class 
-for reuse. 
- 
 Other changes to adapt to current DMD as more D functionality works without 
 bugs now.
+
+
 
 See Hybrid - esp. it's virtual file system and other h3r3tic code,
 and see what we can change/improve (esp. GUI, VFS) 
@@ -48,6 +33,8 @@ See Pitfalls of OOP for info on how to improve Scene, Physics, ParticleSystem hi
 
 
 
+
+Then, see the bugtracker
 
 
 
@@ -137,24 +124,12 @@ Buttons need mouseover, etc styles, like hover links in CSS.
 13:
     Either stop using @safe/@trusted/@system or use it everywhere (check new files)
     - it is not implemented correctly at the moment.
-14:
-    If possible, stop using xxx.init - might be marked for deprecation
-15:
-    Use enum to!string where we're using custom enum to string 
-    (e.g. in color.d, or was it texturepage?)
-16:
-    Replace std.c with core.stdc
-17:
-    Replace overloaded operators with opUnary, opBinary
 18:
     Rename user/root data subdirectories to packages - makes sense
 19:
     GUI: add width, height substitutions to GUI referring
     to this element's width and height - this means width/height must be
     parsed before position
-20:
-    bugtracker: use size_t in file handling and memory code
-    where possible
 21:
     bugtracker:
     for spritesheets, we'll need big images with accompanying YAML files

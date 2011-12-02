@@ -35,7 +35,7 @@ import memory.memory;
 package void gl_color_format(in ColorFormat format, out GLenum gl_format,
                              out GLenum type, out GLint internal_format)
 {
-    switch(format)
+    final switch(format)
     {
         case ColorFormat.RGB_565:
             assert(false, "Unsupported texture format: RGB_565");
@@ -54,8 +54,6 @@ package void gl_color_format(in ColorFormat format, out GLenum gl_format,
             gl_format = GL_RED;
             type = GL_UNSIGNED_BYTE;
             break;
-        default:
-            assert(false, "Unsupported texture format");
     }
 }
 
@@ -70,13 +68,12 @@ package void gl_color_format(in ColorFormat format, out GLenum gl_format,
  */
 package GLint pack_alignment(in ColorFormat format)
 {
-    switch(format)
+    final switch(format)
     {
         case ColorFormat.RGB_565: return 2;
         case ColorFormat.RGB_8: return 1;
         case ColorFormat.RGBA_8: return 4;
         case ColorFormat.GRAY_8: return 1;
-        default: assert(false, "Unsupported texture format");
     }
 }
 
@@ -84,7 +81,7 @@ package GLint pack_alignment(in ColorFormat format)
 //struct that could be "inherited" in D2 using alias this, but that would only 
 //make sense if we added more texture page implementations.
 ///OpenGL texture page with customizable texture packer.
-package align(1) struct GLTexturePage(TexturePacker) 
+package struct GLTexturePage(TexturePacker) 
 {
     private:
         alias std.conv.to to;

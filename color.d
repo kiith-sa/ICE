@@ -49,27 +49,8 @@ uint bytes_per_pixel(in ColorFormat format)
     }
 }
 
-/**
- * Return a string representation of specified color format.
- *
- * Params:  format = Color format to get string representation of.
- *
- * Returns: String representation of specified color format.
- */
-T to(T)(in ColorFormat format)
-    if(isSomeString!T)
-{
-    final switch(format)
-    {
-        case ColorFormat.RGB_565: return "RGB_565";
-        case ColorFormat.RGB_8:   return "RGB_8";
-        case ColorFormat.RGBA_8:  return "RGBA_8";
-        case ColorFormat.GRAY_8:  return "GRAY_8";
-    }
-}
-
 ///32-bit RGBA8 color.
-align(1) struct Color
+struct Color
 {
     ///Red channel.
     ubyte r;

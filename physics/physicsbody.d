@@ -112,6 +112,7 @@ class PhysicsBody
         ///Has the body collided with anything during the last update?
         @property bool collided() const {return colliders_.length > 0;}
 
+    protected:
         /**
          * Update physics state of the body.
          *
@@ -132,7 +133,6 @@ class PhysicsBody
             position_old_ = position_;
         }
 
-    protected:
         /**
          * Resolve collision response to a contact.
          *
@@ -162,6 +162,17 @@ class PhysicsBody
         @property final bool dead (in size_t update_index) const
         {
             return update_index >= dead_at_update_;
+        }
+
+        /**
+         * Used by PhysicsEngine to update the body.
+         *
+         * Params:  time_step = Time length of the update in seconds.
+         *          spatial   = Spatial manager managing the body.
+         */
+        final void update_package(in real time_step, SpatialManager!PhysicsBody spatial)
+        {
+            update(time_step, spatial);
         }
 
         ///Used by PhysicsEngine to call on_die() of the body.

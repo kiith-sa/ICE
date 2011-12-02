@@ -26,11 +26,11 @@ import memory.memory;
  * fitting texture width/height, try to fit the texture to that area, if it doesn't
  * fit, subdivide again, repeat.
  */
-package align(1) struct BinaryTexturePacker
+package struct BinaryTexturePacker
 {
     private:
         ///Node representing a rectangular area of space.
-        static align(1) struct Node
+        static align(4) struct Node
         {
             public:
                 ///Area belonging to the node.

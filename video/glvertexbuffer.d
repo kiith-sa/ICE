@@ -282,7 +282,7 @@ package struct GLVertexBuffer(Vertex)
  *
  * Individual draw calls are merged into vertex groups.
  */
-package align(1) struct GLVertexGroup
+package struct GLVertexGroup
 {
     ///Shader used to draw the group.
     GLShader* shader;

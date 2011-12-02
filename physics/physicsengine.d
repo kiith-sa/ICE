@@ -135,7 +135,10 @@ final class PhysicsEngine : Monitorable
             updating_ = true;
 
             //update all bodies' states
-            foreach(physics_body; bodies_){physics_body.update(time_step, spatial_manager_);}
+            foreach(physics_body; bodies_)
+            {
+                physics_body.update_package(time_step, spatial_manager_);
+            }
 
             //handle collisions
             detect_contacts();

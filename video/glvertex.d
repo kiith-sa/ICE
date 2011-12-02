@@ -24,7 +24,7 @@ package enum GLVertexType
 }
 
 ///Vertex with position and color.
-package align(1) struct GLVertex2DColored
+package align(4) struct GLVertex2DColored
 {
     ///Vertex position.
     Vector2f vertex;
@@ -40,7 +40,7 @@ package align(1) struct GLVertex2DColored
 }
 
 ///Vertex with position, color and texture coordinate.
-package align(1) struct GLVertex2DTextured
+package align(4) struct GLVertex2DTextured
 {
     ///Vertex position.
     Vector2f vertex;
