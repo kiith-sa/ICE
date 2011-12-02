@@ -1,8 +1,8 @@
 ASAP:
 
-THEN fix the docs based on previous commits.
+fix the docs based on previous commits.
 
-And THEN do PhysicsBody.die()
+Then do PhysicsBody.die()
 
 Actor.die(), PhysicsBody.die() 
     Each Actor has a uint or ulong value: dead_at_frame_
@@ -13,6 +13,9 @@ Actor.die(), PhysicsBody.die()
     (no recursion in update () - graph updates node, gets children, updates them)
 This way, Actor needs no reference to SceneManager - even for adding new actors
 by the actor, that reference can be passed on update.
+
+When clear() is called, it clears the object automatically setting pointers/refs to null.
+So setting to null in dtors is useless. Get rid of that.
 
 Color literals:
 RGB:

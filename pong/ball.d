@@ -131,7 +131,7 @@ class Ball : Actor
         bool draw_ball_;
 
     public:
-        ~this()
+        override void on_die()
         {
             trail_.life_time = 0.5;
             trail_.detach();

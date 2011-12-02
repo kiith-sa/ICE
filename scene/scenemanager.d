@@ -155,10 +155,15 @@ final class SceneManager : Monitorable
         ///Remove all actors.
         void clear()
         {
-            //kill all actors still alive
+            //kill all actors still alive in a separate pass -
+            //so the dying actors don't interact with cleared actors.
+
+            foreach(actor; actors_) if(!actor.dead(update_index_))
+            {
+                actor.die(update_index_);
+            }
             foreach(actor; actors_)
             {
-                if(!actor.dead(update_index_)){actor.die(update_index_);}
                 physics_engine_.remove_body(actor.physics_body);
                 .clear(actor);
             }
