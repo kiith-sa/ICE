@@ -277,7 +277,7 @@ final class GUILineGraph : GUIElement
                 const float y = bounds_.max.y;
 
                 //Skip data points if too many.
-                const skip = min(1, points.length / (bounds_.width * 4));
+                const skip = max(1, points.length / (bounds_.width * 4));
 
                 foreach(point; stride(points, skip))
                 {
