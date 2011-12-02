@@ -65,11 +65,11 @@ class PaddleBody : PhysicsBody
 
             const Vector2f closest = box.clamp(ball.position);
 
-            Vector2f contact_direction = closest - ball.position;
+            auto contact_direction = closest - ball.position;
 
             contact_direction.normalize_safe();
 
-            const Vector2f contact_point = ball.position + ball.radius * contact_direction;
+            const contact_point = ball.position + ball.radius * contact_direction;
 
             Vector2f velocity;
             
@@ -96,12 +96,12 @@ class PaddleBody : PhysicsBody
             return velocity * ball.velocity.length;
         }
 
-        override void update(in real time_step, SpatialManager!(PhysicsBody) manager)
+        override void update(in real time_step, SpatialManager!PhysicsBody manager)
         {
             //keep the paddle within the limits
             const Rectanglef box = aabbox;
-            const Rectanglef position_limits = Rectanglef(limits_.min - box.min,
-                                                          limits_.max - box.max);
+            const position_limits = Rectanglef(limits_.min - box.min,
+                                               limits_.max - box.max);
             position = position_limits.clamp(position);
 
             super.update(time_step, manager);
@@ -176,12 +176,12 @@ class Paddle : Wall
         ///How much energy "dissipates" per second.
         real dissipate_rate_ = 12000.0;
         ///Color to interpolate to based on energy levels.
-        Color energy_color_ = Color(224, 224, 255, 192);
+        Color energy_color_ = rgba!"E0E0FF80";
 
     public:
         override void on_die(SceneManager manager)
         {
-            emitter_.life_time = 1.0;
+            emitter_.life_time      = 1.0;
             emitter_.emit_frequency = 0.0;
             emitter_.detach();
         }
@@ -213,7 +213,7 @@ class Paddle : Wall
         this(PaddleBody physics_body, const ref Rectanglef box,
              in real speed, ParticleEmitter emitter)
         {
-            default_color_ = Color(0, 0, 255, 32);
+            default_color_ = rgba!"0000FF20";
             super(physics_body, box);
             speed_ = default_speed_ = speed;
             emitter_ = emitter;
@@ -256,7 +256,7 @@ class PaddleFactory : WallFactoryBase!(Paddle)
 {
     mixin(generate_factory("Vector2f $ limits_min $ Vector2f(-2.0f, -2.0f)", 
                            "Vector2f $ limits_max $ Vector2f(2.0f, 2.0f)",
-                           "real $ speed $ 135.0"));
+                           "real     $ speed      $ 135.0"));
 
     public override Paddle produce(SceneManager manager)
     {
@@ -267,15 +267,15 @@ class PaddleFactory : WallFactoryBase!(Paddle)
         LineEmitter emitter;
         with(new LineEmitterFactory)
         {
-            particle_life = 3.0;
-            emit_frequency = 30;
-            emit_velocity = Vector2f(speed_ * 0.15, 0.0);
+            particle_life   = 3.0;
+            emit_frequency  = 30;
+            emit_velocity   = Vector2f(speed_ * 0.15, 0.0);
             angle_variation = 2 * PI;
-            line_length = 2.0;
-            line_width = 1;
-            start_color = Color(255, 255, 255, 64);
-            end_color = Color(64, 64, 255, 0);
-            emitter = produce(manager);
+            line_length     = 2.0;
+            line_width      = 1;
+            start_color     = rgba!"FFFFFF40";
+            end_color       = rgba!"4040FF00";
+            emitter         = produce(manager);
         }
 
         auto rect = rectangle();

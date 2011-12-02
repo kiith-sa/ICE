@@ -26,9 +26,9 @@ import color;
 /**
  * Handles ball respawning and related effects.
  *
- * When the spawner is created, it generates a set of directions the ball can be 
- * spawned at, in roughly the same direction (determined by specified spread) Then, 
- * during its lifetime, it displays the directions to the player (as rays), gives the
+ * When created, it generates a set of directions the ball can be 
+ * spawned at, in roughly the same direction (determined by specified spread).
+ * During its lifetime, it displays the directions to the player (as rays), gives the
  * player a bit of time and spawns the ball in one of generated directions.
  *
  * Signal:
@@ -121,7 +121,7 @@ class BallSpawner : Actor
             if(timer_.expired(manager.game_time))
             {
                 //emit the ball in a random, previously generated direction
-                Vector2f direction = Vector2f(1.0f, 1.0f);
+                auto direction = Vector2f(1.0f, 1.0f);
                 direction.angle = directions_[uniform(0, directions_.length)];
                 spawn_ball.emit(direction, ball_speed_);
                 die(manager.update_index);
@@ -140,13 +140,13 @@ class BallSpawner : Actor
 
             Vector2f center = physics_body_.position;
             //base color of the rays
-            const base_color = Color(224, 224, 255, 128);
-            const light_color = Color(224, 224, 255, 4);
-            const light_color_end = Color(224, 224, 255, 0);
+            const base_color      = rgba!"E0E0FF80";
+            const light_color     = rgba!"E0E0FF04";
+            const light_color_end = rgba!"E0E0FF00";
 
             const real ray_length = 600.0;
 
-            Vector2f direction = Vector2f(1.0f, 1.0f);
+            auto direction = Vector2f(1.0f, 1.0f);
             if(!light_expired)
             {
                 //draw the light
@@ -229,8 +229,8 @@ class BallSpawner : Actor
  */
 final class BallSpawnerFactory : ActorFactory!(BallSpawner)
 {
-    mixin(generate_factory("real $ time $ 5.0",
-                           "real $ spread $ 0.25",
+    mixin(generate_factory("real $ time       $ 5.0",
+                           "real $ spread     $ 0.25",
                            "real $ ball_speed $ 200"));
     private:
         ///Start time of the spawners' timer.

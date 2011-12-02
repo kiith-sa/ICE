@@ -41,11 +41,11 @@ class LineEmitter : ParticleEmitter
         ///Length of line particles.
         float line_length_ = 8.0f;
         ///Width of line particles.
-        float line_width_ = 2.0f;
+        float line_width_  = 2.0f;
         ///Color of particles at the beginning of their life.
         Color start_color_ = Color.white;
         ///Color of particles at the end of their life.
-        Color end_color_ = Color(255, 255, 255, 0);
+        Color end_color_   = rgba!"FFFFFF00";
 
     public:
         ///Set length of the line particles.
@@ -84,9 +84,9 @@ class LineEmitter : ParticleEmitter
              in float line_width, in Color start_color, in Color end_color)
         {
             line_length_ = line_length;
-            line_width_ = line_width;
+            line_width_  = line_width;
             start_color_ = start_color;
-            end_color_ = end_color;
+            end_color_   = end_color;
             super(physics_body, owner, life_time, particle_life,
                   emit_frequency, emit_velocity, angle_variation);
         }

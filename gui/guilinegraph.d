@@ -338,7 +338,7 @@ final class GUILineGraph : GUIElement
             {
                 line.y     = bounds_.max.y - scale_y_ * line_height;
                 line.text  = to!string(line_height);
-                line.color = Color(255, 128, 0, 192);
+                line.color = rgba!"FF8000C0";
                 lines_ ~= line;
 
                 line_height += spacing;
@@ -377,7 +377,7 @@ final class GUILineGraph : GUIElement
          */
         void draw_info(VideoDriver driver) const
         {
-            immutable data_time_color  = Color(255, 0, 0, 192);
+            immutable data_time_color  = rgba!"FF0000C0";
             immutable data_time_offset = Vector2i(-32, 4);
 
             Vector2f start, end;
@@ -419,18 +419,10 @@ final class GUILineGraphFactory : GUIElementFactoryBase!GUILineGraph
 {
     private:
         ///Palette of colors used by generated graph monitor code.
-        static Color[] palette = [Color.red,
-                                  Color.green,
-                                  Color.blue,
-                                  Color.yellow,
-                                  Color.cyan,
-                                  Color.magenta,
-                                  Color.burgundy,
-                                  Color(0, 128, 0, 255),
-                                  Color(0, 0, 128, 255),
-                                  Color.forest_green,
-                                  Color(0, 128, 128, 255),
-                                  Color.dark_purple];
+        static Color[] palette = [rgb!"FF0000", rgb!"00FF00", rgb!"0000FF",
+                                  rgb!"FFFF00", rgb!"00FFFF", rgb!"FF00FF",
+                                  rgb!"800000", rgb!"008000", rgb!"000080",
+                                  rgb!"808000", rgb!"008080", rgb!"800080"];
 
         ///GraphData to display.
         GraphData data_;

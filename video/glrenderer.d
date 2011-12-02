@@ -333,7 +333,7 @@ package struct GLRenderer
          */
         void draw_texture(in Vector2f min, in Vector2f max, 
                           in Vector2f t_min, in Vector2f t_max,
-                          in Color color = Color(255, 255, 255, 255))
+                          in Color color = rgb!"FFFFFF")
         {
             alias GLVertex2DTextured Vertex;
 

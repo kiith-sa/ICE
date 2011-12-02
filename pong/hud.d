@@ -93,10 +93,10 @@ class HUD
         void update(real time_left, in Player player_1, in Player player_2)
         {
             //update time display
-            time_left = max(time_left, 0.0L);
-            const time_str = time_string(time_left);
-            immutable color_start = Color(160, 160, 255, 160);
-            immutable color_end = Color.red;
+            time_left             = max(time_left, 0.0L);
+            const time_str        = time_string(time_left);
+            immutable color_start = rgba!"A0A0FFA0";
+            immutable color_end   = Color.red;
             //only update if the text has changed
             if(time_str != time_text_.text)
             {

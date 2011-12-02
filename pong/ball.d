@@ -178,10 +178,9 @@ class Ball : Actor
             const Vector2f position = physics_body_.position;
             driver.line_aa = true;
             driver.line_width = 3;
-            driver.draw_circle(position, radius - 2, Color(240, 240, 255, 255), 4);
+            driver.draw_circle(position, radius - 2, rgb!"E0E0FF", 4);
             driver.line_width = 1;
-            driver.draw_circle(position, radius, Color(192, 192, 255, 192));
-            driver.line_width = 1;                  
+            driver.draw_circle(position, radius, rgba!"C0C0FFC0");
             driver.line_aa = false;
         }
 }
@@ -208,7 +207,7 @@ class BallFactory : ActorFactory!(Ball)
         ///Construct a BallFactory, initializing factory data.
         this()
         {
-            trail_factory_ = new LineTrailFactory;
+            trail_factory_   = new LineTrailFactory;
             emitter_factory_ = new LineEmitterFactory;
         }
 
@@ -216,21 +215,21 @@ class BallFactory : ActorFactory!(Ball)
         {
             with(trail_factory_)
             {
-                particle_life = 0.5;
+                particle_life  = 0.5;
                 emit_frequency = 60;
-                start_color = Color(240, 240, 255, 255);
-                end_color = Color(240, 240, 255, 0);
+                start_color    = rgb!"E0E0FF";
+                end_color      = rgba!"E0E0FF00";
             }
 
             with(emitter_factory_)
             {
-                particle_life = 2.0;
-                emit_frequency = 160;
-                emit_velocity = -this.velocity_.normalized * particle_speed_;
+                particle_life   = 2.0;
+                emit_frequency  = 160;
+                emit_velocity   = -this.velocity_.normalized * particle_speed_;
                 angle_variation = PI / 4;
-                line_length = 2.0;
-                start_color = Color(224, 224, 255, 32);
-                end_color = Color(224, 224, 255, 0);
+                line_length     = 2.0;
+                start_color     = rgba!"E0E0FF20";
+                end_color       = rgba!"E0E0FF00";
             }
 
             adjust_factories();
@@ -272,11 +271,11 @@ class DummyBallFactory : BallFactory
 
         override void adjust_factories()
         {
-            trail_factory_.start_color = Color(240, 240, 255, 8); 
+            trail_factory_.start_color = rgba!"F0F0FF08";
             with(emitter_factory_)
             {
-                start_color = Color(240, 240, 255, 6);
-                line_length = 3.0;
+                start_color    = rgba!"F0F0FF06";
+                line_length    = 3.0;
                 emit_frequency = 24;
             }
         }

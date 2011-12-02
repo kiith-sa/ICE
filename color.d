@@ -81,20 +81,20 @@ align(1) struct Color
     ubyte a = 255;
 
     ///Common color constants, identical to HTML.
-    static immutable Color white        = Color(255, 255, 255, 255);
-    static immutable Color grey         = Color(128, 128, 128, 255);
-    static immutable Color black        = Color(0, 0, 0, 255);
+    static immutable white        = rgb!"FFFFFF";
+    static immutable grey         = rgb!"888";
+    static immutable black        = rgb!"000";
                                         
-    static immutable Color red          = Color(255, 0, 0, 255);
-    static immutable Color green        = Color(0, 255, 0, 255);
-    static immutable Color blue         = Color(0, 0, 255, 255);
-    static immutable Color burgundy     = Color(128, 0, 0, 255);
+    static immutable red          = rgb!"FF0000";
+    static immutable green        = rgb!"00FF00";
+    static immutable blue         = rgb!"0000FF";
+    static immutable burgundy     = rgb!"800";
                     
-    static immutable Color yellow       = Color(255, 255, 0, 255);
-    static immutable Color cyan         = Color(0, 255, 255, 255);
-    static immutable Color magenta      = Color(255, 0, 255, 255);
-    static immutable Color forest_green = Color(128, 128, 0, 255);
-    static immutable Color dark_purple  = Color(128, 0, 128, 255);
+    static immutable yellow       = rgb!"FFFF00";
+    static immutable cyan         = rgb!"00FFFF";
+    static immutable magenta      = rgb!"FF00FF";
+    static immutable forest_green = rgb!"880";
+    static immutable dark_purple  = rgb!"808";
 
     /**
      * Construct a color.

@@ -41,7 +41,7 @@ class GUIElement
         GUIElement[] children_;
 
         ///Color of the element's border.
-        Color border_color_ = Color(255, 255, 255, 96);
+        Color border_color_ = rgba!"FFFFFF60";
         ///Bounds of this element in screen space.
         Rectanglei bounds_;
 

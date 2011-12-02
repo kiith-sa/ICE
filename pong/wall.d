@@ -34,11 +34,11 @@ class Wall : Actor
 {
     protected:
         ///Default color of the wall.
-        Color default_color_ = Color(0, 0, 0, 0);
+        Color default_color_ = rgba!"0000";
         ///Current color of the wall.
         Color color_;
         ///Default color of the wall border.
-        Color default_color_border_ = Color(224, 224, 255, 224);
+        Color default_color_border_ = rgba!"E0E0FFE0";
         ///Current color of the wall border.                 
         Color color_border_;
         ///Area taken up by the wall.
@@ -66,8 +66,8 @@ class Wall : Actor
         this(PhysicsBody physics_body, const ref Rectanglef box)
         {
             super(physics_body);
-            box_ = box;
-            color_ = default_color_;
+            box_          = box;
+            color_        = default_color_;
             color_border_ = default_color_border_;
         }
 

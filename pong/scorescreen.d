@@ -90,7 +90,7 @@ class ScoreScreen
                 width        = "128";
                 height       = "16";
                 font_size    = 14;
-                text_color   = Color(224, 224, 255, 160);
+                text_color   = rgba!"E0E0FFA0";
                 font         = "orbitron-light.ttf";
                 text         = "Time: " ~ time_string(time);
                 time_text_   = produce();
@@ -100,7 +100,7 @@ class ScoreScreen
                 width        = "p_width";
                 height       = "32";
                 font_size    = 24;
-                text_color   = Color(192, 192, 255, 128);
+                text_color   = rgba!"C0C0FF80";
                 align_x      = AlignX.Center;
                 font         = "orbitron-bold.ttf";
                 text         = "WINNER: " ~ winner;
@@ -139,14 +139,14 @@ class ScoreScreen
                 width        = "128";
                 height       = "32";
                 font_size    = 14;
-                text_color   = Color(160, 160, 255, 128);
+                text_color   = rgba!"A0A0FF80";
                 font         = "orbitron-light.ttf";
                 text         = player_1.name ~ "\n" ~ player_2.name;
                 names_text_  = produce();
 
                 x            = "p_right - 128";
                 width        = "64";
-                text_color   = Color(224, 224, 255, 160);
+                text_color   = rgba!"E0E0FFA0";
                 font         = "orbitron-bold.ttf";
                 text         = to!string(player_1.score) ~ "\n" ~ to!string(player_2.score);
                 align_x      = AlignX.Right;

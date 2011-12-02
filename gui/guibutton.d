@@ -179,12 +179,12 @@ final class GUIButtonFactory : GUIElementFactoryBase!GUIButton
         this()
         {
             //Initialize default values for button colors.
-            states_[ButtonState.Normal].border_color    = Color(192, 192, 255, 96);
-            states_[ButtonState.Normal].text_color      = Color(160, 160, 255, 192);
-            states_[ButtonState.MouseOver].border_color = Color(192, 192, 255, 160);
-            states_[ButtonState.MouseOver].text_color   = Color(192, 192, 255, 192);
-            states_[ButtonState.Clicked].border_color   = Color(192, 192, 255, 255);
-            states_[ButtonState.Clicked].text_color     = Color(224, 224, 255, 255);
+            states_[ButtonState.Normal].border_color    = rgba!"C0C0FF60";
+            states_[ButtonState.Normal].text_color      = rgba!"A0A0FFC0";
+            states_[ButtonState.MouseOver].border_color = rgba!"C0C0FFA0";
+            states_[ButtonState.MouseOver].text_color   = rgba!"C0C0FFC0";
+            states_[ButtonState.Clicked].border_color   = rgb!"C0C0FF";
+            states_[ButtonState.Clicked].text_color     = rgb!"E0E0FF";
         }
 
         void text_color(in ButtonState state, in Color color)
