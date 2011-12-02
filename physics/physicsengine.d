@@ -117,6 +117,7 @@ final class PhysicsEngine : Monitorable
             }
             foreach(physics_body; bodies_)
             {
+                physics_body.remove_from_spatial(spatial_manager_);
                 clear(physics_body);
             }
             clear(bodies_);
@@ -190,6 +191,12 @@ final class PhysicsEngine : Monitorable
                 auto physics_body = bodies_[body_from];
                 if(physics_body.dead(update_index))
                 {
+                    statistics_.bodies--;
+                    if(physics_body.volume !is null)
+                    {
+                        statistics_.col_bodies--;
+                        physics_body.remove_from_spatial(spatial_manager_);
+                    }
                     .clear(physics_body);
                     continue;
                 }
