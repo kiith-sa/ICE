@@ -4,6 +4,11 @@ then PhysicsBody.die()
 PhysicsBody.on_die() should be called after Actor.on_die(),
 so we'll need a PhysicsEngine.collect_dead() after SceneManager.collect_dead()
 
+
+Make PhysicsBody.update a protected method only callable through
+a package method - like Actor.
+
+
 Actor.die(), PhysicsBody.die() 
     Each Actor has a uint or ulong value: dead_at_frame_
     When die() is called, set this to next frame index -

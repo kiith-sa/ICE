@@ -110,7 +110,15 @@ final class PhysicsEngine : Monitorable
         ~this()
         {
             //destroy any remaining bodies
-            foreach(physics_body; bodies_){physics_body.die();}
+            foreach(physics_body; bodies_)
+            {
+                physics_body.die(0);
+                physics_body.on_die_package();
+            }
+            foreach(physics_body; bodies_)
+            {
+                clear(physics_body);
+            }
             clear(bodies_);
             send_statistics.disconnect_all();
             singleton_dtor();
@@ -119,7 +127,7 @@ final class PhysicsEngine : Monitorable
         /**
          * Run the physics simulation of a single frame.
          *
-         * Params:  time_step = Time length of the update in seconds.
+         * Params:  time_step    = Time length of the update in seconds.
          */
         void update(in real time_step)
         {
@@ -168,31 +176,29 @@ final class PhysicsEngine : Monitorable
             bodies_ ~= physics_body;
         }
 
-        /**
-         * Remove a physics body from the simulation
-         *
-         * Must not be called during an update.
-         *
-         * Params:  physics_body = Body to remove.
-         */
-        void remove_body(PhysicsBody physics_body)
-        in
+        ///Call on_die() of all bodies dead at specified update and remove them.
+        void collect_dead(size_t update_index)
         {
-            assert(canFind!"a is b"(bodies_, physics_body),
-                   "Can't remove a physics body that is not in the PhysicsEngine");
-            assert(!updating_, "Can't remove physics bodies during a physics update");
-        }
-        body
-        {
-            statistics_.bodies--;
-            if(physics_body.volume !is null)
+            foreach(physics_body; bodies_) if(physics_body.dead(update_index))
             {
-                statistics_.col_bodies--;
-                physics_body.remove_from_spatial(spatial_manager_);
+                physics_body.on_die_package();
             }
 
-            bodies_ = remove!((PhysicsBody a){return a is physics_body;})(bodies_);
+            auto l = 0;
+            for(size_t body_from = 0; body_from < bodies_.length; ++body_from)
+            {
+                auto physics_body = bodies_[body_from];
+                if(physics_body.dead(update_index))
+                {
+                    .clear(physics_body);
+                    continue;
+                }
+                bodies_[l] = physics_body;
+                ++l;
+            } 
+            bodies_.length = l;
         }
+
 
         @property MonitorDataInterface monitor_data()
         {

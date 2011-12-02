@@ -32,7 +32,7 @@ abstract class Actor
         ///Physics body of this actor.
         PhysicsBody physics_body_;
 
-        ///Index of update when the actor is deat (to be removed).
+        ///Index of update when the actor is dead (to be removed).
         size_t dead_at_update_ = size_t.max;
 
     public:
@@ -46,7 +46,7 @@ abstract class Actor
         @property final PhysicsBody physics_body() {return physics_body_;}
 
         /**
-         * Destroy this actor at the end of specified update.
+         * Destroy the actor at the end of specified update.
          *
          * This can be used to destroy the actor at the current update by passing
          * current update_index from the SceneManager.
@@ -59,7 +59,7 @@ abstract class Actor
          */
         final void die(size_t update_index)
         {
-            physics_body_.die();
+            physics_body_.die(update_index);
             dead_at_update_ = update_index;
         }
 
@@ -85,6 +85,8 @@ abstract class Actor
          * This is used to handle any game logic that needs to happen when an 
          * actor dies, for instance detaching particle systems from an actor or
          * spawning new actors.
+         *
+         * The physics body of the actor is not yet destroyed at on_die().
          *
          * Params:  manager = SceneManager to get time information and add new actors.
          */

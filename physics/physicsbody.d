@@ -41,6 +41,9 @@ class PhysicsBody
         ///Bodies we've collided with this frame.
         PhysicsBody[] colliders_;
 
+        ///Index of update when the body is dead (to be removed).
+        size_t dead_at_update_ = size_t.max;
+
     public:
         /**
          * Construct a PhysicsBody with specified parameters.
@@ -60,8 +63,22 @@ class PhysicsBody
             this.mass     = mass;
         }
 
-        ///Destroy the physics body.
-        void die(){}
+        /**
+         * Destroy the body at the end of specified update.
+         *
+         * This can be used to destroy the body at the current update by passing
+         * current update_index from the SceneManager.
+         * 
+         * Note that the body will not be destroyed immediately -
+         * At the end of update, all dead bodies' on_die() methods are called 
+         * first, and then the bodies are destroyed.
+         *
+         * Params: update_index  = Update to destroy the body at.
+         */
+        final void die(size_t update_index)
+        {
+            dead_at_update_ = update_index;
+        }
 
         ///Get position of the body, in world space.
         @property final Vector2f position() const {return position_;}
@@ -132,7 +149,24 @@ class PhysicsBody
             else{velocity_ += change;}
         }
 
+        /**
+         * Called at the end of the update after the bodies' die() method is called.
+         *
+         * This is used to handle any game logic that needs to happen when a 
+         * body dies.
+         */
+        void on_die(){};
+
     package:
+        ///Is the actor dead at specified update?
+        @property final bool dead (in size_t update_index) const
+        {
+            return update_index >= dead_at_update_;
+        }
+
+        ///Used by PhysicsEngine to call on_die() of the body.
+        final void on_die_package(){on_die();}
+
         /**
          * Enforces contract on all (even inherited) implementations of collision_response
          * and registers bodies this body has collided with.

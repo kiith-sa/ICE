@@ -138,6 +138,7 @@ final class SceneManager : Monitorable
                 physics_engine_.update(time_step_);
                 update_actors();
                 collect_dead();
+                physics_engine_.collect_dead(update_index_);
                 ++update_index_;
             }
         }
@@ -163,13 +164,9 @@ final class SceneManager : Monitorable
                 actor.die(update_index_);
                 actor.on_die_package(this);
             }
-            foreach(actor; actors_)
-            {
-                physics_engine_.remove_body(actor.physics_body);
-                .clear(actor);
-            }
-            actors_.length = 0;
-            actors_to_add_.length = 0;
+            foreach(actor; actors_){.clear(actor);}
+            .clear(actors_);
+            .clear(actors_to_add_);
         }
 
         /**
@@ -210,7 +207,6 @@ final class SceneManager : Monitorable
                 auto actor = actors_[actor_from];
                 if(actor.dead(update_index_))
                 {
-                    physics_engine_.remove_body(actor.physics_body);
                     .clear(actor);
                     continue;
                 }
