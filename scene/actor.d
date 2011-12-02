@@ -45,12 +45,22 @@ abstract class Actor
         ///Get a reference to physics body of this actor.
         @property final PhysicsBody physics_body() {return physics_body_;}
 
-        //TODO DOC
-        ///Destroy this actor.
-        final void die(size_t frame)
+        /**
+         * Destroy this actor at the end of specified update.
+         *
+         * This can be used to destroy the actor at the current update by passing
+         * current update_index from the SceneManager.
+         * 
+         * Note that the actor will not be destroyed immediately -
+         * At the end of frame, all dead actors' on_die() methods are called 
+         * first, and then the actors are destroyed.
+         *
+         * Params: update_index  = Update to destroy the actor at.
+         */
+        final void die(size_t update_index)
         {
             physics_body_.die();
-            dead_at_frame_ = frame + 1;
+            dead_at_frame_ = frame;
         }
 
     protected:
