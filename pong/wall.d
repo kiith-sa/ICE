@@ -58,7 +58,7 @@ class Wall : Actor
 
     protected:
         /**
-         * Construct a wall with specified parameters.
+         * Construct a wall.
          *
          * Params:  physics_body = Physics body of the wall.
          *          box          = Rectangle used for graphical representation of the wall.

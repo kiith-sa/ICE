@@ -28,7 +28,6 @@ import monitor.graphmonitor;
 import util.weaksingleton;
 import util.signal;
 
-//TODO DOCS
 
 ///Stores monitoring statistics about the scene manager.
 private struct Statistics
@@ -76,7 +75,7 @@ final class SceneManager : Monitorable
         Statistics statistics_;
 
         ///Used to send statistics data to GL monitors.
-        mixin Signal!(Statistics) send_statistics;
+        mixin Signal!Statistics send_statistics;
 
         ///Timer used to measure updates per second.
         Timer ups_timer_;
@@ -110,7 +109,7 @@ final class SceneManager : Monitorable
         ///Get time when the current update started, in game time.
         @property real game_time() const {return game_time_;}
 
-        //TODO DOC
+        ///Get index of the current update since start, first update being zero.
         @property size_t update_index() const {return update_index_;}
 
         ///Set time speed multiplier (0 for pause, 1 for normal speed).

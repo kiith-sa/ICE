@@ -203,7 +203,7 @@ class Paddle : Wall
 
     protected:
         /**
-         * Construct a paddle with specified parameters.
+         * Construct a paddle.
          *
          * Params:  physics_body = Physics body of the paddle.
          *          box          = Rectangle used for graphics representation of the paddle.

@@ -92,7 +92,7 @@ abstract class ParticleEmitter : ParticleSystem
 
     protected:
         /**
-         * Construct a ParticleEmitter with specified parameters.
+         * Construct a ParticleEmitter.
          *
          * Params:  physics_body    = Physics body of the emitter.
          *          owner           = Class to attach the emitter to. 

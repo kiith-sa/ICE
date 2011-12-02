@@ -62,7 +62,7 @@ class LineEmitter : ParticleEmitter
 
     protected:
         /**
-         * Construct a LineEmitter with specified parameters.
+         * Construct a LineEmitter.
          *
          * Params:  physics_body    = Physics body of the emitter.
          *          owner           = Actor to attach the emitter to. 

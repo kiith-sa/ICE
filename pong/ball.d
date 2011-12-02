@@ -145,7 +145,7 @@ class Ball : Actor
 
     protected:
         /**
-         * Construct a ball with specified parameters.
+         * Construct a ball.
          *
          * Params:  physics_body   = Physics body of the ball.
          *          trail          = Line trail of the ball.

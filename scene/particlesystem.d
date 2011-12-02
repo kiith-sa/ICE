@@ -44,7 +44,7 @@ abstract class ParticleSystem : Actor
 
     protected:
         /**
-         * Construct a ParticleSystem with specified parameters.
+         * Construct a ParticleSystem.
          *
          * Params:  physics_body    = Physics body of the system.
          *          owner           = Class to attach the system to. 

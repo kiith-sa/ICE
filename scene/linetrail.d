@@ -34,7 +34,7 @@ final class LineTrail : LineEmitter
 
     protected:
         /**
-         * Construct a LineTrail with specified parameters.
+         * Construct a LineTrail.
          *
          * Params:  physics_body    = Physics body of the trail.
          *          owner           = Class to attach the trail to. 

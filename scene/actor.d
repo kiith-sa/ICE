@@ -32,8 +32,8 @@ abstract class Actor
         ///Physics body of this actor.
         PhysicsBody physics_body_;
 
-        //TODO DOC
-        size_t dead_at_frame_ = size_t.max;
+        ///Index of update when the actor is deat (to be removed).
+        size_t dead_at_update_ = size_t.max;
 
     public:
         ///Get position of this actor.
@@ -52,7 +52,7 @@ abstract class Actor
          * current update_index from the SceneManager.
          * 
          * Note that the actor will not be destroyed immediately -
-         * At the end of frame, all dead actors' on_die() methods are called 
+         * At the end of update, all dead actors' on_die() methods are called 
          * first, and then the actors are destroyed.
          *
          * Params: update_index  = Update to destroy the actor at.
@@ -60,7 +60,7 @@ abstract class Actor
         final void die(size_t update_index)
         {
             physics_body_.die();
-            dead_at_frame_ = frame;
+            dead_at_update_ = update_index;
         }
 
     protected:
@@ -78,7 +78,6 @@ abstract class Actor
         {
             physics_body_ = physics_body;
         };
-        //TODO DOC
 
         /**
          * Called at the end of the update after the actors' die() method is called.
@@ -91,12 +90,10 @@ abstract class Actor
          */
         void on_die(SceneManager manager){};
 
-        //TODO DOC
         /**
          * Update this Actor.
          *
-         * Params:  time_step = Update time step in seconds.
-         *          game_time = Current game time.
+         * Params:  manager   = SceneManager to get time information from and/or add new actors.
          */
         void update(SceneManager manager);
 
@@ -104,10 +101,10 @@ abstract class Actor
         void draw(VideoDriver driver);
 
     package:
-        //TODO DOC
-        @property final bool dead (in size_t frame) const
+        ///Is the actor dead at specified update?
+        @property final bool dead (in size_t update_index) const
         {
-            return frame >= dead_at_frame_;
+            return update_index >= dead_at_update_;
         }
 
         /**
@@ -142,14 +139,18 @@ abstract class ActorFactory(T)
     mixin(generate_factory("Vector2f $ position $ Vector2f(0.0f, 0.0f)", 
                            "Vector2f $ velocity $ Vector2f(0.0f, 0.0f)"));
 
-    //TODO DOC
+    /**
+     * Do any work required on the new actor to be produced and return it.
+     *
+     * This is used as a shortcut to add a produced actor to the scene manager
+     * and do any other work that needs to be done on all new actors.
+     */
     protected final T new_actor(SceneManager manager, T actor)
     {
         manager.add_actor(actor);
         return actor;
     }
 
-    //TODO DOC
     /**
      * Return a new instance of the actor type produced with factory parameters.
      *
