@@ -26,9 +26,9 @@ import color;
  * A rectangular wall in the game area.
  *
  * Signal:
- *     public mixin Signal!(BallBody) ball_hit
+ *     public mixin Signal!(const BallBody) ball_hit
  *
- *     Emitted when a ball hits the wall. Will emit const BallBody after D2 move. 
+ *     Emitted when a ball hits the wall. 
  */
 class Wall : Actor
 {
@@ -46,7 +46,7 @@ class Wall : Actor
 
     public:
         ///Emitted when a ball hits the wall. Will emit const BallBody after D2 move.
-        mixin Signal!BallBody ball_hit;
+        mixin Signal!(const BallBody) ball_hit;
 
         override void on_die()
         {

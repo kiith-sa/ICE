@@ -32,7 +32,7 @@ abstract class Player
 
     public:
         ///Increase score of this player.
-        @property void score(BallBody ball_body){score_++;}
+        @property void score(const BallBody ball_body){score_++;}
 
         ///Get score of this player.
         @property int score() const {return score_;}

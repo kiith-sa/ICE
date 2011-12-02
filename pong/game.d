@@ -383,7 +383,7 @@ class Game
         }
 
         ///Destroy ball with specified ball body.
-        void destroy_ball(BallBody ball_body)
+        void destroy_ball(const BallBody ball_body)
         in
         {
             assert(ball_ !is null && ball_body is ball_.physics_body,
