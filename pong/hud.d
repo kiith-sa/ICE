@@ -81,7 +81,6 @@ class HUD
             score_text_1_.die();
             score_text_2_.die();
             time_text_.die();
-            score_text_1_ = score_text_2_ = time_text_ = null;
         }
 
         /**

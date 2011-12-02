@@ -33,9 +33,9 @@ align(1) struct Matrix4(T)
         @property T* ptr(){return m_.ptr;}
 
         ///Multiplication with a matrix.
-        Matrix4!(T) opMul(const ref Matrix4!(T) m) const
+        Matrix4!T opMul(const ref Matrix4!(T) m) const
         {
-            Matrix4!(T) r;
+            Matrix4!T r;
 
             r.m_[0]  = m_[0] * m.m_[0]  + m_[4] * m.m_[1]  + m_[8]  * m.m_[2]  + m_[12] * m.m_[3];
             r.m_[1]  = m_[1] * m.m_[0]  + m_[5] * m.m_[1]  + m_[9]  * m.m_[2]  + m_[13] * m.m_[3];

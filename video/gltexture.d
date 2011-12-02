@@ -15,7 +15,7 @@ import math.rectangle;
 
 
 ///OpenGL texture struct. Texture data is stored by texture page the texture is on.
-package align(1) struct GLTexture
+package struct GLTexture
 {
     ///Texture coordinates.
     Rectanglef texcoords;

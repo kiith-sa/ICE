@@ -1,8 +1,8 @@
 ASAP:
 
-fix the docs based on previous commits.
+Test and fix bugs, if any
 
-Then do PhysicsBody.die()
+then PhysicsBody.die()
 PhysicsBody.on_die() should be called after Actor.on_die(),
 so we'll need a PhysicsEngine.collect_dead() after SceneManager.collect_dead()
 
@@ -15,9 +15,6 @@ Actor.die(), PhysicsBody.die()
     (no recursion in update () - graph updates node, gets children, updates them)
 This way, Actor needs no reference to SceneManager - even for adding new actors
 by the actor, that reference can be passed on update.
-
-When clear() is called, it clears the object automatically setting pointers/refs to null.
-So setting to null in dtors is useless. Get rid of that.
 
 Color literals:
 RGB:

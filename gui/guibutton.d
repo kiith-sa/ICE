@@ -63,11 +63,7 @@ class GUIButton : GUIElement
         ///Emitted when this button is pressed.
         mixin Signal!() pressed;
 
-        ~this()
-        {
-            pressed.disconnect_all();
-            text_ = null;
-        }
+        ~this(){pressed.disconnect_all();}
 
     protected:    
         /**

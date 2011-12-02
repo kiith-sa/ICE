@@ -58,7 +58,6 @@ align(1) struct Vector(T)
         ///Destroy the vector.
         ~this()
         {
-            used_ = 0;
             if(data_ !is dummy_data_ && data_ !is null)
             {
                 free(data_);

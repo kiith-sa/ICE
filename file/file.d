@@ -157,7 +157,6 @@ struct File
             }
             if(data_ !is null){free(data_);}
             if(write_data_ !is null){free(write_data_);}
-            data_ = write_data_ = null;
         }
 
         ///Access data of a loaded file (only applicable in Read mode).

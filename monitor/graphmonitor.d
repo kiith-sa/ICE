@@ -111,7 +111,6 @@ final package class GraphMonitor(Monitored, Statistics, Values ...) : SubMonitor
         {
             disconnect_();
             clear(data_);
-            data_ = null;
         }
 
         @property override SubMonitorView view()

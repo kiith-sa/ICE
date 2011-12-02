@@ -134,7 +134,7 @@ package final class Font
                 free(glyph);
             }
             FT_Done_Face(font_face_);
-            fast_glyphs_ = [];
+            clear(fast_glyphs_);
             clear(glyphs_);
         }
 

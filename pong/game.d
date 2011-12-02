@@ -109,14 +109,8 @@ class GameGUI
         ~this()
         {
             clear(hud_);
-            hud_ = null;
-            if(score_screen_ !is null)
-            {
-                clear(score_screen_);
-                score_screen_ = null;
-            }
+            if(score_screen_ !is null){clear(score_screen_);}
             score_expired.disconnect_all();
-            parent_ = null;
         }
 }
 

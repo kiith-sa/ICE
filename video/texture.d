@@ -17,7 +17,7 @@ import math.vector2;
 class TextureException : Exception{this(string msg){super(msg);}} 
 
 ///Opague and immutable texture handle struct used by code outside video subsystem.
-align(1) struct Texture
+align(4) struct Texture
 {
     package:
         ///Size of the texture in pixels.

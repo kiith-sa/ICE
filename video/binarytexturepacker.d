@@ -143,16 +143,8 @@ package align(1) struct BinaryTexturePacker
                 ///Destroy this node and its children.
                 ~this()
                 {
-                    if(child_a_ !is null)
-                    {
-                        free(child_a_);
-                        child_a_ = null;
-                    }
-                    if(child_b_ !is null)
-                    {
-                        free(child_b_);
-                        child_b_ = null;
-                    }
+                    if(child_a_ !is null){free(child_a_);}
+                    if(child_b_ !is null){free(child_b_);}
                 }
         }
 

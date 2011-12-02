@@ -14,7 +14,7 @@ import time.time;
 
 
 ///A timer struct; handles timing of various delayed or periodic events.
-align(1) struct Timer
+struct Timer
 {
     invariant()
     {

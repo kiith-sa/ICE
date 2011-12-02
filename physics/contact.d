@@ -16,9 +16,8 @@ import physics.physicsbody;
 import math.vector2;
 import math.math;
 
-
 ///Stores data about a contact between two physics bodies.
-align(1) struct Contact
+struct Contact
 {
     public:
         ///First body involved in the contact.

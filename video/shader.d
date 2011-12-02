@@ -14,7 +14,7 @@ module video.shader;
 class ShaderException : Exception{this(string msg){super(msg);}} 
 
 ///Opague and immutable shader handle used used by code outside video subsystem.
-align(1) struct Shader
+struct Shader
 {
     package:
         ///Index of the shader in VideoDriver implementation.

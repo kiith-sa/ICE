@@ -59,10 +59,7 @@ final package class GridMonitor(T) : SubMonitor
             update_timer_ = Timer(0.02);
         }
 
-        ~this()
-        {
-            clear(object_counts_);
-        }
+        ~this(){clear(object_counts_);}
 
         @property override SubMonitorView view()
         {

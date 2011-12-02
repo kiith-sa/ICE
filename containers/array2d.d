@@ -74,11 +74,7 @@ align(1) struct Array2D(T)
         ///Destroy the array.
         ~this()
         {
-            if(data_ !is null)
-            {
-                x_ = y_ = 0;
-                free(data_);
-            }
+            if(data_ !is null){free(data_);}
         }
 
         /**
@@ -89,7 +85,7 @@ align(1) struct Array2D(T)
         int opApply(int delegate(ref T) dg)
         {
             int result = 0;
-            for(uint i = 0; i < data_.length; i++)
+            for(size_t i = 0; i < data_.length; i++)
             {
                 result = dg(data_[i]);
                 if(result){break;}

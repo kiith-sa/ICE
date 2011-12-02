@@ -134,38 +134,25 @@ abstract class GLVideoDriver : VideoDriver
             }
 
             //delete any remaining texture pages
-            foreach(ref page; pages_)
+            foreach(ref page; pages_) if(page !is null)
             {
-                if(page !is null)
-                {
-                    free(page);
-                    page = null;
-                }
+                free(page);
+                page = null;
             }
 
             //delete any remaining textures
-            foreach(ref texture; textures_)
+            foreach(ref texture; textures_) if(texture !is null)
             {
-                if(texture !is null)
-                {
-                    free(texture);
-                    texture = null;
-                }
+                free(texture);
+                texture = null;
             }
 
             //delete any remaining shaders
-            foreach(ref shader; shaders_)
+            foreach(ref shader; shaders_) if(shader !is null)
             {
-                if(shader !is null)
-                {
-                    free(shader);
-                    shader = null;
-                }
+                free(shader);
+                shader = null;
             }
-
-            pages_ = [];
-            textures_ = [];
-            shaders_ = [];
 
             send_statistics.disconnect_all();
 

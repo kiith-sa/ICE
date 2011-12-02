@@ -141,16 +141,10 @@ class PongGUI
         ~this()
         {
             monitor_.die();
-            monitor_ = null;
 
-            if(credits_ !is null)
-            {
-                clear(credits_);
-                credits_ = null;
-            }
+            if(credits_ !is null){clear(credits_);}
 
             menu_container_.die();
-            menu_container_ = null;
 
             game_start.disconnect_all();
             credits_start.disconnect_all();

@@ -78,7 +78,6 @@ class GUIElement
 
             foreach(ref child; children_){clear(child);}
             clear(children_);
-            parent_ = null;
         }
 
         ///Get position in screen space.
