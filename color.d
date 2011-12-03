@@ -134,7 +134,7 @@ struct Color
     }
     
     ///Add two colors (values are clamped to range 0 .. 255).
-    Color opBinary(string op)(in Color c) if(op == "+")
+    Color opBinary(string op)(in Color c) const if(op == "+")
     {
         return Color(cast(ubyte)min(255, r + c.r), 
                      cast(ubyte)min(255, g + c.g),
@@ -153,7 +153,7 @@ struct Color
     }
 
     ///Multiply a color by a float (values are clamped to range 0 .. 255).
-    Color opBinary(string op)(in float m) if(op == "*")
+    Color opBinary(string op)(in float m) const if(op == "*")
     {
         return Color(cast(ubyte)round_s32(clamp(r * m, 0.0f, 255.0f)), 
                      cast(ubyte)round_s32(clamp(g * m, 0.0f, 255.0f)),

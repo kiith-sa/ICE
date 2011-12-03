@@ -4,11 +4,14 @@ Replace overloaded operators with opUnary, opBinary
 
 use size_t in file handling and memory code where possible
 
+Replace our own max, min with std.algorithm.max/min 
+(maybe also other stuff in math/math.d)
+
 Other changes to adapt to current DMD as more D functionality works without bugs now.
 
 
 
-See Hybrid - esp. it's virtual file system and other h3r3tic code,
+See Hybrid - esp. its virtual file system and other h3r3tic code,
 and see what we can change/improve (esp. GUI, VFS) 
     The VFS API looks good: 
  gui.vfs.mount(new ZipFolder("gui.zip"));
@@ -137,6 +140,7 @@ Buttons need mouseover, etc styles, like hover links in CSS.
     Consider using gl3n (found on bitbucket) instead of our own vectors/matrices 
     Seems to be well written. The style is same as GLSL, which is
     not very D-like, but good enough.
+    We could also alias the type names to something more D-like
 7:
     Write these TODOs in bugtracker
 

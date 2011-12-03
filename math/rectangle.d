@@ -11,10 +11,11 @@ module math.rectangle;
 
 
 import std.algorithm;
+import math.math;
 import math.vector2;
 
 ///Rectangle defined by its extents.
-align(1) struct Rectangle(T)
+struct Rectangle(T)
 {
     invariant()
     {
@@ -50,25 +51,18 @@ align(1) struct Rectangle(T)
         this.min = min;
         this.max = max;
     }
-    
-    ///Addition with a vector - used to move the rectangle. 
-    Rectangle!T opAdd(in Vector2!T v) const {return Rectangle!T(min + v, max + v);}
 
-    ///Subtraction with a vector - used to move the rectangle. 
-    Rectangle!T opSub(in Vector2!T v) const {return Rectangle!T(min - v, max - v);}
-
-    ///Addition-assignment with a vector - used to move the rectangle. 
-    void opAddAssign(in Vector2!T v)
+    ///Addition/subtraction with a vector - used to move the rectangle. 
+    Rectangle opBinary(string op)(in Vector2!T v) const if(op == "+" || op == "-")
     {
-        min += v;
-        max += v;
+        static if(op == "+")     {return Rectangle(min + v, max + v);}
+        else static if(op == "-"){return Rectangle(min - v, max - v);}
     }
 
-    ///Subtraction-assignment with a vector - used to move the rectangle. 
-    void opSubAssign(in Vector2!T v)
+    ///Addition/subtraction with a vector - used to move the rectangle. 
+    void opOpAssign(string op)(in Vector2!T v) const if(op == "+" || op == "-")
     {
-        min -= v;
-        max -= v;
+        this = opBinary!op(v);
     }
 
     ///Returns center of the rectangle.
@@ -99,13 +93,10 @@ align(1) struct Rectangle(T)
      *
      * Returns: Clamped point.
      */
-    Vector2!T clamp(Vector2!T point) const
+    Vector2!T clamp(in Vector2!T point) const
     {
-        if(point.x < min.x) point.x = min.x;
-        else if(point.x > max.x) point.x = max.x;
-        if(point.y < min.y) point.y = min.y;
-        else if(point.y > max.y) point.y = max.y;
-        return point;
+        return Vector2!T(.clamp(point.x, min.x, max.x),
+                         .clamp(point.y, min.y, max.y));
     }
 
     /**
@@ -133,18 +124,18 @@ align(1) struct Rectangle(T)
     ///If the point is not in this rectangle, grow the rectangle to include it.
     void add_internal_point(in Vector2!T point)
     {
-        min.x = std.algorithm.min(min.x, point.x);
-        min.y = std.algorithm.min(min.y, point.y);
-        max.x = std.algorithm.max(max.x, point.x);
-        max.y = std.algorithm.max(max.y, point.y);
+        min.x = .min(min.x, point.x);
+        min.y = .min(min.y, point.y);
+        max.x = .max(max.x, point.x);
+        max.y = .max(max.y, point.y);
     }
 }
 
 ///Rectangle of floats.
-alias Rectangle!float Rectanglef;
+alias Rectangle!float  Rectanglef;
 ///Rectangle of doubles.
 alias Rectangle!double Rectangled;
 ///Rectangle of ints.
-alias Rectangle!int Rectanglei;
+alias Rectangle!int    Rectanglei;
 ///Rectangle of uints.
-alias Rectangle!uint Rectangleu;
+alias Rectangle!uint   Rectangleu;

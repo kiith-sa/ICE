@@ -211,18 +211,18 @@ unittest
 }
 
 ///Vector2 of bytes.
-alias Vector2!byte Vector2b;
+alias Vector2!byte   Vector2b;
 ///Vector2 of ubytes.
-alias Vector2!ubyte Vector2ub;
+alias Vector2!ubyte  Vector2ub;
 ///Vector2 of shorts.
-alias Vector2!short Vector2s;
+alias Vector2!short  Vector2s;
 ///Vector2 of ushorts.
 alias Vector2!ushort Vector2us;
 ///Vector2 of ints.
-alias Vector2!int Vector2i;
+alias Vector2!int    Vector2i;
 ///Vector2 of uints.
-alias Vector2!uint Vector2u;
+alias Vector2!uint   Vector2u;
 ///Vector2 of floats.
-alias Vector2!float Vector2f;
+alias Vector2!float  Vector2f;
 ///Vector2 of doubles.
 alias Vector2!double Vector2d;
