@@ -1,9 +1,5 @@
 ASAP:
 
-Other changes to adapt to current DMD as more D functionality works without bugs now.
-
-
-
 See Hybrid - esp. its virtual file system and other h3r3tic code,
 and see what we can change/improve (esp. GUI, VFS) 
     The VFS API looks good: 

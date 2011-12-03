@@ -10,7 +10,7 @@ module video.gltexturepage;
 @system
 
 
-import std.string;
+import std.conv;
 
 import derelict.opengl.gl;
 
@@ -195,11 +195,10 @@ package struct GLTexturePage(TexturePacker)
          */
         @property string info() const
         {
-            return format("width: ", size_.x, "\n",
-                          "height: ", size_.y, "\n",
-                          "format: ", format_, "\n",
-                          "packer:\n", 
-                          packer_.info);
+            return ("width: "   ~ to!string(size_.x) ~ "\n" ~
+                    "height: "  ~ to!string(size_.y) ~ "\n" ~
+                    "format: "  ~ to!string(format_) ~ "\n" ~
+                    "packer:\n" ~ packer_.info);
         }
 }
 
