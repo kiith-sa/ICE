@@ -71,7 +71,8 @@ final class MonitorManager
         void add_monitorable(Monitorable monitorable, in string name)
         in
         {
-            assert(!canFind(monitored_.keys, name),
+
+            assert((name in monitored_ ) is null,
                    "Trying to add a monitorable with name that is already used");
         }
         body
@@ -84,7 +85,7 @@ final class MonitorManager
         void remove_monitorable(in string name)
         in
         {
-            assert(canFind(monitored_.keys, name), 
+            assert((name in monitored_ ) !is null,
                    "Trying to remove a monitorable that is not present");
         }
         body
@@ -107,7 +108,7 @@ final class MonitorManager
         @property const(string[]) monitor_names(in string monitored) const
         in
         {
-            assert(canFind(monitored_.keys, monitored), 
+            assert((monitored in monitored_ ) !is null,
                    "Trying to get monitor names of a monitorable that is not present");
         }
         body
@@ -119,7 +120,7 @@ final class MonitorManager
         void start(in MonitorID id)
         in
         {
-            assert(canFind(monitored_.keys, id.monitored),
+            assert((id.monitored in monitored_ ) !is null,
                    "Trying to start monitor of a monitorable that is not present");
         }
         body
@@ -131,8 +132,8 @@ final class MonitorManager
         void stop(in MonitorID id)
         in
         {
-            assert(canFind(monitored_.keys, id.monitored),
-                   "trying to stop monitor of a monitorable that is not present");
+            assert((id.monitored in monitored_ ) !is null,
+                   "Trying to stop monitor of a monitorable that is not present");
         }
         body
         {
@@ -143,8 +144,8 @@ final class MonitorManager
         SubMonitor get(in MonitorID id)
         in
         {
-            assert(canFind(monitored_.keys, id.monitored),
-                   "trying to get monitor of a monitorable that is not present");
+            assert((id.monitored in monitored_ ) !is null,
+                   "Trying to get monitor of a monitorable that is not present");
         }
         body{return monitored_[id.monitored].get_monitor(id.monitor);}
 
@@ -153,7 +154,7 @@ final class MonitorManager
         in
         {
             assert(!pinned(id), "Trying to pin a monitor that is already pinned");
-            assert(canFind(monitored_.keys, id.monitored),
+            assert((id.monitored in monitored_ ) !is null,
                    "Trying to pin monitor of a monitorable that is not present");
         }
         body{pinned_ ~= id;}
@@ -193,10 +194,7 @@ final class MonitorView : GUIElement
         ///Return font size for monitor widgets to use.
         static uint font_size(){return 8;}
 
-        ~this()
-        {
-            monitor_.update_views.disconnect(&regenerate);
-        }
+        ~this(){monitor_.update_views.disconnect(&regenerate);}
 
     protected:
         /**
@@ -244,11 +242,11 @@ final class MonitorView : GUIElement
             //generate the menu
             with(new GUIMenuHorizontalFactory)
             {
-                x = "p_left";
-                y = "p_top";
-                item_width = "44";
-                item_height = "14";
-                item_spacing = "4";
+                x              = "p_left";
+                y              = "p_top";
+                item_width     = "44";
+                item_height    = "14";
+                item_spacing   = "4";
                 item_font_size = font_size;
 
                 //hide will set null monitor

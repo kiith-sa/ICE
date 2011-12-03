@@ -69,11 +69,11 @@ abstract class SubMonitorView : GUIElement
             //construct the submonitor menu (common to all submonitors).
             with(new GUIMenuHorizontalFactory)
             {
-                x = "p_left";
-                y = "p_bottom - 22";
-                item_width = "64";
-                item_height = "14";
-                item_spacing = "4";
+                x              = "p_left";
+                y              = "p_bottom - 22";
+                item_width     = "64";
+                item_height    = "14";
+                item_spacing   = "4";
                 item_font_size = MonitorView.font_size;
 
                 add_item("Toggle Pinned", &toggle_pinned_);
@@ -93,12 +93,12 @@ abstract class SubMonitorView : GUIElement
             {
                 with(new GUIStaticTextFactory)
                 {
-                    x = "p_right - 32";
-                    y = "p_bottom - 16";
-                    width = "48";
-                    height = "16";
-                    font_size = MonitorView.font_size;
-                    text = "Pinned";
+                    x            = "p_right - 32";
+                    y            = "p_bottom - 16";
+                    width        = "48";
+                    height       = "16";
+                    font_size    = MonitorView.font_size;
+                    text         = "Pinned";
                     pinned_text_ = produce();
                 }
                 add_child(pinned_text_);

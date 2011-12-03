@@ -1,8 +1,5 @@
 ASAP:
 
-Replace our own max, min with std.algorithm.max/min 
-(maybe also other stuff in math/math.d)
-
 Other changes to adapt to current DMD as more D functionality works without bugs now.
 
 

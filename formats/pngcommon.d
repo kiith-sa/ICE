@@ -72,7 +72,7 @@ enum PNGColorType : ubyte
 uint num_channels(PNGColorType color_type){return [1, 0, 3, 1, 2, 0, 4][color_type];}
 
 ///PNG image description.
-align(1) struct PNGImage
+struct PNGImage
 {
     ///Image width in pixels.
     uint width;
@@ -219,16 +219,14 @@ immutable zTXt = get_uint(['z', 'T', 'X', 't']);
 bool validate_color(in PNGColorType color_type, in uint bit_depth)
 {
     const int bd = bit_depth;
-    switch(color_type)
+    final switch(color_type)
     {
         case PNGColorType.Greyscale: 
-            return canFind([1, 2, 4, 8, 16], bd);
+            return [1, 2, 4, 8, 16].canFind(bd);
         case PNGColorType.Palette: 
-            return canFind([1, 2, 4, 8], bd);
+            return [1, 2, 4, 8].canFind(bd);
         case PNGColorType.RGB, PNGColorType.RGBA, PNGColorType.GreyscaleAlpha: 
-            return canFind([8, 16], bd);
-        default:
-            assert(false, "Invalid PNG color type");
+            return [8, 16].canFind(bd);
     }
 }
 
@@ -279,8 +277,8 @@ struct PNGChunk
         result.data = data_length ? stream[8 .. 8 + data_length] : null;
         //crc at the end of the chunk
         const uint crc = get_uint(stream[8 + data_length .. 12 + data_length]);
-        enforceEx!(PNGException)(zlib_check_crc(crc, stream[4..8 + data_length]),
-                                 "CRC does not match, probably corrupted file");
+        enforceEx!PNGException(zlib_check_crc(crc, stream[4..8 + data_length]),
+                               "CRC does not match, probably corrupted file");
         return result;
     }
 
@@ -289,19 +287,13 @@ struct PNGChunk
     {
         switch(type)
         {
-            case IHDR:
-                return -1;
-            case PLTE:
-                return (other.type == bKGD || other.type == tRNS) ? -1 : 1;
-            case IEND:
-                return 1;
-            case IDAT:
-                return other.type == IEND ? -1 : 1;
-            case bKGD, tRNS:
-                return other.type == IDAT ? -1 : 1;
+            case IHDR: return -1;
+            case PLTE: return (other.type == bKGD || other.type == tRNS) ? -1 : 1;
+            case IEND: return 1;
+            case IDAT: return other.type == IEND ? -1 : 1;
+            case bKGD, tRNS: return other.type == IDAT ? -1 : 1;
             //not ordering unknown chunks
-            default:
-                return 0;
+            default: return 0;
         }
     }
 

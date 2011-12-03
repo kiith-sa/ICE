@@ -59,14 +59,14 @@ final class MonitorData(M) : MonitorDataInterface
          */
         this(M monitored, SubMonitor function(M)[string] constructors)
         {
-            monitored_ = monitored;
+            monitored_    = monitored;
             constructors_ = constructors;
         }
 
         void die()
         {
             foreach(monitor; monitors_){clear(monitor);}
-            monitors_ = null;
+            monitors_     = null;
             constructors_ = null;
         }
 

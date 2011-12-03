@@ -120,7 +120,7 @@ unittest
 }
 
 ///Array of first 32 powers of 2.
-immutable uint[] powers_of_two = generate_pot();
+uint[] powers_of_two = generate_pot();
 
 ///Generate the powers_of_two array and return it.
 private uint[] generate_pot()
@@ -173,9 +173,5 @@ unittest
  */
 bool is_pot(in uint num)
 {
-    foreach(pot; powers_of_two)
-    {
-        if(pot == num){return true;}
-    }
-    return false;
+    return powers_of_two.canFind(num);
 }

@@ -194,10 +194,10 @@ struct CLIOption
     
     private:
         ///Determine whether or not this option is valid.
-        @property bool valid(){return action_ !is null;}
+        @property bool valid() const {return action_ !is null;}
 
         ///Get left part of the help string for this option. (used by CLI.help())
-        @property string help_left()
+        @property string help_left() const
         {
             string result = short_ == '\0' ? "     " : " -" ~ short_ ~ ", ";
             result ~= "--" ~ long_ ~ (arg_name_.length == 0 ? "" : "=" ~ arg_name_);
@@ -374,8 +374,8 @@ class CLI
             program_name_ = args[0];
 
             //clean up in case parse() is called more than once
-            option_data_ = [];
-            positional_ = [];
+            clear(option_data_);
+            clear(positional_);
             help_ = false;
 
             scope(failure){help();}
@@ -437,7 +437,7 @@ class CLI
             //unknown options left
             if(option_data_.length > 0)
             {
-                string msg = "Unrecognized option/s: " ~ option_data_[0].name;
+                auto msg = "Unrecognized option/s: " ~ option_data_[0].name;
                 foreach(o; option_data_[1 .. $]){msg ~= ", " ~ o.name;}
                 throw new CLIException(msg);
             }
@@ -474,8 +474,8 @@ class CLI
                 }
 
                 string[] parts = std.string.split(arg, "=");
-                enforceEx!(CLIException)(parts.length <= 2, 
-                                         "CLI: Invalid argument (too many '='): " ~ arg);
+                enforceEx!CLIException(parts.length <= 2, 
+                                       "CLI: Invalid argument (too many '='): " ~ arg);
                 //starts with "--"
                 if(indexOf(arg, "--") == 0)
                 {
@@ -680,14 +680,11 @@ string[] store_action(T)(string[] args, void delegate(T) target)
  */
 string[] array_store_action(T)(string[] args, ref T[] target)
 {
-    foreach(arg; args)
+    //allow comma separated args
+    foreach(arg; args) foreach(sub; std.string.split(arg, ","))
     {
-        //allow comma separated args
-        foreach(sub; std.string.split(arg, ","))
-        {
-            static if(is(T == bool)){target_ ~= lexical_bool(sub);}
-            else{target ~= to!(T)(sub);}
-        }
+        static if(is(T == bool)){target_ ~= lexical_bool(sub);}
+        else{target ~= to!T(sub);}
     }
     return [];
 }
@@ -704,8 +701,8 @@ string[] array_store_action(T)(string[] args, ref T[] target)
  */
 string[] delegate_action(string[] args, void delegate(string[]) nothrow target, int arg_count)
 {
-    enforceEx!(CLIException)(cast(int)args.length >= arg_count, 
-               "Not enough option arguments: need " ~ to!string(arg_count));
+    enforceEx!CLIException(cast(int)args.length >= arg_count, 
+              "Not enough option arguments: need " ~ to!string(arg_count));
 
     // -1 means all, if any, args
     if(arg_count == -1)     

@@ -14,6 +14,7 @@ import std.algorithm;
 import std.array;
 import std.conv;                  
 import std.exception;
+import std.functional;
 import std.stdio;
 import std.string;
 import std.traits;
@@ -39,16 +40,16 @@ class MathParserException : Exception{this(string msg){super(msg);}}
  * Throws:  MathParserException if the expression is invalid 
  *          (e.g. parentheses mismatch or redundant operator)
  */
-T parse_math(T)(in string expression, in T[string] substitutions = null)
+T parse_math(T)(in string expression, T[string] substitutions = null)
     if(isNumeric!T)
 {
-    enforceEx!(MathParserException)(expression.length > 0, 
-                                    "Can't parse an empty string as a math expression");
+    enforceEx!MathParserException(expression.length > 0, 
+                                  "Can't parse an empty string as a math expression");
 
     scope(failure){writefln("Parsing math expression failed: " ~ expression);}
     const substituted = substitutions is null ? expression 
                                               : substitute(expression, substitutions);
-    return parse_postfix!(T)(to_postfix(substituted));
+    return parse_postfix!T(to_postfix(substituted));
 }
 ///Unittest for parse_math
 unittest
@@ -93,15 +94,15 @@ private:
      *
      * Returns: Input string with substitutions applied.
      */
-    string substitute(T)(in string input, in T[string] substitutions)
+    string substitute(T)(in string input, T[string] substitutions)
     {
         //ugly hack, could use rewriting
         char[] mutable = input.dup;
         foreach(from, to_; substitutions)
         {
-            const replacement = to_ >= cast(T)0 ? to!string(to_) 
+            auto replacement = to_ >= cast(T)0 ? to!string(to_) 
                                                : "(0 " ~ to!string(to_) ~ ")";
-            mutable = replace(mutable, from.dup, replacement.dup);
+            mutable = replace(mutable, from, replacement);
         }
         return cast(string)mutable;
     }
@@ -158,7 +159,7 @@ private:
                     dchar tok = pop();
                     while(tok != '(')
                     {
-                        enforceEx!(MathParserException)
+                        enforceEx!MathParserException
                                   (tok != 0, "Parenthesis mismatch in math expression " 
                                               ~ expression);
                         output ~= " ";
@@ -197,7 +198,7 @@ private:
                                             
         while(tok != 0)
         {
-            enforceEx!(MathParserException)
+            enforceEx!MathParserException
                       (tok != '(', "Parenthesis mismatch in math expression " ~ expression);
 
             tok = pop();
@@ -227,28 +228,25 @@ private:
         T[] stack;
         const string[] tokens = split(postfix);
 
-        void bin_operator(in T function(T, T) operator)
+        void bin_operator(string op)()
         {
             T x = stack[$ - 1]; T y = stack[$ - 2];
-            stack[$ - 2] = operator(x, y);
+            stack[$ - 2] = binaryFun!op(y, x);
             stack = stack[0 .. $ - 1];
         }
 
-        foreach(token; tokens)
+        foreach(token; tokens) switch(token[0])
         {
-            switch(token[0])
-            {
-                case '+': bin_operator(function(T x, T y){return y + x;}); break; 
-                case '-': bin_operator(function(T x, T y){return y - x;}); break; 
-                case '*': bin_operator(function(T x, T y){return y * x;}); break; 
-                case '/': bin_operator(function(T x, T y){return y / x;}); break; 
-                default:
-                    enforceEx!(MathParserException)
-                              (std.string.isNumeric(token), 
-                               "Invalid token a in math expression: " ~ token);
-                    stack ~= cast(T) to!real(token);
-                    break;
-            }
+            case '+': bin_operator!"a + b"; break; 
+            case '-': bin_operator!"a - b"; break; 
+            case '*': bin_operator!"a * b"; break; 
+            case '/': bin_operator!"a / b"; break; 
+            default:
+                enforceEx!MathParserException
+                          (std.string.isNumeric(token), 
+                           "Invalid token a in math expression: " ~ token);
+                stack ~= cast(T) to!real(token);
+                break;
         }
         assert(stack.length == 1, "Postfix notation parser stack contains too many "
                                   "values at exit");

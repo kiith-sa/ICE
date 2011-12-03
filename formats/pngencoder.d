@@ -103,11 +103,11 @@ struct PNGEncoder
             chunks.sort;
             chunks ~= PNGChunk(IEND, []);
 
-            auto buffer = Vector!(ubyte)(png_magic_number.dup);
+            auto buffer = Vector!ubyte(png_magic_number.dup);
             //write chunks to buffer
             foreach(chunk; chunks){write_chunk(buffer, chunk);}
 
-            ubyte[] output = alloc_array!(ubyte)(cast(uint)buffer.length);
+            ubyte[] output = alloc_array!ubyte(cast(uint)buffer.length);
             output[] = buffer[];
 
             return output;
@@ -158,7 +158,7 @@ struct PNGEncoder
             }
 
             //text chunks
-            if (!info.text.empty()){chunks ~= chunkify_text(info.text);}
+            if(!info.text.empty()){chunks ~= chunkify_text(info.text);}
 
             return chunks;
         }
@@ -199,7 +199,7 @@ struct PNGEncoder
          *          source = Data to filter.
          *          image  = Image information.
          */
-        void filter_data(ref Vector!(ubyte) buffer, in ubyte[] source, in PNGImage image)
+        void filter_data(ref Vector!ubyte buffer, in ubyte[] source, in PNGImage image)
         {
             const uint pixel_bytes = (image.bpp + 7) / 8;
             //size of a line in bytes
@@ -222,7 +222,7 @@ struct PNGEncoder
             if(filter_ == PNGFilter.Dynamic)
             {
                 filtered.length = pitch;
-                for(uint y = 0; y < image.height; y++)
+                foreach(y; 0 .. image.height)
                 {
                     ulong smallest = ulong.max;
                     PNGFilter best_filter;
@@ -254,18 +254,15 @@ struct PNGEncoder
                 }
             }
             //one filter for the whole image
-            else
+            else foreach(y; 0 .. image.height)
             {
-                for(uint y = 0; y < image.height; y++)
-                {
-                    line = source[pitch * y .. pitch * (y + 1)];
-                    //if we're at the first line, the line above us is the zero line
-                    previous = y == 0 ? zero_line : source[pitch * (y - 1) .. pitch * y];
+                line = source[pitch * y .. pitch * (y + 1)];
+                //if we're at the first line, the line above us is the zero line
+                previous = y == 0 ? zero_line : source[pitch * (y - 1) .. pitch * y];
 
-                    buffer ~= cast(ubyte)filter_;
-                    filter_line(filtered, previous, line, filters_[filter_], pixel_bytes);
-                    buffer ~= filtered;
-                }
+                buffer ~= cast(ubyte)filter_;
+                filter_line(filtered, previous, line, filters_[filter_], pixel_bytes);
+                buffer ~= filtered;
             }
         }
 }
@@ -303,7 +300,7 @@ ubyte[] header(in PNGImage image)
  * Params:  buffer = Buffer to write to.
  *          chunk  = PNGChunk to write.
  */
-void write_chunk(ref Vector!(ubyte) buffer, ref PNGChunk chunk)
+void write_chunk(ref Vector!ubyte buffer, ref PNGChunk chunk)
 {
     //chunk header
     add_uint(buffer, cast(uint)chunk.data.length);
@@ -352,7 +349,7 @@ body
     uint b = pixel_bytes;
     //first pixel has nothing before it
     while(b--){result[b] = filter(0, previous[b], 0, line[b]);}
-    for(uint i = pixel_bytes; i < result.length; i++)
+    foreach(i; pixel_bytes .. result.length)
     {
         result[i] = filter(previous[i - pixel_bytes], previous[i], 
                            line[i - pixel_bytes], line[i]);

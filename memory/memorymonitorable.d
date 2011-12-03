@@ -36,7 +36,7 @@ final class MemoryMonitorable : Monitorable
 
     package:
         ///Used to send statistics data to memory monitors.
-        mixin Signal!(Statistics) send_statistics;
+        mixin Signal!Statistics send_statistics;
 
     public:
         ///Construct a MemoryMonitorable.
@@ -60,7 +60,7 @@ final class MemoryMonitorable : Monitorable
         {
             SubMonitor function(MemoryMonitorable)[string] ctors_;
             ctors_["Usage"] = &new_graph_monitor!(MemoryMonitorable, Statistics, "manual_MiB");
-            return new MonitorData!(MemoryMonitorable)(this, ctors_);
+            return new MonitorData!MemoryMonitorable(this, ctors_);
         }
 }
 

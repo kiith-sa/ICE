@@ -125,12 +125,9 @@ PNGColorType png_color_type(in ColorFormat format)
 {
     switch(format)
     {
-        case ColorFormat.RGB_8:
-            return PNGColorType.RGB;
-        case ColorFormat.RGBA_8:
-            return PNGColorType.RGBA;
-        default:
-            assert(false, "Unsupported PNG color format.");
+        case ColorFormat.RGB_8:  return PNGColorType.RGB;
+        case ColorFormat.RGBA_8: return PNGColorType.RGBA;
+        default: assert(false, "Unsupported PNG color format.");
     }
 }
 
@@ -149,13 +146,13 @@ ColorFormat color_format_from_png(in PNGColorType type, in ubyte bit_depth)
     switch(type)
     {
         case PNGColorType.Greyscale:
-            enforceEx!(ImageFileException)(bit_depth == 8, "Unsupported PNG gray bit depth");
+            enforceEx!ImageFileException(bit_depth == 8, "Unsupported PNG gray bit depth");
             return ColorFormat.GRAY_8;
         case PNGColorType.RGB:
-            enforceEx!(ImageFileException)(bit_depth == 8, "Unsupported PNG RGB bit depth");
+            enforceEx!ImageFileException(bit_depth == 8, "Unsupported PNG RGB bit depth");
             return ColorFormat.RGB_8;
         case PNGColorType.RGBA:
-            enforceEx!(ImageFileException)(bit_depth == 8, "Unsupported PNG RGBA bit depth");
+            enforceEx!ImageFileException(bit_depth == 8, "Unsupported PNG RGBA bit depth");
             return ColorFormat.RGBA_8;
         default:
             throw new ImageFileException("Unsupported PNG color type.");
