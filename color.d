@@ -133,21 +133,15 @@ struct Color
         assert(color.luminance == 254);
     }
     
-    /**
-     * Add two colors (values are clamped to range 0 .. 255).
-     *
-     * Params:  c = Color to add.
-     *
-     * Returns: Result of color addition.
-     */
-    Color opAdd(in Color c)
+    ///Add two colors (values are clamped to range 0 .. 255).
+    Color opBinary(string op)(in Color c) if(op == "+")
     {
         return Color(cast(ubyte)min(255, r + c.r), 
                      cast(ubyte)min(255, g + c.g),
                      cast(ubyte)min(255, b + c.b), 
                      cast(ubyte)min(255, a + c.a));
     }
-    ///Unittest for add().
+    ///Unittest for opBinary!"+"
     unittest
     {
         Color color1 = Color(253, 254, 255, 255);
@@ -157,7 +151,59 @@ struct Color
         assert(color2 + color3 == Color(131, 145, 255, 59));
         assert(color3 + color1 == Color(255, 255, 255, 255));
     }
-    
+
+    ///Multiply a color by a float (values are clamped to range 0 .. 255).
+    Color opBinary(string op)(in float m) if(op == "*")
+    {
+        return Color(cast(ubyte)round_s32(clamp(r * m, 0.0f, 255.0f)), 
+                     cast(ubyte)round_s32(clamp(g * m, 0.0f, 255.0f)),
+                     cast(ubyte)round_s32(clamp(b * m, 0.0f, 255.0f)), 
+                     cast(ubyte)round_s32(clamp(a * m, 0.0f, 255.0f)));
+    }
+    ///Unittest for opBinary!"*"
+    unittest
+    {
+        Color color1 = Color(128, 128, 128, 128);
+        Color color2 = Color(255, 255, 255, 255);
+        assert(color1 * 0.5 == color2 * 0.25);
+        assert(color1 * 0.5 == Color(64, 64, 64, 64));
+    }
+
+    ///Add a color to this color (values are clamped to range 0 .. 255).
+    void opOpAssign(string op)(in Color c) if(op == "+")
+    {
+        this = this + c;
+    }
+    ///Unittest for opOpAssign!"+"
+    unittest
+    {
+        Color color1 = Color(253, 254, 255, 255);
+        Color color2 = Color(128, 0, 87, 42);
+        Color color3 = Color(3, 145, 192, 17);
+        color1 += color2;
+        color2 += color3;
+        color3 += color1;
+        assert(color1 == Color(255, 254, 255, 255));
+        assert(color2 == Color(131, 145, 255, 59));
+        assert(color3 == Color(255, 255, 255, 255));
+    }
+
+    ///Multiply this color by a float (values are clamped to range 0 .. 255).
+    void opOpAssign(string op)(in float m) if(op == "*")
+    {
+        this = this * m;
+    }
+    ///Unittest for opOpAssign!"+"
+    unittest
+    {
+        Color color1 = Color(128, 128, 128, 128);
+        Color color2 = Color(255, 255, 255, 255);
+        color1 *= 0.5;
+        color2 *= 0.25;
+        assert(color1 == color2);
+        assert(color1 == Color(64, 64, 64, 64));
+    }
+
     /**
      * Interpolate the color to another color.
      *

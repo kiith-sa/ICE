@@ -69,7 +69,7 @@ Maybe name them Actions instead of Delegates, that would make more sense.
 Buttons need mouseover, etc styles, like hover links in CSS.
 
 
-12:
+1:
     Idea: move from actors to a component based system
 
     ComponentManager - builds objects. 
@@ -117,23 +117,27 @@ Buttons need mouseover, etc styles, like hover links in CSS.
 
     Anyway, look at the Gear2D engine to get a better idea.
     This might take a while and be a large change, but better early than never.
-13:
+2:
     Either stop using @safe/@trusted/@system or use it everywhere (check new files)
     - it is not implemented correctly at the moment.
-18:
+3:
     Rename user/root data subdirectories to packages - makes sense
-19:
+4:
     GUI: add width, height substitutions to GUI referring
     to this element's width and height - this means width/height must be
     parsed before position
-21:
+5:
     bugtracker:
     for spritesheets, we'll need big images with accompanying YAML files
     specifying coords of frames on the image (in pixels, not in texcoords) -
     then, we'll need code to load this sheet directly to videodriver,
     put the whole sheet on a texture page, and convert to float texcoords.
 
-19:
+6:  
+    Consider using gl3n (found on bitbucket) instead of our own vectors/matrices 
+    Seems to be well written. The style is same as GLSL, which is
+    not very D-like, but good enough.
+7:
     Write these TODOs in bugtracker
 
 --0.7.0 release

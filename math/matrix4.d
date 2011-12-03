@@ -17,7 +17,7 @@ import math.vector2;
 
 
 ///4x4 column major OpenGL style matrix. Default initialized to indentity matrix.
-align(1) struct Matrix4(T)
+struct Matrix4(T)
 {
     private:
         ///Identity matrix array.
@@ -33,7 +33,7 @@ align(1) struct Matrix4(T)
         @property T* ptr(){return m_.ptr;}
 
         ///Multiplication with a matrix.
-        Matrix4!T opMul(const ref Matrix4!(T) m) const
+        Matrix4!T opMul(const ref Matrix4!T m) const
         {
             Matrix4!T r;
 
@@ -65,9 +65,9 @@ align(1) struct Matrix4(T)
  *
  * Returns: Resulting translation matrix.
  */
-Matrix4!(T) translation_matrix(T)(in Vector2!(T) translate)
+Matrix4!T translation_matrix(T)(in Vector2!T translate)
 {
-    Matrix4!(T) result;
+    Matrix4!T result;
     result.m_[12] = translate.x;
     result.m_[13] = translate.y;
     return result;
@@ -85,17 +85,17 @@ Matrix4!(T) translation_matrix(T)(in Vector2!(T) translate)
  *
  * Returns: Resulting projection matrix.
  */
-Matrix4!(T) ortho_matrix(T)(in T left, in T right, in T bottom, 
-                            in T top, in T near, in T far)
+Matrix4!T ortho_matrix(T)(in T left, in T right, in T bottom, 
+                          in T top, in T near, in T far)
 {
-    Matrix4!(T) result;
+    Matrix4!T result;
     const T width = right - left;
     const T height = top - bottom;
     const T depth = far - near;
     with(result)
     {
-        m_[0] = cast(T)2.0 / width;
-        m_[5] = cast(T)2.0 / height;
+        m_[0]  = cast(T)2.0 / width;
+        m_[5]  = cast(T)2.0 / height;
         m_[10] = cast(T)-2.0 / depth;
 
         m_[12] = -(right + left) / width;
