@@ -60,7 +60,7 @@ struct Rectangle(T)
     }
 
     ///Addition/subtraction with a vector - used to move the rectangle. 
-    void opOpAssign(string op)(in Vector2!T v) const if(op == "+" || op == "-")
+    void opOpAssign(string op)(in Vector2!T v) if(op == "+" || op == "-")
     {
         this = opBinary!op(v);
     }

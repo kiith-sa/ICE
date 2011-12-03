@@ -143,7 +143,7 @@ bool aabbox_aabbox(in Vector2f box1_position, in Vector2f box2_position,
                    ref Contact contact)
 {
     //combined half-widths/half-heights of the rectangles.
-    const Vector2f combined = (box1.rectangle.size + box2.rectangle.size) * 0.5;
+    const Vector2f combined = (box1.rectangle.size + box2.rectangle.size) * 0.5f;
 
     //distance between centers of the rectangles
     const Vector2f distance = (box2_position + box2.rectangle.center) - 

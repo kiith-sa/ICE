@@ -18,7 +18,7 @@ import math.math;
 
 
 ///2D vector or point.
-align(1) struct Vector2(T)
+struct Vector2(T)
     if(isNumeric!T)
 {
     //initialized to null vector by default
@@ -28,70 +28,63 @@ align(1) struct Vector2(T)
     T y = 0;
 
     ///Negation.
-    Vector2!T opNeg() const {return Vector2!T(-x, -y);}
+    Vector2 opNeg() const {return Vector2(-x, -y);}
 
     ///Equality with a vector.
-    bool opEquals(const ref Vector2!T v) const
+    bool opEquals(const ref Vector2 v) const
     {
         return equals(x, v.x) && equals(y, v.y);
     }
 
-    ///Addition with a vector.
-    Vector2!T opAdd (in Vector2!T v) const 
+    ///Addition/subtraction with a vector.
+    Vector2 opBinary(string op)(in Vector2 v) const if(op == "+" || op == "-" || op == "/")
     {
-        return Vector2!T(cast(T)(x + v.x), cast(T)(y + v.y));
+        static if(op == "+")     {return Vector2(cast(T)(x + v.x), cast(T)(y + v.y));}
+        else static if(op == "-"){return Vector2(cast(T)(x - v.x), cast(T)(y - v.y));}
+        else static if(op == "/")
+        {
+            assert(v.x != 0 && v.y != 0,
+                   "Vector can not be divided by a vector with a zero component");
+            return Vector2(cast(T)(x / v.x), cast(T)(y / v.y));
+        }
     }
 
-    ///Subtraction with a vector.
-    Vector2!T opSub(in Vector2!T v) const
+    ///Multiplication/division with a scalar.
+    Vector2 opBinary(string op, U)(in U m) const 
+        if(isNumeric!U && (op == "*" || op == "/"))
     {
-        return Vector2!T(cast(T)(x - v.x), cast(T)(y - v.y));
+        static if(op == "*"){return Vector2(cast(T)(x * m), cast(T)(y * m));}
+        else static if(op == "/")
+        {
+            assert(m != cast(U)0, "Vector can not be divided by zero");
+            return Vector2(cast(T)(x / m), cast(T)(y / m));
+        }
     }
 
-    ///Multiplication with a scalar.
-    Vector2!T opMul(in T m) const
+    ///Multiplication/division with a scalar.
+    Vector2 opBinaryRight(string op, U)(in U m) const 
+        if(isNumeric!U && (op == "*" || op == "/"))
     {
-        return Vector2!T(cast(T)(x * m), cast(T)(y * m));
+        return opBinary!op(m);
     }
 
-    ///Division by a scalar. 
-    Vector2!T opDiv(in T d) const
-    in{assert(d != 0, "Vector can not be divided by zero");}
-    body{return Vector2!T(cast(T)(x / d), cast(T)(y / d));}
-
-    ///Division by a vector. 
-    Vector2!T opDiv(in Vector2!T v) const
-    in{assert(v.x != 0 && v.y != 0, "Vector can not be divided by a vector with a zero component");}
-    body{return Vector2!T(cast(T)(x / v.x), cast(T)(y / v.y));}
-
-    ///Addition-assignment with a vector.
-    void opAddAssign(in Vector2!T v)
+    ///Addition/subtraction with a vector.
+    void opOpAssign(string op)(in Vector2 v) if(op == "+" || op == "-")
     {
-        x += v.x;
-        y += v.y;
+        static if(op == "+")     {x += v.x; y += v.y;}
+        else static if(op == "-"){x -= v.x; y -= v.y;}
     }
 
-    ///Subtraction-assignment with a vector.
-    void opSubAssign(in Vector2!T v)
+    ///Multiplication/division with a scalar.
+    void opOpAssign(string op, U)(in U m)
+        if(isNumeric!U && (op == "*" || op == "/"))
     {
-        x -= v.x;
-        y -= v.y;
-    }
-
-    ///Multiplication-assignment by a scalar.
-    void opMulAssign(in T m)
-    {
-        x *= m;
-        y *= m;
-    }
-
-    ///Division-assignment by a scalar. 
-    void opDivAssign(in T d)
-    in{assert(d != 0.0, "Vector can not be divided by zero");}
-    body
-    {
-        x /= d;
-        y /= d;
+        static if(op == "*")     {x *= m; y *= m;}
+        else static if(op == "/")
+        {
+            assert(m != cast(U)0, "Vector can not be divided by zero");
+            x /= m; y /= m;
+        }
     }
     
     ///Get angle of this vector in radians.
@@ -127,10 +120,10 @@ align(1) struct Vector2(T)
      *
      * Returns: Dot product of this and the other vector.
      */
-    T dot_product(in Vector2!T v) const {return cast(T)(x * v.x + y * v.y);}
+    T dot_product(in Vector2 v) const {return cast(T)(x * v.x + y * v.y);}
 
     ///Get normal of this vector (a pependicular vector).
-    @property Vector2!T normal() const {return Vector2!T(-y, x);}
+    @property Vector2 normal() const {return Vector2(-y, x);}
 
     /**
      * Turns this into a unit vector fast at cost of some precision. 
@@ -156,9 +149,9 @@ align(1) struct Vector2(T)
     }
 
     ///Get unit vector of this vector. Result is undefined if this is a zero vector.
-    @property Vector2!T normalized() const
+    @property Vector2 normalized() const
     {
-        Vector2!T normalized = this;
+        Vector2 normalized = this;
         normalized.normalize();
         return normalized;
     }
@@ -171,7 +164,7 @@ align(1) struct Vector2(T)
 Vector2!T random_direction(T)()
     if(isNumeric!T)
 {
-    Vector2!T v = Vector2!T(cast(T)1, cast(T)0);
+    auto v = Vector2!T(cast(T)1, cast(T)0);
     v.angle(uniform(0, 2 * PI));
     return v;
 }
@@ -184,7 +177,7 @@ Vector2!T random_direction(T)()
  *
  * Returns: Random position in the specified circle.
  */
-Vector2!T random_position(T)(Vector2!T  center, T radius)
+Vector2!T random_position(T)(Vector2!T center, T radius)
     if(isNumeric!T)
 {
     return center + random_direction!T  * uniform(cast(T)0, radius);
