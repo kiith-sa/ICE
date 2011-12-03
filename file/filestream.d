@@ -33,10 +33,10 @@ class FileStream : Stream
          */
         this(ref File file)
         {
-            file_ = &file;
-            readable = can_read();
+            file_     = &file;
+            readable  = can_read();
             writeable = can_write();
-            seekable = true;
+            seekable  = true;
         }
 
     protected:
@@ -44,7 +44,7 @@ class FileStream : Stream
         {
             assert(can_read, "File stream trying to read from a file not opened for reading");
 
-            size = file_.read(buffer[0 .. size]);
+            size    = file_.read(buffer[0 .. size]);
             readEOF = (size == 0);
             return size;
         }

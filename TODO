@@ -1,9 +1,5 @@
 ASAP:
 
-Replace overloaded operators with opUnary, opBinary
-
-use size_t in file handling and memory code where possible
-
 Replace our own max, min with std.algorithm.max/min 
 (maybe also other stuff in math/math.d)
 
@@ -146,6 +142,13 @@ Buttons need mouseover, etc styles, like hover links in CSS.
 
 --0.7.0 release
 --0.8.0 release
+15:
+    If std.stream is rewritten by now, we can completely replace 
+    file.File with streams (we can have custom streams from archives)
+    - but keep the VFS.
+    Also make sure that we can do prefetching in a separate thread.
+16:
+    Draw cursor
 17: 
     Effects:
     when changing the gui, (e.g. moving from menu to pong, or between dialogs), 
@@ -174,8 +177,6 @@ Buttons need mouseover, etc styles, like hover links in CSS.
     Alternative implementation could pack them tightly together, so the current
     "screen" is centered but you can see adjacent ones. Another alternative 
     implementatio could be some zooming effects, and so on, and so on.)
-16:
-    Draw cursor
 18:
     main menu could have an ai-ai game playing in the background
 20:

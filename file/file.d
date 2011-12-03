@@ -136,11 +136,11 @@ struct File
                     load();
                     break;
                 case FileMode.Write, FileMode.Append:
-                    enforceEx!(FileIOException) 
+                    enforceEx!FileIOException 
                               (name.indexOf("::") >= 0, "Mod directory for writing and/or appending "
                                                         "not specified");
                     path_ = get_path_write(name);
-                    write_data_ = alloc_array!(ubyte)(write_reserve_);
+                    write_data_ = alloc_array!ubyte(write_reserve_);
                     break;
                 default:
                     assert(false, "Unsupported file mode");
@@ -191,8 +191,8 @@ struct File
         }
         body
         {
-            const read_size = clamp(cast(int)target.length, 0, 
-                                    cast(int)data_.length - cast(int)seek_position_);
+            const read_size = clamp(cast(long)target.length, 0L, 
+                                    cast(long)data_.length - cast(long)seek_position_);
             target[0 .. read_size] = data[seek_position_ .. seek_position_ + read_size];
             seek_position_ += read_size;
             return read_size;
@@ -223,11 +223,11 @@ struct File
             //reallocate if not enough space
             if(needed > allocated)
             {
-                write_data_ = realloc(write_data_, cast(uint)max(needed, allocated * 2));
+                write_data_ = realloc(write_data_, max(needed, allocated * 2));
             }
 
-            write_data_[cast(uint)seek_position_ .. cast(uint)needed] = data_bytes[];
-            write_used_ = max(write_used_, cast(uint)needed);
+            write_data_[seek_position_ .. needed] = data_bytes[];
+            write_used_ = max(write_used_, needed);
 
             seek_position_ += data_bytes.length;
         }
@@ -265,9 +265,8 @@ struct File
         body
         {
             const size = getSize(path_);
-            assert(size <= uint.max, "Reading files over 4GiB not supported");
 
-            data_ = alloc_array!(ubyte)(cast(uint)size);
+            data_ = alloc_array!ubyte(size);
 
             //create a file object with allocated data_ buffer
             scope(failure){free(data_);}
@@ -276,17 +275,17 @@ struct File
             if(size == 0){return;}
 
             FILE* handle = fopen(toStringz(path_), "rb");
-            enforceEx!(FileIOException)(handle !is null, 
-                                        "Could not open file " ~ path_ ~ " for reading");
+            enforceEx!FileIOException(handle !is null, 
+                                      "Could not open file " ~ path_ ~ " for reading");
 
             //read to file
-            const blocks_read = fread(data_.ptr, cast(uint)size, 1u, handle);
+            const blocks_read = fread(data_.ptr, size, 1u, handle);
             fclose(handle);
 
-            enforceEx!(FileIOException)(blocks_read == 1, 
-                                        "Could open but could not read file: " ~ path_ ~
-                                        " File might be corrupted or you might not have "
-                                        "sufficient rights");
+            enforceEx!FileIOException(blocks_read == 1, 
+                                      "Could open but could not read file: " ~ path_ ~
+                                      " File might be corrupted or you might not have "
+                                      "sufficient rights");
         }
 
         ///Write out the file to a physical file. Should only be called by the destructor.
@@ -302,18 +301,13 @@ struct File
 
             switch(mode_)
             {
-                case FileMode.Write:
-                    handle = fopen(toStringz(path_), "wb");
-                    break;
-                case FileMode.Append:
-                    handle = fopen(toStringz(path_), "ab");
-                    break;
-                default:
-                    assert(false, "Unsupported file mode for writing");
+                case FileMode.Write:  handle = fopen(toStringz(path_), "wb"); break;
+                case FileMode.Append: handle = fopen(toStringz(path_), "ab"); break;
+                default: assert(false, "Unsupported file mode for writing");
             }
 
-            enforceEx!(FileIOException)(handle !is null, 
-                                        "Could not open file " ~ path_ ~ " for writing");
+            enforceEx!FileIOException(handle !is null, 
+                                      "Could not open file " ~ path_ ~ " for writing");
 
             //close the file at exit
             scope(exit){fclose(handle);}
@@ -322,7 +316,7 @@ struct File
 
             const blocks_written = fwrite(write_data_.ptr, write_used_, 1, handle);
 
-            enforceEx!(FileIOException)
+            enforceEx!FileIOException
                       (blocks_written == 1, "Couldn't write to file " ~ path_ ~ " Maybe you " ~ 
                                             "don't have sufficient rights");
         }

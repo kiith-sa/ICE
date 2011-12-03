@@ -448,7 +448,7 @@ private:
             clear(elem);
         }
 
-        debug_free(array.ptr, cast(uint)array.length); 
+        debug_free(array.ptr, array.length); 
 
         static if(hasIndirections!T)
         {

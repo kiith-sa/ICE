@@ -36,11 +36,11 @@ class FileIOException : Exception{this(string msg){super(msg);}}
  */
 void add_mod_directory(in string directory)
 {
-    enforceEx!(FileIOException)
+    enforceEx!FileIOException
               (valid_mod_directory(directory),
               "Invalid data subdirectory: " ~ directory ~ " Only lowercase ASCII "
               "alphanumeric characters and '_' are allowed.");
-    enforceEx!(FileIOException)
+    enforceEx!FileIOException
               (exists(root_ ~ "/" ~ directory) || exists(user_root_ ~ "/" ~ directory)
                , "Mod directory not found: " ~ directory);
 
@@ -60,7 +60,7 @@ void add_mod_directory(in string directory)
  */
 void ensure_directory_user(in string name)
 {
-    enforceEx!(FileIOException)
+    enforceEx!FileIOException
               (name.indexOf("::") >= 0, "Mod directory for directory creation not specified");
     try
     {
@@ -106,7 +106,7 @@ void root_data(in string root_data)
 {
     root_ = root_data;
     const path = root_ ~ "/main";
-    enforceEx!(FileIOException)
+    enforceEx!FileIOException
               (exists(path) && isDir(path), "Root data directory doesn't exist");
 }
 
@@ -133,7 +133,7 @@ void user_data(in string user_data)
     {
         throw new FileIOException("Could not create directory: " ~ path ~ " " ~ e.msg);
     }
-    enforceEx!(FileIOException)(isDir(path), "User data directory is not a directory");
+    enforceEx!FileIOException(isDir(path), "User data directory is not a directory");
 }
 
 package:
@@ -182,31 +182,24 @@ string get_path_read(in string file_name)
 {
     const string[] parts = file_name.split("::");
     //can't have nested mod directory specifiers
-    enforceEx!(FileIOException)(parts.length <= 2, "Invalid file name (reading): " ~ file_name);
+    enforceEx!FileIOException(parts.length <= 2, "Invalid file name (reading): " ~ file_name);
 
     //mod directory specified
-    if(parts.length == 2)
+    if(parts.length == 2) foreach(root; [user_root_, root_])
     {
+        const path = root ~ "/" ~ parts[0] ~ "/" ~ parts[1];
+        if(exists(path)){return path;}
+    }
+    //mod directory not specified; look for the file in mod directories
+    else foreach_reverse(dir; mod_directories_)
+    {
+        //try in user data, root data
         foreach(root; [user_root_, root_])
         {
-            const path = root ~ "/" ~ parts[0] ~ "/" ~ parts[1];
+            const path = root ~ "/" ~ dir ~ "/" ~ file_name;
             if(exists(path)){return path;}
         }
-    }
-    //mod directory not specified
-    else
-    {
-        //look for the file in mod directories
-        foreach_reverse(dir; mod_directories_)
-        {
-            //try in user data, root data
-            foreach(root; [user_root_, root_])
-            {
-                const path = root ~ "/" ~ dir ~ "/" ~ file_name;
-                if(exists(path)){return path;}
-            }
-        }           
-    }
+    }           
     throw new FileIOException("File to read does not exist: " ~ file_name);
 }
 
@@ -230,10 +223,10 @@ string get_path_write(in string file_name)
 {
     const string[] parts = file_name.split("::");
     //can't have nested mod directory specifiers
-    enforceEx!(FileIOException)(parts.length == 2, "Invalid file name (writing): " ~ file_name);
+    enforceEx!FileIOException(parts.length == 2, "Invalid file name (writing): " ~ file_name);
     
-    enforceEx!(FileException)(exists(user_root_ ~ "/" ~ parts[0]),
-                              "File name with invalid mod directory: " ~ file_name);
+    enforceEx!FileException(exists(user_root_ ~ "/" ~ parts[0]),
+                            "File name with invalid mod directory: " ~ file_name);
 
     return user_root_ ~ "/" ~ parts[0] ~ "/" ~ parts[1];
 }
