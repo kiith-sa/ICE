@@ -1,14 +1,10 @@
 ASAP:
 
-Replace std.c with core.stdc
-
 Replace overloaded operators with opUnary, opBinary
 
-bugtracker: use size_t in file handling and memory code
-where possible
+use size_t in file handling and memory code where possible
 
-Other changes to adapt to current DMD as more D functionality works without 
-bugs now.
+Other changes to adapt to current DMD as more D functionality works without bugs now.
 
 
 

@@ -10,7 +10,7 @@ module containers.vector;
 @trusted
 
 
-import std.c.string;
+import core.stdc.string;
 import std.algorithm;
 import std.range;
 import std.traits;

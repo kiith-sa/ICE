@@ -21,8 +21,8 @@
 module main.pong;
 
 
+import core.stdc.stdlib: exit;     
 import std.stdio: writeln;
-import std.c.stdlib: exit;     
 
 import file.fileio;
 import formats.cli;

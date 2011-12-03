@@ -10,7 +10,7 @@ module file.fileio;
 @trusted
 
 
-import std.c.stdio;
+import core.stdc.stdio;
 
 import std.exception;
 import std.file;

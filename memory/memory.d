@@ -10,8 +10,8 @@ module memory.memory;
 @system:
 
 
-import std.c.stdlib;
-import std.c.string;
+import core.stdc.stdlib;
+import core.stdc.string;
 
 import core.memory;
 
@@ -368,7 +368,7 @@ private:
         {
             GC.removeRange(cast(void*)array.ptr);
         }
-        array = (cast(T*)std.c.stdlib.realloc(cast(void*)array.ptr, new_bytes))[0 .. elems];
+        array = (cast(T*)core.stdc.stdlib.realloc(cast(void*)array.ptr, new_bytes))[0 .. elems];
         static if(hasIndirections!T)
         {
             GC.addRange(cast(void*)array.ptr, T.sizeof * array.length);
@@ -416,7 +416,7 @@ private:
 
         static if(hasIndirections!T){GC.removeRange(cast(void*)ptr);}
 
-        std.c.stdlib.free(ptr);
+        core.stdc.stdlib.free(ptr);
     }
 
     /**
@@ -455,7 +455,7 @@ private:
             GC.removeRange(cast(void*)array.ptr);
         }
 
-        std.c.stdlib.free(array.ptr);
+        core.stdc.stdlib.free(array.ptr);
     }
 
     ///Return a string containing statistics about allocated memory.

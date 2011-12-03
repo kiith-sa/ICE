@@ -10,7 +10,8 @@ module video.fontmanager;
 @system
 
 
-import std.c.string;
+import core.stdc.string;
+
 import std.algorithm;
 import std.stdio;
 import std.typecons;

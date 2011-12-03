@@ -20,7 +20,7 @@ module formats.pngencoder;
 @system
 
 
-import std.c.string;
+import core.stdc.string;
 
 import std.math;
 

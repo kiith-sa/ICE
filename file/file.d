@@ -9,7 +9,7 @@ module file.file;
 @trusted
 
 
-import std.c.stdio;
+import core.stdc.stdio;
 
 import std.algorithm;
 import std.exception;

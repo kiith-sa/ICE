@@ -9,7 +9,7 @@
 module image;
 
 
-import std.c.string;
+import core.stdc.string;
 
 import math.vector2;
 import color;
