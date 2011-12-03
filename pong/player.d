@@ -56,7 +56,7 @@ abstract class Player
          */
         this(in string name, Paddle paddle)
         {
-            name_ = name;
+            name_   = name;
             paddle_ = paddle;
         }
 }

@@ -39,11 +39,11 @@ package struct GLRenderer
 {
     private:
         ///Buffer for colored vertices (without texcoords).
-        GLVertexBuffer!(GLVertex2DColored) colored_buffer_;
+        GLVertexBuffer!GLVertex2DColored colored_buffer_;
         ///Buffer for vertices with texcoords.
-        GLVertexBuffer!(GLVertex2DTextured) textured_buffer_;
+        GLVertexBuffer!GLVertex2DTextured textured_buffer_;
         ///Vertex groups, ordered from earliest to latest draws.
-        Vector!(GLVertexGroup) vertex_groups_;
+        Vector!GLVertexGroup vertex_groups_;
 
         ///Vertex group we're currently adding vertices to.
         GLVertexGroup current_group_;
@@ -56,7 +56,7 @@ package struct GLRenderer
         bool flush_group_;
 
         ///Scissor areas of scissor calls during the frame.
-        Vector!(Rectanglei) scissor_areas_;
+        Vector!Rectanglei scissor_areas_;
         ///If true, current group is using scissor. (the last element of scissor_areas_)
         bool scissor_;
         ///Shader of the current group.
@@ -91,14 +91,6 @@ package struct GLRenderer
             init_buffers(mode);
         }
 
-        ///Destroy the GLRenderer.
-        ~this()
-        {
-            clear(vertex_groups_);
-            clear(scissor_areas_);
-            destroy_buffers();
-        }
-
         ///Reset all frame state. (end the frame)
         void reset()
         {
@@ -106,14 +98,14 @@ package struct GLRenderer
             textured_buffer_.reset();
 
             texture_page_ = null;
-            shader_ = null;
-            scissor_ = false;
+            shader_       = null;
+            scissor_      = false;
 
             scissor_areas_.length = 0;
             vertex_groups_.length = 0;
 
             current_group_.vertices = 0;
-            flush_group_ = true;
+            flush_group_            = true;
 
             //we're not resetting zoom, view offset - those keep their values between frames
         }
@@ -139,7 +131,8 @@ package struct GLRenderer
         ///Set draw mode. Should not be called during a frame.
         @property void draw_mode(in GLDrawMode mode)
         {
-            destroy_buffers();
+            clear(colored_buffer_);
+            clear(textured_buffer_);
             init_buffers(mode);
         }
 
@@ -149,7 +142,7 @@ package struct GLRenderer
         ///Set shader to use in following draw calls.
         void set_shader(GLShader* shader)
         {
-            shader_ = shader;
+            shader_      = shader;
             flush_group_ = true;
         }
 
@@ -157,7 +150,7 @@ package struct GLRenderer
         void set_texture_page(TexturePage* page)
         {
             texture_page_ = page;
-            flush_group_ = true;
+            flush_group_  = true;
         }
 
         ///Set scissor area to use in following draw calls. Only this area will be drawn to.
@@ -171,14 +164,14 @@ package struct GLRenderer
         ///Disable scissor test for following draw calls.
         void disable_scissor()
         {
-            scissor_ = false;
+            scissor_     = false;
             flush_group_ = true;
         }
 
         ///Set view zoom for following draw calls.
         @property void view_zoom(in float zoom)
         {
-            view_zoom_ = zoom;
+            view_zoom_   = zoom;
             flush_group_ = true;
         }
 
@@ -226,17 +219,17 @@ package struct GLRenderer
 
             //equivalent to (v2 - v1).normal;
             const offset_base = Vector2f(v1.y - v2.y, v2.x - v1.x).normalized; 
-            const half_width = line_width_ * 0.5;
+            const half_width  = line_width_ * 0.5;
             //offset of line vertices from start and end point of the line
             Vector2f offset = offset_base * half_width;
 
             //get current vertex, index count in colored buffer
             const v = colored_buffer_.vertex_count;
-            uint i = colored_buffer_.index_count;
+            uint  i = colored_buffer_.index_count;
             //enlarge colored buffer to fit new vertices, indices
             colored_buffer_.vertex_count = line_aa_ ? v + 8 : v + 4;
-            colored_buffer_.index_count =  line_aa_ ? i + 18 : i + 6;
-            current_group_.vertices +=     line_aa_ ? 18 : 6;
+            colored_buffer_.index_count  = line_aa_ ? i + 18 : i + 6;
+            current_group_.vertices      += line_aa_ ? 18 : 6;
             //get access to arrays to add vertices, indices to
             auto vertices = colored_buffer_.vertices;
             auto indices = colored_buffer_.indices;
@@ -354,7 +347,7 @@ package struct GLRenderer
             alias Vector2f V;
 
             //add vertices
-            vertices[v] =     Vertex(min, t_min, color);
+            vertices[v]     = Vertex(min, t_min, color);
             vertices[v + 1] = Vertex(V(max.x, min.y), V(t_max.x, t_min.y), color);
             vertices[v + 2] = Vertex(V(min.x, max.y), V(t_min.x, t_max.y), color);
             vertices[v + 3] = Vertex(max, t_max, color);
@@ -413,7 +406,7 @@ package struct GLRenderer
                 glUniformMatrix4fv(mvp, 1, GL_FALSE, (modelview * projection).ptr);
 
                 //determine which buffer the group belongs to
-                switch(group.vertex_type)
+                final switch(group.vertex_type)
                 {
                     case GLVertexType.Colored:
                         if(colored_buffer_.draw(group) < 0)
@@ -428,8 +421,6 @@ package struct GLRenderer
                             writeln("Missing shader attribute");
                         }
                         break;
-                    default:
-                        assert(false, "Unknown vertex type");
                 }
             }
 
@@ -485,14 +476,7 @@ package struct GLRenderer
         ///Initialize vertex buffers with specified draw mode.
         void init_buffers(in GLDrawMode draw_mode_)
         {
-            colored_buffer_ = GLVertexBuffer!(GLVertex2DColored)(draw_mode_);
-            textured_buffer_ = GLVertexBuffer!(GLVertex2DTextured)(draw_mode_);
-        }
-
-        ///Destroy vertex buffers.
-        void destroy_buffers()
-        {
-            clear(colored_buffer_);
-            clear(textured_buffer_);
+            colored_buffer_  = GLVertexBuffer!GLVertex2DColored(draw_mode_);
+            textured_buffer_ = GLVertexBuffer!GLVertex2DTextured(draw_mode_);
         }
 }

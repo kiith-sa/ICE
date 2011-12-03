@@ -184,9 +184,9 @@ abstract class VideoDriver : Monitorable
             const vertex_angle = 2 * PI / vertex_count;
             //total angle of current vertex
             float angle = 0;
-            for(uint vertex = 0; vertex < vertex_count; ++vertex)
+            foreach(vertex; 0 .. vertex_count)
             {
-                angle += vertex_angle;
+                angle      += vertex_angle;
                 line_end.x = center.x + radius * cos(angle); 
                 line_end.y = center.y + radius * sin(angle); 
                 draw_line(line_start, line_end, color, color);

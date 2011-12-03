@@ -99,8 +99,8 @@ package final class Font
             FT_Open_Args args;
             args.memory_base = font_data.ptr_unsafe;
             args.memory_size = font_data.length;
-            args.flags = FT_OPEN_MEMORY;
-            args.driver = null;
+            args.flags       = FT_OPEN_MEMORY;
+            args.driver      = null;
             //we only support face 0 right now, so no bold, italic, etc. 
             //unless it is in a separate font file.
             const face = 0;
@@ -163,17 +163,14 @@ package final class Font
          */
         void unload_textures(VideoDriver driver)
         {
-            foreach(glyph; fast_glyphs_)
+            foreach(glyph; fast_glyphs_) if(glyph !is null)
             {
-                if(glyph !is null)
+                //some glyphs might share texture with default glyph
+                if(default_glyph_ !is null && glyph.texture == default_glyph_.texture)
                 {
-                    //some glyphs might share texture with default glyph
-                    if(default_glyph_ !is null && glyph.texture == default_glyph_.texture)
-                    {
-                        continue;
-                    }
-                    driver.delete_texture(glyph.texture);
+                    continue;
                 }
+                driver.delete_texture(glyph.texture);
             }
             foreach(glyph; glyphs_)
             {
@@ -203,9 +200,9 @@ package final class Font
          */
         void reload_textures(VideoDriver driver)
         {
-            foreach(c, glyph; fast_glyphs_)
+            foreach(c, glyph; fast_glyphs_) if(glyph !is null)
             {
-                if(glyph !is null){load_glyph(driver, cast(dchar)c);}
+                load_glyph(driver, cast(dchar)c);
             }
             foreach(c, glyph; glyphs_){load_glyph(driver, c);}
         }
@@ -237,7 +234,7 @@ package final class Font
             
             foreach(dchar chr; str) 
             {
-                auto glyph = get_glyph(chr);
+                const glyph = get_glyph(chr);
                 glyph_index = glyph.freetype_index;
                 
                 if(use_kerning && previous_index != 0 && glyph_index != 0) 
@@ -293,7 +290,7 @@ package final class Font
         {
             if(c < fast_glyph_count_)
             {
-                if(fast_glyphs_[c] is null){fast_glyphs_[c] = alloc!(Glyph)();}
+                if(fast_glyphs_[c] is null){fast_glyphs_[c] = alloc!Glyph();}
                 *fast_glyphs_[c] = render_glyph(driver, c);
                 return;
             }
@@ -316,10 +313,10 @@ package final class Font
             if(default_glyph_ is null)
             {
                 //empty image is transparent
-                auto image = Image(height_ / 2, height_, ColorFormat.GRAY_8);
-                default_glyph_ = alloc!(Glyph)();
+                auto image             = Image(height_ / 2, height_, ColorFormat.GRAY_8);
+                default_glyph_         = alloc!Glyph();
                 default_glyph_.texture = driver.create_texture(image);
-                default_glyph_.offset = Vector2b(0, cast(byte)-height_);
+                default_glyph_.offset  = Vector2b(0, cast(byte)-height_);
                 default_glyph_.advance = cast(byte)(height_ / 2);
                 default_glyph_.freetype_index = 0;
             }
@@ -353,7 +350,7 @@ package final class Font
             //convert font_face_.glyph to image
             if(FT_Render_Glyph(slot, render_mode()) == 0) 
             {
-                glyph.advance = cast(byte)(font_face_.glyph.advance.x / 64);
+                glyph.advance  = cast(byte)(font_face_.glyph.advance.x / 64);
                 glyph.offset.x = cast(byte)slot.bitmap_left;
                 glyph.offset.y = cast(byte)-slot.bitmap_top;
 
@@ -387,12 +384,9 @@ package final class Font
                 }
                 else
                 {
-                    for(uint y = 0; y < size.y; ++y) 
+                    foreach(y; 0 .. size.y) foreach(x; 0 .. size.x)
                     {
-                        for(uint x = 0; x < size.x; ++x) 
-                        {
-                            image.set_pixel_gray8(x, y, bitmap_color(x, y));
-                        }
+                        image.set_pixel_gray8(x, y, bitmap_color(x, y));
                     }
                 }
 

@@ -10,7 +10,7 @@ module video.gltexturepage;
 @system
 
 
-import std.conv;
+import std.string;
 
 import derelict.opengl.gl;
 
@@ -71,9 +71,9 @@ package GLint pack_alignment(in ColorFormat format)
     final switch(format)
     {
         case ColorFormat.RGB_565: return 2;
-        case ColorFormat.RGB_8: return 1;
-        case ColorFormat.RGBA_8: return 4;
-        case ColorFormat.GRAY_8: return 1;
+        case ColorFormat.RGB_8:   return 1;
+        case ColorFormat.RGBA_8:  return 4;
+        case ColorFormat.GRAY_8:  return 1;
     }
 }
 
@@ -110,7 +110,7 @@ package struct GLTexturePage(TexturePacker)
         }
         body
         {
-            size_ = size;
+            size_   = size;
             format_ = format;
             packer_ = TexturePacker(size);
 
@@ -195,13 +195,11 @@ package struct GLTexturePage(TexturePacker)
          */
         @property string info() const
         {
-            string output;
-            output ~= "width: " ~ to!string(size_.x) ~ "\n";
-            output ~= "height: " ~ to!string(size_.y) ~ "\n";
-            output ~= "format: " ~ to!string(format_) ~ "\n";
-            output ~= "packer:\n";
-            output ~= packer_.info;
-            return output;
+            return format("width: ", size_.x, "\n",
+                          "height: ", size_.y, "\n",
+                          "format: ", format_, "\n",
+                          "packer:\n", 
+                          packer_.info);
         }
 }
 

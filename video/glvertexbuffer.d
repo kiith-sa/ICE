@@ -69,8 +69,6 @@ package struct GLVertexBuffer(Vertex)
         ///Destroy the GLVertexBuffer.
         ~this()
         {
-            clear(vertices_);
-            clear(indices_);
             if(mode_ == GLDrawMode.VertexBuffer){destroy_vbo();}
         }
 
@@ -252,7 +250,7 @@ package struct GLVertexBuffer(Vertex)
             glBindBuffer(GL_ARRAY_BUFFER, vbo_);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_);
             //BUG: On NVidia drivers, deleting buffer names will result in a
-            //     crash once theyh are generated again. This might be some
+            //     crash once they are generated again. This might be some
             //     insidious bug in our code, but this has not been confirmed yet.
             //
             //     We are at least using glBufferData to deallocate buffer storage

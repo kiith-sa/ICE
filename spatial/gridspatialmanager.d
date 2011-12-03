@@ -31,7 +31,7 @@ import containers.vector;
 
 
 ///Implementation of spatial manager storing objects in a simple square grid.
-class GridSpatialManager(T) : SpatialManager!(T)
+class GridSpatialManager(T) : SpatialManager!T
 {
     invariant()
     {
@@ -41,17 +41,14 @@ class GridSpatialManager(T) : SpatialManager!(T)
 
     package:
         ///Grid cell.
-        align(1) static struct Cell
+        align(4) static struct Cell
         {
             ///Objects in the cell.
-            Vector!(T) objects;
-
-            ///Destroy the cell.
-            ~this(){clear(objects);}
+            Vector!T objects;
         }
 
         ///Cells of the grid.
-        Array2D!(Cell) grid_;
+        Array2D!Cell grid_;
         ///Cell representing the area outside the grid.
         Cell outer_;
 
@@ -59,24 +56,23 @@ class GridSpatialManager(T) : SpatialManager!(T)
         ///Iterable used to iterate over groups of spatially close objects (cells).
         class ObjectIterable(T) : Iterable!(T[])
         {
-            public:
-                ///Used by foreach
-                @trusted override int opApply(int delegate(ref T[]) dg)
+            ///Used by foreach
+            public @trusted override int opApply(int delegate(ref T[]) dg)
+            {
+                int result = 0;
+
+                T[] array;
+                foreach(ref cell; grid_)
                 {
-                    int result = 0;
-
-                    T[] array;
-                    foreach(ref cell; grid_)
-                    {
-                        array = cell.objects.ptr_unsafe[0 .. cell.objects.length];
-                        result = dg(array);
-                        if(result){break;}
-                    }
-
-                    array = outer_.objects.ptr_unsafe[0 .. outer_.objects.length];
+                    array = cell.objects.ptr_unsafe[0 .. cell.objects.length];
                     result = dg(array);
-                    return result;
+                    if(result){break;}
                 }
+
+                array = outer_.objects.ptr_unsafe[0 .. outer_.objects.length];
+                result = dg(array);
+                return result;
+            }
         }
 
         ///Origin of the grid (top-left corner) in world space.
@@ -102,16 +98,10 @@ class GridSpatialManager(T) : SpatialManager!(T)
             float half_size_ = cell_size_ * grid_size_ * 0.5;
             origin_ = center - Vector2f(half_size_, half_size_);
 
-            grid_ = Array2D!(Cell)(grid_size_, grid_size_);
+            grid_ = Array2D!Cell(grid_size_, grid_size_);
 
             foreach(ref cell; grid_){cell = Cell();}
             outer_ = Cell();
-        }
-
-        ~this()
-        {
-            clear(outer_);
-            clear(grid_);
         }
 
         override void add_object(T object)
@@ -154,17 +144,17 @@ class GridSpatialManager(T) : SpatialManager!(T)
             add_object(object);
         }
 
-        @property override Iterable!(T[]) iterable(){return new ObjectIterable!(T);}
+        @property override Iterable!(T[]) iterable(){return new ObjectIterable!T;}
 
         ///Get grid size (both X and Y) in cells.
         @property uint grid_size() const {return grid_size_;}
 
         @property MonitorDataInterface monitor_data()
         {
-            SubMonitor function(GridSpatialManager!(T))[string] ctors_;
-            ctors_["Grid"] = function SubMonitor(GridSpatialManager!(T) m)
-                                                 {return new GridMonitor!(T)(m);};
-            return new MonitorData!(GridSpatialManager!(T))(this, ctors_);
+            SubMonitor function(GridSpatialManager!T)[string] ctors_;
+            ctors_["Grid"] = function SubMonitor(GridSpatialManager!T m)
+                                                 {return new GridMonitor!T(m);};
+            return new MonitorData!(GridSpatialManager!T)(this, ctors_);
         }
 
     private:
@@ -219,7 +209,7 @@ class GridSpatialManager(T) : SpatialManager!(T)
             //using rectangle test as it's faster and the overhead in
             //cells not significant.
             const offset = Vector2f(circle.radius, circle.radius);
-            const box = Rectanglef(-offset, offset);
+            const box    = Rectanglef(-offset, offset);
             return cells_rectangle(position + circle.offset, box);
         }
 
@@ -255,16 +245,13 @@ class GridSpatialManager(T) : SpatialManager!(T)
             //now that we have outer (if needed) we can clamp to grid.
             cell_x_min = clamp(cell_x_min, 0, cast(int)grid_size_ - 1);
             cell_y_min = clamp(cell_y_min, 0, cast(int)grid_size_ - 1);
-            cell_x_max = clamp(cell_x_max, 0, cast(int)grid_size_ - 1);
-            cell_y_max = clamp(cell_y_max, 0, cast(int)grid_size_ - 1);
+            cell_x_max = 1 + clamp(cell_x_max, 0, cast(int)grid_size_ - 1);
+            cell_y_max = 1 + clamp(cell_y_max, 0, cast(int)grid_size_ - 1);
 
             //iterate over the cells that contain the rectangle and add all of them.
-            for(uint x = cell_x_min; x <= cell_x_max; x++)
+            foreach(x; cell_x_min .. cell_x_max) foreach(y; cell_y_min .. cell_y_max)
             {
-                for(uint y = cell_y_min; y <= cell_y_max; y++)
-                {
-                    result ~= &grid_[x,y];
-                }
+                result ~= &grid_[x,y];
             }
             return result;
         }
@@ -272,7 +259,7 @@ class GridSpatialManager(T) : SpatialManager!(T)
         unittest
         {
             auto zero = Vector2f(0.0f, 0.0f);
-            auto manager = new GridSpatialManager!(PhysicsBody)(zero, 16.0f, 4);
+            auto manager = new GridSpatialManager!PhysicsBody(zero, 16.0f, 4);
             scope(exit){clear(manager);}
 
             auto rectangle = Rectanglef(-15.0, -17.0, 15.0, 15.0);

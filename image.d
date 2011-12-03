@@ -43,7 +43,7 @@ struct Image
         this(in uint width, in uint height, 
              in ColorFormat format = ColorFormat.RGBA_8)
         {
-            data_ = alloc_array!(ubyte)(width * height * bytes_per_pixel(format));
+            data_ = alloc_array!ubyte(width * height * bytes_per_pixel(format));
             size_ = Vector2u(width, height);
             format_ = format;
         }
@@ -87,7 +87,7 @@ struct Image
         body
         {
             const uint offset = y * pitch + x * 4;
-            data_[offset] = color.r;
+            data_[offset]     = color.r;
             data_[offset + 1] = color.g;
             data_[offset + 2] = color.b;
             data_[offset + 3] = color.a;
@@ -145,35 +145,27 @@ struct Image
         void generate_checkers(in uint size)
         {
             bool white;
-            for(uint y = 0; y < size_.y; ++y)
+            foreach(y; 0 .. size_.y) foreach(x; 0 .. size_.x)
             {
-                for(uint x = 0; x < size_.x; ++x)
+                white = cast(bool)(x / size % 2);
+                if(cast(bool)(y / size % 2)){white = !white;}
+                if(white) final switch(format_)
                 {
-                    white = cast(bool)(x / size % 2);
-                    if(cast(bool)(y / size % 2)){white = !white;}
-                    if(white)
-                    {
-                        switch(format_)
-                        {
-                            case ColorFormat.RGB_565:
-                                data_[y * pitch + x * 2] = 255;
-                                data_[y * pitch + x * 2 + 1] = 255;
-                                break;
-                            case ColorFormat.RGB_8:
-                                data_[y * pitch + x * 3] = 255;
-                                data_[y * pitch + x * 3 + 1] = 255;
-                                data_[y * pitch + x * 3 + 2] = 255;
-                                break;
-                            case ColorFormat.RGBA_8:
-                                set_pixel_rgba8(x, y, Color.white);
-                                break;
-                            case ColorFormat.GRAY_8:
-                                set_pixel_gray8(x, y, 255);
-                                break;
-                            default:
-                                assert(false, "Unsupported color format");
-                        }
-                    }
+                    case ColorFormat.RGB_565:
+                        data_[y * pitch + x * 2] = 255;
+                        data_[y * pitch + x * 2 + 1] = 255;
+                        break;
+                    case ColorFormat.RGB_8:
+                        data_[y * pitch + x * 3] = 255;
+                        data_[y * pitch + x * 3 + 1] = 255;
+                        data_[y * pitch + x * 3 + 2] = 255;
+                        break;
+                    case ColorFormat.RGBA_8:
+                        set_pixel_rgba8(x, y, Color.white);
+                        break;
+                    case ColorFormat.GRAY_8:
+                        set_pixel_gray8(x, y, 255);
+                        break;
                 }
             }
         }
@@ -186,33 +178,25 @@ struct Image
          */
         void generate_stripes(in uint distance)
         {
-            for(uint y = 0; y < size_.y; ++y)
+            foreach(y; 0 .. size_.y) foreach(x; 0 .. size_.x)
             {
-                for(uint x = 0; x < size_.x; ++x)
+                if(cast(bool)(x % distance == y % distance)) final switch(format_)
                 {
-                    if(cast(bool)(x % distance == y % distance))
-                    {
-                        switch(format_)
-                        {
-                            case ColorFormat.RGB_565:
-                                data_[y * pitch + x * 2] = 255;
-                                data_[y * pitch + x * 2 + 1] = 255;
-                                break;
-                            case ColorFormat.RGB_8:
-                                data_[y * pitch + x * 3] = 255;
-                                data_[y * pitch + x * 3 + 1] = 255;
-                                data_[y * pitch + x * 3 + 2] = 255;
-                                break;
-                            case ColorFormat.RGBA_8:
-                                set_pixel_rgba8(x, y, Color.white);
-                                break;
-                            case ColorFormat.GRAY_8:
-                                set_pixel_gray8(x, y, 255);
-                                break;
-                            default:
-                                assert(false, "Unsupported color format");
-                        }
-                    }
+                    case ColorFormat.RGB_565:
+                        data_[y * pitch + x * 2] = 255;
+                        data_[y * pitch + x * 2 + 1] = 255;
+                        break;
+                    case ColorFormat.RGB_8:
+                        data_[y * pitch + x * 3] = 255;
+                        data_[y * pitch + x * 3 + 1] = 255;
+                        data_[y * pitch + x * 3 + 2] = 255;
+                        break;
+                    case ColorFormat.RGBA_8:
+                        set_pixel_rgba8(x, y, Color.white);
+                        break;
+                    case ColorFormat.GRAY_8:
+                        set_pixel_gray8(x, y, 255);
+                        break;
                 }
             }
         }
@@ -223,24 +207,21 @@ struct Image
         body
         {
             Color pixel;
-            for(uint y = 0; y < size_.y; ++y)
+            foreach(y; 0 .. size_.y) foreach(x; 0 .. size_.x)
             {
-                for(uint x = 0; x < size_.x; ++x)
+                switch(format_)
                 {
-                    switch(format_)
-                    {
-                        case ColorFormat.RGBA_8:
-                            pixel = get_pixel(x, y);
-                            pixel.gamma_correct(factor);
-                            set_pixel_rgba8(x, y, pixel);
-                            break;
-                        case ColorFormat.GRAY_8:
-                            set_pixel_gray8(x, y, 
-                            Color.gamma_correct(data_[y * pitch + x], factor));
-                            break;
-                        default:
-                            assert(false, "Unsupported color format for gamma correction");
-                    }
+                    case ColorFormat.RGBA_8:
+                        pixel = get_pixel(x, y);
+                        pixel.gamma_correct(factor);
+                        set_pixel_rgba8(x, y, pixel);
+                        break;
+                    case ColorFormat.GRAY_8:
+                        set_pixel_gray8(x, y, 
+                        Color.gamma_correct(data_[y * pitch + x], factor));
+                        break;
+                    default:
+                        assert(false, "Unsupported color format for gamma correction");
                 }
             }
         }
@@ -249,8 +230,8 @@ struct Image
         void flip_vertical()
         {
             const uint pitch = pitch();
-            ubyte[] temp_row = alloc_array!(ubyte)(pitch);
-            for(uint row = 0; row < size_.y / 2; ++row)
+            ubyte[] temp_row = alloc_array!ubyte(pitch);
+            foreach(row; 0 .. size_.y / 2)
             {
                 //swap row and size_.y - row
                 ubyte* row_a = data_.ptr + pitch * row;

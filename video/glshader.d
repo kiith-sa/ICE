@@ -95,15 +95,15 @@ package struct GLShader
         void load_GLSL(in string vfname, in string ffname)
         {
             //opening and loading from files
-            File vfile = File(vfname, FileMode.Read);
-            File ffile = File(ffname, FileMode.Read);
+            File vfile    = File(vfname, FileMode.Read);
+            File ffile    = File(ffname, FileMode.Read);
 
             const vsource = cast(string)vfile.data;
             const fsource = cast(string)ffile.data;
             const vlength = cast(int)vsource.length; 
             const flength = cast(int)fsource.length; 
-            const vptr = vsource.ptr;
-            const fptr = fsource.ptr;
+            const vptr    = vsource.ptr;
+            const fptr    = fsource.ptr;
             
             //creating OpenGL objects for shaders
             const GLuint vshader = glCreateShader(GL_VERTEX_SHADER);
@@ -117,11 +117,11 @@ package struct GLShader
             int compiled;
             glCompileShader(vshader);
             glGetShaderiv(vshader, GL_COMPILE_STATUS, &compiled);
-            enforceEx!(ShaderException)(compiled, "Couldn't compile vertex shader " ~ vfname);
+            enforceEx!ShaderException(compiled, "Couldn't compile vertex shader " ~ vfname);
 
             glCompileShader(fshader);
             glGetShaderiv(fshader, GL_COMPILE_STATUS, &compiled);
-            enforceEx!(ShaderException)(compiled, "Couldn't compile fragment shader " ~ ffname);
+            enforceEx!ShaderException(compiled, "Couldn't compile fragment shader " ~ ffname);
 
             program_ = glCreateProgram();
 

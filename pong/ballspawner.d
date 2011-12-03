@@ -121,7 +121,7 @@ class BallSpawner : Actor
             if(timer_.expired(manager.game_time))
             {
                 //emit the ball in a random, previously generated direction
-                auto direction = Vector2f(1.0f, 1.0f);
+                auto direction  = Vector2f(1.0f, 1.0f);
                 direction.angle = directions_[uniform(0, directions_.length)];
                 spawn_ball.emit(direction, ball_speed_);
                 die(manager.update_index);

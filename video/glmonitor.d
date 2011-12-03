@@ -178,7 +178,7 @@ final package class PageMonitorView : SubMonitorView
         {
             private:
                 ///Provides mouse zooming and panning.
-                mixin MouseControl!(1.1) mouse_;
+                mixin MouseControl!1.1 mouse_;
 
             public:
                 ///Construct a PageView.
@@ -223,8 +223,7 @@ final package class PageMonitorView : SubMonitorView
     protected:
         override void update()
         {
-            string text = page_iterator_.text;
-            if(text != info_text_.text){info_text_.text = text;}
+            info_text_.text = page_iterator_.text;
             super.update();
         }
 
@@ -234,11 +233,11 @@ final package class PageMonitorView : SubMonitorView
         {
             with(new GUIMenuVerticalFactory)
             {
-                x = "p_left";
-                y = "p_top";
-                item_width = "24";
-                item_height = "14";
-                item_spacing = "2";
+                x              = "p_left";
+                y              = "p_top";
+                item_width     = "24";
+                item_height    = "14";
+                item_spacing   = "2";
                 item_font_size = MonitorView.font_size;
                 add_item("Next", &page_iterator_.next);
                 add_item("Prev", &page_iterator_.prev);
@@ -251,13 +250,13 @@ final package class PageMonitorView : SubMonitorView
         {
             with(new GUIStaticTextFactory)
             {
-                x = "p_right - 74";
-                y = "p_top + 2";
-                width = "72";
-                height = "p_height - 4";
-                font_size = MonitorView.font_size;
-                align_x = AlignX.Right;
-                text = page_iterator_.text;
+                x          = "p_right - 74";
+                y          = "p_top + 2";
+                width      = "72";
+                height     = "p_height - 4";
+                font_size  = MonitorView.font_size;
+                align_x    = AlignX.Right;
+                text       = page_iterator_.text;
                 info_text_ = produce();
             }
             main_.add_child(info_text_);

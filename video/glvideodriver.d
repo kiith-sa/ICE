@@ -105,7 +105,7 @@ abstract class GLVideoDriver : VideoDriver
 
     package:
         ///Used to send statistics data to GL monitors.
-        mixin Signal!(Statistics) send_statistics;
+        mixin Signal!Statistics send_statistics;
         
     public:
         /**
@@ -172,10 +172,8 @@ abstract class GLVideoDriver : VideoDriver
             glClear(GL_COLOR_BUFFER_BIT);
             setup_viewport();
 
-            //disable current page
-            current_page_ = uint.max;
-            //disable current shader
-            current_shader_ = uint.max;
+            //disable current page and shader
+            current_page_ = current_shader_ = uint.max;
 
             const real age = fps_timer_.age();
             fps_timer_.reset();
@@ -196,8 +194,8 @@ abstract class GLVideoDriver : VideoDriver
 
             renderer_.render(screen_width_, screen_height_);
             statistics_.vertices = renderer_.vertex_count();
-            statistics_.indices = renderer_.index_count();
-            statistics_.vgroups = renderer_.vertex_group_count();
+            statistics_.indices  = renderer_.index_count();
+            statistics_.vgroups  = renderer_.vertex_group_count();
             glFlush();
         }
 
@@ -207,8 +205,8 @@ abstract class GLVideoDriver : VideoDriver
 
             //convert to GL coords (origin on the bottom-left instead of top-left)
             Rectanglei translated = scissor_area;
-            translated.min.y = screen_height_ - translated.max.y;
-            translated.max.y = translated.min.y + scissor_area.height;
+            translated.min.y      = screen_height_ - translated.max.y;
+            translated.max.y      = translated.min.y + scissor_area.height;
             renderer_.scissor(translated);
         }
 
@@ -300,38 +298,35 @@ abstract class GLVideoDriver : VideoDriver
             //instead of upper left
             const pos = Vector2i(position.x, position.y + renderer.height);
 
-            try
-            {
                 //iterating over utf-32 chars (conversion is automatic)
-                foreach(dchar c; text)
+            try foreach(dchar c; text)
+            {
+                ++statistics_.characters;
+
+                if(!renderer.has_glyph(c)){renderer.load_glyph(this, c);}
+                const texture = renderer.glyph(c, offset);
+
+                const gl_texture = textures_[texture.index];
+                const page_index = gl_texture.page_index;
+
+                //change texture page if needed
+                if(current_page_ != page_index)
                 {
-                    ++statistics_.characters;
-
-                    if(!renderer.has_glyph(c)){renderer.load_glyph(this, c);}
-                    const texture = renderer.glyph(c, offset);
-
-                    const gl_texture = textures_[texture.index];
-                    const page_index = gl_texture.page_index;
-
-                    //change texture page if needed
-                    if(current_page_ != page_index)
-                    {
-                        ++statistics_.page;
-                        current_page_ = page_index;
-                        renderer_.set_texture_page(pages_[page_index]);
-                    }
-
-                    //generate vertices, texcoords
-                    vmin.x = pos.x + offset.x;
-                    vmin.y = pos.y + offset.y;
-                    vmax.x = vmin.x + texture.size.x;
-                    vmax.y = vmin.y + texture.size.y;
-
-                    renderer_.draw_texture(vmin, vmax, 
-                                           gl_texture.texcoords.min, 
-                                           gl_texture.texcoords.max, 
-                                           color);
+                    ++statistics_.page;
+                    current_page_ = page_index;
+                    renderer_.set_texture_page(pages_[page_index]);
                 }
+
+                //generate vertices, texcoords
+                vmin.x = pos.x + offset.x;
+                vmin.y = pos.y + offset.y;
+                vmax.x = vmin.x + texture.size.x;
+                vmax.y = vmin.y + texture.size.y;
+
+                renderer_.draw_texture(vmin, vmax, 
+                                       gl_texture.texcoords.min, 
+                                       gl_texture.texcoords.max, 
+                                       color);
             }
             //error loading glyphs
             catch(TextureException e)
@@ -345,7 +340,7 @@ abstract class GLVideoDriver : VideoDriver
         {
             assert(!frame_in_progress_, "GLVideoDriver.draw_mode called during a frame");
 
-            switch(mode)
+            final switch(mode)
             {
                 case DrawMode.Immediate:
                     renderer_.draw_mode(GLDrawMode.Immediate);
@@ -356,8 +351,6 @@ abstract class GLVideoDriver : VideoDriver
                 case DrawMode.VRAMBuffers:
                     renderer_.draw_mode(GLDrawMode.VertexBuffer);
                     break;
-                default:
-                    assert(false, "Unknown draw mode");
             }
             return mode;
         }
@@ -367,13 +360,10 @@ abstract class GLVideoDriver : VideoDriver
             scope(failure){writefln("Error measuring text size: " ~ text);}
 
             auto renderer = font_manager_.renderer();
-            try
+            //load any glyphs that aren't loaded yet
+            try foreach(dchar c; text)
             {
-                //load any glyphs that aren't loaded yet
-                foreach(dchar c; text)
-                {
-                    if(!renderer.has_glyph(c)){renderer.load_glyph(this, c);}
-                }
+                if(!renderer.has_glyph(c)){renderer.load_glyph(this, c);}
             }
             //error loading glyphs
             catch(TextureException e)
@@ -432,12 +422,12 @@ abstract class GLVideoDriver : VideoDriver
             uint size = 0;
 
             //try powers of two up to the maximum that works
-            for(uint index; index < powers_of_two.length; ++index)
+            foreach(index; 0 .. powers_of_two.length)
             {
                 size = powers_of_two[index];
                 glTexImage2D(GL_PROXY_TEXTURE_2D, 0, internal_format,
                              size, size, 0, gl_format, type, null);
-                GLint width = size;
+                GLint width  = size;
                 GLint height = size;
                 glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0,
                                          GL_TEXTURE_WIDTH, &width);
@@ -601,18 +591,18 @@ abstract class GLVideoDriver : VideoDriver
         @property override MonitorDataInterface monitor_data()
         {
             SubMonitor function(GLVideoDriver)[string] ctors_;
-            ctors_["FPS"] = &new_graph_monitor!(GLVideoDriver, Statistics, "fps");
-            ctors_["Draws"] = &new_graph_monitor!(GLVideoDriver, Statistics, 
-                                                  "lines", "textures", "texts", "rectangles");
+            ctors_["FPS"]        = &new_graph_monitor!(GLVideoDriver, Statistics, "fps");
+            ctors_["Draws"]      = &new_graph_monitor!(GLVideoDriver, Statistics, 
+                                                       "lines", "textures", "texts", "rectangles");
 
             ctors_["Primitives"] = &new_graph_monitor!(GLVideoDriver, Statistics, 
                                                        "vertices", "indices", "characters"),
-            ctors_["Cache"] = &new_graph_monitor!(GLVideoDriver, Statistics, 
-                                                  "vgroups");
-            ctors_["Changes"] = &new_graph_monitor!(GLVideoDriver, Statistics, 
-                                                    "shader", "page");
-            ctors_["Pages"] = function SubMonitor(GLVideoDriver v)
-                                                  {return new PageMonitor(v);};
+            ctors_["Cache"]      = &new_graph_monitor!(GLVideoDriver, Statistics, 
+                                                       "vgroups");
+            ctors_["Changes"]    = &new_graph_monitor!(GLVideoDriver, Statistics, 
+                                                       "shader", "page");
+            ctors_["Pages"]      = function SubMonitor(GLVideoDriver v)
+                                                      {return new PageMonitor(v);};
             return new MonitorData!GLVideoDriver(this, ctors_);
         }
 
@@ -676,11 +666,11 @@ abstract class GLVideoDriver : VideoDriver
 
             try
             {
-                plain_shader_ = create_shader("line");
+                plain_shader_   = create_shader("line");
                 scope(failure){delete_shader(plain_shader_);}
                 texture_shader_ = create_shader("texture");
                 scope(failure){delete_shader(texture_shader_);}
-                font_shader_ = create_shader("font");
+                font_shader_    = create_shader("font");
                 scope(failure){delete_shader(font_shader_);}
             }
             catch(ShaderException e)
@@ -784,14 +774,11 @@ abstract class GLVideoDriver : VideoDriver
             }
             
             //Look for page indices with null pages to insert page there if possible
-            foreach(index, ref page; pages_)
+            foreach(index, ref page; pages_) if(page is null)
             {
-                if(page is null)
-                {
-                    page_size(index);
-                    page = alloc!TexturePage(size, format);
-                    return;
-                }
+                page_size(index);
+                page = alloc!TexturePage(size, format);
+                return;
             }
             page_size(pages_.length);
             pages_ ~= alloc!TexturePage(size, format);

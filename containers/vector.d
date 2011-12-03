@@ -30,7 +30,7 @@ import memory.memory;
  * This could be done for instance by having other references to
  * those classes/arrays/memory outside manually allocated memory.
  */
-align(1) struct Vector(T)
+align(4) struct Vector(T)
 {
     private:
         static enum T[] dummy_data_ = [];

@@ -238,12 +238,12 @@ package struct BinaryTexturePacker
             const real full_percent = full_area / total_area * 100.0;
             const real empty_percent = 100.0 - full_percent;
             string output;
-            output ~= "nodes: " ~ to!string(nodes) ~ "\n";
+            output ~= "nodes: "  ~ to!string(nodes) ~ "\n";
             output ~= "leaves: " ~ to!string(leaves) ~ "\n";
-            output ~= "full: " ~ to!string(full) ~ "\n";
-            output ~= "empty: " ~ to!string(leaves - full) ~ "\n";
-            output ~= "farea: " ~ to!string(full_percent) ~ "%\n";
-            output ~= "earea: " ~ to!string(empty_percent) ~ "%\n";
+            output ~= "full: "   ~ to!string(full) ~ "\n";
+            output ~= "empty: "  ~ to!string(leaves - full) ~ "\n";
+            output ~= "farea: "  ~ to!string(full_percent) ~ "%\n";
+            output ~= "earea: "  ~ to!string(empty_percent) ~ "%\n";
             return output;
         }
 }   

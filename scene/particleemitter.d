@@ -54,13 +54,13 @@ abstract class ParticleEmitter : ParticleSystem
 
     private:
         ///Lifetime of particles emitted.
-        real particle_life_ = 5.0;
+        real particle_life_    = 5.0;
         ///Time since the last particle was emitted.
         real time_accumulated_ = 0.0;
         ///Variation of angles of particles' velocities (in radians).
-        real angle_variation_ = PI / 2;
+        real angle_variation_  = PI / 2;
         ///Emit frequency in particles per second.
-        real emit_frequency_ = 10.0;
+        real emit_frequency_   = 10.0;
 
     protected:
         ///Particles in the system.
@@ -108,10 +108,10 @@ abstract class ParticleEmitter : ParticleSystem
              in real life_time, in real particle_life, in real emit_frequency, 
              in Vector2f emit_velocity, in real angle_variation)
         {
-            particle_life_ = particle_life;
-            emit_frequency_ = emit_frequency;
+            particle_life_   = particle_life;
+            emit_frequency_  = emit_frequency;
             angle_variation_ = angle_variation;
-            emit_velocity_ = emit_velocity;
+            emit_velocity_   = emit_velocity;
             particles_.reserve(8);
 
             super(physics_body, owner, life_time);
@@ -153,9 +153,9 @@ abstract class ParticleEmitter : ParticleSystem
                 Particle particle;
                 with(particle)
                 {
-                    timer = Timer(particle_life_, game_time_);
-                    position = physics_body_.position;
-                    velocity = emit_velocity_;
+                    timer          = Timer(particle_life_, game_time_);
+                    position       = physics_body_.position;
+                    velocity       = emit_velocity_;
                     velocity.angle = particle.velocity.angle + 
                                      uniform(-angle_variation_, angle_variation_);
                 }

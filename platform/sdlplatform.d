@@ -73,27 +73,24 @@ class SDLPlatform : Platform
         {
             SDL_Event event;
 
-            while(SDL_PollEvent(&event))
+            while(SDL_PollEvent(&event)) switch(event.type)
             {
-                switch(event.type)
-                {
-                    case SDL_QUIT:
-                        quit();
-                        break;
-                    case SDL_KEYDOWN:
-                    case SDL_KEYUP:
-                        process_key(event.key);
-                        break;
-                    case SDL_MOUSEBUTTONDOWN:
-                    case SDL_MOUSEBUTTONUP:
-                        process_mouse_key(event.button);
-                        break;
-                    case SDL_MOUSEMOTION:
-                        process_mouse_motion(event.motion);
-                        break;
-                    default:
-                        break;
-                }
+                case SDL_QUIT:
+                    quit();
+                    break;
+                case SDL_KEYDOWN:
+                case SDL_KEYUP:
+                    process_key(event.key);
+                    break;
+                case SDL_MOUSEBUTTONDOWN:
+                case SDL_MOUSEBUTTONUP:
+                    process_mouse_key(event.button);
+                    break;
+                case SDL_MOUSEMOTION:
+                    process_mouse_motion(event.motion);
+                    break;
+                default:
+                    break;
             }
             return super.run();
         }
@@ -131,23 +128,12 @@ class SDLPlatform : Platform
             MouseKey key;
             switch(event.button)
             {
-                case(SDL_BUTTON_LEFT):
-                    key = MouseKey.Left;
-                    break;
-                case(SDL_BUTTON_MIDDLE):
-                    key = MouseKey.Middle;
-                    break;
-                case(SDL_BUTTON_RIGHT):
-                    key = MouseKey.Right;
-                    break;
-                case(SDL_BUTTON_WHEELUP):
-                    key = MouseKey.WheelUp;
-                    break;
-                case(SDL_BUTTON_WHEELDOWN):
-                    key = MouseKey.WheelDown;
-                    break;
-                default:
-                    break;
+                case(SDL_BUTTON_LEFT): key = MouseKey.Left;           break;
+                case(SDL_BUTTON_MIDDLE): key = MouseKey.Middle;       break;
+                case(SDL_BUTTON_RIGHT): key = MouseKey.Right;         break;
+                case(SDL_BUTTON_WHEELUP): key = MouseKey.WheelUp;     break;
+                case(SDL_BUTTON_WHEELDOWN): key = MouseKey.WheelDown; break;
+                default: break;
             }
 
             const position = Vector2u(event.x, event.y);

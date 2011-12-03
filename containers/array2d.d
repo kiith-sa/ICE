@@ -85,7 +85,7 @@ align(1) struct Array2D(T)
         int opApply(int delegate(ref T) dg)
         {
             int result = 0;
-            for(size_t i = 0; i < data_.length; i++)
+            foreach(i; 0 .. data_.length)
             {
                 result = dg(data_[i]);
                 if(result){break;}

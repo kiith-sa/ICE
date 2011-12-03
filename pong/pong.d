@@ -102,10 +102,10 @@ class PongGUI
 
             with(new MonitorViewFactory(monitor))
             {
-                x = "16";
-                y = "16";
-                width ="192 + w_right / 4";
-                height ="168 + w_bottom / 6";
+                x      = "16";
+                y      = "16";
+                width  = "192 + w_right / 4";
+                height = "168 + w_bottom / 6";
                 this.monitor_ = produce();
             }
             parent_.add_child(monitor_);
@@ -113,9 +113,9 @@ class PongGUI
 
             with(new GUIElementFactory)
             {
-                x = "p_right - 176";
-                y = "16";
-                width = "160";
+                x      = "p_right - 176";
+                y      = "16";
+                width  = "160";
                 height = "p_bottom - 32";
                 menu_container_ = produce();
             }
@@ -123,10 +123,10 @@ class PongGUI
 
             with(new GUIMenuVerticalFactory)
             {
-                x = "p_left";
-                y = "p_top + 136";
-                item_width = "144";
-                item_height = "24";
+                x            = "p_left";
+                y            = "p_top + 136";
+                item_width   = "144";
+                item_height  = "24";
                 item_spacing = "8";
                 add_item("Player vs AI", &game_start.emit);
                 add_item("Credits", &credits_show);
@@ -241,7 +241,7 @@ class Pong
                 singleton_dtor();
             }
             monitor_ = new MonitorManager();
-            memory_ = new MemoryMonitorable;
+            memory_  = new MemoryMonitorable();
 
             scope(failure){monitor_.remove_monitorable("Memory");}
             monitor_.add_monitorable(memory_, "Memory");
@@ -397,19 +397,11 @@ class Pong
          */
         void key_handler(KeyState state, Key key, dchar unicode)
         {
-            if(state == KeyState.Pressed)
-            {                   
-                switch(key)
-                {
-                    case Key.Escape:
-                        exit();
-                        break;
-                    case Key.Return:
-                        game_start();
-                        break;
-                    default:
-                        break;
-                }
+            if(state == KeyState.Pressed) switch(key)
+            {
+                case Key.Escape: exit(); break;
+                case Key.Return: game_start(); break;
+                default: break;
             }
         }
 
@@ -425,28 +417,14 @@ class Pong
          */
         void key_handler_global(KeyState state, Key key, dchar unicode)
         {
-            if(state == KeyState.Pressed)
+            if(state == KeyState.Pressed) switch(key)
             {
-                switch(key)
-                {
-                    case Key.K_1:
-                        video_driver_.draw_mode(DrawMode.Immediate);
-                        break;
-                    case Key.K_2:
-                        video_driver_.draw_mode(DrawMode.RAMBuffers);
-                        break;
-                    case Key.K_3:
-                        video_driver_.draw_mode(DrawMode.VRAMBuffers);
-                        break;
-                    case Key.F10:
-                        gui_.monitor_toggle();
-                        break;
-                    case Key.Scrollock:
-                        save_screenshot();
-                        break;
-                    default:
-                        break;
-                }
+                case Key.K_1: video_driver_.draw_mode(DrawMode.Immediate);   break;
+                case Key.K_2: video_driver_.draw_mode(DrawMode.RAMBuffers);  break;
+                case Key.K_3: video_driver_.draw_mode(DrawMode.VRAMBuffers); break;
+                case Key.F10: gui_.monitor_toggle();   break;
+                case Key.Scrollock: save_screenshot(); break;
+                default: break;
             }
         }
 
@@ -468,7 +446,6 @@ class Pong
          */
         void reset_video_driver(in uint width, in uint height, in ColorFormat format)
         {
-
             //game area
             const Rectanglef area = game_.game_area;
 

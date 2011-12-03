@@ -233,24 +233,24 @@ class Game
             //construct walls and goals
             with(new WallFactory)
             {
-                box_max    = Vector2f(32.0f, 536.0f);
+                box_max     = Vector2f(32.0f, 536.0f);
                 //walls slowly move into place when game starts
-                velocity   = Vector2f(73.6f, 0.0f);
-                position   = Vector2f(-64.0f, 32.0f);
-                wall_left_ = produce(scene_manager_);
+                velocity    = Vector2f(73.6f, 0.0f);
+                position    = Vector2f(-64.0f, 32.0f);
+                wall_left_  = produce(scene_manager_);
 
                 velocity    = Vector2f(-73.6f, 0.0f);
                 position    = Vector2f(832.0, 32.0f);
                 wall_right_ = produce(scene_manager_);
 
-                box_max  = Vector2f(560.0f, 28.0f);
-                velocity = Vector2f(320.0f, 0.0f);
-                position = Vector2f(-680.0f, 4.0f);
-                goal_up_ = produce(scene_manager_);
+                box_max     = Vector2f(560.0f, 28.0f);
+                velocity    = Vector2f(320.0f, 0.0f);
+                position    = Vector2f(-680.0f, 4.0f);
+                goal_up_    = produce(scene_manager_);
 
-                velocity   = Vector2f(-320.0f, 0.0f);
-                position   = Vector2f(920.0f, 568.0f);
-                goal_down_ = produce(scene_manager_);
+                velocity    = Vector2f(-320.0f, 0.0f);
+                position    = Vector2f(920.0f, 568.0f);
+                goal_down_  = produce(scene_manager_);
             }
 
             //construct paddles.
@@ -489,7 +489,7 @@ class GameContainer
         body
         {
             monitor_ = monitor;
-            spatial_physics_ = new GridSpatialManager!(PhysicsBody)
+            spatial_physics_ = new GridSpatialManager!PhysicsBody
                                    (Vector2f(400.0f, 300.0f), 25.0f, 32);
             physics_engine_  = new PhysicsEngine(spatial_physics_);
             scene_manager_   = new SceneManager(physics_engine_);

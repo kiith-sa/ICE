@@ -42,7 +42,7 @@ struct EventCounter
 
     public:
         ///Emitted when a period ends - passes events per second.
-        mixin Signal!(real) update;
+        mixin Signal!real update;
 
         /**
          * Construct an EventCounter. 

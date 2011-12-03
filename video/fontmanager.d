@@ -36,7 +36,7 @@ alias file.file.File File;
 package:
 
 ///Used by VideoDriver implementations to draw a string.
-align(1) struct FontRenderer
+align(4) struct FontRenderer
 {
     private:
         ///Font we're drawing with.
@@ -57,8 +57,8 @@ align(1) struct FontRenderer
         ///Start drawing a string.
         void start()
         {
-            font_face_ = draw_font_.font_face;
-            kerning_ = draw_font_.kerning && kerning_;
+            font_face_      = draw_font_.font_face;
+            kerning_        = draw_font_.kerning && kerning_;
             previous_index_ = PenX = 0;
         }
 
@@ -106,8 +106,8 @@ align(1) struct FontRenderer
                 PenX += kerning.x / 64;
             }
 
-            offset.x = PenX + glyph.offset.x;
-            offset.y = glyph.offset.y;
+            offset.x        = PenX + glyph.offset.x;
+            offset.y        = glyph.offset.y;
             previous_index_ = glyph_index;
 
             //move pen to the next glyph
@@ -205,8 +205,8 @@ final class FontManager
                                        default_font_name_, default_font_size_, 
                                        fast_glyphs_, antialiasing_);
                     current_font_ = fonts_[$ - 1];
-                    font_name_ = default_font_name_;
-                    font_size_ = default_font_size_;
+                    font_name_    = default_font_name_;
+                    font_size_    = default_font_size_;
                 }
                 catch(FileIOException e)
                 {
@@ -328,7 +328,7 @@ final class FontManager
 
 
             //TODO Get rid of Vector or improve it to be usable here
-            // (according to std.container.array) 
+            // (according to std.container.Array) 
             // - either use refcounting or disable copying/assignment
             File file = File("fonts/" ~ name, FileMode.Read);
             auto bytes = cast(ubyte[])file.data;
@@ -401,9 +401,9 @@ final class FontManager
         ///Get data of font with specified name.
         ref Vector!ubyte get_font(string name)
         {
-            foreach(ref pair; font_files_)
+            foreach(ref pair; font_files_) if(name == pair.name)
             {
-                if(name == pair.name){return pair.data;}
+                return pair.data;
             }
             assert(false, "No font with name " ~ name);
         }

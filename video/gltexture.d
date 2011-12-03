@@ -33,8 +33,8 @@ package struct GLTexture
      */
     this(Rectanglef texcoords, Vector2u offset, uint page_index)
     {
-        this.texcoords = texcoords;
-        this.offset = offset;
+        this.texcoords  = texcoords;
+        this.offset     = offset;
         this.page_index = page_index;
     }
 }
