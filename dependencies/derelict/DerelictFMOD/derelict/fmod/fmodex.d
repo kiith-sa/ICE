@@ -456,5 +456,6 @@ static this()
 
 static ~this()
 {
-    DerelictFMODEX.unload();
+    if(SharedLibLoader.isAutoUnloadEnabled())
+        DerelictFMODEX.unload();
 }

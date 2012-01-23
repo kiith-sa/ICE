@@ -27,6 +27,11 @@ DEALINGS IN THE SOFTWARE.
 */
 module derelict.ogg.vorbisenctypes;
 
+private
+{
+    import derelict.util.compat;
+}
+
 // deprecated rate management supported only for compatability
 enum
 {
@@ -39,12 +44,12 @@ enum
 struct ovectl_ratemanage_arg {
     int    management_active;
 
-    int    bitrate_hard_min;
-    int    bitrate_hard_max;
+    c_long    bitrate_hard_min;
+    c_long    bitrate_hard_max;
     double bitrate_hard_window;
 
-    int    bitrate_av_lo;
-    int    bitrate_av_hi;
+    c_long    bitrate_av_lo;
+    c_long    bitrate_av_hi;
     double bitrate_av_window;
     double bitrate_av_window_center;
 };
@@ -59,12 +64,12 @@ enum
 struct ovectl_ratemanage2_arg {
     int    management_active;
 
-    int    bitrate_limit_min_kbps;
-    int    bitrate_limit_max_kbps;
-    int    bitrate_limit_reservoir_bits;
+    c_long    bitrate_limit_min_kbps;
+    c_long    bitrate_limit_max_kbps;
+    c_long    bitrate_limit_reservoir_bits;
     double bitrate_limit_reservoir_bias;
 
-    int    bitrate_average_kbps;
+    c_long    bitrate_average_kbps;
     double bitrate_average_damping;
 };
 

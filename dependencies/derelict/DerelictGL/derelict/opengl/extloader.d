@@ -107,12 +107,6 @@ package
         extLoadPlatform();
     }
 
-    ///DPong
-    void extLoadCustom()
-    {
-        loaded["GL_EXT_framebuffer_object"] = load_GL_EXT_framebuffer_object;
-    }
-
     string[] getLoadedExtensionNames()
     {
         auto keys = loaded.keys;
@@ -226,6 +220,8 @@ private
             loaded["GL_ARB_robustness"] = load_GL_ARB_robustness();
             loaded["GL_ARB_shader_stencil_export"] = load_GL_ARB_shader_stencil_export();
             loaded["GL_ARB_compatibility"] = load_GL_ARB_compatibility();
+            loaded["GL_ARB_depth_clamp"] = load_GL_ARB_depth_clamp();
+            loaded["GL_ARB_sampler_objects"] = load_GL_ARB_sampler_objects();
         }
 
         version(DerelictGL_EXT)
@@ -720,11 +716,6 @@ private
         else
         {
             *ptr = loadGLSymbol(funcName);
-            debug
-            {
-                if(*ptr is null)
-                    throw new SymbolLoadException("Failed to load OpenGL extension " ~ funcName);
-            }
             return (*ptr !is null);
         }
     }
@@ -1772,6 +1763,49 @@ private
         {
             if(!extIsSupported("GL_ARB_compatibility"))
                 return GLExtensionState.DriverUnsupported;
+            return GLExtensionState.Loaded;
+        }
+
+        GLExtensionState load_GL_ARB_depth_clamp()
+        {
+            if(!extIsSupported("GL_ARB_depth_clamp"))
+                return GLExtensionState.DriverUnsupported;
+            return GLExtensionState.Loaded;
+        }
+
+        GLExtensionState load_GL_ARB_sampler_objects()
+        {
+            if(!extIsSupported("GL_ARB_sampler_objects"))
+                return GLExtensionState.DriverUnsupported;
+            if(!bindExtFunc(cast(void**)&glGenSamplers, "glGenSamplers"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glDeleteSamplers, "glDeleteSamplers"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glIsSampler, "glIsSampler"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glBindSampler, "glBindSampler"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glSamplerParameteri, "glSamplerParameteri"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glSamplerParameteriv, "glSamplerParameteriv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glSamplerParameterf, "glSamplerParameterf"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glSamplerParameterfv, "glSamplerParameterfv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glSamplerParameterIiv, "glSamplerParameterIiv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glSamplerParameterIuiv, "glSamplerParameterIuiv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glGetSamplerParameteriv, "glGetSamplerParameteriv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glGetSamplerParameterIiv, "glGetSamplerParameterIiv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glGetSamplerParameterfv, "glGetSamplerParameterfv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glGetSamplerParameterIuiv, "glGetSamplerParameterIuiv"))
+                return GLExtensionState.FailedToLoad;
+
             return GLExtensionState.Loaded;
         }
     }

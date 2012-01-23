@@ -155,5 +155,6 @@ static this()
 
 static ~this()
 {
-    DerelictIL.unload();
+    if(SharedLibLoader.isAutoUnloadEnabled())
+        DerelictIL.unload();
 }

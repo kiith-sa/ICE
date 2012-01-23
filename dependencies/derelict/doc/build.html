@@ -1,7 +1,7 @@
 <html lang="en">
 <head>
-	<title>Building the Derelict Bindings</title>
-	<link rel="stylesheet" type="text/css" href="styles.css">
+    <title>Building the Derelict Bindings</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
 
@@ -52,7 +52,7 @@ The following table shows supported compilers and the values that should be pass
 
 <p>
 The default name of each compiled library is that of the package (DerelictGL.lib, DerelictOgg.lib, etc..., on Windows,
-and libDerelictGL.a, libDerelictOgg.a, etc..., on other platforms). However, some Derelict packages bind to multiple shared libraries. 
+and libDerelictGL.a, libDerelictOgg.a, etc..., on other platforms). However, some Derelict packages bind to multiple shared libraries.
 For example, DerelictGL includes bindings for both OpenGL and GLU. Issuing the above make commands without
 specifying any targets results in all bindings in a package being compiled into a single library file. But there are
 targets to build each binding into separate libraries. Doing so will result in some libraries named differently than
@@ -66,7 +66,7 @@ make -fwin32.mak DerelictGL DerelictGLU DC=dmd
 <p>
 This results in two libraries being generated, DerelictGL.lib and DerelictGLU.lib. You can also build both libraries
 by using, in this case, the DerelictGL_ALL make target. Each package has a $(PACKAGENAME)_ALL target that will build all libraries
-implemented by that package. The individual make targets supported for each package can be found in the package-specific 
+implemented by that package. The individual make targets supported for each package can be found in the package-specific
 documentation.
 </p>
 <p>
@@ -113,7 +113,7 @@ To build via VisualD, follow these steps.
 from the popup menu to build all packages, or you can right click on any of the project names in the Solution Explorer window and
 select 'Build' to build individual packages.</li>
 </ol>
-As with the make-based build system, libraries are created in $(DERELICT)/lib and .di files in $(DERELICT)/import by default. 
+As with the make-based build system, libraries are created in $(DERELICT)/lib and .di files in $(DERELICT)/import by default.
 You can change this for each build configuration in the settings dialog for each project. Unfortunately, I don't know of a way
 to configure this globally.
 

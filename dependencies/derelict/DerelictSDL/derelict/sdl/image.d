@@ -42,7 +42,7 @@ enum : Uint8
 {
     SDL_IMAGE_MAJOR_VERSION     = 1,
     SDL_IMAGE_MINOR_VERSION     = 2,
-    SDL_IMAGE_PATCHLEVEL        = 8,
+    SDL_IMAGE_PATCHLEVEL        = 11,
 }
 
 void SDL_IMAGE_VERSION(SDL_version* X)
@@ -57,51 +57,89 @@ enum
     IMG_INIT_JPG    = 0x00000001,
     IMG_INIT_PNG    = 0x00000002,
     IMG_INIT_TIF    = 0x00000004,
+    IMG_INIT_WEBP   = 0x00000008,
 }
 
 
 
 extern(C)
 {
-    mixin(gsharedString!() ~
-    "
-    int function(int) IMG_Init;
-    int function() IMG_Quit;
-    CSDLVERPTR function() IMG_Linked_Version;
-    SDL_Surface* function(SDL_RWops*, int, char*) IMG_LoadTyped_RW;
-    SDL_Surface* function(in char*) IMG_Load;
-    SDL_Surface* function(SDL_RWops*, int) IMG_Load_RW;
-    int function(int) IMG_InvertAlpha;
-    int function(SDL_RWops*) IMG_isBMP;
-    int function(SDL_RWops*) IMG_isGIF;
-    int function(SDL_RWops*) IMG_isJPG;
-    int function(SDL_RWops*) IMG_isLBM;
-    int function(SDL_RWops*) IMG_isPCX;
-    int function(SDL_RWops*) IMG_isPNG;
-    int function(SDL_RWops*) IMG_isPNM;
-    int function(SDL_RWops*) IMG_isTIF;
-    int function(SDL_RWops*) IMG_isXCF;
-    int function(SDL_RWops*) IMG_isXPM;
-    int function(SDL_RWops*) IMG_isXV;
-    int function(SDL_RWops*) IMG_isICO;
-    int function(SDL_RWops*) IMG_isCUR;
-    SDL_Surface* function(SDL_RWops*) IMG_LoadBMP_RW;
-    SDL_Surface* function(SDL_RWops*) IMG_LoadGIF_RW;
-    SDL_Surface* function(SDL_RWops*) IMG_LoadJPG_RW;
-    SDL_Surface* function(SDL_RWops*) IMG_LoadLBM_RW;
-    SDL_Surface* function(SDL_RWops*) IMG_LoadPCX_RW;
-    SDL_Surface* function(SDL_RWops*) IMG_LoadPNG_RW;
-    SDL_Surface* function(SDL_RWops*) IMG_LoadPNM_RW;
-    SDL_Surface* function(SDL_RWops*) IMG_LoadTGA_RW;
-    SDL_Surface* function(SDL_RWops*) IMG_LoadTIF_RW;
-    SDL_Surface* function(SDL_RWops*) IMG_LoadXCF_RW;
-    SDL_Surface* function(SDL_RWops*) IMG_LoadXPM_RW;
-    SDL_Surface* function(SDL_RWops*) IMG_LoadXV_RW;
-    SDL_Surface* function(SDL_RWops*) IMG_LoadICO_RW;
-    SDL_Surface* function(SDL_RWops*) IMG_LoadCUR_RW;
-    SDL_Surface* function(char**) IMG_ReadXPMFromArray;
-    ");
+    alias int function(int) da_IMG_Init;
+    alias int function() da_IMG_Quit;
+    alias CSDLVERPTR function() da_IMG_Linked_Version;
+    alias SDL_Surface* function(SDL_RWops*, int, char*) da_IMG_LoadTyped_RW;
+    alias SDL_Surface* function(in char*) da_IMG_Load;
+    alias SDL_Surface* function(SDL_RWops*, int) da_IMG_Load_RW;
+    alias int function(int) da_IMG_InvertAlpha;
+    alias int function(SDL_RWops*) da_IMG_isBMP;
+    alias int function(SDL_RWops*) da_IMG_isGIF;
+    alias int function(SDL_RWops*) da_IMG_isJPG;
+    alias int function(SDL_RWops*) da_IMG_isLBM;
+    alias int function(SDL_RWops*) da_IMG_isPCX;
+    alias int function(SDL_RWops*) da_IMG_isPNG;
+    alias int function(SDL_RWops*) da_IMG_isPNM;
+    alias int function(SDL_RWops*) da_IMG_isTIF;
+    alias int function(SDL_RWops*) da_IMG_isXCF;
+    alias int function(SDL_RWops*) da_IMG_isXPM;
+    alias int function(SDL_RWops*) da_IMG_isXV;
+    alias int function(SDL_RWops*) da_IMG_isICO;
+    alias int function(SDL_RWops*) da_IMG_isCUR;
+    alias SDL_Surface* function(SDL_RWops*) da_IMG_LoadBMP_RW;
+    alias SDL_Surface* function(SDL_RWops*) da_IMG_LoadGIF_RW;
+    alias SDL_Surface* function(SDL_RWops*) da_IMG_LoadJPG_RW;
+    alias SDL_Surface* function(SDL_RWops*) da_IMG_LoadLBM_RW;
+    alias SDL_Surface* function(SDL_RWops*) da_IMG_LoadPCX_RW;
+    alias SDL_Surface* function(SDL_RWops*) da_IMG_LoadPNG_RW;
+    alias SDL_Surface* function(SDL_RWops*) da_IMG_LoadPNM_RW;
+    alias SDL_Surface* function(SDL_RWops*) da_IMG_LoadTGA_RW;
+    alias SDL_Surface* function(SDL_RWops*) da_IMG_LoadTIF_RW;
+    alias SDL_Surface* function(SDL_RWops*) da_IMG_LoadXCF_RW;
+    alias SDL_Surface* function(SDL_RWops*) da_IMG_LoadXPM_RW;
+    alias SDL_Surface* function(SDL_RWops*) da_IMG_LoadXV_RW;
+    alias SDL_Surface* function(SDL_RWops*) da_IMG_LoadICO_RW;
+    alias SDL_Surface* function(SDL_RWops*) da_IMG_LoadCUR_RW;
+    alias SDL_Surface* function(char**) da_IMG_ReadXPMFromArray;
 }
+
+mixin(gsharedString!() ~
+"
+da_IMG_Init IMG_Init;
+da_IMG_Quit IMG_Quit;
+da_IMG_Linked_Version IMG_Linked_Version;
+da_IMG_LoadTyped_RW IMG_LoadTyped_RW;
+da_IMG_Load IMG_Load;
+da_IMG_Load_RW IMG_Load_RW;
+da_IMG_InvertAlpha IMG_InvertAlpha;
+da_IMG_isBMP IMG_isBMP;
+da_IMG_isGIF IMG_isGIF;
+da_IMG_isJPG IMG_isJPG;
+da_IMG_isLBM IMG_isLBM;
+da_IMG_isPCX IMG_isPCX;
+da_IMG_isPNG IMG_isPNG;
+da_IMG_isPNM IMG_isPNM;
+da_IMG_isTIF IMG_isTIF;
+da_IMG_isXCF IMG_isXCF;
+da_IMG_isXPM IMG_isXPM;
+da_IMG_isXV IMG_isXV;
+da_IMG_isICO IMG_isICO;
+da_IMG_isCUR IMG_isCUR;
+da_IMG_LoadBMP_RW IMG_LoadBMP_RW;
+da_IMG_LoadGIF_RW IMG_LoadGIF_RW;
+da_IMG_LoadJPG_RW IMG_LoadJPG_RW;
+da_IMG_LoadLBM_RW IMG_LoadLBM_RW;
+da_IMG_LoadPCX_RW IMG_LoadPCX_RW;
+da_IMG_LoadPNG_RW IMG_LoadPNG_RW;
+da_IMG_LoadPNM_RW IMG_LoadPNM_RW;
+da_IMG_LoadTGA_RW IMG_LoadTGA_RW;
+da_IMG_LoadTIF_RW IMG_LoadTIF_RW;
+da_IMG_LoadXCF_RW IMG_LoadXCF_RW;
+da_IMG_LoadXPM_RW IMG_LoadXPM_RW;
+da_IMG_LoadXV_RW IMG_LoadXV_RW;
+da_IMG_LoadICO_RW IMG_LoadICO_RW;
+da_IMG_LoadCUR_RW IMG_LoadCUR_RW;
+da_IMG_ReadXPMFromArray IMG_ReadXPMFromArray;
+");
+
 
 class DerelictSDLImageLoader : SharedLibLoader
 {
@@ -169,5 +207,6 @@ static this()
 
 static ~this()
 {
-    DerelictSDLImage.unload();
+    if(SharedLibLoader.isAutoUnloadEnabled())
+        DerelictSDLImage.unload();
 }

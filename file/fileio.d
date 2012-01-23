@@ -12,12 +12,16 @@ module file.fileio;
 
 import core.stdc.stdio;
 
+import std.algorithm;
 import std.exception;
 import std.file;
 import std.string;
 
 public import file.file;
 import memory.memory;
+
+
+alias std.algorithm.indexOf indexOf;
 
 
 ///Exception thrown at file errors.
@@ -54,9 +58,9 @@ void add_mod_directory(in string directory)
  * 
  * Params:  name = In-engine name of the directory.
  *
- * Throws:  FileIOException if the mod directory is not specified, name is invalid, file with 
- *                          specified file exists that is not a directory or it couldn't be 
- *                          created.
+ * Throws:  FileIOException if the mod directory is not specified, name is invalid, 
+ *          file with specified name exists that is not a directory or it couldn't be 
+ *          created.
  */
 void ensure_directory_user(in string name)
 {

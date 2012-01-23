@@ -29,6 +29,7 @@ module derelict.ogg.vorbistypes;
 
 private
 {
+    import derelict.util.compat;
     import derelict.ogg.oggtypes;
 }
 
@@ -54,10 +55,10 @@ struct vorbis_info
 {   int _version; // Renamed from "version", since that's a keyword in D
     int channels;
     int rate;
-    int bitrate_upper;
-    int bitrate_nominal;
-    int bitrate_lower;
-    int bitrate_window;
+    c_long bitrate_upper;
+    c_long bitrate_nominal;
+    c_long bitrate_lower;
+    c_long bitrate_window;
 
     void *codec_setup;
 }
@@ -75,10 +76,10 @@ struct vorbis_dsp_state
     int  preextrapolate;
     int  eofflag;
 
-    int  lW;
-    int  W;
-    int  nW;
-    int  centerW;
+    c_long  lW;
+    c_long  W;
+    c_long  nW;
+    c_long  centerW;
 
     ogg_int64_t granulepos;
     ogg_int64_t sequence;
@@ -96,9 +97,9 @@ struct vorbis_block
 {
     float  **pcm;
     oggpack_buffer opb;
-    int   lW;
-    int   W;
-    int   nW;
+    c_long   lW;
+    c_long   W;
+    c_long   nW;
     int   pcmend;
     int   mode;
     int         eofflag;
@@ -106,14 +107,14 @@ struct vorbis_block
     ogg_int64_t sequence;
     vorbis_dsp_state *vd;
     void               *localstore;
-    int                 localtop;
-    int                 localalloc;
-    int                 totaluse;
+    c_long              localtop;
+    c_long              localalloc;
+    c_long              totaluse;
     alloc_chain *reap;
-    int  glue_bits;
-    int  time_bits;
-    int  floor_bits;
-    int  res_bits;
+    c_long  glue_bits;
+    c_long  time_bits;
+    c_long  floor_bits;
+    c_long  res_bits;
 
     void *internal;
 }

@@ -631,5 +631,6 @@ static this()
 
 static ~this()
 {
-    DerelictODE.unload();
+    if(SharedLibLoader.isAutoUnloadEnabled())
+        DerelictODE.unload();
 }

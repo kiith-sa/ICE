@@ -35,34 +35,44 @@ private
 
 extern(C)
 {
-    mixin(gsharedString!() ~
-    "
-    // Clock.h
-    sfClock* function() sfClock_Create;
-    void function(sfClock*) sfClock_Destroy;
-    float function(sfClock*) sfClock_GetTime;
-    void function(sfClock*) sfClock_Reset;
-
-    // Mutex.h
-    sfMutex* function() sfMutex_Create;
-    void function(sfMutex*) sfMutex_Destroy;
-    void function(sfMutex*) sfMutex_Lock;
-    void function(sfMutex*) sfMutex_Unlock;
-
-    // Rendomizer.h
-    void function(uint) sfRandom_SetSeed;
-    uint function() sfRandom_GetSeed;
-    float function(float, float) sfRandom_Float;
-    int function(int, int) sfRandom_Int;
-
-    // Sleep
-    void function(float) sfSleep;
-
-    // Thread.h
-    sfThread* function(void function(void*), void*) sfThread_Create;
-    void function(sfThread*) sfThread_Destroy;
-    void function(sfThread*) sfThread_Launch;
-    void function(sfThread*) sfThread_Wait;
-    void function(sfThread*) sfThread_Terminate;
-    ");
+    alias sfClock* function() da_sfClock_Create;
+    alias void function(sfClock*) da_sfClock_Destroy;
+    alias float function(sfClock*) da_sfClock_GetTime;
+    alias void function(sfClock*) da_sfClock_Reset;
+    alias sfMutex* function() da_sfMutex_Create;
+    alias void function(sfMutex*) da_sfMutex_Destroy;
+    alias void function(sfMutex*) da_sfMutex_Lock;
+    alias void function(sfMutex*) da_sfMutex_Unlock;
+    alias void function(uint) da_sfRandom_SetSeed;
+    alias uint function() da_sfRandom_GetSeed;
+    alias float function(float, float) da_sfRandom_Float;
+    alias int function(int, int) da_sfRandom_Int;
+    alias void function(float) da_sfSleep;
+    alias sfThread* function(void function(void*), void*) da_sfThread_Create;
+    alias void function(sfThread*) da_sfThread_Destroy;
+    alias void function(sfThread*) da_sfThread_Launch;
+    alias void function(sfThread*) da_sfThread_Wait;
+    alias void function(sfThread*) da_sfThread_Terminate;
 }
+
+mixin(gsharedString!() ~
+"
+da_sfClock_Create sfClock_Create;
+da_sfClock_Destroy sfClock_Destroy;
+da_sfClock_GetTime sfClock_GetTime;
+da_sfClock_Reset sfClock_Reset;
+da_sfMutex_Create sfMutex_Create;
+da_sfMutex_Destroy sfMutex_Destroy;
+da_sfMutex_Lock sfMutex_Lock;
+da_sfMutex_Unlock sfMutex_Unlock;
+da_sfRandom_SetSeed sfRandom_SetSeed;
+da_sfRandom_GetSeed sfRandom_GetSeed;
+da_sfRandom_Float sfRandom_Float;
+da_sfRandom_Int sfRandom_Int;
+da_sfSleep sfSleep;
+da_sfThread_Create sfThread_Create;
+da_sfThread_Destroy sfThread_Destroy;
+da_sfThread_Launch sfThread_Launch;
+da_sfThread_Wait sfThread_Wait;
+da_sfThread_Terminate sfThread_Terminate;
+");

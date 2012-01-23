@@ -54,6 +54,7 @@ protected:
     override void loadSymbols()
     {
         bindFunc(cast(void**)&oggpack_writeinit, "oggpack_writeinit");
+        bindFunc(cast(void**)&oggpack_writecheck, "oggpack_writecheck");
         bindFunc(cast(void**)&oggpack_writetrunc, "oggpack_writetrunc");
         bindFunc(cast(void**)&oggpack_writealign, "oggpack_writealign");
         bindFunc(cast(void**)&oggpack_writecopy, "oggpack_writecopy");
@@ -72,6 +73,7 @@ protected:
         bindFunc(cast(void**)&oggpack_get_buffer, "oggpack_get_buffer");
 
         bindFunc(cast(void**)&oggpackB_writeinit, "oggpackB_writeinit");
+        bindFunc(cast(void**)&oggpackB_writecheck, "oggpackB_writecheck");
         bindFunc(cast(void**)&oggpackB_writetrunc, "oggpackB_writetrunc");
         bindFunc(cast(void**)&oggpackB_writealign, "oggpackB_writealign");
         bindFunc(cast(void**)&oggpackB_writecopy, "oggpackB_writecopy");
@@ -90,13 +92,18 @@ protected:
         bindFunc(cast(void**)&oggpackB_get_buffer, "oggpackB_get_buffer");
 
         bindFunc(cast(void**)&ogg_stream_packetin, "ogg_stream_packetin");
+        bindFunc(cast(void**)&ogg_stream_iovecin, "ogg_stream_iovecin");
         bindFunc(cast(void**)&ogg_stream_pageout, "ogg_stream_pageout");
+        bindFunc(cast(void**)&ogg_stream_pageout_fill, "ogg_stream_pageout_fill");
         bindFunc(cast(void**)&ogg_stream_flush, "ogg_stream_flush");
+        bindFunc(cast(void**)&ogg_stream_flush_fill, "ogg_stream_flush_fill");
 
         bindFunc(cast(void**)&ogg_sync_init, "ogg_sync_init");
         bindFunc(cast(void**)&ogg_sync_clear, "ogg_sync_clear");
         bindFunc(cast(void**)&ogg_sync_reset, "ogg_sync_reset");
         bindFunc(cast(void**)&ogg_sync_destroy, "ogg_sync_destroy");
+        bindFunc(cast(void**)&ogg_sync_check, "ogg_sync_check");
+
         bindFunc(cast(void**)&ogg_sync_buffer, "ogg_sync_buffer");
         bindFunc(cast(void**)&ogg_sync_wrote, "ogg_sync_wrote");
         bindFunc(cast(void**)&ogg_sync_pageseek, "ogg_sync_pageseek");
@@ -110,7 +117,9 @@ protected:
         bindFunc(cast(void**)&ogg_stream_reset, "ogg_stream_reset");
         bindFunc(cast(void**)&ogg_stream_reset_serialno, "ogg_stream_reset_serialno");
         bindFunc(cast(void**)&ogg_stream_destroy, "ogg_stream_destroy");
+        bindFunc(cast(void**)&ogg_stream_check, "ogg_stream_check");
         bindFunc(cast(void**)&ogg_stream_eos, "ogg_stream_eos");
+
         bindFunc(cast(void**)&ogg_page_checksum_set, "ogg_page_checksum_set");
         bindFunc(cast(void**)&ogg_page_version, "ogg_page_version");
         bindFunc(cast(void**)&ogg_page_continued, "ogg_page_continued");
@@ -133,5 +142,6 @@ static this()
 
 static ~this()
 {
-    DerelictOgg.unload();
+    if(SharedLibLoader.isAutoUnloadEnabled())
+        DerelictOgg.unload();
 }

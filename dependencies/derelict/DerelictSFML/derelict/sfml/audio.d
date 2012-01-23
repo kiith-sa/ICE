@@ -178,5 +178,6 @@ static this()
 
 static ~this()
 {
-    DerelictSFMLAudio.unload();
+    if(SharedLibLoader.isAutoUnloadEnabled())
+        DerelictSFMLAudio.unload();
 }

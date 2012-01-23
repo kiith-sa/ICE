@@ -95,11 +95,11 @@ enum
 }
 
 // View.h
-struct sfFont {}
-struct sfImage {}
-struct sfPostFX {}
-struct sfRenderWindow {}
-struct sfShape {}
-struct sfSprite {}
-struct sfString {}
-struct sfView {}
+struct sfFont;
+struct sfImage;
+struct sfPostFX;
+struct sfRenderWindow;
+struct sfShape;
+struct sfSprite;
+struct sfString;
+struct sfView;

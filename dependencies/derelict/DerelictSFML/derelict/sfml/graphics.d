@@ -286,5 +286,6 @@ static this()
 
 static ~this()
 {
-    DerelictSFMLGraphics.unload();
+    if(SharedLibLoader.isAutoUnloadEnabled())
+        DerelictSFMLGraphics.unload();
 }

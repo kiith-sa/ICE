@@ -29,48 +29,83 @@ module derelict.portaudio.pafuncs;
 
 private
 {
-	import derelict.util.compat;
-	import derelict.portaudio.patypes;
+    import derelict.util.compat;
+    import derelict.portaudio.patypes;
 }
 
 
 extern(C)
 {
-	mixin(gsharedString!() ~
-    "
-	int function() Pa_GetVersion;
-	char * function() Pa_GetVersionText;
-	char * function(PaError errorCode) Pa_GetErrorText;
-	PaError function() Pa_Initialize;
-	PaError function() Pa_Terminate;
-	PaHostApiIndex function() Pa_GetHostApiCount;
-	PaHostApiIndex function() Pa_GetDefaultHostApi;
-	PaHostApiInfo * function(PaHostApiIndex) Pa_GetHostApiInfo;
-	PaHostApiIndex function(PaHostApiTypeId) Pa_HostApiTypeIdToHostApiIndex;
-	PaDeviceIndex function(PaHostApiIndex, int) Pa_HostApiDeviceIndexToDeviceIndex;
-	PaHostErrorInfo * function() Pa_GetLastHostErrorInfo;
-	PaDeviceIndex function() Pa_GetDeviceCount;
-	PaDeviceIndex function() Pa_GetDefaultInputDevice;
-	PaDeviceIndex function() Pa_GetDefaultOutputDevice;
-	PaDeviceInfo * function(PaDeviceIndex) Pa_GetDeviceInfo;
-	PaError function(PaStreamParameters *, PaStreamParameters *, double) Pa_IsFormatSupported;
-	PaError function(PaStream **, PaStreamParameters *, PaStreamParameters *, double, uint, PaStreamFlags, PaStreamCallback, void *) Pa_OpenStream;
-	PaError function(PaStream **, int, int, PaSampleFormat, double, uint, PaStreamCallback, void *) Pa_OpenDefaultStream;
-	PaError function(PaStream *) Pa_CloseStream;
-	PaError function(PaStream *, void function(void *)) Pa_SetStreamFinishedCallback;
-	PaError function(PaStream *) Pa_StartStream;
-	PaError function(PaStream *) Pa_StopStream;
-	PaError function(PaStream *) Pa_AbortStream;
-	PaError function(PaStream *) Pa_IsStreamStopped;
-	PaError function(PaStream *) Pa_IsStreamActive;
-	PaStreamInfo * function(PaStream *) Pa_GetStreamInfo;
-	PaTime function(PaStream *) Pa_GetStreamTime;
-	double function(PaStream *) Pa_GetStreamCpuLoad;
-	PaError function(PaStream *, void *, uint) Pa_ReadStream;
-	PaError function(PaStream *, void *, uint) Pa_WriteStream;
-	int function(PaStream *) Pa_GetStreamReadAvailable;
-	int function(PaStream *) Pa_GetStreamWriteAvailable;
-	PaError function(PaSampleFormat) Pa_GetSampleSize;
-	void function(int) Pa_Sleep;
-	");
+    alias int function() da_Pa_GetVersion;
+    alias CCPTR function() da_Pa_GetVersionText;
+    alias CCPTR function(PaError errorCode) da_Pa_GetErrorText;
+    alias PaError function() da_Pa_Initialize;
+    alias PaError function() da_Pa_Terminate;
+    alias PaHostApiIndex function() da_Pa_GetHostApiCount;
+    alias PaHostApiIndex function() da_Pa_GetDefaultHostApi;
+    alias CPHAIPTR function(PaHostApiIndex) da_Pa_GetHostApiInfo;
+    alias PaHostApiIndex function(PaHostApiTypeId) da_Pa_HostApiTypeIdToHostApiIndex;
+    alias PaDeviceIndex function(PaHostApiIndex, int) da_Pa_HostApiDeviceIndexToDeviceIndex;
+    alias CPHEIPTR function() da_Pa_GetLastHostErrorInfo;
+    alias PaDeviceIndex function() da_Pa_GetDeviceCount;
+    alias PaDeviceIndex function() da_Pa_GetDefaultInputDevice;
+    alias PaDeviceIndex function() da_Pa_GetDefaultOutputDevice;
+    alias CPDIPTR function(PaDeviceIndex) da_Pa_GetDeviceInfo;
+    alias PaError function(in PaStreamParameters*, in PaStreamParameters*, double) da_Pa_IsFormatSupported;
+    alias PaError function(PaStream**, in PaStreamParameters*, in PaStreamParameters*, double, c_ulong, PaStreamFlags, PaStreamCallback, void*) da_Pa_OpenStream;
+    alias PaError function(PaStream**, int, int, PaSampleFormat, double, c_ulong, PaStreamCallback, void*) da_Pa_OpenDefaultStream;
+    alias PaError function(PaStream*) da_Pa_CloseStream;
+    alias PaError function(PaStream*, void function(void*)) da_Pa_SetStreamFinishedCallback;
+    alias PaError function(PaStream*) da_Pa_StartStream;
+    alias PaError function(PaStream*) da_Pa_StopStream;
+    alias PaError function(PaStream*) da_Pa_AbortStream;
+    alias PaError function(PaStream*) da_Pa_IsStreamStopped;
+    alias PaError function(PaStream*) da_Pa_IsStreamActive;
+    alias CPSIPTR function(PaStream*) da_Pa_GetStreamInfo;
+    alias PaTime function(PaStream*) da_Pa_GetStreamTime;
+    alias double function(PaStream*) da_Pa_GetStreamCpuLoad;
+    alias PaError function(PaStream*, void*, c_ulong) da_Pa_ReadStream;
+    alias PaError function(PaStream*, in void*, c_ulong) da_Pa_WriteStream;
+    alias c_long function(PaStream*) da_Pa_GetStreamReadAvailable;
+    alias c_long function(PaStream*) da_Pa_GetStreamWriteAvailable;
+    alias PaError function(PaSampleFormat) da_Pa_GetSampleSize;
+    alias void function(c_long) da_Pa_Sleep;
 }
+
+mixin(gsharedString!() ~
+"
+da_Pa_GetVersion Pa_GetVersion;
+da_Pa_GetVersionText Pa_GetVersionText;
+da_Pa_GetErrorText Pa_GetErrorText;
+da_Pa_Initialize Pa_Initialize;
+da_Pa_Terminate Pa_Terminate;
+da_Pa_GetHostApiCount Pa_GetHostApiCount;
+da_Pa_GetDefaultHostApi Pa_GetDefaultHostApi;
+da_Pa_GetHostApiInfo Pa_GetHostApiInfo;
+da_Pa_HostApiTypeIdToHostApiIndex Pa_HostApiTypeIdToHostApiIndex;
+da_Pa_HostApiDeviceIndexToDeviceIndex Pa_HostApiDeviceIndexToDeviceIndex;
+da_Pa_GetLastHostErrorInfo Pa_GetLastHostErrorInfo;
+da_Pa_GetDeviceCount Pa_GetDeviceCount;
+da_Pa_GetDefaultInputDevice Pa_GetDefaultInputDevice;
+da_Pa_GetDefaultOutputDevice Pa_GetDefaultOutputDevice;
+da_Pa_GetDeviceInfo Pa_GetDeviceInfo;
+da_Pa_IsFormatSupported Pa_IsFormatSupported;
+da_Pa_OpenStream Pa_OpenStream;
+da_Pa_OpenDefaultStream Pa_OpenDefaultStream;
+da_Pa_CloseStream Pa_CloseStream;
+da_Pa_SetStreamFinishedCallback Pa_SetStreamFinishedCallback;
+da_Pa_StartStream Pa_StartStream;
+da_Pa_StopStream Pa_StopStream;
+da_Pa_AbortStream Pa_AbortStream;
+da_Pa_IsStreamStopped Pa_IsStreamStopped;
+da_Pa_IsStreamActive Pa_IsStreamActive;
+da_Pa_GetStreamInfo Pa_GetStreamInfo;
+da_Pa_GetStreamTime Pa_GetStreamTime;
+da_Pa_GetStreamCpuLoad Pa_GetStreamCpuLoad;
+da_Pa_ReadStream Pa_ReadStream;
+da_Pa_WriteStream Pa_WriteStream;
+da_Pa_GetStreamReadAvailable Pa_GetStreamReadAvailable;
+da_Pa_GetStreamWriteAvailable Pa_GetStreamWriteAvailable;
+da_Pa_GetSampleSize Pa_GetSampleSize;
+da_Pa_Sleep Pa_Sleep;
+");

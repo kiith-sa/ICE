@@ -1,10 +1,13 @@
 include inc/linux_inc.mak
 
-all : DerelictAL_ALL DerelictFMODEX_ALL DerelictFT_ALL DerelictGL_ALL DerelictIL_ALL DerelictODE_ALL DerelictOgg_ALL DerelictPA_ALL DerelictSDL_ALL DerelictSFML_ALL DerelictUtil_ALL
+all : DerelictAL_ALL DerelictAllegro_ALL DerelictFMODEX_ALL DerelictFT_ALL DerelictGL_ALL DerelictIL_ALL DerelictODE_ALL DerelictOgg_ALL DerelictPA_ALL DerelictSDL_ALL DerelictSFML_ALL DerelictUtil_ALL
 
 # Targets for all libs in each package
 DerelictAL_ALL :
 	$(DMAKE) -C DerelictAL all PLATFORM=linux
+	
+DerelictAllegro_ALL :
+	$(DMAKE) -C DerelictAllegro all PLATFORM=linux
 	
 DerelictFMODEX_ALL :
 	$(DMAKE) -C DerelictFMOD all PLATFORM=linux
@@ -43,6 +46,29 @@ DerelictUtil_ALL :
 	
 # There's only one DerelictAL target
 DerelictAL : DerelictAL_ALL
+
+# Individual DerelictAllegro targets
+DerelictAllegro : Allegro
+Allegro :
+	$(DMAKE) -C DerelictAllegro DerelictAllegro PLATFORM=linux
+	
+DerelictAllegroImage :
+	$(DMAKE) -C DerelictAllegro DerelictAllegroImage PLATFORM=linux
+	
+DerelictAllegroFont :
+	$(DMAKE) -C DerelictAllegro DerelictAllegroFont PLATFORM=linux
+	
+DerelictAllegroAudio :
+	$(DMAKE) -C DerelictAllegro DerelictAllegroAudio PLATFORM=linux
+	
+DerelictAllegroACodec :
+	$(DMAKE) -C DerelictAllegro DerelictAllegroACodec PLATFORM=linux
+	
+DerelictAllegroDialog :
+	$(DMAKE) -C DerelictAllegro DerelictAllegroDialog PLATFORM=linux
+	
+DerelictAllegroTTF :
+	$(DMAKE) -C DerelictAllegro DerelictAllegroTTF PLATFORM=linux
 
 # There's only one DerelictFMODEX target
 DerelictFMODEX : DerelictFMODEX_ALL

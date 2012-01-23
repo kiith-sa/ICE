@@ -29,7 +29,7 @@ module derelict.ogg.vorbisfile;
 
 public
 {
-	import derelict.ogg.vorbisfiletypes;
+    import derelict.ogg.vorbisfiletypes;
     import derelict.ogg.vorbisfilefuncs;
 }
 
@@ -91,6 +91,7 @@ protected:
         bindFunc(cast(void**)&ov_comment, "ov_comment");
 
         bindFunc(cast(void**)&ov_read_float, "ov_read_float");
+        bindFunc(cast(void**)&ov_read_filter, "ov_read_filter");
         bindFunc(cast(void**)&ov_read, "ov_read");
         bindFunc(cast(void**)&ov_crosslap, "ov_crosslap");
 
@@ -108,5 +109,6 @@ static this()
 
 static ~this()
 {
-    DerelictVorbisFile.unload();
+    if(SharedLibLoader.isAutoUnloadEnabled())
+        DerelictVorbisFile.unload();
 }

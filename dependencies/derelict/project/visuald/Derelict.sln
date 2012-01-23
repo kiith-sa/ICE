@@ -23,6 +23,8 @@ Project("{002A2DE9-8BB6-484D-9802-7E4AD4084715}") = "DerelictPA", "DerelictPA\De
 EndProject
 Project("{002A2DE9-8BB6-484D-9802-7E4AD4084715}") = "DerelictSFML", "DerelictSFML\DerelictSFML.visualdproj", "{586C8A49-C877-4611-BFF0-04327DFD559C}"
 EndProject
+Project("{002A2DE9-8BB6-484D-9802-7E4AD4084715}") = "DerelictAllegro", "DerelictAllegro\DerelictAllegro.visualdproj", "{4858C31C-BEC2-4216-81EF-69F468F64B67}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -73,6 +75,10 @@ Global
 		{586C8A49-C877-4611-BFF0-04327DFD559C}.Debug|Win32.Build.0 = Debug|Win32
 		{586C8A49-C877-4611-BFF0-04327DFD559C}.Release|Win32.ActiveCfg = Release|Win32
 		{586C8A49-C877-4611-BFF0-04327DFD559C}.Release|Win32.Build.0 = Release|Win32
+		{4858C31C-BEC2-4216-81EF-69F468F64B67}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4858C31C-BEC2-4216-81EF-69F468F64B67}.Debug|Win32.Build.0 = Debug|Win32
+		{4858C31C-BEC2-4216-81EF-69F468F64B67}.Release|Win32.ActiveCfg = Release|Win32
+		{4858C31C-BEC2-4216-81EF-69F468F64B67}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

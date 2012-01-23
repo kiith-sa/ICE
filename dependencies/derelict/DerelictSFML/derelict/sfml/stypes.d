@@ -27,6 +27,6 @@ DEALINGS IN THE SOFTWARE.
 */
 module derelict.sfml.stypes;
 
-struct sfClock {}
-struct sfMutex {}
-struct sfThread {}
+struct sfClock;
+struct sfMutex;
+struct sfThread;

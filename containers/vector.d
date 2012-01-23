@@ -232,7 +232,7 @@ align(4) struct Vector(T)
         ref const(T) front() const {return this[0];}
 
         ///Access the last element of the vector.
-        ref const(T) back() const {return this[length - 1];}
+        ref const(T) back() const {return this[this.length - 1];}
 
         ///Remove the last element of the vector.
         void popBack() {length = length - 1;}

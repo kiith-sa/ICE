@@ -279,5 +279,6 @@ static this()
 
 static ~this()
 {
-    DerelictSDL.unload();
+    if(SharedLibLoader.isAutoUnloadEnabled())
+        DerelictSDL.unload();
 }

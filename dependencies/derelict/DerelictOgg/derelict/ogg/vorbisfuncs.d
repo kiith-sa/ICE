@@ -36,44 +36,80 @@ private
 
 extern(C)
 {
-    mixin(gsharedString!() ~
-    "
-    void function(vorbis_info* vi) vorbis_info_init;
-    void function(vorbis_info* vi) vorbis_info_clear;
-    int  function(vorbis_info* vi,int zo) vorbis_info_blocksize;
-    void function(vorbis_comment* vc) vorbis_comment_init;
-    void function(vorbis_comment* vc, byte* comment) vorbis_comment_add;
-    void function(vorbis_comment* vc, byte* tag, byte* contents) vorbis_comment_add_tag;
-    byte* function(vorbis_comment* vc, byte* tag, int count) vorbis_comment_query;
-    int function(vorbis_comment* vc, byte* tag) vorbis_comment_query_count;
-    void function(vorbis_comment* vc) vorbis_comment_clear;
-    int function(vorbis_dsp_state* v, vorbis_block* vb) vorbis_block_init;
-    int function(vorbis_block* vb) vorbis_block_clear;
-    void function(vorbis_dsp_state* v) vorbis_dsp_clear;
-    double function(vorbis_dsp_state* v, ogg_int64_t granulepos) vorbis_granule_time;
-
-    int function(vorbis_dsp_state* v,vorbis_info* vi) vorbis_analysis_init;
-    int function(vorbis_comment* vc, ogg_packet* op) vorbis_commentheader_out;
-    int function(vorbis_dsp_state* v, vorbis_comment* vc, ogg_packet* op, ogg_packet* op_comm, ogg_packet* op_code) vorbis_analysis_headerout;
-    float** function(vorbis_dsp_state* v,int vals) vorbis_analysis_buffer;
-    int function(vorbis_dsp_state* v,int vals) vorbis_analysis_wrote;
-    int function(vorbis_dsp_state* v,vorbis_block* vb) vorbis_analysis_blockout;
-    int function(vorbis_block* vb,ogg_packet* op) vorbis_analysis;
-    int function(vorbis_block* vb) vorbis_bitrate_addblock;
-    int function(vorbis_dsp_state* vd, ogg_packet* op) vorbis_bitrate_flushpacket;
-
-    int function(ogg_packet* op) vorbis_synthesis_idheader;
-    int function(vorbis_info* vi,vorbis_comment* vc, ogg_packet* op) vorbis_synthesis_headerin;
-    int function(vorbis_dsp_state* v,vorbis_info* vi) vorbis_synthesis_init;
-    int function(vorbis_dsp_state* v) vorbis_synthesis_restart;
-    int function(vorbis_block* vb,ogg_packet* op) vorbis_synthesis;
-    int function(vorbis_block* vb,ogg_packet* op) vorbis_synthesis_trackonly;
-    int function(vorbis_dsp_state* v,vorbis_block* vb) vorbis_synthesis_blockin;
-    int function(vorbis_dsp_state* v,float*** pcm) vorbis_synthesis_pcmout;
-    int function(vorbis_dsp_state* v,float*** pcm) vorbis_synthesis_lapout;
-    int function(vorbis_dsp_state* v,int samples) vorbis_synthesis_read;
-    int function(vorbis_info* vi,ogg_packet* op) vorbis_packet_blocksize;
-    int function(vorbis_info* v,int flag) vorbis_synthesis_halfrate;
-    int function(vorbis_info* v) vorbis_synthesis_halfrate_p;
-    ");
+    alias void function(vorbis_info*) da_vorbis_info_init;
+    alias void function(vorbis_info*) da_vorbis_info_clear;
+    alias int  function(vorbis_info*,int) da_vorbis_info_blocksize;
+    alias void function(vorbis_comment*) da_vorbis_comment_init;
+    alias void function(vorbis_comment*, byte*t) da_vorbis_comment_add;
+    alias void function(vorbis_comment*, byte*, byte*) da_vorbis_comment_add_tag;
+    alias byte* function(vorbis_comment*, byte*, int) da_vorbis_comment_query;
+    alias int function(vorbis_comment*, byte*) da_vorbis_comment_query_count;
+    alias void function(vorbis_comment*) da_vorbis_comment_clear;
+    alias int function(vorbis_dsp_state*, vorbis_block*) da_vorbis_block_init;
+    alias int function(vorbis_block*) da_vorbis_block_clear;
+    alias void function(vorbis_dsp_state*) da_vorbis_dsp_clear;
+    alias double function(vorbis_dsp_state*, ogg_int64_t) da_vorbis_granule_time;
+    alias CCPTR function() da_vorbis_version_string;
+    alias int function(vorbis_dsp_state*,vorbis_info*) da_vorbis_analysis_init;
+    alias int function(vorbis_comment*, ogg_packet*) da_vorbis_commentheader_out;
+    alias int function(vorbis_dsp_state*, vorbis_comment*, ogg_packet*, ogg_packet*, ogg_packet*) da_vorbis_analysis_headerout;
+    alias float** function(vorbis_dsp_state*, int) da_vorbis_analysis_buffer;
+    alias int function(vorbis_dsp_state*, int) da_vorbis_analysis_wrote;
+    alias int function(vorbis_dsp_state*,vorbis_block*) da_vorbis_analysis_blockout;
+    alias int function(vorbis_block*,ogg_packet*) da_vorbis_analysis;
+    alias int function(vorbis_block*) da_vorbis_bitrate_addblock;
+    alias int function(vorbis_dsp_state*, ogg_packet*) da_vorbis_bitrate_flushpacket;
+    alias int function(ogg_packet*) da_vorbis_synthesis_idheader;
+    alias int function(vorbis_info*, vorbis_comment*, ogg_packet*) da_vorbis_synthesis_headerin;
+    alias int function(vorbis_dsp_state*, vorbis_info*) da_vorbis_synthesis_init;
+    alias int function(vorbis_dsp_state*) da_vorbis_synthesis_restart;
+    alias int function(vorbis_block*, ogg_packet*) da_vorbis_synthesis;
+    alias int function(vorbis_block*, ogg_packet*) da_vorbis_synthesis_trackonly;
+    alias int function(vorbis_dsp_state*,vorbis_block*) da_vorbis_synthesis_blockin;
+    alias int function(vorbis_dsp_state*, float***) da_vorbis_synthesis_pcmout;
+    alias int function(vorbis_dsp_state*, float***) da_vorbis_synthesis_lapout;
+    alias int function(vorbis_dsp_state*, int) da_vorbis_synthesis_read;
+    alias c_long function(vorbis_info*,ogg_packet*) da_vorbis_packet_blocksize;
+    alias int function(vorbis_info*, int) da_vorbis_synthesis_halfrate;
+    alias int function(vorbis_info*) da_vorbis_synthesis_halfrate_p;
 }
+
+mixin(gsharedString!() ~
+"
+da_vorbis_info_init vorbis_info_init;
+da_vorbis_info_clear vorbis_info_clear;
+da_vorbis_info_blocksize vorbis_info_blocksize;
+da_vorbis_comment_init vorbis_comment_init;
+da_vorbis_comment_add vorbis_comment_add;
+da_vorbis_comment_add_tag vorbis_comment_add_tag;
+da_vorbis_comment_query vorbis_comment_query;
+da_vorbis_comment_query_count vorbis_comment_query_count;
+da_vorbis_comment_clear vorbis_comment_clear;
+da_vorbis_block_init vorbis_block_init;
+da_vorbis_block_clear vorbis_block_clear;
+da_vorbis_dsp_clear vorbis_dsp_clear;
+da_vorbis_granule_time vorbis_granule_time;
+da_vorbis_version_string vorbis_version_string;
+da_vorbis_analysis_init vorbis_analysis_init;
+da_vorbis_commentheader_out vorbis_commentheader_out;
+da_vorbis_analysis_headerout vorbis_analysis_headerout;
+da_vorbis_analysis_buffer vorbis_analysis_buffer;
+da_vorbis_analysis_wrote vorbis_analysis_wrote;
+da_vorbis_analysis_blockout vorbis_analysis_blockout;
+da_vorbis_analysis vorbis_analysis;
+da_vorbis_bitrate_addblock vorbis_bitrate_addblock;
+da_vorbis_bitrate_flushpacket vorbis_bitrate_flushpacket;
+da_vorbis_synthesis_idheader vorbis_synthesis_idheader;
+da_vorbis_synthesis_headerin vorbis_synthesis_headerin;
+da_vorbis_synthesis_init vorbis_synthesis_init;
+da_vorbis_synthesis_restart vorbis_synthesis_restart;
+da_vorbis_synthesis vorbis_synthesis;
+da_vorbis_synthesis_trackonly vorbis_synthesis_trackonly;
+da_vorbis_synthesis_blockin vorbis_synthesis_blockin;
+da_vorbis_synthesis_pcmout vorbis_synthesis_pcmout;
+da_vorbis_synthesis_lapout vorbis_synthesis_lapout;
+da_vorbis_synthesis_read vorbis_synthesis_read;
+da_vorbis_packet_blocksize vorbis_packet_blocksize;
+da_vorbis_synthesis_halfrate vorbis_synthesis_halfrate;
+da_vorbis_synthesis_halfrate_p vorbis_synthesis_halfrate_p;
+");

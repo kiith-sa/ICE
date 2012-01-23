@@ -44,15 +44,15 @@ else version (linux)
 
 version(GLX)
 {
-    typedef int  Bool;
-    typedef uint VisualID;
-    typedef byte*   XPointer;
+    alias int  Bool;
+    alias uint VisualID;
+    alias byte*   XPointer;
 
-    typedef void Display;
-    typedef uint XID;
-    typedef XID Pixmap;
-    typedef XID Font;
-    typedef XID Window;
+    alias void Display;
+    alias uint XID;
+    alias XID Pixmap;
+    alias XID Font;
+    alias XID Window;
 
     struct XExtData
     {

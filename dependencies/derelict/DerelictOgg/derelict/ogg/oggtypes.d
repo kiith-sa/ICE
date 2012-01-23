@@ -27,47 +27,59 @@ DEALINGS IN THE SOFTWARE.
 */
 module derelict.ogg.oggtypes;
 
+private
+{
+    import derelict.util.compat;
+}
+
 alias long      ogg_int64_t;
+alias ulong     ogg_uint64_t;
 alias int       ogg_int32_t;
 alias uint      ogg_uint32_t;
 alias short     ogg_int16_t;
 alias ushort    ogg_uint16_t;
 
+struct ogg_iovec_t
+{
+    void* iov_base;
+    size_t iov_len;
+}
+
 struct oggpack_buffer
 {
-    int endbyte;
+    c_long endbyte;
     int endbit;
     ubyte* buffer;
     ubyte* ptr;
-    int storage;
+    c_long storage;
 }
 
 struct ogg_page
 {
     ubyte *header;
-    int  header_len;
+    c_long  header_len;
     ubyte *_body;       // originally named "body", but that's a keyword in D.
-    int  body_len;
+    c_long  body_len;
 }
 
 struct ogg_stream_state
 {
     ubyte  *body_data;
-    int     body_storage;
-    int     body_fill;
-    int     body_returned;
+    c_long     body_storage;
+    c_long     body_fill;
+    c_long     body_returned;
     int     *lacing_vals;
     ogg_int64_t *granule_vals;
-    int     lacing_storage;
-    int     lacing_fill;
-    int     lacing_packet;
-    int     lacing_returned;
+    c_long     lacing_storage;
+    c_long     lacing_fill;
+    c_long     lacing_packet;
+    c_long     lacing_returned;
     ubyte   header[282];
     int     header_fill;
     int     e_o_s;
     int     b_o_s;
-    int     serialno;
-    int     pageno;
+    c_long     serialno;
+    c_long     pageno;
     ogg_int64_t  packetno;
     ogg_int64_t   granulepos;
 }
@@ -75,9 +87,9 @@ struct ogg_stream_state
 struct ogg_packet
 {
     ubyte *packet;
-    int   bytes;
-    int   b_o_s;
-    int   e_o_s;
+    c_long   bytes;
+    c_long   b_o_s;
+    c_long   e_o_s;
     ogg_int64_t  granulepos;
     ogg_int64_t  packetno;
 }

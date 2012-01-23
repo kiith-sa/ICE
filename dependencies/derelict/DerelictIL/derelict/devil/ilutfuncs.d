@@ -37,51 +37,48 @@ private
 
 extern(System)
 {
-    mixin(gsharedString!() ~
-    "
-    ILboolean function(ILenum) ilutDisable;
-    ILboolean function(ILenum) ilutEnable;
-    ILboolean function(ILenum) ilutGetBoolean;
-    ILvoid function(ILenum, ILboolean*) ilutGetBooleanv;
-    ILint function(ILenum) ilutGetInteger;
-    ILvoid function(ILenum, ILint*) ilutGetIntegerv;
-    ILstring function(ILenum) ilutGetString;
-    ILvoid function() ilutInit;
-    ILboolean function(ILenum) ilutIsDisabled;
-    ILboolean function(ILenum) ilutIsEnabled;
-    ILvoid function() ilutPopAttrib;
-    ILvoid function(ILuint) ilutPushAttrib;
-    ILvoid function(ILenum, ILint) ilutSetInteger;
-    ILboolean function(ILenum) ilutRenderer;
-    uint function() ilutGLBindTexImage;
-    uint function() ilutGLBindMipmaps;
-    ILboolean function() ilutGLBuildMipmaps;
-    uint function(ILstring FileName) ilutGLLoadImage;
-    ILboolean function() ilutGLScreen;
-    ILboolean function() ilutGLScreenie;
-    ILboolean function(ILstring, uint) ilutGLSaveImage;
-    ILboolean function(uint) ilutGLSetTex;
-    ILboolean function(uint) ilutGLTexImage;
-    ILboolean function(uint, ILuint, ILuint) ilutGLSubTex;
+    alias ILboolean function(ILenum) da_ilutDisable;
+    alias ILboolean function(ILenum) da_ilutEnable;
+    alias ILboolean function(ILenum) da_ilutGetBoolean;
+    alias ILvoid function(ILenum, ILboolean*) da_ilutGetBooleanv;
+    alias ILint function(ILenum) da_ilutGetInteger;
+    alias ILvoid function(ILenum, ILint*) da_ilutGetIntegerv;
+    alias ILstring function(ILenum) da_ilutGetString;
+    alias ILvoid function() da_ilutInit;
+    alias ILboolean function(ILenum) da_ilutIsDisabled;
+    alias ILboolean function(ILenum) da_ilutIsEnabled;
+    alias ILvoid function() da_ilutPopAttrib;
+    alias ILvoid function(ILuint) da_ilutPushAttrib;
+    alias ILvoid function(ILenum, ILint) da_ilutSetInteger;
+    alias ILboolean function(ILenum) da_ilutRenderer;
+    alias uint function() da_ilutGLBindTexImage;
+    alias uint function() da_ilutGLBindMipmaps;
+    alias ILboolean function() da_ilutGLBuildMipmaps;
+    alias uint function(ILstring FileName) da_ilutGLLoadImage;
+    alias ILboolean function() da_ilutGLScreen;
+    alias ILboolean function() da_ilutGLScreenie;
+    alias ILboolean function(ILstring, uint) da_ilutGLSaveImage;
+    alias ILboolean function(uint) da_ilutGLSetTex;
+    alias ILboolean function(uint) da_ilutGLTexImage;
+    alias ILboolean function(uint, ILuint, ILuint) da_ilutGLSubTex;
 
     version(Windows)
     {
         private import derelict.util.wintypes;
-
-        HBITMAP function(HDC hDC) ilutConvertToHBitmap;
-        ILvoid function(ILubyte *Data) ilutFreePaddedData;
-        ILvoid function(BITMAPINFO *Info) ilutGetBmpInfo;
-        HPALETTE function() ilutGetHPal;
-        ILubyte* function() ilutGetPaddedData;
-        ILboolean function() ilutGetWinClipboard;
-        ILboolean function(HINSTANCE hInst, ILint ID,  ILstring ResourceType, ILenum Type) ilutLoadResource;
-        ILboolean function(HBITMAP Bitmap) ilutSetHBitmap;
-        ILboolean function(HPALETTE Pal) ilutSetHPal;
-        ILboolean function() ilutSetWinClipboard;
-        HBITMAP function( ILstring FileName, HDC hDC) ilutWinLoadImage;
-        ILboolean function( ILstring Url) ilutWinLoadUrl;
-        ILboolean function(ILuint XPos, ILuint YPos, ILuint Width, ILuint Height, HDC hDC) ilutWinPrint;
-        ILboolean function( ILstring FileName, HBITMAP Bitmap) ilutWinSaveImage;
+        alias HBITMAP function(HDC hDC) da_ilutConvertToHBitmap;
+        alias ILvoid function(ILubyte *Data) da_ilutFreePaddedData;
+        alias ILvoid function(BITMAPINFO *Info) da_ilutGetBmpInfo;
+        alias HPALETTE function() da_ilutGetHPal;
+        alias ILubyte* function() da_ilutGetPaddedData;
+        alias ILboolean function() da_ilutGetWinClipboard;
+        alias ILboolean function(HINSTANCE hInst, ILint ID,  ILstring ResourceType, ILenum Type) da_ilutLoadResource;
+        alias ILboolean function(HBITMAP Bitmap) da_ilutSetHBitmap;
+        alias ILboolean function(HPALETTE Pal) da_ilutSetHPal;
+        alias ILboolean function() da_ilutSetWinClipboard;
+        alias HBITMAP function( ILstring FileName, HDC hDC) da_ilutWinLoadImage;
+        alias ILboolean function( ILstring Url) da_ilutWinLoadUrl;
+        alias ILboolean function(ILuint XPos, ILuint YPos, ILuint Width, ILuint Height, HDC hDC) da_ilutWinPrint;
+        alias ILboolean function( ILstring FileName, HBITMAP Bitmap) da_ilutWinSaveImage;
     }
 
     version(Linux)
@@ -89,5 +86,51 @@ extern(System)
         // private import derelict.util.xtypes;
         // TODO
     }
-    ");
+
 }
+
+mixin(gsharedString!() ~
+"
+da_ilutDisable ilutDisable;
+da_ilutEnable ilutEnable;
+da_ilutGetBoolean ilutGetBoolean;
+da_ilutGetBooleanv ilutGetBooleanv;
+da_ilutGetInteger ilutGetInteger;
+da_ilutGetIntegerv ilutGetIntegerv;
+da_ilutGetString ilutGetString;
+da_ilutInit ilutInit;
+da_ilutIsDisabled ilutIsDisabled;
+da_ilutIsEnabled ilutIsEnabled;
+da_ilutPopAttrib ilutPopAttrib;
+da_ilutPushAttrib ilutPushAttrib;
+da_ilutSetInteger ilutSetInteger;
+da_ilutRenderer ilutRenderer;
+da_ilutGLBindTexImage ilutGLBindTexImage;
+da_ilutGLBindMipmaps ilutGLBindMipmaps;
+da_ilutGLBuildMipmaps ilutGLBuildMipmaps;
+da_ilutGLLoadImage ilutGLLoadImage;
+da_ilutGLScreen ilutGLScreen;
+da_ilutGLScreenie ilutGLScreenie;
+da_ilutGLSaveImage ilutGLSaveImage;
+da_ilutGLSetTex ilutGLSetTex;
+da_ilutGLTexImage ilutGLTexImage;
+da_ilutGLSubTex ilutGLSubTex;
+
+version(Windows)
+{
+    da_ilutConvertToHBitmap ilutConvertToHBitmap;
+    da_ilutFreePaddedData ilutFreePaddedData;
+    da_ilutGetBmpInfo ilutGetBmpInfo;
+    da_ilutGetHPal ilutGetHPal;
+    da_ilutGetPaddedData ilutGetPaddedData;
+    da_ilutGetWinClipboard ilutGetWinClipboard;
+    da_ilutLoadResource ilutLoadResource;
+    da_ilutSetHBitmap ilutSetHBitmap;
+    da_ilutSetHPal ilutSetHPal;
+    da_ilutSetWinClipboard ilutSetWinClipboard;
+    da_ilutWinLoadImage ilutWinLoadImage;
+    da_ilutWinLoadUrl ilutWinLoadUrl;
+    da_ilutWinPrint ilutWinPrint;
+    da_ilutWinSaveImage ilutWinSaveImage;
+}
+");

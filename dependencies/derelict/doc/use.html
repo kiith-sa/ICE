@@ -1,7 +1,7 @@
 <html lang="en">
 <head>
-	<title>Using the Derelict Bindings</title>
-	<link rel="stylesheet" type="text/css" href="styles.css">
+    <title>Using the Derelict Bindings</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
 
@@ -60,7 +60,7 @@ import derelict.openal.al;
 
 void main()
 {
-	DerelictAL.load();
+    DerelictAL.load();
 }
 </code>
 </pre>
@@ -80,18 +80,18 @@ import derelict.opengl.gl;
 
 void main()
 {
-	version(Windows)
-	{
-		string alLibs = "MyAL1.dll, MyAL2.dll";
-		string glLibs = "MyGL.dll";
-	}
-	version(Posix)
-	{
-		string alLibs = "libMyAL1.so, libMyAL2.so";
-		string glLibs = "libMyGL.so";
-	}
-	DerelictAL.load(alLibs);
-	DerelictGL.load(glLibs);
+    version(Windows)
+    {
+        string alLibs = "MyAL1.dll, MyAL2.dll";
+        string glLibs = "MyGL.dll";
+    }
+    version(Posix)
+    {
+        string alLibs = "libMyAL1.so, libMyAL2.so";
+        string glLibs = "libMyGL.so";
+    }
+    DerelictAL.load(alLibs);
+    DerelictGL.load(glLibs);
 }
 </code>
 </pre>
@@ -110,7 +110,7 @@ to import any of them unless you need any of the DerelictUtil functionality your
 the DerelictUtil library.
 </p>
 
-<h4>Exceptions</h4>
+<h4><a class="bookmark" name="Exceptions">Exceptions</a></h4>
 The module <tt>derelict.util.exception</tt> defines two exceptions that may be thrown from the <tt>load</tt> method: <tt>SharedLibLoadException</tt>
 and <tt>SymbolLoadException</tt>. Both of these derive from the base class <tt>DerelictException</tt>, so you can simply catch that
 if you want. But it is recommended that you catch the two derived exceptions so that you can report a more accurate message to the end user.

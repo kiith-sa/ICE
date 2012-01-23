@@ -8,11 +8,16 @@ a:hover 	{
 	text-decoration	: underline;
 }
 
+a.bookmark {
+	color : #404040;	
+}
+
 body{
 	font-family 	: Verdana, Helvetica, sans-serif;
 	font-size		: 11pt;
 	color 			: #404040;
 	line-height		: 14pt;
+	background-color : #F0F0F0;
 }
 
 ul {
@@ -27,7 +32,6 @@ pre {
 tt {
 	color: #000080;
 	font-weight: bold;
-	background-color: #F8F8FF;
 }
 
 h2 {
@@ -45,7 +49,7 @@ h3 {
 	font-family 	: Verdana, Helvetica, sans-serif;
 	font-size		: 12pt;
 	color 			: #705030;
-	background-color: #FECCCC;
+	background-color: #CDBA96;
 	margin-bottom	: .5em;
 	border : 4px double black;
 }
@@ -61,13 +65,8 @@ blockquote {
 
 .note {
 	font-weight: bold;
-	background-color: #EEEEEE;
 	margin-top: .5em;
 	margin-bottom: .5em;
-}
-
-.note tt {
-	background-color: #EEEEEE;
 }
 
 .important {

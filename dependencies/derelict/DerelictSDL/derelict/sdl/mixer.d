@@ -39,7 +39,7 @@ enum : Uint8
 {
     SDL_MIXER_MAJOR_VERSION     = 1,
     SDL_MIXER_MINOR_VERSION     = 2,
-    SDL_MIXER_PATCHLEVEL        = 11,
+    SDL_MIXER_PATCHLEVEL        = 12,
 }
 alias SDL_MIXER_MAJOR_VERSION MIX_MAJOR_VERSION;
 alias SDL_MIXER_MINOR_VERSION MIX_MINOR_VERSION;
@@ -85,6 +85,7 @@ enum : int
    MUS_MP3,
    MUS_MP3_MAD,
    MUS_FLAC,
+   MUS_MODPLUG,
 };
 
 struct _Mix_Music {}
@@ -139,80 +140,153 @@ int Mix_FadeInChannel(int channel, Mix_Chunk* chunk, int loops, int ms)
 
 extern (C)
 {
-    mixin(gsharedString!() ~
-    "
-    CSDLVERPTR function() Mix_Linked_Version;
-    int function(int) Mix_Init;
-    void function() Mix_Quit;
-    int function (int, Uint16, int, int) Mix_OpenAudio;
-    int function(int) Mix_AllocateChannels;
-    int function(int*, Uint16*, int*) Mix_QuerySpec;
-    Mix_Chunk* function(SDL_RWops*, int) Mix_LoadWAV_RW;
-    Mix_Music* function(in char*) Mix_LoadMUS;
-    Mix_Music* function(SDL_RWops*) Mix_LoadMUS_RW;
-    Mix_Chunk* function(Uint8*) Mix_QuickLoad_WAV;
-    Mix_Chunk* function(Uint8*, Uint32) Mix_QuickLoad_RAW;
-    void function(Mix_Chunk*) Mix_FreeChunk;
-    void function(Mix_Music*) Mix_FreeMusic;
-    int function() Mix_GetNumChunkDecoders;
-    CCPTR function(int) Mix_GetChunkDecoder;
-    int function() Mix_GetNumMusicDecoders;
-    CCPTR function() Mix_GetMusicDecoder;
-    Mix_MusicType function(in Mix_Music*) Mix_GetMusicType;
-    void function(void function(void*, Uint8*, int) mix_func, void*) Mix_SetPostMix;
-    void function(void function(void*, Uint8*, int) mix_func, void*) Mix_HookMusic;
-    void function(void function() music_finished) Mix_HookMusicFinished;
-    void*  function() Mix_GetMusicHookData;
-    void function(void function(int channel) channel_finished) Mix_ChannelFinished;
-    int function(int, Mix_EffectFunc_t, Mix_EffectDone_t, void*) Mix_RegisterEffect;
-    int function(int, Mix_EffectFunc_t) Mix_UnregisterEffect;
-    int function(int) Mix_UnregisterAllEffects;
-    int function(int, Uint8, Uint8) Mix_SetPanning;
-    int function(int, Sint16, Uint8) Mix_SetPosition;
-    int function(int, Uint8) Mix_SetDistance;
-    // int function(int, Uint8) Mix_SetReverb;
-    int function(int, int) Mix_SetReverseStereo;
-    int function(int) Mix_ReserveChannels;
-    int function(int, int) Mix_GroupChannel;
-    int function(int, int, int) Mix_GroupChannels;
-    int function(int) Mix_GroupAvailable;
-    int function(int) Mix_GroupCount;
-    int function(int) Mix_GroupOldest;
-    int function(int) Mix_GroupNewer;
-    int function(int, Mix_Chunk*, int, int) Mix_PlayChannelTimed;
-    int function(Mix_Music*, int) Mix_PlayMusic;
-    int function(Mix_Music*, int, int) Mix_FadeInMusic;
-    int function(Mix_Music*, int, int, double) Mix_FadeInMusicPos;
-    int function(int, Mix_Chunk*, int, int, int) Mix_FadeInChannelTimed;
-    int function(int, int) Mix_Volume;
-    int function(Mix_Chunk*, int) Mix_VolumeChunk;
-    int function(int) Mix_VolumeMusic;
-    int function(int) Mix_HaltChannel;
-    int function(int) Mix_HaltGroup;
-    int function() Mix_HaltMusic;
-    int function(int, int) Mix_ExpireChannel;
-    int function(int, int) Mix_FadeOutChannel;
-    int function(int, int) Mix_FadeOutGroup;
-    int function(int) Mix_FadeOutMusic;
-    Mix_Fading function() Mix_FadingMusic;
-    Mix_Fading function(int) Mix_FadingChannel;
-    void function(int) Mix_Pause;
-    void function(int) Mix_Resume;
-    int function(int) Mix_Paused;
-    void function() Mix_PauseMusic;
-    void function() Mix_ResumeMusic;
-    void function() Mix_RewindMusic;
-    int function() Mix_PausedMusic;
-    int function(double) Mix_SetMusicPosition;
-    int function(int) Mix_Playing;
-    int function() Mix_PlayingMusic;
-    int function(in char*) Mix_SetMusicCMD;
-    int function(int) Mix_SetSynchroValue;
-    int function() Mix_GetSynchroValue;
-    Mix_Chunk* function(int) Mix_GetChunk;
-    void function() Mix_CloseAudio;
-    ");
+    alias CSDLVERPTR function() da_Mix_Linked_Version;
+    alias int function(int) da_Mix_Init;
+    alias void function() da_Mix_Quit;
+    alias int function (int, Uint16, int, int) da_Mix_OpenAudio;
+    alias int function(int) da_Mix_AllocateChannels;
+    alias int function(int*, Uint16*, int*) da_Mix_QuerySpec;
+    alias Mix_Chunk* function(SDL_RWops*, int) da_Mix_LoadWAV_RW;
+    alias Mix_Music* function(in char*) da_Mix_LoadMUS;
+    alias Mix_Music* function(SDL_RWops*) da_Mix_LoadMUS_RW;
+    alias Mix_Music* function(SDL_RWops*, Mix_MusicType, int) da_Mix_LoadMUSType_RW;
+    alias Mix_Chunk* function(Uint8*) da_Mix_QuickLoad_WAV;
+    alias Mix_Chunk* function(Uint8*, Uint32) da_Mix_QuickLoad_RAW;
+    alias void function(Mix_Chunk*) da_Mix_FreeChunk;
+    alias void function(Mix_Music*) da_Mix_FreeMusic;
+    alias int function() da_Mix_GetNumChunkDecoders;
+    alias CCPTR function(int) da_Mix_GetChunkDecoder;
+    alias int function() da_Mix_GetNumMusicDecoders;
+    alias CCPTR function() da_Mix_GetMusicDecoder;
+    alias Mix_MusicType function(in Mix_Music*) da_Mix_GetMusicType;
+    alias void function(void function(void*, Uint8*, int) da_Mix_func, void*) da_Mix_SetPostMix;
+    alias void function(void function(void*, Uint8*, int) da_Mix_func, void*) da_Mix_HookMusic;
+    alias void function(void function() music_finished) da_Mix_HookMusicFinished;
+    alias void*  function() da_Mix_GetMusicHookData;
+    alias void function(void function(int channel) channel_finished) da_Mix_ChannelFinished;
+    alias int function(int, Mix_EffectFunc_t, Mix_EffectDone_t, void*) da_Mix_RegisterEffect;
+    alias int function(int, Mix_EffectFunc_t) da_Mix_UnregisterEffect;
+    alias int function(int) da_Mix_UnregisterAllEffects;
+    alias int function(int, Uint8, Uint8) da_Mix_SetPanning;
+    alias int function(int, Sint16, Uint8) da_Mix_SetPosition;
+    alias int function(int, Uint8) da_Mix_SetDistance;
+    // alias int function(int, Uint8) da_Mix_SetReverb;
+    alias int function(int, int) da_Mix_SetReverseStereo;
+    alias int function(int) da_Mix_ReserveChannels;
+    alias int function(int, int) da_Mix_GroupChannel;
+    alias int function(int, int, int) da_Mix_GroupChannels;
+    alias int function(int) da_Mix_GroupAvailable;
+    alias int function(int) da_Mix_GroupCount;
+    alias int function(int) da_Mix_GroupOldest;
+    alias int function(int) da_Mix_GroupNewer;
+    alias int function(int, Mix_Chunk*, int, int) da_Mix_PlayChannelTimed;
+    alias int function(Mix_Music*, int) da_Mix_PlayMusic;
+    alias int function(Mix_Music*, int, int) da_Mix_FadeInMusic;
+    alias int function(Mix_Music*, int, int, double) da_Mix_FadeInMusicPos;
+    alias int function(int, Mix_Chunk*, int, int, int) da_Mix_FadeInChannelTimed;
+    alias int function(int, int) da_Mix_Volume;
+    alias int function(Mix_Chunk*, int) da_Mix_VolumeChunk;
+    alias int function(int) da_Mix_VolumeMusic;
+    alias int function(int) da_Mix_HaltChannel;
+    alias int function(int) da_Mix_HaltGroup;
+    alias int function() da_Mix_HaltMusic;
+    alias int function(int, int) da_Mix_ExpireChannel;
+    alias int function(int, int) da_Mix_FadeOutChannel;
+    alias int function(int, int) da_Mix_FadeOutGroup;
+    alias int function(int) da_Mix_FadeOutMusic;
+    alias Mix_Fading function() da_Mix_FadingMusic;
+    alias Mix_Fading function(int) da_Mix_FadingChannel;
+    alias void function(int) da_Mix_Pause;
+    alias void function(int) da_Mix_Resume;
+    alias int function(int) da_Mix_Paused;
+    alias void function() da_Mix_PauseMusic;
+    alias void function() da_Mix_ResumeMusic;
+    alias void function() da_Mix_RewindMusic;
+    alias int function() da_Mix_PausedMusic;
+    alias int function(double) da_Mix_SetMusicPosition;
+    alias int function(int) da_Mix_Playing;
+    alias int function() da_Mix_PlayingMusic;
+    alias int function(in char*) da_Mix_SetMusicCMD;
+    alias int function(int) da_Mix_SetSynchroValue;
+    alias int function() da_Mix_GetSynchroValue;
+    alias Mix_Chunk* function(int) da_Mix_GetChunk;
+    alias void function() da_Mix_CloseAudio;
 }
+
+mixin(gsharedString!() ~
+"
+da_Mix_Linked_Version Mix_Linked_Version;
+da_Mix_Init Mix_Init;
+da_Mix_Quit Mix_Quit;
+da_Mix_OpenAudio Mix_OpenAudio;
+da_Mix_AllocateChannels Mix_AllocateChannels;
+da_Mix_QuerySpec Mix_QuerySpec;
+da_Mix_LoadWAV_RW Mix_LoadWAV_RW;
+da_Mix_LoadMUS Mix_LoadMUS;
+da_Mix_LoadMUS_RW Mix_LoadMUS_RW;
+da_Mix_LoadMUSType_RW Mix_LoadMUSType_RW;
+da_Mix_QuickLoad_WAV Mix_QuickLoad_WAV;
+da_Mix_QuickLoad_RAW Mix_QuickLoad_RAW;
+da_Mix_FreeChunk Mix_FreeChunk;
+da_Mix_FreeMusic Mix_FreeMusic;
+da_Mix_GetNumChunkDecoders Mix_GetNumChunkDecoders;
+da_Mix_GetChunkDecoder Mix_GetChunkDecoder;
+da_Mix_GetNumMusicDecoders Mix_GetNumMusicDecoders;
+da_Mix_GetMusicDecoder Mix_GetMusicDecoder;
+da_Mix_GetMusicType Mix_GetMusicType;
+da_Mix_SetPostMix Mix_SetPostMix;
+da_Mix_HookMusic Mix_HookMusic;
+da_Mix_HookMusicFinished Mix_HookMusicFinished;
+da_Mix_GetMusicHookData Mix_GetMusicHookData;
+da_Mix_ChannelFinished Mix_ChannelFinished;
+da_Mix_RegisterEffect Mix_RegisterEffect;
+da_Mix_UnregisterEffect Mix_UnregisterEffect;
+da_Mix_UnregisterAllEffects Mix_UnregisterAllEffects;
+da_Mix_SetPanning Mix_SetPanning;
+da_Mix_SetPosition Mix_SetPosition;
+da_Mix_SetDistance Mix_SetDistance;
+// da_ Mix_SetReverb;
+da_Mix_SetReverseStereo Mix_SetReverseStereo;
+da_Mix_ReserveChannels Mix_ReserveChannels;
+da_Mix_GroupChannel Mix_GroupChannel;
+da_Mix_GroupChannels Mix_GroupChannels;
+da_Mix_GroupAvailable Mix_GroupAvailable;
+da_Mix_GroupCount Mix_GroupCount;
+da_Mix_GroupOldest Mix_GroupOldest;
+da_Mix_GroupNewer Mix_GroupNewer;
+da_Mix_PlayChannelTimed Mix_PlayChannelTimed;
+da_Mix_PlayMusic Mix_PlayMusic;
+da_Mix_FadeInMusic Mix_FadeInMusic;
+da_Mix_FadeInMusicPos Mix_FadeInMusicPos;
+da_Mix_FadeInChannelTimed Mix_FadeInChannelTimed;
+da_Mix_Volume Mix_Volume;
+da_Mix_VolumeChunk Mix_VolumeChunk;
+da_Mix_VolumeMusic Mix_VolumeMusic;
+da_Mix_HaltChannel Mix_HaltChannel;
+da_Mix_HaltGroup Mix_HaltGroup;
+da_Mix_HaltMusic Mix_HaltMusic;
+da_Mix_ExpireChannel Mix_ExpireChannel;
+da_Mix_FadeOutChannel Mix_FadeOutChannel;
+da_Mix_FadeOutGroup Mix_FadeOutGroup;
+da_Mix_FadeOutMusic Mix_FadeOutMusic;
+da_Mix_FadingMusic Mix_FadingMusic;
+da_Mix_FadingChannel Mix_FadingChannel;
+da_Mix_Pause Mix_Pause;
+da_Mix_Resume Mix_Resume;
+da_Mix_Paused Mix_Paused;
+da_Mix_PauseMusic Mix_PauseMusic;
+da_Mix_ResumeMusic Mix_ResumeMusic;
+da_Mix_RewindMusic Mix_RewindMusic;
+da_Mix_PausedMusic Mix_PausedMusic;
+da_Mix_SetMusicPosition Mix_SetMusicPosition;
+da_Mix_Playing Mix_Playing;
+da_Mix_PlayingMusic Mix_PlayingMusic;
+da_Mix_SetMusicCMD Mix_SetMusicCMD;
+da_Mix_SetSynchroValue Mix_SetSynchroValue;
+da_Mix_GetSynchroValue Mix_GetSynchroValue;
+da_Mix_GetChunk Mix_GetChunk;
+da_Mix_CloseAudio Mix_CloseAudio;
+");
 
 class DerelictSDLMixerLoader : SharedLibLoader
 {
@@ -243,6 +317,7 @@ protected:
         bindFunc(cast(void**)&Mix_LoadWAV_RW, "Mix_LoadWAV_RW");
         bindFunc(cast(void**)&Mix_LoadMUS, "Mix_LoadMUS");
         bindFunc(cast(void**)&Mix_LoadMUS_RW, "Mix_LoadMUS_RW");
+        bindFunc(cast(void**)&Mix_LoadMUSType_RW, "Mix_LoadMUSType_RW");
         bindFunc(cast(void**)&Mix_QuickLoad_WAV, "Mix_QuickLoad_WAV");
         bindFunc(cast(void**)&Mix_QuickLoad_RAW, "Mix_QuickLoad_RAW");
         bindFunc(cast(void**)&Mix_FreeChunk, "Mix_FreeChunk");
@@ -316,5 +391,6 @@ static this()
 
 static ~this()
 {
-    DerelictSDLMixer.unload();
+    if(SharedLibLoader.isAutoUnloadEnabled())
+        DerelictSDLMixer.unload();
 }

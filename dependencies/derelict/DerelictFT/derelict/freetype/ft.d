@@ -61,6 +61,7 @@ protected:
         bindFunc(cast(void**)&FT_Open_Face, "FT_Open_Face");
         bindFunc(cast(void**)&FT_Attach_File, "FT_Attach_File");
         bindFunc(cast(void**)&FT_Attach_Stream, "FT_Attach_Stream");
+        bindFunc(cast(void**)&FT_Reference_Face, "FT_Reference_Face");
         bindFunc(cast(void**)&FT_Done_Face, "FT_Done_Face");
         bindFunc(cast(void**)&FT_Select_Size, "FT_Select_Size");
         bindFunc(cast(void**)&FT_Request_Size, "FT_Request_Size");
@@ -127,6 +128,7 @@ protected:
         bindFunc(cast(void**)&FT_Add_Module, "FT_Add_Module");
         bindFunc(cast(void**)&FT_Get_Module, "FT_Get_Module");
         bindFunc(cast(void**)&FT_Remove_Module, "FT_Remove_Module");
+        bindFunc(cast(void**)&FT_Reference_Library, "FT_Reference_Library");
         bindFunc(cast(void**)&FT_New_Library, "FT_New_Library");
         bindFunc(cast(void**)&FT_Done_Library, "FT_Done_Library");
         bindFunc(cast(void**)&FT_Set_Debug_Hook, "FT_Set_Debug_Hook");
@@ -141,6 +143,7 @@ protected:
         bindFunc(cast(void**)&FT_Has_PS_Glyph_Names, "FT_Has_PS_Glyph_Names");
         bindFunc(cast(void**)&FT_Get_PS_Font_Info, "FT_Get_PS_Font_Info");
         bindFunc(cast(void**)&FT_Get_PS_Font_Private, "FT_Get_PS_Font_Private");
+        bindFunc(cast(void**)&FT_Get_PS_Font_Value, "FT_Get_PS_Font_Value");
 
         // tttables.h
         bindFunc(cast(void**)&FT_Get_Sfnt_Table, "FT_Get_Sfnt_Table");
@@ -268,6 +271,7 @@ protected:
 
         // ftlcdfil.h
         bindFunc(cast(void**)&FT_Library_SetLcdFilter, "FT_Library_SetLcdFilter");
+        bindFunc(cast(void**)&FT_Library_SetLcdFilterWeights, "FT_Library_SetLcdFilterWeights");
 
         // ftgasp.h
         bindFunc(cast(void**)&FT_Get_Gasp, "FT_Get_Gasp");
@@ -354,5 +358,6 @@ static this()
 
 static ~this()
 {
-    DerelictFT.unload();
+    if(SharedLibLoader.isAutoUnloadEnabled())
+        DerelictFT.unload();
 }

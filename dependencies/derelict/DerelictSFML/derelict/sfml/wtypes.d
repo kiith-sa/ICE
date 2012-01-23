@@ -29,13 +29,14 @@ module derelict.sfml.wtypes;
 
 private
 {
+	import derelict.util.compat;
     import derelict.sfml.config;
 }
 
 // Types.h
-struct sfContext {}
-struct sfInput {}
-struct sfWindow {}
+struct sfContext;
+struct sfInput;
+struct sfWindow;
 
 // Event.h
 alias int sfKeyCode;
@@ -292,11 +293,11 @@ version(Windows)
 }
 else version(linux)
 {
-    alias uint sfWindowHandle;
+    alias c_ulong sfWindowHandle;
 }
 else version(posix)
 {
-    alias uint sfWindowHandle;
+    alias c_ulong sfWindowHandle;
 }
 else version(OSX)
 {

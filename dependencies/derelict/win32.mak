@@ -1,10 +1,15 @@
 include inc\win32_inc.mak
 
-all : DerelictAL_ALL DerelictFMODEX_ALL DerelictFT_ALL DerelictGL_ALL DerelictIL_ALL DerelictODE_ALL DerelictOgg_ALL DerelictPA_ALL DerelictSDL_ALL DerelictSFML_ALL DerelictUtil_ALL
+all : DerelictAL_ALL DerelictAllegro_ALL DerelictFMODEX_ALL DerelictFT_ALL DerelictGL_ALL DerelictIL_ALL DerelictODE_ALL DerelictOgg_ALL DerelictPA_ALL DerelictSDL_ALL DerelictSFML_ALL DerelictUtil_ALL
 
 # Targets for all libs in each package
 DerelictAL_ALL :
 	cd DerelictAL
+	$(DMAKE) all PLATFORM=win32 DC=$(DC)
+	cd ..
+	
+DerelictAllegro_ALL :
+	cd DerelictAllegro
 	$(DMAKE) all PLATFORM=win32 DC=$(DC)
 	cd ..
 	
@@ -60,6 +65,47 @@ DerelictUtil_ALL :
 	
 # There's only one DerelictAL target
 DerelictAL : DerelictAL_ALL
+
+# Individual DerelictAllegro targets
+DerelictAllegro : 
+	cd DerelictAllegro
+	$(DMAKE) DerelictAllegro PLATFORM=win32 DC=$(DC)
+	cd ..
+	
+DerelictAllegroImage :
+	cd DerelictAllegro
+	$(DMAKE) DerelictAllegroImage PLATFORM=win32 DC=$(DC)
+	cd ..
+	
+DerelictAllegroFont :
+	cd DerelictAllegro
+	$(DMAKE) DerelictAllegroFont PLATFORM=win32 DC=$(DC)
+	cd ..
+	
+DerelictAllegroAudio :
+	cd DerelictAllegro
+	$(DMAKE) DerelictAllegroAudio PLATFORM=win32 DC=$(DC)
+	cd ..
+	
+DerelictAllegroACodec :
+	cd DerelictAllegro
+	$(DMAKE) DerelictAllegroACodec PLATFORM=win32 DC=$(DC)
+	cd ..
+	
+DerelictAllegroDialog :
+	cd DerelictAllegro
+	$(DMAKE) DerelictAllegroDialog PLATFORM=win32 DC=$(DC)
+	cd ..
+	
+DerelictAllegroTTF:
+	cd DerelictAllegro
+	$(DMAKE) DerelictAllegroDialog PLATFORM=win32 DC=$(DC)
+	cd ..
+	
+DerelictAllegroPrimitives:
+	cd DerelictAllegro
+	$(DMAKE) DerelictAllegroPrimitives PLATFORM=win32 DC=$(DC)
+	cd ..
 
 # There's only one DerelictFMODEX target
 DerelictFMODEX : DerelictFMODEX_ALL

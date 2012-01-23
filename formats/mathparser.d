@@ -122,7 +122,6 @@ private:
         dchar[] stack;
 
         string output = "";
-        bool last_was_space = false;
         dchar prev_c = 0;
 
         dchar pop()
@@ -145,7 +144,7 @@ private:
             //operator
             else
             {
-                //if there are two operators in a row, we have an error.
+                //if there are two arithmetic operators in a row, we have an error.
                 if(arithmetic.canFind(prev_c) && arithmetic.canFind(c))
                 {
                     throw new MathParserException("Redundant operator in math expression " 

@@ -27,6 +27,10 @@ DEALINGS IN THE SOFTWARE.
 */
 module derelict.ode.odetypes;
 
+private
+{
+    import derelict.util.compat;
+}
 
 private
 {
@@ -41,7 +45,14 @@ private
     else
     {
         import std.math;
-        import std.stdarg;
+        version(D_Version2)
+        {
+            import core.vararg;
+        }
+        else
+        {
+            import std.stdarg;
+        }
     }
 }
 
@@ -80,12 +91,12 @@ int dPAD(int a)
     return (a > 1) ? (((a - 1)|3)+1) : a;
 }
 
-typedef dReal dVector3[4];
-typedef dReal dVector4[4];
-typedef dReal dMatrix3[4*3];
-typedef dReal dMatrix4[4*4];
-typedef dReal dMatrix6[8*6];
-typedef dReal dQuaternion[4];
+alias dReal dVector3[4];
+alias dReal dVector4[4];
+alias dReal dMatrix3[4*3];
+alias dReal dMatrix4[4*4];
+alias dReal dMatrix6[8*6];
+alias dReal dQuaternion[4];
 
 dReal dRecip(dReal x)
 {
@@ -118,13 +129,13 @@ alias atan2 dAtan2;
 alias isnan dIsNan;
 alias copysign dCopySign;
 
-struct dxWorld {};
-struct dxSpace {};
-struct dxBody {};
-struct dxGeom {};
-struct dxJoint {};
-struct dxJointNode {};
-struct dxJointGroup {};
+struct dxWorld;
+struct dxSpace;
+struct dxBody;
+struct dxGeom;
+struct dxJoint;
+struct dxJointNode;
+struct dxJointGroup;
 
 alias dxWorld* dWorldID;
 alias dxSpace* dSpaceID;
@@ -271,11 +282,11 @@ alias dxHeightfieldData* dHeightfieldDataID;
 extern(C)
 {
     alias dReal function(void*, int, int) dHeightfieldGetHeight;
-    alias void function(dGeomID, dReal[6]) dGetAABBFn;
+    alias void function(dGeomID, ref dReal[6]) dGetAABBFn;
     alias int function(dGeomID, dGeomID, int, dContactGeom*, int) dColliderFn;
     alias dColliderFn function(int) dGetColliderFnFn;
     alias void function(dGeomID) dGeomDtorFn;
-    alias int function(dGeomID, dGeomID, dReal[6]) dAABBTestFn;
+    alias int function(dGeomID, dGeomID, ref dReal[6]) dAABBTestFn;
 }
 
 
@@ -302,7 +313,7 @@ enum
 }
 
 // collision_trimesh.h
-struct dxTriMeshData {}
+struct dxTriMeshData;
 alias dxTriMeshData* dTriMeshDataID;
 
 enum { TRIMESH_FACE_NORMALS }
@@ -400,5 +411,5 @@ enum : uint
 struct dStopwatch
 {
     double time;
-    uint cc[2];
+    c_ulong cc[2];
 }

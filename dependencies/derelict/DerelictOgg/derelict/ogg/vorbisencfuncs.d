@@ -35,13 +35,22 @@ private
 
 extern(C)
 {
-    mixin(gsharedString!() ~
-    "
-    int function (vorbis_info *vi, int  channels, int  rate, int  max_bitrate, int  nominal_bitrate, int  min_bitrate) vorbis_encode_init;
-    int function(vorbis_info *vi, int  channels, int  rate, int  max_bitrate, int  nominal_bitrate, int  min_bitrate) vorbis_encode_setup_managed;
-    int function(vorbis_info *vi, int channels, int rate, float base_quality) vorbis_encode_setup_vbr;
-    int function(vorbis_info *vi, int channels, int rate, float base_quality) vorbis_encode_init_vbr;
-    int function(vorbis_info *vi) vorbis_encode_setup_init;
-    int function(vorbis_info *vi,int number, void *arg) vorbis_encode_ctl;
-    ");
+    alias int function (vorbis_info*, c_long, c_long, c_long, c_long, c_long) da_vorbis_encode_init;
+    alias int function(vorbis_info*, c_long, c_long, c_long, c_long, c_long) da_vorbis_encode_setup_managed;
+    alias int function(vorbis_info*, c_long, c_long, float) da_vorbis_encode_setup_vbr;
+    alias int function(vorbis_info*, c_long, c_long, float) da_vorbis_encode_init_vbr;
+    alias int function(vorbis_info*) da_vorbis_encode_setup_init;
+    alias int function(vorbis_info*, int, void*) da_vorbis_encode_ctl;
+
 }
+
+mixin(gsharedString!() ~
+"
+da_vorbis_encode_init vorbis_encode_init;
+da_vorbis_encode_setup_managed vorbis_encode_setup_managed;
+da_vorbis_encode_setup_vbr vorbis_encode_setup_vbr;
+da_vorbis_encode_init_vbr vorbis_encode_init_vbr;
+da_vorbis_encode_setup_init vorbis_encode_setup_init;
+da_vorbis_encode_ctl vorbis_encode_ctl;
+
+");

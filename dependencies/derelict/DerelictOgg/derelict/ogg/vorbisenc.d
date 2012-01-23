@@ -29,7 +29,7 @@ module derelict.ogg.vorbisenc;
 
 public
 {
-	import derelict.ogg.vorbistypes;
+    import derelict.ogg.vorbistypes;
     import derelict.ogg.vorbisenctypes;
     import derelict.ogg.vorbisencfuncs;
 }
@@ -72,5 +72,6 @@ static this()
 
 static ~this()
 {
-    DerelictVorbisEnc.unload();
+    if(SharedLibLoader.isAutoUnloadEnabled())
+        DerelictVorbisEnc.unload();
 }

@@ -58,6 +58,16 @@ public:
         _lib = new SharedLib();
     }
 
+    static void disableAutoUnload()
+    {
+        _manualUnload = true;
+    }
+
+    static bool isAutoUnloadEnabled()
+    {
+        return (_manualUnload == false);
+    }
+
     void load()
     {
         load(_libNames);
@@ -112,6 +122,7 @@ protected:
     }
 
 private:
+    static bool _manualUnload;
     string _libNames;
     SharedLib _lib;
 }

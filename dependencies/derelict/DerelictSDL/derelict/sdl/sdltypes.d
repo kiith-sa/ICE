@@ -31,12 +31,10 @@ private
 {
     version(Tango)
     {
-        import tango.core.BitManip;
         import tango.stdc.stdio;
     }
     else
     {
-        import std.intrinsic;
         import std.c.stdio;
     }
 }
@@ -242,7 +240,7 @@ Uint16 SDL_Swap16(Uint16 val)
 
 Uint32 SDL_Swap32(Uint32 val)
 {
-    return bswap(val);
+    return cast(Uint32)((val<<24)|((val<<8)&0x00FF0000)|((val>>8)&0x0000FF00)|(val>>24));
 }
 
 Uint64 SDL_Swap64(Uint64 val)
@@ -250,9 +248,9 @@ Uint64 SDL_Swap64(Uint64 val)
     Uint32 lo = cast(Uint32)(val & 0xFFFFFFFF);
     val >>= 32;
     Uint32 hi = cast(Uint32)(val & 0xFFFFFFFF);
-    val = bswap(lo);
+    val = SDL_Swap32(lo);
     val <<= 32;
-    val |= bswap(hi);
+    val |= SDL_Swap32(hi);
     return val;
 }
 
@@ -273,49 +271,15 @@ version(LittleEndian)
         return val;
     }
 
-    Uint16 SDL_SwapBE16(Uint16 val)
-    {
-        return cast(Uint16)((val<<8)|(val>>8));
-    }
-
-    Uint32 SDL_SwapBE32(Uint32 val)
-    {
-        return bswap(val);
-    }
-
-    Uint64 SDL_SwapBE64(Uint64 val)
-    {
-        Uint32 lo = cast(Uint32)(val & 0xFFFFFFFF);
-        val >>= 32;
-        Uint32 hi = cast(Uint32)(val & 0xFFFFFFFF);
-        val = bswap(lo);
-        val <<= 32;
-        val |= bswap(hi);
-        return val;
-    }
+    alias SDL_Swap16 SDL_SwapBE16;
+    alias SDL_Swap32 SDL_SwapBE32;
+    alias SDL_Swap64 SDL_SwapBE64;
 }
 else
 {
-    Uint16 SDL_SwapLE16(Uint16 val)
-    {
-        return cast(Uint16)((val<<8)|(val>>8));
-    }
-
-    Uint32 SDL_SwapLE32(Uint32 val)
-    {
-        return bswap(val);
-    }
-
-    Uint64 SDL_SwapLE64(Uint64 val)
-    {
-        Uint32 lo = cast(Uint32)(val & 0xFFFFFFFF);
-        val >>= 32;
-        Uint32 hi = cast(Uint32)(val & 0xFFFFFFFF);
-        val = bswap(lo);
-        val <<= 32;
-        val |= bswap(hi);
-        return val;
-    }
+    alias SDL_Swap16 SDL_SwapLE16;
+    alias SDL_Swap32 SDL_SwapLE32;
+    alias SDL_Swap64 SDL_SwapLE64;
 
     Uint16 SDL_SwapBE16(Uint16 val)
     {
@@ -529,7 +493,7 @@ enum
 }
 
 // SDL_joystick.h
-struct SDL_Joystick {}
+struct SDL_Joystick;
 
 enum : Uint8
 {
@@ -845,7 +809,7 @@ enum
 
 // SDL_mouse.h
 
-struct WMcursor {}
+struct WMcursor;
 
 struct SDL_Cursor
 {
@@ -883,11 +847,11 @@ enum { SDL_MUTEX_TIMEOUT = 1 }
 
 enum : Uint32 { SDL_MUTEX_MAXWAIT = (~(cast(Uint32)0)) }
 
-struct SDL_mutex {}
+struct SDL_mutex;
 
-struct SDL_sem {}
+struct SDL_sem;
 
-struct SDL_cond {}
+struct SDL_cond;
 
 // SDL_rwops.h
 enum
@@ -1049,7 +1013,7 @@ else
 }
 
 // SDL_thread.h
-struct SDL_Thread {}
+struct SDL_Thread;
 
 // SDL_timer.h
 

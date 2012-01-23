@@ -20,9 +20,10 @@ module formats.pngdecoder;
 @system
 
 
+import core.bitop;
+
 import std.algorithm;
 import std.exception;
-import std.intrinsic;
 import std.string;
 
 import formats.pngcommon;

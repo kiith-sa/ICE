@@ -66,6 +66,7 @@ protected:
         bindFunc(cast(void**)&vorbis_block_clear, "vorbis_block_clear");
         bindFunc(cast(void**)&vorbis_dsp_clear, "vorbis_dsp_clear");
         bindFunc(cast(void**)&vorbis_granule_time, "vorbis_granule_time");
+        bindFunc(cast(void**)&vorbis_version_string, "vorbis_version_string");
 
         bindFunc(cast(void**)&vorbis_analysis_init, "vorbis_analysis_init");
         bindFunc(cast(void**)&vorbis_commentheader_out, "vorbis_commentheader_out");
@@ -104,5 +105,6 @@ static this()
 
 static ~this()
 {
-    DerelictVorbis.unload();
+    if(SharedLibLoader.isAutoUnloadEnabled())
+        DerelictVorbis.unload();
 }

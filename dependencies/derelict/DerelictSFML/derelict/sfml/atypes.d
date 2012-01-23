@@ -63,9 +63,9 @@ extern(C)
 }
 
 // Types.h
-struct sfMusic {}
-struct sfSound {}
-struct sfSoundBuffer {}
-struct sfSoundBufferRecorder {}
-struct sfSoundRecorder {}
-struct sfSoundStream {}
+struct sfMusic;
+struct sfSound;
+struct sfSoundBuffer;
+struct sfSoundBufferRecorder;
+struct sfSoundRecorder;
+struct sfSoundStream;

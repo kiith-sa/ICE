@@ -35,17 +35,17 @@ private
 // FMODEX version 4.30
 // fmod.h
 alias int FMOD_BOOL;
-struct FMOD_SYSTEM {}
-struct FMOD_SOUND {}
-struct FMOD_CHANNEL {}
-struct FMOD_CHANNELGROUP {}
-struct FMOD_SOUNDGROUP {}
-struct FMOD_REVERB {}
-struct FMOD_DSP {}
-struct FMOD_DSPCONNECTION {}
-struct FMOD_POLYGON {}
-struct FMOD_GEOMETRY {}
-struct FMOD_SYNCPOINT {}
+struct FMOD_SYSTEM;
+struct FMOD_SOUND;
+struct FMOD_CHANNEL;
+struct FMOD_CHANNELGROUP;
+struct FMOD_SOUNDGROUP;
+struct FMOD_REVERB;
+struct FMOD_DSP;
+struct FMOD_DSPCONNECTION;
+struct FMOD_POLYGON;
+struct FMOD_GEOMETRY;
+struct FMOD_SYNCPOINT;
 alias uint FMOD_MODE;
 alias uint FMOD_TIMEUNIT;
 alias uint FMOD_INITFLAGS;

@@ -27,6 +27,11 @@ DEALINGS IN THE SOFTWARE.
 */
 module derelict.portaudio.patypes;
 
+private
+{
+    import derelict.util.compat;
+}
+
 enum PaError
 {
     paNoError = 0,
@@ -73,6 +78,15 @@ enum PaErrorCode
 alias int PaDeviceIndex;
 
 alias int PaHostApiIndex;
+version(D_Version2)
+{
+    mixin("alias const(PaHostApiInfo)* CPHAIPTR;");
+}
+else
+{
+    alias PaHostApiInfo* CPHAIPTR;
+}
+
 
 enum PaHostApiTypeId
 {
@@ -92,29 +106,35 @@ enum PaHostApiTypeId
     paAudioScienceHPI,
 }
 
-align(1)
 struct PaHostApiInfo
 {
     int structVersion;
     PaHostApiTypeId type;
-    char *name;
+    CCPTR name;
     int deviceCount;
     PaDeviceIndex defaultInputDevice;
     PaDeviceIndex defaultOutputDevice;
 }
 
-align(1)
 struct PaHostErrorInfo
 {
     PaHostApiTypeId hostApiType;
-    int errorCode;
-    char *errorText;
+    c_long errorCode;
+    CCPTR errorText;
+}
+version(D_Version2)
+{
+    mixin("alias const(PaHostErrorInfo)* CPHEIPTR;");
+}
+else
+{
+    alias PaDeviceInfo* CPHEIPTR;
 }
 
 
 alias double PaTime;
 
-alias uint PaSampleFormat;
+alias c_ulong PaSampleFormat;
 enum : PaSampleFormat
 {
     paFloat32 = 0x00000001,
@@ -127,11 +147,10 @@ enum : PaSampleFormat
     paNonInterleaved = 0x80000000,
 }
 
-align(1)
 struct PaDeviceInfo
 {
     int structVersion;
-    char *name;
+    CCPTR name;
     PaHostApiIndex hostApi;
     int maxInputChannels;
     int maxOutputChannels;
@@ -141,8 +160,16 @@ struct PaDeviceInfo
     PaTime defaultHighOutputLatency;
     double defaultSampleRate;
 }
+version(D_Version2)
+{
+    mixin("alias const(PaDeviceInfo)* CPDIPTR;");
+}
+else
+{
+    alias PaDeviceInfo* CPDIPTR;
+}
 
-align(1)
+
 struct PaStreamParameters
 {
     PaDeviceIndex device;
@@ -154,14 +181,13 @@ struct PaStreamParameters
 
 
 alias void PaStream;
-alias uint PaStreamFlags;
+alias c_ulong PaStreamFlags;
 enum : PaStreamFlags
 {
     paClipOff = 0x00000001,
     paDitherOff = 0x00000002,
 }
 
-align(1)
 struct PaStreamCallbackTimeInfo
 {
     PaTime inputBufferAdcTime;
@@ -169,7 +195,7 @@ struct PaStreamCallbackTimeInfo
     PaTime outputBufferDacTime;
 }
 
-alias uint PaStreamCallbackFlags;
+alias c_ulong PaStreamCallbackFlags;
 
 enum PaStreamCallbackResult
 {
@@ -185,9 +211,17 @@ struct PaStreamInfo
     PaTime outputLatency;
     double sampleRate;
 }
+version(D_Version2)
+{
+    mixin("alias const(PaStreamInfo)* CPSIPTR;");
+}
+else
+{
+    alias PaStreamInfo* CPSIPTR;
+}
 
 extern(C)
 {
     alias void function(void*) PaStreamFinishedCallback;
-    alias int function(void*, void*, uint, PaStreamCallbackTimeInfo*, PaStreamCallbackFlags, void*) PaStreamCallback;
+    alias int function(in void*, void*, c_ulong, in PaStreamCallbackTimeInfo*, PaStreamCallbackFlags, void*) PaStreamCallback;
 }

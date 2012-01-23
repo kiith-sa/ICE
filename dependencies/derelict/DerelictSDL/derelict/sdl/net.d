@@ -39,7 +39,7 @@ enum : Uint8
 {
     SDL_NET_MAJOR_VERSION           = 1,
     SDL_NET_MINOR_VERSION           = 2,
-    SDL_NET_PATCHLEVEL              = 7,
+    SDL_NET_PATCHLEVEL              = 8,
 }
 
 struct IPaddress
@@ -149,40 +149,75 @@ Uint32 SDLNet_Read32(void* areap)
 
 extern(C)
 {
-    mixin(gsharedString!() ~
-    "
-    CSDLVERPTR function() SDLNet_Linked_Version;
-    int function() SDLNet_Init;
-    void function() SDLNet_Quit;
-    int function(IPaddress*, in char*, Uint16) SDLNet_ResolveHost;
-    CCPTR function(IPaddress*) SDLNet_ResolveIP;
-    TCPsocket function(IPaddress*) SDLNet_TCP_Open;
-    TCPsocket function(TCPsocket) SDLNet_TCP_Accept;
-    IPaddress* function(TCPsocket) SDLNet_TCP_GetPeerAddress;
-    int function(TCPsocket,in void*,int) SDLNet_TCP_Send;
-    int function(TCPsocket,void*,int) SDLNet_TCP_Recv;
-    void function(TCPsocket) SDLNet_TCP_Close;
-    UDPpacket* function(int) SDLNet_AllocPacket;
-    int function(UDPpacket*) SDLNet_ResizePacket;
-    void function(UDPpacket*) SDLNet_FreePacket;
-    UDPpacket** function(int,int) SDLNet_AllocPacketV;
-    void function(UDPpacket**) SDLNet_FreePacketV;
-    UDPsocket function(Uint16) SDLNet_UDP_Open;
-    int function(UDPsocket,int,IPaddress*) SDLNet_UDP_Bind;
-    void function(UDPsocket,int) SDLNet_UDP_Unbind;
-    IPaddress* function(UDPsocket,int) SDLNet_UDP_GetPeerAddress;
-    int function(UDPsocket,UDPpacket**,int) SDLNet_UDP_SendV;
-    int function(UDPsocket,int,UDPpacket*) SDLNet_UDP_Send;
-    int function(UDPsocket,UDPpacket**) SDLNet_UDP_RecvV;
-    int function(UDPsocket,UDPpacket*) SDLNet_UDP_Recv;
-    void function(UDPsocket) SDLNet_UDP_Close;
-    SDLNet_SocketSet function(int) SDLNet_AllocSocketSet;
-    int function(SDLNet_SocketSet,SDLNet_GenericSocket) SDLNet_AddSocket;
-    int function(SDLNet_SocketSet,SDLNet_GenericSocket) SDLNet_DelSocket;
-    int function(SDLNet_SocketSet,Uint32) SDLNet_CheckSockets;
-    void function(SDLNet_SocketSet) SDLNet_FreeSocketSet;
-    ");
+    alias CSDLVERPTR function() da_SDLNet_Linked_Version;
+    alias int function() da_SDLNet_Init;
+    alias void function() da_SDLNet_Quit;
+    alias int function(IPaddress*, in char*, Uint16) da_SDLNet_ResolveHost;
+    alias CCPTR function(in IPaddress*) da_SDLNet_ResolveIP;
+    alias int function(IPaddress*, int) da_SDLNet_GetLocalAddresses;
+    alias TCPsocket function(IPaddress*) da_SDLNet_TCP_Open;
+    alias TCPsocket function(TCPsocket) da_SDLNet_TCP_Accept;
+    alias IPaddress* function(TCPsocket) da_SDLNet_TCP_GetPeerAddress;
+    alias int function(TCPsocket,in void*,int) da_SDLNet_TCP_Send;
+    alias int function(TCPsocket,void*,int) da_SDLNet_TCP_Recv;
+    alias void function(TCPsocket) da_SDLNet_TCP_Close;
+    alias UDPpacket* function(int) da_SDLNet_AllocPacket;
+    alias int function(UDPpacket*) da_SDLNet_ResizePacket;
+    alias void function(UDPpacket*) da_SDLNet_FreePacket;
+    alias UDPpacket** function(int,int) da_SDLNet_AllocPacketV;
+    alias void function(UDPpacket**) da_SDLNet_FreePacketV;
+    alias UDPsocket function(Uint16) da_SDLNet_UDP_Open;
+    alias void function(Uint16) da_SDLNet_UDP_SetPacketLoss;
+    alias int function(UDPsocket,int,IPaddress*) da_SDLNet_UDP_Bind;
+    alias void function(UDPsocket,int) da_SDLNet_UDP_Unbind;
+    alias IPaddress* function(UDPsocket,int) da_SDLNet_UDP_GetPeerAddress;
+    alias int function(UDPsocket,UDPpacket**,int) da_SDLNet_UDP_SendV;
+    alias int function(UDPsocket,int,UDPpacket*) da_SDLNet_UDP_Send;
+    alias int function(UDPsocket,UDPpacket**) da_SDLNet_UDP_RecvV;
+    alias int function(UDPsocket,UDPpacket*) da_SDLNet_UDP_Recv;
+    alias void function(UDPsocket) da_SDLNet_UDP_Close;
+    alias SDLNet_SocketSet function(int) da_SDLNet_AllocSocketSet;
+    alias int function(SDLNet_SocketSet,SDLNet_GenericSocket) da_SDLNet_AddSocket;
+    alias int function(SDLNet_SocketSet,SDLNet_GenericSocket) da_SDLNet_DelSocket;
+    alias int function(SDLNet_SocketSet,Uint32) da_SDLNet_CheckSockets;
+    alias void function(SDLNet_SocketSet) da_SDLNet_FreeSocketSet;
 }
+
+mixin(gsharedString!() ~
+"
+da_SDLNet_Linked_Version SDLNet_Linked_Version;
+da_SDLNet_Init SDLNet_Init;
+da_SDLNet_Quit SDLNet_Quit;
+da_SDLNet_ResolveHost SDLNet_ResolveHost;
+da_SDLNet_ResolveIP SDLNet_ResolveIP;
+da_SDLNet_GetLocalAddresses SDLNet_GetLocalAddresses;
+da_SDLNet_TCP_Open SDLNet_TCP_Open;
+da_SDLNet_TCP_Accept SDLNet_TCP_Accept;
+da_SDLNet_TCP_GetPeerAddress SDLNet_TCP_GetPeerAddress;
+da_SDLNet_TCP_Send SDLNet_TCP_Send;
+da_SDLNet_TCP_Recv SDLNet_TCP_Recv;
+da_SDLNet_TCP_Close SDLNet_TCP_Close;
+da_SDLNet_AllocPacket SDLNet_AllocPacket;
+da_SDLNet_ResizePacket SDLNet_ResizePacket;
+da_SDLNet_FreePacket SDLNet_FreePacket;
+da_SDLNet_AllocPacketV SDLNet_AllocPacketV;
+da_SDLNet_FreePacketV SDLNet_FreePacketV;
+da_SDLNet_UDP_Open SDLNet_UDP_Open;
+da_SDLNet_UDP_SetPacketLoss SDLNet_UDP_SetPacketLoss;
+da_SDLNet_UDP_Bind SDLNet_UDP_Bind;
+da_SDLNet_UDP_Unbind SDLNet_UDP_Unbind;
+da_SDLNet_UDP_GetPeerAddress SDLNet_UDP_GetPeerAddress;
+da_SDLNet_UDP_SendV SDLNet_UDP_SendV;
+da_SDLNet_UDP_Send SDLNet_UDP_Send;
+da_SDLNet_UDP_RecvV SDLNet_UDP_RecvV;
+da_SDLNet_UDP_Recv SDLNet_UDP_Recv;
+da_SDLNet_UDP_Close SDLNet_UDP_Close;
+da_SDLNet_AllocSocketSet SDLNet_AllocSocketSet;
+da_SDLNet_AddSocket SDLNet_AddSocket;
+da_SDLNet_DelSocket SDLNet_DelSocket;
+da_SDLNet_CheckSockets SDLNet_CheckSockets;
+da_SDLNet_FreeSocketSet SDLNet_FreeSocketSet;
+");
 
 class DerelictSDLNetLoader : SharedLibLoader
 {
@@ -209,6 +244,7 @@ protected:
         bindFunc(cast(void**)&SDLNet_Quit, "SDLNet_Quit");
         bindFunc(cast(void**)&SDLNet_ResolveHost, "SDLNet_ResolveHost");
         bindFunc(cast(void**)&SDLNet_ResolveIP, "SDLNet_ResolveIP");
+        bindFunc(cast(void**)&SDLNet_GetLocalAddresses, "SDLNet_GetLocalAddresses");
         bindFunc(cast(void**)&SDLNet_TCP_Open, "SDLNet_TCP_Open");
         bindFunc(cast(void**)&SDLNet_TCP_Accept, "SDLNet_TCP_Accept");
         bindFunc(cast(void**)&SDLNet_TCP_GetPeerAddress, "SDLNet_TCP_GetPeerAddress");
@@ -221,6 +257,7 @@ protected:
         bindFunc(cast(void**)&SDLNet_AllocPacketV, "SDLNet_AllocPacketV");
         bindFunc(cast(void**)&SDLNet_FreePacketV, "SDLNet_FreePacketV");
         bindFunc(cast(void**)&SDLNet_UDP_Open, "SDLNet_UDP_Open");
+        bindFunc(cast(void**)&SDLNet_UDP_SetPacketLoss, "SDLNet_UDP_SetPacketLoss");
         bindFunc(cast(void**)&SDLNet_UDP_Bind, "SDLNet_UDP_Bind");
         bindFunc(cast(void**)&SDLNet_UDP_Unbind, "SDLNet_UDP_Unbind");
         bindFunc(cast(void**)&SDLNet_UDP_GetPeerAddress, "SDLNet_UDP_GetPeerAddress");
@@ -246,5 +283,6 @@ static this()
 
 static ~this()
 {
-    DerelictSDLNet.unload();
+    if(SharedLibLoader.isAutoUnloadEnabled())
+        DerelictSDLNet.unload();
 }

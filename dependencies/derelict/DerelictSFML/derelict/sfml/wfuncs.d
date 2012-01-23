@@ -36,51 +36,80 @@ private
 
 extern(C)
 {
-    mixin(gsharedString!() ~
-    "
-    // Context.h
-    sfContext* function() sfContext_Create;
-    void function(sfContext*) sfContext_Destroy;
-    void function(sfContext*, sfBool) sfContext_SetActive;
-
-    // Input.h
-    sfBool function(sfInput*, sfKeyCode) sfInput_IsKeyDown;
-    sfBool function(sfInput*, sfMouseButton) sfInput_IsMouseButtonDown;
-    sfBool function(sfInput*, uint, uint) sfInput_IsJoystickButtonDown;
-    int function(sfInput*) sfInput_GetMouseX;
-    int function(sfInput*) sfInput_GetMouseY;
-    float function(sfInput*, uint, sfJoyAxis) sfInput_GetJoystickAxis;
-
-    // VideoMode.h
-    sfVideoMode function() sfVideoMode_GetDesktopMode;
-    sfVideoMode function(size_t) sfVideoMode_GetMode;
-    size_t function() sfVideoMode_GetModesCount;
-    sfBool function(sfVideoMode) sfVideoMode_IsValid;
-
-    // Window.h
-    sfWindow* function(sfVideoMode, CCPTR, uint, sfWindowSettings) sfWindow_Create;
-    sfWindow* function(sfWindowHandle, sfWindowSettings) sfWindow_CreateFromHandle;
-    void function(sfWindow*) sfWindow_Destroy;
-    void function(sfWindow*) sfWindow_Close;
-    sfBool function(sfWindow*) sfWindow_IsOpened;
-    uint function(sfWindow*) sfWindow_GetWidth;
-    uint function(sfWindow*) sfWindow_GetHeight;
-    sfWindowSettings function(sfWindow*) sfWindow_GetSettings;
-    sfBool function(sfWindow*, sfEvent*) sfWindow_GetEvent;
-    void function(sfWindow*, sfBool) sfWindow_UseVerticalSync;
-    void function(sfWindow*, sfBool) sfWindow_ShowMouseCursor;
-    void function(sfWindow*, uint, uint) sfWindow_SetCursorPosition;
-    void function(sfWindow*, int, int) sfWindow_SetPosition;
-    void function(sfWindow*, uint, uint) sfWindow_SetSize;
-    void function(sfWindow*, sfBool) sfWindow_Show;
-    void function(sfWindow*, sfBool) sfWindow_EnableKeyRepeat;
-    void function(sfWindow*, uint, uint, sfUint8*) sfWindow_SetIcon;
-    sfBool function(sfWindow*, sfBool) sfWindow_SetActive;
-    void function(sfWindow*) sfWindow_Display;
-    sfInput* function(sfWindow*) sfWindow_GetInput;
-    void function(sfWindow*, uint) sfWindow_SetFramerateLimit;
-    float function(sfWindow*) sfWindow_GetFrameTime;
-    void function(sfWindow*, float) sfWindow_SetJoystickThreshold;
-    ");
+    alias sfContext* function() da_sfContext_Create;
+    alias void function(sfContext*) da_sfContext_Destroy;
+    alias void function(sfContext*, sfBool) da_sfContext_SetActive;
+    alias sfBool function(sfInput*, sfKeyCode) da_sfInput_IsKeyDown;
+    alias sfBool function(sfInput*, sfMouseButton) da_sfInput_IsMouseButtonDown;
+    alias sfBool function(sfInput*, uint, uint) da_sfInput_IsJoystickButtonDown;
+    alias int function(sfInput*) da_sfInput_GetMouseX;
+    alias int function(sfInput*) da_sfInput_GetMouseY;
+    alias float function(sfInput*, uint, sfJoyAxis) da_sfInput_GetJoystickAxis;
+    alias sfVideoMode function() da_sfVideoMode_GetDesktopMode;
+    alias sfVideoMode function(size_t) da_sfVideoMode_GetMode;
+    alias size_t function() da_sfVideoMode_GetModesCount;
+    alias sfBool function(sfVideoMode) da_sfVideoMode_IsValid;
+    alias sfWindow* function(sfVideoMode, CCPTR, c_ulong, sfWindowSettings) da_sfWindow_Create;
+    alias sfWindow* function(sfWindowHandle, sfWindowSettings) da_sfWindow_CreateFromHandle;
+    alias void function(sfWindow*) da_sfWindow_Destroy;
+    alias void function(sfWindow*) da_sfWindow_Close;
+    alias sfBool function(sfWindow*) da_sfWindow_IsOpened;
+    alias uint function(sfWindow*) da_sfWindow_GetWidth;
+    alias uint function(sfWindow*) da_sfWindow_GetHeight;
+    alias sfWindowSettings function(sfWindow*) da_sfWindow_GetSettings;
+    alias sfBool function(sfWindow*, sfEvent*) da_sfWindow_GetEvent;
+    alias void function(sfWindow*, sfBool) da_sfWindow_UseVerticalSync;
+    alias void function(sfWindow*, sfBool) da_sfWindow_ShowMouseCursor;
+    alias void function(sfWindow*, uint, uint) da_sfWindow_SetCursorPosition;
+    alias void function(sfWindow*, int, int) da_sfWindow_SetPosition;
+    alias void function(sfWindow*, uint, uint) da_sfWindow_SetSize;
+    alias void function(sfWindow*, sfBool) da_sfWindow_Show;
+    alias void function(sfWindow*, sfBool) da_sfWindow_EnableKeyRepeat;
+    alias void function(sfWindow*, uint, uint, sfUint8*) da_sfWindow_SetIcon;
+    alias sfBool function(sfWindow*, sfBool) da_sfWindow_SetActive;
+    alias void function(sfWindow*) da_sfWindow_Display;
+    alias sfInput* function(sfWindow*) da_sfWindow_GetInput;
+    alias void function(sfWindow*, uint) da_sfWindow_SetFramerateLimit;
+    alias float function(sfWindow*) da_sfWindow_GetFrameTime;
+    alias void function(sfWindow*, float) da_sfWindow_SetJoystickThreshold;
 }
 
+mixin(gsharedString!() ~
+"
+da_sfContext_Create sfContext_Create;
+da_sfContext_Destroy sfContext_Destroy;
+da_sfContext_SetActive sfContext_SetActive;
+da_sfInput_IsKeyDown sfInput_IsKeyDown;
+da_sfInput_IsMouseButtonDown sfInput_IsMouseButtonDown;
+da_sfInput_IsJoystickButtonDown sfInput_IsJoystickButtonDown;
+da_sfInput_GetMouseX sfInput_GetMouseX;
+da_sfInput_GetMouseY sfInput_GetMouseY;
+da_sfInput_GetJoystickAxis sfInput_GetJoystickAxis;
+da_sfVideoMode_GetDesktopMode sfVideoMode_GetDesktopMode;
+da_sfVideoMode_GetMode sfVideoMode_GetMode;
+da_sfVideoMode_GetModesCount sfVideoMode_GetModesCount;
+da_sfVideoMode_IsValid sfVideoMode_IsValid;
+da_sfWindow_Create sfWindow_Create;
+da_sfWindow_CreateFromHandle sfWindow_CreateFromHandle;
+da_sfWindow_Destroy sfWindow_Destroy;
+da_sfWindow_Close sfWindow_Close;
+da_sfWindow_IsOpened sfWindow_IsOpened;
+da_sfWindow_GetWidth sfWindow_GetWidth;
+da_sfWindow_GetHeight sfWindow_GetHeight;
+da_sfWindow_GetSettings sfWindow_GetSettings;
+da_sfWindow_GetEvent sfWindow_GetEvent;
+da_sfWindow_UseVerticalSync sfWindow_UseVerticalSync;
+da_sfWindow_ShowMouseCursor sfWindow_ShowMouseCursor;
+da_sfWindow_SetCursorPosition sfWindow_SetCursorPosition;
+da_sfWindow_SetPosition sfWindow_SetPosition;
+da_sfWindow_SetSize sfWindow_SetSize;
+da_sfWindow_Show sfWindow_Show;
+da_sfWindow_EnableKeyRepeat sfWindow_EnableKeyRepeat;
+da_sfWindow_SetIcon sfWindow_SetIcon;
+da_sfWindow_SetActive sfWindow_SetActive;
+da_sfWindow_Display sfWindow_Display;
+da_sfWindow_GetInput sfWindow_GetInput;
+da_sfWindow_SetFramerateLimit sfWindow_SetFramerateLimit;
+da_sfWindow_GetFrameTime sfWindow_GetFrameTime;
+da_sfWindow_SetJoystickThreshold sfWindow_SetJoystickThreshold;
+");

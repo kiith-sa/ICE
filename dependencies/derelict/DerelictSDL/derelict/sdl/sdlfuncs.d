@@ -85,232 +85,437 @@ else
 
 extern(C)
 {
-    mixin(gsharedString!() ~
-    "
     // SDL.h
-    int function(Uint32) SDL_Init;
-    int function(Uint32) SDL_InitSubSystem;
-    void function(Uint32) SDL_QuitSubSystem;
-    Uint32 function(Uint32) SDL_WasInit;
-    void function() SDL_Quit;
+    alias int function(Uint32) da_SDL_Init;
+    alias int function(Uint32) da_SDL_InitSubSystem;
+    alias void function(Uint32) da_SDL_QuitSubSystem;
+    alias Uint32 function(Uint32) da_SDL_WasInit;
+    alias void function() da_SDL_Quit;
 
     // SDL_active.h
-    Uint8 function() SDL_GetAppState;
+    alias Uint8 function() da_SDL_GetAppState;
 
     // SDL_audio.h
-    int function(in char*) SDL_AudioInit;
-    void function() SDL_AudioQuit;
-    char* function(char*,int) SDL_AudioDriverName;
-    int function(SDL_AudioSpec*,SDL_AudioSpec*) SDL_OpenAudio;
-    SDL_audiostatus function() SDL_GetAudioStatus;
-    void function(int) SDL_PauseAudio;
-    SDL_AudioSpec* function(SDL_RWops*,int,SDL_AudioSpec*,Uint8**,Uint32*) SDL_LoadWAV_RW;
-    void function(Uint8*) SDL_FreeWAV;
-    int function(SDL_AudioCVT*,Uint16,Uint8,int,Uint16,Uint8,int) SDL_BuildAudioCVT;
-    int function(SDL_AudioCVT*) SDL_ConvertAudio;
-    void function(Uint8*,in Uint8*,Uint32,int) SDL_MixAudio;
-    void function() SDL_LockAudio;
-    void function() SDL_UnlockAudio;
-    void function() SDL_CloseAudio;
+    alias int function(in char*) da_SDL_AudioInit;
+    alias void function() da_SDL_AudioQuit;
+    alias char* function(char*,int) da_SDL_AudioDriverName;
+    alias int function(SDL_AudioSpec*,SDL_AudioSpec*) da_SDL_OpenAudio;
+    alias SDL_audiostatus function() da_SDL_GetAudioStatus;
+    alias void function(int) da_SDL_PauseAudio;
+    alias SDL_AudioSpec* function(SDL_RWops*,int,SDL_AudioSpec*,Uint8**,Uint32*) da_SDL_LoadWAV_RW;
+    alias void function(Uint8*) da_SDL_FreeWAV;
+    alias int function(SDL_AudioCVT*,Uint16,Uint8,int,Uint16,Uint8,int) da_SDL_BuildAudioCVT;
+    alias int function(SDL_AudioCVT*) da_SDL_ConvertAudio;
+    alias void function(Uint8*,in Uint8*,Uint32,int) da_SDL_MixAudio;
+    alias void function() da_SDL_LockAudio;
+    alias void function() da_SDL_UnlockAudio;
+    alias void function() da_SDL_CloseAudio;
 
     // SDL_cdrom.h
-    int function() SDL_CDNumDrives;
-    CCPTR function(int) SDL_CDName;
-    SDL_CD* function(int) SDL_CDOpen;
-    CDstatus function(SDL_CD*) SDL_CDStatus;
-    int function(SDL_CD*,int,int,int,int) SDL_CDPlayTracks;
-    int function(SDL_CD*,int,int) SDL_CDPlay;
-    int function(SDL_CD*) SDL_CDPause;
-    int function(SDL_CD*) SDL_CDResume;
-    int function(SDL_CD*) SDL_CDStop;
-    int function(SDL_CD*) SDL_CDEject;
-    int function(SDL_CD*) SDL_CDClose;
+    alias int function() da_SDL_CDNumDrives;
+    alias CCPTR function(int) da_SDL_CDName;
+    alias SDL_CD* function(int) da_SDL_CDOpen;
+    alias CDstatus function(SDL_CD*) da_SDL_CDStatus;
+    alias int function(SDL_CD*,int,int,int,int) da_SDL_CDPlayTracks;
+    alias int function(SDL_CD*,int,int) da_SDL_CDPlay;
+    alias int function(SDL_CD*) da_SDL_CDPause;
+    alias int function(SDL_CD*) da_SDL_CDResume;
+    alias int function(SDL_CD*) da_SDL_CDStop;
+    alias int function(SDL_CD*) da_SDL_CDEject;
+    alias int function(SDL_CD*) da_SDL_CDClose;
 
     // SDL_cpuinfo.h
-    SDL_bool function() SDL_HasRDTSC;
-    SDL_bool function() SDL_HasMMX;
-    SDL_bool function() SDL_HasMMXExt;
-    SDL_bool function() SDL_Has3DNow;
-    SDL_bool function() SDL_Has3DNowExt;
-    SDL_bool function() SDL_HasSSE;
-    SDL_bool function() SDL_HasSSE2;
-    SDL_bool function() SDL_HasAltiVec;
+    alias SDL_bool function() da_SDL_HasRDTSC;
+    alias SDL_bool function() da_SDL_HasMMX;
+    alias SDL_bool function() da_SDL_HasMMXExt;
+    alias SDL_bool function() da_SDL_Has3DNow;
+    alias SDL_bool function() da_SDL_Has3DNowExt;
+    alias SDL_bool function() da_SDL_HasSSE;
+    alias SDL_bool function() da_SDL_HasSSE2;
+    alias SDL_bool function() da_SDL_HasAltiVec;
 
     // SDL_error.h
-    void function(in char*,...) SDL_SetError;
-    char* function() SDL_GetError;
-    void function() SDL_ClearError;
+    alias void function(in char*,...) da_SDL_SetError;
+    alias char* function() da_SDL_GetError;
+    alias void function() da_SDL_ClearError;
 
     // SDL_events.h
-    void function() SDL_PumpEvents;
-    int function(SDL_Event*,int,SDL_eventaction,Uint32) SDL_PeepEvents;
-    int function(SDL_Event*) SDL_PollEvent;
-    int function(SDL_Event*) SDL_WaitEvent;
-    int function(SDL_Event*) SDL_PushEvent;
-    void function(SDL_EventFilter) SDL_SetEventFilter;
-    SDL_EventFilter function() SDL_GetEventFilter;
-    Uint8 function(Uint8,int) SDL_EventState;
+    alias void function() da_SDL_PumpEvents;
+    alias int function(SDL_Event*,int,SDL_eventaction,Uint32) da_SDL_PeepEvents;
+    alias int function(SDL_Event*) da_SDL_PollEvent;
+    alias int function(SDL_Event*) da_SDL_WaitEvent;
+    alias int function(SDL_Event*) da_SDL_PushEvent;
+    alias void function(SDL_EventFilter) da_SDL_SetEventFilter;
+    alias SDL_EventFilter function() da_SDL_GetEventFilter;
+    alias Uint8 function(Uint8,int) da_SDL_EventState;
 
     // SDL_joystick.h
-    int function() SDL_NumJoysticks;
-    CCPTR function(int) SDL_JoystickName;
-    SDL_Joystick* function(int) SDL_JoystickOpen;
-    int function(int) SDL_JoystickOpened;
-    int function(SDL_Joystick*) SDL_JoystickIndex;
-    int function(SDL_Joystick*) SDL_JoystickNumAxes;
-    int function(SDL_Joystick*) SDL_JoystickNumBalls;
-    int function(SDL_Joystick*) SDL_JoystickNumHats;
-    int function(SDL_Joystick*) SDL_JoystickNumButtons;
-    void function() SDL_JoystickUpdate;
-    int function(int) SDL_JoystickEventState;
-    Sint16 function(SDL_Joystick*,int) SDL_JoystickGetAxis;
-    Uint8 function(SDL_Joystick*,int) SDL_JoystickGetHat;
-    int function(SDL_Joystick*,int,int*,int*) SDL_JoystickGetBall;
-    Uint8 function(SDL_Joystick*,int) SDL_JoystickGetButton;
-    void function(SDL_Joystick*) SDL_JoystickClose;
+    alias int function() da_SDL_NumJoysticks;
+    alias CCPTR function(int) da_SDL_JoystickName;
+    alias SDL_Joystick* function(int) da_SDL_JoystickOpen;
+    alias int function(int) da_SDL_JoystickOpened;
+    alias int function(SDL_Joystick*) da_SDL_JoystickIndex;
+    alias int function(SDL_Joystick*) da_SDL_JoystickNumAxes;
+    alias int function(SDL_Joystick*) da_SDL_JoystickNumBalls;
+    alias int function(SDL_Joystick*) da_SDL_JoystickNumHats;
+    alias int function(SDL_Joystick*) da_SDL_JoystickNumButtons;
+    alias void function() da_SDL_JoystickUpdate;
+    alias int function(int) da_SDL_JoystickEventState;
+    alias Sint16 function(SDL_Joystick*,int) da_SDL_JoystickGetAxis;
+    alias Uint8 function(SDL_Joystick*,int) da_SDL_JoystickGetHat;
+    alias int function(SDL_Joystick*,int,int*,int*) da_SDL_JoystickGetBall;
+    alias Uint8 function(SDL_Joystick*,int) da_SDL_JoystickGetButton;
+    alias void function(SDL_Joystick*) da_SDL_JoystickClose;
 
     // SDL_keyboard.h
-    int function(int) SDL_EnableUNICODE;
-    int function(int,int) SDL_EnableKeyRepeat;
-    void function(int*,int*) SDL_GetKeyRepeat;
-    Uint8* function(int*) SDL_GetKeyState;
-    SDLMod function() SDL_GetModState;
-    void function(SDLMod) SDL_SetModState;
-    char* function(SDLKey key) SDL_GetKeyName;
+    alias int function(int) da_SDL_EnableUNICODE;
+    alias int function(int,int) da_SDL_EnableKeyRepeat;
+    alias void function(int*,int*) da_SDL_GetKeyRepeat;
+    alias Uint8* function(int*) da_SDL_GetKeyState;
+    alias SDLMod function() da_SDL_GetModState;
+    alias void function(SDLMod) da_SDL_SetModState;
+    alias char* function(SDLKey key) da_SDL_GetKeyName;
 
     // SDL_loadso.h
-    void* function(in char*) SDL_LoadObject;
-    void* function(in void*,char*) SDL_LoadFunction;
-    void function(void*) SDL_UnloadObject;
+    alias void* function(in char*) da_SDL_LoadObject;
+    alias void* function(in void*,char*) da_SDL_LoadFunction;
+    alias void function(void*) da_SDL_UnloadObject;
 
     // SDL_mouse.h
-    Uint8 function(int*,int*) SDL_GetMouseState;
-    Uint8 function(int*,int*) SDL_GetRelativeMouseState;
-    void function(Uint16,Uint16) SDL_WarpMouse;
-    SDL_Cursor* function(Uint8*,Uint8*,int,int,int,int) SDL_CreateCursor;
-    void function(SDL_Cursor*) SDL_SetCursor;
-    SDL_Cursor* function() SDL_GetCursor;
-    void function(SDL_Cursor*) SDL_FreeCursor;
-    int function(int) SDL_ShowCursor;
+    alias Uint8 function(int*,int*) da_SDL_GetMouseState;
+    alias Uint8 function(int*,int*) da_SDL_GetRelativeMouseState;
+    alias void function(Uint16,Uint16) da_SDL_WarpMouse;
+    alias SDL_Cursor* function(Uint8*,Uint8*,int,int,int,int) da_SDL_CreateCursor;
+    alias void function(SDL_Cursor*) da_SDL_SetCursor;
+    alias SDL_Cursor* function() da_SDL_GetCursor;
+    alias void function(SDL_Cursor*) da_SDL_FreeCursor;
+    alias int function(int) da_SDL_ShowCursor;
 
     // SDL_mutex.h
-    SDL_mutex* function() SDL_CreateMutex;
-    int function(SDL_mutex*) SDL_mutexP;
-    int function(SDL_mutex*) SDL_mutexV;
-    void function(SDL_mutex*) SDL_DestroyMutex;
-    SDL_sem* function(Uint32) SDL_CreateSemaphore;
-    void function(SDL_sem*) SDL_DestroySemaphore;
-    int function(SDL_sem*) SDL_SemWait;
-    int function(SDL_sem*) SDL_SemTryWait;
-    int function(SDL_sem*,Uint32) SDL_SemWaitTimeout;
-    int function(SDL_sem*) SDL_SemPost;
-    Uint32 function(SDL_sem*) SDL_SemValue;
-    SDL_cond* function() SDL_CreateCond;
-    void function(SDL_cond*) SDL_DestroyCond;
-    int function(SDL_cond*) SDL_CondSignal;
-    int function(SDL_cond*) SDL_CondBroadcast;
-    int function(SDL_cond*,SDL_mutex*) SDL_CondWait;
-    int function(SDL_cond*,SDL_mutex*,Uint32) SDL_CondWaitTimeout;
+    alias SDL_mutex* function() da_SDL_CreateMutex;
+    alias int function(SDL_mutex*) da_SDL_mutexP;
+    alias int function(SDL_mutex*) da_SDL_mutexV;
+    alias void function(SDL_mutex*) da_SDL_DestroyMutex;
+    alias SDL_sem* function(Uint32) da_SDL_CreateSemaphore;
+    alias void function(SDL_sem*) da_SDL_DestroySemaphore;
+    alias int function(SDL_sem*) da_SDL_SemWait;
+    alias int function(SDL_sem*) da_SDL_SemTryWait;
+    alias int function(SDL_sem*,Uint32) da_SDL_SemWaitTimeout;
+    alias int function(SDL_sem*) da_SDL_SemPost;
+    alias Uint32 function(SDL_sem*) da_SDL_SemValue;
+    alias SDL_cond* function() da_SDL_CreateCond;
+    alias void function(SDL_cond*) da_SDL_DestroyCond;
+    alias int function(SDL_cond*) da_SDL_CondSignal;
+    alias int function(SDL_cond*) da_SDL_CondBroadcast;
+    alias int function(SDL_cond*,SDL_mutex*) da_SDL_CondWait;
+    alias int function(SDL_cond*,SDL_mutex*,Uint32) da_SDL_CondWaitTimeout;
 
     // SDL_rwops.h
-    SDL_RWops* function(in char*,in char*) SDL_RWFromFile;
-    SDL_RWops* function(FILE*,int) SDL_RWFromFP;
-    SDL_RWops* function(void*,int) SDL_RWFromMem;
-    SDL_RWops* function(in void*,int) SDL_RWFromConstMem;
-    SDL_RWops* function() SDL_AllocRW;
-    void function(SDL_RWops*) SDL_FreeRW;
-    Uint16 function(SDL_RWops*) SDL_ReadLE16;
-    Uint16 function(SDL_RWops*) SDL_ReadBE16;
-    Uint32 function(SDL_RWops*) SDL_ReadLE32;
-    Uint32 function(SDL_RWops*) SDL_ReadBE32;
-    Uint64 function(SDL_RWops*) SDL_ReadLE64;
-    Uint64 function(SDL_RWops*) SDL_ReadBE64;
-    Uint16 function(SDL_RWops*,Uint16) SDL_WriteLE16;
-    Uint16 function(SDL_RWops*,Uint16) SDL_WriteBE16;
-    Uint32 function(SDL_RWops*,Uint32) SDL_WriteLE32;
-    Uint32 function(SDL_RWops*,Uint32) SDL_WriteBE32;
-    Uint64 function(SDL_RWops*,Uint64) SDL_WriteLE64;
-    Uint64 function(SDL_RWops*,Uint64) SDL_WriteBE64;
+    alias SDL_RWops* function(in char*,in char*) da_SDL_RWFromFile;
+    alias SDL_RWops* function(FILE*,int) da_SDL_RWFromFP;
+    alias SDL_RWops* function(void*,int) da_SDL_RWFromMem;
+    alias SDL_RWops* function(in void*,int) da_SDL_RWFromConstMem;
+    alias SDL_RWops* function() da_SDL_AllocRW;
+    alias void function(SDL_RWops*) da_SDL_FreeRW;
+    alias Uint16 function(SDL_RWops*) da_SDL_ReadLE16;
+    alias Uint16 function(SDL_RWops*) da_SDL_ReadBE16;
+    alias Uint32 function(SDL_RWops*) da_SDL_ReadLE32;
+    alias Uint32 function(SDL_RWops*) da_SDL_ReadBE32;
+    alias Uint64 function(SDL_RWops*) da_SDL_ReadLE64;
+    alias Uint64 function(SDL_RWops*) da_SDL_ReadBE64;
+    alias Uint16 function(SDL_RWops*,Uint16) da_SDL_WriteLE16;
+    alias Uint16 function(SDL_RWops*,Uint16) da_SDL_WriteBE16;
+    alias Uint32 function(SDL_RWops*,Uint32) da_SDL_WriteLE32;
+    alias Uint32 function(SDL_RWops*,Uint32) da_SDL_WriteBE32;
+    alias Uint64 function(SDL_RWops*,Uint64) da_SDL_WriteLE64;
+    alias Uint64 function(SDL_RWops*,Uint64) da_SDL_WriteBE64;
 
     // SDL_version.h
-    CSDLVERPTR function() SDL_Linked_Version;
+    alias CSDLVERPTR function() da_SDL_Linked_Version;
 
     // SDL_syswm.h
-    int function(SDL_SysWMinfo*) SDL_GetWMInfo;
+    alias int function(SDL_SysWMinfo*) da_SDL_GetWMInfo;
 
     // SDL_thread.h
-    SDL_Thread* function(int function(void*) fm, void*) SDL_CreateThread;
-    Uint32 function() SDL_ThreadID;
-    Uint32 function(SDL_Thread*) SDL_GetThreadID;
-    void function(SDL_Thread*,int*) SDL_WaitThread;
-    void function(SDL_Thread*) SDL_KillThread;
+    alias SDL_Thread* function(int function(void*) fm, void*) da_SDL_CreateThread;
+    alias Uint32 function() da_SDL_ThreadID;
+    alias Uint32 function(SDL_Thread*) da_SDL_GetThreadID;
+    alias void function(SDL_Thread*,int*) da_SDL_WaitThread;
+    alias void function(SDL_Thread*) da_SDL_KillThread;
 
     // SDL_timer.h
-    Uint32 function() SDL_GetTicks;
-    void function(Uint32) SDL_Delay;
-    int function(Uint32,SDL_TimerCallback) SDL_SetTimer;
-    SDL_TimerID function(Uint32,SDL_NewTimerCallback,void*) SDL_AddTimer;
-    SDL_bool function(SDL_TimerID) SDL_RemoveTimer;
+    alias Uint32 function() da_SDL_GetTicks;
+    alias void function(Uint32) da_SDL_Delay;
+    alias int function(Uint32,SDL_TimerCallback) da_SDL_SetTimer;
+    alias SDL_TimerID function(Uint32,SDL_NewTimerCallback,void*) da_SDL_AddTimer;
+    alias SDL_bool function(SDL_TimerID) da_SDL_RemoveTimer;
 
     // SDL_video.h
-    int function(in char*,Uint32) SDL_VideoInit;
-    void function() SDL_VideoQuit;
-    char* function(char*,int) SDL_VideoDriverName;
-    SDL_Surface* function() SDL_GetVideoSurface;
-    SDLVIPTR function() SDL_GetVideoInfo;
-    int function(int,int,int,Uint32) SDL_VideoModeOK;
-    SDL_Rect** function(SDL_PixelFormat*,Uint32) SDL_ListModes;
-    SDL_Surface* function(int,int,int,Uint32) SDL_SetVideoMode;
-    void function(SDL_Surface*,int,SDL_Rect*) SDL_UpdateRects;
-    void function(SDL_Surface*,Sint32,Sint32,Uint32,Uint32) SDL_UpdateRect;
-    int function(SDL_Surface*) SDL_Flip;
-    int function(float,float,float) SDL_SetGamma;
-    int function(in Uint16*,in Uint16*,in Uint16*) SDL_SetGammaRamp;
-    int function(Uint16*,Uint16*,Uint16*) SDL_GetGammaRamp;
-    int function(SDL_Surface*,SDL_Color*,int,int) SDL_SetColors;
-    int function(SDL_Surface*,int,SDL_Color*,int,int) SDL_SetPalette;
-    Uint32 function(in SDL_PixelFormat*,in Uint8,in Uint8,in Uint8) SDL_MapRGB;
-    Uint32 function(in SDL_PixelFormat*, in Uint8,in Uint8,in Uint8,in Uint8) SDL_MapRGBA;
-    void function(Uint32,SDL_PixelFormat*,Uint8*,Uint8*,Uint8*) SDL_GetRGB;
-    void function(Uint32,SDL_PixelFormat*,Uint8*,Uint8*,Uint8*,Uint8*) SDL_GetRGBA;
-    SDL_Surface* function(Uint32,int,int,int,Uint32,Uint32,Uint32,Uint32) SDL_CreateRGBSurface;
-    SDL_Surface* function(void*,int,int,int,int,Uint32,Uint32,Uint32,Uint32) SDL_CreateRGBSurfaceFrom;
-    void function(SDL_Surface*) SDL_FreeSurface;
-    int function(SDL_Surface*) SDL_LockSurface;
-    void function(SDL_Surface*) SDL_UnlockSurface;
-    SDL_Surface* function(SDL_RWops*,int) SDL_LoadBMP_RW;
-    int function(SDL_Surface*,SDL_RWops*,int) SDL_SaveBMP_RW;
-    int function(SDL_Surface*,Uint32,Uint32) SDL_SetColorKey;
-    int function(SDL_Surface*,Uint32,Uint8) SDL_SetAlpha;
-    SDL_bool function(SDL_Surface*,in SDL_Rect*) SDL_SetClipRect;
-    void function(SDL_Surface*,SDL_Rect*) SDL_GetClipRect;
-    SDL_Surface* function(SDL_Surface*,SDL_PixelFormat*,Uint32) SDL_ConvertSurface;
-    int function(SDL_Surface*,SDL_Rect*,SDL_Surface*,SDL_Rect*) SDL_UpperBlit;
-    int function(SDL_Surface*,SDL_Rect*,SDL_Surface*,SDL_Rect*) SDL_LowerBlit;
-    int function(SDL_Surface*,SDL_Rect*,Uint32) SDL_FillRect;
-    SDL_Surface* function(SDL_Surface*) SDL_DisplayFormat;
-    SDL_Surface* function(SDL_Surface*) SDL_DisplayFormatAlpha;
-    SDL_Overlay* function(int,int,Uint32,SDL_Surface*) SDL_CreateYUVOverlay;
-    int function(SDL_Overlay*) SDL_LockYUVOverlay;
-    void function(SDL_Overlay*) SDL_UnlockYUVOverlay;
-    int function(SDL_Overlay*,SDL_Rect*) SDL_DisplayYUVOverlay;
-    void function(SDL_Overlay*) SDL_FreeYUVOverlay;
-    int function(in char*) SDL_GL_LoadLibrary;
-    void* function(in char*) SDL_GL_GetProcAddress;
-    int function(SDL_GLattr,int) SDL_GL_SetAttribute;
-    int function(SDL_GLattr,int*) SDL_GL_GetAttribute;
-    void function() SDL_GL_SwapBuffers;
-    void function(int,SDL_Rect*) SDL_GL_UpdateRects;
-    void function() SDL_GL_Lock;
-    void function() SDL_GL_Unlock;
-    void function(in char*,in char*) SDL_WM_SetCaption;
-    void function(char**,char**) SDL_WM_GetCaption;
-    void function(SDL_Surface*,Uint8*) SDL_WM_SetIcon;
-    int function() SDL_WM_IconifyWindow;
-    int function(SDL_Surface*) SDL_WM_ToggleFullScreen;
-    SDL_GrabMode function(SDL_GrabMode) SDL_WM_GrabInput;
-    ");
-
-    alias SDL_CreateRGBSurface SDL_AllocSurface;
-    alias SDL_UpperBlit SDL_BlitSurface;
+    alias int function(in char*,Uint32) da_SDL_VideoInit;
+    alias void function() da_SDL_VideoQuit;
+    alias char* function(char*,int) da_SDL_VideoDriverName;
+    alias SDL_Surface* function() da_SDL_GetVideoSurface;
+    alias SDLVIPTR function() da_SDL_GetVideoInfo;
+    alias int function(int,int,int,Uint32) da_SDL_VideoModeOK;
+    alias SDL_Rect** function(SDL_PixelFormat*,Uint32) da_SDL_ListModes;
+    alias SDL_Surface* function(int,int,int,Uint32) da_SDL_SetVideoMode;
+    alias void function(SDL_Surface*,int,SDL_Rect*) da_SDL_UpdateRects;
+    alias void function(SDL_Surface*,Sint32,Sint32,Uint32,Uint32) da_SDL_UpdateRect;
+    alias int function(SDL_Surface*) da_SDL_Flip;
+    alias int function(float,float,float) da_SDL_SetGamma;
+    alias int function(in Uint16*,in Uint16*,in Uint16*) da_SDL_SetGammaRamp;
+    alias int function(Uint16*,Uint16*,Uint16*) da_SDL_GetGammaRamp;
+    alias int function(SDL_Surface*,SDL_Color*,int,int) da_SDL_SetColors;
+    alias int function(SDL_Surface*,int,SDL_Color*,int,int) da_SDL_SetPalette;
+    alias Uint32 function(in SDL_PixelFormat*,in Uint8,in Uint8,in Uint8) da_SDL_MapRGB;
+    alias Uint32 function(in SDL_PixelFormat*, in Uint8,in Uint8,in Uint8,in Uint8) da_SDL_MapRGBA;
+    alias void function(Uint32,SDL_PixelFormat*,Uint8*,Uint8*,Uint8*) da_SDL_GetRGB;
+    alias void function(Uint32,SDL_PixelFormat*,Uint8*,Uint8*,Uint8*,Uint8*) da_SDL_GetRGBA;
+    alias SDL_Surface* function(Uint32,int,int,int,Uint32,Uint32,Uint32,Uint32) da_SDL_CreateRGBSurface;
+    alias SDL_Surface* function(void*,int,int,int,int,Uint32,Uint32,Uint32,Uint32) da_SDL_CreateRGBSurfaceFrom;
+    alias void function(SDL_Surface*) da_SDL_FreeSurface;
+    alias int function(SDL_Surface*) da_SDL_LockSurface;
+    alias void function(SDL_Surface*) da_SDL_UnlockSurface;
+    alias SDL_Surface* function(SDL_RWops*,int) da_SDL_LoadBMP_RW;
+    alias int function(SDL_Surface*,SDL_RWops*,int) da_SDL_SaveBMP_RW;
+    alias int function(SDL_Surface*,Uint32,Uint32) da_SDL_SetColorKey;
+    alias int function(SDL_Surface*,Uint32,Uint8) da_SDL_SetAlpha;
+    alias SDL_bool function(SDL_Surface*,in SDL_Rect*) da_SDL_SetClipRect;
+    alias void function(SDL_Surface*,SDL_Rect*) da_SDL_GetClipRect;
+    alias SDL_Surface* function(SDL_Surface*,SDL_PixelFormat*,Uint32) da_SDL_ConvertSurface;
+    alias int function(SDL_Surface*,SDL_Rect*,SDL_Surface*,SDL_Rect*) da_SDL_UpperBlit;
+    alias int function(SDL_Surface*,SDL_Rect*,SDL_Surface*,SDL_Rect*) da_SDL_LowerBlit;
+    alias int function(SDL_Surface*,SDL_Rect*,Uint32) da_SDL_FillRect;
+    alias SDL_Surface* function(SDL_Surface*) da_SDL_DisplayFormat;
+    alias SDL_Surface* function(SDL_Surface*) da_SDL_DisplayFormatAlpha;
+    alias SDL_Overlay* function(int,int,Uint32,SDL_Surface*) da_SDL_CreateYUVOverlay;
+    alias int function(SDL_Overlay*) da_SDL_LockYUVOverlay;
+    alias void function(SDL_Overlay*) da_SDL_UnlockYUVOverlay;
+    alias int function(SDL_Overlay*,SDL_Rect*) da_SDL_DisplayYUVOverlay;
+    alias void function(SDL_Overlay*) da_SDL_FreeYUVOverlay;
+    alias int function(in char*) da_SDL_GL_LoadLibrary;
+    alias void* function(in char*) da_SDL_GL_GetProcAddress;
+    alias int function(SDL_GLattr,int) da_SDL_GL_SetAttribute;
+    alias int function(SDL_GLattr,int*) da_SDL_GL_GetAttribute;
+    alias void function() da_SDL_GL_SwapBuffers;
+    alias void function(int,SDL_Rect*) da_SDL_GL_UpdateRects;
+    alias void function() da_SDL_GL_Lock;
+    alias void function() da_SDL_GL_Unlock;
+    alias void function(in char*,in char*) da_SDL_WM_SetCaption;
+    alias void function(char**,char**) da_SDL_WM_GetCaption;
+    alias void function(SDL_Surface*,Uint8*) da_SDL_WM_SetIcon;
+    alias int function() da_SDL_WM_IconifyWindow;
+    alias int function(SDL_Surface*) da_SDL_WM_ToggleFullScreen;
+    alias SDL_GrabMode function(SDL_GrabMode) da_SDL_WM_GrabInput;
 }
+
+mixin(gsharedString!() ~
+"
+da_SDL_Init SDL_Init;
+da_SDL_InitSubSystem SDL_InitSubSystem;
+da_SDL_QuitSubSystem SDL_QuitSubSystem;
+da_SDL_WasInit SDL_WasInit;
+da_SDL_Quit SDL_Quit;
+
+da_SDL_GetAppState SDL_GetAppState;
+
+da_SDL_AudioInit SDL_AudioInit;
+da_SDL_AudioQuit SDL_AudioQuit;
+da_SDL_AudioDriverName SDL_AudioDriverName;
+da_SDL_OpenAudio SDL_OpenAudio;
+da_SDL_GetAudioStatus SDL_GetAudioStatus;
+da_SDL_PauseAudio SDL_PauseAudio;
+da_SDL_LoadWAV_RW SDL_LoadWAV_RW;
+da_SDL_FreeWAV SDL_FreeWAV;
+da_SDL_BuildAudioCVT SDL_BuildAudioCVT;
+da_SDL_ConvertAudio SDL_ConvertAudio;
+da_SDL_MixAudio SDL_MixAudio;
+da_SDL_LockAudio SDL_LockAudio;
+da_SDL_UnlockAudio SDL_UnlockAudio;
+da_SDL_CloseAudio SDL_CloseAudio;
+
+da_SDL_CDNumDrives SDL_CDNumDrives;
+da_SDL_CDName SDL_CDName;
+da_SDL_CDOpen SDL_CDOpen;
+da_SDL_CDStatus SDL_CDStatus;
+da_SDL_CDPlayTracks SDL_CDPlayTracks;
+da_SDL_CDPlay SDL_CDPlay;
+da_SDL_CDPause SDL_CDPause;
+da_SDL_CDResume SDL_CDResume;
+da_SDL_CDStop SDL_CDStop;
+da_SDL_CDEject SDL_CDEject;
+da_SDL_CDClose SDL_CDClose;
+
+da_SDL_HasRDTSC SDL_HasRDTSC;
+da_SDL_HasMMX SDL_HasMMX;
+da_SDL_HasMMXExt SDL_HasMMXExt;
+da_SDL_Has3DNow SDL_Has3DNow;
+da_SDL_Has3DNowExt SDL_Has3DNowExt;
+da_SDL_HasSSE SDL_HasSSE;
+da_SDL_HasSSE2 SDL_HasSSE2;
+da_SDL_HasAltiVec SDL_HasAltiVec;
+
+da_SDL_SetError SDL_SetError;
+da_SDL_GetError SDL_GetError;
+da_SDL_ClearError SDL_ClearError;
+
+da_SDL_PumpEvents SDL_PumpEvents;
+da_SDL_PeepEvents SDL_PeepEvents;
+da_SDL_PollEvent SDL_PollEvent;
+da_SDL_WaitEvent SDL_WaitEvent;
+da_SDL_PushEvent SDL_PushEvent;
+da_SDL_SetEventFilter SDL_SetEventFilter;
+da_SDL_GetEventFilter SDL_GetEventFilter;
+da_SDL_EventState SDL_EventState;
+
+da_SDL_NumJoysticks SDL_NumJoysticks;
+da_SDL_JoystickName SDL_JoystickName;
+da_SDL_JoystickOpen SDL_JoystickOpen;
+da_SDL_JoystickOpened SDL_JoystickOpened;
+da_SDL_JoystickIndex SDL_JoystickIndex;
+da_SDL_JoystickNumAxes SDL_JoystickNumAxes;
+da_SDL_JoystickNumBalls SDL_JoystickNumBalls;
+da_SDL_JoystickNumHats SDL_JoystickNumHats;
+da_SDL_JoystickNumButtons SDL_JoystickNumButtons;
+da_SDL_JoystickUpdate SDL_JoystickUpdate;
+da_SDL_JoystickEventState SDL_JoystickEventState;
+da_SDL_JoystickGetAxis SDL_JoystickGetAxis;
+da_SDL_JoystickGetHat SDL_JoystickGetHat;
+da_SDL_JoystickGetBall SDL_JoystickGetBall;
+da_SDL_JoystickGetButton SDL_JoystickGetButton;
+da_SDL_JoystickClose SDL_JoystickClose;
+
+da_SDL_EnableUNICODE SDL_EnableUNICODE;
+da_SDL_EnableKeyRepeat SDL_EnableKeyRepeat;
+da_SDL_GetKeyRepeat SDL_GetKeyRepeat;
+da_SDL_GetKeyState SDL_GetKeyState;
+da_SDL_GetModState SDL_GetModState;
+da_SDL_SetModState SDL_SetModState;
+da_SDL_GetKeyName SDL_GetKeyName;
+
+da_SDL_LoadObject SDL_LoadObject;
+da_SDL_LoadFunction SDL_LoadFunction;
+da_SDL_UnloadObject SDL_UnloadObject;
+
+da_SDL_GetMouseState SDL_GetMouseState;
+da_SDL_GetRelativeMouseState SDL_GetRelativeMouseState;
+da_SDL_WarpMouse SDL_WarpMouse;
+da_SDL_CreateCursor SDL_CreateCursor;
+da_SDL_SetCursor SDL_SetCursor;
+da_SDL_GetCursor SDL_GetCursor;
+da_SDL_FreeCursor SDL_FreeCursor;
+da_SDL_ShowCursor SDL_ShowCursor;
+
+da_SDL_CreateMutex SDL_CreateMutex;
+da_SDL_mutexP SDL_mutexP;
+da_SDL_mutexV SDL_mutexV;
+da_SDL_DestroyMutex SDL_DestroyMutex;
+da_SDL_CreateSemaphore SDL_CreateSemaphore;
+da_SDL_DestroySemaphore SDL_DestroySemaphore;
+da_SDL_SemWait SDL_SemWait;
+da_SDL_SemTryWait SDL_SemTryWait;
+da_SDL_SemWaitTimeout SDL_SemWaitTimeout;
+da_SDL_SemPost SDL_SemPost;
+da_SDL_SemValue SDL_SemValue;
+da_SDL_CreateCond SDL_CreateCond;
+da_SDL_DestroyCond SDL_DestroyCond;
+da_SDL_CondSignal SDL_CondSignal;
+da_SDL_CondBroadcast SDL_CondBroadcast;
+da_SDL_CondWait SDL_CondWait;
+da_SDL_CondWaitTimeout SDL_CondWaitTimeout;
+
+da_SDL_RWFromFile SDL_RWFromFile;
+da_SDL_RWFromFP SDL_RWFromFP;
+da_SDL_RWFromMem SDL_RWFromMem;
+da_SDL_RWFromConstMem SDL_RWFromConstMem;
+da_SDL_AllocRW SDL_AllocRW;
+da_SDL_FreeRW SDL_FreeRW;
+da_SDL_ReadLE16 SDL_ReadLE16;
+da_SDL_ReadBE16 SDL_ReadBE16;
+da_SDL_ReadLE32 SDL_ReadLE32;
+da_SDL_ReadBE32 SDL_ReadBE32;
+da_SDL_ReadLE64 SDL_ReadLE64;
+da_SDL_ReadBE64 SDL_ReadBE64;
+da_SDL_WriteLE16 SDL_WriteLE16;
+da_SDL_WriteBE16 SDL_WriteBE16;
+da_SDL_WriteLE32 SDL_WriteLE32;
+da_SDL_WriteBE32 SDL_WriteBE32;
+da_SDL_WriteLE64 SDL_WriteLE64;
+da_SDL_WriteBE64 SDL_WriteBE64;
+
+da_SDL_Linked_Version SDL_Linked_Version;
+
+da_SDL_GetWMInfo SDL_GetWMInfo;
+
+da_SDL_CreateThread SDL_CreateThread;
+da_SDL_ThreadID SDL_ThreadID;
+da_SDL_GetThreadID SDL_GetThreadID;
+da_SDL_WaitThread SDL_WaitThread;
+da_SDL_KillThread SDL_KillThread;
+
+da_SDL_GetTicks SDL_GetTicks;
+da_SDL_Delay SDL_Delay;
+da_SDL_SetTimer SDL_SetTimer;
+da_SDL_AddTimer SDL_AddTimer;
+da_SDL_RemoveTimer SDL_RemoveTimer;
+
+da_SDL_VideoInit SDL_VideoInit;
+da_SDL_VideoQuit SDL_VideoQuit;
+da_SDL_VideoDriverName SDL_VideoDriverName;
+da_SDL_GetVideoSurface SDL_GetVideoSurface;
+da_SDL_GetVideoInfo SDL_GetVideoInfo;
+da_SDL_VideoModeOK SDL_VideoModeOK;
+da_SDL_ListModes SDL_ListModes;
+da_SDL_SetVideoMode SDL_SetVideoMode;
+da_SDL_UpdateRects SDL_UpdateRects;
+da_SDL_UpdateRect SDL_UpdateRect;
+da_SDL_Flip SDL_Flip;
+da_SDL_SetGamma SDL_SetGamma;
+da_SDL_SetGammaRamp SDL_SetGammaRamp;
+da_SDL_GetGammaRamp SDL_GetGammaRamp;
+da_SDL_SetColors SDL_SetColors;
+da_SDL_SetPalette SDL_SetPalette;
+da_SDL_MapRGB SDL_MapRGB;
+da_SDL_MapRGBA SDL_MapRGBA;
+da_SDL_GetRGB SDL_GetRGB;
+da_SDL_GetRGBA SDL_GetRGBA;
+da_SDL_CreateRGBSurface SDL_CreateRGBSurface;
+da_SDL_CreateRGBSurfaceFrom SDL_CreateRGBSurfaceFrom;
+da_SDL_FreeSurface SDL_FreeSurface;
+da_SDL_LockSurface SDL_LockSurface;
+da_SDL_UnlockSurface SDL_UnlockSurface;
+da_SDL_LoadBMP_RW SDL_LoadBMP_RW;
+da_SDL_SaveBMP_RW SDL_SaveBMP_RW;
+da_SDL_SetColorKey SDL_SetColorKey;
+da_SDL_SetAlpha SDL_SetAlpha;
+da_SDL_SetClipRect SDL_SetClipRect;
+da_SDL_GetClipRect SDL_GetClipRect;
+da_SDL_ConvertSurface SDL_ConvertSurface;
+da_SDL_UpperBlit SDL_UpperBlit;
+da_SDL_LowerBlit SDL_LowerBlit;
+da_SDL_FillRect SDL_FillRect;
+da_SDL_DisplayFormat SDL_DisplayFormat;
+da_SDL_DisplayFormatAlpha SDL_DisplayFormatAlpha;
+da_SDL_CreateYUVOverlay SDL_CreateYUVOverlay;
+da_SDL_LockYUVOverlay SDL_LockYUVOverlay;
+da_SDL_UnlockYUVOverlay SDL_UnlockYUVOverlay;
+da_SDL_DisplayYUVOverlay SDL_DisplayYUVOverlay;
+da_SDL_FreeYUVOverlay SDL_FreeYUVOverlay;
+da_SDL_GL_LoadLibrary SDL_GL_LoadLibrary;
+da_SDL_GL_GetProcAddress SDL_GL_GetProcAddress;
+da_SDL_GL_SetAttribute SDL_GL_SetAttribute;
+da_SDL_GL_GetAttribute SDL_GL_GetAttribute;
+da_SDL_GL_SwapBuffers SDL_GL_SwapBuffers;
+da_SDL_GL_UpdateRects SDL_GL_UpdateRects;
+da_SDL_GL_Lock SDL_GL_Lock;
+da_SDL_GL_Unlock SDL_GL_Unlock;
+da_SDL_WM_SetCaption SDL_WM_SetCaption;
+da_SDL_WM_GetCaption SDL_WM_GetCaption;
+da_SDL_WM_SetIcon SDL_WM_SetIcon;
+da_SDL_WM_IconifyWindow SDL_WM_IconifyWindow;
+da_SDL_WM_ToggleFullScreen SDL_WM_ToggleFullScreen;
+da_SDL_WM_GrabInput SDL_WM_GrabInput;
+");
+
+alias SDL_CreateRGBSurface SDL_AllocSurface;
+alias SDL_UpperBlit SDL_BlitSurface;

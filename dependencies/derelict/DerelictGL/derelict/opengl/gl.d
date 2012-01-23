@@ -147,14 +147,6 @@ public:
         extLoadAll();
     }
 
-    ///DPong
-    void loadExtensionsCustom()
-    {
-        if(!hasValidContext())
-            throw new DerelictException("An OpenGL context must be created and activated before attempting to load extensions.");
-        extLoadCustom();
-    }
-
     string[] loadedExtensionNames()
     {
         return getLoadedExtensionNames();
@@ -504,8 +496,11 @@ public:
         return _maxVersion;
     }
 
-    GLVersion loadModernVersions(GLVersion targetVersion)
+    GLVersion loadModernVersions(GLVersion targetVersion = GLVersion.GL30)
     {
+        if(!hasValidContext())
+            throw new DerelictException("An OpenGL context must be created and activated before attempting to load modern versions.");
+
         GLVersion maxAvail = findMaxAvailable();
         if(maxAvail < targetVersion)
             throw new DerelictException("Required GL version " ~ versionToString(targetVersion) ~ " is not available.");
@@ -529,7 +524,10 @@ public:
             bindExtendedFunc(cast(void**)&glEnablei, "glEnablei", doThrow);
             bindExtendedFunc(cast(void**)&glEndConditionalRender, "glEndConditionalRender", doThrow);
             bindExtendedFunc(cast(void**)&glEndTransformFeedback, "glEndTransformFeedback", doThrow);
+            bindExtendedFunc(cast(void**)&glBindBufferRange, "glBindBufferRange", doThrow);
+            bindExtendedFunc(cast(void**)&glBindBufferBase, "glBindBufferBase", doThrow);
             bindExtendedFunc(cast(void**)&glGetBooleani_v, "glGetBooleani_v", doThrow);
+            bindExtendedFunc(cast(void**)&glGetIntegeri_v, "glGetIntegeri_v", doThrow);
             bindExtendedFunc(cast(void**)&glGetFragDataLocation, "glGetFragDataLocation", doThrow);
             bindExtendedFunc(cast(void**)&glGetStringi, "glGetStringi", doThrow);
             bindExtendedFunc(cast(void**)&glGetTexParameterIiv, "glGetTexParameterIiv", doThrow);
@@ -538,6 +536,7 @@ public:
             bindExtendedFunc(cast(void**)&glTexParameterIiv, "glTexParameterIiv", doThrow);
             bindExtendedFunc(cast(void**)&glTexParameterIuiv, "glTexParameterIuiv", doThrow);
             bindExtendedFunc(cast(void**)&glTransformFeedbackVaryings, "glTransformFeedbackVaryings", doThrow);
+            bindExtendedFunc(cast(void**)&glGetTransformFeedbackVarying, "glGetTransformFeedbackVarying", doThrow);
             bindExtendedFunc(cast(void**)&glUniform1ui, "glUniform1ui", doThrow);
             bindExtendedFunc(cast(void**)&glUniform1uiv, "glUniform1uiv", doThrow);
             bindExtendedFunc(cast(void**)&glUniform2ui, "glUniform2ui", doThrow);
@@ -567,6 +566,9 @@ public:
             bindExtendedFunc(cast(void**)&glVertexAttribI4uiv, "glVertexAttribI4uiv", doThrow);
             bindExtendedFunc(cast(void**)&glVertexAttribI4usv, "glVertexAttribI4usv", doThrow);
             bindExtendedFunc(cast(void**)&glVertexAttribIPointer, "glVertexAttribIPointer", doThrow);
+            bindExtendedFunc(cast(void**)&glGetVertexAttribIiv, "glGetVertexAttribIiv", doThrow);
+            bindExtendedFunc(cast(void**)&glGetVertexAttribIuiv, "glGetVertexAttribIuiv", doThrow);
+            bindExtendedFunc(cast(void**)&glGetUniformuiv, "glGetUniformuiv", doThrow);
             bindExtendedFunc(cast(void**)&glGetStringi, "glGetStringi", doThrow);
 
             _maxVersion = GLVersion.GL30;
@@ -1042,5 +1044,6 @@ static this()
 
 static ~this()
 {
-    DerelictGL.unload();
+    if(SharedLibLoader.isAutoUnloadEnabled())
+        DerelictGL.unload();
 }

@@ -766,20 +766,39 @@ version(DerelictGL_ARB)
         GL_VERTEX_ARRAY_BINDING = 0x85B5,
 
         // GL_ARB_uniform_buffer_object
-        UNIFORM_BUFFER_ARB = 0x8A11,
-        UNIFORM_BUFFER_BINDING_ARB                      = 0x8A28,
-        UNIFORM_BUFFER_START_ARB                        = 0x8A29,
-        UNIFORM_BUFFER_SIZE_ARB                         = 0x8A2A,
-        MAX_VERTEX_UNIFORM_BLOCKS_ARB                   = 0x8A2B,
-        MAX_GEOMETRY_UNIFORM_BLOCKS_ARB                 = 0x8A2C,
-        MAX_FRAGMENT_UNIFORM_BLOCKS_ARB                 = 0x8A2D,
-        MAX_COMBINED_UNIFORM_BLOCKS_ARB                 = 0x8A2E,
-        MAX_UNIFORM_BUFFER_BINDINGS_ARB                 = 0x8A2F,
-        MAX_UNIFORM_BLOCK_SIZE_ARB                      = 0x8A30,
-        MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS_ARB      = 0x8A31,
-        MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS_ARB    = 0x8A32,
-        MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS_ARB    = 0x8A33,
-        UNIFORM_BUFFER_OFFSET_ALIGNMENT_ARB             = 0x8A34,
+        GL_UNIFORM_BUFFER                 = 0x8A11,
+        GL_UNIFORM_BUFFER_BINDING         = 0x8A28,
+        GL_UNIFORM_BUFFER_START           = 0x8A29,
+        GL_UNIFORM_BUFFER_SIZE            = 0x8A2A,
+        GL_MAX_VERTEX_UNIFORM_BLOCKS      = 0x8A2B,
+        GL_MAX_GEOMETRY_UNIFORM_BLOCKS    = 0x8A2C,
+        GL_MAX_FRAGMENT_UNIFORM_BLOCKS    = 0x8A2D,
+        GL_MAX_COMBINED_UNIFORM_BLOCKS    = 0x8A2E,
+        GL_MAX_UNIFORM_BUFFER_BINDINGS    = 0x8A2F,
+        GL_MAX_UNIFORM_BLOCK_SIZE         = 0x8A30,
+        GL_MAX_COMBINED_VERTEX_UNIFORM_COMPONENTS = 0x8A31,
+        GL_MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS = 0x8A32,
+        GL_MAX_COMBINED_FRAGMENT_UNIFORM_COMPONENTS = 0x8A33,
+        GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT = 0x8A34,
+        GL_ACTIVE_UNIFORM_BLOCK_MAX_NAME_LENGTH = 0x8A35,
+        GL_ACTIVE_UNIFORM_BLOCKS          = 0x8A36,
+        GL_UNIFORM_TYPE                   = 0x8A37,
+        GL_UNIFORM_SIZE                   = 0x8A38,
+        GL_UNIFORM_NAME_LENGTH            = 0x8A39,
+        GL_UNIFORM_BLOCK_INDEX            = 0x8A3A,
+        GL_UNIFORM_OFFSET                 = 0x8A3B,
+        GL_UNIFORM_ARRAY_STRIDE           = 0x8A3C,
+        GL_UNIFORM_MATRIX_STRIDE          = 0x8A3D,
+        GL_UNIFORM_IS_ROW_MAJOR           = 0x8A3E,
+        GL_UNIFORM_BLOCK_BINDING          = 0x8A3F,
+        GL_UNIFORM_BLOCK_DATA_SIZE        = 0x8A40,
+        GL_UNIFORM_BLOCK_NAME_LENGTH      = 0x8A41,
+        GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS  = 0x8A42,
+        GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES = 0x8A43,
+        GL_UNIFORM_BLOCK_REFERENCED_BY_VERTEX_SHADER = 0x8A44,
+        GL_UNIFORM_BLOCK_REFERENCED_BY_GEOMETRY_SHADER = 0x8A45,
+        GL_UNIFORM_BLOCK_REFERENCED_BY_FRAGMENT_SHADER = 0x8A46,
+        GL_INVALID_INDEX                  = 0xFFFFFFFFu,
 
         // GL_ARB_vertex_attrib_64bit
         GL_DOUBLE_MAT2          = 0x8F46,
@@ -836,6 +855,12 @@ version(DerelictGL_ARB)
         GL_UNKNOWN_CONTEXT_RESET_ARB            = 0x8255,
         GL_RESET_NOTIFICATION_STRATEGY_ARB      = 0x8256,
         GL_NO_RESET_NOTIFICATION_ARB            = 0x8261,
+
+        // GL_ARB_depth_clamp
+        GL_DEPTH_CLAMP                          = 0x864F,
+
+        // GL_ARB_sampler_objects
+        GL_SAMPLER_BINDING                      = 0x8919,
     }
 }
 

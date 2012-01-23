@@ -134,7 +134,7 @@ alias SymbolLoadException SharedLibProcLoadException;
 * the shared library to continue loading. Returning false will cause the exception
 * to be thrown.
 */
-alias bool function(string libName, string procName) MissingSymbolCallback;
+alias bool function(string libName, string symbolName) MissingSymbolCallback;
 alias MissingSymbolCallback MissingProcCallback;
 
 private MissingSymbolCallback missingSymbolCallback;
@@ -145,7 +145,7 @@ public void Derelict_HandleMissingSymbol(string libName, string symbolName)
     if(missingSymbolCallback !is null)
         result = missingSymbolCallback(libName, symbolName);
     if(!result)
-        throw new SharedLibProcLoadException(libName, symbolName);
+        throw new SymbolLoadException(libName, symbolName);
 }
 alias Derelict_HandleMissingSymbol Derelict_HandleMissingProc;
 

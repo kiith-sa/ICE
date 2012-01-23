@@ -56,15 +56,15 @@ private
 struct __GLXcontextRec {}
 struct __GLXFBConfigRec {}
 
-typedef uint GLXContentID;
-typedef uint GLXPixmap;
-typedef uint GLXDrawable;
-typedef uint GLXPbuffer;
-typedef uint GLXWindow;
-typedef uint GLXFBConfigID;
+alias uint GLXContentID;
+alias uint GLXPixmap;
+alias uint GLXDrawable;
+alias uint GLXPbuffer;
+alias uint GLXWindow;
+alias uint GLXFBConfigID;
 
-typedef __GLXcontextRec *GLXContext;      // __GLXcontextRec type is opaque
-typedef __GLXFBConfigRec *GLXFBConfig;    // __GLXFBConfigRec type is opaque
+alias __GLXcontextRec *GLXContext;      // __GLXcontextRec type is opaque
+alias __GLXFBConfigRec *GLXFBConfig;    // __GLXFBConfigRec type is opaque
 
 /*
  * GLX Events
@@ -95,53 +95,52 @@ union GLXEvent
 
 extern (C)
 {
-     mixin(gsharedString!() ~
-     "
-     XVisualInfo* function(Display*,int,int*) glXChooseVisual;
-     void function(Display*,GLXContext,GLXContext,uint) glXCopyContext;
-     GLXContext function(Display*,XVisualInfo*,GLXContext,Bool) glXCreateContext;
-     GLXPixmap function(Display*,XVisualInfo*,Pixmap) glXCreateGLXPixmap;
-     void function(Display*,GLXContext) glXDestroyContext;
-     void function(Display*,GLXPixmap) glXDestroyGLXPixmap;
-     int  function(Display*,XVisualInfo*,int,int*) glXGetConfig;
-     GLXContext function() glXGetCurrentContext;
-     GLXDrawable function() glXGetCurrentDrawable;
-     Bool function(Display*,GLXContext) glXIsDirect;
-     Bool function(Display*,GLXDrawable,GLXContext) glXMakeCurrent;
-     Bool function(Display*,int*,int*) glXQueryExtension;
-     Bool function(Display*,int*,int*) glXQueryVersion;
-     void function(Display*,GLXDrawable) glXSwapBuffers;
-     void function(Font,int,int,int) glXUseXFont;
-     void function() glXWaitGL;
-     void function() glXWaitX;
-     char* function(Display*,int) glXGetClientString;
-     char* function(Display*,int,int) glXQueryServerString;
-     char* function(Display*,int) glXQueryExtensionsString;
+    alias XVisualInfo* function(Display*,int,int*) da_glXChooseVisual;
+    alias void function(Display*,GLXContext,GLXContext,uint) da_glXCopyContext;
+    alias GLXContext function(Display*,XVisualInfo*,GLXContext,Bool) da_glXCreateContext;
+    alias GLXPixmap function(Display*,XVisualInfo*,Pixmap) da_glXCreateGLXPixmap;
+    alias void function(Display*,GLXContext) da_glXDestroyContext;
+    alias void function(Display*,GLXPixmap) da_glXDestroyGLXPixmap;
+    alias int  function(Display*,XVisualInfo*,int,int*) da_glXGetConfig;
+    alias GLXContext function() da_glXGetCurrentContext;
+    alias GLXDrawable function() da_glXGetCurrentDrawable;
+    alias Bool function(Display*,GLXContext) da_glXIsDirect;
+    alias Bool function(Display*,GLXDrawable,GLXContext) da_glXMakeCurrent;
+    alias Bool function(Display*,int*,int*) da_glXQueryExtension;
+    alias Bool function(Display*,int*,int*) da_glXQueryVersion;
+    alias void function(Display*,GLXDrawable) da_glXSwapBuffers;
+    alias void function(Font,int,int,int) da_glXUseXFont;
+    alias void function() da_glXWaitGL;
+    alias void function() da_glXWaitX;
+    alias char* function(Display*,int) da_glXGetClientString;
+    alias char* function(Display*,int,int) da_glXQueryServerString;
+    alias char* function(Display*,int) da_glXQueryExtensionsString;
 
     /* GLX 1.3 */
 
-     GLXFBConfig* function(Display*,int,int*) glXGetFBConfigs;
-     GLXFBConfig* function(Display*,int,int*,int*) glXChooseFBConfig;
-     int  function(Display*,GLXFBConfig,int,int*) glXGetFBConfigAttrib;
-     XVisualInfo* function(Display*,GLXFBConfig) glXGetVisualFromFBConfig;
-     GLXWindow function(Display*,GLXFBConfig,Window,int*) glXCreateWindow;
-     void function(Display*,GLXWindow) glXDestroyWindow;
-     GLXPixmap function(Display*,GLXFBConfig,Pixmap,int*) glXCreatePixmap;
-     void function(Display*,GLXPixmap) glXDestroyPixmap;
-     GLXPbuffer function(Display*,GLXFBConfig,int*) glXCreatePbuffer;
-     void function(Display*,GLXPbuffer) glXDestroyPbuffer;
-     void function(Display*,GLXDrawable,int,uint*) glXQueryDrawable;
-     GLXContext function(Display*,GLXFBConfig,int,GLXContext,Bool) glXCreateNewContext;
-     Bool function(Display*,GLXDrawable,GLXDrawable,GLXContext) glXMakeContextCurrent;
-     GLXDrawable function() glXGetCurrentReadDrawable;
-     Display* function() glXGetCurrentDisplay;
-     int  function(Display*,GLXContext,int,int*) glXQueryContext;
-     void function(Display*,GLXDrawable,uint) glXSelectEvent;
-     void function(Display*,GLXDrawable,uint*) glXGetSelectedEvent;
+    alias GLXFBConfig* function(Display*,int,int*) da_glXGetFBConfigs;
+    alias GLXFBConfig* function(Display*,int,int*,int*) da_glXChooseFBConfig;
+    alias int  function(Display*,GLXFBConfig,int,int*) da_glXGetFBConfigAttrib;
+    alias XVisualInfo* function(Display*,GLXFBConfig) da_glXGetVisualFromFBConfig;
+    alias GLXWindow function(Display*,GLXFBConfig,Window,int*) da_glXCreateWindow;
+    alias void function(Display*,GLXWindow) da_glXDestroyWindow;
+    alias GLXPixmap function(Display*,GLXFBConfig,Pixmap,int*) da_glXCreatePixmap;
+    alias void function(Display*,GLXPixmap) da_glXDestroyPixmap;
+    alias GLXPbuffer function(Display*,GLXFBConfig,int*) da_glXCreatePbuffer;
+    alias void function(Display*,GLXPbuffer) da_glXDestroyPbuffer;
+    alias void function(Display*,GLXDrawable,int,uint*) da_glXQueryDrawable;
+    alias GLXContext function(Display*,GLXFBConfig,int,GLXContext,Bool) da_glXCreateNewContext;
+    alias Bool function(Display*,GLXDrawable,GLXDrawable,GLXContext) da_glXMakeContextCurrent;
+    alias GLXDrawable function() da_glXGetCurrentReadDrawable;
+    alias Display* function() da_glXGetCurrentDisplay;
+    alias int  function(Display*,GLXContext,int,int*) da_glXQueryContext;
+    alias void function(Display*,GLXDrawable,uint) da_glXSelectEvent;
+    alias void function(Display*,GLXDrawable,uint*) da_glXGetSelectedEvent;
 
     /* GLX 1.4+ */
-     void* function(CCPTR) glXGetProcAddress;
-     ");
+    alias void* function(CCPTR) da_glXGetProcAddress;
+
+
 }
 
 /* GLX extensions -- legacy */
@@ -189,6 +188,56 @@ Bool                    function(Display*,GLXDrawable,int*)
                             glXDrawableAttribARB;
 
 +/
+
+
+mixin(gsharedString!() ~
+"
+da_glXChooseVisual glXChooseVisual;
+da_glXCopyContext glXCopyContext;
+da_glXCreateContext glXCreateContext;
+da_glXCreateGLXPixmap glXCreateGLXPixmap;
+da_glXDestroyContext glXDestroyContext;
+da_glXDestroyGLXPixmap glXDestroyGLXPixmap;
+da_glXGetConfig glXGetConfig;
+da_glXGetCurrentContext glXGetCurrentContext;
+da_glXGetCurrentDrawable glXGetCurrentDrawable;
+da_glXIsDirect glXIsDirect;
+da_glXMakeCurrent glXMakeCurrent;
+da_glXQueryExtension glXQueryExtension;
+da_glXQueryVersion glXQueryVersion;
+da_glXSwapBuffers glXSwapBuffers;
+da_glXUseXFont glXUseXFont;
+da_glXWaitGL glXWaitGL;
+da_glXWaitX glXWaitX;
+da_glXGetClientString glXGetClientString;
+da_glXQueryServerString glXQueryServerString;
+da_glXQueryExtensionsString glXQueryExtensionsString;
+
+/* GLX 1.3 */
+
+da_glXGetFBConfigs glXGetFBConfigs;
+da_glXChooseFBConfig glXChooseFBConfig;
+da_glXGetFBConfigAttrib glXGetFBConfigAttrib;
+da_glXGetVisualFromFBConfig glXGetVisualFromFBConfig;
+da_glXCreateWindow glXCreateWindow;
+da_glXDestroyWindow glXDestroyWindow;
+da_glXCreatePixmap glXCreatePixmap;
+da_glXDestroyPixmap glXDestroyPixmap;
+da_glXCreatePbuffer glXCreatePbuffer;
+da_glXDestroyPbuffer glXDestroyPbuffer;
+da_glXQueryDrawable glXQueryDrawable;
+da_glXCreateNewContext glXCreateNewContext;
+da_glXMakeContextCurrent glXMakeContextCurrent;
+da_glXGetCurrentReadDrawable glXGetCurrentReadDrawable;
+da_glXGetCurrentDisplay glXGetCurrentDisplay;
+da_glXQueryContext glXQueryContext;
+da_glXSelectEvent glXSelectEvent;
+da_glXGetSelectedEvent glXGetSelectedEvent;
+
+/* GLX 1.4+ */
+da_glXGetProcAddress glXGetProcAddress;
+
+");
 
 package
 {

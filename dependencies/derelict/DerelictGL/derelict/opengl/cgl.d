@@ -66,10 +66,10 @@ version (CGL)
     /*
     ** CGL opaque data.
     */
-    typedef _CGLContextObject*              CGLContextObj;
-    typedef _CGLPixelFormatObject*          CGLPixelFormatObj;
-    typedef _CGLRendererInfoObject*         CGLRendererInfoObj;
-    typedef _CGLPBufferObject*              CGLPBufferObj;
+    alias _CGLContextObject*              CGLContextObj;
+    alias _CGLPixelFormatObject*          CGLPixelFormatObj;
+    alias _CGLRendererInfoObject*         CGLRendererInfoObj;
+    alias _CGLPBufferObject*              CGLPBufferObj;
 
     /*
     ** Attribute names for CGLChoosePixelFormat and CGLDescribePixelFormat.

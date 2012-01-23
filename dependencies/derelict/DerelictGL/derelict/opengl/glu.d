@@ -118,5 +118,6 @@ static this()
 
 static ~this()
 {
-    DerelictGLU.unload();
+    if(SharedLibLoader.isAutoUnloadEnabled())
+        DerelictGLU.unload();
 }

@@ -455,6 +455,22 @@ extern(System)
         void function(GLuint, GLint, GLsizei, GLint*) glGetnUniformivARB;
         void function(GLuint, GLint, GLsizei, GLuint*) glGetUniformuivARB;
         void function(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void*) glReadnPixelsARB;
+
+        // GL_ARB_sampler_objects
+        void function(GLuint, GLuint*) glGenSamplers;
+        void function(GLsizei, in GLuint*) glDeleteSamplers;
+        GLboolean function(GLuint) glIsSampler;
+        void function(GLuint, GLuint) glBindSampler;
+        void function(GLuint, GLenum, GLint) glSamplerParameteri;
+        void function(GLuint, GLenum, in GLint*) glSamplerParameteriv;
+        void function(GLuint, GLenum, GLfloat) glSamplerParameterf;
+        void function(GLuint, GLenum, in GLfloat*) glSamplerParameterfv;
+        void function(GLuint, GLenum, in GLint*) glSamplerParameterIiv;
+        void function(GLuint, GLenum, in GLuint*) glSamplerParameterIuiv;
+        void function(GLuint, GLenum, GLint*) glGetSamplerParameteriv;
+        void function(GLuint, GLenum, GLint*) glGetSamplerParameterIiv;
+        void function(GLuint, GLenum, GLfloat*) glGetSamplerParameterfv;
+        void function(GLuint, GLenum, GLuint*) glGetSamplerParameterIuiv;
     }
 
     version(DerelictGL_EXT)
@@ -1841,7 +1857,7 @@ extern(System)
             // WGL_ARB_pixel_format
             BOOL function(HDC, int, int, UINT, in int*, int*) wglGetPixelFormatAttribivARB;
             BOOL function(HDC, int, int, UINT, in int*, float*) wglGetPixelFormatAttribfvARB;
-            BOOL function(HDC, in int*, in float*, UINT, int*, UINT) wglChoosePixelFormatARB;
+            BOOL function(HDC, in int*, in float*, UINT, int*, UINT*) wglChoosePixelFormatARB;
 
             // WGL_ARB_make_current_read
             BOOL function(HDC, HDC, HGLRC) wglMakeContextCurrentARB;

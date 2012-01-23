@@ -165,10 +165,11 @@ DerelictALLoader DerelictAL;
 
 static this()
 {
-    DerelictAL = new DerelictALLoader();
+	DerelictAL = new DerelictALLoader();
 }
 
 static ~this()
 {
-    DerelictAL.unload();
+    if(SharedLibLoader.isAutoUnloadEnabled())
+    	DerelictAL.unload();
 }

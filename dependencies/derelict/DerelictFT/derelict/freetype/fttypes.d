@@ -53,21 +53,13 @@ alias short             FT_Short;
 alias ushort            FT_UShort;
 alias int               FT_Int;
 alias uint              FT_UInt;
+alias c_long            FT_Long;
+alias c_ulong           FT_ULong;
 
-// The C long type corresponds to either D's int or long type.
-// But it might depend on compiler as well as architechture?
-version(X86_64)
-{
-    alias long          FT_Long;
-    alias ulong         FT_ULong;
-} else {
-    alias int           FT_Long;
-    alias uint          FT_ULong;
-}
 
 alias short             FT_F2Dot14;
-alias FT_Long           FT_F26Dot6;
-alias FT_Long           FT_Fixed;
+alias c_long            FT_F26Dot6;
+alias c_long            FT_Fixed;
 alias int               FT_Error;
 alias void*             FT_Pointer;
 
@@ -796,24 +788,24 @@ enum T1_ParseState
 }
 */
 
-struct FT_RasterRec {}
-struct FT_LibraryRec {}
-struct FT_ModuleRec {}
-struct FT_DriverRec {}
-struct FT_RendererRec {}
-struct FT_Face_InternalRec {}
-struct FT_Size_InternalRec {}
-struct FT_SubGlyphRec {}
-struct FT_Slot_InternalRec {}
+struct FT_RasterRec;
+struct FT_LibraryRec;
+struct FT_ModuleRec;
+struct FT_DriverRec;
+struct FT_RendererRec;
+struct FT_Face_InternalRec;
+struct FT_Size_InternalRec;
+struct FT_SubGlyphRec;
+struct FT_Slot_InternalRec;
 
-struct FTC_FaceIDRec {}
-struct FTC_ManagerRec {}
-struct FTC_NodeRec {}
-struct FTC_CMapCacheRec {}
-struct FTC_ImageCacheRec {}
-struct FTC_SBitCacheRec {}
-struct FT_StrokerRec {}
-struct FT_IncrementalRec {}
+struct FTC_FaceIDRec;
+struct FTC_ManagerRec;
+struct FTC_NodeRec;
+struct FTC_CMapCacheRec;
+struct FTC_ImageCacheRec;
+struct FTC_SBitCacheRec;
+struct FT_StrokerRec;
+struct FT_IncrementalRec;
 
 // ftsystem.h
 union FT_StreamDesc
@@ -833,8 +825,8 @@ struct FT_MemoryRec
 struct FT_StreamRec
 {
  ubyte* base;
- uint size;
- uint pos;
+ c_ulong size;
+ c_ulong pos;
  FT_StreamDesc descriptor;
  FT_StreamDesc pathname;
  FT_Stream_IoFunc read;
@@ -1063,7 +1055,7 @@ struct FT_GlyphSlotRec
  FT_UInt num_subglyphs;
  FT_SubGlyph subglyphs;
  void* control_data;
- int control_len;
+ c_long control_len;
  FT_Pos lsb_delta;
  FT_Pos rsb_delta;
  void* other;
@@ -1236,6 +1228,58 @@ struct CID_FaceInfoRec
  FT_Int num_dicts;
  CID_FaceDict font_dicts;
  FT_ULong data_offset;
+}
+
+alias int PS_Dict_Keys;
+enum
+{
+    PS_DICT_FONT_TYPE,
+    PS_DICT_FONT_MATRIX,
+    PS_DICT_FONT_BBOX,
+    PS_DICT_PAINT_TYPE,
+    PS_DICT_FONT_NAME,
+    PS_DICT_UNIQUE_ID,
+    PS_DICT_NUM_CHAR_STRINGS,
+    PS_DICT_CHAR_STRING_KEY,
+    PS_DICT_CHAR_STRING,
+    PS_DICT_ENCODING_TYPE,
+    PS_DICT_ENCODING_ENTRY,
+    PS_DICT_NUM_SUBRS,
+    PS_DICT_SUBR,
+    PS_DICT_STD_HW,
+    PS_DICT_STD_VW,
+    PS_DICT_NUM_BLUE_VALUES,
+    PS_DICT_BLUE_VALUE,
+    PS_DICT_BLUE_FUZZ,
+    PS_DICT_NUM_OTHER_BLUES,
+    PS_DICT_OTHER_BLUE,
+    PS_DICT_NUM_FAMILY_BLUES,
+    PS_DICT_FAMILY_BLUE,
+    PS_DICT_NUM_FAMILY_OTHER_BLUES,
+    PS_DICT_FAMILY_OTHER_BLUE,
+    PS_DICT_BLUE_SCALE,
+    PS_DICT_BLUE_SHIFT,
+    PS_DICT_NUM_STEM_SNAP_H,
+    PS_DICT_STEM_SNAP_H,
+    PS_DICT_NUM_STEM_SNAP_V,
+    PS_DICT_STEM_SNAP_V,
+    PS_DICT_FORCE_BOLD,
+    PS_DICT_RND_STEM_UP,
+    PS_DICT_MIN_FEATURE,
+    PS_DICT_LEN_IV,
+    PS_DICT_PASSWORD,
+    PS_DICT_LANGUAGE_GROUP,
+    PS_DICT_VERSION,
+    PS_DICT_NOTICE,
+    PS_DICT_FULL_NAME,
+    PS_DICT_FAMILY_NAME,
+    PS_DICT_WEIGHT,
+    PS_DICT_IS_FIXED_PITCH,
+    PS_DICT_UNDERLINE_POSITION,
+    PS_DICT_UNDERLINE_THICKNESS,
+    PS_DICT_FS_TYPE,
+    PS_DICT_ITALIC_ANGLE,
+    PS_DICT_MAX = PS_DICT_ITALIC_ANGLE
 }
 
 // tttables.h
@@ -2504,14 +2548,14 @@ struct PSAux_ServiceRec
 extern(C)
 {
     // ftsystem.h
-    alias void* function( FT_Memory memory, int size )
+    alias void* function( FT_Memory memory, c_long size )
         FT_Alloc_Func;
     alias void  function( FT_Memory memory, void* block )
         FT_Free_Func;
-    alias void* function( FT_Memory memory, int cur_size, int new_size, void* block )
+    alias void* function( FT_Memory memory, c_long cur_size, c_long new_size, void* block )
         FT_Realloc_Func;
 
-    alias uint function( FT_Stream stream, uint offset, ubyte* buffer, uint count )
+    alias c_ulong function( FT_Stream stream, c_ulong offset, ubyte* buffer, c_ulong count )
         FT_Stream_IoFunc;
     alias void           function( FT_Stream stream )
         FT_Stream_CloseFunc;

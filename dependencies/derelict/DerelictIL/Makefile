@@ -1,7 +1,7 @@
 include ../inc/$(PLATFORM)_inc.mak
 include ../inc/$(DC)_inc.mak
 
-PACKAGE_PATH=derelict/il
+PACKAGE_PATH=derelict/devil
 IL_LIB=$(LIB_PRE)DerelictIL.$(LIB_EXT)
 ILU_LIB=$(LIB_PRE)DerelictILU.$(LIB_EXT)
 ILUT_LIB=$(LIB_PRE)DerelictILUT.$(LIB_EXT)
@@ -12,19 +12,19 @@ DerelictILU : $(ILU_LIB) copylib
 DerelictILUT : $(ILUT_LIB) copylib
 
 IL_SRC= \
-	derelict/devil/il.d \
-    derelict/devil/ilfuncs.d \
-    derelict/devil/iltypes.d
+	$(PACKAGE_PATH)/il.d \
+    $(PACKAGE_PATH)/ilfuncs.d \
+    $(PACKAGE_PATH)/iltypes.d
     
 ILU_SRC= \
-	derelict/devil/ilu.d \
-    derelict/devil/ilufuncs.d \
-    derelict/devil/ilutypes.d
+	$(PACKAGE_PATH)/ilu.d \
+    $(PACKAGE_PATH)/ilufuncs.d \
+    $(PACKAGE_PATH)/ilutypes.d
     
 ILUT_SRC= \
-	derelict/devil/ilut.d \
-    derelict/devil/ilutfuncs.d \
-    derelict/devil/iluttypes.d
+	$(PACKAGE_PATH)/ilut.d \
+    $(PACKAGE_PATH)/ilutfuncs.d \
+    $(PACKAGE_PATH)/iluttypes.d
     
 $(IL_LIB) : $(DC)_build_il
 $(ILU_LIB) : $(DC)_build_ilu

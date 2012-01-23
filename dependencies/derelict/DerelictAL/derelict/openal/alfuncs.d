@@ -35,115 +35,222 @@ private
 
 extern(C)
 {
-    mixin(gsharedString!() ~
-    "
-    void function(ALenum) alEnable;
-    void function(ALenum) alDisable;
-    ALboolean function(ALenum) alIsEnabled;
+    alias void function(ALenum) da_alEnable;
+    alias void function(ALenum) da_alDisable;
+    alias ALboolean function(ALenum) da_alIsEnabled;
 
-    CCPTR function(ALenum) alGetString;
-    void function(ALenum, ALboolean*) alGetBooleanv;
-    void function(ALenum, ALint*) alGetIntegerv;
-    void function(ALenum, ALfloat*) alGetFloatv;
-    void function(ALenum, ALdouble*) alGetDoublev;
-    ALboolean function(ALenum) alGetBoolean;
-    ALint function(ALenum) alGetInteger;
-    ALfloat function(ALenum) alGetFloat;
-    ALdouble function(ALenum) alGetDouble;
-    ALenum function() alGetError;
+    alias CCPTR function(ALenum) da_alGetString;
+    alias void function(ALenum, ALboolean*) da_alGetBooleanv;
+    alias void function(ALenum, ALint*) da_alGetIntegerv;
+    alias void function(ALenum, ALfloat*) da_alGetFloatv;
+    alias void function(ALenum, ALdouble*) da_alGetDoublev;
+    alias ALboolean function(ALenum) da_alGetBoolean;
+    alias ALint function(ALenum) da_alGetInteger;
+    alias ALfloat function(ALenum) da_alGetFloat;
+    alias ALdouble function(ALenum) da_alGetDouble;
+    alias ALenum function() da_alGetError;
 
-    ALboolean function(in char*) alIsExtensionPresent;
-    ALboolean function(in char*) alGetProcAddress;
-    ALenum function(in char*) alGetEnumValue;
+    alias ALboolean function(in char*) da_alIsExtensionPresent;
+    alias ALboolean function(in char*) da_alGetProcAddress;
+    alias ALenum function(in char*) da_alGetEnumValue;
 
-    void function(ALenum, ALfloat) alListenerf;
-    void function(ALenum, ALfloat, ALfloat, ALfloat) alListener3f;
-    void function(ALenum, in ALfloat*) alListenerfv;
-    void function(ALenum, ALint) alListeneri;
-    void function(ALenum, ALint, ALint, ALint) alListener3i;
-    void function(ALenum, in ALint*) alListeneriv;
+    alias void function(ALenum, ALfloat) da_alListenerf;
+    alias void function(ALenum, ALfloat, ALfloat, ALfloat) da_alListener3f;
+    alias void function(ALenum, in ALfloat*) da_alListenerfv;
+    alias void function(ALenum, ALint) da_alListeneri;
+    alias void function(ALenum, ALint, ALint, ALint) da_alListener3i;
+    alias void function(ALenum, in ALint*) da_alListeneriv;
 
-    void function(ALenum, ALfloat*) alGetListenerf;
-    void function(ALenum, ALfloat*, ALfloat*, ALfloat*) alGetListener3f;
-    void function(ALenum, ALfloat*) alGetListenerfv;
-    void function(ALenum, ALint*) alGetListeneri;
-    void function(ALenum, ALint*, ALint*, ALint*) alGetListener3i;
-    void function(ALenum, ALint*) alGetListeneriv;
+    alias void function(ALenum, ALfloat*) da_alGetListenerf;
+    alias void function(ALenum, ALfloat*, ALfloat*, ALfloat*) da_alGetListener3f;
+    alias void function(ALenum, ALfloat*) da_alGetListenerfv;
+    alias void function(ALenum, ALint*) da_alGetListeneri;
+    alias void function(ALenum, ALint*, ALint*, ALint*) da_alGetListener3i;
+    alias void function(ALenum, ALint*) da_alGetListeneriv;
 
-    void function(ALsizei, ALuint*) alGenSources;
-    void function(ALsizei, in ALuint*) alDeleteSources;
-    ALboolean function(ALuint) alIsSource;
+    alias void function(ALsizei, ALuint*) da_alGenSources;
+    alias void function(ALsizei, in ALuint*) da_alDeleteSources;
+    alias ALboolean function(ALuint) da_alIsSource;
 
-    void function(ALuint, ALenum, ALfloat) alSourcef;
-    void function(ALuint, ALenum, ALfloat, ALfloat, ALfloat) alSource3f;
-    void function(ALuint, ALenum, in ALfloat*) alSourcefv;
-    void function(ALuint, ALenum, ALint) alSourcei;
-    void function(ALuint, ALenum, ALint, ALint, ALint) alSource3i;
-    void function(ALuint, ALenum, in ALint*) alSourceiv;
+    alias void function(ALuint, ALenum, ALfloat) da_alSourcef;
+    alias void function(ALuint, ALenum, ALfloat, ALfloat, ALfloat) da_alSource3f;
+    alias void function(ALuint, ALenum, in ALfloat*) da_alSourcefv;
+    alias void function(ALuint, ALenum, ALint) da_alSourcei;
+    alias void function(ALuint, ALenum, ALint, ALint, ALint) da_alSource3i;
+    alias void function(ALuint, ALenum, in ALint*) da_alSourceiv;
 
+    alias void function(ALuint, ALenum, ALfloat*) da_alGetSourcef;
+    alias void function(ALuint, ALenum, ALfloat*, ALfloat*, ALfloat*) da_alGetSource3f;
+    alias void function(ALuint, ALenum, ALfloat*) da_alGetSourcefv;
+    alias void function(ALuint, ALenum, ALint*) da_alGetSourcei;
+    alias void function(ALuint, ALenum, ALint*, ALint*, ALint*) da_alGetSource3i;
+    alias void function(ALuint, ALenum, ALint*) da_alGetSourceiv;
 
-    void function(ALuint, ALenum, ALfloat*) alGetSourcef;
-    void function(ALuint, ALenum, ALfloat*, ALfloat*, ALfloat*) alGetSource3f;
-    void function(ALuint, ALenum, ALfloat*) alGetSourcefv;
-    void function(ALuint, ALenum, ALint*) alGetSourcei;
-    void function(ALuint, ALenum, ALint*, ALint*, ALint*) alGetSource3i;
-    void function(ALuint, ALenum, ALint*) alGetSourceiv;
+    alias void function(ALsizei, in ALuint*) da_alSourcePlayv;
+    alias void function(ALsizei, in ALuint*) da_alSourceStopv;
+    alias void function(ALsizei, in ALuint*) da_alSourceRewindv;
+    alias void function(ALsizei, in ALuint*) da_alSourcePausev;
+    alias void function(ALuint) da_alSourcePlay;
+    alias void function(ALuint) da_alSourcePause;
+    alias void function(ALuint) da_alSourceRewind;
+    alias void function(ALuint) da_alSourceStop;
 
-    void function(ALsizei, in ALuint*) alSourcePlayv;
-    void function(ALsizei, in ALuint*) alSourceStopv;
-    void function(ALsizei, in ALuint*) alSourceRewindv;
-    void function(ALsizei, in ALuint*) alSourcePausev;
-    void function(ALuint) alSourcePlay;
-    void function(ALuint) alSourcePause;
-    void function(ALuint) alSourceRewind;
-    void function(ALuint) alSourceStop;
+    alias void function(ALuint, ALsizei, ALuint*) da_alSourceQueueBuffers;
+    alias void function(ALuint, ALsizei, ALuint*) da_alSourceUnqueueBuffers;
 
-    void function(ALuint, ALsizei, ALuint*) alSourceQueueBuffers;
-    void function(ALuint, ALsizei, ALuint*) alSourceUnqueueBuffers;
+    alias void function(ALsizei, ALuint*) da_alGenBuffers;
+    alias void function(ALsizei, in ALuint*) da_alDeleteBuffers;
+    alias ALboolean function(ALuint) da_alIsBuffer;
+    alias void function(ALuint, ALenum, in ALvoid*, ALsizei, ALsizei) da_alBufferData;
 
-    void function(ALsizei, ALuint*) alGenBuffers;
-    void function(ALsizei, in ALuint*) alDeleteBuffers;
-    ALboolean function(ALuint) alIsBuffer;
-    void function(ALuint, ALenum, in ALvoid*, ALsizei, ALsizei) alBufferData;
+    alias void function(ALuint, ALenum, ALfloat) da_alBufferf;
+    alias void function(ALuint, ALenum, ALfloat, ALfloat, ALfloat) da_alBuffer3f;
+    alias void function(ALuint, ALenum, in ALfloat*) da_alBufferfv;
+    alias void function(ALuint, ALenum, ALint) da_alBufferi;
+    alias void function(ALuint, ALenum, ALint, ALint, ALint) da_alBuffer3i;
+    alias void function(ALuint, ALenum, in ALint*) da_alBufferiv;
 
-    void function(ALuint, ALenum, ALfloat) alBufferf;
-    void function(ALuint, ALenum, ALfloat, ALfloat, ALfloat) alBuffer3f;
-    void function(ALuint, ALenum, in ALfloat*) alBufferfv;
-    void function(ALuint, ALenum, ALint) alBufferi;
-    void function(ALuint, ALenum, ALint, ALint, ALint) alBuffer3i;
-    void function(ALuint, ALenum, in ALint*) alBufferiv;
+    alias void function(ALuint, ALenum, ALfloat*) da_alGetBufferf;
+    alias void function(ALuint, ALenum, ALfloat*, ALfloat*, ALfloat*) da_alGetBuffer3f;
+    alias void function(ALuint, ALenum, ALfloat*) da_alGetBufferfv;
+    alias void function(ALuint, ALenum, ALint*) da_alGetBufferi;
+    alias void function(ALuint, ALenum, ALint*, ALint*, ALint*) da_alGetBuffer3i;
+    alias void function(ALuint, ALenum, ALint*) da_alGetBufferiv;
 
-    void function(ALuint, ALenum, ALfloat*) alGetBufferf;
-    void function(ALuint, ALenum, ALfloat*, ALfloat*, ALfloat*) alGetBuffer3f;
-    void function(ALuint, ALenum, ALfloat*) alGetBufferfv;
-    void function(ALuint, ALenum, ALint*) alGetBufferi;
-    void function(ALuint, ALenum, ALint*, ALint*, ALint*) alGetBuffer3i;
-    void function(ALuint, ALenum, ALint*) alGetBufferiv;
+    alias void function(ALfloat) da_alDopplerFactor;
+    alias void function(ALfloat) da_alDopplerVelocity;
+    alias void function(ALfloat) da_alSpeedOfSound;
+    alias void function(ALenum) da_alDistanceModel;
 
-    void function(ALfloat) alDopplerFactor;
-    void function(ALfloat) alDopplerVelocity;
-    void function(ALfloat) alSpeedOfSound;
-    void function(ALenum) alDistanceModel;
-
-    ALCcontext* function(ALCdevice*, in ALCint*) alcCreateContext;
-    ALCboolean function(ALCcontext*) alcMakeContextCurrent;
-    void function(ALCcontext*) alcProcessContext;
-    void function(ALCcontext*) alcSuspendContext;
-    void function(ALCcontext*) alcDestroyContext;
-    ALCcontext* function() alcGetCurrentContext;
-    ALCdevice* function(ALCcontext*) alcGetContextsDevice;
-    ALCdevice* function(in char*) alcOpenDevice;
-    ALCboolean function(ALCdevice*) alcCloseDevice;
-    ALCenum function(ALCdevice*) alcGetError;
-    ALCboolean function(ALCdevice*, in char*) alcIsExtensionPresent;
-    void* function(ALCdevice*, in char*) alcGetProcAddress;
-    ALCenum function(ALCdevice*, in char*) alcGetEnumValue;
-    CCPTR function(ALCdevice*, ALCenum) alcGetString;
-    void function(ALCdevice*, ALCenum, ALCsizei, ALCint*) alcGetIntegerv;
-    ALCdevice* function(in char*, ALCuint, ALCenum, ALCsizei) alcCaptureOpenDevice;
-    ALCboolean function(ALCdevice*) alcCaptureCloseDevice;
-    void function(ALCdevice*) alcCaptureStart;
-    void function(ALCdevice*) alcCaptureStop;
-    void function(ALCdevice*, ALCvoid*, ALCsizei) alcCaptureSamples;
-    ");
+    alias ALCcontext* function(ALCdevice*, in ALCint*) da_alcCreateContext;
+    alias ALCboolean function(ALCcontext*) da_alcMakeContextCurrent;
+    alias void function(ALCcontext*) da_alcProcessContext;
+    alias void function(ALCcontext*) da_alcSuspendContext;
+    alias void function(ALCcontext*) da_alcDestroyContext;
+    alias ALCcontext* function() da_alcGetCurrentContext;
+    alias ALCdevice* function(ALCcontext*) da_alcGetContextsDevice;
+    alias ALCdevice* function(in char*) da_alcOpenDevice;
+    alias ALCboolean function(ALCdevice*) da_alcCloseDevice;
+    alias ALCenum function(ALCdevice*) da_alcGetError;
+    alias ALCboolean function(ALCdevice*, in char*) da_alcIsExtensionPresent;
+    alias void* function(ALCdevice*, in char*) da_alcGetProcAddress;
+    alias ALCenum function(ALCdevice*, in char*) da_alcGetEnumValue;
+    alias CCPTR function(ALCdevice*, ALCenum) da_alcGetString;
+    alias void function(ALCdevice*, ALCenum, ALCsizei, ALCint*) da_alcGetIntegerv;
+    alias ALCdevice* function(in char*, ALCuint, ALCenum, ALCsizei) da_alcCaptureOpenDevice;
+    alias ALCboolean function(ALCdevice*) da_alcCaptureCloseDevice;
+    alias void function(ALCdevice*) da_alcCaptureStart;
+    alias void function(ALCdevice*) da_alcCaptureStop;
+    alias void function(ALCdevice*, ALCvoid*, ALCsizei) da_alcCaptureSamples;
 }
+
+mixin(gsharedString!() ~
+"
+da_alEnable alEnable;
+da_alDisable alDisable;
+da_alIsEnabled alIsEnabled;
+
+da_alGetString alGetString;
+da_alGetBooleanv alGetBooleanv;
+da_alGetIntegerv alGetIntegerv;
+da_alGetFloatv alGetFloatv;
+da_alGetDoublev alGetDoublev;
+da_alGetBoolean alGetBoolean;
+da_alGetInteger alGetInteger;
+da_alGetFloat alGetFloat;
+da_alGetDouble alGetDouble;
+da_alGetError alGetError;
+
+da_alIsExtensionPresent alIsExtensionPresent;
+da_alGetProcAddress alGetProcAddress;
+da_alGetEnumValue alGetEnumValue;
+
+da_alListenerf alListenerf;
+da_alListener3f alListener3f;
+da_alListenerfv alListenerfv;
+da_alListeneri alListeneri;
+da_alListener3i alListener3i;
+da_alListeneriv alListeneriv;
+
+da_alGetListenerf alGetListenerf;
+da_alGetListener3f alGetListener3f;
+da_alGetListenerfv alGetListenerfv;
+da_alGetListeneri alGetListeneri;
+da_alGetListener3i alGetListener3i;
+da_alGetListeneriv alGetListeneriv;
+
+da_alGenSources alGenSources;
+da_alDeleteSources alDeleteSources;
+da_alIsSource alIsSource;
+
+da_alSourcef alSourcef;
+da_alSource3f alSource3f;
+da_alSourcefv alSourcefv;
+da_alSourcei alSourcei;
+da_alSource3i alSource3i;
+da_alSourceiv alSourceiv;
+
+
+da_alGetSourcef alGetSourcef;
+da_alGetSource3f alGetSource3f;
+da_alGetSourcefv alGetSourcefv;
+da_alGetSourcei alGetSourcei;
+da_alGetSource3i alGetSource3i;
+da_alGetSourceiv alGetSourceiv;
+
+da_alSourcePlayv alSourcePlayv;
+da_alSourceStopv alSourceStopv;
+da_alSourceRewindv alSourceRewindv;
+da_alSourcePausev alSourcePausev;
+da_alSourcePlay alSourcePlay;
+da_alSourcePause alSourcePause;
+da_alSourceRewind alSourceRewind;
+da_alSourceStop alSourceStop;
+
+da_alSourceQueueBuffers alSourceQueueBuffers;
+da_alSourceUnqueueBuffers alSourceUnqueueBuffers;
+
+da_alGenBuffers alGenBuffers;
+da_alDeleteBuffers alDeleteBuffers;
+da_alIsBuffer alIsBuffer;
+da_alBufferData alBufferData;
+
+da_alBufferf alBufferf;
+da_alBuffer3f alBuffer3f;
+da_alBufferfv alBufferfv;
+da_alBufferi alBufferi;
+da_alBuffer3i alBuffer3i;
+da_alBufferiv alBufferiv;
+da_alGetBufferf alGetBufferf;
+da_alGetBuffer3f alGetBuffer3f;
+da_alGetBufferfv alGetBufferfv;
+da_alGetBufferi alGetBufferi;
+da_alGetBuffer3i alGetBuffer3i;
+da_alGetBufferiv alGetBufferiv;
+
+da_alDopplerFactor alDopplerFactor;
+da_alDopplerVelocity alDopplerVelocity;
+da_alSpeedOfSound alSpeedOfSound;
+da_alDistanceModel alDistanceModel;
+
+da_alcCreateContext alcCreateContext;
+da_alcMakeContextCurrent alcMakeContextCurrent;
+da_alcProcessContext alcProcessContext;
+da_alcSuspendContext alcSuspendContext;
+da_alcDestroyContext alcDestroyContext;
+da_alcGetCurrentContext alcGetCurrentContext;
+da_alcGetContextsDevice alcGetContextsDevice;
+da_alcOpenDevice alcOpenDevice;
+da_alcCloseDevice alcCloseDevice;
+da_alcGetError alcGetError;
+da_alcIsExtensionPresent alcIsExtensionPresent;
+da_alcGetProcAddress alcGetProcAddress;
+da_alcGetEnumValue alcGetEnumValue;
+da_alcGetString alcGetString;
+da_alcGetIntegerv alcGetIntegerv;
+da_alcCaptureOpenDevice alcCaptureOpenDevice;
+da_alcCaptureCloseDevice alcCaptureCloseDevice;
+da_alcCaptureStart alcCaptureStart;
+da_alcCaptureStop alcCaptureStop;
+da_alcCaptureSamples alcCaptureSamples;
+");

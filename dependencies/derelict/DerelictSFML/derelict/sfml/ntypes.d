@@ -147,15 +147,15 @@ enum
 }
 
 // Types.h
-struct sfFtpDirectoryResponse {}
-struct sfFtpListingResponse {}
-struct sfFtpResponse {}
-struct sfFtp {}
-struct sfHttpRequest {}
-struct sfHttpResponse {}
-struct sfHttp {}
-struct sfPacket {}
-struct sfSelectorTCP {}
-struct sfSelectorUDP {}
-struct sfSocketTCP {}
-struct sfSocketUDP {}
+struct sfFtpDirectoryResponse;
+struct sfFtpListingResponse;
+struct sfFtpResponse;
+struct sfFtp;
+struct sfHttpRequest;
+struct sfHttpResponse;
+struct sfHttp;
+struct sfPacket;
+struct sfSelectorTCP;
+struct sfSelectorUDP;
+struct sfSocketTCP;
+struct sfSocketUDP;

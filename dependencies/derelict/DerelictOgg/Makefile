@@ -8,7 +8,7 @@ VE_LIB=$(LIB_PRE)DerelictVorbisEnc.$(LIB_EXT)
 VF_LIB=$(LIB_PRE)DerelictVorbisFile.$(LIB_EXT)
 
 all : $(OGG_LIB) $(V_LIB) $(VE_LIB) $(VF_LIB) copylib
-DerleictOGG : $(OGG_LIB) copylib
+DerelictOgg : $(OGG_LIB) copylib
 DerelictVorbis : $(V_LIB) copylib
 DerelictVorbisEnc : $(VE_LIB) copylib
 DerelictVorbisFile : $(VF_LIB) copylib

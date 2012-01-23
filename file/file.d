@@ -21,6 +21,9 @@ import memory.memory;
 import math.math;
 
 
+alias std.algorithm.indexOf indexOf;
+
+
 ///File open modes.
 enum FileMode
 {
@@ -193,7 +196,7 @@ struct File
         {
             const read_size = clamp(cast(long)target.length, 0L, 
                                     cast(long)data_.length - cast(long)seek_position_);
-            target[0 .. read_size] = data[seek_position_ .. seek_position_ + read_size];
+            target[0 .. read_size] = data_[seek_position_ .. seek_position_ + read_size];
             seek_position_ += read_size;
             return read_size;
         }
@@ -212,7 +215,7 @@ struct File
         in
         {
             assert(mode_ != FileMode.Read, "Can't write to a file opened for reading");
-            assert(write_data_ !is null, "Trying to read from a closed file");
+            assert(write_data_ !is null, "Trying to write to a closed file");
         }
         body
         {
@@ -246,9 +249,11 @@ struct File
          */
         ulong seek(long offset, Seek origin)
         {
+            //XXX this is still wrong in append mode - it must be
+            //file_size + write_used in the Seek.End mode then
             const long base = origin == Seek.Set     ? 0 :
                               origin == Seek.Current ? seek_position_ :
-                                                       write_used_;
+                              mode_  == FileMode.Read ? data_.length : write_used_;
             const long position = base + offset;
             assert(position >= 0, "Can't seek before the beginning of a file");
             seek_position_ = cast(size_t)position;

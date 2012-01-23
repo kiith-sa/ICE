@@ -112,5 +112,6 @@ static this()
 
 static ~this()
 {
-    DerelictILU.unload();
+    if(SharedLibLoader.isAutoUnloadEnabled())
+        DerelictILU.unload();
 }
