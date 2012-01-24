@@ -1,0 +1,63 @@
+<html lang="en">
+<head>
+    <title>DerelictAL</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+<h2>DerelictAL</h2>
+DerelictAL is a D binding to <a href="http://connect.creativelabs.com/openal/default.aspx">OpenAL</a>,
+a cross-platform 3D audio API.
+<p>
+The current version of DerelictAL requires <tt>OpenAL 1.1</tt> or later.</a>
+</p>
+
+<h3>Building</h3>
+To compile DerelictAL, add the <tt>DerelictAL</tt> make target to the command line when
+compiling Derelict. For example, to build DerelictAL on Windows with DMD, you would execute the following:
+<pre><code>
+make -fwin32.mak DerelictAL DC=DMD
+</code></pre>
+For more information on compiling Derelict libraries, see <a href="build.html">Building the
+Derelict Bindings</a>.
+
+<h3>Using</h3>
+<ol>
+<li>Always make sure the DerelictAL source modules are available on your import
+path.</li>
+<li>In modules that make use of DerelictAL, you will need to import the
+<tt>derelict.openal.al</tt> module.</li>
+<li>You must link your application with the DerelictAL and DerelictUtil libraries.</li>
+<li>Before calling any OpenAL functions, you need to make a call to <tt>DerelictAL.load</tt>.
+This will load the shared library.</li>
+</ol>
+
+<p>
+The following is a complete program that loads DerelictAL:
+</p>
+
+<pre><code>
+import derelict.openal.al;
+
+void main()
+{
+    DerelictAL.load();
+
+    // now you can call OpenAL functions
+}
+</code></pre>
+<p>
+As with other Derelict bindings, DerelictAL will throw an exception if an error
+occurs while loading the shared library. For more information on Derelict
+exceptions, see the documentation for <a href="use.html#Exceptions">Using the Derelict Bindings</a>.
+</p>
+
+<p>
+Finally, the method <tt>DerelictAL.unload()</tt> is provided for convenience. In normal
+practice you do not need to call this function, as Derelict will unload the library
+automatically when the app exits. You generally should only use this function if
+you need to unload DerelictAL while the application is running or if you disable the
+automatic unloading of shared libraries (as per <a href="util.html#Loader">the documentation for the loader module</a>).
+</p>
+
+</body>
+</html>

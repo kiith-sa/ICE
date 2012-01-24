@@ -1,0 +1,99 @@
+<html lang="en">
+<head>
+    <title>DerelictUtil Package</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+<h2>DerelictUtil</h2>
+DerelictUtil contains several modules. Of these, two are intended exclusively for
+internal use. Of the remainder, one, <tt>derelict.util.exception</tt>, provides
+optional functionality that the client can use to make an application as robust
+as possible. <tt>derelict.util.loader</tt> and <tt>derelict.util.sharedlib</tt>
+are primarily intended for internal use but may be useful for anyone needing to
+manually load a shared library in their applications. Finally, <tt>derelict.util.compat</tt>
+is also primarily intended for internal use, but can be used outside of Derelict
+to facilitate interoperability between D1/D2 and Phobos/Tango. Regardless of whether or not
+the client imports any modules from DerelictUtil, the other Derelict packages all
+have an implicit dependency upon the package. As such, when building an application
+that uses Derelict, the DerelictUtil library <em>must</em> be linked with the executable.
+
+<h3>The Exception Module</h3>
+This is the module that will be of most interest to clients. To use this module,
+you must import <tt>derelict.util.exception</tt>. It defines two exception types
+that can be thrown when a shared library fails to load, and also defines the
+interface for <a href="selective.html">selective symbol loading</a>. Both
+exception types share a common base class, <tt>DerelictException</tt>.
+
+<p>
+<tt>SharedLibLoadException</tt><br>
+This exception is thrown when the shared library cannot be loaded. This indicates
+that the library is not on the user's system, is not on the path, or perhaps has
+a name that is different than expected. In other words, no library could be found
+that matches the name returned by the <tt>sharedLibName</tt> property of this
+exception.
+</p>
+<p>
+These exceptions may be chained in cases where Derelict attempts to load a library
+using multiple names. An exception will be created for each failure and chained to
+the last created exception. If the library fails to load after all of the names
+have been attempted, then the last exception created will be thrown with all
+of the previous exceptions chained to it.
+</p>
+
+<p><tt>SymbolLoadException</tt><br>
+This exception is thrown when a symbol cannot be loaded from a shared library.
+This might indicate that the library is corrupt, or that it is a different version
+than expected. In other words, the library exists on the system, but
+no symbol could be found that matches the name returned by the <tt>symbolName</tt> property of
+this exception. In some cases, it may be desirable to prevent this exception from being
+thrown. You can learn how by reading about <a href="selective.html">Selective Symbol Loading</a>.
+</p>
+
+<p><tt>void Derelict_SetMissingSymbolCallback(MissingSymbolCallback callback)</tt></br>
+<tt><b>[alias bool function(char[] libName, char[] symbolName) MissingSymbolCallback]</b></tt><br>
+This function allows the client to set a callback that will be called when a
+symbol cannot be found in a shared library. The name of the library will be passed
+to the callback in the <tt>libName</tt> parameter and the name of the missing
+symbol in the <tt>symbolName</tt> parameter. The client can use these parameters
+to determine if Derelict should continue loading the shared library. If so, then
+the callback should return true. If Derelict should abort loading and throw an exception,
+the callback should return false. Note that the callback must be set before loading
+the library(ies) you are interested in. You can read more about this feature in
+the <a href="selective.html">Selective Symbol Loading</a> documentation.
+</p>
+
+<h3><a class="bookmark" name="Loader">The Loader Module</a></h3>
+In this module, you will find the class <tt>SharedLibLoader</tt>. This is the base class
+of all package-specific loaders in Derelict. For normal use of Derelict, you need not
+concern yourself with this class. However, there is one specific use case where it may
+come in handy.
+
+<p>
+By default, each shared library in Derelict is unloaded in a module destructor at program
+exit. This means you need not call the <tt>unload</tt> method on any loader yourself. However,
+conflicts can sometimes arise when you want to use Derelict with your own resource management
+scheme. In these rare cases, it's possible that your code may try call a function through one
+of Derelict's function pointers after a library has already been unloaded. For those situations,
+<tt>SharedLibLoader</tt> exposes a static method that disables automatic unloading of shared
+libraries. Once this method is called, it is the client's responsibility to call the unload
+method on any loader whose load method was successfully called.
+</p>
+<p>
+The following code example shows how to use this feature.
+</p>
+
+<pre>
+// First, you must make sure to import derelict.util.loader.
+import derelict.util.loader;
+
+// In a function or method, make the following call.
+SharedLibLoader.disableAutoUnload();
+
+// From this point on, you are responsible for calling
+// unload on any loader objects whose load methods were
+// successfully called before or after disableAutoUnload.
+// Derelict will not unload *any* shared libraries at all.
+</pre>
+
+</body>
+</html>

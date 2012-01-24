@@ -1,0 +1,83 @@
+<html lang="en">
+<head>
+    <title>DerelictSDL</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+<h2>DerelictSDL</h2>
+DerelictSDL is a D binding to Sam Lantinga's <a href="http://www.libsdl.org/">Simple
+DirectMedia Layer</a>, a cross-platform multimedia library designed to provide
+low level access to audio, keyboard, mouse, joystick, 3D hardware via OpenGL,
+and 2D video framebuffer. DerelictSDL is implemented
+against the 1.2.x series of the SDL library. It will not work with the 1.3.x series,
+the version which will eventually become SDL 2.
+
+<p>
+The current version of DerelictSDL requires at least <tt>SDL 1.2.13</tt>.
+</p>
+
+<h3>Building</h3>
+To compile DerelictSDL only, add the <tt>DerelictSDL</tt> make target to the command line when
+compiling Derelict. For example, to build DerelictSDL on Windows with DMD, you would execute
+the following:
+<pre><code>
+make -fwin32.mak DerelictSDL DC=DMD
+</code></pre>
+For more information on compiling Derelict libraries, see <a href="build.html">Building the
+Derelict Bindings</a>.
+
+<h3>Using</h3>
+<ol>
+<li>Always make sure the DerelictSDL source modules are available on your import
+path.</li>
+<li>In modules that make use of DerelictSDL, you will need to import the
+<tt>derelict.sdl.sdl</tt> module.</li>
+<li>You must link your application with the DerelictSDL and DerelictUtil libraries.</li>
+<li>Before calling any SDL functions, you need to make a call to <tt>DerelictSDL.load()</tt>.
+This will load the shared library.</li>
+</ol>
+
+<p>
+The following is a complete program that loads DerelictSDL:
+</p>
+
+<pre>
+import derelict.sdl.sdl;
+
+void main()
+{
+    DerelictSDL.load();
+
+    // now you can call SDL functions
+}
+</pre>
+<p>
+As with other Derelict bindings, DerelictSDL will throw an exception if an error
+occurs while loading the shared library. For more information on Derelict
+exceptions, see the documentation for
+<a href="use.html#Exceptions">Using the Derelict Bindings</a>.
+</p><p>
+Finally, the method <tt>DerelictSDL.unload()</tt> is provided for convenience. In normal
+practice you do not need to call this function, as Derelict will unload the library
+automatically when the app exits. You generally should only use this function if
+you need to unload DerelictSDL while the application is running or if you disable the
+automatic unloading of shared libraries (as per <a href="util.html#Loader">the documentation for the loader module</a>).
+</p>
+
+<h3>Things You Need To Know</h3>
+<ul>
+<li><tt>SDL_VideoInfo</tt> is defined differently in DerelictSDL than it is in SDL. This is because
+the C version makes use of bitfields, which D does not support. Currently, DerelictSDL
+replaces all bitfields in the structure definition with a single <tt>uint</tt> field called
+<tt>flags</tt>. It is still possible to access the individual bitfield flags by using bit
+manipulation operators, but unless you know what you are doing it is recommended that you
+not do so. Instances of SDL_VideoInfo are created on the C side, not in D. There is
+nothing in the C standard which specifies the order of the bits in the bitfield
+(i.e. the first field encountered might become the low order or high order bit),
+so what may work with one SDL shared library on one platform might not work with an
+SDL shared library on another platform (or even on the same platform if compiled
+with a different compiler). So please keep in mind that manipulating the <tt>flags</tt>
+field of DerelictSDL's SDL_VideoInfo could result in unexpected consequences.</li>
+</ul>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<html lang="en">
+<head>
+    <title>DerelictSFML Package</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+<h2>DerelictSFML</h2>
+The DerelictSFML package contains D bindings to each of the release packages that comprise the
+<a href="http://www.sfml-dev.org/">SFML 1.6</a> distribution.
+<ul>
+<li><a href="sfml_audio.html">DerelictSFMLAudio</a></li>
+<li><a href="sfml_graphics.html">DerelictSFMLGraphics</a></li>
+<li><a href="sfml_network.html">DerelictSFMLNetwork</a></li>
+<li><a href="sfml_system.html">DerelictSFMLSystem</a></li>
+<li><a href="sfml_window.html">DerelictSFMLWindow</a></li>
+</ul>
+
+<h3>Building</h3>
+To compile all libraries in the DerelictSFML package, add the <tt>DerelictSFML_ALL</tt>
+make target to the command line. For example, to build the libraries on Windows with DMD,
+you would execute the following:
+<pre><code>
+make -fwin32.mak DerelictSFML_ALL DC=DMD
+</code></pre>
+For more information on compiling Derelict libraries, see <a href="build.html">Building the
+Derelict Bindings</a>.
+
+</body>
+</html>

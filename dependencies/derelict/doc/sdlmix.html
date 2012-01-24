@@ -1,0 +1,67 @@
+<html lang="en">
+<head>
+    <title>DerelictSDLMixer</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+<h2>DerelictSDLMixer</h2>
+DerelictSDLMixer is a D binding to Sam Lantinga's
+<a href="http://www.libsdl.org/projects/SDL_mixer/">SDL_mixer</a>, a cross-platform,
+multichannel, audio mixer library designed to be used together with
+<a href="http://www.libsdl.org/">SDL</a>.
+
+<p>
+The current version of DerelictSDLMixer requires <tt>SDL_mixer 1.2.11</tt> or later.
+</p>
+
+
+<h3>Building</h3>
+To compile DerelictSDLMixer, add the <tt>DerelictSDLMixer</tt> make target to the command line when
+compiling Derelict. For example, to build DerelictSDLMixer on Windows with DMD, you would execute the following:
+<pre><code>
+make -fwin32.mak DerelictSDLMixer DC=DMD
+</code></pre>
+For more information on compiling Derelict libraries, see <a href="build.html">Building the
+Derelict Bindings</a>.
+
+<h3>Using</h3>
+<ol>
+<li>Always make sure the DerelictSDLMixer source modules are available on your import
+path.</li>
+<li>In modules that make use of DerelictSDLMixer, you will need to import the
+<tt>derelict.sdl.mixer</tt> and <tt>derelict.sdl.sdl</tt> modules.</li>
+<li>You must link your application with the DerelictSDL, DerelictSDLMixer and DerelictUtil libraries.</li>
+<li>Before calling any SDL_mixer functions, you need to make a call to <tt>DerelictSDLMixer.load()</tt>.
+This will load the shared library.</li>
+</ol>
+
+<p>
+The following is a complete program that loads DerelictSDLMixer:
+</p>
+
+<pre><code>
+import derelict.sdl.mixer;
+
+void main()
+{
+    DerelictSDLMixer.load();
+
+    // now you can call SDL_mixer functions
+}
+</code></pre>
+<p>
+As with other Derelict bindings, DerelictSDLMixer will throw an exception if an error
+occurs while loading the shared library. For more information on Derelict
+exceptions, see the documentation for <a href="use.html#Exceptions">Using the Derelict Bindings</a>.
+</p>
+
+<p>
+Finally, the method <tt>DerelictSDLMixer.unload()</tt> is provided for convenience. In normal
+practice you do not need to call this function, as Derelict will unload the library
+automatically when the app exits. You generally should only use this function if
+you need to unload DerelictSDLMixer while the application is running or if you disable the
+automatic unloading of shared libraries (as per <a href="util.html#Loader">the documentation for the loader module</a>).
+</p>
+
+</body>
+</html>

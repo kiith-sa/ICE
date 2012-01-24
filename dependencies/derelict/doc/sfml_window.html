@@ -1,0 +1,59 @@
+<html lang="en">
+<head>
+    <title>DerelictSFMLWindow</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+<h2>DerelictSFMLWindow</h2>
+DerelictSFMLWindow is a D binding to the SFML Window library that ships with <a href="http://www.sfml-dev.org/">SFML 1.6</a>.
+
+<h3>Building</h3>
+To compile DerelictSFMLWindow, add the <tt>DerelictSFMLWindow</tt> make target to the command line when
+compiling Derelict. For example, to build DerelictSFMLWindow on Windows with DMD, you would execute the following:
+<pre><code>
+make -fwin32.mak DerelictSFMLWindow DC=DMD
+</code></pre>
+For more information on compiling Derelict libraries, see <a href="build.html">Building the
+Derelict Bindings</a>.
+
+<h3>Using</h3>
+<ol>
+<li>Always make sure the DerelictSFML source modules are available on your import
+path.</li>
+<li>In modules that make use of DerelictSFMLWindow, you will need to import the
+<tt>derelict.sfml.window</tt> module.</li>
+<li>You must link your application with the DerelictSFMLSystem, DerelictSFMLWindow and DerelictUtil libraries.</li>
+<li>Before calling any SFML Window functions, you need to make a call to <tt>DerelictSFMLWindow.load</tt>.
+This will load the shared library.</li>
+</ol>
+
+<p>
+The following is a complete program that loads DerelictSFMLWindow:
+</p>
+
+<pre><code>
+import derelict.sfml.window;
+
+void main()
+{
+    DerelictSFMLWindow.load();
+
+    // now you can call SFML Window functions
+}
+</code></pre>
+<p>
+As with other Derelict bindings, DerelictSFMLWindow will throw an exception if an error
+occurs while loading the shared library. For more information on Derelict
+exceptions, see the documentation for <a href="use.html#Exceptions">Using the Derelict Bindings</a>.
+</p>
+
+<p>
+Finally, the method <tt>DerelictSFMLWindow.unload()</tt> is provided for convenience. In normal
+practice you do not need to call this function, as Derelict will unload the library
+automatically when the app exits. You generally should only use this function if
+you need to unload DerelictSFMLWindow while the application is running or if you disable the
+automatic unloading of shared libraries (as per <a href="util.html#Loader">the documentation for the loader module</a>).
+</p>
+
+</body>
+</html>

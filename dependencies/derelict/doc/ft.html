@@ -1,0 +1,64 @@
+<html lang="en">
+<head>
+    <title>DerelictFT</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+<h2>DerelictFT</h2>
+DerelictFT is a D binding to to
+<a href="http://www.freetype.org/">FreeType</a>, a
+cross-platform 3D audio API.
+<p>
+The current version of DerelictFT requires <tt>FreeType 2.4.8</tt> or later.</a>
+</p>
+
+<h3>Building</h3>
+To compile DerelictFT, add the <tt>DerelictFT</tt> make target to the command line when
+compiling Derelict. For example, to build DerelictFT on Windows with DMD, you would execute the following:
+<pre><code>
+make -fwin32.mak DerelictFT DC=DMD
+</code></pre>
+For more information on compiling Derelict libraries, see <a href="build.html">Building the
+Derelict Bindings</a>.
+
+<h3>Using</h3>
+<ol>
+<li>Always make sure the DerelictFT source modules are available on your import
+path.</li>
+<li>In modules that make use of DerelictFT, you will need to import the
+<tt>derelict.freettpe.ft</tt> module.</li>
+<li>You must link your application with the DerelictFT and DerelictUtil libraries.</li>
+<li>Before calling any FreeType functions, you need to make a call to <tt>DerelictFT.load</tt>.
+This will load the shared library.</li>
+</ol>
+
+<p>
+The following is a complete program that loads DerelictFT:
+</p>
+
+<pre><code>
+import derelict.freetype.ft;
+
+void main()
+{
+    DerelictFT.load();
+
+    // now you can call FreeType functions
+}
+</code></pre>
+<p>
+As with other Derelict bindings, DerelictFT will throw an exception if an error
+occurs while loading the shared library. For more information on Derelict
+exceptions, see the documentation for <a href="use.html#Exceptions">Using the Derelict Bindings</a>.
+</p>
+
+<p>
+Finally, the method <tt>DerelictFT.unload()</tt> is provided for convenience. In normal
+practice you do not need to call this function, as Derelict will unload the library
+automatically when the app exits. You generally should only use this function if
+you need to unload DerelictFT while the application is running or if you disable the
+automatic unloading of shared libraries (as per <a href="util.html#Loader">the documentation for the loader module</a>).
+</p>
+
+</body>
+</html>

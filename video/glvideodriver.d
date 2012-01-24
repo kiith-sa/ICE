@@ -647,9 +647,6 @@ abstract class GLVideoDriver : VideoDriver
                 //Loads the newest available OpenGL version
                 version_ = DerelictGL.loadClassicVersions(GLVersion.GL20);
 
-                ////replace with selective symbol loading if possible and remove
-                ////the custom function from Derelict
-                //DerelictGL.loadExtensionsCustom();
                 DerelictGL.loadExtensions();
             }
             catch(DerelictException e)

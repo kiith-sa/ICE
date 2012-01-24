@@ -1,0 +1,63 @@
+<html lang="en">
+<head>
+	<title>DerelictODE</title>
+	<link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+<h2>DerelictODE</h2>
+DerelictODE is a D binding to the <a href="http://www.ode.org/">Open Dynamics Engine (ODE)</a>,
+a cross-platform, high performance library for simulating rigid body dynamics.
+<p>
+The current version of DerelictODE requires <tt>ODE 0.11</tt> or later.</a>
+</p>
+
+<h3>Building</h3>
+To compile DerelictODE, add the <tt>DerelictODE</tt> make target to the command line when
+compiling Derelict. For example, to build DerelictODE on Windows with DMD, you would execute the following:
+<pre><code>
+make -fwin32.mak DerelictODE DC=DMD
+</code></pre>
+For more information on compiling Derelict libraries, see <a href="build.html">Building the
+Derelict Bindings</a>.
+
+<h3>Using</h3>
+<ol>
+<li>Always make sure the DerelictODE source modules are available on your import
+path.</li>
+<li>In modules that make use of DerelictODE, you will need to import the 
+<tt>derelict.ode.ode</tt> module.</li>
+<li>You must link your application with the DerelictODE and DerelictUtil libraries.</li>
+<li>Before calling any ODE functions, you need to make a call to <tt>DerelictODE.load</tt>.
+This will load the shared library.</li>
+</ol>
+
+<p>
+The following is a complete program that loads DerelictODE:
+</p>
+
+<pre><code>
+import derelict.ode.ode;
+
+void main()
+{
+	DerelictODE.load();
+	
+	// now you can call ODE functions
+}
+</code></pre>
+<p>
+As with other Derelict bindings, DerelictODE will throw an exception if an error
+occurs while loading the shared library. For more information on Derelict 
+exceptions, see the documentation for <a href="use.html#Exceptions">Using the Derelict Bindings</a>.
+</p>
+
+<p>
+Finally, the method <tt>DerelictODE.unload()</tt> is provided for convenience. In normal
+practice you do not need to call this function, as Derelict will unload the library
+automatically when the app exits. You generally should only use this function if
+you need to unload DerelictODE while the application is running or if you disable the
+automatic unloading of shared libraries (as per <a href="util.html#Loader">the documentation for the loader module</a>).
+</p>
+
+</body>
+</html>

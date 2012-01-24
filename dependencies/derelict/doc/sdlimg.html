@@ -1,0 +1,65 @@
+<html lang="en">
+<head>
+    <title>DerelictSDLImage</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+<h2>DerelictSDLImage</h2>
+DerelictSDLImage is a D binding to Sam Lantinga's
+<a href="http://www.libsdl.org/projects/SDL_image/">SDL_image</a>, a
+cross-platform image loading library designed to be used together with
+<a href="http://www.libsdl.org/">SDL</a>.
+<p>
+The current version of DerelictSDLImage requires <tt>SDL_image 1.2.8</tt> or later.</a>
+</p>
+
+<h3>Building</h3>
+To compile DerelictSDLImage, add the <tt>DerelictSDLImage</tt> make target to the command line when
+compiling Derelict. For example, to build DerelictSDLImage on Windows with DMD, you would execute the following:
+<pre><code>
+make -fwin32.mak DerelictSDLImage DC=DMD
+</code></pre>
+For more information on compiling Derelict libraries, see <a href="build.html">Building the
+Derelict Bindings</a>.
+
+<h3>Using</h3>
+<ol>
+<li>Always make sure the DerelictSDL source modules are available on your import
+path.</li>
+<li>In modules that make use of DerelictSDLImage, you will need to import the
+<tt>derelict.sdl.image</tt> and <tt>derelict.sdl.sdl</tt> modules.</li>
+<li>You must link your application with the DerelictSDL, DerelictSDLImage and DerelictUtil libraries.</li>
+<li>Before calling any SDL_image functions, you need to make a call to <tt>DerelictSDLImage.load</tt>.
+This will load the shared library.</li>
+</ol>
+
+<p>
+The following is a complete program that loads DerelictSDLImage:
+</p>
+
+<pre><code>
+import derelict.sdl.image;
+
+void main()
+{
+    DerelictSDLImage.load();
+
+    // now you can call SDL_image functions
+}
+</code></pre>
+<p>
+As with other Derelict bindings, DerelictSDLImage will throw an exception if an error
+occurs while loading the shared library. For more information on Derelict
+exceptions, see the documentation for <a href="use.html#Exceptions">Using the Derelict Bindings</a>.
+</p>
+
+<p>
+Finally, the method <tt>DerelictSDLImage.unload()</tt> is provided for convenience. In normal
+practice you do not need to call this function, as Derelict will unload the library
+automatically when the app exits. You generally should only use this function if
+you need to unload DerelictSDLImage while the application is running or if you disable the
+automatic unloading of shared libraries (as per <a href="util.html#Loader">the documentation for the loader module</a>).
+</p>
+
+</body>
+</html>

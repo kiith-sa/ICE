@@ -1,0 +1,89 @@
+<html lang="en">
+<head>
+    <title>Selective Symbol Loading</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+<h2>Selective Symbol Loading</h2>
+There may be times when you want to provide backwards compatibility with an
+older version of a library, or when you know that a particular build of a library
+you are using is missing some functions that a Derelict package loads. Derelict,
+by default, throws a <tt>SymbolLoadException</tt> when a shared library symbol
+cannot be found. In order to allow the client to bypass this default behavior,
+the <a href="util.html">DerelictUtil</a> package provides a callback mechanism
+that allows you to selectively throw exceptions when symbols are missing.
+
+<h3>MissingSymbolCallback</h3>
+The <tt>derelict.util.exception</tt> module defines a type <tt>MissingSymbolCallback</tt>.
+The type definition looks like this:
+
+<pre>
+alias bool function(string libName, string symbolName) MissingSymbolCallback;
+</pre>
+
+<p>
+When a symbol fails to load, Derelict first checks if a <tt>MissingSymbolCallback</tt>
+has been set. If not, a <tt>SymbolLoadException</tt> is thrown. But, if a callback
+has been set, then the callback is called with the name of the library
+and the name of the missing symbol as arguments. The callback should return <tt>true</tt> if
+loading should continue and <tt>false</tt> if a <tt>SymbolLoadException</tt> should be thrown.
+Callbacks can be set using the function <tt>Derelict_SetMissingSymbolCallback</tt>.
+</p>
+<p>
+Following is a complete example of using this feature. Older versions of SDL
+did not include functions to test for CPU capabilities.
+<a href="sdl.html">DerelictSDL</a> always attempts to load those functions since
+they are present in the latest versions. It is possible to load older versions
+of the SDL shared library by ignoring the CPU related functions. This example
+demonstrates how to do that.
+</p>
+
+<pre>
+import derelict.util.exception;             // MissingSymbolCallback interface declared here
+import derelict.sdl.sdl;
+
+import std.string;
+
+bool SDLMissingSymbolCallback(char[] libName, char[] procName)
+{
+    // there are 8 functions in SDL's CPU interface - test for them all.
+    // If the procName matches any one of them, return true to ignore the missing
+    // function.
+    if( procName.cmp("SDL_HasRDTSC") == 0 ||
+        procName.cmp("SDL_HasMMX") == 0 ||
+        procName.cmp("SDL_HasMMXExt") == 0 ||
+        procName.cmp("SDL_Has3DNow") == 0 ||
+        procName.cmp("SDL_Has3DNowExt") == 0 ||
+        procName.cmp("SDL_HasSSE") == 0 ||
+        procName.cmp("SDL_HasSSE2") == 0 ||
+        procName.cmp("SDL_HasAltiVec") == 0)
+            return true;        // ignore the error and throw no exception
+
+    // a function other than one of those above failed to load - return false
+    // to indicate that an exception should be thrown.
+    return false;
+}
+
+void main()
+{
+   // the callback must be set before loading the library(ies) you want the callback to handle
+   Derelict_SetMissingProcCallback(&myMissingProcCallback);
+   DerelictSDL.load();
+}
+</pre>
+
+<p>
+It is important to note that the callback must be set before loading the library
+you are interested in filtering. You can implement one callback for multiple libraries if you like,
+and filter them based upon the <tt>libName</tt> parameter. Or you can define multiple callbacks to
+handle one library each - as long as you call <tt>Derelict_SetMissingSymbolCallback</tt> with the
+appropriate callback argument before loading each library.
+</p>
+<p>
+<span class="important">This is an optional feature and is not required to use
+Derelict</span>. It is provided to give an even greater degree of flexibility
+and control to those who need it.
+</p>
+
+</body>
+</html>

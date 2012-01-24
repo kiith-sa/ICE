@@ -1,0 +1,59 @@
+<html lang="en">
+<head>
+    <title>DerelictSFMLAudio</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+<h2>DerelictSFMLAudio</h2>
+DerelictSFMLAudio is a D binding to the SFML Audio library that ships with <a href="http://www.sfml-dev.org/">SFML 1.6</a>.
+
+<h3>Building</h3>
+To compile DerelictSFMLAudio, add the <tt>DerelictSFMLAudio</tt> make target to the command line when
+compiling Derelict. For example, to build DerelictSFMLAudio on Windows with DMD, you would execute the following:
+<pre><code>
+make -fwin32.mak DerelictSFMLAudio DC=DMD
+</code></pre>
+For more information on compiling Derelict libraries, see <a href="build.html">Building the
+Derelict Bindings</a>.
+
+<h3>Using</h3>
+<ol>
+<li>Always make sure the DerelictSFML source modules are available on your import
+path.</li>
+<li>In modules that make use of DerelictSFMLAudio, you will need to import the
+<tt>derelict.sfml.audio</tt> module.</li>
+<li>You must link your application with the DerelictSFMLSystem, DerelictSFMLAudio and DerelictUtil libraries.</li>
+<li>Before calling any SFML Audio functions, you need to make a call to <tt>DerelictSFMLAudio.load</tt>.
+This will load the shared library.</li>
+</ol>
+
+<p>
+The following is a complete program that loads DerelictSFMLAudio:
+</p>
+
+<pre><code>
+import derelict.sfml.audio;
+
+void main()
+{
+    DerelictSFMLAudio.load();
+
+    // now you can call SFML Audio functions
+}
+</code></pre>
+<p>
+As with other Derelict bindings, DerelictSFMLAudio will throw an exception if an error
+occurs while loading the shared library. For more information on Derelict
+exceptions, see the documentation for <a href="use.html#Exceptions">Using the Derelict Bindings</a>.
+</p>
+
+<p>
+Finally, the method <tt>DerelictSFMLAudio.unload()</tt> is provided for convenience. In normal
+practice you do not need to call this function, as Derelict will unload the library
+automatically when the app exits. You generally should only use this function if
+you need to unload DerelictSFMLAudio while the application is running or if you disable the
+automatic unloading of shared libraries (as per <a href="util.html#Loader">the documentation for the loader module</a>).
+</p>
+
+</body>
+</html>
