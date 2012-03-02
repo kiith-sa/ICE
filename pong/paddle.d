@@ -6,7 +6,6 @@
 
 ///Paddle actor.
 module pong.paddle;
-@safe
 
 
 import std.algorithm;
@@ -43,7 +42,7 @@ class PaddleBody : PhysicsBody
          * and the ball gets reflected from the corner of the paddle, ratio of X and Y
          * components of reflected ball velocity will be 1:1.
         */
-        immutable real max_xy_ratio_ = 1.0;
+        immutable real maxXyRatio_ = 1.0;
 
         ///Limits of paddle body movement in world space.
         immutable Rectanglef limits_;
@@ -58,25 +57,25 @@ class PaddleBody : PhysicsBody
          *
          * Returns: Velocity the BallBody should be reflected at.
          */
-        Vector2f reflected_ball_velocity (in BallBody ball) const
+        Vector2f reflectedBallVelocity (in BallBody ball) const
         {
             //Translate the aabbox to world space
             const Rectanglef box = aabbox + position_;
 
             const Vector2f closest = box.clamp(ball.position);
 
-            auto contact_direction = closest - ball.position;
+            auto contactDirection = closest - ball.position;
 
-            contact_direction.normalize_safe();
+            contactDirection.normalize();
 
-            const contact_point = ball.position + ball.radius * contact_direction;
+            const contactPoint = ball.position + ball.radius * contactDirection;
 
             Vector2f velocity;
             
             //reflection angle depends on where on the paddle does the ball fall
-            velocity.x = max_xy_ratio_ * (contact_point.x - position_.x) / 
+            velocity.x = maxXyRatio_ * (contactPoint.x - position_.x) / 
                          (box.max.x - position_.x);
-            velocity.y = (contact_point.y - position_.y) / 
+            velocity.y = (contactPoint.y - position_.y) / 
                          (box.max.y - position_.y);
 
             //If the velocity is too horizontal, randomly nudge it up or down so that 
@@ -85,14 +84,14 @@ class PaddleBody : PhysicsBody
             //are positioned on left-right sides of the screen instead of up/down
             if(velocity.y / velocity.x < 0.001)
             {
-                float y_mod = velocity.x / 1000.0;
+                float yMod = velocity.x / 1000.0;
                 //random bool
-                y_mod *= uniform(-1.0, 1.0) > 0.0 ? -1.0 : 1.0;
-                velocity.y += y_mod;
+                yMod *= uniform(-1.0, 1.0) > 0.0 ? -1.0 : 1.0;
+                velocity.y += yMod;
             }
 
             //keep the same velocity
-            velocity.normalize_safe();
+            velocity.normalize();
             return velocity * ball.velocity.length;
         }
 
@@ -116,15 +115,15 @@ class PaddleBody : PhysicsBody
             limits_ = limits;
         }
 
-        override void update(in real time_step, SpatialManager!PhysicsBody manager)
+        override void update(in real timeStep, SpatialManager!PhysicsBody manager)
         {
             //keep the paddle within the limits
             const Rectanglef box = aabbox;
-            const position_limits = Rectanglef(limits_.min - box.min,
+            const positionLimits = Rectanglef(limits_.min - box.min,
                                                limits_.max - box.max);
-            position = position_limits.clamp(position);
+            position = positionLimits.clamp(position);
 
-            super.update(time_step, manager);
+            super.update(timeStep, manager);
         }
 
     private:
@@ -146,97 +145,97 @@ class Paddle : Wall
     {
         //this could be done by keeping reference to aabbox of the physics body
         //and translating that by physicsbody's position
-        Vector2f position = physics_body_.position;
+        Vector2f position = physicsBody_.position;
         Rectanglef box = box_ + position;
 
         assert(equals(box.max.x - position.x, position.x - box.min.x, 1.0f),
                "Paddle not symmetric on the X axis");
         assert(equals(box.max.y - position.y, position.y - box.min.y, 1.0f),
                "Paddle not symmetric on the Y axis");
-        assert(physics_body_.classinfo == PaddleBody.classinfo,
+        assert(physicsBody_.classinfo == PaddleBody.classinfo,
                "Physics body of a paddle must be a PaddleBody");
         assert(energy_ >= 0.0, "Energy of a paddle must not be negative");
-        assert(energy_mult_ > 0.0, "Energy multiplier of a paddle must be positive");
-        assert(dissipate_rate_ >= 0.0, "Dissipate rate of a paddle must not be negative");
+        assert(energyMult_ > 0.0, "Energy multiplier of a paddle must be positive");
+        assert(dissipateRate_ >= 0.0, "Dissipate rate of a paddle must not be negative");
     }
 
     private:
         ///Default speed of this paddle.
-        real default_speed_;
+        real defaultSpeed_;
         ///Current speed of this paddle.
         real speed_;
         ///Particle emitter of the paddle
         ParticleEmitter emitter_;
         ///Default emit frequency of the emitter.
-        real default_emit_frequency_;
+        real defaultEmitFrequency_;
         ///"Energy" from collisions, affects speed and graphics.
         real energy_ = 0.0;
         ///Multiplier applied to energy related effects.
-        real energy_mult_ = 0.00001;
+        real energyMult_ = 0.00001;
         ///How much energy "dissipates" per second.
-        real dissipate_rate_ = 12000.0;
+        real dissipateRate_ = 12000.0;
         ///Color to interpolate to based on energy levels.
-        Color energy_color_ = rgba!"E0E0FF80";
+        Color energyColor_ = rgba!"E0E0FF80";
 
     public:
-        override void on_die(SceneManager manager)
+        override void onDie(SceneManager manager)
         {
-            emitter_.life_time      = 1.0;
-            emitter_.emit_frequency = 0.0;
+            emitter_.lifeTime      = 1.0;
+            emitter_.emitFrequency = 0.0;
             emitter_.detach();
         }
 
         ///Get movement limits of this paddle.
         @property Rectanglef limits() const 
         {
-            return (cast(PaddleBody)physics_body_).limits;
+            return (cast(PaddleBody)physicsBody_).limits;
         }
 
         ///Control the paddle to move right (used by player or AI).
-        void move_right(){physics_body_.velocity = speed_ * Vector2f(1.0, 0.0);}
+        void moveRight(){physicsBody_.velocity = speed_ * Vector2f(1.0, 0.0);}
 
         ///Control the paddle to move left (used by player or AI).
-        void move_left(){physics_body_.velocity = speed_ * Vector2f(-1.0, 0.0);}
+        void moveLeft(){physicsBody_.velocity = speed_ * Vector2f(-1.0, 0.0);}
 
         ///Control the paddle to stop (used by player or AI).
-        void stop(){physics_body_.velocity = Vector2f(0.0, 0.0);}
+        void stop(){physicsBody_.velocity = Vector2f(0.0, 0.0);}
 
     protected:
         /**
          * Construct a paddle.
          *
-         * Params:  physics_body = Physics body of the paddle.
+         * Params:  physicsBody = Physics body of the paddle.
          *          box          = Rectangle used for graphics representation of the paddle.
          *          speed        = Speed of paddle movement.
          *          emitter      = Particle emitter of the paddle.
          */
-        this(PaddleBody physics_body, const ref Rectanglef box,
+        this(PaddleBody physicsBody, const ref Rectanglef box,
              in real speed, ParticleEmitter emitter)
         {
-            default_color_ = rgba!"0000FF20";
-            super(physics_body, box);
-            speed_ = default_speed_ = speed;
+            defaultColor_ = rgba!"0000FF20";
+            super(physicsBody, box);
+            speed_ = defaultSpeed_ = speed;
             emitter_ = emitter;
-            default_emit_frequency_ = emitter_.emit_frequency;
+            defaultEmitFrequency_ = emitter_.emitFrequency;
             emitter.attach(this);
         }
 
         override void update(SceneManager manager)
         {
-            energy_ = max(0.0L, energy_ - manager.time_step * dissipate_rate_);
-            foreach(collider; physics_body_.colliders)
+            energy_ = max(0.0L, energy_ - manager.timeStep * dissipateRate_);
+            foreach(collider; physicsBody_.colliders)
             {
-                if(!equals(collider.inverse_mass, 0.0L))
+                if(!equals(collider.inverseMass, 0.0L))
                 {
-                    energy_ += collider.velocity.length / collider.inverse_mass;
+                    energy_ += collider.velocity.length / collider.inverseMass;
                 }
             }
 
-            const real energy_ratio = energy_ * energy_mult_;
+            const real energyRatio = energy_ * energyMult_;
 
-            color_ = energy_color_.interpolated(default_color_, min(energy_ratio, 1.0L));
-            speed_ = default_speed_ * (1.0 + 1.5 * energy_ratio);
-            emitter_.emit_frequency = default_emit_frequency_ * (1.0 + 10.0 * energy_ratio);
+            color_ = energyColor_.interpolated(defaultColor_, min(energyRatio, 1.0L));
+            speed_ = defaultSpeed_ * (1.0 + 1.5 * energyRatio);
+            emitter_.emitFrequency = defaultEmitFrequency_ * (1.0 + 10.0 * energyRatio);
 
             super.update(manager);
         }
@@ -245,40 +244,40 @@ class Paddle : Wall
 /**
  * Factory used to construct paddles.
  *
- * Params:  limits_min = Minimum extent of paddle movement limits in world space.
+ * Params:  limitsMin = Minimum extent of paddle movement limits in world space.
  *                       Default; Vector2f(-2.0f, -2.0f)
- *          limits_max = Maximum extent of paddle movement limits in world space.
+ *          limitsMax = Maximum extent of paddle movement limits in world space.
  *                       Default; Vector2f(2.0f, 2.0f)
  *          speed      = Speed of paddle movement.
  *                       Default; 135.0
  */
 class PaddleFactory : WallFactoryBase!(Paddle)
 {
-    mixin(generate_factory("Vector2f $ limits_min $ Vector2f(-2.0f, -2.0f)", 
-                           "Vector2f $ limits_max $ Vector2f(2.0f, 2.0f)",
+    mixin(generateFactory("Vector2f $ limitsMin $ Vector2f(-2.0f, -2.0f)", 
+                           "Vector2f $ limitsMax $ Vector2f(2.0f, 2.0f)",
                            "real     $ speed      $ 135.0"));
 
     public override Paddle produce(SceneManager manager)
     {
-        auto limits = Rectanglef(limits_min_, limits_max_);
-        auto physics_body = new PaddleBody(bbox, position_, velocity_, real.infinity, limits);
+        auto limits = Rectanglef(limitsMin_, limitsMax_);
+        auto physicsBody = new PaddleBody(bbox, position_, velocity_, real.infinity, limits);
 
         //construct particle system of the paddle
         LineEmitter emitter;
         with(new LineEmitterFactory)
         {
-            particle_life   = 3.0;
-            emit_frequency  = 30;
-            emit_velocity   = Vector2f(speed_ * 0.15, 0.0);
-            angle_variation = 2 * PI;
-            line_length     = 2.0;
-            line_width      = 1;
-            start_color     = rgba!"FFFFFF40";
-            end_color       = rgba!"4040FF00";
+            particleLife   = 3.0;
+            emitFrequency  = 30;
+            emitVelocity   = Vector2f(speed_ * 0.15, 0.0);
+            angleVariation = 2 * PI;
+            lineLength     = 2.0;
+            lineWidth      = 1;
+            startColor     = rgba!"FFFFFF40";
+            endColor       = rgba!"4040FF00";
             emitter         = produce(manager);
         }
 
         auto rect = rectangle();
-        return new_actor(manager, new Paddle(physics_body, rect, speed_, emitter));
+        return newActor(manager, new Paddle(physicsBody, rect, speed_, emitter));
     }
 }

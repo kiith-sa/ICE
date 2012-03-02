@@ -7,7 +7,6 @@
 
 ///Image encoding/decoding.
 module formats.image;
-@trusted
 
 
 import std.string;
@@ -38,8 +37,8 @@ enum ImageFileFormat
  * Write an image to file.
  *
  * Params:  image       = Image to write.
- *          file_name   = In-engine name of the file to write to.
- *          file_format = Image file format. Autodetected by default.
+ *          fileName   = In-engine name of the file to write to.
+ *          fileFormat = Image file format. Autodetected by default.
  *                        If the format can't be autodetected, PNG format is used.
  *
  * PNG is the only supported format at the moment (more formats may or may not be
@@ -50,22 +49,22 @@ enum ImageFileFormat
  *          ImageFileException in the case of an encoding error, if the color format is not 
  *          supported or file format could not be detected in case of autodetection.
  */
-void write_image(const ref Image image, in string file_name, 
-                 ImageFileFormat file_format = ImageFileFormat.Auto)
+void writeImage(const ref Image image, const string fileName, 
+                 ImageFileFormat fileFormat = ImageFileFormat.Auto)
 {
-    scope(failure){writeln("Image writing failed: " ~ file_name);}
+    scope(failure){writeln("Image writing failed: " ~ fileName);}
 
-    if(file_format == ImageFileFormat.Auto)
+    if(fileFormat == ImageFileFormat.Auto)
     {
-        file_format = detect_image_format(file_name);
+        fileFormat = detectImageFormat(fileName);
     }
 
     try
     {
-        File file = File(file_name, FileMode.Write);
-        if(file_format == ImageFileFormat.PNG)
+        File file = File(fileName, FileMode.Write);
+        if(fileFormat == ImageFileFormat.PNG)
         {
-            ubyte[] data = encode_png(image.data, image.width, image.height, image.format);
+            ubyte[] data = encodePNG(image.data, image.width, image.height, image.format);
             file.write(data);
             free(data);
         }
@@ -81,8 +80,8 @@ void write_image(const ref Image image, in string file_name,
  * Read an image from a file.
  *
  * Params:  image       = Image to read to. Any existing contents will be cleared.
- *          file_name   = In-engine name of the file to read from.
- *          file_format = Image file format. Autodetected by default.
+ *          fileName   = In-engine name of the file to read from.
+ *          fileFormat = Image file format. Autodetected by default.
  *                        If the format can't be autodetected, PNG format is used.
  *
  * PNG is the only supported format at the moment (more formats may or may not be
@@ -92,38 +91,38 @@ void write_image(const ref Image image, in string file_name,
  * Throws:  FileIOException if the file could not be read from.
  *          ImageFileException if image data was invalid.
  */
-void read_image(ref Image image, in string file_name, 
-                ImageFileFormat file_format = ImageFileFormat.Auto)
+void readImage(ref Image image, const string fileName, 
+                ImageFileFormat fileFormat = ImageFileFormat.Auto)
 {
-    scope(failure){writeln("Image reading failed: " ~ file_name);}
+    scope(failure){writeln("Image reading failed: " ~ fileName);}
 
-    if(file_format == ImageFileFormat.Auto)
+    if(fileFormat == ImageFileFormat.Auto)
     {
-        file_format = detect_image_format(file_name);
+        fileFormat = detectImageFormat(fileName);
     }
 
     try
     {
-        File file = File(file_name, FileMode.Read);
+        File file = File(fileName, FileMode.Read);
 
         //parameters of the loaded image will be written here
         uint width, height;
         ColorFormat format;
 
-        ubyte[] image_data = null;
+        ubyte[] imageData = null;
 
-        if(file_format == ImageFileFormat.PNG)
+        if(fileFormat == ImageFileFormat.PNG)
         {
-            image_data = decode_png(cast(ubyte[])file.data, width, height, format);
+            imageData = decodePNG(cast(ubyte[])file.data, width, height, format);
         }
         else{assert(false, "Unsupported image file format for reading");}
 
-        assert(image_data !is null, "No image data read");
+        assert(imageData !is null, "No image data read");
 
         clear(image);
         image = Image(width, height, format);
-        image.data_unsafe[] = image_data;
-        free(image_data);
+        image.dataUnsafe[] = imageData;
+        free(imageData);
     }
     catch(ImageFileException e)
     {
@@ -137,12 +136,12 @@ private:
 /**
  * Determine file format from file name extension.
  *
- * Params:  file_name = File name to determine file format from.
+ * Params:  fileName = File name to determine file format from.
  *          
  * Returns: Format detected, or PNG if could not detect.
  */
-ImageFileFormat detect_image_format(in string file_name)
+ImageFileFormat detectImageFormat(const string fileName)
 { 
-    const extension = file_name.split(".")[$ - 1];
+    const extension = fileName.split(".")[$ - 1];
     return extension.icmp("png") ? ImageFileFormat.PNG : ImageFileFormat.PNG;
 }

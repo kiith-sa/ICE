@@ -7,7 +7,6 @@
 
 ///Font manager and text drawing code abstracted from the video driver.
 module video.fontmanager;
-@system
 
 
 import core.stdc.string;
@@ -40,26 +39,26 @@ align(4) struct FontRenderer
 {
     private:
         ///Font we're drawing with.
-        Font draw_font_;
+        Font drawFont_;
         ///Does this font use kerning?
         bool kerning_;
         ///FreeType font face of the font.
-        FT_Face font_face_;
+        FT_Face fontFace_;
         ///Freetype index of the previously drawn glyph (0 at first glyph).
-        uint previous_index_;
+        uint previousIndex_;
         ///Current x position of the pen.
         uint PenX;
 
     public:
         ///Get height of the font we're drawing.
-        @property uint height() const {return draw_font_.height;}
+        @property uint height() const pure {return drawFont_.height;}
 
         ///Start drawing a string.
         void start()
         {
-            font_face_      = draw_font_.font_face;
-            kerning_        = draw_font_.kerning && kerning_;
-            previous_index_ = PenX = 0;
+            fontFace_      = drawFont_.fontFace;
+            kerning_        = drawFont_.kerning && kerning_;
+            previousIndex_ = PenX = 0;
         }
 
         /**
@@ -69,7 +68,7 @@ align(4) struct FontRenderer
          *
          * Returns: True if the glyph is loaded, false otherwise.
          */
-        bool has_glyph(in dchar c) const {return draw_font_.has_glyph(c);}
+        bool hasGlyph(const dchar c) const {return drawFont_.hasGlyph(c);}
 
         /**
          * Load glyph for a character.
@@ -81,7 +80,7 @@ align(4) struct FontRenderer
          *
          * Throws:  TextureException if the glyph texture could not be created.
          */
-        void load_glyph(VideoDriver driver, in dchar c){draw_font_.load_glyph(driver, c);}
+        void loadGlyph(VideoDriver driver, const dchar c){drawFont_.loadGlyph(driver, c);}
 
         /**
          * Get glyph texture and offset to draw a glyph at.
@@ -92,23 +91,23 @@ align(4) struct FontRenderer
          *
          * Returns: Pointer to the texture of the glyph.
          */
-        const(Texture*) glyph(in dchar c, out Vector2u offset)
+        const(Texture*) glyph(const dchar c, out Vector2u offset)
         {
-            const glyph = draw_font_.get_glyph(c);
-            const uint glyph_index = glyph.freetype_index;
+            const glyph = drawFont_.getGlyph(c);
+            const uint glyphIndex = glyph.freetypeIndex;
 
             //adjust pen with kering information
-            if(kerning_ && previous_index_ != 0 && glyph_index != 0)
+            if(kerning_ && previousIndex_ != 0 && glyphIndex != 0)
             {
                 FT_Vector kerning;
-                FT_Get_Kerning(font_face_, previous_index_, glyph_index, 
+                FT_Get_Kerning(fontFace_, previousIndex_, glyphIndex, 
                                FT_Kerning_Mode.FT_KERNING_DEFAULT, &kerning);
                 PenX += kerning.x / 64;
             }
 
             offset.x        = PenX + glyph.offset.x;
             offset.y        = glyph.offset.y;
-            previous_index_ = glyph_index;
+            previousIndex_ = glyphIndex;
 
             //move pen to the next glyph
             PenX += glyph.advance;
@@ -122,11 +121,11 @@ align(4) struct FontRenderer
          *
          * Returns: Size of the text in X and Y. Y might be slightly imprecise.
          */
-        Vector2u text_size(in string text)
+        Vector2u textSize(const string text)
         {
             //Y size could be determined more precisely by getting
             //minimum and maximum extents of the text.
-            return Vector2u(draw_font_.text_width(text, kerning_), draw_font_.size);
+            return Vector2u(drawFont_.textWidth(text, kerning_), drawFont_.size);
         }
 }
 
@@ -136,27 +135,27 @@ final class FontManager
     mixin WeakSingleton;
     private:
         ///FreeType library handle.
-        FT_Library freetype_lib_;
+        FT_Library freetypeLib_;
 
         ///All currently loaded fonts. fonts_[0] is the default font.
         Font[] fonts_;
 
         ///Buffers storing font file data indexed by file names.
-        //Vector!(ubyte)[string] font_files_; //can't use this due to compiler bug
+        //Vector!(ubyte)[string] fontFiles_; //can't use this due to compiler bug
         alias Tuple!(string, "name", ubyte[], "data") FontData;
-        FontData[] font_files_;
+        FontData[] fontFiles_;
         
         ///Fallback font name.
-        string default_font_name_ = "DejaVuSans.ttf";
+        string defaultFontName_ = "DejaVuSans.ttf";
         ///Fallback font size.
-        uint default_font_size_ = 12;
+        uint defaultFontSize_ = 12;
 
         ///Currently set font.
-        Font current_font_;
+        Font currentFont_;
         ///Currently set font name.
-        string font_name_;
+        string fontName_;
         ///Currently set font size.
-        uint font_size_;
+        uint fontSize_;
 
         /**
          * Default number of quickly accessible characters in fonts.
@@ -164,7 +163,7 @@ final class FontManager
          * instead of associative array, speeding up their retrieval.
          * 512 covers latin with most important extensions.
          */
-        uint fast_glyphs_ = 512;
+        uint fastGlyphs_ = 512;
 
         ///Is font antialiasing enabled?
         bool antialiasing_ = true;
@@ -182,7 +181,7 @@ final class FontManager
             writeln("Initializing FontManager");
             scope(failure){writeln("FontManager initialization failed");}
 
-            singleton_ctor();
+            singletonCtor();
             try
             {
                 //sometimes FreeType is missing a function we don't use, 
@@ -193,20 +192,20 @@ final class FontManager
                 DerelictFT.load(); 
                 Derelict_SetMissingProcCallback(null);
                 //initialize FreeType
-                if(FT_Init_FreeType(&freetype_lib_) != 0 || freetype_lib_ is null)
+                if(FT_Init_FreeType(&freetypeLib_) != 0 || freetypeLib_ is null)
                 {
                     throw new FontException("FreeType initialization error");
                 }
                 try
                 {
-                    load_font_file(default_font_name_);
+                    loadFontFile(defaultFontName_);
                     //load default font.
-                    fonts_ ~= new Font(freetype_lib_, get_font(default_font_name_),
-                                       default_font_name_, default_font_size_, 
-                                       fast_glyphs_, antialiasing_);
-                    current_font_ = fonts_[$ - 1];
-                    font_name_    = default_font_name_;
-                    font_size_    = default_font_size_;
+                    fonts_ ~= new Font(freetypeLib_, getFont(defaultFontName_),
+                                       defaultFontName_, defaultFontSize_, 
+                                       fastGlyphs_, antialiasing_);
+                    currentFont_ = fonts_[$ - 1];
+                    fontName_    = defaultFontName_;
+                    fontSize_    = defaultFontSize_;
                 }
                 catch(FileIOException e)
                 {
@@ -228,9 +227,9 @@ final class FontManager
          *
          * Params:  driver = VideoDriver to unload textures from.
          */
-        void unload_textures(VideoDriver driver)
+        void unloadTextures(VideoDriver driver)
         {
-            foreach(ref font; fonts_){font.unload_textures(driver);}
+            foreach(ref font; fonts_){font.unloadTextures(driver);}
         }
 
         /**
@@ -240,72 +239,72 @@ final class FontManager
          *
          * Throws:  TextureException if the glyph textures could not be reloaded.
          */
-        void reload_textures(VideoDriver driver)
+        void reloadTextures(VideoDriver driver)
         {
-            foreach(ref font; fonts_){font.reload_textures(driver);}
+            foreach(ref font; fonts_){font.reloadTextures(driver);}
         }
 
         /**
          * Destroy the FontManager. 
          *
-         * To destroy all FontManager resources, unload_textures must be called first.
+         * To destroy all FontManager resources, unloadTextures must be called first.
          */
         ~this()
         {
             writeln("Destroying FontManager");
             foreach(ref font; fonts_){clear(font);}
-            foreach(ref pair; font_files_){free(pair.data);}
+            foreach(ref pair; fontFiles_){free(pair.data);}
             clear(fonts_);
-            clear(font_files_);
-            FT_Done_FreeType(freetype_lib_);
+            clear(fontFiles_);
+            FT_Done_FreeType(freetypeLib_);
             DerelictFT.unload(); 
-            singleton_dtor();
+            singletonDtor();
         }
 
         /**
          * Set font to use.
          *
-         * Params:  font_name  = Name of the font to set.
-         *          force_load = Force the font to be set right now and loaded 
+         * Params:  fontName  = Name of the font to set.
+         *          forceLoad = Force the font to be set right now and loaded 
          *                       if it's not loaded yet.
          */
-        void font(string font_name, in bool force_load = false)
+        void font(string fontName, const bool forceLoad = false)
         {
             //if "default", use default font
-            if(font_name == "default"){font_name = default_font_name_;}
-            font_name_ = font_name;
-            if(force_load){load_font();}
+            if(fontName == "default"){fontName = defaultFontName_;}
+            fontName_ = fontName;
+            if(forceLoad){loadFont();}
         }
 
         /**
          * Set font size to use.
          *
          * Params:  size       = Font size to set.
-         *          force_load = Force the font size to be set right now and font loaded
+         *          forceLoad = Force the font size to be set right now and font loaded
          *                       if it's not loaded yet.
          */
-        void font_size(uint size, in bool force_load = false)
+        void fontSize(uint size, const bool forceLoad = false)
         in{assert(size < 128, "Font sizes greater than 127 are not supported");}
         body
         {
             //In optimized build, we don't have the assert so force size to at most 127
             size = min(size, 127u);
-            font_size_ = size;
-            if(force_load){load_font();}
+            fontSize_ = size;
+            if(forceLoad){loadFont();}
         }
 
         ///Return a renderer to draw text with.
         FontRenderer renderer()
         {
-            load_font();
-            return FontRenderer(current_font_, kerning_);
+            loadFont();
+            return FontRenderer(currentFont_, kerning_);
         }
 
         ///Is font antialiasing enabled?
-        @property bool antialiasing() const {return antialiasing_;}
+        @property bool antialiasing() const pure {return antialiasing_;}
       
         ///Is kerning enabled?
-        @property bool kerning() const {return kerning_;}
+        @property bool kerning() const pure {return kerning_;}
 
     private:
         //might be replaced by serious resource management.
@@ -316,88 +315,88 @@ final class FontManager
          * 
          * Throws:  FileIOException if the font file name is invalid or it could not be opened.
          */
-        void load_font_file(in string name)
+        void loadFontFile(const string name)
         {
             scope(failure){writeln("Could not read from font file: " ~ name);}
 
             //already loaded
-            foreach(ref pair; font_files_) if(pair.name == name)
+            foreach(ref pair; fontFiles_) if(pair.name == name)
             {
                 return;
             }
 
             File file = File("fonts/" ~ name, FileMode.Read);
             auto bytes = cast(ubyte[])file.data;
-            font_files_ ~= FontData(name, cast(ubyte[])null);
-            font_files_[$ - 1].data = alloc_array!ubyte(bytes.length);
-            font_files_[$ - 1].data[] = bytes[];
+            fontFiles_ ~= FontData(name, cast(ubyte[])null);
+            fontFiles_[$ - 1].data = allocArray!ubyte(bytes.length);
+            fontFiles_[$ - 1].data[] = bytes[];
         }
 
         /**
-         * Try to set font according to font_name_ and font_size_.
+         * Try to set font according to fontName_ and fontSize_.
          *
          * Will load the font if needed, and if it can't load, will
-         * try to fall back to default font with font_size_. If that can't
+         * try to fall back to default font with fontSize_. If that can't
          * be done either, will set the default font and font size loaded at startup.
          */
-        void load_font()
+        void loadFont()
         {
             //Font is already set
-            if(current_font_.name == font_name_ && current_font_.size == font_size_)
+            if(currentFont_.name == fontName_ && currentFont_.size == fontSize_)
             {
                 return;
             }
 
-            bool find_font(ref Font font)
+            bool findFont(ref Font font)
             {
-                return font.name == font_name_ && font.size == font_size_;
+                return font.name == fontName_ && font.size == fontSize_;
             }
-            auto found = find!find_font(fonts_);
+            auto found = find!findFont(fonts_);
 
             //Font is already loaded, set it
             if(found.length > 0)
             {
-                current_font_ = found[0];
+                currentFont_ = found[0];
                 return;
             }
 
             //fallback scenario when the font could not be loaded 
-            void fallback(in string error)
+            void fallback(const string error)
             {
-                writeln("Failed to load font: ", font_name_);
+                writeln("Failed to load font: ", fontName_);
                 writeln(error);
 
                 //If we already have default font name and can't load it, 
                 //try font 0 (default with default size)
-                if(font_name_ == default_font_name_)
+                if(fontName_ == defaultFontName_)
                 {
-                    current_font_ = fonts_[0];
+                    currentFont_ = fonts_[0];
                     return;
                 }
                 //Couldn't load the font, try default with our size
-                font_name_ = default_font_name_;
-                load_font();
+                fontName_ = defaultFontName_;
+                loadFont();
             }
 
             //Font is not loaded, try to load it
-            Font new_font;
+            Font newFont;
             try
             {
-                load_font_file(font_name_);
-                new_font = new Font(freetype_lib_, get_font(font_name_), font_name_, 
-                                    font_size_, fast_glyphs_, antialiasing_);
+                loadFontFile(fontName_);
+                newFont = new Font(freetypeLib_, getFont(fontName_), fontName_, 
+                                    fontSize_, fastGlyphs_, antialiasing_);
                 //Font was succesfully loaded, set it
-                fonts_ ~= new_font;
-                current_font_ = fonts_[$ - 1];
+                fonts_ ~= newFont;
+                currentFont_ = fonts_[$ - 1];
             }
             catch(FileIOException e){fallback("Font file could not be read: " ~ e.msg);}
             catch(FontException e){fallback("FreeType error: " ~ e.msg);}
         }
 
         ///Get data of font with specified name.
-        ubyte[] get_font(string name)
+        ubyte[] getFont(string name)
         {
-            foreach(ref pair; font_files_) if(name == pair.name)
+            foreach(ref pair; fontFiles_) if(name == pair.name)
             {
                 return pair.data;
             }

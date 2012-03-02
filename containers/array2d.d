@@ -7,7 +7,6 @@
 
 ///2D array struct.
 module containers.array2d;
-@trusted
 
 
 import memory.memory;
@@ -36,13 +35,11 @@ import memory.memory;
  * uint a = array[1, 1]; 
  * --------------------
  */
-align(1) struct Array2D(T)
+align(4) struct Array2D(T)
 {
     private:
-        static enum T[] dummy_data_ = [];
-
         ///Manually allocated data storage.
-        T[] data_ = dummy_data_;
+        T[] data_ = null;
         ///Array width.
         uint x_ = 0;
         ///Array height.
@@ -58,7 +55,7 @@ align(1) struct Array2D(T)
          * Params:  x = Array width.
          *          y = Array height.
          */
-        this(in uint x, in uint y)
+        this(const uint x, const uint y)
         out(result)
         {
             assert(x_ == x && y == y && data_.length == x * y,
@@ -68,7 +65,7 @@ align(1) struct Array2D(T)
         {
             x_ = x;
             y_ = y;
-            data_ = alloc_array!(T)(x * y);
+            data_ = allocArray!T(x * y);
         }
 
         ///Destroy the array.
@@ -80,7 +77,8 @@ align(1) struct Array2D(T)
         /**
          * Used by foreach. 
          *
-         * Foreach will iterate over all elements of the array, but in undefined order.
+         * Foreach will iterate over all elements of the array, 
+         * but in undefined order.
          */
         int opApply(int delegate(ref T) dg)
         {
@@ -101,7 +99,7 @@ align(1) struct Array2D(T)
          *
          * Returns: Element at the specified coordinates.
          */
-        ref inout(T) opIndex(in uint x, in uint y) inout
+        ref inout(T) opIndex(const uint x, const uint y) inout pure
         in{assert(x < x_ && y < y_, "2D array access out of bounds");}
         body{return data_[y * x_ + x];}
 
@@ -111,20 +109,20 @@ align(1) struct Array2D(T)
          * Params:  x = X coordinate of the element.
          *          y = Y coordinate of the element.
          */
-        void opIndexAssign(T value, in uint x, in uint y)
+        void opIndexAssign(T value, const uint x, const uint y)
         in{assert(x < x_ && y < y_, "2D array access out of bounds");}
         body{data_[y * x_ + x] = value;}
 
         ///Get width of the array.
-        @property uint x() const {return x_;}
+        @property uint width() const pure {return x_;}
 
         ///Get height of the array.
-        @property uint y() const {return y_;}
+        @property uint height() const pure {return y_;}
 }
 ///Unittest for Array2D.
 unittest
 {
-    auto array = Array2D!(uint)(4,4);
+    auto array = Array2D!uint(4,4);
 
     //default initialization
     assert(array[0,0] == 0);

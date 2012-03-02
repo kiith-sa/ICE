@@ -7,7 +7,6 @@
 
 ///OpenGL draw cache/renderer.
 module video.glrenderer;
-@system
 
 
 import std.stdio;
@@ -39,39 +38,39 @@ package struct GLRenderer
 {
     private:
         ///Buffer for colored vertices (without texcoords).
-        GLVertexBuffer!GLVertex2DColored colored_buffer_;
+        GLVertexBuffer!GLVertex2DColored coloredBuffer_;
         ///Buffer for vertices with texcoords.
-        GLVertexBuffer!GLVertex2DTextured textured_buffer_;
+        GLVertexBuffer!GLVertex2DTextured texturedBuffer_;
         ///Vertex groups, ordered from earliest to latest draws.
-        Vector!GLVertexGroup vertex_groups_;
+        Vector!GLVertexGroup vertexGroups_;
 
         ///Vertex group we're currently adding vertices to.
-        GLVertexGroup current_group_;
+        GLVertexGroup currentGroup_;
 
         /**
-         * Do we need to flush the current group (add it to vertex_groups_)? 
+         * Do we need to flush the current group (add it to vertexGroups_)? 
          *
          * True if group specific state (e.g. shader) has changed.
          */
-        bool flush_group_;
+        bool flushGroup_;
 
         ///Scissor areas of scissor calls during the frame.
-        Vector!Rectanglei scissor_areas_;
-        ///If true, current group is using scissor. (the last element of scissor_areas_)
+        Vector!Rectanglei scissorAreas_;
+        ///If true, current group is using scissor. (the last element of scissorAreas_)
         bool scissor_;
         ///Shader of the current group.
         GLShader* shader_ = null;
         ///Texture page of the current group.
-        TexturePage* texture_page_ = null;
+        TexturePage* texturePage_ = null;
         ///View zoom of the current group.
-        Vector2f view_offset_ = Vector2f(0.0f, 0.0f);
+        Vector2f viewOffset_ = Vector2f(0.0f, 0.0f);
         ///View offset of the current group.
-        float view_zoom_ = 1.0f;
+        float viewZoom_ = 1.0f;
         
         ///Current line width.
-        float line_width_ = 1.0f;
+        float lineWidth_ = 1.0f;
         ///Is line antialiasing enabled?
-        bool line_aa_ = false;
+        bool lineAA_ = false;
 
         ///Has the renderer been initialized?
         bool initialized_ = false;
@@ -82,117 +81,117 @@ package struct GLRenderer
          *
          * Params:  mode = Draw mode to use.
          */
-        this(in GLDrawMode mode)
+        this(const GLDrawMode mode)
         {
-            vertex_groups_.reserve(8);
-            scissor_areas_.reserve(8);
-            flush_group_ = true;
+            vertexGroups_.reserve(8);
+            scissorAreas_.reserve(8);
+            flushGroup_ = true;
             initialized_ = true;
-            init_buffers(mode);
+            initBuffers(mode);
         }
 
         ///Reset all frame state. (end the frame)
         void reset()
         {
-            colored_buffer_.reset();
-            textured_buffer_.reset();
+            coloredBuffer_.reset();
+            texturedBuffer_.reset();
 
-            texture_page_ = null;
+            texturePage_ = null;
             shader_       = null;
             scissor_      = false;
 
-            scissor_areas_.length = 0;
-            vertex_groups_.length = 0;
+            scissorAreas_.length = 0;
+            vertexGroups_.length = 0;
 
-            current_group_.vertices = 0;
-            flush_group_            = true;
+            currentGroup_.vertices = 0;
+            flushGroup_            = true;
 
             //we're not resetting zoom, view offset - those keep their values between frames
         }
 
         ///Get number of vertices used during the frame so far.
-        @property uint vertex_count() const
+        @property uint vertexCount() const 
         {
-            return colored_buffer_.vertex_count + textured_buffer_.vertex_count;
+            return coloredBuffer_.vertexCount + texturedBuffer_.vertexCount;
         }
 
         ///Get number of indices used during the frame so far.
-        @property uint index_count() const
+        @property uint indexCount() const
         {
-            return colored_buffer_.index_count + textured_buffer_.index_count;
+            return coloredBuffer_.indexCount + texturedBuffer_.indexCount;
         }
 
         ///Get number of vertex groups created during the frame so far.
-        @property uint vertex_group_count() const 
+        @property uint vertexGroupCount() const 
         {
-            return cast(uint)vertex_groups_.length;
+            return cast(uint)vertexGroups_.length;
         }
 
         ///Set draw mode. Should not be called during a frame.
-        @property void draw_mode(in GLDrawMode mode)
+        @property void drawMode(const GLDrawMode mode)
         {
-            clear(colored_buffer_);
-            clear(textured_buffer_);
-            init_buffers(mode);
+            clear(coloredBuffer_);
+            clear(texturedBuffer_);
+            initBuffers(mode);
         }
 
         ///Is the GLRenderer initialized?
-        @property bool initialized() const {return initialized_;}
+        @property bool initialized() const pure  {return initialized_;}
 
         ///Set shader to use in following draw calls.
-        void set_shader(GLShader* shader)
+        void setShader(GLShader* shader) pure 
         {
             shader_      = shader;
-            flush_group_ = true;
+            flushGroup_ = true;
         }
 
         ///Set texture page to use in following draw calls.
-        void set_texture_page(TexturePage* page)
+        void setTexturePage(TexturePage* page) pure 
         {
-            texture_page_ = page;
-            flush_group_  = true;
+            texturePage_ = page;
+            flushGroup_  = true;
         }
 
         ///Set scissor area to use in following draw calls. Only this area will be drawn to.
-        void scissor(const ref Rectanglei scissor_area)
+        void scissor(const ref Rectanglei scissorArea) 
         {
             scissor_ = true;
-            scissor_areas_ ~= scissor_area;
-            flush_group_ = true;
+            scissorAreas_ ~= scissorArea;
+            flushGroup_ = true;
         }
 
         ///Disable scissor test for following draw calls.
-        void disable_scissor()
+        void disableScissor() pure 
         {
             scissor_     = false;
-            flush_group_ = true;
+            flushGroup_ = true;
         }
 
         ///Set view zoom for following draw calls.
-        @property void view_zoom(in float zoom)
+        @property void viewZoom(const float zoom) pure 
         {
-            view_zoom_   = zoom;
-            flush_group_ = true;
+            viewZoom_   = zoom;
+            flushGroup_ = true;
         }
 
         ///Get view zoom.
-        @property real view_zoom() const {return view_zoom_;}
+        @property real viewZoom() const pure  {return viewZoom_;}
 
         ///Set view offset for following draw calls.
-        @property void view_offset(in Vector2f offset)
+        @property void viewOffset(const Vector2f offset) pure 
         {
-            view_offset_ = offset;
-            flush_group_ = true;
+            viewOffset_ = offset;
+            flushGroup_ = true;
         }
 
         ///Get view offset.
-        @property Vector2f view_offset() const {return view_offset_;}
+        @property Vector2f viewOffset() const pure  {return viewOffset_;}
 
         ///Set line width for following draw calls.
-        @property void line_width(in real width){line_width_ = width;}
+        @property void lineWidth(const real width) pure {lineWidth_ = width;}
 
         ///Set line antialiasing (on or off) for following draw calls.
-        @property void line_aa(in bool aa){line_aa_ = aa;}
+        @property void lineAA(const bool aa) pure {lineAA_ = aa;}
 
         /**
          * Draw a line.
@@ -207,37 +206,37 @@ package struct GLRenderer
          *          c1 = Color at the start point of the line.
          *          c2 = Color at the end point of the line.
          */
-        void draw_line(in Vector2f v1, in Vector2f v2, in Color c1, in Color c2)
+        void drawLine(const Vector2f v1, const Vector2f v2, const Color c1, const Color c2)
         {
             //The line is drawn as a rectangle with width slightly smaller than
-            //line_width_ to prevent artifacts.
+            //lineWidth_ to prevent artifacts.
 
             alias GLVertex2DColored Vertex;
 
             //ensure we have the needed vertex type in the current group
-            update_group(Vertex.vertex_type);
+            updateGroup(Vertex.vertexType);
 
             //equivalent to (v2 - v1).normal;
-            const offset_base = Vector2f(v1.y - v2.y, v2.x - v1.x).normalized; 
-            const half_width  = line_width_ * 0.5;
+            const offsetBase = Vector2f(v1.y - v2.y, v2.x - v1.x).normalized; 
+            const halfWidth  = lineWidth_ * 0.5;
             //offset of line vertices from start and end point of the line
-            Vector2f offset = offset_base * half_width;
+            Vector2f offset = offsetBase * halfWidth;
 
             //get current vertex, index count in colored buffer
-            const v = colored_buffer_.vertex_count;
-            uint  i = colored_buffer_.index_count;
+            const v = coloredBuffer_.vertexCount;
+            uint  i = coloredBuffer_.indexCount;
             //enlarge colored buffer to fit new vertices, indices
-            colored_buffer_.vertex_count = line_aa_ ? v + 8 : v + 4;
-            colored_buffer_.index_count  = line_aa_ ? i + 18 : i + 6;
-            current_group_.vertices      += line_aa_ ? 18 : 6;
+            coloredBuffer_.vertexCount = lineAA_ ? v + 8 : v + 4;
+            coloredBuffer_.indexCount  = lineAA_ ? i + 18 : i + 6;
+            currentGroup_.vertices      += lineAA_ ? 18 : 6;
             //get access to arrays to add vertices, indices to
-            auto vertices = colored_buffer_.vertices;
-            auto indices = colored_buffer_.indices;
+            auto vertices = coloredBuffer_.vertices;
+            auto indices = coloredBuffer_.indices;
 
-            if(line_aa_)
+            if(lineAA_)
             {
                 //offsets of AA vertices from start and end point of the line
-                const offset_aa = offset_base * (half_width + 0.4);
+                const offsetAA = offsetBase * (halfWidth + 0.4);
                 //colors of AA vertices
                 Color c3 = c1;
                 Color c4 = c2;
@@ -245,16 +244,16 @@ package struct GLRenderer
                 c4.a = 0;
 
                 //AA vertices
-                vertices[v]     = Vertex(v1 + offset_aa, c3);
-                vertices[v + 1] = Vertex(v2 + offset_aa, c4);
+                vertices[v]     = Vertex(v1 + offsetAA, c3);
+                vertices[v + 1] = Vertex(v2 + offsetAA, c4);
                 //line vertices         
                 vertices[v + 2] = Vertex(v1 + offset, c1);
                 vertices[v + 3] = Vertex(v2 + offset, c2);
                 vertices[v + 4] = Vertex(v1 - offset, c1);
                 vertices[v + 5] = Vertex(v2 - offset, c2);
                 //AA vertices           
-                vertices[v + 6] = Vertex(v1 - offset_aa, c3);
-                vertices[v + 7] = Vertex(v2 - offset_aa, c4);
+                vertices[v + 6] = Vertex(v1 - offsetAA, c3);
+                vertices[v + 7] = Vertex(v2 - offsetAA, c4);
 
                 //indices, each line specifies a triangle.
                 indices[i++] = v;     indices[i++] = v + 1; indices[i++] = v + 2;
@@ -287,23 +286,23 @@ package struct GLRenderer
          *          max   = Maximum dimensions of the rectangle.
          *          color = Rectangle color.
          */
-        void draw_rectangle(in Vector2f min, in Vector2f max, in Color color)
+        void drawRectangle(const Vector2f min, const Vector2f max, const Color color)
         {
             alias GLVertex2DColored Vertex;
 
             //ensure we have the needed vertex type in the current group
-            update_group(Vertex.vertex_type);
+            updateGroup(Vertex.vertexType);
 
             //get current vertex, index count in colored buffer
-            const v = colored_buffer_.vertex_count;
-            auto i = colored_buffer_.index_count;
+            const v = coloredBuffer_.vertexCount;
+            auto i = coloredBuffer_.indexCount;
             //enlarge colored buffer to fit new vertices, indices
-            colored_buffer_.vertex_count = v + 4;
-            colored_buffer_.index_count = i + 6;
-            current_group_.vertices += 6;
+            coloredBuffer_.vertexCount = v + 4;
+            coloredBuffer_.indexCount = i + 6;
+            currentGroup_.vertices += 6;
             //get access to arrays to add vertices, indices to
-            auto vertices = colored_buffer_.vertices;
-            auto indices = colored_buffer_.indices;
+            auto vertices = coloredBuffer_.vertices;
+            auto indices = coloredBuffer_.indices;
 
             //add vertices
             vertices[v]     = Vertex(min, color);
@@ -320,37 +319,37 @@ package struct GLRenderer
          *
          * Params:  min   = Minimum dimensions of the rectangle.
          *          max   = Maximum dimensions of the rectangle.
-         *          t_mix = Minimum texture coordinates of the rectangle.
-         *          t_max = Maximum texture coordinates of the rectangle.
+         *          tMix = Minimum texture coordinates of the rectangle.
+         *          tMax = Maximum texture coordinates of the rectangle.
          *          color = Base rectangle color.
          */
-        void draw_texture(in Vector2f min, in Vector2f max, 
-                          in Vector2f t_min, in Vector2f t_max,
-                          in Color color = rgb!"FFFFFF")
+        void drawTexture(const Vector2f min, const Vector2f max, 
+                          const Vector2f tMin, const Vector2f tMax,
+                          const Color color = rgb!"FFFFFF")
         {
             alias GLVertex2DTextured Vertex;
 
             //ensure we have the needed vertex type in the current group
-            update_group(Vertex.vertex_type);
+            updateGroup(Vertex.vertexType);
 
             //get current vertex, index count in textured buffer
-            const v = textured_buffer_.vertex_count;
-            auto i = textured_buffer_.index_count;
+            const v = texturedBuffer_.vertexCount;
+            auto i = texturedBuffer_.indexCount;
             //enlarge textured buffer to fit new vertices, indices
-            textured_buffer_.vertex_count = v + 4;
-            current_group_.vertices += 6;
-            textured_buffer_.index_count = i + 6;
+            texturedBuffer_.vertexCount = v + 4;
+            currentGroup_.vertices += 6;
+            texturedBuffer_.indexCount = i + 6;
             //get access to arrays to add vertices, indices to
-            auto vertices = textured_buffer_.vertices;
-            auto indices = textured_buffer_.indices;
+            auto vertices = texturedBuffer_.vertices;
+            auto indices = texturedBuffer_.indices;
 
             alias Vector2f V;
 
             //add vertices
-            vertices[v]     = Vertex(min, t_min, color);
-            vertices[v + 1] = Vertex(V(max.x, min.y), V(t_max.x, t_min.y), color);
-            vertices[v + 2] = Vertex(V(min.x, max.y), V(t_min.x, t_max.y), color);
-            vertices[v + 3] = Vertex(max, t_max, color);
+            vertices[v]     = Vertex(min, tMin, color);
+            vertices[v + 1] = Vertex(V(max.x, min.y), V(tMax.x, tMin.y), color);
+            vertices[v + 2] = Vertex(V(min.x, max.y), V(tMin.x, tMax.y), color);
+            vertices[v + 3] = Vertex(max, tMax, color);
             //indices, each line specifies a triangle.
             indices[i++] = v;     indices[i++] = v + 2; indices[i++] = v + 1;
             indices[i++] = v + 1; indices[i++] = v + 2; indices[i++] = v + 3;
@@ -359,24 +358,24 @@ package struct GLRenderer
         /**
          * Render out data specified with previous draw calls.
          *
-         * Params:  screen_width  = Video mode width.
-         *          screen_height = Video mode height.
+         * Params:  screenWidth  = Video mode width.
+         *          screenHeight = Video mode height.
          */
-        void render(in uint screen_width, in uint screen_height)
+        void render(const uint screenWidth, const uint screenHeight)
         {
             //if we have an unfinished group, add it
-            if(current_group_.vertices > 0){vertex_groups_ ~= current_group_;}
+            if(currentGroup_.vertices > 0){vertexGroups_ ~= currentGroup_;}
 
             //start drawing with the buffers
-            colored_buffer_.start_draw();
-            textured_buffer_.start_draw();
+            coloredBuffer_.startDraw();
+            texturedBuffer_.startDraw();
 
-            foreach(ref group; vertex_groups_)
+            foreach(ref group; vertexGroups_)
             {
                 //uint.max means no scissor
                 if(group.scissor != uint.max)
                 {
-                    Rectanglei scissor = scissor_areas_[group.scissor];
+                    Rectanglei scissor = scissorAreas_[group.scissor];
                     glEnable(GL_SCISSOR_TEST);
                     glScissor(scissor.min.x, scissor.min.y,
                               scissor.width, scissor.height);
@@ -389,14 +388,14 @@ package struct GLRenderer
                 //enable shader of the group
                 group.shader.start();
 
-                auto modelview = translation_matrix(-group.view_offset /
-                                                    Vector2f(screen_width, screen_height));
-                auto projection = ortho_matrix(0.0f, screen_width / group.view_zoom,
-                                               screen_height / group.view_zoom, 0.0f,
+                auto modelview = translationMatrix(-group.viewOffset /
+                                                    Vector2f(screenWidth, screenHeight));
+                auto projection = orthoMatrix(0.0f, screenWidth / group.viewZoom,
+                                               screenHeight / group.viewZoom, 0.0f,
                                                -1.0f, 1.0f);
 
                 //model-view-projection
-                const mvp = group.shader.get_uniform("mvp_matrix");
+                const mvp = group.shader.getUniform("mvp_matrix");
                 if(mvp < 0)
                 {
                     writeln("Missing uniform mvp_matrix in shader");
@@ -406,17 +405,17 @@ package struct GLRenderer
                 glUniformMatrix4fv(mvp, 1, GL_FALSE, (modelview * projection).ptr);
 
                 //determine which buffer the group belongs to
-                final switch(group.vertex_type)
+                final switch(group.vertexType)
                 {
                     case GLVertexType.Colored:
-                        if(colored_buffer_.draw(group) < 0)
+                        if(coloredBuffer_.draw(group) < 0)
                         {
                             writeln("Missing shader attribute");
                         }
                         break;
                     case GLVertexType.Textured:
-                        group.texture_page.start();  
-                        if(textured_buffer_.draw(group) < 0)
+                        group.texturePage.start();  
+                        if(texturedBuffer_.draw(group) < 0)
                         {
                             writeln("Missing shader attribute");
                         }
@@ -425,8 +424,8 @@ package struct GLRenderer
             }
 
             //end drawing with the buffers
-            colored_buffer_.end_draw();
-            textured_buffer_.end_draw();
+            coloredBuffer_.endDraw();
+            texturedBuffer_.endDraw();
         }
 
     private:
@@ -435,7 +434,7 @@ package struct GLRenderer
          *
          * Params:  type = Vertex type we need.
          */
-        void update_group(in GLVertexType type)
+        void updateGroup(const GLVertexType type)
         in
         {
             assert(type == GLVertexType.Colored || type == GLVertexType.Textured,
@@ -443,40 +442,40 @@ package struct GLRenderer
         }
         body
         {
-            if(!flush_group_ && current_group_.vertex_type == type){return;}
+            if(!flushGroup_ && currentGroup_.vertexType == type){return;}
 
-            //After the frame starts, flush_group is true but we don't want to add an unitialized 
+            //After the frame starts, flushGroup is true but we don't want to add an unitialized 
             //group, so ignore it. Also, adding an empty group is useless anyway.
-            if(current_group_.vertices > 0)
+            if(currentGroup_.vertices > 0)
             {
                 //add the current group
-                vertex_groups_ ~= current_group_;
+                vertexGroups_ ~= currentGroup_;
             }
 
             //reset current group with current settings and specified vertex type
-            with(current_group_)
+            with(currentGroup_)
             {
-                vertex_type = type;
+                vertexType = type;
 
-                offset = type == GLVertexType.Colored ? cast(uint)colored_buffer_.index_count
-                                                      : cast(uint)textured_buffer_.index_count;
+                offset = type == GLVertexType.Colored ? cast(uint)coloredBuffer_.indexCount
+                                                      : cast(uint)texturedBuffer_.indexCount;
                 vertices = 0;
 
-                view_zoom = view_zoom_;
-                view_offset = view_offset_;
+                viewZoom = viewZoom_;
+                viewOffset = viewOffset_;
 
-                scissor = scissor_ ? cast(uint)scissor_areas_.length - 1 : uint.max;
+                scissor = scissor_ ? cast(uint)scissorAreas_.length - 1 : uint.max;
                 shader = shader_;
-                texture_page = type == GLVertexType.Textured ? texture_page_ : null;
+                texturePage = type == GLVertexType.Textured ? texturePage_ : null;
             }
 
-            flush_group_ = false;
+            flushGroup_ = false;
         }
 
         ///Initialize vertex buffers with specified draw mode.
-        void init_buffers(in GLDrawMode draw_mode_)
+        void initBuffers(const GLDrawMode drawMode_)
         {
-            colored_buffer_  = GLVertexBuffer!GLVertex2DColored(draw_mode_);
-            textured_buffer_ = GLVertexBuffer!GLVertex2DTextured(draw_mode_);
+            coloredBuffer_  = GLVertexBuffer!GLVertex2DColored(drawMode_);
+            texturedBuffer_ = GLVertexBuffer!GLVertex2DTextured(drawMode_);
         }
 }

@@ -7,7 +7,6 @@
 
 ///RGBA Color struct and utility functions.
 module color;
-@safe
 
 
 import std.algorithm;
@@ -38,7 +37,7 @@ enum ColorFormat
  *
  * Returns: Bytes per pixel needed by specified color format.
  */
-uint bytes_per_pixel(in ColorFormat format)
+uint bytesPerPixel(const ColorFormat format) pure
 {
     final switch(format)
     {
@@ -74,8 +73,8 @@ struct Color
     static immutable yellow       = rgb!"FFFF00";
     static immutable cyan         = rgb!"00FFFF";
     static immutable magenta      = rgb!"FF00FF";
-    static immutable forest_green = rgb!"880";
-    static immutable dark_purple  = rgb!"808";
+    static immutable forestGreen = rgb!"880";
+    static immutable darkPurple  = rgb!"808";
 
     /**
      * Construct a color.
@@ -85,7 +84,7 @@ struct Color
      *          b = Blue channel value.
      *          a = Alpha channel value.
      */
-    this(in ubyte r, in ubyte g, in ubyte b, in ubyte a)
+    this(const ubyte r, const ubyte g, const ubyte b, const ubyte a) pure
     {
         this.r = r;
         this.g = g;
@@ -97,7 +96,7 @@ struct Color
     @property ubyte average() const
     {
         const real average = (r + g + b) / 3.0L;
-        return cast(ubyte)round_s32(average);
+        return cast(ubyte)roundS32(average);
     }
     ///Unittest for average().
     unittest
@@ -118,13 +117,13 @@ struct Color
     @property ubyte lightness() const
     {
         uint d = max(r, g, b) + min(r, g, b);
-        return cast(ubyte)round_s32(0.5f * d); 
+        return cast(ubyte)roundS32(0.5f * d); 
     }
 
     ///Return luminance of the color.
-    @property ubyte luminance() const 
+    @property ubyte luminance() const
     {
-        return cast(ubyte)round_s32(0.3 * r + 0.59 * g + 0.11 * b);
+        return cast(ubyte)roundS32(0.3 * r + 0.59 * g + 0.11 * b);
     }
     ///Unittest for luminance().
     unittest
@@ -134,7 +133,7 @@ struct Color
     }
     
     ///Add two colors (values are clamped to range 0 .. 255).
-    Color opBinary(string op)(in Color c) const if(op == "+")
+    Color opBinary(string op)(const Color c) const pure if(op == "+")
     {
         return Color(cast(ubyte)min(255, r + c.r), 
                      cast(ubyte)min(255, g + c.g),
@@ -153,12 +152,12 @@ struct Color
     }
 
     ///Multiply a color by a float (values are clamped to range 0 .. 255).
-    Color opBinary(string op)(in float m) const if(op == "*")
+    Color opBinary(string op)(const float m) const if(op == "*")
     {
-        return Color(cast(ubyte)round_s32(clamp(r * m, 0.0f, 255.0f)), 
-                     cast(ubyte)round_s32(clamp(g * m, 0.0f, 255.0f)),
-                     cast(ubyte)round_s32(clamp(b * m, 0.0f, 255.0f)), 
-                     cast(ubyte)round_s32(clamp(a * m, 0.0f, 255.0f)));
+        return Color(cast(ubyte)roundS32(clamp(r * m, 0.0f, 255.0f)), 
+                     cast(ubyte)roundS32(clamp(g * m, 0.0f, 255.0f)),
+                     cast(ubyte)roundS32(clamp(b * m, 0.0f, 255.0f)), 
+                     cast(ubyte)roundS32(clamp(a * m, 0.0f, 255.0f)));
     }
     ///Unittest for opBinary!"*"
     unittest
@@ -170,7 +169,7 @@ struct Color
     }
 
     ///Add a color to this color (values are clamped to range 0 .. 255).
-    void opOpAssign(string op)(in Color c) if(op == "+")
+    void opOpAssign(string op)(const Color c) pure if(op == "+")
     {
         this = this + c;
     }
@@ -189,7 +188,7 @@ struct Color
     }
 
     ///Multiply this color by a float (values are clamped to range 0 .. 255).
-    void opOpAssign(string op)(in float m) if(op == "*")
+    void opOpAssign(string op)(const float m) if(op == "*")
     {
         this = this * m;
     }
@@ -211,26 +210,26 @@ struct Color
      *          d = Interpolation ratio. 1 is this color, 0 other color, 0.5 half in between.
      *              Must be in 0.0 .. 1.0 range.
      */
-    Color interpolated(in Color c, in float d) const
+    Color interpolated(const Color c, const float d) const pure
     in{assert(d >= 0.0 && d <= 1.0, "Color interpolation value must be between 0.0 and 1.0");}
     body
     {
-        const ubyte d_byte = floor_u8(d * 255.0);
-        const ubyte inv_byte = cast(ubyte)(255 - d_byte);
+        const ubyte dByte = floorU8(d * 255.0);
+        const ubyte invByte = cast(ubyte)(255 - dByte);
 
         //ugly, but fast
         //colors are multiplied as ubytes from 0 to 255 and then divided by 256
-        return Color(cast(ubyte)((r * d_byte + c.r * inv_byte) >> 8),
-                     cast(ubyte)((g * d_byte + c.g * inv_byte) >> 8),
-                     cast(ubyte)((b * d_byte + c.b * inv_byte) >> 8),
-                     cast(ubyte)((a * d_byte + c.a * inv_byte) >> 8));
+        return Color(cast(ubyte)((r * dByte + c.r * invByte) >> 8),
+                     cast(ubyte)((g * dByte + c.g * invByte) >> 8),
+                     cast(ubyte)((b * dByte + c.b * invByte) >> 8),
+                     cast(ubyte)((a * dByte + c.a * invByte) >> 8));
     }
 
     ///Set grayscale color.
-    @property void gray_8(in ubyte gray){r = g = b = a = gray;}
+    @property void gray8(const ubyte gray) pure {r = g = b = a = gray;}
 
     ///Gamma correct the color with specified factor.
-    void gamma_correct(in real factor) 
+    void gammaCorrect(const real factor) pure
     in{assert(factor >= 0.0, "Can't gamma correct with a negative factor");}
     body
     {
@@ -239,10 +238,10 @@ struct Color
         real R = cast(real)r;
         real G = cast(real)g;
         real B = cast(real)b;
-        const real factor_inv = factor / 255.0;
-        R *= factor_inv;
-        G *= factor_inv;
-        B *= factor_inv;
+        const real factorInv = factor / 255.0;
+        R *= factorInv;
+        G *= factorInv;
+        B *= factorInv;
         if (R > 1.0 && (temp = (1.0 / R)) < scale) scale = temp;
         if (G > 1.0 && (temp = (1.0 / G)) < scale) scale = temp;
         if (B > 1.0 && (temp = (1.0 / B)) < scale) scale = temp;
@@ -256,7 +255,7 @@ struct Color
     }
 
     ///Return a random color with full opacity.
-    static Color random_rgb()
+    static Color randomRGB()
     {
         Color result;
         result.r = cast(ubyte)uniform(0, 256);
@@ -274,7 +273,7 @@ struct Color
      *
      * Returns: Gamma corrected color.
      */
-    static ubyte gamma_correct(in ubyte color, in real factor) pure
+    static ubyte gammaCorrect(const ubyte color, const real factor) pure
     in
     {
         assert(factor >= 0.0, "Can't gamma correct with a negative factor");
@@ -294,8 +293,8 @@ template rgb(string c) if(c.length == 6)
 ///RGBA color from a hexadecimal string (CSS style), e.g. FFFFFF80 for half-transparent white.
 template rgba(string c) if(c.length == 8) 
 {
-    enum auto rgba = Color(hex_color(c[0 .. 2]), hex_color(c[2 .. 4]), 
-                           hex_color(c[4 .. 6]), hex_color(c[6 .. 8]));
+    enum auto rgba = Color(hexColor(c[0 .. 2]), hexColor(c[2 .. 4]), 
+                           hexColor(c[4 .. 6]), hexColor(c[6 .. 8]));
 }
 
 ///RGB color from a short hexadecimal string (CSS style), e.g. FFF for white.
@@ -320,15 +319,15 @@ unittest
 
 private:
 ///Get value of a 2-character hexadecimal sequence corresponding to single color channel.
-ubyte hex_color(string hex) pure
+ubyte hexColor(string hex) pure
 {
     assert(hex.length == 2, "Hex string to get color from must have 2 chars");
     hex = toUpper(hex);
-    return cast(ubyte)(16 * hex_digit(hex[0]) + hex_digit(hex[1]));
+    return cast(ubyte)(16 * hexDigit(hex[0]) + hexDigit(hex[1]));
 }
 
 ///Convert a hexadecimal digit to integer.
-auto hex_digit(const char hex) pure
+auto hexDigit(const char hex) pure
 {
     if(hex >= '0' && hex <= '9')     {return hex - '0';}
     else if(hex >= 'A' && hex <= 'F'){return 10 + hex - 'A';}

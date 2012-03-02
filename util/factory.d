@@ -30,28 +30,28 @@ import util.stringctfe;
  * public void width(string width){width_ = width};
  * --------------------
  *
- * Params:  parameter_strings = Array of strings representing factory members,
+ * Params:  parameterStrings = Array of strings representing factory members,
  *                              their types and default values.
  *
  * Returns: Generated code ready to be inserted into a factory class definition.
  */
-string generate_factory(string[] parameter_strings ...)
+string generateFactory(string[] parameterStrings ...)
 {
-    alias Tuple!(string, "type", string, "name", string, "def_value") Parameter;
+    alias Tuple!(string, "type", string, "name", string, "defValue") Parameter;
 
     //Preallocating because appending here causes a compiler error.
-    Parameter[] params = new Parameter[parameter_strings.length];
-    foreach(i, param; parameter_strings)
+    Parameter[] params = new Parameter[parameterStrings.length];
+    foreach(i, param; parameterStrings)
     { 
         string[] p = param.split("$");
         assert(p.length == 3, "Malformed parameter to generate factory code: " ~ param);
-        params[i] = Parameter(p[0].strip_ctfe(), p[1].strip_ctfe(), p[2].strip_ctfe());
+        params[i] = Parameter(p[0].stripCtfe(), p[1].stripCtfe(), p[2].stripCtfe());
     }
 
     string data, setters;
     foreach(p; params)
     {
-        data    ~= p.type ~ " " ~ p.name ~ "_ = " ~ p.def_value ~ ";\n";
+        data    ~= p.type ~ " " ~ p.name ~ "_ = " ~ p.defValue ~ ";\n";
         setters ~= "void " ~ p.name ~ "(" ~ p.type ~ " " ~ p.name ~ "){" ~
                    p.name ~ "_ = " ~ p.name ~ ";}\n";
     }
@@ -67,7 +67,7 @@ unittest
         "public:\n"
         "void a(string a){a_ = a;}\n"
         "void b(int b){b_ = b;}\n";
-    assert(expected == generate_factory("string $ a $ \"default\"", "int $ b $ 42"),
+    assert(expected == generateFactory("string $ a $ \"default\"", "int $ b $ 42"),
            "Unexpected factory code generated");
 }
 

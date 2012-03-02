@@ -6,7 +6,6 @@
 
 ///AI and human player classes.
 module pong.player;
-@safe
 
 
 import pong.paddle;
@@ -32,7 +31,7 @@ abstract class Player
 
     public:
         ///Increase score of this player.
-        @property void score(const BallBody ball_body){score_++;}
+        @property void score(const BallBody ballBody){score_++;}
 
         ///Get score of this player.
         @property int score() const {return score_;}
@@ -66,9 +65,9 @@ final class AIPlayer : Player
 {
     protected:
         ///Timer determining when to update the AI.
-        Timer update_timer_;
+        Timer updateTimer_;
         ///Position of the ball during last AI update.
-        Vector2f ball_last_;
+        Vector2f ballLast_;
 
     public:
         /**
@@ -76,19 +75,19 @@ final class AIPlayer : Player
          * 
          * Params:  name          = Player name.
          *          paddle        = Paddle controlled by the player.
-         *          update_period = Time period of AI updates.
+         *          updatePeriod = Time period of AI updates.
          */
-        this(in string name, Paddle paddle, in real update_period)
+        this(in string name, Paddle paddle, in real updatePeriod)
         {
             super(name, paddle);
-            update_timer_ = Timer(update_period);
+            updateTimer_ = Timer(updatePeriod);
         }
 
         override void update(Game game)
         {
-            if(update_timer_.expired())
+            if(updateTimer_.expired())
             {
-                update_timer_.reset();
+                updateTimer_.reset();
 
                 //currently only support zero or one ball
                 const Ball[] balls = game.balls;
@@ -98,42 +97,42 @@ final class AIPlayer : Player
                 {
                     //Setting last ball position to center of paddle limits prevents
                     //any weird AI movements when ball first appears.
-                    ball_last_ = paddle_.limits.center;
-                    move_to_center();
+                    ballLast_ = paddle_.limits.center;
+                    moveToCenter();
                     return;
                 }
 
                 const Ball ball = balls[0];
                 const float distance = paddle_.limits.distance(ball.position);
-                const float distance_last = paddle_.limits.distance(ball_last_);
+                const float distanceLast = paddle_.limits.distance(ballLast_);
                 
                 //If the ball is closing to paddle movement area
-                if(distance_last >= distance){ball_closing(ball);}       
+                if(distanceLast >= distance){ballClosing(ball);}       
                 //If the ball is moving away from paddle movement area
-                else{move_to_center();}
+                else{moveToCenter();}
 
-                ball_last_ = ball.position;
+                ballLast_ = ball.position;
             }
         }
 
     protected:
         ///React to the ball closing in.
-        void ball_closing(in Ball ball)
+        void ballClosing(in Ball ball)
         {
             //If paddle x position is roughly equal to ball, no need to move
             if(equals(paddle_.position.x, ball.position.x, 16.0f)){paddle_.stop();}
-            else if(paddle_.position.x < ball.position.x){paddle_.move_right();}
-            else{paddle_.move_left();}
+            else if(paddle_.position.x < ball.position.x){paddle_.moveRight();}
+            else{paddle_.moveLeft();}
         }
 
         ///Move the paddle to center.
-        void move_to_center()
+        void moveToCenter()
         {
             Vector2f center = paddle_.limits.center;
             //If paddle x position is roughly in the center, no need to move
             if(equals(paddle_.position.x, center.x, 16.0f)){paddle_.stop();}
-            else if(paddle_.position.x < center.x){paddle_.move_right();}
-            else{paddle_.move_left();}
+            else if(paddle_.position.x < center.x){paddle_.moveRight();}
+            else{paddle_.moveLeft();}
         }
 }
 
@@ -156,11 +155,11 @@ final class HumanPlayer : Player
         {
             super(name, paddle);
             platform_ = platform;
-            platform_.key.connect(&key_handler);
+            platform_.key.connect(&keyHandler);
         }
         
         ///Destroy this HumanPlayer.
-        ~this(){platform_.key.disconnect(&key_handler);}
+        ~this(){platform_.key.disconnect(&keyHandler);}
 
         /**
          * Process keyboard input.
@@ -169,18 +168,18 @@ final class HumanPlayer : Player
          *          key     = Keyboard key.
          *          unicode = Unicode value of the key.
          */
-        void key_handler(KeyState state, Key key, dchar unicode)
+        void keyHandler(KeyState state, Key key, dchar unicode)
         {
             if(state == KeyState.Pressed)
             {
                 if(key == Key.Right)
                 {
-                    paddle_.move_right();
+                    paddle_.moveRight();
                     return;
                 }
                 if(key == Key.Left)
                 {
-                    paddle_.move_left();
+                    paddle_.moveLeft();
                     return;
                 }
             }
@@ -188,9 +187,9 @@ final class HumanPlayer : Player
             {
                 if(key == Key.Right)
                 {
-                    if(platform_.is_key_pressed(Key.Left))
+                    if(platform_.isKeyPressed(Key.Left))
                     {
-                        paddle_.move_left();
+                        paddle_.moveLeft();
                         return;
                     }
                     paddle_.stop();
@@ -198,9 +197,9 @@ final class HumanPlayer : Player
                 }
                 else if(key == Key.Left)
                 {
-                    if(platform_.is_key_pressed(Key.Right))
+                    if(platform_.isKeyPressed(Key.Right))
                     {
-                        paddle_.move_right();
+                        paddle_.moveRight();
                         return;
                     }
                     paddle_.stop();

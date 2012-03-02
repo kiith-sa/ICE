@@ -7,7 +7,6 @@
 
 ///2D axis aligned bounding box.
 module spatial.volumeaabbox;
-@safe
 
 
 import spatial.volume;
@@ -29,7 +28,7 @@ final immutable class VolumeAABBox : Volume
          * Params:  offset = Position of the top-left corner of the box in object space.
          *          size   = Size of the bounding box.
          */
-        this(in Vector2f offset, in Vector2f size)
+        this(const Vector2f offset, const Vector2f size)
         {
             rectangle = Rectanglef(offset, offset + size);
         }

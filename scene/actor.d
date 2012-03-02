@@ -7,7 +7,6 @@
 
 ///Base class for actors in the scene.
 module scene.actor;
-@safe
 
 
 import std.string;
@@ -30,53 +29,53 @@ abstract class Actor
 {
     protected:
         ///Physics body of this actor.
-        PhysicsBody physics_body_;
+        PhysicsBody physicsBody_;
 
         ///Index of update when the actor is dead (to be removed).
-        size_t dead_at_update_ = size_t.max;
+        size_t deadAtUpdate_ = size_t.max;
 
     public:
         ///Get position of this actor.
-        @property final Vector2f position() const {return physics_body_.position;}
+        @property final Vector2f position() const pure {return physicsBody_.position;}
 
         ///Get velocity of this actor.
-        @property final Vector2f velocity() const {return physics_body_.velocity;}
+        @property final Vector2f velocity() const pure {return physicsBody_.velocity;}
 
         ///Get a reference to physics body of this actor.
-        @property final PhysicsBody physics_body() {return physics_body_;}
+        @property final PhysicsBody physicsBody() {return physicsBody_;}
 
         /**
          * Destroy the actor at the end of specified update.
          *
          * This can be used to destroy the actor at the current update by passing
-         * current update_index from the SceneManager.
+         * current updateIndex from the SceneManager.
          * 
          * Note that the actor will not be destroyed immediately -
-         * At the end of update, all dead actors' on_die() methods are called 
+         * At the end of update, all dead actors' onDie() methods are called 
          * first, and then the actors are destroyed.
          *
-         * Params: update_index  = Update to destroy the actor at.
+         * Params: updateIndex  = Update to destroy the actor at.
          */
-        final void die(size_t update_index)
+        final void die(const size_t updateIndex)
         {
-            physics_body_.die(update_index);
-            dead_at_update_ = update_index;
+            physicsBody_.die(updateIndex);
+            deadAtUpdate_ = updateIndex;
         }
 
     protected:
         /**
          * Construct an Actor.
          *
-         * Params:  physics_body = Physics body of the actor.
+         * Params:  physicsBody = Physics body of the actor.
          */
-        this(PhysicsBody physics_body) 
+        this(PhysicsBody physicsBody) 
         in
         {
-            assert(physics_body !is null, "Can't construct an actor without a physics body");
+            assert(physicsBody !is null, "Can't construct an actor without a physics body");
         }
         body
         {
-            physics_body_ = physics_body;
+            physicsBody_ = physicsBody;
         };
 
         /**
@@ -86,11 +85,11 @@ abstract class Actor
          * actor dies, for instance detaching particle systems from an actor or
          * spawning new actors.
          *
-         * The physics body of the actor is not yet destroyed at on_die().
+         * The physics body of the actor is not yet destroyed at onDie().
          *
          * Params:  manager = SceneManager to get time information and add new actors.
          */
-        void on_die(SceneManager manager){};
+        void onDie(SceneManager manager){};
 
         /**
          * Update this Actor.
@@ -104,9 +103,9 @@ abstract class Actor
 
     package:
         ///Is the actor dead at specified update?
-        @property final bool dead (in size_t update_index) const
+        @property final bool dead (in size_t updateIndex) const pure
         {
-            return update_index >= dead_at_update_;
+            return updateIndex >= deadAtUpdate_;
         }
 
         /**
@@ -114,18 +113,18 @@ abstract class Actor
          *
          * Params:  manager   = SceneManager to get time information from and/or add new actors.
          */
-        final void update_package(SceneManager manager){update(manager);}
+        final void updatePackage(SceneManager manager){update(manager);}
 
         /**
-         * Used by SceneManager to call on_die() of the actor.
+         * Used by SceneManager to call onDie() of the actor.
          *
          * Params:  manager   = SceneManager to get time information from and/or add new actors.
          */
-        final void on_die_package(SceneManager manager){on_die(manager);}
+        final void onDiePackage(SceneManager manager){onDie(manager);}
 
 
         ///Interface used by SceneManager to draw the actor.
-        final void draw_actor(VideoDriver driver){draw(driver);}
+        final void drawActor(VideoDriver driver){draw(driver);}
 }
 
 /**
@@ -138,8 +137,8 @@ abstract class Actor
  */
 abstract class ActorFactory(T)
 {
-    mixin(generate_factory("Vector2f $ position $ Vector2f(0.0f, 0.0f)", 
-                           "Vector2f $ velocity $ Vector2f(0.0f, 0.0f)"));
+    mixin(generateFactory("Vector2f $ position $ Vector2f(0.0f, 0.0f)", 
+                          "Vector2f $ velocity $ Vector2f(0.0f, 0.0f)"));
 
     /**
      * Do any work required on the new actor to be produced and return it.
@@ -147,9 +146,9 @@ abstract class ActorFactory(T)
      * This is used as a shortcut to add a produced actor to the scene manager
      * and do any other work that needs to be done on all new actors.
      */
-    protected final T new_actor(SceneManager manager, T actor)
+    protected final T newActor(SceneManager manager, T actor)
     {
-        manager.add_actor(actor);
+        manager.addActor(actor);
         return actor;
     }
 

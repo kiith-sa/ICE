@@ -6,7 +6,6 @@
 
 ///Main pong program class.
 module pong.pong;
-@safe
 
 
 import std.algorithm;
@@ -40,17 +39,17 @@ import image;
  * Class holding all GUI used by Pong (main menu, etc.).
  *
  * Signal:
- *     public mixin Signal!() game_start
+ *     public mixin Signal!() gameStart
  *
  *     Emitted when the player clicks the button to start the game.
  *
  * Signal:
- *     public mixin Signal!() credits_start
+ *     public mixin Signal!() creditsStart
  *
  *     Emitted when the credits screen is opened. 
  *
  * Signal:
- *     public mixin Signal!() credits_end
+ *     public mixin Signal!() creditsEnd
  *
  *     Emitted when the credits screen is closed. 
  *
@@ -60,7 +59,7 @@ import image;
  *     Emitted when the player clicks the button to quit. 
  *
  * Signal:
- *     public mixin Signal!() reset_video
+ *     public mixin Signal!() resetVideo
  *
  *     Emitted when the player clicks the button to reset video mode. 
  */
@@ -72,7 +71,7 @@ class PongGUI
         ///Monitor view widget.
         MonitorView monitor_;
         ///Container of the main menu.
-        GUIElement menu_container_;
+        GUIElement menuContainer_;
         ///Main menu.
         GUIMenu menu_;
         ///Credits screen (null unless shown).
@@ -80,15 +79,15 @@ class PongGUI
 
     public:
         ///Emitted when the player clicks the button to start the game.
-        mixin Signal!() game_start;
+        mixin Signal!() gameStart;
         ///Emitted when the credits screen is opened.
-        mixin Signal!() credits_start;
+        mixin Signal!() creditsStart;
         ///Emitted when the credits screen is closed.
-        mixin Signal!() credits_end;
+        mixin Signal!() creditsEnd;
         ///Emitted when the player clicks the button to quit.
         mixin Signal!() quit;
         ///Emitted when the player clicks the button to reset video mode.
-        mixin Signal!() reset_video;
+        mixin Signal!() resetVideo;
 
         /**
          * Construct PongGUI with specified parameters.
@@ -108,7 +107,7 @@ class PongGUI
                 height = "168 + w_bottom / 6";
                 this.monitor_ = produce();
             }
-            parent_.add_child(monitor_);
+            parent_.addChild(monitor_);
             monitor_.hide();
 
             with(new GUIElementFactory)
@@ -117,24 +116,24 @@ class PongGUI
                 y      = "16";
                 width  = "160";
                 height = "p_bottom - 32";
-                menu_container_ = produce();
+                menuContainer_ = produce();
             }
-            parent_.add_child(menu_container_);
+            parent_.addChild(menuContainer_);
 
             with(new GUIMenuVerticalFactory)
             {
                 x            = "p_left";
                 y            = "p_top + 136";
-                item_width   = "144";
-                item_height  = "24";
-                item_spacing = "8";
-                add_item("Player vs AI", &game_start.emit);
-                add_item("Credits", &credits_show);
-                add_item("Quit", &quit.emit);
-                add_item("(DEBUG) Reset video", &reset_video.emit);
+                itemWidth   = "144";
+                itemHeight  = "24";
+                itemSpacing = "8";
+                addItem("Player vs AI", &gameStart.emit);
+                addItem("Credits", &creditsShow);
+                addItem("Quit", &quit.emit);
+                addItem("(DEBUG) Reset video", &resetVideo.emit);
                 menu_ = produce();
             }
-            menu_container_.add_child(menu_);
+            menuContainer_.addChild(menu_);
         }
 
         ///Destroy the PongGUI.
@@ -144,48 +143,48 @@ class PongGUI
 
             if(credits_ !is null){clear(credits_);}
 
-            menu_container_.die();
+            menuContainer_.die();
 
-            game_start.disconnect_all();
-            credits_start.disconnect_all();
-            credits_end.disconnect_all();
-            quit.disconnect_all();
-            reset_video.disconnect_all();
+            gameStart.disconnectAll();
+            creditsStart.disconnectAll();
+            creditsEnd.disconnectAll();
+            quit.disconnectAll();
+            resetVideo.disconnectAll();
         }
 
         ///Get the monitor widget.
         @property const(MonitorView) monitor() const {return monitor_;}
 
         ///Toggle monitor display.
-        void monitor_toggle()
+        void monitorToggle()
         {
             if(monitor_.visible){monitor_.hide();}
             else{monitor_.show();}
         }
 
         ///Show main menu.
-        void menu_show(){menu_container_.show();};
+        void menuShow(){menuContainer_.show();};
 
         ///Hide main menu.
-        void menu_hide(){menu_container_.hide();};
+        void menuHide(){menuContainer_.hide();};
 
     private:
         ///Show credits screen (and hide main menu).
-        void credits_show()
+        void creditsShow()
         {
-            menu_hide();
+            menuHide();
             credits_ = new Credits(parent_);
-            credits_.closed.connect(&credits_hide);
-            credits_start.emit();
+            credits_.closed.connect(&creditsHide);
+            creditsStart.emit();
         }
 
         ///Hide credits screen (and show main menu).
-        void credits_hide()
+        void creditsHide()
         {
             clear(credits_);
             credits_ = null;
-            menu_show();
-            credits_end.emit();
+            menuShow();
+            creditsEnd.emit();
         }
 }
 
@@ -196,7 +195,7 @@ class Pong
         alias std.conv.to to;
 
         ///FPS counter.
-        EventCounter fps_counter_;
+        EventCounter fpsCounter_;
         ///Continue running?
         bool continue_ = true;
 
@@ -204,12 +203,12 @@ class Pong
         Platform platform_;
 
         ///Container managing video driver and its dependencies.
-        VideoDriverContainer video_driver_container_;
+        VideoDriverContainer videoDriverContainer_;
         ///Video driver.
-        VideoDriver video_driver_;
+        VideoDriver videoDriver_;
 
         ///Root of the GUI.
-        GUIRoot gui_root_;
+        GUIRoot guiRoot_;
         
         ///Pong GUI.
         PongGUI gui_;
@@ -218,7 +217,7 @@ class Pong
         MemoryMonitorable memory_;
 
         ///Container managing game and its dependencies.
-        GameContainer game_container_;
+        GameContainer gameContainer_;
         ///Game.
         Game game_;
 
@@ -232,19 +231,19 @@ class Pong
             writeln("Initializing Pong");
             scope(failure){writeln("Pong initialization failed");}
 
-            singleton_ctor();
+            singletonCtor();
 
             scope(failure)
             {
                 clear(monitor_);
                 clear(memory_);
-                singleton_dtor();
+                singletonDtor();
             }
             monitor_ = new MonitorManager();
             memory_  = new MemoryMonitorable();
 
-            scope(failure){monitor_.remove_monitorable("Memory");}
-            monitor_.add_monitorable(memory_, "Memory");
+            scope(failure){monitor_.removeMonitorable("Memory");}
+            monitor_.addMonitorable(memory_, "Memory");
 
             scope(failure)
             {
@@ -255,31 +254,31 @@ class Pong
 
             scope(failure)
             {
-                clear(video_driver_container_);
+                clear(videoDriverContainer_);
             }
-            video_driver_container_ = new VideoDriverContainer;
-            video_driver_ = video_driver_container_.produce!(SDLGLVideoDriver)
+            videoDriverContainer_ = new VideoDriverContainer;
+            videoDriver_ = videoDriverContainer_.produce!(SDLGLVideoDriver)
                             (800, 600, ColorFormat.RGBA_8, false);
-            scope(failure){monitor_.remove_monitorable("Video");}
-            monitor_.add_monitorable(video_driver_, "Video");
+            scope(failure){monitor_.removeMonitorable("Video");}
+            monitor_.addMonitorable(videoDriver_, "Video");
 
             //initialize GUI
-            scope(failure){clear(gui_root_);}
-            gui_root_ = new GUIRoot(platform_);
+            scope(failure){clear(guiRoot_);}
+            guiRoot_ = new GUIRoot(platform_);
 
             scope(failure){clear(gui_);}
-            gui_ = new PongGUI(gui_root_.root, monitor_);
-            gui_.credits_start.connect(&credits_start);
-            gui_.credits_end.connect(&credits_end);
-            gui_.game_start.connect(&game_start);
+            gui_ = new PongGUI(guiRoot_.root, monitor_);
+            gui_.creditsStart.connect(&creditsStart);
+            gui_.creditsEnd.connect(&creditsEnd);
+            gui_.gameStart.connect(&gameStart);
             gui_.quit.connect(&exit);
-            gui_.reset_video.connect(&reset_video);
+            gui_.resetVideo.connect(&resetVideo);
 
-            game_container_ = new GameContainer();
+            gameContainer_ = new GameContainer();
 
             //Update FPS every second.
-            fps_counter_ = EventCounter(1.0);
-            fps_counter_.update.connect(&fps_update);
+            fpsCounter_ = EventCounter(1.0);
+            fpsCounter_.update.connect(&fpsUpdate);
         }
 
         ///Destroy Pong and all subsystems.
@@ -291,27 +290,27 @@ class Pong
             //because the platform stopped to run
             if(game_ !is null)
             {
-                game_.end_game();
-                game_container_.destroy();
+                game_.endGame();
+                gameContainer_.destroy();
                 game_ = null;
             }
 
-            clear(fps_counter_);
+            clear(fpsCounter_);
 
-            monitor_.remove_monitorable("Memory");
+            monitor_.removeMonitorable("Memory");
             //video driver might be already destroyed in exceptional circumstances
-            if(video_driver_ !is null){monitor_.remove_monitorable("Video");}
+            if(videoDriver_ !is null){monitor_.removeMonitorable("Video");}
 
             clear(gui_);
-            clear(gui_root_);
+            clear(guiRoot_);
             clear(monitor_);
 
             //video driver might be already destroyed in exceptional circumstances
-            if(video_driver_ !is null)
+            if(videoDriver_ !is null)
             {
-                video_driver_container_.destroy();
-                clear(video_driver_container_);
-                video_driver_ = null;
+                videoDriverContainer_.destroy();
+                clear(videoDriverContainer_);
+                videoDriver_ = null;
             }
 
             clear(platform_);
@@ -319,7 +318,7 @@ class Pong
 
             clear(memory_);
 
-            singleton_dtor();
+            singletonDtor();
         }
 
         ///Update Pong.
@@ -332,58 +331,58 @@ class Pong
                 writeln("Failure in Pong main loop, iteration ", iterations);
             }
 
-            platform_.key.connect(&key_handler_global);
-            platform_.key.connect(&key_handler);
+            platform_.key.connect(&keyHandlerGlobal);
+            platform_.key.connect(&keyHandler);
 
             while(platform_.run() && continue_)
             {
                 //Count this frame
-                fps_counter_.event();
+                fpsCounter_.event();
 
-                const bool game_run = game_ !is null && game_.run();
-                if(game_ !is null && !game_run){game_end();}
+                const bool gameRun = game_ !is null && game_.run();
+                if(game_ !is null && !gameRun){gameEnd();}
 
                 //update game state
-                gui_root_.update();
+                guiRoot_.update();
 
-                video_driver_.start_frame();
+                videoDriver_.startFrame();
 
-                if(game_run){game_.draw(video_driver_);}
+                if(gameRun){game_.draw(videoDriver_);}
 
-                gui_root_.draw(video_driver_);
-                video_driver_.end_frame();
+                guiRoot_.draw(videoDriver_);
+                videoDriver_.endFrame();
             
                 memory_.update();
             
                 iterations++;
             }
-            writeln("FPS statistics:\n", fps_counter_.statistics, "\n");
+            writeln("FPS statistics:\n", fpsCounter_.statistics, "\n");
         }
 
     private:
         ///Start game.
-        void game_start()
+        void gameStart()
         {
-            gui_.menu_hide();
-            platform_.key.disconnect(&key_handler);
-            game_ = game_container_.produce(platform_, monitor_, gui_root_.root);
+            gui_.menuHide();
+            platform_.key.disconnect(&keyHandler);
+            game_ = gameContainer_.produce(platform_, monitor_, guiRoot_.root);
             game_.intro();
         }
 
         ///End game.
-        void game_end()
+        void gameEnd()
         {
-            game_container_.destroy();
+            gameContainer_.destroy();
             game_ = null;
-            platform_.key.connect(&key_handler);
-            gui_.menu_show();
+            platform_.key.connect(&keyHandler);
+            gui_.menuShow();
         }
 
         ///Show credits screen.
-        void credits_start(){platform_.key.disconnect(&key_handler);}
+        void creditsStart(){platform_.key.disconnect(&keyHandler);}
 
         ///Hide (destroy) credits screen.
-        void credits_end(){platform_.key.connect(&key_handler);}
+        void creditsEnd(){platform_.key.connect(&keyHandler);}
 
         ///Exit Pong.
         void exit(){continue_ = false;}
@@ -395,12 +394,12 @@ class Pong
          *          key     = Keyboard key.
          *          unicode = Unicode value of the key.
          */
-        void key_handler(KeyState state, Key key, dchar unicode)
+        void keyHandler(KeyState state, Key key, dchar unicode)
         {
             if(state == KeyState.Pressed) switch(key)
             {
                 case Key.Escape: exit(); break;
-                case Key.Return: game_start(); break;
+                case Key.Return: gameStart(); break;
                 default: break;
             }
         }
@@ -415,27 +414,27 @@ class Pong
          *          key     = Keyboard key.
          *          unicode = Unicode value of the key.
          */
-        void key_handler_global(KeyState state, Key key, dchar unicode)
+        void keyHandlerGlobal(KeyState state, Key key, dchar unicode)
         {
             if(state == KeyState.Pressed) switch(key)
             {
-                case Key.K_1: video_driver_.draw_mode(DrawMode.Immediate);   break;
-                case Key.K_2: video_driver_.draw_mode(DrawMode.RAMBuffers);  break;
-                case Key.K_3: video_driver_.draw_mode(DrawMode.VRAMBuffers); break;
-                case Key.F10: gui_.monitor_toggle();   break;
-                case Key.Scrollock: save_screenshot(); break;
+                case Key.K_1: videoDriver_.drawMode(DrawMode.Immediate);   break;
+                case Key.K_2: videoDriver_.drawMode(DrawMode.RAMBuffers);  break;
+                case Key.K_3: videoDriver_.drawMode(DrawMode.VRAMBuffers); break;
+                case Key.F10: gui_.monitorToggle();   break;
+                case Key.Scrollock: saveScreenshot(); break;
                 default: break;
             }
         }
 
         ///Update FPS display.
-        void fps_update(real fps)
+        void fpsUpdate(real fps)
         {
-            platform_.window_caption = "FPS: " ~ to!string(fps);
+            platform_.windowCaption = "FPS: " ~ to!string(fps);
         }
 
         ///Reset video mode.
-        void reset_video(){reset_video_driver(800, 600, ColorFormat.RGBA_8);}
+        void resetVideo(){resetVideoDriver(800, 600, ColorFormat.RGBA_8);}
 
         /**
          * Reset video driver with specified video mode.
@@ -444,18 +443,18 @@ class Pong
          *          height = Window/screen height to use.
          *          format = Color format of video mode.
          */
-        void reset_video_driver(in uint width, in uint height, in ColorFormat format)
+        void resetVideoDriver(in uint width, in uint height, in ColorFormat format)
         {
             //game area
-            const Rectanglef area = game_.game_area;
+            const Rectanglef area = game_.gameArea;
 
-            monitor_.remove_monitorable("Video");
+            monitor_.removeMonitorable("Video");
 
-            video_driver_container_.destroy();
-            scope(failure){(video_driver_ = null);}
+            videoDriverContainer_.destroy();
+            scope(failure){(videoDriver_ = null);}
             try
             {
-                video_driver_ = video_driver_container_.produce!(SDLGLVideoDriver)
+                videoDriver_ = videoDriverContainer_.produce!(SDLGLVideoDriver)
                                 (width, height, format, false);
             }
             catch(VideoDriverException e)
@@ -466,39 +465,39 @@ class Pong
             }
 
             //Zoom according to the new video mode.
-            const real w_mult = width / area.width;
-            const real h_mult = height / area.height;
-            const real zoom = min(w_mult, h_mult);
+            const real wMult = width / area.width;
+            const real hMult = height / area.height;
+            const real zoom = min(wMult, hMult);
 
             //Center game area on screen.
             Vector2d offset;
-            offset.x = area.min.x + (w_mult / zoom - 1.0) * 0.5 * area.width * -1.0; 
-            offset.y = area.min.y + (h_mult / zoom - 1.0) * 0.5 * area.height * -1.0;
+            offset.x = area.min.x + (wMult / zoom - 1.0) * 0.5 * area.width * -1.0; 
+            offset.y = area.min.y + (hMult / zoom - 1.0) * 0.5 * area.height * -1.0;
 
-            video_driver_.zoom(zoom);
-            video_driver_.view_offset(offset);
-            gui_root_.realign(video_driver_);
-            monitor_.add_monitorable(video_driver_, "Video");
+            videoDriver_.zoom(zoom);
+            videoDriver_.viewOffset(offset);
+            guiRoot_.realign(videoDriver_);
+            monitor_.addMonitorable(videoDriver_, "Video");
         }
 
         ///Save screenshot (to data/main/screenshots).
-        void save_screenshot()
+        void saveScreenshot()
         {
             Image screenshot;
 
-            video_driver_.screenshot(screenshot);
+            videoDriver_.screenshot(screenshot);
 
             try
             {
-                ensure_directory_user("main::screenshots");
+                ensureDirectoryUser("main::screenshots");
 
                 //save screenshot with increasing suffix number.
                 for(uint s = 0; s < 100000; s++)
                 {
-                    string file_name = format("main::screenshots/screenshot_%05d.png", s);
-                    if(!file_exists_user(file_name))
+                    string fileName = format("main::screenshots/screenshot_%05d.png", s);
+                    if(!fileExistsUser(fileName))
                     {
-                        write_image(screenshot, file_name);
+                        writeImage(screenshot, fileName);
                         return;
                     }
                 }

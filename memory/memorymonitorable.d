@@ -7,7 +7,6 @@
 
 ///Monitorable used to view memory.
 module memory.memorymonitorable;
-@safe
 
 
 import memory.memory;
@@ -23,7 +22,7 @@ import util.signal;
  * Used for monitoring manually allocated memory. 
  * 
  * Signal:
- *     package mixin Signal!(Statistics) send_statistics
+ *     package mixin Signal!(Statistics) sendStatistics
  *
  *     Used to send statistics data to memory monitors.
  */
@@ -36,30 +35,30 @@ final class MemoryMonitorable : Monitorable
 
     package:
         ///Used to send statistics data to memory monitors.
-        mixin Signal!Statistics send_statistics;
+        mixin Signal!Statistics sendStatistics;
 
     public:
         ///Construct a MemoryMonitorable.
-        this(){singleton_ctor();}
+        this(){singletonCtor();}
 
         ///Destroy this MemoryMonitorable.
         ~this()
         {
-            singleton_dtor();
-            send_statistics.disconnect_all();
+            singletonDtor();
+            sendStatistics.disconnectAll();
         }
 
         ///Update and send monitoring data to monitor.
         void update()
         {
-            statistics_.manual_MiB = currently_allocated / (1024.0 * 1024.0);
-            send_statistics.emit(statistics_);
+            statistics_.manualMiB = currentlyAllocated / (1024.0 * 1024.0);
+            sendStatistics.emit(statistics_);
         }
 
-        MonitorDataInterface monitor_data()
+        MonitorDataInterface monitorData()
         {
             SubMonitor function(MemoryMonitorable)[string] ctors_;
-            ctors_["Usage"] = &new_graph_monitor!(MemoryMonitorable, Statistics, "manual_MiB");
+            ctors_["Usage"] = &newGraphMonitor!(MemoryMonitorable, Statistics, "manualMiB");
             return new MonitorData!MemoryMonitorable(this, ctors_);
         }
 }
@@ -68,5 +67,5 @@ final class MemoryMonitorable : Monitorable
 package struct Statistics
 {
     ///Total manually allocated memory at the moment, in MiB.
-    real manual_MiB;
+    real manualMiB;
 }

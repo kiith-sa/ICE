@@ -7,13 +7,11 @@
 
 ///SDL platform implementation.
 module platform.sdlplatform;
-@trusted
 
 
 import std.conv;
 import std.stdio;
 import std.string;
-alias std.conv.to to;
 
 import derelict.sdl.sdl;
 import derelict.util.exception;
@@ -80,14 +78,14 @@ class SDLPlatform : Platform
                     break;
                 case SDL_KEYDOWN:
                 case SDL_KEYUP:
-                    process_key(event.key);
+                    processKey(event.key);
                     break;
                 case SDL_MOUSEBUTTONDOWN:
                 case SDL_MOUSEBUTTONUP:
-                    process_mouse_key(event.button);
+                    processMouseKey(event.button);
                     break;
                 case SDL_MOUSEMOTION:
-                    process_mouse_motion(event.motion);
+                    processMouseMotion(event.motion);
                     break;
                 default:
                     break;
@@ -95,31 +93,31 @@ class SDLPlatform : Platform
             return super.run();
         }
 
-        @property override void window_caption(in string str)
+        @property override void windowCaption(const string str)
         {
             SDL_WM_SetCaption(toStringz(str), null); 
         }
 
-        override void hide_cursor(){SDL_ShowCursor(0);}
+        override void hideCursor(){SDL_ShowCursor(0);}
 
-        override void show_cursor(){SDL_ShowCursor(1);}
+        override void showCursor(){SDL_ShowCursor(1);}
 
     package:
         ///Process a keyboard event.
-        void process_key(in SDL_KeyboardEvent event)
+        void processKey(const SDL_KeyboardEvent event)
         {
             KeyState state = KeyState.Pressed;
-            keys_pressed_[event.keysym.sym] = true;
+            keysPressed_[event.keysym.sym] = true;
             if(event.type == SDL_KEYUP)
             {
                 state = KeyState.Released;
-                keys_pressed_[event.keysym.sym] = false;
+                keysPressed_[event.keysym.sym] = false;
             }
             key.emit(state, cast(Key)event.keysym.sym, event.keysym.unicode);
         }
         
         ///Process a mouse button event.
-        void process_mouse_key(in SDL_MouseButtonEvent event) 
+        void processMouseKey(const SDL_MouseButtonEvent event) 
         {
             const state = event.type == SDL_MOUSEBUTTONUP ? KeyState.Released 
                                                           : KeyState.Pressed;
@@ -138,14 +136,14 @@ class SDLPlatform : Platform
 
             const position = Vector2u(event.x, event.y);
 
-            mouse_key.emit(state, key, position);
+            mouseKey.emit(state, key, position);
         }
         
         ///Process a mouse motion event.
-        void process_mouse_motion(in SDL_MouseMotionEvent event) 
+        void processMouseMotion(const SDL_MouseMotionEvent event) 
         {
             const position = Vector2u(event.x, event.y);
-            const position_relative = Vector2i(event.xrel, event.yrel);
-            mouse_motion.emit(position, position_relative);
+            const positionRelative = Vector2i(event.xrel, event.yrel);
+            mouseMotion.emit(position, positionRelative);
         }
 }

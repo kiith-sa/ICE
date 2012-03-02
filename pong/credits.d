@@ -6,7 +6,6 @@
 
 ///Credits screen.
 module pong.credits;
-@safe
 
 
 import gui.guielement;
@@ -52,7 +51,7 @@ class Credits
         ///GUI element containing all elements of the credits screen.
         GUIElement container_;
         ///Button used to close the screen.
-        GUIButton close_button_;
+        GUIButton closeButton_;
         ///Credits text.
         GUIStaticText text_;
 
@@ -74,7 +73,7 @@ class Credits
                 margin(16, 96, 16, 96);
                 container_ = produce();
             }
-            parent_.add_child(container_);
+            parent_.addChild(container_);
 
             with(new GUIStaticTextFactory)
             {
@@ -90,18 +89,18 @@ class Credits
                 width  = "144";
                 height = "24";
                 text   = "Close";
-                close_button_ = produce();
+                closeButton_ = produce();
             }
 
-            container_.add_child(text_);
-            container_.add_child(close_button_);
-            close_button_.pressed.connect(&closed.emit);
+            container_.addChild(text_);
+            container_.addChild(closeButton_);
+            closeButton_.pressed.connect(&closed.emit);
         }
 
         ///Destroy this credits screen.
         ~this()
         {
             container_.die();
-            closed.disconnect_all();
+            closed.disconnectAll();
         }
 }

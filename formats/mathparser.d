@@ -7,7 +7,6 @@
 
 ///Math expression parser.
 module formats.mathparser;
-@trusted
 
 
 import std.algorithm;
@@ -41,27 +40,27 @@ class MathParserException : Exception{this(string msg){super(msg);}}
  * Throws:  MathParserException if the expression is invalid 
  *          (e.g. parentheses mismatch or redundant operator)
  */
-T parse_math(T)(in string expression, T[string] substitutions = null)
+T parseMath(T)(const string expression, T[string] substitutions = null)
     if(isNumeric!T)
 {
     enforceEx!MathParserException(expression.length > 0, 
                                   "Can't parse an empty string as a math expression");
 
-    scope(failure){writefln("Parsing math expression failed: " ~ expression);}
+    scope(failure){writeln("Parsing math expression failed: " ~ expression);}
     const substituted = substitutions is null ? expression 
                                               : substitute(expression, substitutions);
-    return parse_postfix!T(to_postfix(substituted));
+    return parsePostfix!T(toPostfix(substituted));
 }
-///Unittest for parse_math
+///Unittest for parseMath
 unittest
 {
     int[string] substitutions;
     substitutions["width"] = 320;
     substitutions["height"] = 240;
     string str = "width + 12 0 * 2 + 2 * height";
-    assert(parse_math(str, substitutions) == 1040);
+    assert(parseMath(str, substitutions) == 1040);
     str = "3 + 4 * 8 / 1 - 5";
-    assert(parse_math!(int)(str) == 30);
+    assert(parseMath!(int)(str) == 30);
 }
 
 
@@ -71,7 +70,7 @@ private:
     ///Associative operators.
     dchar[] associative = ['*', '+'];
     ///Left-associative operators.
-    dchar[] associative_left = ['-', '/'];
+    dchar[] associativeLeft = ['-', '/'];
     ///All arithmetic operators.
     dchar[] arithmetic;
     ///All operators.
@@ -82,7 +81,7 @@ private:
     ///Static constructor. Set up operator arrays.
     static this()
     {
-        arithmetic = associative ~ associative_left;
+        arithmetic = associative ~ associativeLeft;
         operators = formatting ~ arithmetic;
         precedence = ['+':1, '-':1, '*':2, '/':2, '(':3, ')':3];
     }
@@ -95,7 +94,7 @@ private:
      *
      * Returns: Input string with substitutions applied.
      */
-    string substitute(T)(in string input, T[string] substitutions)
+    string substitute(T)(const string input, T[string] substitutions)
     {
         //ugly hack, could use rewriting
         char[] mutable = input.dup;
@@ -118,7 +117,7 @@ private:
      * Throws:  MathParserException if the expression is invalid 
      *          (e.g. parentheses mismatch or redundant operator)
      */
-    string to_postfix(in string expression)
+    string toPostfix(const string expression)
     {
         dchar[] stack;
 
@@ -221,14 +220,14 @@ private:
      *
      * Throws:  MathParsetException if an invalid token is detected in the expression.
      */
-    T parse_postfix(T)(in string postfix)
+    T parsePostfix(T)(const string postfix) 
     {
-        scope(failure){writefln("Parsing postfix notation failed: " ~ postfix);}
+        scope(failure){writeln("Parsing postfix notation failed: " ~ postfix);}
 
         T[] stack;
         const string[] tokens = split(postfix);
 
-        void bin_operator(string op)()
+        void binOperator(const string op)()
         {
             T x = stack[$ - 1]; T y = stack[$ - 2];
             stack[$ - 2] = binaryFun!op(y, x);
@@ -237,10 +236,10 @@ private:
 
         foreach(token; tokens) switch(token[0])
         {
-            case '+': bin_operator!"a + b"; break; 
-            case '-': bin_operator!"a - b"; break; 
-            case '*': bin_operator!"a * b"; break; 
-            case '/': bin_operator!"a / b"; break; 
+            case '+': binOperator!"a + b"; break; 
+            case '-': binOperator!"a - b"; break; 
+            case '*': binOperator!"a * b"; break; 
+            case '/': binOperator!"a / b"; break; 
             default:
                 enforceEx!MathParserException
                           (std.string.isNumeric(token), 

@@ -6,7 +6,6 @@
 
 ///Stream implementation based on File.
 module file.filestream;
-@safe
 
 
 import std.stream;
@@ -34,15 +33,15 @@ class FileStream : Stream
         this(ref File file)
         {
             file_     = &file;
-            readable  = can_read();
-            writeable = can_write();
+            readable  = canRead();
+            writeable = canWrite();
             seekable  = true;
         }
 
     protected:
         override size_t readBlock(void* buffer, size_t size) 
         {
-            assert(can_read, "File stream trying to read from a file not opened for reading");
+            assert(canRead, "File stream trying to read from a file not opened for reading");
 
             size    = file_.read(buffer[0 .. size]);
             readEOF = (size == 0);
@@ -51,7 +50,7 @@ class FileStream : Stream
 
         override size_t writeBlock(const void* buffer, size_t size) 
         {
-            assert(can_write, "File stream trying to write to a file not opened "
+            assert(canWrite, "File stream trying to write to a file not opened "
                               "for writing/appending");
 
             file_.write(buffer[0 .. size]);
@@ -69,18 +68,18 @@ class FileStream : Stream
 
         override size_t available() 
         {
-            assert(can_read, "File stream trying to get available data size of "
+            assert(canRead, "File stream trying to get available data size of "
                              "file not opened for reading");
 
-            return cast(size_t)max(0, file_.data.length - file_.seek_position_);
+            return cast(size_t)max(0, file_.data.length - file_.seekPosition_);
         }
 
     private:
         ///Determine whether or not we can read from file_ .
-        @property bool can_read() const {return file_.mode == FileMode.Read;}
+        @property bool canRead() const {return file_.mode == FileMode.Read;}
 
         ///Determine whether or not we can write to file_ .
-        @property bool can_write() const
+        @property bool canWrite() const
         {
             return [FileMode.Write, FileMode.Append].canFind(file_.mode);
         }
@@ -88,11 +87,11 @@ class FileStream : Stream
     unittest
     {
         File file;
-        string read_contents =
+        string readContents =
             "line 1\n"
             "line 2\n"
             "42 3.14  ";
-        file_dummy_read(file, read_contents);
+        fileDummyRead(file, readContents);
         InputStream input = new FileStream(file);
         
         assert(input.readLine() == "line 1");
@@ -103,8 +102,8 @@ class FileStream : Stream
     unittest
     {
         File file;
-        int[] read_contents = [42, 4];
-        file_dummy_read(file, read_contents);
+        int[] readContents = [42, 4];
+        fileDummyRead(file, readContents);
         InputStream input = new FileStream(file);
         
         int result;
@@ -116,7 +115,7 @@ class FileStream : Stream
     unittest
     {
         File file;
-        file_dummy_write(file);
+        fileDummyWrite(file);
         OutputStream output = new FileStream(file);
 
         output.writeLine("line 1");
@@ -128,12 +127,12 @@ class FileStream : Stream
             "line 2\n"
             "42 3.14  ";
 
-        assert(file.write_data_[0 .. expected.length] == expected);
+        assert(file.writeData_[0 .. expected.length] == expected);
     }
     unittest
     {
         File file;
-        file_dummy_append(file);
+        fileDummyAppend(file);
         OutputStream output = new FileStream(file);
 
         output.writeLine("line 1");
@@ -145,6 +144,6 @@ class FileStream : Stream
             "line 2\n"
             "42 3.14  ";
 
-        assert(file.write_data_[0 .. expected.length] == expected);
+        assert(file.writeData_[0 .. expected.length] == expected);
     }
 }

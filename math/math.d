@@ -7,7 +7,6 @@
 
 ///Math functions.
 module math.math;
-@safe
 
 
 import std.algorithm;
@@ -32,7 +31,7 @@ template epsilon(T)
  *
  * Returns: True if the numbers are equal, false otherwise.
  */
-bool equals(T)(in T a, in T b, in T tolerance = epsilon!T)
+bool equals(T)(const T a, const T b, const T tolerance = epsilon!T) pure
     if(isNumeric!T)
 {
     return (a + tolerance >= b) && (a - tolerance <= b); 
@@ -57,7 +56,7 @@ unittest
  *
  * Returns: Clamped value.
  */
-T clamp(T)(in T v, in T minimum, in T maximum)
+T clamp(T)(const T v, const T minimum, const T maximum) pure
     if(isNumeric!T)
 in{assert(minimum <= maximum, "Clamp range minimum greater than maximum");}
 body{return min(maximum, max(minimum, v));}
@@ -76,7 +75,7 @@ unittest
  *
  * Returns: Nearest int to given value.
  */
-int round_s32(T)(in T f)if(isNumeric!T){return cast(int)round(f);}
+int roundS32(T)(const T f) if(isNumeric!T){return cast(int)round(f);}
 
 /**
  * Floor a float value to an unsigned 8-bit int.
@@ -85,17 +84,17 @@ int round_s32(T)(in T f)if(isNumeric!T){return cast(int)round(f);}
  *                                                                                   
  * Returns: Floor of given value as ubyte.
  */
-ubyte floor_u8(float f)
+ubyte floorU8(float f) pure
 {
     f += 256.0f;
     return cast(ubyte)(((*cast(uint*)&f)&0x7fffff)>>15);
 }
-///Unittest for floor_u8.
+///Unittest for floorU8.
 unittest
 {
-    assert(floor_u8(255.001) == 255);
-    assert(floor_u8(8.001) == 8);
-    assert(floor_u8(7.999) == 7);
+    assert(floorU8(255.001) == 255);
+    assert(floorU8(8.001) == 8);
+    assert(floorU8(7.999) == 7);
 }
 
 /**
@@ -105,37 +104,37 @@ unittest
  *
  * Returns: Floor of given value as int.
  */
-int floor_s32(double f)
+int floorS32(double f) pure
 {
     //2 ^ 36 * 1.5,  (52 - 16 == 36) uses limited precisicion to floor
     f += 68719476736.0*1.5; 
     return (*cast(int*)&f) >> 16;
 }                                                                                      
-///Unittest for floor_s32.
+///Unittest for floorS32.
 unittest
 {
-    assert(floor_s32(8.00001) == 8);
-    assert(floor_s32(7.99999) == 7);
-    assert(floor_s32(-0.00001) == -1);
+    assert(floorS32(8.00001) == 8);
+    assert(floorS32(7.99999) == 7);
+    assert(floorS32(-0.00001) == -1);
 }
 
 ///Array of first 32 powers of 2.
-uint[] powers_of_two = generate_pot();
+uint[] powersOfTwo = generatePot();
 
-///Generate the powers_of_two array and return it.
-private uint[] generate_pot()
+///Generate the powersOfTwo array and return it.
+private uint[] generatePot()
 {
     uint[] pot;
     foreach(p; 0 .. 32){pot ~= cast(uint)pow(cast(real)2, p);}
     return pot;
 }
-///Unittest for generate_pot().
+///Unittest for generatePot().
 unittest
 {
-    assert(powers_of_two[0] == 1);
-    assert(powers_of_two[1] == 2);
-    assert(powers_of_two[8] == 256);
-    assert(powers_of_two[14] == 16384);
+    assert(powersOfTwo[0] == 1);
+    assert(powersOfTwo[1] == 2);
+    assert(powersOfTwo[8] == 256);
+    assert(powersOfTwo[14] == 16384);
 }
 
 /**
@@ -145,23 +144,23 @@ unittest
  *
  * Returns: Smallest power of two greater or equal to given number.
  */
-uint pot_ceil(in uint num)
-in{assert(num <= powers_of_two[$ - 1], "Can't compute ceiling power of two for huge ints");}
+uint potCeil(const uint num) 
+in{assert(num <= powersOfTwo[$ - 1], "Can't compute ceiling power of two for huge ints");}
 body
 {
-    foreach(pot; powers_of_two)
+    foreach(pot; powersOfTwo)
     {
         if(pot >= num){return pot;}
     }
     assert(false);
 }
-///Unittest for pot_ceil.
+///Unittest for potCeil.
 unittest
 {
-    assert(pot_ceil(65535) == 65536);
-    assert(pot_ceil(8) == 8);
-    assert(pot_ceil(9) == 16);
-    assert(pot_ceil(12486) == 16384);
+    assert(potCeil(65535) == 65536);
+    assert(potCeil(8) == 8);
+    assert(potCeil(9) == 16);
+    assert(potCeil(12486) == 16384);
 }
 
 /**
@@ -171,7 +170,7 @@ unittest
  *
  * Returns: True if the number is a power of two, false otherwise.
  */
-bool is_pot(in uint num)
+bool isPot(const uint num)
 {
-    return powers_of_two.canFind(num);
+    return powersOfTwo.canFind(num);
 }

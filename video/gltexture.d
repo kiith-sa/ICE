@@ -7,7 +7,6 @@
 
 ///OpenGL texture handle.
 module video.gltexture;
-@safe
 
 
 import math.vector2;
@@ -22,20 +21,20 @@ package struct GLTexture
     ///Offset relative to the page.
     Vector2u offset;
     ///Index of the page.
-    uint page_index;
+    uint pageIndex;
 
     /**
      * Construct a GLTexture.
      *
      * Params:  texcoords  = Texture coordinates on the texture page.
      *          offset     = Offset from the origin of texture page.
-     *          page_index = Index if the texture page.
+     *          pageIndex = Index if the texture page.
      */
-    this(Rectanglef texcoords, Vector2u offset, uint page_index)
+    this(const Rectanglef texcoords, const Vector2u offset, const uint pageIndex) pure
     {
-        this.texcoords  = texcoords;
-        this.offset     = offset;
-        this.page_index = page_index;
+        this.texcoords = texcoords;
+        this.offset    = offset;
+        this.pageIndex = pageIndex;
     }
 }
 

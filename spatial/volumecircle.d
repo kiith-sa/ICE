@@ -7,7 +7,6 @@
 
 ///Bounding circle.
 module spatial.volumecircle;
-@safe
 
 
 import spatial.volume;
@@ -32,7 +31,7 @@ final immutable class VolumeCircle : Volume
          * Params:  offset = Position of circle's center in object space.
          *          radius = Radius of the circle. Must be greater than 0.
          */
-        this(in Vector2f offset, in float radius)
+        this(const Vector2f offset, const float radius)
         {
             this.offset = offset;
             this.radius = radius;

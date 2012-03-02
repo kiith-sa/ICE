@@ -7,7 +7,6 @@
 
 ///Base class for all particle systems.
 module scene.particlesystem;
-@safe
 
 
 import scene.actor;
@@ -22,7 +21,7 @@ abstract class ParticleSystem : Actor
 {
     private:
         ///Time left for the system to live. If negative, the system can exist indefinitely.
-        real life_time_;
+        real lifeTime_;
 
     protected:
         ///Actor the particle system is attached to. If null, the system is independent.
@@ -30,58 +29,58 @@ abstract class ParticleSystem : Actor
 
     public:
         ///Set time left for the LineTrail to live. Negative means infinite.
-        final void life_time(in real time){life_time_ = time;}
+        final void lifeTime(const real time) pure {lifeTime_ = time;}
 
         /**
          * Attach the particle system to specified actor.
          *
          * Params:  actor = Actor to attach to.
          */
-        final void attach(Actor actor){owner_ = actor;}
+        final void attach(Actor actor) pure {owner_ = actor;}
 
         ///Detach the particle system from any actor it's attached to.
-        final void detach(){owner_ = null;}
+        final void detach() pure {owner_ = null;}
 
     protected:
         /**
          * Construct a ParticleSystem.
          *
-         * Params:  physics_body    = Physics body of the system.
+         * Params:  physicsBody    = Physics body of the system.
          *          owner           = Class to attach the system to. 
          *                            If null, the system is independent.
-         *          life_time       = Life time of the system. 
+         *          lifeTime       = Life time of the system. 
          *                            If negative, lifetime is indefinite.
          */                          
-        this(PhysicsBody physics_body, Actor owner, in real life_time)
+        this(PhysicsBody physicsBody, Actor owner, const real lifeTime)
         {
-            life_time_ = life_time;
+            lifeTime_ = lifeTime;
             owner_ = owner;
-            super(physics_body);
+            super(physicsBody);
         }
 
         override void update(SceneManager manager)
         {
-            //If life_time_ reaches zero, destroy the system
-            if(life_time_ >= 0.0 && life_time_ - manager.time_step <= 0.0)
+            //If lifeTime_ reaches zero, destroy the system
+            if(lifeTime_ >= 0.0 && lifeTime_ - manager.timeStep <= 0.0)
             {
-                die(manager.update_index);
+                die(manager.updateIndex);
             }
-            life_time_ -= manager.time_step;
+            lifeTime_ -= manager.timeStep;
         }
 }
 
 /**
  * Base class for particle system factories.
  *
- * Params:  owner           = Actor to attach produced particle system to.
- *                            If null, the particle system will be independent.
- *                            Default; null 
- *          life_time       = Life time of the produced system. 
- *                            If negative, lifetime is indefinite.
- *                            Default; -1.0
+ * Params:  owner    = Actor to attach produced particle system to.
+ *                     If null, the particle system will be independent.
+ *                     Default; null 
+ *          lifeTime = Life time of the produced system. 
+ *                     If negative, lifetime is indefinite.
+ *                     Default; -1.0
  */                          
 abstract class ParticleSystemFactory(T) : ActorFactory!T
 {
-    mixin(generate_factory("Actor $ owner $ null",
-                           "real $ life_time $ -1.0"));
+    mixin(generateFactory("Actor $ owner $ null",
+                           "real $ lifeTime $ -1.0"));
 }

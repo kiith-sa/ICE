@@ -7,7 +7,6 @@
 
 ///Command line parser.
 module formats.cli;
-@safe
 
 
 import std.algorithm;
@@ -27,7 +26,7 @@ import util.traits;
  * Command line option.
  *
  * Methods of this struct are used to specify parameters of the option.
- * The option is then added to a CLI using its add_option() method.
+ * The option is then added to a CLI using its addOption() method.
  */
 struct CLIOption
 {
@@ -42,10 +41,10 @@ struct CLIOption
         ///Help string.
         string help_ = "";
         ///Default arguments to pass to action if the option is not specified.
-        string[] default_args_ = null;
+        string[] defaultArgs_ = null;
 
         ///Argument name to write in help text.
-        string arg_name_;
+        string argName_;
                                                 
     public:
         /**
@@ -54,7 +53,7 @@ struct CLIOption
          * Params:  name = Long name of the option. (Will automatically be prefixed with "--" .)
          *                 Must not be parsable as a number.
          */
-        this(in string name)
+        this(const string name)
         in
         {
             assert(!std.string.isNumeric(name), 
@@ -70,7 +69,7 @@ struct CLIOption
          *
          * Params:  name = Short name (one character). Must be from the alphabet.
          */
-        @property ref CLIOption short_name(in char name)
+        @property ref CLIOption shortName(const char name) pure
         in
         {
             assert((name >= 'a' && name <= 'z') || (name >= 'A' && name <= 'Z'), 
@@ -79,7 +78,7 @@ struct CLIOption
         body{short_ = name; return this;}
 
         ///Set help string of the option.
-        @property ref CLIOption help(in string help){help_ = help; return this;}
+        @property ref CLIOption help(const string help) pure {help_ = help; return this;}
 
         /**
          * Set value target.                       
@@ -96,8 +95,8 @@ struct CLIOption
             if(is_primitive!T)
         {
             assert(action_ is null, "Target of a CLIOption specified more than once");
-            action_ = (string[] args){return store_action(args, (T t){*target = t;});};
-            arg_name_ = "arg";
+            action_ = (string[] args){return storeAction(args, (T t){*target = t;});};
+            argName_ = "arg";
             return this;
         }              
 
@@ -121,8 +120,8 @@ struct CLIOption
         {
             assert(action_ is null, "Target of a CLIOption specified more than once");
             alias ParameterTypeTuple!T[0] A;
-            action_ = (string[] args){return store_action(args, (A t){target(t);});};
-            arg_name_ = "arg";
+            action_ = (string[] args){return storeAction(args, (A t){target(t);});};
+            argName_ = "arg";
             return this;
         }
 
@@ -143,8 +142,8 @@ struct CLIOption
             if(is_primitive!T)
         {
             assert(action_ is null, "Target of a CLIOption specified more than once");
-            action_ = (string[] args){return array_store_action(args, target);};
-            arg_name_ = "arg...";
+            action_ = (string[] args){return arrayStoreAction(args, target);};
+            argName_ = "arg...";
             return this;
         }
 
@@ -160,16 +159,16 @@ struct CLIOption
          *
          * Params:  target = Target function to pass option arguments to.
          */
-        ref CLIOption target(T)(T target, in int arg_count = -1)
+        ref CLIOption target(T)(T target, const int argCount = -1)
             if(is(T == void delegate(string[]) nothrow))
         {
             assert(action_ is null, "Target of a CLIOption specified more than once");
-            action_ = (string[] args){return delegate_action(args, target, arg_count);};
-            if(arg_count == -1){arg_name_ = "arg...";}
-            else if(arg_count > 0)
+            action_ = (string[] args){return delegateAction(args, target, argCount);};
+            if(argCount == -1){argName_ = "arg...";}
+            else if(argCount > 0)
             {
-                arg_name_ = "arg1";
-                foreach(a; 1 .. arg_count){arg_name_ ~= " arg" ~ to!string(a);}
+                argName_ = "arg1";
+                foreach(a; 1 .. argCount){argName_ ~= " arg" ~ to!string(a);}
             }
             return this;
         }
@@ -186,21 +185,21 @@ struct CLIOption
          *
          * Returns: Resulting CLIOption.
          */
-        ref CLIOption default_args(string[] args ...)
+        ref CLIOption defaultArgs(string[] args ...)
         {
-            default_args_ = args; 
+            defaultArgs_ = args; 
             return this;
         }
     
     private:
         ///Determine whether or not this option is valid.
-        @property bool valid() const {return action_ !is null;}
+        @property bool valid() const pure {return action_ !is null;}
 
         ///Get left part of the help string for this option. (used by CLI.help())
-        @property string help_left() const
+        @property string helpLeft() const pure
         {
             string result = short_ == '\0' ? "     " : " -" ~ short_ ~ ", ";
-            result ~= "--" ~ long_ ~ (arg_name_.length == 0 ? "" : "=" ~ arg_name_);
+            result ~= "--" ~ long_ ~ (argName_.length == 0 ? "" : "=" ~ argName_);
             return result;
         }
 }
@@ -208,7 +207,7 @@ struct CLIOption
 /**
  * Command line parser.
  *
- * Options are specified using the Option struct and added using the add_option() method.
+ * Options are specified using the Option struct and added using the addOption() method.
  *                 
  * Each option has a long, GNU-style name automatically prefixed by "--" and
  * optionally a short, one character name automatically prefixed by "-".
@@ -237,17 +236,17 @@ struct CLIOption
  *     int[] array;
  *
  *     //bool flag
- *     cli.add_option(CLIOption("flag").target(&flag).short_name('f'));
+ *     cli.addOption(CLIOption("flag").target(&flag).shortName('f'));
  *     //value, with defaults
- *     cli.add_option(CLIOption("value").target(&flag).short_name('v').default_args("1"));
+ *     cli.addOption(CLIOption("value").target(&flag).shortName('v').defaultArgs("1"));
  *     //setter
- *     cli.add_option(CLIOption("setter").target(&setter).short_name('s');
+ *     cli.addOption(CLIOption("setter").target(&setter).shortName('s');
  *     //array
- *     cli.add_option(CLIOption("array").target(array).short_name('a');
+ *     cli.addOption(CLIOption("array").target(array).shortName('a');
  *     //custom function
- *     cli.add_option(CLIOption("custom")
+ *     cli.addOption(CLIOption("custom")
  *                        .target((string[] args){foreach(arg; args){writeln(arg);}})
- *                        .short_name('c');
+ *                        .shortName('c');
  *     
  *     //parse arguments
  *     if(!cli.parse(args)){return;}
@@ -263,7 +262,7 @@ class CLI
         alias std.string.indexOf indexOf;
 
         ///Struct holding preprocessed (not yet parsed) option data.
-        private static struct OptionData
+        private struct OptionData
         {                  
             ///Option name.
             string name;
@@ -276,7 +275,7 @@ class CLI
         }
 
         ///Line width of help text.
-        uint line_width_ = 80;
+        uint lineWidth_ = 80;
         ///Description of the program (on the beginning of help).
         string description_;
         ///End of the help text.
@@ -285,9 +284,9 @@ class CLI
         CLIOption[] options_;
 
         ///Name of the program (taken from the first command line argument).
-        string program_name_;
+        string programName_;
         ///Preprocessed option data.
-        OptionData[] option_data_;
+        OptionData[] optionData_;
         ///Positional arguments.
         string[] positional_;
         ///Was help message requested?
@@ -297,15 +296,15 @@ class CLI
         ///Construct a CLI.
         this()
         {
-            add_option(CLIOption("help").short_name('h').target(&help_)
+            addOption(CLIOption("help").shortName('h').target(&help_)
                                         .help("Display this help and exit."));
         }
 
         ///Set program description (start of the help text).
-        @property void description(in string text){description_ = text;}
+        @property void description(const string text) pure {description_ = text;}
 
         ///Set epilog of the help text.
-        @property void epilog(in string text){epilog_ = text;}
+        @property void epilog(const string text) pure {epilog_ = text;}
 
         /**
          * Add a command line option.
@@ -314,7 +313,7 @@ class CLI
          *
          * Params:  option = Option to add.
          */
-        void add_option(CLIOption option)
+        void addOption(CLIOption option) pure
         in
         {
             debug
@@ -366,29 +365,29 @@ class CLI
          * 
          * Throws:  CLIException on parsing error.
          */
-        bool parse_(string[] args)
+        bool parse_(string[] args) 
         in{assert(args.length > 0, "No command line arguments to parse. Need at least one");}
         body
         {
             //first arg is the program name
-            program_name_ = args[0];
+            programName_ = args[0];
 
             //clean up in case parse() is called more than once
-            clear(option_data_);
+            clear(optionData_);
             clear(positional_);
             help_ = false;
 
             scope(failure){help();}
 
-            preprocess_args(args[1 .. $]);
+            preprocessArgs(args[1 .. $]);
 
-            string[] long_opts_;
-            foreach(ref option; options_){long_opts_ ~= option.long_;}
+            string[] longOpts_;
+            foreach(ref option; options_){longOpts_ ~= option.long_;}
 
             //abbreviations (associative array - abbrev -> word)
-            auto abbrev = abbrev(long_opts_);
+            auto abbrev = abbrev(longOpts_);
 
-            //search for all known options in option_data_
+            //search for all known options in optionData_
             foreach(ref option; options_)
             {
                 if(help_){help(); return false;}
@@ -401,26 +400,26 @@ class CLI
                     }
 
                     //get option data that match this option
-                    auto data = partition!match(option_data_);
+                    auto data = partition!match(optionData_);
 
                     if(data.length == 0)
                     {
                         //execute action with default args, if any
-                        if(option.default_args_ != null)
+                        if(option.defaultArgs_ != null)
                         {
-                            option.action_(option.default_args_);
+                            option.action_(option.defaultArgs_);
                         }
                         continue;
                     }
 
                     //execute options' actions and add unprocessed args to positional
-                    foreach(opt_data; data)
+                    foreach(optData; data)
                     {
-                        positional_ ~= option.action_(opt_data.arguments);
+                        positional_ ~= option.action_(optData.arguments);
                     }
 
                     //remove the processed data (partition divided the array into two parts)
-                    option_data_ = option_data_[0 .. $ - data.length];
+                    optionData_ = optionData_[0 .. $ - data.length];
                 }
                 catch(ConvOverflowException e)
                 {
@@ -435,10 +434,10 @@ class CLI
             if(help_){help(); return false;}
 
             //unknown options left
-            if(option_data_.length > 0)
+            if(optionData_.length > 0)
             {
-                auto msg = "Unrecognized option/s: " ~ option_data_[0].name;
-                foreach(o; option_data_[1 .. $]){msg ~= ", " ~ o.name;}
+                auto msg = "Unrecognized option/s: " ~ optionData_[0].name;
+                foreach(o; optionData_[1 .. $]){msg ~= ", " ~ o.name;}
                 throw new CLIException(msg);
             }
 
@@ -446,19 +445,19 @@ class CLI
         }
 
         /**
-         * Preprocesses command line arguments into option_data_ and positional_ arrays.
+         * Preprocesses command line arguments into optionData_ and positional_ arrays.
          *
          * Params:  args = Arguments to preprocess (without program name).
          *
          * Throws:  CLIException when an invalid argument is detected.
          */
-        void preprocess_args(string[] args)
+        void preprocessArgs(string[] args) 
         {               
-            void add_arg(string arg)
+            void addArg(const string arg) pure
             {
                 //no options yet, so add to positional args
-                if(option_data_.length == 0){positional_ ~= arg;}
-                else{option_data_[$ - 1].arguments ~= arg;}
+                if(optionData_.length == 0){positional_ ~= arg;}
+                else{optionData_[$ - 1].arguments ~= arg;}
             }
 
             foreach(arg; args)
@@ -469,7 +468,7 @@ class CLI
                 {
                     //ignore '=' between whitespaces
                     if(arg == "="){continue;}
-                    add_arg(arg);
+                    addArg(arg);
                     continue;
                 }
 
@@ -480,7 +479,7 @@ class CLI
                 if(indexOf(arg, "--") == 0)
                 {
                     //without the --
-                    option_data_ ~= OptionData(parts[0][2 .. $], parts[1 .. $]);
+                    optionData_ ~= OptionData(parts[0][2 .. $], parts[1 .. $]);
                 }
                 //starts with '-'
                 else
@@ -488,7 +487,7 @@ class CLI
                     arg = parts[0][1 .. $];
                     foreach(i, c; arg)
                     {
-                        static bool short_match(ref CLIOption option, char sh)
+                        static bool short_match(ref CLIOption option, const char sh) pure
                         {
                             return option.short_ == sh;
                         }
@@ -496,61 +495,61 @@ class CLI
                         //if this is not an option
                         if(!canFind!short_match(options_, c))
                         {
-                            add_arg(arg[i .. $]);
+                            addArg(arg[i .. $]);
                             break;
                         }
-                        option_data_ ~= OptionData([c]);
+                        optionData_ ~= OptionData([c]);
                     }
-                    if(parts.length == 2){add_arg(parts[1]);}
+                    if(parts.length == 2){addArg(parts[1]);}
                 }
             }
         }
                                     
         ///Display help information.
-        void help()
+        void help() 
         {
             writeln(description_);
             //might change once positional args are implemented
-            writeln("Usage: " ~ program_name_ ~ " [OPTION]...\n");
+            writeln("Usage: " ~ programName_ ~ " [OPTION]...\n");
                             
             //space between right and left sides
             uint sep = 2;
 
             static CLIOption max(ref CLIOption a, ref CLIOption b)
             {
-                return a.help_left.length > b.help_left.length ? a : b;
+                return a.helpLeft.length > b.helpLeft.length ? a : b;
             }
 
             //option with widest left side
             auto widest = reduce!max(options_);
 
             //left side width
-            uint left_width = clamp(cast(uint)widest.help_left.length + sep, 
-                                    line_width_ / 4, line_width_ / 2);
+            uint leftWidth = clamp(cast(uint)widest.helpLeft.length + sep, 
+                                    lineWidth_ / 4, lineWidth_ / 2);
             //right side width
-            uint right_width = line_width_ - left_width;
+            uint rightWidth = lineWidth_ - leftWidth;
 
             foreach(option; options_)
             {
-                string left = option.help_left;
-                string indent = replicate(" ", left_width);
+                string left = option.helpLeft;
+                string indent = replicate(" ", leftWidth);
 
                 //if option left side too wide, print it on a separate line
-                if(left.length + sep > left_width )
+                if(left.length + sep > leftWidth )
                 {
                     writeln(left);
-                    write(wrap(option.help_, line_width_, indent, indent));
+                    write(wrap(option.help_, lineWidth_, indent, indent));
                 }
                 else
                 {
-                    write(leftJustify(left, left_width));
-                    write(wrap!string(option.help_, line_width_, null, indent));
+                    write(leftJustify(left, leftWidth));
+                    write(wrap!string(option.help_, lineWidth_, null, indent));
                 }
-                if(option.default_args_.length > 0)
+                if(option.defaultArgs_.length > 0)
                 {
                     //default args
-                    writeln(wrap("Default: " ~ join(option.default_args_, ", "), 
-                                 right_width, indent, indent));
+                    writeln(wrap("Default: " ~ join(option.defaultArgs_, ", "), 
+                                 rightWidth, indent, indent));
                 }
             }
 
@@ -561,58 +560,58 @@ class CLI
 
 private:
 //used in unittest
-int test_global;
+int testGlobal;
 
 unittest
 {
     auto cli = new CLI();
     bool flag = false;
-    cli.add_option(CLIOption("flag").short_name('f').target(&flag).default_args("true"));
+    cli.addOption(CLIOption("flag").shortName('f').target(&flag).defaultArgs("true"));
     //defaults
-    cli.parse(["program_name"]);
+    cli.parse(["programName"]);
     assert(flag == true);
     //bool flag - explicit, long
-    cli.parse(["program_name", "--flag=0"]);
+    cli.parse(["programName", "--flag=0"]);
     assert(flag == false);
     //bool flag - implicit, short
-    cli.parse(["program_name", "-f"]);
+    cli.parse(["programName", "-f"]);
     assert(flag == true);
     //bool flag - explicit, short
-    cli.parse(["program_name", "-f0"]);
+    cli.parse(["programName", "-f0"]);
     assert(flag == false);
                            
     real r;
     int i;
     uint u;
     string s;
-    cli.add_option(CLIOption("real").target(&r));
-    cli.add_option(CLIOption("int").target(&i));
-    cli.add_option(CLIOption("uint").target(&u));
-    cli.add_option(CLIOption("string").target(&s));
-    cli.parse(["program_name", "--real", "4.2", "--int=-42", "--uint", "42", "--string", "42"]);
+    cli.addOption(CLIOption("real").target(&r));
+    cli.addOption(CLIOption("int").target(&i));
+    cli.addOption(CLIOption("uint").target(&u));
+    cli.addOption(CLIOption("string").target(&s));
+    cli.parse(["programName", "--real", "4.2", "--int=-42", "--uint", "42", "--string", "42"]);
     assert(equals(r, 4.2L) && i == -42 && u == 42 && s == "42");
 
     //setters
     void setter(uint u_) nothrow {u = u_;}
-    static void global_setter(uint g) nothrow {test_global = g;}
-    cli.add_option(CLIOption("setter").target(&setter));
-    cli.add_option(CLIOption("global_setter").target(&global_setter));
-    cli.parse(["program_name", "--setter", "24", "--global_setter", "42"]);
+    static void globalSetter(uint g) nothrow {testGlobal = g;}
+    cli.addOption(CLIOption("setter").target(&setter));
+    cli.addOption(CLIOption("globalSetter").target(&globalSetter));
+    cli.parse(["programName", "--setter", "24", "--globalSetter", "42"]);
     assert(u == 24);
-    assert(test_global == 42);
+    assert(testGlobal == 42);
 
     //arrays
     uint[] array;
-    cli.add_option(CLIOption("array").target(array));
-    cli.parse(["program_name", "--array", "1", "2", "--flag", "--array", "3,4"]);
+    cli.addOption(CLIOption("array").target(array));
+    cli.parse(["programName", "--array", "1", "2", "--flag", "--array", "3,4"]);
     assert(array == [1u, 2u, 3u, 4u]);
 
     //custom functions
-    string[] array_str;
-    void deleg(string[] args) nothrow {array_str = args;}
-    cli.add_option(CLIOption("deleg").target(&deleg));
-    cli.parse(["program_name", "--deleg", "4", "5", "6"]);
-    assert(array_str == ["4", "5", "6"]);
+    string[] arrayStr;
+    void deleg(string[] args) nothrow {arrayStr = args;}
+    cli.addOption(CLIOption("deleg").target(&deleg));
+    cli.parse(["programName", "--deleg", "4", "5", "6"]);
+    assert(arrayStr == ["4", "5", "6"]);
 }
 
 ///Convert a string to a bool lexically.
@@ -648,7 +647,7 @@ class CLIException : Exception{this(string msg){super(msg);}}
  *          ConvOverflowException on a parsing overflow error (e.g. to large int).
  *          ConvException on a parsing error.
  */
-string[] store_action(T)(string[] args, void delegate(T) target)
+string[] storeAction(T)(string[] args, void delegate(T) target)
 {
     static if(is(T == bool))
     {
@@ -678,7 +677,7 @@ string[] store_action(T)(string[] args, void delegate(T) target)
  * Throws:  ConvOverflowException on a parsing overflow error (e.g. to large int).
  *          ConvException on a parsing error.
  */
-string[] array_store_action(T)(string[] args, ref T[] target)
+string[] arrayStoreAction(T)(string[] args, ref T[] target)
 {
     //allow comma separated args
     foreach(arg; args) foreach(sub; std.string.split(arg, ","))
@@ -694,22 +693,22 @@ string[] array_store_action(T)(string[] args, ref T[] target)
  *                 
  * Params:  args      = Option arguments.
  *          target    = Target delegate to pass arguments to.
- *          arg_count = Number of arguments to pass.
- *                      If arg_count is -1 , all, if any, arguments will be passed. 
+ *          argCount = Number of arguments to pass.
+ *                      If argCount is -1 , all, if any, arguments will be passed. 
  *
  * Returns: Arguments that were not passed.
  */
-string[] delegate_action(string[] args, void delegate(string[]) nothrow target, int arg_count)
+string[] delegateAction(string[] args, void delegate(string[]) nothrow target, int argCount)
 {
-    enforceEx!CLIException(cast(int)args.length >= arg_count, 
-              "Not enough option arguments: need " ~ to!string(arg_count));
+    enforceEx!CLIException(cast(int)args.length >= argCount, 
+              "Not enough option arguments: need " ~ to!string(argCount));
 
     // -1 means all, if any, args
-    if(arg_count == -1)     
+    if(argCount == -1)     
     {
         target(args);
         return [];
     }
-    target(args[0 .. arg_count]); 
-    return args[arg_count .. $];
+    target(args[0 .. argCount]); 
+    return args[argCount .. $];
 }

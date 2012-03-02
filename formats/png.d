@@ -7,7 +7,6 @@
 
 ///PNG encoding/decoding interface.
 module formats.png;
-@system
 
 
 import std.exception;
@@ -35,18 +34,18 @@ package:
  *
  * Throws:  ImageFileException in case of an encoding error.
  */
-ubyte[] encode_png(const ubyte[] data, in uint width, in uint height, in ColorFormat format)
+ubyte[] encodePNG(const ubyte[] data, const uint width, const uint height, const ColorFormat format)
 in
 {
-    assert(data.length == width * height * bytes_per_pixel(format),
+    assert(data.length == width * height * bytesPerPixel(format),
            "Incorrect length of data to encode to a PNG image");
     assert(format == ColorFormat.RGBA_8 || format == ColorFormat.RGB_8, 
            "Unsupported color format for PNG encoding");
 }
 body
 {
-    const PNGInfo info = PNGInfo(PNGImage(width, height, cast(ubyte)bits_per_channel(format),
-                                 png_color_type(format)));
+    const PNGInfo info = PNGInfo(PNGImage(width, height, cast(ubyte)bitsPerChannel(format),
+                                 pngColorType(format)));
 
     PNGEncoder encoder;
     encoder.compression = CompressionStrategy.Filtered;
@@ -69,7 +68,7 @@ body
  *
  * Throws:  ImageFileException on failure.
  */
-ubyte[] decode_png(in ubyte[] data, out uint width, out uint height, out ColorFormat format)
+ubyte[] decodePNG(const ubyte[] data, out uint width, out uint height, out ColorFormat format)
 {
     PNGDecoder decoder;
     PNGInfo info;
@@ -81,8 +80,8 @@ ubyte[] decode_png(in ubyte[] data, out uint width, out uint height, out ColorFo
 
         width = info.image.width;
         height = info.image.height;
-        format = color_format_from_png(info.image.color_type, info.image.bit_depth);
-        assert(decoded.length == width * height * bytes_per_pixel(format),
+        format = colorFormatFromPNG(info.image.colorType, info.image.bitDepth);
+        assert(decoded.length == width * height * bytesPerPixel(format),
                "Image data size does not match image parameters");
 
         return decoded;
@@ -103,7 +102,7 @@ private:
  *
  * Returns: Bits per channel of the format.
  */
-uint bits_per_channel(in ColorFormat format)
+uint bitsPerChannel(const ColorFormat format) pure
 {
     switch(format)
     {
@@ -121,7 +120,7 @@ uint bits_per_channel(in ColorFormat format)
  *
  * Returns: PNGColorType corresponding to the format.
  */
-PNGColorType png_color_type(in ColorFormat format)
+PNGColorType pngColorType(const ColorFormat format) pure
 {
     switch(format)
     {
@@ -135,24 +134,24 @@ PNGColorType png_color_type(in ColorFormat format)
  * Convert PNG color type and channel bit depth to ColorFormat.
  *
  * Params:  type      = PNG color type.
- *          bit_depth = PNG bit depth per channel.
+ *          bitDepth = PNG bit depth per channel.
  *
  * Returns: Corresponding color format.
  *
  * Throws:  ImageFileException if the PNG color type/bitdepth is not supported.
  */
-ColorFormat color_format_from_png(in PNGColorType type, in ubyte bit_depth)
+ColorFormat colorFormatFromPNG(const PNGColorType type, const ubyte bitDepth) pure
 {
     switch(type)
     {
         case PNGColorType.Greyscale:
-            enforceEx!ImageFileException(bit_depth == 8, "Unsupported PNG gray bit depth");
+            enforceEx!ImageFileException(bitDepth == 8, "Unsupported PNG gray bit depth");
             return ColorFormat.GRAY_8;
         case PNGColorType.RGB:
-            enforceEx!ImageFileException(bit_depth == 8, "Unsupported PNG RGB bit depth");
+            enforceEx!ImageFileException(bitDepth == 8, "Unsupported PNG RGB bit depth");
             return ColorFormat.RGB_8;
         case PNGColorType.RGBA:
-            enforceEx!ImageFileException(bit_depth == 8, "Unsupported PNG RGBA bit depth");
+            enforceEx!ImageFileException(bitDepth == 8, "Unsupported PNG RGBA bit depth");
             return ColorFormat.RGBA_8;
         default:
             throw new ImageFileException("Unsupported PNG color type.");

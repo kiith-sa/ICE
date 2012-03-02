@@ -7,14 +7,13 @@
 
 ///Singleton with no global access.
 module util.weaksingleton;
-@safe
 
 
 /**
  * Singleton template mixin with support for polymorphism, without global access.
  *
- * Note: Any non-abstract weak singleton class must call singleton_ctor() in its ctor
- *       and singleton_dtor in its dtor or die() method.
+ * Note: Any non-abstract weak singleton class must call singletonCtor() in its ctor
+ *       and singletonDtor in its dtor or die() method.
  */
 template WeakSingleton()
 {
@@ -24,7 +23,7 @@ template WeakSingleton()
 
     public:
         ///Enforce only single instance at any given time.
-        void singleton_ctor()
+        void singletonCtor()
         {
             assert(_instance_ is null, 
                   "Trying to construct a weak singleton that is already constructed: "
@@ -33,7 +32,7 @@ template WeakSingleton()
         }
 
         ///Enforce only single instance at any given time.
-        void singleton_dtor()
+        void singletonDtor()
         {
             assert(_instance_ !is null, 
                   "Trying to destroy a weak singleton that is not constructed: "

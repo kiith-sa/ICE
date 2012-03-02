@@ -7,7 +7,6 @@
 
 ///Base class for all widgets.
 module gui.guielement;
-@safe
 
 
 import std.algorithm;
@@ -41,25 +40,25 @@ class GUIElement
         GUIElement[] children_;
 
         ///Color of the element's border.
-        Color border_color_ = rgba!"FFFFFF60";
+        Color borderColor_ = rgba!"FFFFFF60";
         ///Bounds of this element in screen space.
         Rectanglei bounds_;
 
         ///Is this element visible?
         bool visible_ = true;
         ///Draw border of this element?
-        bool draw_border_;
+        bool drawBorder_;
         ///Are the contents of this element aligned based on its current properties?
         bool aligned_ = false;
 
         ///Math expression used to calculate X position of the element.
-        string x_string_;
+        string xString_;
         ///Math expression used to calculate Y position of the element.
-        string y_string_;
+        string yString_;
         ///Math expression used to calculate width of the element.
-        string width_string_;
+        string widthString_;
         ///Math expression used to calculate height of the element.
-        string height_string_;
+        string heightString_;
 
     public:
         ///Destroy this element and all its children.
@@ -81,10 +80,10 @@ class GUIElement
         }
 
         ///Get position in screen space.
-        @property final Vector2i position_global() const {return bounds_.min;}
+        @property final Vector2i positionGlobal() const {return bounds_.min;}
 
         ///Get position relative to parent element.
-        @property final Vector2i position_local() const
+        @property final Vector2i positionLocal() const
         {
             return bounds_.min - parent_.bounds_.min;
         }
@@ -92,11 +91,11 @@ class GUIElement
         ///Get size of this element in screen space.
         @property final Vector2u size() const 
         {
-            return math.vector2.to!(uint)(bounds_.size);
+            return bounds_.size.to!uint;
         }
 
         ///Get bounding rectangle of this GUI element in screen space.
-        @property final Rectanglei bounds_global() const {return bounds_;}
+        @property final Rectanglei boundsGlobal() const {return bounds_;}
 
         /**
          * Add a child element. 
@@ -106,7 +105,7 @@ class GUIElement
          *
          * Params:  child = Child to add.
          */
-        final void add_child(GUIElement child)
+        final void addChild(GUIElement child)
         in
         {
             assert(!canFind!"a is b"(children_, child),
@@ -120,7 +119,7 @@ class GUIElement
         }
 
         ///Remove a child element. The specified element must be a child of this element.
-        final void remove_child(GUIElement child)
+        final void removeChild(GUIElement child)
         in
         {
             assert(canFind!"a is b"(children_, child) && child.parent_ is this,
@@ -151,11 +150,11 @@ class GUIElement
         {
             with(params)
             {
-                x_string_      = x;
-                y_string_      = y;
-                width_string_  = width;
-                height_string_ = height;
-                draw_border_   = draw_border;
+                xString_      = x;
+                yString_      = y;
+                widthString_  = width;
+                heightString_ = height;
+                drawBorder_   = drawBorder;
             }
             aligned_ = false;
         }
@@ -167,23 +166,21 @@ class GUIElement
          */
         void draw(VideoDriver driver)
         {
-            alias math.vector2.to to;
-
             if(!visible_){return;}
 
             if(!aligned_){realign(driver);}
 
-            if(draw_border_)
+            if(drawBorder_)
             {
-                driver.draw_rectangle(to!float(bounds_.min), to!float(bounds_.max), 
-                                      border_color_);
+                driver.drawRectangle(bounds_.min.to!float, bounds_.max.to!float, 
+                                     borderColor_);
             }
 
-            draw_children(driver);
+            drawChildren(driver);
         }
 
         ///Update this GUIElement and its children.
-        void update(){update_children();}
+        void update(){updateChildren();}
 
         /**
          * Process keyboard input.
@@ -208,13 +205,13 @@ class GUIElement
          *          key      = Mouse key.
          *          position = Position of the mouse.
          */
-        void mouse_key(KeyState state, MouseKey key, Vector2u position)
+        void mouseKey(KeyState state, MouseKey key, Vector2u position)
         {
             //ignore hidden elements
             if(!visible_){return;}
 
             //pass input to the children
-            foreach_reverse(ref child; children_){child.mouse_key(state, key, position);}
+            foreach_reverse(ref child; children_){child.mouseKey(state, key, position);}
         }
 
         /**
@@ -223,13 +220,13 @@ class GUIElement
          * Params:  position = Position of the mouse in screen coordinates.
          *          relative = Relative movement of the mouse.
          */
-        void mouse_move(Vector2u position, Vector2i relative)
+        void mouseMove(Vector2u position, Vector2i relative)
         {
             //ignore hidden elements
             if(!visible_){return;}
 
             //pass input to the children
-            foreach_reverse(ref child; children_){child.mouse_move(position, relative);}
+            foreach_reverse(ref child; children_){child.mouseMove(position, relative);}
         }
 
         ///Realign contents of this element according to its dimensions.
@@ -239,8 +236,8 @@ class GUIElement
             int[string] substitutions;
 
             //substitutions for window and parents' coordinates.
-            substitutions["w_right"]  = driver.screen_width;
-            substitutions["w_bottom"] = driver.screen_height;
+            substitutions["w_right"]  = driver.screenWidth;
+            substitutions["w_bottom"] = driver.screenHeight;
             substitutions["p_left"]   = parent_ is null ? 0 : parent_.bounds_.min.x;
             substitutions["p_right"]  = parent_ is null ? 0 : parent_.bounds_.max.x;
             substitutions["p_top"]    = parent_ is null ? 0 : parent_.bounds_.min.y;
@@ -258,15 +255,15 @@ class GUIElement
             }
 
             scope(failure){writeln("GUI dimension expression parsing failed: width: " 
-                                    ~ width_string_ ~ ", height: " ~ height_string_);}
+                                    ~ widthString_ ~ ", height: " ~ heightString_);}
 
             try
             {
-                bounds_.min = Vector2i(parse_math(x_string_, substitutions), 
-                                       parse_math(y_string_, substitutions));
+                bounds_.min = Vector2i(parseMath(xString_, substitutions), 
+                                       parseMath(yString_, substitutions));
 
-                width  = parse_math(width_string_, substitutions);
-                height = parse_math(height_string_, substitutions);
+                width  = parseMath(widthString_, substitutions);
+                height = parseMath(heightString_, substitutions);
 
                 if(height < 0 || width < 0)
                 {
@@ -299,30 +296,30 @@ class GUIElement
          *
          * Params:  driver = VideoDriver to draw with.
          */
-        final void draw_children(VideoDriver driver)
+        final void drawChildren(VideoDriver driver)
         {
             foreach(ref child; children_){child.draw(driver);}
         }
 
         ///Update children of this element.
-        final void update_children()
+        final void updateChildren()
         {
             foreach(ref child; children_){child.update();}
         }
 
         ///Remove dead GUI elements.
-        final void collect_dead()
+        final void collectDead()
         {
             auto l = 0;
-            for(size_t child_from = 0; child_from < children_.length; ++child_from)
+            for(size_t childFrom = 0; childFrom < children_.length; ++childFrom)
             {
-                auto child = children_[child_from];
+                auto child = children_[childFrom];
                 if(child.dead_)
                 {
                     clear(child);
                     continue;
                 }
-                child.collect_dead();
+                child.collectDead();
                 children_[l] = child;
                 ++l;
             } 
@@ -348,7 +345,7 @@ final class GUIRoot
          */
         this(Platform platform)
         {
-            singleton_ctor();
+            singletonCtor();
 
             //construct the root element.
             with(new GUIElementFactory)
@@ -359,11 +356,11 @@ final class GUIRoot
                 height = "w_bottom";
                 root_  = produce();
             }
-            root_.draw_border_ = false;
+            root_.drawBorder_ = false;
 
             platform.key.connect(&root_.key);
-            platform.mouse_motion.connect(&root_.mouse_move);
-            platform.mouse_key.connect(&root_.mouse_key);
+            platform.mouseMotion.connect(&root_.mouseMove);
+            platform.mouseKey.connect(&root_.mouseKey);
         }
 
         ///Destroy the GUIRoot.
@@ -371,7 +368,7 @@ final class GUIRoot
         {
             root_.die();
             clear(root_);
-            singleton_dtor();
+            singletonDtor();
         }
 
         /**
@@ -385,16 +382,16 @@ final class GUIRoot
 
             //save view zoom and offset
             const zoom   = driver.zoom;
-            const offset = driver.view_offset; 
+            const offset = driver.viewOffset; 
 
             //set 1:1 zoom and zero offset for GUI drawing
             driver.zoom        = 1.0;
-            driver.view_offset = Vector2d(0.0, 0.0);
+            driver.viewOffset = Vector2d(0.0, 0.0);
             //draw the elements
             root_.draw(driver);
             //restore zoom and offset
             driver.zoom        = zoom;
-            driver.view_offset = offset;
+            driver.viewOffset = offset;
         }
 
         ///Get the root element of the GUI.
@@ -403,15 +400,15 @@ final class GUIRoot
         ///Update the GUI.
         void update()
         {
-            root_.collect_dead();
-            root_.update_children();
+            root_.collectDead();
+            root_.updateChildren();
         }
 
         ///Add a child element.
-        void add_child(GUIElement child){root_.add_child(child);}
+        void addChild(GUIElement child){root_.addChild(child);}
 
         ///Remove a child element.
-        void remove_child(GUIElement child){root_.remove_child(child);}
+        void removeChild(GUIElement child){root_.removeChild(child);}
 
         ///Realign the GUI.
         void realign(VideoDriver driver){root_.realign(driver);}
@@ -424,7 +421,7 @@ final class GUIRoot
  */
 final class GUIElementFactory : GUIElementFactoryBase!GUIElement
 {
-    public override GUIElement produce(){return new GUIElement(gui_element_params);}
+    public override GUIElement produce(){return new GUIElement(guiElementParams);}
 }
 
 /**
@@ -455,7 +452,7 @@ final class GUIElementFactory : GUIElementFactoryBase!GUIElement
  *                        Default; "64"
  *          height      = Height math expression. 
  *                        Default; "64"
- *          draw_border = Draw border of the element?
+ *          drawBorder = Draw border of the element?
  *                        Default; true
  * Examples:
  * Example of usage of GUIElementFactory, which is used
@@ -476,31 +473,31 @@ final class GUIElementFactory : GUIElementFactoryBase!GUIElement
  *     width = "p_right - 192";
  *     height = "p_bottom - 32";
  *     element = produce();
- *     other.add_child(element);
+ *     other.addChild(element);
  * }
  *
  *
  * //destruction:
- * other.remove_child(element);
+ * other.removeChild(element);
  * element.die();
  * //(alternatively, we could just destroy other, which would also destroy element)
  * --------------------
  */
 abstract class GUIElementFactoryBase(T)
 {
-    mixin(generate_factory(`string $ x           $ "p_left"`, 
+    mixin(generateFactory(`string $ x           $ "p_left"`, 
                            `string $ y           $ "p_top"`, 
                            `string $ width       $ "64"`, 
                            `string $ height      $ "64"`,
-                           `bool   $ draw_border $ true`));
+                           `bool   $ drawBorder $ true`));
     private:
         alias std.conv.to to;
 
     protected:
         ///Return a struct containing factory parameters packaged for GUIElement ctor.
-        final GUIElementParams gui_element_params() const
+        final GUIElementParams guiElementParams() const
         {
-            return GUIElementParams(x_, y_, width_, height_, draw_border_);
+            return GUIElementParams(x_, y_, width_, height_, drawBorder_);
         }
 
     public:
@@ -536,6 +533,6 @@ immutable struct GUIElementParams
         ///Coordinates' math expressions.
         string x, y, width, height;
         ///Draw border of the GUI element?
-        bool draw_border;
+        bool drawBorder;
 }
 

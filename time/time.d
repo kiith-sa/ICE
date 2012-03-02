@@ -7,7 +7,6 @@
 
 ///Time functions.
 module time.time;
-@safe
 
 
 import std.conv;
@@ -17,13 +16,13 @@ import math.math;
 
 
 ///Time when the program started in tenths of microseconds since 00:00 1.1.1 AD.
-private immutable long start_time_;
+private immutable long startTime_;
 
 ///Static ctor - initialize program start time.
-private static this(){start_time_ = Clock.currStdTime();}
+private static this(){startTime_ = Clock.currStdTime();}
 
 ///Returns time since program start in seconds.
-real get_time(){return (Clock.currStdTime() - start_time_) / 1_000_000_0.0L;}
+real getTime(){return (Clock.currStdTime() - startTime_) / 1_000_000_0.0L;}
 
 /**
  * Converts a time value to a string in format mm:ss, or hh:mm:ss if hours is true.
@@ -35,28 +34,28 @@ real get_time(){return (Clock.currStdTime() - start_time_) / 1_000_000_0.0L;}
  * Params:  time  = Time value to convert.
  *          hours = Show hours (as opposed to only minutes, seconds).
  */
-string time_string(in real time, in bool hours = false)
+string timeString(const real time, const bool hours = false)
 in
 {
     assert(time >= 0, "Can't convert negative time value to a string");
 }
 body
 {
-    const uint total_s = round_s32(time);
-    const uint s = total_s % 60;
-    uint m = total_s / 60;
-    string s_str = to!string(s);
+    const uint totalS = roundS32(time);
+    const uint s = totalS % 60;
+    uint m = totalS / 60;
+    string sStr = to!string(s);
     if(!hours)
     {
-        if(s_str.length == 1){s_str = "0" ~ s_str;}
-        return to!string(m) ~ ":" ~ s_str;
+        if(sStr.length == 1){sStr = "0" ~ sStr;}
+        return to!string(m) ~ ":" ~ sStr;
     }
     else
     {
-        string m_str = to!string(m);
-        if(m_str.length == 1){m_str = "0" ~ m_str;}
+        string mStr = to!string(m);
+        if(mStr.length == 1){mStr = "0" ~ mStr;}
         const uint h = m / 60;
         m %= 60;
-        return to!string(h) ~ ":" ~ m_str ~ ":" ~ s_str;
+        return to!string(h) ~ ":" ~ mStr ~ ":" ~ sStr;
     }
 }

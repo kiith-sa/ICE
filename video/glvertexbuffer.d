@@ -7,7 +7,6 @@
 
 ///OpenGL vertex buffer.
 module video.glvertexbuffer;
-@system
 
 
 import derelict.opengl.gl;
@@ -51,7 +50,7 @@ package struct GLVertexBuffer(Vertex)
          *
          * Params:  mode = Draw mode of the buffer.
          */
-        this(in GLDrawMode mode)
+        this(const GLDrawMode mode)
         in
         {
             assert(mode == GLDrawMode.Immediate || 
@@ -63,29 +62,29 @@ package struct GLVertexBuffer(Vertex)
             vertices_.reserve(8);
             indices_.reserve(8);
             mode_ = mode;
-            if(mode_ == GLDrawMode.VertexBuffer){init_vbo();}
+            if(mode_ == GLDrawMode.VertexBuffer){initVBO();}
         }
 
         ///Destroy the GLVertexBuffer.
         ~this()
         {
-            if(mode_ == GLDrawMode.VertexBuffer){destroy_vbo();}
+            if(mode_ == GLDrawMode.VertexBuffer){destroyVBO();}
         }
 
         ///Start drawing with this buffer. Must be called before calls to draw().
-        void start_draw()
+        void startDraw()
         {
             if(mode_ == GLDrawMode.VertexBuffer)
             {
-                const vertex_bytes = cast(uint)(Vertex.sizeof * vertices_.length);
-                const index_bytes = cast(uint)(uint.sizeof * indices_.length);
+                const vertexBytes = cast(uint)(Vertex.sizeof * vertices_.length);
+                const indexBytes = cast(uint)(uint.sizeof * indices_.length);
 
                 //bind the buffers
                 glBindBuffer(GL_ARRAY_BUFFER, vbo_);
                 glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_);
                 //upload data to the buffers
-                glBufferData(GL_ARRAY_BUFFER, vertex_bytes, vertices_.ptr, GL_STREAM_DRAW);
-                glBufferData(GL_ELEMENT_ARRAY_BUFFER, index_bytes, indices_.ptr, GL_STREAM_DRAW);
+                glBufferData(GL_ARRAY_BUFFER, vertexBytes, vertices_.ptr, GL_STREAM_DRAW);
+                glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBytes, indices_.ptr, GL_STREAM_DRAW);
 
                 //unbind the buffers
                 glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -94,7 +93,7 @@ package struct GLVertexBuffer(Vertex)
         }
 
         ///End drawing with this buffer. Must be called after calls to draw().
-        void end_draw()
+        void endDraw()
         {
             //not necessary, just forcing the buffers not to be bound at the end of frame
             if(mode_ == GLDrawMode.VertexBuffer)
@@ -105,19 +104,19 @@ package struct GLVertexBuffer(Vertex)
         }
 
         ///Access vertex data as an array.
-        @property Vertex[] vertices(){return vertices_.ptr_unsafe[0 .. vertices_.length];}
+        @property Vertex[] vertices(){return vertices_.ptrUnsafe[0 .. vertices_.length];}
 
         ///Access index data as an array.
-        @property uint[] indices(){return indices_.ptr_unsafe[0 .. indices_.length];}
+        @property uint[] indices(){return indices_.ptrUnsafe[0 .. indices_.length];}
 
         ///Get number of vertices in the buffer.
-        @property uint vertex_count() const {return cast(uint)vertices_.length;}
+        @property uint vertexCount() const {return cast(uint)vertices_.length;}
 
         ///Get number of indices in the buffer.
-        @property uint index_count() const {return cast(uint)indices_.length;}
+        @property uint indexCount() const {return cast(uint)indices_.length;}
 
         ///Set number of vertices in the buffer (to add more vertices).
-        @property void vertex_count(in size_t length)
+        @property void vertexCount(const size_t length)
         {
             if(vertices_.allocated < length)
             {
@@ -127,7 +126,7 @@ package struct GLVertexBuffer(Vertex)
         }
 
         ///Set number of indices in the buffer (to add more indices).
-        @property void index_count(in size_t length)
+        @property void indexCount(const size_t length)
         {
             if(indices_.allocated < length)
             {
@@ -153,7 +152,7 @@ package struct GLVertexBuffer(Vertex)
         int draw(const ref GLVertexGroup group)
         in
         {
-            assert(group.vertex_type == Vertex.vertex_type, 
+            assert(group.vertexType == Vertex.vertexType, 
                    "Incorrect vertex group vertex type to draw with this buffer");
         }
         body
@@ -161,12 +160,12 @@ package struct GLVertexBuffer(Vertex)
             static const textured = is(Vertex == GLVertex2DTextured);
 
             //get vertex attribute handles
-            const position = group.shader.get_attribute("in_position");
-            const color = group.shader.get_attribute("in_color");
+            const position = group.shader.getAttribute("in_position");
+            const color = group.shader.getAttribute("in_color");
             if(position < 0 || color < 0 ){return -1;}
             static if(textured)
             {
-                const texcoord = group.shader.get_attribute("in_texcoord");
+                const texcoord = group.shader.getAttribute("in_texcoord");
                 if(texcoord < 0){return -1;}
             }
 
@@ -202,14 +201,14 @@ package struct GLVertexBuffer(Vertex)
 
                 //specify data formats, locations
                 glVertexAttribPointer(position, 2, GL_FLOAT, GL_FALSE, Vertex.sizeof, 
-                                      data + Vertex.vertex_offset);
+                                      data + Vertex.vertexOffset);
                 static if(textured)
                 {
                     glVertexAttribPointer(texcoord, 2, GL_FLOAT, GL_FALSE, Vertex.sizeof, 
-                                          data + Vertex.texcoord_offset);
+                                          data + Vertex.texcoordOffset);
                 }                                 
                 glVertexAttribPointer(color, 4, GL_UNSIGNED_BYTE, GL_TRUE, Vertex.sizeof, 
-                                      data + Vertex.color_offset);
+                                      data + Vertex.colorOffset);
                 
                 //draw
                 glDrawElements(GL_TRIANGLES, group.vertices, GL_UNSIGNED_INT, 
@@ -233,7 +232,7 @@ package struct GLVertexBuffer(Vertex)
 
     private:
         ///Initialize OpenGL VBOs, only used in VertexBuffer draw mode.
-        void init_vbo()
+        void initVBO()
         {
             //generate names
             glGenBuffers(1, &vbo_);
@@ -244,7 +243,7 @@ package struct GLVertexBuffer(Vertex)
         }
         
         ///Destroy OpenGL VBOs, only used in VertexBuffer draw mode.
-        void destroy_vbo()
+        void destroyVBO()
         {
             //bind
             glBindBuffer(GL_ARRAY_BUFFER, vbo_);
@@ -285,14 +284,14 @@ package struct GLVertexGroup
     ///Shader used to draw the group.
     GLShader* shader;
     ///Texture page of the group if it uses texturing.
-    TexturePage* texture_page;
+    TexturePage* texturePage;
     ///Scissor index of the group. uint.max means no scissor is used.
     uint scissor = uint.max;
 
     ///View zoom. 1.0 is normal, > 1.0 is zoomed in, < 1.0 is zoomed out.
-    float view_zoom = 1.0;
+    float viewZoom = 1.0;
     ///Current view offset in screen space.
-    Vector2f view_offset;
+    Vector2f viewOffset;
 
     ///Offset to index buffer used.
     uint offset;
@@ -300,5 +299,5 @@ package struct GLVertexGroup
     uint vertices;
 
     ///Vertex type of the group.
-    GLVertexType vertex_type;
+    GLVertexType vertexType;
 }

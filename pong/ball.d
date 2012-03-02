@@ -6,7 +6,6 @@
 
 ///Ball classes.
 module pong.ball;
-@safe
 
 
 import std.math;
@@ -39,20 +38,20 @@ class BallBody : PhysicsBody
         immutable float radius_;
 
     public:
-        override void collision_response(ref Contact contact)
+        override void collisionResponse(ref Contact contact)
         {
-            const PhysicsBody other = this is contact.body_a ? contact.body_b : contact.body_a;
+            const PhysicsBody other = this is contact.bodyA ? contact.bodyB : contact.bodyA;
             //handle paddle collisions separately
             if(other.classinfo == PaddleBody.classinfo)
             {
                 const PaddleBody paddle = cast(PaddleBody)other;
                 //let paddle reflect this ball
-                velocity_ = paddle.reflected_ball_velocity(this);
+                velocity_ = paddle.reflectedBallVelocity(this);
                 //prevent any further resolving (since we're not doing precise physics)
                 contact.resolved = true;
                 return;
             }
-            super.collision_response(contact);
+            super.collisionResponse(contact);
         }
 
         ///Get radius of this ball body.
@@ -87,12 +86,12 @@ class BallBody : PhysicsBody
 class DummyBallBody : BallBody
 {
     public:
-        override void collision_response(ref Contact contact)
+        override void collisionResponse(ref Contact contact)
         {
             //keep the speed unchanged
-            const float speed = velocity_.length_safe;
-            super.collision_response(contact);
-            velocity_.normalize_safe();
+            const float speed = velocity_.length;
+            super.collisionResponse(contact);
+            velocity_.normalize();
             velocity_ *= speed;
 
             //prevent any further resolving (since we're not doing precise physics)
@@ -124,64 +123,64 @@ class Ball : Actor
         ///Particle trail of the ball.
         ParticleEmitter emitter_;
         ///Speed of particles emitted by the ball.
-        float particle_speed_;
+        float particleSpeed_;
         ///Line trail of the ball.
         LineTrail trail_;
         ///Draw the ball itself or only the particle systems?
-        bool draw_ball_;
+        bool drawBall_;
 
     public:
-        override void on_die(SceneManager manager)
+        override void onDie(SceneManager manager)
         {
-            trail_.life_time = 0.5;
+            trail_.lifeTime = 0.5;
             trail_.detach();
-            emitter_.life_time = 2.0;
-            emitter_.emit_frequency = 0.0;
+            emitter_.lifeTime = 2.0;
+            emitter_.emitFrequency = 0.0;
             emitter_.detach();
         }
  
         ///Get the radius of this ball.
-        @property float radius() const {return (cast(BallBody)physics_body_).radius;}
+        @property float radius() const {return (cast(BallBody)physicsBody_).radius;}
 
     protected:
         /**
          * Construct a ball.
          *
-         * Params:  physics_body   = Physics body of the ball.
+         * Params:  physicsBody   = Physics body of the ball.
          *          trail          = Line trail of the ball.
          *          emitter        = Particle trail of the ball.
-         *          particle_speed = Speed of particles in the particle trail.
-         *          draw_ball      = Draw the ball itself or only particle effects?
+         *          particleSpeed = Speed of particles in the particle trail.
+         *          drawBall      = Draw the ball itself or only particle effects?
          */
-        this(BallBody physics_body, LineTrail trail,
-             ParticleEmitter emitter, in float particle_speed, in bool draw_ball)
+        this(BallBody physicsBody, LineTrail trail,
+             ParticleEmitter emitter, in float particleSpeed, in bool drawBall)
         {
-            super(physics_body);
+            super(physicsBody);
             trail_ = trail;
             trail.attach(this);
             emitter_ = emitter;
             emitter.attach(this);
-            particle_speed_ = particle_speed;
-            draw_ball_ = draw_ball;
+            particleSpeed_ = particleSpeed;
+            drawBall_ = drawBall;
         }
 
         override void update(SceneManager manager)
         {
             //Ball can only change direction, not speed, after a collision
-            if(!physics_body_.collided()){return;}
-            emitter_.emit_velocity = -physics_body_.velocity.normalized * particle_speed_;
+            if(!physicsBody_.collided()){return;}
+            emitter_.emitVelocity = -physicsBody_.velocity.normalized * particleSpeed_;
         }
 
         override void draw(VideoDriver driver)
         {
-            if(!draw_ball_){return;}
-            const Vector2f position = physics_body_.position;
-            driver.line_aa = true;
-            driver.line_width = 3;
-            driver.draw_circle(position, radius - 2, rgb!"E0E0FF", 4);
-            driver.line_width = 1;
-            driver.draw_circle(position, radius, rgba!"C0C0FFC0");
-            driver.line_aa = false;
+            if(!drawBall_){return;}
+            const Vector2f position = physicsBody_.position;
+            driver.lineAA = true;
+            driver.lineWidth = 3;
+            driver.drawCircle(position, radius - 2, rgb!"E0E0FF", 4);
+            driver.lineWidth = 1;
+            driver.drawCircle(position, radius, rgba!"C0C0FFC0");
+            driver.lineAA = false;
         }
 }
 
@@ -190,54 +189,54 @@ class Ball : Actor
  *
  * Params:  radius         = Radius of the ball.
  *                           Default; 6.0
- *          particle_speed = Speed of particles in the ball's particle trail.
+ *          particleSpeed = Speed of particles in the ball's particle trail.
  *                           Default; 25.0
  */
 class BallFactory : ActorFactory!(Ball)
 {
-    mixin(generate_factory("float $ radius $ 6.0f",
-                           "float $ particle_speed $ 25.0f"));
+    mixin(generateFactory("float $ radius $ 6.0f",
+                           "float $ particleSpeed $ 25.0f"));
     private:
         ///Factory for ball line trail.
-        LineTrailFactory trail_factory_;
+        LineTrailFactory trailFactory_;
         ///Factory for ball particle trail.
-        LineEmitterFactory emitter_factory_;
+        LineEmitterFactory emitterFactory_;
 
     public:
         ///Construct a BallFactory, initializing factory data.
         this()
         {
-            trail_factory_   = new LineTrailFactory;
-            emitter_factory_ = new LineEmitterFactory;
+            trailFactory_   = new LineTrailFactory;
+            emitterFactory_ = new LineEmitterFactory;
         }
 
         override Ball produce(SceneManager manager)
         {
-            with(trail_factory_)
+            with(trailFactory_)
             {
-                particle_life  = 0.5;
-                emit_frequency = 60;
-                start_color    = rgb!"E0E0FF";
-                end_color      = rgba!"E0E0FF00";
+                particleLife  = 0.5;
+                emitFrequency = 60;
+                startColor    = rgb!"E0E0FF";
+                endColor      = rgba!"E0E0FF00";
             }
 
-            with(emitter_factory_)
+            with(emitterFactory_)
             {
-                particle_life   = 2.0;
-                emit_frequency  = 160;
-                emit_velocity   = -this.velocity_.normalized * particle_speed_;
-                angle_variation = PI / 4;
-                line_length     = 2.0;
-                start_color     = rgba!"E0E0FF20";
-                end_color       = rgba!"E0E0FF00";
+                particleLife   = 2.0;
+                emitFrequency  = 160;
+                emitVelocity   = -this.velocity_.normalized * particleSpeed_;
+                angleVariation = PI / 4;
+                lineLength     = 2.0;
+                startColor     = rgba!"E0E0FF20";
+                endColor       = rgba!"E0E0FF00";
             }
 
-            adjust_factories();
-            return new_actor(manager, 
-                             new Ball(ball_body, 
-                             trail_factory_.produce(manager),
-                             emitter_factory_.produce(manager),
-                             particle_speed_, draw_ball));
+            adjustFactories();
+            return newActor(manager, 
+                             new Ball(ballBody, 
+                             trailFactory_.produce(manager),
+                             emitterFactory_.produce(manager),
+                             particleSpeed_, drawBall));
         }
 
     protected:
@@ -248,37 +247,37 @@ class BallFactory : ActorFactory!(Ball)
         }
 
         ///Construct a ball body with factory parameters.
-        @property BallBody ball_body() const 
+        @property BallBody ballBody() const 
         {
             return new BallBody(circle, position_, velocity_, 100.0, radius_);
         }
 
         ///Adjust particle effect factories. Used by derived classes.
-        void adjust_factories(){};
+        void adjustFactories(){};
 
         ///Determine if the produced ball should draw itself, instead of just particle systems.
-        bool draw_ball(){return true;}
+        bool drawBall(){return true;}
 }             
 
 ///Factory used to produce dummy balls.
 class DummyBallFactory : BallFactory
 {
     protected:
-        @property override BallBody ball_body() const
+        @property override BallBody ballBody() const
         {
             return new DummyBallBody(circle, position_, velocity_, 4.0, radius_);
         }
 
-        override void adjust_factories()
+        override void adjustFactories()
         {
-            trail_factory_.start_color = rgba!"F0F0FF08";
-            with(emitter_factory_)
+            trailFactory_.startColor = rgba!"F0F0FF08";
+            with(emitterFactory_)
             {
-                start_color    = rgba!"F0F0FF06";
-                line_length    = 3.0;
-                emit_frequency = 24;
+                startColor    = rgba!"F0F0FF06";
+                lineLength    = 3.0;
+                emitFrequency = 24;
             }
         }
 
-        override bool draw_ball(){return false;}
+        override bool drawBall(){return false;}
 }

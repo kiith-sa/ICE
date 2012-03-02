@@ -7,7 +7,6 @@
 
 ///Monitor viewing physics engine.
 module physics.physicsmonitor;
-@safe
 
 
 ///Statistics data sent by PhysicsEngine to physics monitors.
@@ -16,7 +15,7 @@ package struct Statistics
     ///Physics bodies at the moment.
     uint bodies = 0;
     ///Physics bodies with collision volumes at the moment.
-    uint col_bodies = 0;
+    uint colBodies = 0;
     ///Contact tests this frame.
     uint tests;
     ///Contacts detected this frame.
@@ -27,5 +26,5 @@ package struct Statistics
     uint response;
 
     ///Reset the statistics gathered for the next frame.
-    void zero(){tests = contacts = penetration = response = 0;}
+    void zero() pure {tests = contacts = penetration = response = 0;}
 }

@@ -7,7 +7,6 @@
 
 ///Line emitter particle system.
 module scene.lineemitter;
-@safe
 
 
 import std.math;
@@ -32,102 +31,102 @@ class LineEmitter : ParticleEmitter
 {
     invariant()
     {
-        assert(line_length_ > 0.0, "LineEmitter line length must be greater than 0");
-        assert(line_width_ > 0.0, "LineEmitter line width must be greater than 0");
-        assert(emit_velocity_ != Vector2f(0.0, 0.0), "Can't emit particles with zero velocity");
+        assert(lineLength_ > 0.0, "LineEmitter line length must be greater than 0");
+        assert(lineWidth_ > 0.0, "LineEmitter line width must be greater than 0");
+        assert(emitVelocity_ != Vector2f(0.0, 0.0), "Can't emit particles with zero velocity");
     }
 
     protected:
         ///Length of line particles.
-        float line_length_ = 8.0f;
+        float lineLength_ = 8.0f;
         ///Width of line particles.
-        float line_width_  = 2.0f;
+        float lineWidth_  = 2.0f;
         ///Color of particles at the beginning of their life.
-        Color start_color_ = Color.white;
+        Color startColor_ = Color.white;
         ///Color of particles at the end of their life.
-        Color end_color_   = rgba!"FFFFFF00";
+        Color endColor_   = rgba!"FFFFFF00";
 
     public:
         ///Set length of the line particles.
-        @property final void line_length(in float length){line_length_ = length;}
+        @property final void lineLength(const float length) pure {lineLength_ = length;}
 
         ///Set width of the line particles.
-        @property final void line_width(in float width){line_width_ = width;}
+        @property final void lineWidth(const float width) pure {lineWidth_ = width;}
 
         ///Set color the particles have at the beginning of their lifetimes.
-        @property final void start_color(in Color color){start_color_ = color;}
+        @property final void startColor(const Color color) pure {startColor_ = color;}
 
         ///Set color the particles have at the end of their lifetimes.
-        @property final void end_color(in Color color){end_color_ = color;}
+        @property final void endColor(const Color color) pure {endColor_ = color;}
 
     protected:
         /**
          * Construct a LineEmitter.
          *
-         * Params:  physics_body    = Physics body of the emitter.
+         * Params:  physicsBody    = Physics body of the emitter.
          *          owner           = Actor to attach the emitter to. 
          *                            If null, the emitter is independent.
-         *          life_time       = Life time of the emitter in seconds. 
+         *          lifeTime       = Life time of the emitter in seconds. 
          *                            If negative, lifetime is indefinite.
-         *          particle_life   = Life time of particles emitted.
-         *          emit_frequency  = Frequency to emit particles at in particles per second.
-         *          emit_velocity   = Base velocity of particles emitted.
-         *          angle_variation = Variation of angle of emit velocity in radians.
-         *          line_length     = Length of lines emitted in pixels.
-         *          line_width      = Width of lines emitted in pixels.
-         *          start_color     = Color at the beginning of particle lifetime.
-         *          end_color       = Color at the end of particle lifetime.  
+         *          particleLife   = Life time of particles emitted.
+         *          emitFrequency  = Frequency to emit particles at in particles per second.
+         *          emitVelocity   = Base velocity of particles emitted.
+         *          angleVariation = Variation of angle of emit velocity in radians.
+         *          lineLength     = Length of lines emitted in pixels.
+         *          lineWidth      = Width of lines emitted in pixels.
+         *          startColor     = Color at the beginning of particle lifetime.
+         *          endColor       = Color at the end of particle lifetime.  
          */                          
-        this(PhysicsBody physics_body, Actor owner, 
-             in real life_time, in real particle_life, in real emit_frequency, 
-             in Vector2f emit_velocity, in real angle_variation, in float line_length, 
-             in float line_width, in Color start_color, in Color end_color)
+        this(PhysicsBody physicsBody, Actor owner, 
+             const real lifeTime, const real particleLife, const real emitFrequency, 
+             const Vector2f emitVelocity, const real angleVariation, const float lineLength, 
+             const float lineWidth, const Color startColor, const Color endColor)
         {
-            line_length_ = line_length;
-            line_width_  = line_width;
-            start_color_ = start_color;
-            end_color_   = end_color;
-            super(physics_body, owner, life_time, particle_life,
-                  emit_frequency, emit_velocity, angle_variation);
+            lineLength_ = lineLength;
+            lineWidth_  = lineWidth;
+            startColor_ = startColor;
+            endColor_   = endColor;
+            super(physicsBody, owner, lifeTime, particleLife,
+                  emitFrequency, emitVelocity, angleVariation);
         }
 
         override void draw(VideoDriver driver)
         {
-            driver.line_aa = true;
-            driver.line_width = line_width_;
+            driver.lineAA = true;
+            driver.lineWidth = lineWidth_;
             Color color;
             //draw particles
             foreach(ref p; particles_)
             {
-                color = end_color_.interpolated(start_color_, p.timer.age_relative(game_time_));
+                color = endColor_.interpolated(startColor_, p.timer.ageRelative(gameTime_));
                 //determine line from particle velocity
                 //note that we assume that particle velocity is never zero,
                 //otherwise normalization would break
-                driver.draw_line(p.position, p.position + p.velocity.normalized * line_length_,
+                driver.drawLine(p.position, p.position + p.velocity.normalized * lineLength_,
                                  color, color);
             }
-            driver.line_width = 1.0f;
-            driver.line_aa = false;
+            driver.lineWidth = 1.0f;
+            driver.lineAA = false;
         }
 }
 
 /**
  * Base class for factories producing LineEmitter or derived classes.
  *
- * Params:  line_width  = Width of lines emitted in pixels.
+ * Params:  lineWidth  = Width of lines emitted in pixels.
  *                        Default; 1.0
- *          start_color = Color at the beginning of particle lifetime. 
+ *          startColor = Color at the beginning of particle lifetime. 
  *                        Default; Color.white
- *          end_color   = Color at the end of particle lifetime. 
+ *          endColor   = Color at the end of particle lifetime. 
  *                        Default; Color.black
  */
 abstract class LineEmitterFactoryBase(T) : ParticleEmitterFactory!T
 {
-    mixin(generate_factory("float $ line_width $ 1",
-                           "Color $ start_color $ Color.white",
-                           "Color $ end_color $ Color.black"));
+    mixin(generateFactory("float $ lineWidth $ 1",
+                           "Color $ startColor $ Color.white",
+                           "Color $ endColor $ Color.black"));
     ///Return physics body constructed from factory parameters. Used by produce().
-    protected PhysicsBody physics_body()
+    protected PhysicsBody physicsBody()
     {
         return new PhysicsBody(null, position_, velocity_, 10.0);
     }
@@ -136,19 +135,19 @@ abstract class LineEmitterFactoryBase(T) : ParticleEmitterFactory!T
 /**
  * Factory producing line emitters.
  *
- * Params:  line_length = Length of the lines emitted in pixels.
+ * Params:  lineLength = Length of the lines emitted in pixels.
  *                        Default; 5.0
  */
 class LineEmitterFactory : LineEmitterFactoryBase!(LineEmitter)
 {
-    mixin(generate_factory("float $ line_length $ 5.0"));
+    mixin(generateFactory("float $ lineLength $ 5.0"));
 
     public override LineEmitter produce(SceneManager manager)
     {
-        return new_actor(manager, 
-                         new LineEmitter(physics_body, owner_, life_time_,
-                                         particle_life_, emit_frequency_, emit_velocity_, 
-                                         angle_variation_, line_length_, line_width_, 
-                                         start_color_, end_color_));
+        return newActor(manager, 
+                        new LineEmitter(physicsBody, owner_, lifeTime_,
+                                        particleLife_, emitFrequency_, emitVelocity_, 
+                                        angleVariation_, lineLength_, lineWidth_, 
+                                        startColor_, endColor_));
     }
 }

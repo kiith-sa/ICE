@@ -6,7 +6,6 @@
 
 ///In game HUD.
 module pong.hud;
-@safe
 
 
 import std.algorithm;
@@ -30,26 +29,26 @@ class HUD
         GUIElement parent_;
 
         ///Displays player 1 score.
-        GUIStaticText score_text_1_;
+        GUIStaticText scoreText1_;
         ///Displays player 2 score.
-        GUIStaticText score_text_2_;
+        GUIStaticText scoreText2_;
         ///Displays time left in game.
-        GUIStaticText time_text_;
+        GUIStaticText timeText_;
 
         ///Maximum time the game can take in game time.
-        real time_limit_;
+        real timeLimit_;
 
     public:
         /**
          * Constructs HUD with specified parameters.
          *
          * Params:  parent     = Parent GUI element for all HUD elements.
-         *          time_limit = Maximum time the game will take.
+         *          timeLimit = Maximum time the game will take.
          */
-        this(GUIElement parent, in real time_limit)
+        this(GUIElement parent, in real timeLimit)
         {
             parent_ = parent;
-            time_limit_ = time_limit;
+            timeLimit_ = timeLimit;
 
             with(new GUIStaticTextFactory)
             {
@@ -57,73 +56,73 @@ class HUD
                 y             = "p_top + 8";
                 width         = "96";
                 height        = "16";
-                font_size     = 16;
+                fontSize     = 16;
                 font          = "orbitron-light.ttf";
-                align_x       = AlignX.Right;
-                score_text_1_ = produce();
+                alignX       = AlignX.Right;
+                scoreText1_ = produce();
 
                 y             = "p_bottom - 24";
-                score_text_2_ = produce();
+                scoreText2_ = produce();
 
                 x             = "p_right - 112";
                 font          = "orbitron-bold.ttf";
-                time_text_    = produce();
+                timeText_    = produce();
             }
 
-            parent_.add_child(score_text_1_);
-            parent_.add_child(score_text_2_);
-            parent_.add_child(time_text_);
+            parent_.addChild(scoreText1_);
+            parent_.addChild(scoreText2_);
+            parent_.addChild(timeText_);
         }
 
         ///Destroy the HUD.
         ~this()
         {
-            score_text_1_.die();
-            score_text_2_.die();
-            time_text_.die();
+            scoreText1_.die();
+            scoreText2_.die();
+            timeText_.die();
         }
 
         /**
          * Update the HUD.
          *
-         * Params:    time_left = Time left until time limit runs out.
-         *            player_1  = First player of the game.
-         *            player_2  = Second player of the game. 
+         * Params:    timeLeft = Time left until time limit runs out.
+         *            player1  = First player of the game.
+         *            player2  = Second player of the game. 
          */
-        void update(real time_left, in Player player_1, in Player player_2)
+        void update(real timeLeft, in Player player1, in Player player2)
         {
             //update time display
-            time_left             = max(time_left, 0.0L);
-            const time_str        = time_string(time_left);
-            immutable color_start = rgba!"A0A0FFA0";
-            immutable color_end   = Color.red;
+            timeLeft             = max(timeLeft, 0.0L);
+            const timeStr        = timeString(timeLeft);
+            immutable colorStart = rgba!"A0A0FFA0";
+            immutable colorEnd   = Color.red;
             //only update if the text has changed
-            if(time_str != time_text_.text)
+            if(timeStr != timeText_.text)
             {
-                time_text_.text = time_str != "0:0" ? time_str : time_str ~ " !";
+                timeText_.text = timeStr != "0:0" ? timeStr : timeStr ~ " !";
 
-                const real t = max(time_left / time_limit_, 1.0L);
-                time_text_.text_color = color_start.interpolated(color_end, t);
+                const real t = max(timeLeft / timeLimit_, 1.0L);
+                timeText_.textColor = colorStart.interpolated(colorEnd, t);
             }
 
             //update score displays
-            score_text_1_.text = player_1.name ~ ": " ~ to!string(player_1.score);
-            score_text_2_.text = player_2.name ~ ": " ~ to!string(player_2.score); 
+            scoreText1_.text = player1.name ~ ": " ~ to!string(player1.score);
+            scoreText2_.text = player2.name ~ ": " ~ to!string(player2.score); 
         }
 
         ///Hide the HUD.
         void hide()
         {
-            score_text_1_.hide();
-            score_text_2_.hide();
-            time_text_.hide();
+            scoreText1_.hide();
+            scoreText2_.hide();
+            timeText_.hide();
         }
 
         ///Show the HUD.
         void show()
         {
-            score_text_1_.show();
-            score_text_2_.show();
-            time_text_.show();
+            scoreText1_.show();
+            scoreText2_.show();
+            timeText_.show();
         }
 }

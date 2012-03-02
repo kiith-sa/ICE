@@ -17,7 +17,7 @@ import std.algorithm;
  * Signal template mixin for Qt-like signals/slots.
  *
  * Signals should always be documented in header class documentation,
- * and always disconnect all their slots (disconnect_all) at their
+ * and always disconnect all their slots (disconnectAll) at their
  * owner classes' destructor or die() method.
  * 
  * Examples:
@@ -78,5 +78,5 @@ template Signal(Args ...)
         }
 
         ///Disconnect all connected slots.
-        void disconnect_all(){slots_ = [];}
+        void disconnectAll(){slots_ = [];}
 }

@@ -7,7 +7,6 @@
 
 ///Keyboard/mouse key related enums.
 module platform.key;
-@safe
 
 
 ///Possible key event states.

@@ -7,7 +7,6 @@
 
 ///GLVideoDriver using SDL to set up video mode.
 module video.sdlglvideodriver;
-@trusted
 
 
 import derelict.sdl.sdl;
@@ -28,12 +27,12 @@ final class SDLGLVideoDriver : GLVideoDriver
         /**
          * Construct a SDLGLVideoDriver.
          *
-         * Params:  font_manager = Font manager to use for font rendering and management.
+         * Params:  fontManager = Font manager to use for font rendering and management.
          */
-        this(FontManager font_manager)
+        this(FontManager fontManager)
         {
             writeln("Initializing SDLGLVideoDriver");
-            super(font_manager);
+            super(fontManager);
         }
 
         ~this()
@@ -41,8 +40,8 @@ final class SDLGLVideoDriver : GLVideoDriver
             writeln("Destroying SDLGLVideoDriver");
         }
 
-        override void set_video_mode(in uint width, in uint height, 
-                                     in ColorFormat format, in bool fullscreen)
+        override void setVideoMode(const uint width, const uint height, 
+                                     const ColorFormat format, const bool fullscreen)
         {
             assert(width >= 80 && width <= 65536, 
                    "Can't set video mode with such ridiculous width");
@@ -75,28 +74,28 @@ final class SDLGLVideoDriver : GLVideoDriver
             SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, alpha);
             SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-            const uint bit_depth = red + green + blue + alpha;
+            const uint bitDepth = red + green + blue + alpha;
 
             uint flags = SDL_OPENGL;
             if(fullscreen){flags |= SDL_FULLSCREEN;}
 
-            if(SDL_SetVideoMode(width, height, bit_depth, flags) is null)
+            if(SDL_SetVideoMode(width, height, bitDepth, flags) is null)
             {
                 string msg = std.string.format("Could not set video mode: %d %d %dbpp",
-                                               width, height, bit_depth);
+                                               width, height, bitDepth);
                 writeln(msg);
                 throw new VideoDriverException(msg);
             }
 
-            screen_width_ = width;
-            screen_height_ = height;
+            screenWidth_ = width;
+            screenHeight_ = height;
             
-            init_gl();
+            initGL();
         }
 
-        override void end_frame()
+        override void endFrame()
         {
-            super.end_frame();
+            super.endFrame();
             SDL_GL_SwapBuffers();
         }
 }

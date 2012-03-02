@@ -7,7 +7,6 @@
 
 ///Manual memory management functions.
 module memory.memory;
-@system:
 
 
 import core.stdc.stdlib;
@@ -41,7 +40,7 @@ public:
     T* alloc(T, string file = __FILE__, uint line = __LINE__, Args ...)(Args args) 
         if(!is(T == class)) 
     {
-        return allocate_single!(T, file, line, Args)(args);
+        return allocateSingle!(T, file, line, Args)(args);
     }
 
     ///Free an object (struct) allocated by alloc(). Will clear the object.
@@ -90,7 +89,7 @@ public:
      *
      * Returns: Allocated array. Values in the array are default-initialized.
      */
-    T[] alloc_array(T, string file = __FILE__, uint line = __LINE__)(in size_t elems)
+    T[] allocArray(T, string file = __FILE__, uint line = __LINE__)(const size_t elems)
     {
         return allocate!(T, file, line)(elems);
     }
@@ -109,7 +108,7 @@ public:
      *
      * Returns: Reallocated array.
      */
-    T[] realloc(T, string file = __FILE__, uint line = __LINE__)(T[] array, in size_t elems)
+    T[] realloc(T, string file = __FILE__, uint line = __LINE__)(T[] array, const size_t elems)
     {
         return reallocate!(T, file, line)(array, elems);
     }
@@ -127,7 +126,7 @@ public:
     ///Unittest for alloc(), realloc() and free().
     unittest
     {
-        uint[] test = alloc_array!uint(5);
+        uint[] test = allocArray!uint(5);
         assert(test.length == 5 && test[3] == 0);
         test[3] = 5;
         test = realloc(test, 4);
@@ -139,15 +138,15 @@ public:
 
 package:
     ///Get currently allocated memory in bytes.
-    ulong currently_allocated(){return currently_allocated_;}
+    ulong currentlyAllocated(){return currentlyAllocated_;}
 
 private:
     ///Total memory manually allocated over the whole run of the program, in bytes.
-    ulong total_allocated_ = 0;
+    ulong totalAllocated_ = 0;
     ///Total memory manually freed over the whole run of the program, in bytes.
-    ulong total_freed_ = 0;
+    ulong totalFreed_ = 0;
     ///Currently allocated memory, in bytes.
-    ulong currently_allocated_ = 0;
+    ulong currentlyAllocated_ = 0;
 
     /**
      * Struct holding information about a memory allocation.
@@ -162,7 +161,7 @@ private:
         debug
         {
             ///Time when the program started.
-            static real start_time_;
+            static real startTime_;
             ///Information about allocated type.
             TypeInfo type_; 
             ///Number of objects allocated.
@@ -193,7 +192,7 @@ private:
              * Returns: Constructed Allocation.
              */
             static Allocation construct(T, string file, uint line) 
-                                       (in T* ptr, in size_t objects)
+                                       (const T* ptr, const size_t objects)
             {
                 Allocation a;
 
@@ -204,7 +203,7 @@ private:
                     a.line_ = line;
                     a.type_ = typeid(T);
                     a.objects_ = objects > uint.max ? uint.max : cast(uint)objects;
-                    a.time_ = cast(ushort)(get_time() - start_time_);
+                    a.time_ = cast(ushort)(getTime() - startTime_);
                 }
 
                 a.ptr = cast(void*)ptr;
@@ -233,14 +232,14 @@ private:
         debug
         {
             ///Static constructor - set start time.
-            static this(){start_time_ = get_time();}
+            static this(){startTime_ = getTime();}
         }
     }
 
     debug
     {
         ///Information about allocations that have been freed.
-        Allocation[] past_allocations_;
+        Allocation[] pastAllocations_;
     }
 
     //set (RB tree) might work better if there are performance problems
@@ -255,7 +254,7 @@ private:
      *
      * Returns: Pointer to the allocated struct.
      */
-    T* allocate_single(T, string file, uint line, Args ...)(Args args)
+    T* allocateSingle(T, string file, uint line, Args ...)(Args args)
     {
         const bytes = T.sizeof;
 
@@ -269,7 +268,7 @@ private:
         }
 
         ptr = cast(T*)malloc(bytes);
-        debug_allocate!(T, file, line)(ptr, 1); 
+        debugAllocate!(T, file, line)(ptr, 1); 
 
         static if(args.length == 0){*ptr = T.init;}
         else                       {emplace(ptr, args);}
@@ -288,7 +287,7 @@ private:
      * 
      * Returns: Allocated array.
      */
-    T[] allocate(T, string file, uint line)(in size_t elems)
+    T[] allocate(T, string file, uint line)(const size_t elems)
     out(result)
     {
         assert(result.length == elems, "Failed to allocate space for "
@@ -309,7 +308,7 @@ private:
 
         array = (cast(T*)malloc(bytes))[0 .. elems];
 
-        debug_allocate!(T, file, line)(array.ptr, elems); 
+        debugAllocate!(T, file, line)(array.ptr, elems); 
         static if(hasIndirections!T)
         {
             GC.addRange(cast(void*)array.ptr, T.sizeof * array.length);
@@ -334,7 +333,7 @@ private:
      *
      * Returns: Reallocated array.
      */
-    T[] reallocate(T, string file, uint line)(T[] array, in size_t elems)
+    T[] reallocate(T, string file, uint line)(T[] array, const size_t elems)
     in
     {
         debug
@@ -347,16 +346,16 @@ private:
     }
     body
     {
-        const old_bytes = T.sizeof * array.length;
-        const new_bytes = T.sizeof * elems;
-        T* old_ptr = array.ptr;
-        const old_length = array.length;
+        const oldBytes = T.sizeof * array.length;
+        const newBytes = T.sizeof * elems;
+        T* oldPtr = array.ptr;
+        const oldLength = array.length;
                   
         //if we're shrinking, destroy extra elements unless this is 
         //an array of pointers or reference types.
         static if(hasElaborateDestructor!T) 
         {
-            if(old_length > elems) foreach(ref T elem; array[elems .. $])
+            if(oldLength > elems) foreach(ref T elem; array[elems .. $])
             {
                 clear(elem);
             }
@@ -366,27 +365,27 @@ private:
         {
             GC.removeRange(cast(void*)array.ptr);
         }
-        array = (cast(T*)core.stdc.stdlib.realloc(cast(void*)array.ptr, new_bytes))[0 .. elems];
+        array = (cast(T*)core.stdc.stdlib.realloc(cast(void*)array.ptr, newBytes))[0 .. elems];
         static if(hasIndirections!T)
         {
             GC.addRange(cast(void*)array.ptr, T.sizeof * array.length);
         }
 
-        debug_reallocate!(T, file, line)(array.ptr, array.length, old_ptr, old_length); 
+        debugReallocate!(T, file, line)(array.ptr, array.length, oldPtr, oldLength); 
 
         //default-initialize new elements, if any
-        if(array.length > old_length)
+        if(array.length > oldLength)
         {
             //using memset for ubytes as it's faster and ubytes are often used for large arrays.
             static if (is(T == ubyte))
             {
-                memset(array.ptr + old_length, 0, new_bytes - old_bytes);
+                memset(array.ptr + oldLength, 0, newBytes - oldBytes);
             }
             else
             {
-                if(array.length > old_length)
+                if(array.length > oldLength)
                 {
-                    array[old_length .. $] = T.init;
+                    array[oldLength .. $] = T.init;
                 }
             }
         }
@@ -410,7 +409,7 @@ private:
         //call dtor for structs
         clear(*ptr);
 
-        debug_free(ptr, 1); 
+        debugFree(ptr, 1); 
 
         static if(hasIndirections!T){GC.removeRange(cast(void*)ptr);}
 
@@ -446,7 +445,7 @@ private:
             clear(elem);
         }
 
-        debug_free(array.ptr, array.length); 
+        debugFree(array.ptr, array.length); 
 
         static if(hasIndirections!T)
         {
@@ -460,15 +459,15 @@ private:
     string statistics()
     {
         string stats = "Memory allocator statistics:";
-        stats ~= "\nTotal allocated (bytes): " ~ to!string(total_allocated_);
-        stats ~= "\nTotal freed (bytes): " ~ to!string(total_freed_);
+        stats ~= "\nTotal allocated (bytes): " ~ to!string(totalAllocated_);
+        stats ~= "\nTotal freed (bytes): " ~ to!string(totalFreed_);
 
-        const non_freed = allocations_.length;
-        stats ~= non_freed ? "\nLEAK: " ~ to!string(non_freed) ~ " pointers were not freed."
+        const nonFreed = allocations_.length;
+        stats ~= nonFreed ? "\nLEAK: " ~ to!string(nonFreed) ~ " pointers were not freed."
                            : "\nAll pointers have been freed, no memory leaks detected.";
         stats ~= "\n\n\n";
 
-        if(non_freed)
+        if(nonFreed)
         {
             stats ~= "Non-freed allocations (LEAKS):";
             foreach(ref allocation; allocations_)
@@ -480,7 +479,7 @@ private:
         debug
         {
             stats ~= "Freed allocations:";
-            foreach(ref allocation; past_allocations_)
+            foreach(ref allocation; pastAllocations_)
             {
                 stats ~= "\n\n" ~ allocation.info;
             }
@@ -493,7 +492,7 @@ private:
     static ~this()
     {
         scope(failure){writeln("Error logging memory usage");}
-        ensure_directory_user("main::logs");
+        ensureDirectoryUser("main::logs");
         string stats = statistics();
 
         //using a scope
@@ -515,45 +514,45 @@ private:
      * Params:  ptr     = Pointer to the allocated memory.
      *          objects = Number of objects allocated.
      */
-    void debug_allocate(T, string file, uint line)(in T* ptr, in size_t objects)
+    void debugAllocate(T, string file, uint line)(const T* ptr, const size_t objects)
     {
         allocations_ ~= Allocation.construct!(T, file, line)(ptr, objects);
 
         const bytes = objects * T.sizeof;
-        total_allocated_ += bytes;
-        currently_allocated_ += bytes;
+        totalAllocated_ += bytes;
+        currentlyAllocated_ += bytes;
     }
 
     //not the best way to go about recording reallocs, but sufficient for now
     /**
      * Record data about a reallocation.
      * 
-     * Params:  new_ptr     = Pointer to the reallocated memory.
-     *          new_objects = Number of objects in reallocated memory.
-     *          old_ptr     = Pointer to original memory.
-     *          old_objects = Number of objects in original memory.
+     * Params:  newPtr     = Pointer to the reallocated memory.
+     *          newObjects = Number of objects in reallocated memory.
+     *          oldPtr     = Pointer to original memory.
+     *          oldObjects = Number of objects in original memory.
      */
-    void debug_reallocate(T, string file, uint line)
-                         (in T* new_ptr, in size_t new_objects,
-                          in T* old_ptr, in size_t old_objects)
+    void debugReallocate(T, string file, uint line)
+                         (const T* newPtr, const size_t newObjects,
+                          const T* oldPtr, const size_t oldObjects)
     {
         //find and replace allocation info corresponding to reallocated data
         bool found = false;
-        foreach(ref allocation; allocations_) if(allocation.ptr == old_ptr)
+        foreach(ref allocation; allocations_) if(allocation.ptr == oldPtr)
         {
-            debug{past_allocations_ ~= allocation;}
+            debug{pastAllocations_ ~= allocation;}
             //replace allocation info
-            allocation = Allocation.construct!(T, file, line)(new_ptr, new_objects);
+            allocation = Allocation.construct!(T, file, line)(newPtr, newObjects);
             found = true;
             break;
         }
         assert(found, "No match found for a pointer to reallocate");
 
-        const old_bytes = old_objects * T.sizeof;
-        const new_bytes = new_objects * T.sizeof;
-        const diff = new_bytes - old_bytes;
-        total_allocated_ += diff;
-        currently_allocated_ += diff;
+        const oldBytes = oldObjects * T.sizeof;
+        const newBytes = newObjects * T.sizeof;
+        const diff = newBytes - oldBytes;
+        totalAllocated_ += diff;
+        currentlyAllocated_ += diff;
     }
 
     /**
@@ -562,13 +561,13 @@ private:
      * Params:  ptr     = Pointer to deallocated memory.
      *          objects = Number of objects deallocated.
      */
-    void debug_free(T)(in T* ptr, in size_t objects)
+    void debugFree(T)(const T* ptr, const size_t objects)
     {
         //remove allocation info
         bool found = false;
         foreach(ref allocation; allocations_) if(allocation.ptr == ptr)
         {
-            debug{past_allocations_ ~= allocation;}
+            debug{pastAllocations_ ~= allocation;}
             //remove by rewriting by the last allocation
             allocation = allocations_[$ - 1];
             found = true;
@@ -578,6 +577,6 @@ private:
         allocations_ = allocations_[0 .. $ - 1];
 
         const bytes = objects * T.sizeof;
-        total_freed_ += bytes;
-        currently_allocated_ -= bytes;
+        totalFreed_ += bytes;
+        currentlyAllocated_ -= bytes;
     }

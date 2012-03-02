@@ -7,7 +7,6 @@
 
 ///OpenGL shader.
 module video.glshader;
-@system
 
 
 import std.exception;
@@ -40,11 +39,11 @@ package struct GLShader
          * 
          * Throws:  ShaderException if the shader could not be loaded or was invalid.
          */
-        this(in string name)
+        this(const string name)
         {
             scope(failure){writefln("Shader initialization failed: " ~ name);}
 
-            try{load_GLSL("shaders/" ~ name ~ ".vert", "shaders/" ~ name ~ ".frag");}
+            try{loadGLSL("shaders/" ~ name ~ ".vert", "shaders/" ~ name ~ ".frag");}
             catch(FileIOException e)
             {
                 throw new ShaderException("Shader could not be read: " ~ e.msg);
@@ -65,7 +64,7 @@ package struct GLShader
          * 
          * Returns: Handle to the attribute or -1 if not found in the shader.
          */
-        GLint get_attribute(in string name) const
+        GLint getAttribute(const string name) const
         {
             return glGetAttribLocation(program_, toStringz(name));
         }
@@ -77,7 +76,7 @@ package struct GLShader
          * 
          * Returns: Handle to the uniform or -1 if not found in the shader.
          */
-        GLint get_uniform(in string name) const
+        GLint getUniform(const string name) const
         {
             return glGetUniformLocation(program_, toStringz(name));
         }
@@ -92,7 +91,7 @@ package struct GLShader
          * Throws:  FileIOException if a shader file could not be found or file name is invalid.
          *          ShaderException if the shader could not be loaded, compiled or linked.
          */
-        void load_GLSL(in string vfname, in string ffname)
+        void loadGLSL(const string vfname, const string ffname)
         {
             //opening and loading from files
             File vfile    = File(vfname, FileMode.Read);

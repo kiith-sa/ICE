@@ -7,7 +7,6 @@
 
 ///Struct counting occurences of an event over time.
 module time.eventcounter;
-@safe
 
 
 import std.conv;
@@ -29,16 +28,16 @@ struct EventCounter
 {
     private:
         ///Time when this eventcounter started.
-        real start_time_;
+        real startTime_;
         ///Used for periodic updates.
         Timer period_;
 
         ///Number of events last period.
-        uint events_period_ = 0;
+        uint eventsPeriod_ = 0;
         ///Total number of events.
-        uint events_total_ = 0;
+        uint eventsTotal_ = 0;
         ///Total number of events until the end of the last period.
-        uint events_total_last_period_ = 0;
+        uint eventsTotalLastPeriod_ = 0;
 
     public:
         ///Emitted when a period ends - passes events per second.
@@ -49,42 +48,42 @@ struct EventCounter
          * 
          * Params:  period = Update period.
          */
-        this(in real period)
+        this(const real period)
         {
             period_ = Timer(period);
-            start_time_ = get_time();
+            startTime_ = getTime();
         }
 
         ///Destroy this EventCounter.
-        ~this(){update.disconnect_all();}
+        ~this(){update.disconnectAll();}
 
         ///Count one event.
         void event()
         {
             if(period_.expired())
             {
-                events_period_ = events_total_ - events_total_last_period_;
+                eventsPeriod_ = eventsTotal_ - eventsTotalLastPeriod_;
 
-                const real updates_second = events_period_ / period_.age();
-                update.emit(updates_second);
+                const real updatesSecond = eventsPeriod_ / period_.age();
+                update.emit(updatesSecond);
 
-                events_total_last_period_ = events_total_;
+                eventsTotalLastPeriod_ = eventsTotal_;
                 period_.reset();
             }
-            ++events_total_;
+            ++eventsTotal_;
         }
 
         ///Get number of events counted so far.
-        @property uint events() const {return events_total_;}
+        @property uint events() const pure {return eventsTotal_;}
 
         ///Return a string containing statistics about events counted.
         @property string statistics() const
         {
-            const real time_total = get_time() - start_time_;
-            const real events_second = events_total_ / time_total;
+            const real timeTotal = getTime() - startTime_;
+            const real eventsSecond = eventsTotal_ / timeTotal;
 
-            return "Total events: " ~ to!string(events_total_) ~ "\n" 
-                   ~ "Total Time: " ~ to!string(time_total) ~ "\n" 
-                   ~ "Average events per second: " ~ to!string(events_second);
+            return "Total events: " ~ to!string(eventsTotal_) ~ "\n" 
+                   ~ "Total Time: " ~ to!string(timeTotal) ~ "\n" 
+                   ~ "Average events per second: " ~ to!string(eventsSecond);
         }
 }

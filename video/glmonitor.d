@@ -7,7 +7,6 @@
 
 ///Monitor viewing OpenGL video driver state.
 module video.glmonitor;
-@trusted
 
 
 import std.conv;
@@ -42,7 +41,7 @@ package struct Statistics
     real fps = 0.0;
 
     ///Reset the statistics gathered for the next frame.
-    void zero()
+    void zero() pure
     {    
         lines = textures = texts = rectangles = vertices = indices = characters 
               = vgroups = shader = page = 0;
@@ -53,16 +52,13 @@ package struct Statistics
 ///Provides access to information about texture pages in GLVideoDriver.
 final package class PageMonitor : SubMonitor
 {
-    private:
-        alias std.conv.to to;
-
     public:
         ///Allows iteration over and access to texture pages in GLVideoDriver.
         final class PageIterator
         {
             private:
                 ///Current page index.
-                uint current_page_;
+                uint currentPage_;
 
             public:
                 ///Construct a PageIterator.
@@ -72,15 +68,15 @@ final package class PageMonitor : SubMonitor
                 void next()
                 {
                     //Cycle back to first if we're at the last.
-                    if(current_page_ >= cast(uint)driver_.pages.length - 1)
+                    if(currentPage_ >= cast(uint)driver_.pages.length - 1)
                     {
-                        current_page_ = 0;
+                        currentPage_ = 0;
                     }
-                    else{++current_page_;}
+                    else{++currentPage_;}
 
                     if(driver_.pages.length == 0){return;}
                     //If the page was destroyed, move to the next one.
-                    if(driver_.pages[current_page_] == null)
+                    if(driver_.pages[currentPage_] == null)
                     {
                         next();
                         return;
@@ -91,14 +87,14 @@ final package class PageMonitor : SubMonitor
                 void prev()
                 {
                     //Cycle back to last if we're at the first.
-                    if(current_page_ == 0)
+                    if(currentPage_ == 0)
                     {
-                        current_page_ = cast(uint)driver_.pages.length - 1;
+                        currentPage_ = cast(uint)driver_.pages.length - 1;
                     }
-                    else{--current_page_;}
+                    else{--currentPage_;}
                     if(driver_.pages.length == 0){return;}
                     //If the page was destroyed, move to the previous one.
-                    if(driver_.pages[current_page_] is null)
+                    if(driver_.pages[currentPage_] is null)
                     {
                         prev();
                         return;
@@ -110,10 +106,10 @@ final package class PageMonitor : SubMonitor
                 {
                     if(driver_.pages.length == 0){return "No pages";}
 
-                    while(driver_.pages[current_page_] == null){next();}
+                    while(driver_.pages[currentPage_] == null){next();}
 
-                    string text = "page index: " ~ to!string(current_page_) ~ "\n" ~
-                                  driver_.pages[current_page_].info;
+                    string text = "page index: " ~ to!string(currentPage_) ~ "\n" ~
+                                  driver_.pages[currentPage_].info;
 
                     return text;
                 }
@@ -128,14 +124,12 @@ final package class PageMonitor : SubMonitor
                  *          offset = Offset into the page in texture pixels (wraps).
                  *          zoom   = Zoom factor.
                  */
-                void draw(Rectanglei bounds, in Vector2f offset, in real zoom)
+                void draw(Rectanglei bounds, const Vector2f offset, const real zoom)
                 {
-                    alias math.vector2.to to;
-
                     //no page to draw
                     if(driver_.pages.length == 0){return;}
                     //current page was deleted, change to another one
-                    while(driver_.pages[current_page_] == null){next();}
+                    while(driver_.pages[currentPage_] == null){next();}
 
                     bounds.min = bounds.min + Vector2i(1, 1);
                     bounds.max = bounds.max - Vector2i(1, 1);
@@ -143,10 +137,10 @@ final package class PageMonitor : SubMonitor
                     //draw the page view
                     //texture area to draw
                     const area = Rectanglef(Vector2f(0, 0), 
-                                            to!(float)(bounds.size) / zoom) - offset; 
+                                            bounds.size.to!float / zoom) - offset; 
                     //quad to map the texture area to
-                    const quad = Rectanglef(to!(float)(bounds.min), to!(float)(bounds.max));
-                    driver_.draw_page(current_page_, area, quad);
+                    const quad = Rectanglef(bounds.min.to!float, bounds.max.to!float);
+                    driver_.drawPage(currentPage_, area, quad);
                 }
         }
 
@@ -195,17 +189,17 @@ final package class PageMonitorView : SubMonitorView
                     if(!visible_){return;}
                     super.draw(driver);
 
-                    page_iterator_.draw(bounds_, offset_, zoom_);
+                    pageIterator_.draw(bounds_, offset_, zoom_);
                 }
         }
 
         ///PageIterator used to access texture pages.
-        PageMonitor.PageIterator page_iterator_;
+        PageMonitor.PageIterator pageIterator_;
 
         ///Page view widget.
         PageView view_;
         ///Information about the page.
-        GUIStaticText info_text_;
+        GUIStaticText infoText_;
 
     public:
         ///Construct a PageMonitorView using specified iterator to access texture pages.
@@ -213,40 +207,40 @@ final package class PageMonitorView : SubMonitorView
         {
             super();
 
-            page_iterator_ = iterator;
+            pageIterator_ = iterator;
 
-            main_.add_child(new PageView);
-            init_menu();
-            init_text();
+            main_.addChild(new PageView);
+            initMenu();
+            initText();
         }
 
     protected:
         override void update()
         {
-            info_text_.text = page_iterator_.text;
+            infoText_.text = pageIterator_.text;
             super.update();
         }
 
     private:
         ///Initialize menu.
-        void init_menu()
+        void initMenu()
         {
             with(new GUIMenuVerticalFactory)
             {
                 x              = "p_left";
                 y              = "p_top";
-                item_width     = "24";
-                item_height    = "14";
-                item_spacing   = "2";
-                item_font_size = MonitorView.font_size;
-                add_item("Next", &page_iterator_.next);
-                add_item("Prev", &page_iterator_.prev);
-                main_.add_child(produce());
+                itemWidth     = "24";
+                itemHeight    = "14";
+                itemSpacing   = "2";
+                itemFontSize = MonitorView.fontSize;
+                addItem("Next", &pageIterator_.next);
+                addItem("Prev", &pageIterator_.prev);
+                main_.addChild(produce());
             }
         }
 
         ///Initialize info text.
-        void init_text()
+        void initText()
         {
             with(new GUIStaticTextFactory)
             {
@@ -254,11 +248,11 @@ final package class PageMonitorView : SubMonitorView
                 y          = "p_top + 2";
                 width      = "72";
                 height     = "p_height - 4";
-                font_size  = MonitorView.font_size;
-                align_x    = AlignX.Right;
-                text       = page_iterator_.text;
-                info_text_ = produce();
+                fontSize  = MonitorView.fontSize;
+                alignX    = AlignX.Right;
+                text       = pageIterator_.text;
+                infoText_ = produce();
             }
-            main_.add_child(info_text_);
+            main_.addChild(infoText_);
         }
 }

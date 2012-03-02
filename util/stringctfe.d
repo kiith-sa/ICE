@@ -22,7 +22,7 @@ import std.array;
  *
  * Returns: Stripped string.
  */
-string strip_ctfe(string str)
+string stripCtfe(string str)
 {
     while(str.length && str.front == ' '){str.popFront();}
     while(str.length && str.back == ' ') {str.popBack();}

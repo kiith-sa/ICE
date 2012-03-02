@@ -7,7 +7,6 @@
 
 ///Platform abstraction.
 module platform.platform;
-@safe
 
 
 public import platform.key;
@@ -29,12 +28,12 @@ class PlatformException : Exception{this(string msg){super(msg);}}
  *     Emitted when a key is pressed. Passes the key, its state and unicode value.
  *
  * Signal:
- *     public mixin Signal!(KeyState, MouseKey, Vector2u) mouse_key 
+ *     public mixin Signal!(KeyState, MouseKey, Vector2u) mouseKey 
  *
  *     Emitted when a mouse button is pressed. Passes the key, its state and mouse position.
  *
  * Signal:
- *     public mixin Signal!(Vector2u, Vector2i) mouse_motion
+ *     public mixin Signal!(Vector2u, Vector2i) mouseMotion
  *
  *     Emitted when mouse is moved. Passes mouse position and position change. 
  */
@@ -43,7 +42,7 @@ abstract class Platform
     mixin WeakSingleton;
     protected:
         ///Array of bools for each key specifying if the key is currently pressed.
-        bool[Key.max] keys_pressed_;
+        bool[Key.max] keysPressed_;
 
     private:
         ///Continue to run?
@@ -53,47 +52,47 @@ abstract class Platform
         ///Emitted when a key is pressed. Passes the key, its state and unicode value.
         mixin Signal!(KeyState, Key, dchar) key;
         ///Emitted when a mouse button is pressed. Passes the key, its state and mouse position.
-        mixin Signal!(KeyState, MouseKey, Vector2u) mouse_key;
+        mixin Signal!(KeyState, MouseKey, Vector2u) mouseKey;
         ///Emitted when mouse is moved. Passes mouse position and position change.
-        mixin Signal!(Vector2u, Vector2i) mouse_motion;
+        mixin Signal!(Vector2u, Vector2i) mouseMotion;
 
         /**
          * Construct Platform.
          *
          * Throws:  PlatformException on failure.
          */
-        this(){singleton_ctor();}
+        this(){singletonCtor();}
 
         ///Destroy the Platform.
         ~this()
         {
             import std.stdio;
             writeln("Destroying Platform");
-            key.disconnect_all();
-            mouse_key.disconnect_all();
-            mouse_motion.disconnect_all();
+            key.disconnectAll();
+            mouseKey.disconnectAll();
+            mouseMotion.disconnectAll();
 
-            singleton_dtor();
+            singletonDtor();
         }
         
         ///Collect input and determine if the game should continue to run.
-        bool run(){return run_;}
+        bool run() {return run_;}
 
         ///Quit the platform, i.e. the game.
-        final void quit(){run_ = false;}
+        final void quit() pure {run_ = false;}
 
         ///Set window caption string to str.
-        @property void window_caption(in string str);
+        @property void windowCaption(const string str);
 
         ///Hide the mouse cursor.
-        void hide_cursor();
+        void hideCursor();
 
         ///Show the mouse cursor.
-        void show_cursor();
+        void showCursor();
 
         ///Determine if specified key is pressed.
-        final bool is_key_pressed(in Key key) const 
+        final bool isKeyPressed(const Key key) const 
         {
-            return keys_pressed_[cast(uint)key];
+            return keysPressed_[cast(uint)key];
         }
 }

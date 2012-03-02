@@ -7,7 +7,6 @@
 
 ///Spatial volume.
 module spatial.volume;
-@safe
 
 
 ///Base class for spatial volumes. Currently empty, but this might change in future.

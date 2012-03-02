@@ -7,7 +7,6 @@
 
 ///OpenGL texture page.
 module video.gltexturepage;
-@system
 
 
 import std.conv;
@@ -27,30 +26,30 @@ import memory.memory;
  * Convert a ColorFormat to OpenGL color format parameters.
  *
  * Params:  format          = ColorFormat to convert.
- *          gl_format       = GL format of the data (RGBA, luminance, etc) will be written here.
+ *          glFormat       = GL format of the data (RGBA, luminance, etc) will be written here.
  *          type            = GL data type (unsigned byte, etc) will be written here.
- *          internal_format = GL internal format (RGBA8, etc) will be written here.
+ *          internalFormat = GL internal format (RGBA8, etc) will be written here.
  */
-package void gl_color_format(in ColorFormat format, out GLenum gl_format,
-                             out GLenum type, out GLint internal_format)
+package void glColorFormat(const ColorFormat format, out GLenum glFormat,
+                             out GLenum type, out GLint internalFormat) pure
 {
     final switch(format)
     {
         case ColorFormat.RGB_565:
             assert(false, "Unsupported texture format: RGB_565");
         case ColorFormat.RGB_8:
-            internal_format = GL_RGB8;
-            gl_format = GL_RGB;
+            internalFormat = GL_RGB8;
+            glFormat = GL_RGB;
             type = GL_UNSIGNED_BYTE;
             break;
         case ColorFormat.RGBA_8:
-            internal_format = GL_RGBA8;
-            gl_format = GL_RGBA;
+            internalFormat = GL_RGBA8;
+            glFormat = GL_RGBA;
             type = GL_UNSIGNED_INT_8_8_8_8;
             break;
         case ColorFormat.GRAY_8:
-            internal_format = GL_RED;
-            gl_format = GL_RED;
+            internalFormat = GL_RED;
+            glFormat = GL_RED;
             type = GL_UNSIGNED_BYTE;
             break;
     }
@@ -65,7 +64,7 @@ package void gl_color_format(in ColorFormat format, out GLenum gl_format,
  *
  * Returns: Alignment for specified format.
  */
-package GLint pack_alignment(in ColorFormat format)
+package GLint packAlignment(const ColorFormat format) pure
 {
     final switch(format)
     {
@@ -101,10 +100,10 @@ package struct GLTexturePage(TexturePacker)
          * Params:  size   = Dimensions of the page in pixels.
          *          format = Color format of the page.
          */
-        this(in Vector2u size, in ColorFormat format)
+        this(const Vector2u size, const ColorFormat format)
         in
         {
-            assert(is_pot(size.x) && is_pot(size.y), 
+            assert(isPot(size.x) && isPot(size.y), 
                    "Non-power-of-two texture page size");
         }
         body
@@ -119,13 +118,13 @@ package struct GLTexturePage(TexturePacker)
             
             glBindTexture(GL_TEXTURE_2D, texture_);
 
-            GLenum gl_format;
+            GLenum glFormat;
             GLenum type;
-            GLint internal_format;
-            gl_color_format(format, gl_format, type, internal_format);
+            GLint internalFormat;
+            glColorFormat(format, glFormat, type, internalFormat);
             
-            glTexImage2D(GL_TEXTURE_2D, 0, internal_format, size_.x, size_.y, 
-                         0, gl_format, type, image.data_unsafe.ptr);
+            glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, size_.x, size_.y, 
+                         0, glFormat, type, image.dataUnsafe.ptr);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         }
@@ -145,28 +144,28 @@ package struct GLTexturePage(TexturePacker)
          *
          * Returns: True on success, false on failure.
          */
-        bool insert_texture(const ref Image image, 
+        bool insertTexture(const ref Image image, 
                             out Rectanglef texcoords, out Vector2u offset)
         {
             //image format must match
             if(image.format != format_){return false;}
-            if(packer_.allocate_space(image.size, texcoords, offset))
+            if(packer_.allocateSpace(image.size, texcoords, offset))
             {                                  
                 //get opengl color format parameters
-                GLenum gl_format, type;
-                GLint internal_format;
-                gl_color_format(format_, gl_format, type, internal_format);
+                GLenum glFormat, type;
+                GLint internalFormat;
+                glColorFormat(format_, glFormat, type, internalFormat);
 
                 glBindTexture(GL_TEXTURE_2D, texture_);
                 
                 //default GL alignment is 4 bytes which messes up less than
                 //4 Bpp textures (e.g. grayscale) when their row sizes are not
                 //divisible by 4. So we force alignment here.
-                glPixelStorei(GL_UNPACK_ALIGNMENT, pack_alignment(image.format));
+                glPixelStorei(GL_UNPACK_ALIGNMENT, packAlignment(image.format));
                 //write to texture
                 glTexSubImage2D(GL_TEXTURE_2D, 0, offset.x, offset.y, 
                                 image.size.x, image.size.y, 
-                                gl_format, type, image.data.ptr);
+                                glFormat, type, image.data.ptr);
                 return true;
             }
             return false;
@@ -176,13 +175,13 @@ package struct GLTexturePage(TexturePacker)
         void start(){glBindTexture(GL_TEXTURE_2D, texture_);}
 
         ///Remove texture with specified bounds from this page.
-        void remove_texture(const ref Rectangleu bounds){packer_.free_space(bounds);}
+        void removeTexture(const ref Rectangleu bounds){packer_.freeSpace(bounds);}
 
         ///Determine if this page is empty (i.e. there are no textures on it).
-        @property bool empty() const {return packer_.empty();}
+        @property bool empty() const pure {return packer_.empty();}
 
         ///Get size of the page in pixels.
-        @property Vector2u size() const {return size_;}
+        @property Vector2u size() const pure {return size_;}
 
         /**
          * Return a string containing information about the page.

@@ -7,7 +7,6 @@
 
 ///Base class for particle emitters.
 module scene.particleemitter;
-@safe
 
 
 import std.math;
@@ -39,7 +38,7 @@ private struct Particle
      *
      * Params:  time_step = Time step of the update.
      */
-    void update(in real time_step){position += velocity * time_step;}
+    void update(const real timeStep) pure {position += velocity * timeStep;}
 }
 
 ///Base class for particle emitters.
@@ -47,92 +46,110 @@ abstract class ParticleEmitter : ParticleSystem
 {
     invariant()
     {
-        assert(particle_life_ > 0.0, "Lifetime of particles emitted must be > 0");
-        assert(emit_frequency_ >= 0.0, "Particle emit frequency must not be negative");
-        assert(angle_variation_ >= 0.0, "Particle angle variation must not be negative");
+        assert(particleLife_ > 0.0, "Lifetime of particles emitted must be > 0");
+        assert(emitFrequency_ >= 0.0, "Particle emit frequency must not be negative");
+        assert(angleVariation_ >= 0.0, "Particle angle variation must not be negative");
     }
 
     private:
         ///Lifetime of particles emitted.
-        real particle_life_    = 5.0;
+        real particleLife_    = 5.0;
         ///Time since the last particle was emitted.
-        real time_accumulated_ = 0.0;
+        real timeAccumulated_ = 0.0;
         ///Variation of angles of particles' velocities (in radians).
-        real angle_variation_  = PI / 2;
+        real angleVariation_  = PI / 2;
         ///Emit frequency in particles per second.
-        real emit_frequency_   = 10.0;
+        real emitFrequency_   = 10.0;
 
     protected:
         ///Particles in the system.
         Vector!Particle particles_;
 
         ///Velocity to emit particles at.
-        Vector2f emit_velocity_ = Vector2f(1.0, 0.0);
+        Vector2f emitVelocity_ = Vector2f(1.0, 0.0);
         ///Current game time.
-        real game_time_;
+        real gameTime_;
 
     public:
         ///Set life time of particles emitted.
-        @property final void particle_life(in real life){particle_life_ = life;}
+        @property final void particleLife(const real life) pure 
+        {
+            particleLife_ = life;
+        }
         
         ///Get life time of particles emitted.
-        @property final real particle_life() const {return particle_life_;}
+        @property final real particleLife() const pure 
+        {
+            return particleLife_;
+        }
 
         ///Set number of particles to emit per second.
-        @property void emit_frequency(in real frequency){emit_frequency_ = frequency;}
+        @property void emitFrequency(const real frequency) pure 
+        {
+            emitFrequency_ = frequency;
+        }
         
         ///Get number of particles emitted per second.
-        @property final real emit_frequency() const {return emit_frequency_;}
+        @property final real emitFrequency() const pure 
+        {
+            return emitFrequency_;
+        }
 
         ///Set velocity to emit particles at.
-        @property final void emit_velocity(in Vector2f velocity){emit_velocity_ = velocity;}
+        @property final void emitVelocity(const Vector2f velocity) pure 
+        {
+            emitVelocity_ = velocity;
+        }
 
         ///Set angle variation of particles emitted in radians.
-        @property final void angle_variation(in real variation){angle_variation_ = variation;}
+        @property final void angleVariation(const real variation) pure 
+        {
+            angleVariation_ = variation;
+        }
 
     protected:
         /**
          * Construct a ParticleEmitter.
          *
-         * Params:  physics_body    = Physics body of the emitter.
+         * Params:  physicsBody    = Physics body of the emitter.
          *          owner           = Class to attach the emitter to. 
          *                            If null, the emitter is independent.
-         *          life_time       = Life time of the emitter. 
+         *          lifeTime       = Life time of the emitter. 
          *                            If negative, lifetime is indefinite.
-         *          particle_life   = Life time of particles emitted.
-         *          emit_frequency  = Frequency to emit particles at in particles per second.
-         *          emit_velocity   = Base velocity of particles emitted.
-         *          angle_variation = Variation of angle of emit velocity in radians.
+         *          particleLife   = Life time of particles emitted.
+         *          emitFrequency  = Frequency to emit particles at in particles per second.
+         *          emitVelocity   = Base velocity of particles emitted.
+         *          angleVariation = Variation of angle of emit velocity in radians.
          */                          
-        this(PhysicsBody physics_body, Actor owner, 
-             in real life_time, in real particle_life, in real emit_frequency, 
-             in Vector2f emit_velocity, in real angle_variation)
+        this(PhysicsBody physicsBody, Actor owner, 
+             const real lifeTime, const real particleLife, const real emitFrequency, 
+             const Vector2f emitVelocity, const real angleVariation)
         {
-            particle_life_   = particle_life;
-            emit_frequency_  = emit_frequency;
-            angle_variation_ = angle_variation;
-            emit_velocity_   = emit_velocity;
+            particleLife_   = particleLife;
+            emitFrequency_  = emitFrequency;
+            angleVariation_ = angleVariation;
+            emitVelocity_   = emitVelocity;
             particles_.reserve(8);
 
-            super(physics_body, owner, life_time);
+            super(physicsBody, owner, lifeTime);
         }
 
         override void update(SceneManager manager)
         {
             //if attached, get position from the owner.
-            if(owner_ !is null){physics_body_.position = owner_.position;}
+            if(owner_ !is null){physicsBody_.position = owner_.position;}
 
-            game_time_ = manager.game_time;
+            gameTime_ = manager.gameTime;
 
-            bool expired(ref Particle p){return p.timer.expired(manager.game_time);}
+            bool expired(ref Particle p){return p.timer.expired(manager.gameTime);}
             //remove expired particles
             particles_.remove(&expired);
                               
             //emit new particles
-            emit(manager.time_step);
+            emit(manager.timeStep);
 
             //update particles
-            foreach(ref particle; particles_){particle.update(manager.time_step);}
+            foreach(ref particle; particles_){particle.update(manager.timeStep);}
 
             super.update(manager);
         }
@@ -140,28 +157,28 @@ abstract class ParticleEmitter : ParticleSystem
         /**
          * Emit particles if any should be emitted this frame.
          * 
-         * Params:  time_step = Time step in seconds.
+         * Params:  timeStep = Time step in seconds.
          */
-        void emit(in real time_step)
+        void emit(const real timeStep)
         {
-            time_accumulated_ += time_step;
-            if(equals(emit_frequency_, 0.0L)){return;}
-            const real emit_period = 1.0 / emit_frequency_;
-            while(time_accumulated_ >= emit_period)
+            timeAccumulated_ += timeStep;
+            if(equals(emitFrequency_, 0.0L)){return;}
+            const real emitPeriod = 1.0 / emitFrequency_;
+            while(timeAccumulated_ >= emitPeriod)
             {
                 //add a new particle
                 Particle particle;
                 with(particle)
                 {
-                    timer          = Timer(particle_life_, game_time_);
-                    position       = physics_body_.position;
-                    velocity       = emit_velocity_;
+                    timer          = Timer(particleLife_, gameTime_);
+                    position       = physicsBody_.position;
+                    velocity       = emitVelocity_;
                     velocity.angle = particle.velocity.angle + 
-                                     uniform(-angle_variation_, angle_variation_);
+                                     uniform(-angleVariation_, angleVariation_);
                 }
                 particles_ ~= particle;
 
-                time_accumulated_ -= emit_period;
+                timeAccumulated_ -= emitPeriod;
             }
         }
 }
@@ -169,19 +186,19 @@ abstract class ParticleEmitter : ParticleSystem
 /**
  * Base class for factories producing ParticleEmitter derived classes.
  *
- * Params:  particle_life   = Life time of particles emitted in seconds.
+ * Params:  particleLife   = Life time of particles emitted in seconds.
  *                            Default; 5.0
- *          emit_frequency  = Frequency to emit particles at in particles per second.
+ *          emitFrequency  = Frequency to emit particles at in particles per second.
  *                            Default; 10.0
- *          emit_velocity   = Base velocity of particles emitted.
+ *          emitVelocity   = Base velocity of particles emitted.
  *                            Default; Vector2f(1.0f, 1.0f)
- *          angle_variation = Variation of angle of emit velocity in radians.
+ *          angleVariation = Variation of angle of emit velocity in radians.
  *                            Default; PI / 2
  */                          
 abstract class ParticleEmitterFactory(T) : ParticleSystemFactory!T
 {
-    mixin(generate_factory("real $ particle_life $ 5.0",
-                           "real $ emit_frequency $ 10.0",
-                           "Vector2f $ emit_velocity $ Vector2f(1.0f, 1.0f)",
-                           "real $ angle_variation $ PI / 2"));
+    mixin(generateFactory("real $ particleLife $ 5.0",
+                           "real $ emitFrequency $ 10.0",
+                           "Vector2f $ emitVelocity $ Vector2f(1.0f, 1.0f)",
+                           "real $ angleVariation $ PI / 2"));
 }

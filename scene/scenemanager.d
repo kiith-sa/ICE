@@ -7,7 +7,6 @@
 
 ///Scene manager subsystem.
 module scene.scenemanager;
-@safe
 
 
 import std.algorithm;
@@ -43,103 +42,103 @@ final class SceneManager : Monitorable
 
     invariant()
     {
-        assert(time_step_ >= 0.0, "Time step can't be negative");
-        assert(game_time_ >= 0.0, "Frame time can't be negative");
-        assert(time_speed_ >= 0.0, "Time speed can't be negative");
-        assert(accumulated_time_ >= 0.0, "Accumulated time can't be negative");
+        assert(timeStep_ >= 0.0, "Time step can't be negative");
+        assert(gameTime_ >= 0.0, "Frame time can't be negative");
+        assert(timeSpeed_ >= 0.0, "Time speed can't be negative");
+        assert(accumulatedTime_ >= 0.0, "Accumulated time can't be negative");
     }
 
     private:
         ///Physics engine managing physics bodies of the actors.
-        PhysicsEngine physics_engine_;
+        PhysicsEngine physicsEngine_;
 
         ///Actors managed by the SceneManager.
         Actor[] actors_;
         ///Actors to be added at the beginning of the next update.
-        Actor[] actors_to_add_;
+        Actor[] actorsToAdd_;
 
         ///Time taken by single game update.
-        const real time_step_ = 1.0 / 90.0; 
+        const real timeStep_ = 1.0 / 90.0; 
         ///Time this update started, in game time.
-        real game_time_;
+        real gameTime_;
         ///Time this frame (which can have multiple updates) started, in absolute time.
-        real frame_start_;
+        real frameStart_;
         ///Time we're behind in updates.
-        real accumulated_time_ = 0.0;
+        real accumulatedTime_ = 0.0;
         ///Time speed multiplier. Zero means pause (stopped time).
-        real time_speed_ = 1.0;
+        real timeSpeed_ = 1.0;
         ///Number of the current update.
-        size_t update_index_ = 0;
+        size_t updateIndex_ = 0;
 
         ///Statistics data for monitoring.
         Statistics statistics_;
 
         ///Used to send statistics data to GL monitors.
-        mixin Signal!Statistics send_statistics;
+        mixin Signal!Statistics sendStatistics;
 
         ///Timer used to measure updates per second.
-        Timer ups_timer_;
+        Timer upsTimer_;
 
     public:
         /**
          * Construct the SceneManager.
          *
-         * Params:  physics_engine = Physics engine for the actor manager to use.
+         * Params:  physicsEngine = Physics engine for the actor manager to use.
          */
-        this(PhysicsEngine physics_engine)
+        this(PhysicsEngine physicsEngine)
         {
-            physics_engine_ = physics_engine;
-            game_time_ = 0.0;
-            frame_start_ = get_time();
+            physicsEngine_ = physicsEngine;
+            gameTime_ = 0.0;
+            frameStart_ = getTime();
             //dummy delay, not used.
-            ups_timer_ = Timer(1.0);
-            singleton_ctor();
+            upsTimer_ = Timer(1.0);
+            singletonCtor();
         }
 
         ///Destroy the SceneManager.
         ~this()
         {
             this.clear();
-            singleton_dtor();
+            singletonDtor();
         }
 
         ///Get update length in seconds, i.e. "update frame" length, not graphics.
-        @property real time_step() const {return time_step_;}
+        @property real timeStep() const {return timeStep_;}
 
         ///Get time when the current update started, in game time.
-        @property real game_time() const {return game_time_;}
+        @property real gameTime() const pure {return gameTime_;}
 
         ///Get index of the current update since start, first update being zero.
-        @property size_t update_index() const {return update_index_;}
+        @property size_t updateIndex() const pure {return updateIndex_;}
 
         ///Set time speed multiplier (0 for pause, 1 for normal speed).
-        @property void time_speed(in real speed){time_speed_ = speed;}
+        @property void timeSpeed(const real speed){timeSpeed_ = speed;}
 
         ///Get time speed multiplier.
-        @property real time_speed() const {return time_speed_;}
+        @property real timeSpeed() const pure {return timeSpeed_;}
         
         ///Update the scene manager.
         void update()
         {
-            const real time = get_time();
+            const real time = getTime();
             //time since last frame
-            real frame_length = max(time - frame_start_, 0.0L);
-            frame_start_ = time;
+            real frameLength = max(time - frameStart_, 0.0L);
+            frameStart_ = time;
 
             //preventing spiral of death - if we can't keep up updating, slow down the game
-            frame_length = min(frame_length * time_speed_, 0.25L);
+            frameLength = min(frameLength * timeSpeed_, 0.25L);
 
-            accumulated_time_ += frame_length;
+            accumulatedTime_ += frameLength;
 
-            while(accumulated_time_ >= time_step_)
+            while(accumulatedTime_ >= timeStep_)
             {
-                game_time_ += time_step_;
-                accumulated_time_ -= time_step_;
-                physics_engine_.update(time_step_);
-                update_actors();
-                collect_dead();
-                physics_engine_.collect_dead(update_index_);
-                ++update_index_;
+                gameTime_ += timeStep_;
+                accumulatedTime_ -= timeStep_;
+                physicsEngine_.update(timeStep_);
+                updateActors();
+                collectDead();
+                physicsEngine_.collectDead(updateIndex_);
+                ++updateIndex_;
             }
         }
 
@@ -150,7 +149,7 @@ final class SceneManager : Monitorable
          */
         void draw(VideoDriver driver)
         {
-            foreach(actor; actors_){actor.draw_actor(driver);}
+            foreach(actor; actors_){actor.drawActor(driver);}
         }
 
         ///Remove all actors.
@@ -159,14 +158,14 @@ final class SceneManager : Monitorable
             //kill all actors still alive in a separate pass -
             //so the dying actors don't interact with cleared actors.
 
-            foreach(actor; actors_) if(!actor.dead(update_index_))
+            foreach(actor; actors_) if(!actor.dead(updateIndex_))
             {
-                actor.die(update_index_);
-                actor.on_die_package(this);
+                actor.die(updateIndex_);
+                actor.onDiePackage(this);
             }
             foreach(actor; actors_){.clear(actor);}
             .clear(actors_);
-            .clear(actors_to_add_);
+            .clear(actorsToAdd_);
         }
 
         /**
@@ -176,36 +175,36 @@ final class SceneManager : Monitorable
          *
          * Params:  actor = Actor to add. Must not already be in the SceneManager.
          */
-        void add_actor(Actor actor)
+        void addActor(Actor actor)
         in
         {
-            assert(!canFind!"a is b"(actors_to_add_, actor) &&
+            assert(!canFind!"a is b"(actorsToAdd_, actor) &&
                    !canFind!"a is b"(actors_, actor),
                    "Adding the same actor twice");
         }
-        body{actors_to_add_ ~= actor;}
+        body{actorsToAdd_ ~= actor;}
 
-        MonitorDataInterface monitor_data()
+        MonitorDataInterface monitorData()
         {
             SubMonitor function(SceneManager)[string] ctors_;
-            ctors_["UPS"] = &new_graph_monitor!(SceneManager, Statistics, "ups");
+            ctors_["UPS"] = &newGraphMonitor!(SceneManager, Statistics, "ups");
             return new MonitorData!(SceneManager)(this, ctors_);
         }
 
     package:
-        ///Call on_die() of all dead actors and remove them.
-        void collect_dead()
+        ///Call onDie() of all dead actors and remove them.
+        void collectDead()
         {
-            foreach(actor; actors_) if(actor.dead(update_index_))
+            foreach(actor; actors_) if(actor.dead(updateIndex_))
             {
-                actor.on_die_package(this);
+                actor.onDiePackage(this);
             }
 
             auto l = 0;
-            for(size_t actor_from = 0; actor_from < actors_.length; ++actor_from)
+            for(size_t actorFrom = 0; actorFrom < actors_.length; ++actorFrom)
             {
-                auto actor = actors_[actor_from];
-                if(actor.dead(update_index_))
+                auto actor = actors_[actorFrom];
+                if(actor.dead(updateIndex_))
                 {
                     .clear(actor);
                     continue;
@@ -217,22 +216,22 @@ final class SceneManager : Monitorable
         }
 
         ///Update all actors.
-        void update_actors()
+        void updateActors()
         {
-            const real age = ups_timer_.age();
-            ups_timer_.reset();
+            const real age = upsTimer_.age();
+            upsTimer_.reset();
             //avoid divide by zero
             statistics_.ups = age == 0.0L ? 0.0 : 1.0 / age;
-            send_statistics.emit(statistics_);
+            sendStatistics.emit(statistics_);
 
-            actors_ ~= actors_to_add_;
-            foreach(actor; actors_to_add_)
+            actors_ ~= actorsToAdd_;
+            foreach(actor; actorsToAdd_)
             {
-                physics_engine_.add_body(actor.physics_body);
+                physicsEngine_.addBody(actor.physicsBody);
             }
 
-            actors_to_add_.length = 0;
+            actorsToAdd_.length = 0;
 
-            foreach(actor; actors_){actor.update_package(this);}
+            foreach(actor; actors_){actor.updatePackage(this);}
         }
 }

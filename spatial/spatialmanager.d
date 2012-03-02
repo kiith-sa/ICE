@@ -7,7 +7,7 @@
 
 ///Base class for spatial managers.
 module spatial.spatialmanager;
-@safe
+
 
 import monitor.monitorable;
 import math.vector2;
@@ -36,7 +36,7 @@ abstract class SpatialManager(T) : Monitorable
          *
          * Params:  object = Object to add. Must have a volume.
          */
-        void add_object(T object);
+        void addObject(T object);
 
         /**
          * Remove an object.
@@ -48,7 +48,7 @@ abstract class SpatialManager(T) : Monitorable
          *
          * Params:  object = Object to remove. Must have a volume. 
          */
-        void remove_object(T object);
+        void removeObject(T object);
 
         /**
          * Update an object in the manager.
@@ -57,9 +57,9 @@ abstract class SpatialManager(T) : Monitorable
          * not changed since the object was last updated/added).
          *
          * Params:  object       = Object to update.
-         *          old_position = Position of the object last time when it was updated or added.
+         *          oldPosition = Position of the object last time when it was updated or added.
          */
-        void update_object(T object, in Vector2f old_position);
+        void updateObject(T object, const Vector2f oldPosition);
 
         ///Return an iterator iterating over groups of spatially close objects.
         @property Iterable!(T[]) iterable();

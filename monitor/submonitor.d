@@ -7,7 +7,6 @@
 
 ///Base class for submonitors provided by monitorables.
 module monitor.submonitor;
-@safe
 
 import monitor.monitormanager;
 import gui.guielement;
@@ -34,7 +33,7 @@ abstract class SubMonitor
  * Base class for SubMonitor GUI views.
  *
  * Signal:
- *     public mixin Signal!() toggle_pinned;
+ *     public mixin Signal!() togglePinned;
  *
  *     Emitted when the submonitor viewed should be pinned/unpinned.
  */
@@ -42,7 +41,7 @@ abstract class SubMonitorView : GUIElement
 {
     private:
         ///Text showing whether or not the submonitor is pinned.
-        GUIStaticText pinned_text_;
+        GUIStaticText pinnedText_;
 
     protected:
         ///Main area of the view.
@@ -50,7 +49,7 @@ abstract class SubMonitorView : GUIElement
 
     public:
         ///Emitted when the submonitor viewed should be pinned/unpinned.
-        mixin Signal!() toggle_pinned;
+        mixin Signal!() togglePinned;
 
         ///Construct a SubMonitorView.
         this()
@@ -63,30 +62,30 @@ abstract class SubMonitorView : GUIElement
                 margin(22, 4, 22, 4);
                 main_ = produce();
             }
-            add_child(main_);
+            addChild(main_);
 
             //construct the submonitor menu (common to all submonitors).
             with(new GUIMenuHorizontalFactory)
             {
                 x              = "p_left";
                 y              = "p_bottom - 22";
-                item_width     = "64";
-                item_height    = "14";
-                item_spacing   = "4";
-                item_font_size = MonitorView.font_size;
+                itemWidth     = "64";
+                itemHeight    = "14";
+                itemSpacing   = "4";
+                itemFontSize = MonitorView.fontSize;
 
-                add_item("Toggle Pinned", &toggle_pinned_);
-                add_child(produce());
+                addItem("Toggle Pinned", &togglePinned_);
+                addChild(produce());
             }
         }
 
         ///Update pinned text display.
-        void set_pinned(in bool pinned)
+        void setPinned(const bool pinned)
         {
-            if(pinned_text_ !is null)
+            if(pinnedText_ !is null)
             {
-                pinned_text_.die();
-                pinned_text_ = null;
+                pinnedText_.die();
+                pinnedText_ = null;
             }
             if(pinned)
             {
@@ -96,19 +95,19 @@ abstract class SubMonitorView : GUIElement
                     y            = "p_bottom - 16";
                     width        = "48";
                     height       = "16";
-                    font_size    = MonitorView.font_size;
+                    fontSize    = MonitorView.fontSize;
                     text         = "Pinned";
-                    pinned_text_ = produce();
+                    pinnedText_ = produce();
                 }
-                add_child(pinned_text_);
+                addChild(pinnedText_);
             }
         }
 
     private
         ///Pin/unpin the submonitor viewed.
-        void toggle_pinned_()
+        void togglePinned_()
         {
-            set_pinned(pinned_text_ is null);
-            toggle_pinned.emit();
+            setPinned(pinnedText_ is null);
+            togglePinned.emit();
         }
 }

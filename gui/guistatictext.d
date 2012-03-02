@@ -7,7 +7,6 @@
 
 ///Static text widget.
 module gui.guistatictext;
-@safe
 
 
 import std.algorithm;
@@ -67,22 +66,22 @@ class GUIStaticText : GUIElement
         TextLine[] lines_;
 
         ///Horizontal alignment of the text.
-        AlignX align_x_;
+        AlignX alignX_;
         ///Vertical alignment of the text.
-        AlignY align_y_;
+        AlignY alignY_;
         ///Distance between the lines in pixels.
-        uint line_gap_;
+        uint lineGap_;
         
         ///Name of the font used.
         string font_;
         ///Font size in points.
-        uint font_size_;
+        uint fontSize_;
         ///Font color.
-        Color font_color_;
+        Color fontColor_;
 
     public:
         ///Set text color.
-        @property void text_color(in Color color){font_color_ = color;}
+        @property void textColor(in Color color){fontColor_ = color;}
 
         ///Return displayed text.
         @property string text() const {return text_;}
@@ -96,35 +95,35 @@ class GUIStaticText : GUIElement
         }
 
         ///Get default font size of GUIStaticText instances.
-        @property static uint default_font_size(){return 12;}
+        @property static uint defaultFontSize(){return 12;}
 
     protected:
         /**
          * Construct a static text with specified parameters.
          *
          * Params:  params      = Parameters for GUIElement constructor.
-         *          text_color  = Text color.
+         *          textColor  = Text color.
          *          text        = Text to display.
-         *          align_x     = Horizontal alignment of the text.
-         *          align_y     = Vertical alignment of the text.
-         *          font_size   = Font size.
+         *          alignX     = Horizontal alignment of the text.
+         *          alignY     = Vertical alignment of the text.
+         *          fontSize   = Font size.
          *          font        = Name of the font to use.
          */
-        this(in GUIElementParams params, in Color text_color, in string text, 
-             in AlignX align_x, in AlignY align_y, in uint font_size, in string font)
+        this(in GUIElementParams params, in Color textColor, in string text, 
+             in AlignX alignX, in AlignY alignY, in uint fontSize, in string font)
         {
             super(params);
 
             text_ = detab(text);
 
-            font_color_ = text_color;
-            font_size_  = font_size;
+            fontColor_ = textColor;
+            fontSize_  = fontSize;
             font_       = font;
 
-            align_x_ = align_x;
-            align_y_ = align_y;
+            alignX_ = alignX;
+            alignY_ = alignY;
             //pretty much arbitrary, something better might be needed in future
-            line_gap_ = max(2u, font_size_ / 6);
+            lineGap_ = max(2u, fontSize_ / 6);
 
             aligned_ = false;
         }
@@ -136,10 +135,10 @@ class GUIStaticText : GUIElement
             super.draw(driver);
 
             driver.font = font_;
-            driver.font_size = font_size_;
+            driver.fontSize = fontSize_;
             foreach(ref line; lines_)
             {
-                driver.draw_text(bounds_.min + line.offset, line.text, font_color_);
+                driver.drawText(bounds_.min + line.offset, line.text, fontColor_);
             }
         }
 
@@ -151,14 +150,14 @@ class GUIStaticText : GUIElement
 
             //we need to set font to get information about drawn size of lines
             driver.font = font_;
-            driver.font_size = font_size_;
+            driver.fontSize = fontSize_;
             lines_ = [];
-            uint y_offset;
+            uint yOffset;
 
             //break text to lines and align them horizontally, then align vertically
-            while(text.length > 0){text = add_line(driver, text, y_offset, y_offset);}
+            while(text.length > 0){text = addLine(driver, text, yOffset, yOffset);}
 
-            align_vertical();
+            alignVertical();
         }
 
     private:
@@ -168,19 +167,19 @@ class GUIStaticText : GUIElement
          *
          * Params:  driver       = VideoDriver used for text size measurement.
          *          text         = Text to get the line from.
-         *          y_offset_in  = Y offset to use for this line.
-         *          y_offset_out = Y offset to use for the next line will be written here.
+         *          yOffsetIn  = Y offset to use for this line.
+         *          yOffsetOut = Y offset to use for the next line will be written here.
          *
          * Returns: Remaining text that isn't part of the newly added line.
          */
-        string add_line(VideoDriver driver, string text, in 
-                        uint y_offset_in, out uint y_offset_out)
+        string addLine(VideoDriver driver, string text, in 
+                        uint yOffsetIn, out uint yOffsetOut)
         {
             //get leading space, if any, and following word from text
             //also, break the line if (unix) newline found
-            string get_word(out bool end_line)
+            string getWord(out bool endLine)
             {
-                end_line = false;
+                endLine = false;
                 uint end;
                 //get leading space
                 foreach(i, dchar c; text)
@@ -189,7 +188,7 @@ class GUIStaticText : GUIElement
                     //break at newline
                     else if(c == '\n')
                     {
-                        end_line = true;
+                        endLine = true;
                         return text[0 .. end];
                     }
                     ++end;
@@ -201,7 +200,7 @@ class GUIStaticText : GUIElement
                     //break at newline
                     else if(c == '\n')
                     {
-                        end_line = true;
+                        endLine = true;
                         return text[0 .. end];
                     }
                     ++end;
@@ -212,15 +211,15 @@ class GUIStaticText : GUIElement
             //line we're constructing
             TextLine line;
             const uint width = size.x;
-            bool end_line = false;
+            bool endLine = false;
 
             while(text.length > 0)
             {
-                string word = get_word(end_line);
+                string word = getWord(endLine);
 
                 //can we add word to the line without passing width?
-                Vector2u line_size = driver.text_size(line.text ~ word);
-                if(line_size.x > width || end_line)
+                Vector2u lineSize = driver.textSize(line.text ~ word);
+                if(lineSize.x > width || endLine)
                 {
                     //line too wide, don't add the word and break
                     if(line.text.length == 0)
@@ -231,7 +230,7 @@ class GUIStaticText : GUIElement
                         text = text[word.length .. $];
                     }
                     //update y position to below this line
-                    y_offset_out = y_offset_in + line_size.y + line_gap_;
+                    yOffsetOut = yOffsetIn + lineSize.y + lineGap_;
                     break;
                 }
                 else
@@ -242,10 +241,10 @@ class GUIStaticText : GUIElement
             }
 
             //align the line horizontally
-            line.offset = Vector2i(0, y_offset_in);
-            const text_width = driver.text_size(line.text).x;
-            line.offset.x  = align_x_ == AlignX.Right  ? width - text_width :
-                             align_x_ == AlignX.Center ? (width - text_width) / 2
+            line.offset = Vector2i(0, yOffsetIn);
+            const textWidth = driver.textSize(line.text).x;
+            line.offset.x  = alignX_ == AlignX.Right  ? width - textWidth :
+                             alignX_ == AlignX.Center ? (width - textWidth) / 2
                              : line.offset.x;
                                            
             lines_ ~= line;
@@ -254,15 +253,15 @@ class GUIStaticText : GUIElement
         }
         
         ///Align lines verically.
-        void align_vertical()
+        void alignVertical()
         {
             //if AlignY is Top, we're aligned as lines start at y == 0 by default
-            if(lines_.length == 0 || align_y_ == AlignY.Top){return;}
-            const text_height = font_size_ * lines_.length + line_gap_ * (lines_.length - 1);
-            auto offset_y = size.y - text_height;
-            if(align_y_ == AlignY.Center){offset_y /= 2;}
+            if(lines_.length == 0 || alignY_ == AlignY.Top){return;}
+            const textHeight = fontSize_ * lines_.length + lineGap_ * (lines_.length - 1);
+            auto offsetY = size.y - textHeight;
+            if(alignY_ == AlignY.Center){offsetY /= 2;}
             //move lines according to the offset
-            foreach(ref line; lines_){line.offset.y += offset_y;}
+            foreach(ref line; lines_){line.offset.y += offsetY;}
         }
 }               
 
@@ -271,35 +270,35 @@ class GUIStaticText : GUIElement
  *
  * See_Also: GUIElementFactoryBase
  *
- * Params:  draw_border = Draw border of the element?
+ * Params:  drawBorder = Draw border of the element?
  *                        Default; false
- *          text_color  = Color of the text.
+ *          textColor  = Color of the text.
  *                        Default; Color.white
  *          text        = Text to display.
  *                        Default; ""
- *          align_x     = Horizontal alignment of the text.
+ *          alignX     = Horizontal alignment of the text.
  *                        Default; AlignX.Left
- *          align_y     = Vertical alignment of the text.
+ *          alignY     = Vertical alignment of the text.
  *                        Default; AlignY.Top
- *          font_size   = Size of text font.
+ *          fontSize   = Size of text font.
  *          font        = Name of the font to use.
  *                        Default; "default"
  */
 final class GUIStaticTextFactory : GUIElementFactoryBase!GUIStaticText
 {
-    mixin(generate_factory(`Color  $ text_color $ Color.white`, 
+    mixin(generateFactory(`Color  $ textColor $ Color.white`, 
                            `string $ text       $ ""`, 
-                           `AlignX $ align_x    $ AlignX.Left`, 
-                           `AlignY $ align_y    $ AlignY.Top`, 
-                           `uint   $ font_size  $ GUIStaticText.default_font_size()`,
+                           `AlignX $ alignX    $ AlignX.Left`, 
+                           `AlignY $ alignY    $ AlignY.Top`, 
+                           `uint   $ fontSize  $ GUIStaticText.defaultFontSize()`,
                            `string $ font       $ "default"`));
 
     ///Construct a GUIStaticTextFactory and initialize defaults.
-    this(){draw_border_ = false;}
+    this(){drawBorder_ = false;}
 
     public override GUIStaticText produce()
     {
-        return new GUIStaticText(gui_element_params, text_color_, text_, 
-                                 align_x_, align_y_, font_size_, font_);
+        return new GUIStaticText(guiElementParams, textColor_, text_, 
+                                 alignX_, alignY_, fontSize_, font_);
     }
 }

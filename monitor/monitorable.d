@@ -7,7 +7,6 @@
 
 ///Interface for monitorable classes.
 module monitor.monitorable;
-@safe
 
 
 import monitor.monitordata;
@@ -17,5 +16,5 @@ import monitor.monitordata;
 interface Monitorable
 {
     ///Get MonitorData to access submonitors of the monitorable.
-    MonitorDataInterface monitor_data();
+    MonitorDataInterface monitorData();
 }

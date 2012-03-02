@@ -7,7 +7,6 @@
 
 ///Interface providing access to submonitors (returned by a monitorable).
 module monitor.monitordata;
-@safe
 
 
 import std.algorithm;
@@ -23,16 +22,16 @@ interface MonitorDataInterface
     void die();
 
     ///Get names of submonitors available.
-    @property const(string[]) monitor_names() const;
+    @property const(string[]) monitorNames() const;
 
     ///Start monitor with specified name.
-    void start_monitor(in string name);
+    void startMonitor(const string name);
 
     ///Stop monitor with specified name.
-    void stop_monitor(in string name);
+    void stopMonitor(const string name);
 
     ///Access monitor with specified name.
-    SubMonitor get_monitor(in string name);
+    SubMonitor getMonitor(const string name);
 }
 
 //needs better naming
@@ -69,14 +68,14 @@ final class MonitorData(M) : MonitorDataInterface
             constructors_ = null;
         }
 
-        @property const(string[]) monitor_names() const {return constructors_.keys;}
+        @property const(string[]) monitorNames() const {return constructors_.keys;}
 
-        void start_monitor(in string name)
+        void startMonitor(const string name)
         {
             monitors_[name] = constructors_[name](monitored_);
         }
 
-        void stop_monitor(in string name)
+        void stopMonitor(const string name)
         in
         {
             assert(canFind(monitors_.keys, name), 
@@ -88,7 +87,7 @@ final class MonitorData(M) : MonitorDataInterface
             monitors_.remove(name);
         }
 
-        SubMonitor get_monitor(in string name)
+        SubMonitor getMonitor(const string name)
         in
         {
             assert(canFind(monitors_.keys, name), "Trying to access a nonexistent monitor");

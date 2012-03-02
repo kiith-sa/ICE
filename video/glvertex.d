@@ -7,7 +7,6 @@
 
 ///OpenGL vertex.
 module video.glvertex;
-@safe
 
 
 import math.vector2;
@@ -32,11 +31,11 @@ package align(4) struct GLVertex2DColored
     Color color;
 
     ///Offset of GLVertex2DColored.vertex relative to the struct in bytes.
-    static immutable vertex_offset = 0;
+    static immutable vertexOffset = 0;
     ///Offset of GLVertex2DColored.color relative to the struct in bytes.
-    static immutable color_offset = 8;
+    static immutable colorOffset = 8;
     ///Enum value corresponding to this vertex type.
-    static immutable vertex_type = GLVertexType.Colored;
+    static immutable vertexType = GLVertexType.Colored;
 }
 
 ///Vertex with position, color and texture coordinate.
@@ -50,11 +49,11 @@ package align(4) struct GLVertex2DTextured
     Color color;
 
     ///Offset of GLVertex2DTextured.vertex relative to the struct in bytes.
-    static immutable vertex_offset = 0;
+    static immutable vertexOffset = 0;
     ///Offset of GLVertex2DTextured.texcoord relative to the struct in bytes.
-    static immutable texcoord_offset = 8;
+    static immutable texcoordOffset = 8;
     ///Offset of GLVertex2DTextured.color relative to the struct in bytes.
-    static immutable color_offset = 16;
+    static immutable colorOffset = 16;
     ///Enum value corresponding to this vertex type.
-    static immutable vertex_type = GLVertexType.Textured;
+    static immutable vertexType = GLVertexType.Textured;
 }

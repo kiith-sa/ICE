@@ -43,16 +43,16 @@ void main(string[] args)
     string user = "./user_data";
 
     //Root data and user data MUST be specified at startup
-    cli.add_option(CLIOption("root_data").short_name('R').target(&root));
-    cli.add_option(CLIOption("user_data").short_name('U').target(&user));
+    cli.addOption(CLIOption("root_data").shortName('R').target(&root));
+    cli.addOption(CLIOption("user_data").shortName('U').target(&user));
 
     if(!cli.parse(args)){return;}
 
     scope(exit) writeln("Main exit");
     try
     {
-        root_data(root);
-        user_data(user);
+        rootData(root);
+        userData(user);
 
         Pong pong = new Pong();
         scope(exit){clear(pong);}

@@ -7,7 +7,6 @@
 
 ///Monitor subsystem.
 module monitor.monitormanager;
-@safe
 
 
 import std.array;
@@ -33,7 +32,7 @@ import util.signal;
  *
  * Signal:
  *
- *     package mixin Signal!() update_views
+ *     package mixin Signal!() updateViews
  *
  *     Used to update views viewing this monitor e.g. when a monitorable is added/removed.
  */
@@ -50,7 +49,7 @@ final class MonitorManager
 
     public:
         ///Construct a MonitorManager.
-        this(){singleton_ctor();}
+        this(){singletonCtor();}
 
         ///Destroy the MonitorManager.
         ~this()
@@ -60,7 +59,7 @@ final class MonitorManager
                    "All monitorables must be removed before destroying monitor. \n"
                    "Not removed: " ~ join(monitored_.keys, " "));
         }
-        body{singleton_dtor();}
+        body{singletonDtor();}
 
         /**
          * Add a monitorable.
@@ -68,21 +67,20 @@ final class MonitorManager
          * Params:  monitorable = Monitorable to add.
          *          name        = Name to use for the monitorable. Must be unique.
          */
-        void add_monitorable(Monitorable monitorable, in string name)
+        void addMonitorable(Monitorable monitorable, const string name)
         in
         {
-
             assert((name in monitored_ ) is null,
                    "Trying to add a monitorable with name that is already used");
         }
         body
         {
-            monitored_[name] = monitorable.monitor_data;
-            update_views.emit();
+            monitored_[name] = monitorable.monitorData;
+            updateViews.emit();
         }
 
         ///Remove monitorable with specified name.
-        void remove_monitorable(in string name)
+        void removeMonitorable(const string name)
         in
         {
             assert((name in monitored_ ) !is null,
@@ -94,18 +92,18 @@ final class MonitorManager
             pinned_ = remove!((ref MonitorID id){return id.monitored == name;})(pinned_);
             monitored_[name].die();
             monitored_.remove(name);
-            update_views.emit();
+            updateViews.emit();
         }
 
     package:
         ///Emitted when the view/s viewing this monitor need to be updated.
-        mixin Signal!() update_views;
+        mixin Signal!() updateViews;
 
         ///Get names of monitored objects.
-        @property const(string[]) monitored_names() const {return monitored_.keys;}
+        @property const(string[]) monitoredNames() const {return monitored_.keys;}
 
         ///Get names of monitors of the specified monitored object.
-        @property const(string[]) monitor_names(in string monitored) const
+        @property const(string[]) monitorNames(const string monitored) const
         in
         {
             assert((monitored in monitored_ ) !is null,
@@ -113,11 +111,11 @@ final class MonitorManager
         }
         body
         {
-            return monitored_[monitored].monitor_names();
+            return monitored_[monitored].monitorNames();
         }
 
         ///Start specified monitor (unless it's pinned).
-        void start(in MonitorID id)
+        void start(const MonitorID id)
         in
         {
             assert((id.monitored in monitored_ ) !is null,
@@ -125,11 +123,11 @@ final class MonitorManager
         }
         body
         {
-            if(!pinned(id)){monitored_[id.monitored].start_monitor(id.monitor);}
+            if(!pinned(id)){monitored_[id.monitored].startMonitor(id.monitor);}
         }
 
         ///Stop specified monitor (unless it's pinned).
-        void stop(in MonitorID id)
+        void stop(const MonitorID id)
         in
         {
             assert((id.monitored in monitored_ ) !is null,
@@ -137,20 +135,20 @@ final class MonitorManager
         }
         body
         {
-            if(!pinned(id)){monitored_[id.monitored].stop_monitor(id.monitor);}
+            if(!pinned(id)){monitored_[id.monitored].stopMonitor(id.monitor);}
         }
 
         ///Get specified submonitor.
-        SubMonitor get(in MonitorID id)
+        SubMonitor get(const MonitorID id)
         in
         {
             assert((id.monitored in monitored_ ) !is null,
                    "Trying to get monitor of a monitorable that is not present");
         }
-        body{return monitored_[id.monitored].get_monitor(id.monitor);}
+        body{return monitored_[id.monitored].getMonitor(id.monitor);}
 
         ///Pin specified monitor. Pinned monitors can't be stopped or started.
-        void pin(in MonitorID id)
+        void pin(const MonitorID id) pure
         in
         {
             assert(!pinned(id), "Trying to pin a monitor that is already pinned");
@@ -168,7 +166,7 @@ final class MonitorManager
         }
 
         ///Is a submonitor pinned?
-        bool pinned(in MonitorID id){return pinned_.canFind(id);}
+        bool pinned(const MonitorID id) pure {return pinned_.canFind(id);}
 }
 
 
@@ -182,19 +180,19 @@ final class MonitorView : GUIElement
         ///Menu used to select monitored objects or submonitors to view.
         GUIMenu menu_ = null;
         ///Currently shown submonitor view.
-        SubMonitorView current_view_;
+        SubMonitorView currentView_;
 
         ///Name of the monitored object currently shown by the menu (null if none).
-        string current_monitored_;
+        string currentMonitored_;
 
         ///ID of currently viewed submonitor (contents as null if none).
-        MonitorID current_monitor_;
+        MonitorID currentMonitor_;
 
     public:
         ///Return font size for monitor widgets to use.
-        static uint font_size(){return 8;}
+        static uint fontSize() pure {return 8;}
 
-        ~this(){monitor_.update_views.disconnect(&regenerate);}
+        ~this(){monitor_.updateViews.disconnect(&regenerate);}
 
     protected:
         /**
@@ -203,12 +201,12 @@ final class MonitorView : GUIElement
          * Params:  params  = Parameters for GUIElement constructor.
          *          monitor = MonitorManager to view.
          */
-        this(in GUIElementParams params, MonitorManager monitor)
+        this(const GUIElementParams params, MonitorManager monitor)
         {          
             super(params);
 
             monitor_ = monitor;
-            monitor.update_views.connect(&regenerate);
+            monitor.updateViews.connect(&regenerate);
             regenerate();
         }
 
@@ -219,24 +217,24 @@ final class MonitorView : GUIElement
             //destroy menu, if any
             if(menu_ !is null)
             {
-                remove_child(menu_);
+                removeChild(menu_);
                 menu_.die();
                 menu_ = null;
             }
 
             //current monitored might have been removed by the monitor, so check for that
             //copying due to phobos not yet working correctly with const/immutable
-            string[] monitored_names = monitor_.monitored_names.dup;
-            if(!monitored_names.canFind(current_monitored_))
+            string[] monitoredNames = monitor_.monitoredNames.dup;
+            if(!monitoredNames.canFind(currentMonitored_))
             {
-                if(current_monitor_.monitored == current_monitored_)
+                if(currentMonitor_.monitored == currentMonitored_)
                 {
-                    //must do this here, set_monitor would try to stop nonexistent monitor
-                    current_monitor_.set_null();
+                    //must do this here, setMonitor would try to stop nonexistent monitor
+                    currentMonitor_.setNull();
                     //will also destroy the view
-                    set_monitor(current_monitor_);
+                    setMonitor(currentMonitor_);
                 }
-                current_monitored_ = null;
+                currentMonitored_ = null;
             }
 
             //generate the menu
@@ -244,87 +242,87 @@ final class MonitorView : GUIElement
             {
                 x              = "p_left";
                 y              = "p_top";
-                item_width     = "44";
-                item_height    = "14";
-                item_spacing   = "4";
-                item_font_size = font_size;
+                itemWidth     = "44";
+                itemHeight    = "14";
+                itemSpacing   = "4";
+                itemFontSize = fontSize;
 
                 //hide will set null monitor
                 MonitorID id;
-                id.set_null();
-                add_item("Hide", {set_monitor(id);});
+                id.setNull();
+                addItem("Hide", {setMonitor(id);});
 
                 //if we're at top level, add menu items, callbacks for each monitorable
-                if(current_monitored_ is null)
+                if(currentMonitored_ is null)
                 {
                     //used to avoid a compiler bug with closures, seems to be #2043
-                    void add_monitored_button(in string monitored)
+                    void addMonitoredButton(const string monitored)
                     {
-                        add_item(monitored, {set_monitored(monitored);});
+                        addItem(monitored, {setMonitored(monitored);});
                     }
-                    foreach(monitored; monitor_.monitored_names)
+                    foreach(monitored; monitor_.monitoredNames)
                     {
-                        add_monitored_button(monitored);
+                        addMonitoredButton(monitored);
                     }
                 }
                 //add menu items, callbacks for each submonitor and a back button.
                 else
                 {
                     //used to avoid a compiler bug with closures, seems to be #2043
-                    void add_monitor_button(in string monitored, in string monitor)
+                    void addMonitorButton(const string monitored, const string monitor)
                     {
-                        add_item(monitor, {set_monitor(MonitorID(monitored, monitor));});
+                        addItem(monitor, {setMonitor(MonitorID(monitored, monitor));});
                     }
-                    add_item("Back", {set_monitored(null);});
-                    foreach(monitor; monitor_.monitor_names(current_monitored_))
+                    addItem("Back", {setMonitored(null);});
+                    foreach(monitor; monitor_.monitorNames(currentMonitored_))
                     {
-                        add_monitor_button(current_monitored_, monitor);
+                        addMonitorButton(currentMonitored_, monitor);
                     }
                 }
 
                 menu_ = produce();
             }
 
-            add_child(menu_);
+            addChild(menu_);
         }
 
 
         ///Set specified monitored object.
-        void set_monitored(in string monitored)
+        void setMonitored(const string monitored)
         {
-            current_monitored_ = monitored;
+            currentMonitored_ = monitored;
             regenerate();
         }
 
         ///Set specified submonitor.
-        void set_monitor(in MonitorID id)
+        void setMonitor(const MonitorID id)
         {
             //will be stopped if not pinned
-            if(!current_monitor_.is_null){monitor_.stop(current_monitor_);}
-            if(current_view_ !is null)
+            if(!currentMonitor_.isNull){monitor_.stop(currentMonitor_);}
+            if(currentView_ !is null)
             {
-                current_view_.toggle_pinned.disconnect(&toggle_pinned);
-                current_view_.die();
-                current_view_ = null;
+                currentView_.togglePinned.disconnect(&togglePinned);
+                currentView_.die();
+                currentView_ = null;
             }
 
-            current_monitor_ = id;
+            currentMonitor_ = id;
 
             //if null monitor is set, we don't need to start it.
-            if(id.is_null){return;}
+            if(id.isNull){return;}
 
             monitor_.start(id);
-            current_view_ = monitor_.get(id).view;
-            add_child(current_view_);
-            current_view_.toggle_pinned.connect(&toggle_pinned);
-            current_view_.set_pinned(monitor_.pinned(current_monitor_));
+            currentView_ = monitor_.get(id).view;
+            addChild(currentView_);
+            currentView_.togglePinned.connect(&togglePinned);
+            currentView_.setPinned(monitor_.pinned(currentMonitor_));
         }
 
         ///Pin/unpin currently viewed monitor.
-        void toggle_pinned()
+        void togglePinned()
         {
-            if(!monitor_.pinned(current_monitor_)){monitor_.pin(current_monitor_);}
-            else{monitor_.unpin(current_monitor_);}
+            if(!monitor_.pinned(currentMonitor_)){monitor_.pin(currentMonitor_);}
+            else{monitor_.unpin(currentMonitor_);}
         }
 }
 
@@ -337,9 +335,9 @@ private struct MonitorID
     string monitor;
 
     ///Set this submonitor to "null" (no submonitor).
-    void set_null(){monitored = monitor = null;}
+    void setNull() pure {monitored = monitor = null;}
     ///Is the submonitor "null"?
-    @property bool is_null() const {return monitored is null;}
+    @property bool isNull() const pure {return monitored is null;}
 }
 
 ///Factory producing MonitorViews.
@@ -355,6 +353,6 @@ final class MonitorViewFactory : GUIElementFactoryBase!MonitorView
 
         override MonitorView produce()
         {
-            return new MonitorView(gui_element_params, monitor_);
+            return new MonitorView(guiElementParams, monitor_);
         }
 }

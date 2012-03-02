@@ -7,7 +7,6 @@
 
 ///Menu widget.
 module gui.guimenu;
-@safe
 
 
 import std.conv;
@@ -27,50 +26,50 @@ abstract class GUIMenu : GUIElement
         GUIButton[] items_;
 
         ///Math expression used to calculate menu item width.
-        string item_width_;
+        string itemWidth_;
         ///Math expression used to calculate menu item height.
-        string item_height_;
+        string itemHeight_;
         ///Math expression used to calculate spacing between menu items.
-        string item_spacing_;
+        string itemSpacing_;
 
     private:
         ///Menu item font size.
-        uint font_size_ = GUIStaticText.default_font_size();
+        uint fontSize_ = GUIStaticText.defaultFontSize();
 
     protected:
         /**
          * Construct a menu with specified parameters.
          *
          * Params:  params         = Parameters for GUIElement constructor.
-         *          item_width     = Menu item width math expression.
-         *          item_height    = Menu item height math expression.
-         *          item_spacing   = Math expression used to calculate spacing between menu items.
-         *          item_font_size = Menu item font size.
+         *          itemWidth     = Menu item width math expression.
+         *          itemHeight    = Menu item height math expression.
+         *          itemSpacing   = Math expression used to calculate spacing between menu items.
+         *          itemFontSize = Menu item font size.
          *          items_         = Names and callback functions of menu items.
          */
         this(in GUIElementParams params,
-             in string item_width, in string item_height, in string item_spacing, 
-             in uint item_font_size, MenuItemData[] items)
+             in string itemWidth, in string itemHeight, in string itemSpacing, 
+             in uint itemFontSize, MenuItemData[] items)
         {
             super(params);
             //parentheses prevent unwanted operator precedence, simplify realigning code
-            item_width_   = "(" ~ item_width ~ ")";
-            item_height_  = "(" ~ item_height ~ ")";
-            item_spacing_ = "(" ~ item_spacing ~ ")";
-            font_size_    = item_font_size;
+            itemWidth_   = "(" ~ itemWidth ~ ")";
+            itemHeight_  = "(" ~ itemHeight ~ ")";
+            itemSpacing_ = "(" ~ itemSpacing ~ ")";
+            fontSize_    = itemFontSize;
             aligned_      = false;
 
             foreach(ref item; items)
             {
-                add_item(item.text, item.deleg);
+                addItem(item.text, item.deleg);
             }
         }
 
         ///Create math expression for X position of a new item.
-        string new_item_x() const;
+        string newItemX() const;
 
         ///Create math expression for Y position of a new item.
-        string new_item_y() const;
+        string newItemY() const;
 
     private:
         /**
@@ -81,25 +80,25 @@ abstract class GUIMenu : GUIElement
          * Params:  text  = Text of the menu item.
          *          deleg = Function to call when the menu item is clicked.
          */
-        void add_item(in string text, void delegate() deleg)
+        void addItem(in string text, void delegate() deleg)
         {
             //construct the new item
             auto factory = new GUIButtonFactory;
             factory.text = text;
             with(factory)
             {
-                x         = new_item_x();
-                y         = new_item_y();
-                width     = item_width_;
-                height    = item_height_;
-                font_size = this.font_size_;
+                x         = newItemX();
+                y         = newItemY();
+                width     = itemWidth_;
+                height    = itemHeight_;
+                fontSize = this.fontSize_;
             }
             auto button = factory.produce();
 
             //connect and add the new item
             button.pressed.connect(deleg);
             items_ ~= button;
-            add_child(button);
+            addChild(button);
             aligned_ = false;
         }
 }
@@ -112,42 +111,42 @@ class GUIMenuHorizontal : GUIMenu
          * Construct a horizontal menu with specified parameters.
          *
          * Params:  params         = Parameters for GUIElement constructor.
-         *          item_width     = Menu item width math expression.
-         *          item_height    = Menu item height math expression.
-         *          item_spacing   = Math expression used to calculate spacing between menu items.
-         *          item_font_size = Menu item font size.
+         *          itemWidth     = Menu item width math expression.
+         *          itemHeight    = Menu item height math expression.
+         *          itemSpacing   = Math expression used to calculate spacing between menu items.
+         *          itemFontSize = Menu item font size.
          *          items          = Names and callback functions of menu items.
          */
         this(in GUIElementParams params,
-             in string item_width, in string item_height, in string item_spacing, 
-             in uint item_font_size, MenuItemData[] items)
+             in string itemWidth, in string itemHeight, in string itemSpacing, 
+             in uint itemFontSize, MenuItemData[] items)
         {
-            super(params, item_width, item_height, item_spacing, item_font_size, items);
+            super(params, itemWidth, itemHeight, itemSpacing, itemFontSize, items);
         }
 
         override void realign(VideoDriver driver)
         {
-            //offset = item_width_ + item_spacing_
-            const offset = "(" ~ item_width_ ~ " + " ~ item_spacing_ ~ ")";
-            //width = item_spacing_ + offset * items_.length
-            width_string_ = item_spacing_ ~ " + " ~ offset ~ " * " ~ to!string(items_.length);
-            //height = item_spacing_ * 2 + item_height_
-            height_string_ = item_spacing_ ~ " * 2 + " ~ item_height_;
+            //offset = itemWidth_ + itemSpacing_
+            const offset = "(" ~ itemWidth_ ~ " + " ~ itemSpacing_ ~ ")";
+            //width = itemSpacing_ + offset * items_.length
+            widthString_ = itemSpacing_ ~ " + " ~ offset ~ " * " ~ to!string(items_.length);
+            //height = itemSpacing_ * 2 + itemHeight_
+            heightString_ = itemSpacing_ ~ " * 2 + " ~ itemHeight_;
             super.realign(driver);
         }
 
-        override string new_item_x() const
+        override string newItemX() const
         {
-            //offset = item_width_ + item_spacing_
-            const offset = "(" ~ item_width_ ~ " + " ~ item_spacing_ ~ ")";
-            //return item_spacing_ + parent_.bounds_.min.x + offset * items_.length
-            return item_spacing_ ~ " + p_left + " ~ offset ~ " * " ~ to!string(items_.length);
+            //offset = itemWidth_ + itemSpacing_
+            const offset = "(" ~ itemWidth_ ~ " + " ~ itemSpacing_ ~ ")";
+            //return itemSpacing_ + parent_.bounds_.min.x + offset * items_.length
+            return itemSpacing_ ~ " + p_left + " ~ offset ~ " * " ~ to!string(items_.length);
         }
 
-        override string new_item_y() const
+        override string newItemY() const
         {
-            //return parent_.bounds_.min.y + item_spacing_
-            return "p_top + " ~ item_spacing_;
+            //return parent_.bounds_.min.y + itemSpacing_
+            return "p_top + " ~ itemSpacing_;
         }
 }
 
@@ -159,42 +158,42 @@ class GUIMenuVertical : GUIMenu
          * Construct a vertical menu with specified parameters.
          *
          * Params:  params         = Parameters for GUIElement constructor.
-         *          item_width     = Menu item width math expression.
-         *          item_height    = Menu item height math expression.
-         *          item_spacing   = Math expression used to calculate spacing between menu items.
-         *          item_font_size = Menu item font size.
+         *          itemWidth     = Menu item width math expression.
+         *          itemHeight    = Menu item height math expression.
+         *          itemSpacing   = Math expression used to calculate spacing between menu items.
+         *          itemFontSize = Menu item font size.
          *          items          = Names and callback functions of menu items.
          */
         this(in GUIElementParams params,
-             in string item_width, in string item_height, in string item_spacing, 
-             in uint item_font_size, MenuItemData[] items)
+             in string itemWidth, in string itemHeight, in string itemSpacing, 
+             in uint itemFontSize, MenuItemData[] items)
         {
-            super(params, item_width, item_height, item_spacing, item_font_size, items);
+            super(params, itemWidth, itemHeight, itemSpacing, itemFontSize, items);
         }
 
         override void realign(VideoDriver driver)
         {
-            //offset = item_height_ + item_spacing_
-            const offset = "(" ~ item_height_ ~ " + " ~ item_spacing_ ~ ")";
-            //width = item_spacing_ * 2 + item_width_
-            width_string_ = item_spacing_ ~ " * 2 + " ~ item_width_;
-            //height = item_spacing_ + offset * items_.length
-            height_string_ = item_spacing_ ~ " + " ~ offset ~ " * " ~ to!string(items_.length);
+            //offset = itemHeight_ + itemSpacing_
+            const offset = "(" ~ itemHeight_ ~ " + " ~ itemSpacing_ ~ ")";
+            //width = itemSpacing_ * 2 + itemWidth_
+            widthString_ = itemSpacing_ ~ " * 2 + " ~ itemWidth_;
+            //height = itemSpacing_ + offset * items_.length
+            heightString_ = itemSpacing_ ~ " + " ~ offset ~ " * " ~ to!string(items_.length);
             super.realign(driver);
         }
 
-        override string new_item_x() const
+        override string newItemX() const
         {
-            //return parent_.bounds_.min.x + item_spacing_
-            return "p_left + " ~ item_spacing_;
+            //return parent_.bounds_.min.x + itemSpacing_
+            return "p_left + " ~ itemSpacing_;
         }
 
-        override string new_item_y() const
+        override string newItemY() const
         {
-            //offset = item_height_ + item_spacing_
-            const offset = "(" ~ item_height_ ~ " + " ~ item_spacing_ ~ ")";
-            //return item_spacing_ + parent_.bounds_.min.y + offset * items_.length
-            return item_spacing_ ~ " + p_top + " ~ offset ~ " * " ~ to!string(items_.length);
+            //offset = itemHeight_ + itemSpacing_
+            const offset = "(" ~ itemHeight_ ~ " + " ~ itemSpacing_ ~ ")";
+            //return itemSpacing_ + parent_.bounds_.min.y + offset * items_.length
+            return itemSpacing_ ~ " + p_top + " ~ offset ~ " * " ~ to!string(items_.length);
         }
 }
 
@@ -207,40 +206,40 @@ class GUIMenuVertical : GUIMenu
  *
  * See_Also: GUIElementFactoryBase
  *
- * Params:  draw_border    = Draw border of this menu? 
+ * Params:  drawBorder    = Draw border of this menu? 
  *                           Default;  false
- *          item_width     = Menu item width math expression.
+ *          itemWidth     = Menu item width math expression.
  *                           Default;  128
- *          item_height    = Menu item height math expression.
+ *          itemHeight    = Menu item height math expression.
  *                           Default;  24
- *          item_spacing   = Math expression used to calculate spacing between menu items.
+ *          itemSpacing   = Math expression used to calculate spacing between menu items.
  *                           Default;  4
- *          item_font_size = Font size of menu items.
- *          add_item       = Add a menu item with specified text and callback
+ *          itemFontSize = Font size of menu items.
+ *          addItem       = Add a menu item with specified text and callback
  *                           to be called when the item is clicked.
  */
 class GUIMenuFactory(T) : GUIElementFactoryBase!T
 {
-    mixin(generate_factory(`string $ item_width     $ "128"`, 
-                           `string $ item_height    $ "24"`,
-                           `string $ item_spacing   $ "4"`,
-                           `uint   $ item_font_size $ GUIStaticText.default_font_size()`));
+    mixin(generateFactory(`string $ itemWidth     $ "128"`, 
+                           `string $ itemHeight    $ "24"`,
+                           `string $ itemSpacing   $ "4"`,
+                           `uint   $ itemFontSize $ GUIStaticText.defaultFontSize()`));
     private:
         ///Text and callback for each menu item.
         MenuItemData[] items_;
     public:
         ///Construct a GUIMenuFactory and initialize defaults.
-        this(){draw_border_ = false;}
+        this(){drawBorder_ = false;}
 
-        void add_item(in string text, void delegate() deleg)
+        void addItem(in string text, void delegate() deleg)
         {
             items_ ~= MenuItemData(text, deleg);
         }
 
         override T produce()
         {
-            return new T(gui_element_params, item_width_, 
-                         item_height_, item_spacing_, item_font_size_, items_);
+            return new T(guiElementParams, itemWidth_, 
+                         itemHeight_, itemSpacing_, itemFontSize_, items_);
         }
 }
 

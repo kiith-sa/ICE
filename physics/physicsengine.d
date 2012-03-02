@@ -7,7 +7,6 @@
 
 ///Physics engine.
 module physics.physicsengine;
-@safe
 
 
 import std.algorithm;
@@ -35,7 +34,7 @@ import util.iterable;
  * and collision volume.
  * 
  * Signal:
- *     package mixin Signal!(Statistics) send_statistics
+ *     package mixin Signal!(Statistics) sendStatistics
  *
  *     Used to send statistics data to physics monitors.
  */
@@ -45,17 +44,17 @@ final class PhysicsEngine : Monitorable
 
     invariant()
     {
-        assert(penetration_iteration_multiplier_ >= 1.0, 
+        assert(penetrationIterationMultiplier_ >= 1.0, 
                "Penetration iteration multiplier must be at least 1.0 to prevent "
                "unresolved penetrations");
-        assert(response_iteration_multiplier_ >= 1.0, 
+        assert(responseIterationMultiplier_ >= 1.0, 
                "Contact response iteration multiplier must be at least 1.0 to prevent "
                "unresolved contacts");
     }
 
     private:
         ///Spatial manager used for coarse collision detection.
-        SpatialManager!PhysicsBody spatial_manager_;
+        SpatialManager!PhysicsBody spatialManager_;
 
         ///Are we updating (running the simulation) right now?
         bool updating_;
@@ -72,7 +71,7 @@ final class PhysicsEngine : Monitorable
          * iterations, allowing us to resolve secondary penetrations caused by the 
          * first resolution.
          */
-        real penetration_iteration_multiplier_ = 2.0;
+        real penetrationIterationMultiplier_ = 2.0;
         /*
          * How many times the number of contacts to iterate collision response?
          *
@@ -80,73 +79,73 @@ final class PhysicsEngine : Monitorable
          * iterations, allowing us to resolve collision response problems caused by 
          * the first resolution.
          */
-        real response_iteration_multiplier_ = 2.0;
+        real responseIterationMultiplier_ = 2.0;
 
         ///Don't bother resolving penetrations smaller than this.
-        real acceptable_penetration = 0.1;
+        real acceptablePenetration = 0.1;
         ///Don't bother resolving velocity errors smaller than this.
-        real acceptable_velocity_error = 0.05;
+        real acceptableVelocityError = 0.05;
 
         ///Statistics data for monitoring.
         Statistics statistics_;
 
     package:
         ///Used to send statistics data to physics monitors.
-        mixin Signal!Statistics send_statistics;
+        mixin Signal!Statistics sendStatistics;
 
     public:
         /**
          * Construct the PhysicsEngine.
          *
-         * Params:  spatial_manager = Spatial manager to use for coarse collision detection.
+         * Params:  spatialManager = Spatial manager to use for coarse collision detection.
          */
-        this(SpatialManager!PhysicsBody spatial_manager)
+        this(SpatialManager!PhysicsBody spatialManager)
         {
-            singleton_ctor();
-            spatial_manager_ = spatial_manager;
+            singletonCtor();
+            spatialManager_ = spatialManager;
         }
 
         ///Destroy the PhysicsEngine.
         ~this()
         {
             //destroy any remaining bodies
-            foreach(physics_body; bodies_)
+            foreach(physicsBody; bodies_)
             {
-                physics_body.die(0);
-                physics_body.on_die_package();
+                physicsBody.die(0);
+                physicsBody.onDiePackage();
             }
-            foreach(physics_body; bodies_)
+            foreach(physicsBody; bodies_)
             {
-                physics_body.remove_from_spatial(spatial_manager_);
-                clear(physics_body);
+                physicsBody.removeFromSpatial(spatialManager_);
+                clear(physicsBody);
             }
             clear(bodies_);
-            send_statistics.disconnect_all();
-            singleton_dtor();
+            sendStatistics.disconnectAll();
+            singletonDtor();
         }
 
         /**
          * Run the physics simulation of a single frame.
          *
-         * Params:  time_step    = Time length of the update in seconds.
+         * Params:  timeStep    = Time length of the update in seconds.
          */
-        void update(in real time_step)
+        void update(const real timeStep)
         {
             updating_ = true;
 
             //update all bodies' states
-            foreach(physics_body; bodies_)
+            foreach(physicsBody; bodies_)
             {
-                physics_body.update_package(time_step, spatial_manager_);
+                physicsBody.updatePackage(timeStep, spatialManager_);
             }
 
             //handle collisions
-            detect_contacts();
-            resolve_penetrations();
-            collision_response();
+            detectContacts();
+            resolvePenetrations();
+            collisionResponse();
 
             statistics_.contacts = cast(uint)contacts_.length;
-            send_statistics.emit(statistics_);
+            sendStatistics.emit(statistics_);
             statistics_.zero();
 
             //clear contacts
@@ -159,107 +158,106 @@ final class PhysicsEngine : Monitorable
          *
          * Must not be called during an update.
          *
-         * Params:  physics_body = Body to add.
+         * Params:  physicsBody = Body to add.
          */
-        void add_body(PhysicsBody physics_body)
+        void addBody(PhysicsBody physicsBody)
         in
         {
-            assert(!canFind!"a is b"(bodies_, physics_body),
+            assert(!canFind!"a is b"(bodies_, physicsBody),
                    "Adding the same physics body twice");
             assert(!updating_, "Can't add new physics bodies during a physics update");
         }
         body
         {
             statistics_.bodies++;
-            if(physics_body.volume !is null)
+            if(physicsBody.volume !is null)
             {
-                statistics_.col_bodies++;
-                physics_body.add_to_spatial(spatial_manager_);
+                statistics_.colBodies++;
+                physicsBody.addToSpatial(spatialManager_);
             }
 
-            bodies_ ~= physics_body;
+            bodies_ ~= physicsBody;
         }
 
-        ///Call on_die() of all bodies dead at specified update and remove them.
-        void collect_dead(size_t update_index)
+        ///Call onDie() of all bodies dead at specified update and remove them.
+        void collectDead(const size_t updateIndex)
         {
-            foreach(physics_body; bodies_) if(physics_body.dead(update_index))
+            foreach(physicsBody; bodies_) if(physicsBody.dead(updateIndex))
             {
-                physics_body.on_die_package();
+                physicsBody.onDiePackage();
             }
 
             auto l = 0;
-            for(size_t body_from = 0; body_from < bodies_.length; ++body_from)
+            for(size_t bodyFrom = 0; bodyFrom < bodies_.length; ++bodyFrom)
             {
-                auto physics_body = bodies_[body_from];
-                if(physics_body.dead(update_index))
+                auto physicsBody = bodies_[bodyFrom];
+                if(physicsBody.dead(updateIndex))
                 {
                     statistics_.bodies--;
-                    if(physics_body.volume !is null)
+                    if(physicsBody.volume !is null)
                     {
-                        statistics_.col_bodies--;
-                        physics_body.remove_from_spatial(spatial_manager_);
+                        statistics_.colBodies--;
+                        physicsBody.removeFromSpatial(spatialManager_);
                     }
-                    .clear(physics_body);
+                    .clear(physicsBody);
                     continue;
                 }
-                bodies_[l] = physics_body;
+                bodies_[l] = physicsBody;
                 ++l;
             } 
             bodies_.length = l;
         }
 
-
-        @property MonitorDataInterface monitor_data()
+        @property MonitorDataInterface monitorData()
         {
             SubMonitor function(PhysicsEngine)[string] ctors_;
-            ctors_["Contacts"] = &new_graph_monitor!(PhysicsEngine, Statistics, 
+            ctors_["Contacts"] = &newGraphMonitor!(PhysicsEngine, Statistics, 
                                                      "contacts", "penetration", "response");
 
-            ctors_["Bodies"] = &new_graph_monitor!(PhysicsEngine, Statistics, 
-                                                   "bodies", "col_bodies"),
-            ctors_["Coarse"] = &new_graph_monitor!(PhysicsEngine, Statistics, "tests");
+            ctors_["Bodies"] = &newGraphMonitor!(PhysicsEngine, Statistics, 
+                                                   "bodies", "colBodies"),
+            ctors_["Coarse"] = &newGraphMonitor!(PhysicsEngine, Statistics, "tests");
             return new MonitorData!PhysicsEngine(this, ctors_);
         }
 
     private:
         ///Detect collisions between bodies.
-        void detect_contacts()
+        void detectContacts()
         {
-            Contact current_contact;
+            Contact currentContact;
             //use spatial manager for coarse collision detection
-            foreach(bodies; spatial_manager_.iterable)
+            foreach(bodies; spatialManager_.iterable)
             {
                 //we only need to check a subrange of bodies_
                 //since we'd get the same pairs of objects checked anyway
-                foreach(a, body_a; bodies) foreach(b; a + 1 .. bodies.length)
+                foreach(a, bodyA; bodies) foreach(b; a + 1 .. bodies.length)
                 {
                     statistics_.tests++;
                     //fine collision detection
-                    if(detect_contact(body_a, bodies[b], current_contact))
+                    if(detectContact(bodyA, bodies[b], currentContact))
                     {
-                        contacts_ ~= current_contact;
+                        contacts_ ~= currentContact;
                     }
                 }
             }
         }
 
         ///Resolve interpenetrations between bodies.
-        void resolve_penetrations()
+        void resolvePenetrations()
         {
             //number of iterations to process - penetration resolution might introduce
             //more penetrations so we need to have more iterations than contacts
 
             const iterations = cast(uint)(contacts_.length * 
-                                          penetration_iteration_multiplier_);
+                                          penetrationIterationMultiplier_);
 
             //contact we're currently resolving
             Contact contact;
 
-            //position change of body_a of current contact after resolution
-            Vector2f change_a;
-            //position change of body_b of current contact after resolution
-            Vector2f change_b;
+            //position change of bodyA of current contact after resolution
+            Vector2f changeA;
+            //position change of bodyB of current contact after resolution
+            Vector2f changeB;
 
             //resolve penetrations from greatest to smallest
             foreach(iteration; 0 .. iterations)
@@ -274,32 +272,32 @@ final class PhysicsEngine : Monitorable
                                   (contacts_)[0];
 
                 //ignore insignificant penetrations
-                if(contact.penetration < acceptable_penetration){break;}
+                if(contact.penetration < acceptablePenetration){break;}
 
-                contact.resolve_penetration(change_a, change_b);
+                contact.resolvePenetration(changeA, changeB);
 
                 //adjust other contacts where adjusted bodies are involved
-                foreach(ref contact_b; contacts_) with(contact_b)
+                foreach(ref contactB; contacts_) with(contactB)
                 {
-                    float adjust_a(){return change_a.dot_product(contact_normal);}
-                    float adjust_b(){return change_b.dot_product(contact_normal);}
+                    float adjustA(){return changeA.dotProduct(contactNormal);}
+                    float adjustB(){return changeB.dotProduct(contactNormal);}
 
-                    if(body_a is contact.body_a)     {penetration += adjust_a();}
-                    else if(body_a is contact.body_b){penetration += adjust_b();}
-                    if(body_b is contact.body_a)     {penetration -= adjust_a();}
-                    else if(body_b is contact.body_b){penetration -= adjust_b();}
+                    if(bodyA is contact.bodyA)     {penetration += adjustA();}
+                    else if(bodyA is contact.bodyB){penetration += adjustB();}
+                    if(bodyB is contact.bodyA)     {penetration -= adjustA();}
+                    else if(bodyB is contact.bodyB){penetration -= adjustB();}
                 }
             }
         }
 
         ///Process collision responses.
-        void collision_response()
+        void collisionResponse()
         {
             //number of iterations to process - collision response
             //might introduce more errors so we need to have more
             //iterations than contacts
             const iterations = cast(size_t)(contacts_.length * 
-                                            response_iteration_multiplier_);
+                                            responseIterationMultiplier_);
 
             Contact contact;
 
@@ -310,13 +308,13 @@ final class PhysicsEngine : Monitorable
                 statistics_.response++;
                 //get the contact with maximum desired delta velocity
                 contact = minPos!((ref Contact a, ref Contact b)
-                                  {return a.desired_delta_velocity > b.desired_delta_velocity;})
+                                  {return a.desiredDeltaVelocity > b.desiredDeltaVelocity;})
                                   (contacts_)[0];
 
                 //ignore insignificant errors
-                if(contact.desired_delta_velocity < acceptable_velocity_error){break;}
+                if(contact.desiredDeltaVelocity < acceptableVelocityError){break;}
 
-                contact.collision_response();
+                contact.collisionResponse();
 
                 //don't need to adjust parameters of other contacts involving bodies from
                 //currently resolved contact as these parameters are computed on demand

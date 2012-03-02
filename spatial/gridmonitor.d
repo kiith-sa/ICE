@@ -32,15 +32,15 @@ final package class GridMonitor(T) : SubMonitor
         GridSpatialManager!T monitored_;
 
         ///Object counts of cells in the grid.
-        Array2D!uint object_counts_;
+        Array2D!uint objectCounts_;
         ///Objects in the "outer" cell of the GridSpatialManager (objects outside the grid).
-        uint outer_object_count_;
+        uint outerObjectCount_;
 
         ///Timer used to determine when to update data from the monitored manager.
-        Timer update_timer_;
+        Timer updateTimer_;
 
         ///Size of the grid (both X and Y).
-        const uint grid_size_;
+        const uint gridSize_;
 
     public:
         /**
@@ -53,13 +53,13 @@ final package class GridMonitor(T) : SubMonitor
             super();
 
             monitored_     = monitored;
-            grid_size_     = monitored_.grid_size;
-            object_counts_ = Array2D!uint(grid_size_, grid_size_);
+            gridSize_     = monitored_.gridSize;
+            objectCounts_ = Array2D!uint(gridSize_, gridSize_);
 
-            update_timer_ = Timer(0.02);
+            updateTimer_ = Timer(0.02);
         }
 
-        ~this(){clear(object_counts_);}
+        ~this(){clear(objectCounts_);}
 
         @property override SubMonitorView view()
         {
@@ -71,33 +71,31 @@ final package class GridMonitor(T) : SubMonitor
         void update()
         {
             //Using timer to prevent updating every frame.
-            if(update_timer_.expired)
+            if(updateTimer_.expired)
             {
-                foreach(x; 0 .. grid_size_) foreach(y; 0 .. grid_size_)
+                foreach(x; 0 .. gridSize_) foreach(y; 0 .. gridSize_)
                 {
-                    object_counts_[x, y] = cast(uint)monitored_.grid_[x, y].objects.length;
+                    objectCounts_[x, y] = cast(uint)monitored_.grid_[x, y].objects.length;
                 }
-                outer_object_count_ = cast(uint)monitored_.outer_.objects.length;
-                update_timer_.reset();
+                outerObjectCount_ = cast(uint)monitored_.outer_.objects.length;
+                updateTimer_.reset();
             }
         }
 
         ///Get number of objects outside the grid.
-        @property uint outer_object_count() const {return outer_object_count_;}
+        @property uint outerObjectCount() const pure {return outerObjectCount_;}
 
         ///Get (x and y) grid size in cells.
-        @property uint grid_size() const {return grid_size_;}
+        @property uint gridSize() const pure {return gridSize_;}
 
         ///Get a pointer to the array of object counts in the grid. 
-        @property const(Array2D!uint*) object_counts() const {return &object_counts_;} 
+        @property const(Array2D!uint*) objectCounts() const pure {return &objectCounts_;} 
 }
 
 ///Grid monitor GUI view.
 final package class GridMonitorView(GridMonitor) : SubMonitorView
 {
     private:
-        alias math.vector2.to to;
-
         ///GridMonitor viewed.
         GridMonitor monitor_;
 
@@ -121,54 +119,54 @@ final package class GridMonitorView(GridMonitor) : SubMonitorView
             if(!visible_){return;}
             super.draw(driver);
 
-            const bounds = main_.bounds_global();
+            const bounds = main_.boundsGlobal();
 
             //convert bounds to float for drawing and slightly cut them to
             //prevent overdrawing border.
-            const bounds_min = to!(float)(bounds.min) + Vector2f(0.0f, 1.0f);
-            const bounds_max = to!(float)(bounds.max) + Vector2f(-1.0f, 0.0f); 
+            const boundsMin = bounds.min.to!float + Vector2f(0.0f, 1.0f);
+            const boundsMax = bounds.max.to!float + Vector2f(-1.0f, 0.0f); 
 
             //prevent drawing outside bounds.
-            driver.scissor(Rectanglei(to!(int)(bounds_min), to!(int)(bounds_max)));
+            driver.scissor(Rectanglei(boundsMin.to!int, boundsMax.to!int));
 
             //draw background.
-            driver.draw_filled_rectangle(bounds_min, bounds_max, Color.black);
+            driver.drawFilledRectangle(boundsMin, boundsMax, Color.black);
             //Color of the current cell
             Color color = Color.blue;
-            color.a = cast(ubyte)min(255u, 32 * monitor_.outer_object_count);
+            color.a = cast(ubyte)min(255u, 32 * monitor_.outerObjectCount);
 
             //draw outer.
-            driver.draw_filled_rectangle(bounds_min, bounds_max, color);
+            driver.drawFilledRectangle(boundsMin, boundsMax, color);
 
             //grid size on screen.
-            const grid_size = Vector2f(256.0f, 256.0f) * zoom_;
-            const origin = to!(float)(bounds_.center) - 0.5f * grid_size + offset_;
+            const gridSize = Vector2f(256.0f, 256.0f) * zoom_;
+            const origin = bounds_.center.to!float - 0.5f * gridSize + offset_;
 
             //draw background for the grid.
-            driver.draw_filled_rectangle(origin, origin + grid_size, Color.black);
+            driver.drawFilledRectangle(origin, origin + gridSize, Color.black);
 
-            const float cell_size = grid_size.x / monitor_.grid_size;
+            const float cellSize = gridSize.x / monitor_.gridSize;
 
             //coords of the current cell.
-            Vector2f cell_min = origin;
-            Vector2f cell_max = cell_min + Vector2f(cell_size, cell_size);
+            Vector2f cellMin = origin;
+            Vector2f cellMax = cellMin + Vector2f(cellSize, cellSize);
             //draw the grid.
-            foreach(x; 0 .. monitor_.grid_size_)
+            foreach(x; 0 .. monitor_.gridSize_)
             {
-                foreach(y; 0 .. monitor_.grid_size_)
+                foreach(y; 0 .. monitor_.gridSize_)
                 {
-                    color.a = cast(ubyte)min(255u, 32 * (*monitor_.object_counts)[x, y]); 
-                    driver.draw_filled_rectangle(cell_min, cell_max, color);
+                    color.a = cast(ubyte)min(255u, 32 * (*monitor_.objectCounts)[x, y]); 
+                    driver.drawFilledRectangle(cellMin, cellMax, color);
 
-                    cell_min.y += cell_size;
-                    cell_max.y += cell_size;
+                    cellMin.y += cellSize;
+                    cellMax.y += cellSize;
                 }
-                cell_min.y = origin.y;
-                cell_max.y = cell_min.y + cell_size;
-                cell_min.x += cell_size;
-                cell_max.x += cell_size;
+                cellMin.y = origin.y;
+                cellMax.y = cellMin.y + cellSize;
+                cellMin.x += cellSize;
+                cellMax.x += cellSize;
             }
 
-            driver.disable_scissor();
+            driver.disableScissor();
         }
 }

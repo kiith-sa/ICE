@@ -6,7 +6,6 @@
 
 ///File I/O struct.
 module file.file;
-@trusted
 
 
 import core.stdc.stdio;
@@ -66,13 +65,13 @@ struct File
         ///File contents loaded into memory in read mode: manually allocated.
         ubyte[] data_;
 
-        ///Number of used bytes in write_data_ .
-        size_t write_used_;
+        ///Number of used bytes in writeData_ .
+        size_t writeUsed_;
         ///Data to write to file: manually allocated, reallocated if not sufficient.
-        ubyte[] write_data_;
+        ubyte[] writeData_;
 
         ///Current position in the file.
-        size_t seek_position_ = 0;
+        size_t seekPosition_ = 0;
 
     public:
         /**
@@ -89,7 +88,7 @@ struct File
          * Alternatively, mod directory can be explicitly specified, like this : "mod::file.ext",
          * which will look only in that subdirectory in user, root data directories.
          * If specified explicitly, the mod directory only needs to exist in root and/or user data,
-         * it doesn't need to be registered with add_mod_directory().
+         * it doesn't need to be registered with addModDirectory().
          *
          * If the file is opened for writing or appending, the mod directory must be specified
          * and must exist in user data, and the file will be opened whether it already exists or not.
@@ -134,7 +133,7 @@ struct File
             switch(mode)
             {
                 case FileMode.Read:
-                    path_ = get_path_read(name);
+                    path_ = getPathRead(name);
                     //load file into memory
                     load();
                     break;
@@ -142,8 +141,8 @@ struct File
                     enforceEx!FileIOException 
                               (name.indexOf("::") >= 0, "Mod directory for writing and/or appending "
                                                         "not specified");
-                    path_ = get_path_write(name);
-                    write_data_ = alloc_array!ubyte(write_reserve_);
+                    path_ = getPathWrite(name);
+                    writeData_ = allocArray!ubyte(writeReserve_);
                     break;
                 default:
                     assert(false, "Unsupported file mode");
@@ -156,10 +155,10 @@ struct File
             //dummy unittest files have empty names, don't need to be written out
             if(name_ != "" && (mode_ == FileMode.Write || mode_ == FileMode.Append))
             {
-                write_out();
+                writeOut();
             }
             if(data_ !is null){free(data_);}
-            if(write_data_ !is null){free(write_data_);}
+            if(writeData_ !is null){free(writeData_);}
         }
 
         ///Access data of a loaded file (only applicable in Read mode).
@@ -194,11 +193,11 @@ struct File
         }
         body
         {
-            const read_size = clamp(cast(long)target.length, 0L, 
-                                    cast(long)data_.length - cast(long)seek_position_);
-            target[0 .. read_size] = data_[seek_position_ .. seek_position_ + read_size];
-            seek_position_ += read_size;
-            return read_size;
+            const readSize = clamp(cast(long)target.length, 0L, 
+                                    cast(long)data_.length - cast(long)seekPosition_);
+            target[0 .. readSize] = data_[seekPosition_ .. seekPosition_ + readSize];
+            seekPosition_ += readSize;
+            return readSize;
         }
 
         /**
@@ -215,24 +214,24 @@ struct File
         in
         {
             assert(mode_ != FileMode.Read, "Can't write to a file opened for reading");
-            assert(write_data_ !is null, "Trying to write to a closed file");
+            assert(writeData_ !is null, "Trying to write to a closed file");
         }
         body
         {
-            const data_bytes = cast(ubyte[])data;
-            const needed = seek_position_ + data_bytes.length;
-            const allocated = write_data_.length;
+            const dataBytes = cast(ubyte[])data;
+            const needed = seekPosition_ + dataBytes.length;
+            const allocated = writeData_.length;
 
             //reallocate if not enough space
             if(needed > allocated)
             {
-                write_data_ = realloc(write_data_, max(needed, allocated * 2));
+                writeData_ = realloc(writeData_, max(needed, allocated * 2));
             }
 
-            write_data_[seek_position_ .. needed] = data_bytes[];
-            write_used_ = max(write_used_, needed);
+            writeData_[seekPosition_ .. needed] = dataBytes[];
+            writeUsed_ = max(writeUsed_, needed);
 
-            seek_position_ += data_bytes.length;
+            seekPosition_ += dataBytes.length;
         }
         
         /**
@@ -250,14 +249,14 @@ struct File
         ulong seek(long offset, Seek origin)
         {
             //XXX this is still wrong in append mode - it must be
-            //file_size + write_used in the Seek.End mode then
+            //fileSize + writeUsed in the Seek.End mode then
             const long base = origin == Seek.Set     ? 0 :
-                              origin == Seek.Current ? seek_position_ :
-                              mode_  == FileMode.Read ? data_.length : write_used_;
+                              origin == Seek.Current ? seekPosition_ :
+                              mode_  == FileMode.Read ? data_.length : writeUsed_;
             const long position = base + offset;
             assert(position >= 0, "Can't seek before the beginning of a file");
-            seek_position_ = cast(size_t)position;
-            return seek_position_;
+            seekPosition_ = cast(size_t)position;
+            return seekPosition_;
         }
 
     private:
@@ -271,7 +270,7 @@ struct File
         {
             const size = getSize(path_);
 
-            data_ = alloc_array!ubyte(size);
+            data_ = allocArray!ubyte(size);
 
             //create a file object with allocated data_ buffer
             scope(failure){free(data_);}
@@ -284,17 +283,17 @@ struct File
                                       "Could not open file " ~ path_ ~ " for reading");
 
             //read to file
-            const blocks_read = fread(data_.ptr, size, 1u, handle);
+            const blocksRead = fread(data_.ptr, size, 1u, handle);
             fclose(handle);
 
-            enforceEx!FileIOException(blocks_read == 1, 
+            enforceEx!FileIOException(blocksRead == 1, 
                                       "Could open but could not read file: " ~ path_ ~
                                       " File might be corrupted or you might not have "
                                       "sufficient rights");
         }
 
         ///Write out the file to a physical file. Should only be called by the destructor.
-        void write_out()
+        void writeOut()
         in
         {
             assert(mode_ == FileMode.Write || mode_ == FileMode.Append, 
@@ -317,12 +316,12 @@ struct File
             //close the file at exit
             scope(exit){fclose(handle);}
             //nothing to write
-            if(write_used_ == 0){return;}
+            if(writeUsed_ == 0){return;}
 
-            const blocks_written = fwrite(write_data_.ptr, write_used_, 1, handle);
+            const blocksWritten = fwrite(writeData_.ptr, writeUsed_, 1, handle);
 
             enforceEx!FileIOException
-                      (blocks_written == 1, "Couldn't write to file " ~ path_ ~ " Maybe you " ~ 
+                      (blocksWritten == 1, "Couldn't write to file " ~ path_ ~ " Maybe you " ~ 
                                             "don't have sufficient rights");
         }
 }
@@ -335,11 +334,11 @@ package:
  * Params: file     = File struct to write to.
  *         contents = Contents of the dummy file.
  */
-void file_dummy_read(T)(out File file, T[] contents)
+void fileDummyRead(T)(out File file, T[] contents)
 {
     file.mode_ = FileMode.Read;
     const bytes = contents.length * T.sizeof;
-    file.data_ = alloc_array!ubyte(bytes);
+    file.data_ = allocArray!ubyte(bytes);
     file.data_[] = (cast(ubyte*)contents.ptr)[0 .. bytes].dup;
 }
 
@@ -348,10 +347,10 @@ void file_dummy_read(T)(out File file, T[] contents)
  *
  * Params: file = File struct to write to.
  */
-void file_dummy_write(out File file)
+void fileDummyWrite(out File file)
 {
     file.mode_ = FileMode.Write;
-    file.write_data_ = alloc_array!(ubyte)(write_reserve_);
+    file.writeData_ = allocArray!(ubyte)(writeReserve_);
 }
 
 /**
@@ -359,9 +358,9 @@ void file_dummy_write(out File file)
  *
  * Params: file = File struct to write to.
  */
-void file_dummy_append(out File file)
+void fileDummyAppend(out File file)
 {
     file.mode_ = FileMode.Append;
-    file.data_ = alloc_array!(ubyte)(0);
-    file.write_data_ = alloc_array!(ubyte)(write_reserve_);
+    file.data_ = allocArray!(ubyte)(0);
+    file.writeData_ = allocArray!(ubyte)(writeReserve_);
 }

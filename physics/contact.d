@@ -7,7 +7,6 @@
 
 ///Physics body contact struct.
 module physics.contact;
-@safe
 
 
 import std.algorithm;
@@ -21,16 +20,16 @@ struct Contact
 {
     public:
         ///First body involved in the contact.
-        PhysicsBody body_a;
+        PhysicsBody bodyA;
         ///Second body involved in the contact.
-        PhysicsBody body_b;
+        PhysicsBody bodyB;
 
         /**
          * Normal of the contact.
-         * Contact normal is the direction we must move body_b (and opposite of the
-         * direction we must move body_a) to resolve the contact.
+         * Contact normal is the direction we must move bodyB (and opposite of the
+         * direction we must move bodyA) to resolve the contact.
          */
-        Vector2f contact_normal;
+        Vector2f contactNormal;
         ///Greatest depth of interpenetration between the bodies.
         float penetration;
 
@@ -39,10 +38,10 @@ struct Contact
 
     package:
         ///Swap the bodies in the contact, and flip the direction of the contact normal.
-        void swap_bodies()
+        void swapBodies()
         {
-            contact_normal *= -1.0f;
-            swap(body_a, body_b);
+            contactNormal *= -1.0f;
+            swap(bodyA, bodyB);
         }
         
         /**
@@ -51,66 +50,66 @@ struct Contact
          * No resolution is done if both bodies have infinite mass.
          * This might change if bugs arise.
          *
-         * Params:  change_a = Vector to write position change of the first body to.
-         *          change_b = Vector to write position change of the second body to.
+         * Params:  changeA = Vector to write position change of the first body to.
+         *          changeB = Vector to write position change of the second body to.
          */
-        void resolve_penetration(out Vector2f change_a, out Vector2f change_b)
+        void resolvePenetration(out Vector2f changeA, out Vector2f changeB) pure
         in
         {
-            assert(body_a !is null && body_b !is null,
+            assert(bodyA !is null && bodyB !is null,
                    "Can't resolve penetration of a contact with one or no body");
         }
         body
         {
-            const inv_mass_a = body_a.inverse_mass;
-            const inv_mass_b = body_b.inverse_mass;
-            const inv_mass_total = inv_mass_a + inv_mass_b;
+            const invMassA = bodyA.inverseMass;
+            const invMassB = bodyB.inverseMass;
+            const invMassTotal = invMassA + invMassB;
 
             //if both inverse masses are 0 (masses are infinite),
             //don't move anything (degenerate case)
             //maybe handle this differently if bugs arise
-            if(equals(inv_mass_total, cast(const real)0.0L)){return;}
+            if(equals(invMassTotal, cast(const real)0.0L)){return;}
 
-            const move_a = penetration * (inv_mass_a / inv_mass_total) * -1.0;
-            const move_b = penetration * (inv_mass_b / inv_mass_total) * 1.0;
+            const moveA = penetration * (invMassA / invMassTotal) * -1.0;
+            const moveB = penetration * (invMassB / invMassTotal) * 1.0;
 
-            change_a = contact_normal * move_a;
-            change_b = contact_normal * move_b;
+            changeA = contactNormal * moveA;
+            changeB = contactNormal * moveB;
 
-            body_a.position = body_a.position + change_a;
-            body_b.position = body_b.position + change_b;
+            bodyA.position = bodyA.position + changeA;
+            bodyB.position = bodyB.position + changeB;
         }
 
         ///Handle collision response to the contact (e.g. bodies bouncing away).
-        void collision_response()
+        void collisionResponse()
         in
         {
-            assert(body_a !is null && body_b !is null,
+            assert(bodyA !is null && bodyB !is null,
                    "Can't process collision response of a contact with one or no body");
             assert(!resolved, "Trying to resolve collision response that was already fully resolved");
         }
         body
         {
-            body_a.collision_response_contract(this);
-            body_b.collision_response_contract(this);
+            bodyA.collisionResponseContract(this);
+            bodyB.collisionResponseContract(this);
         }
 
         ///Return desired change of velocity of the contact (total of both bodies) for collision response.
-        @property float desired_delta_velocity() const
+        @property float desiredDeltaVelocity() const pure
         {
-            return resolved ? 0.0f : 2.0 * contact_velocity;
+            return resolved ? 0.0f : 2.0 * contactVelocity;
         }
 
         ///Return sum of inverse masses of bodies involved in this contact.
-        @property real inverse_mass_total() const 
+        @property real inverseMassTotal() const pure
         {
-            return body_a.inverse_mass + body_b.inverse_mass;
+            return bodyA.inverseMass + bodyB.inverseMass;
         }
 
     private:
         ///Return total velocity of the contact (both bodies) in the direction of contact normal.
-        @property float contact_velocity() const
+        @property float contactVelocity() const pure
         {
-            return contact_normal.dot_product(body_a.velocity - body_b.velocity);
+            return contactNormal.dotProduct(bodyA.velocity - bodyB.velocity);
         }
 }        

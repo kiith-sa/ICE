@@ -17,7 +17,6 @@ Authors: Lode Vandevenne (original version in C++), Lutger Blijdestijn (D versio
 
 ///PNG decoder.
 module formats.pngdecoder;
-@system
 
 
 import core.bitop;
@@ -54,23 +53,23 @@ struct PNGDecoder
          * Throws:  PNGException on decoding error.
          *          CompressionException on PNG data decompression error.
          */
-        ubyte[] decode(in ubyte[] source, out PNGInfo info)
+        ubyte[] decode(const ubyte[] source, out PNGInfo info)
         {
             ubyte interlace;
-            info = PNGInfo(read_header(source, interlace));
+            info = PNGInfo(readHeader(source, interlace));
             info.interlace = interlace;
 
-            const expected_length = info.interlace 
-                                    ? buffer_size(info.image) + info.image.height * 2
-                                    : buffer_size(info.image) + info.image.height;
+            const expectedLength = info.interlace 
+                                   ? bufferSize(info.image) + info.image.height * 2
+                                   : bufferSize(info.image) + info.image.height;
 
 
             Vector!ubyte buffer;
-            buffer.reserve(expected_length);
+            buffer.reserve(expectedLength);
 
             auto inflator = Inflator(buffer);
 
-            foreach(chunk; new PNGChunkIterator(source[header_size - 1 .. $]))
+            foreach(chunk; new PNGChunkIterator(source[headerSize - 1 .. $]))
             {
                 switch(chunk.type)
                 {
@@ -83,41 +82,41 @@ struct PNGDecoder
                         enforceEx!PNGException(chunk.data.length <= 256 * 3, 
                                                "Palette with over 256 colors");
                         info.palette.length = chunk.data.length / 3;
-                        uint byte_idx = 0;
+                        uint byteIdx = 0;
                         foreach(ref color; info.palette)
                         {
-                            color = Color(chunk.data[byte_idx++],
-                                          chunk.data[byte_idx++], 
-                                          chunk.data[byte_idx++],
+                            color = Color(chunk.data[byteIdx++],
+                                          chunk.data[byteIdx++], 
+                                          chunk.data[byteIdx++],
                                           255);
                         }
                         break;
                     //color key or palette transparency
                     case tRNS:
                         if(chunk.data.length == 0){break;}
-                        info.color_key = true;
-                        if(info.image.color_type == PNGColorType.Palette)
+                        info.colorKey = true;
+                        if(info.image.colorType == PNGColorType.Palette)
                         {
                             enforceEx!PNGException(chunk.data.length <= info.palette.length, 
                                                    "Palette too large");
                             foreach(index, alpha; chunk.data){info.palette[index].a = alpha;}
                         }
-                        else if(info.image.color_type == PNGColorType.RGB)
+                        else if(info.image.colorType == PNGColorType.RGB)
                         {
-                            info.color_key_r = cast(ushort)(256U * chunk.data[0] + chunk.data[1]);
-                            info.color_key_g = cast(ushort)(256U * chunk.data[2] + chunk.data[3]);
-                            info.color_key_b = cast(ushort)(256U * chunk.data[4] + chunk.data[5]);
+                            info.colorKeyR = cast(ushort)(256U * chunk.data[0] + chunk.data[1]);
+                            info.colorKeyG = cast(ushort)(256U * chunk.data[2] + chunk.data[3]);
+                            info.colorKeyB = cast(ushort)(256U * chunk.data[4] + chunk.data[5]);
                         }
-                        else if(info.image.color_type == PNGColorType.Greyscale)
+                        else if(info.image.colorType == PNGColorType.Greyscale)
                         {
-                            info.color_key_r = cast(ushort)(256U * chunk.data[0] + chunk.data[1]);
+                            info.colorKeyR = cast(ushort)(256U * chunk.data[0] + chunk.data[1]);
                         }
                         else{assert(false, "Transparency chunk not supported for this format");}
                         break;
                     //background color
                     case bKGD:
-                        if(info.image.color_type == PNGColorType.Palette || 
-                           info.image.bit_depth == 16)
+                        if(info.image.colorType == PNGColorType.Palette || 
+                           info.image.bitDepth == 16)
                         {
                             info.background = chunk.data.dup;
                         }
@@ -147,7 +146,7 @@ struct PNGDecoder
                                 info.text.latin[cast(immutable ubyte[])
                                                 chunk.data[0 .. sep]] = 
                                                 cast(immutable ubyte[]) 
-                                                zlib_inflate(chunk.data[sep + 2 .. $]);
+                                                zlibInflate(chunk.data[sep + 2 .. $]);
                             }
                         }
                         break;
@@ -176,7 +175,7 @@ struct PNGDecoder
                         else
                         {
                             info.text.unicode[keyword] = 
-                                             cast(string)zlib_inflate(chunk.data[sep + 1 .. $]);
+                                             cast(string)zlibInflate(chunk.data[sep + 1 .. $]);
                         }
                         break;
                     default:
@@ -190,7 +189,7 @@ struct PNGDecoder
             if(info.interlace != 0){deinterlace(buffer, info.image);}
             else{reconstruct(buffer, info.image);}
 
-            ubyte[] output = alloc_array!(ubyte)(cast(uint)buffer.length);
+            ubyte[] output = allocArray!ubyte(cast(uint)buffer.length);
             output[] = buffer[];
 
             return output;
@@ -199,7 +198,7 @@ struct PNGDecoder
 
 private:
 ///Size of a PNG header.
-immutable uint header_size = 34;
+immutable uint headerSize = 34;
 
 /**
  * Parse a PNG header.
@@ -211,33 +210,33 @@ immutable uint header_size = 34;
  *
  * Throws:  PNGException if the header is invalid.
  */
-PNGImage read_header(in ubyte[] source, out ubyte interlace)
+PNGImage readHeader(const ubyte[] source, out ubyte interlace)
 {
     //spec: http://www.w3.org/TR/PNG/#11IHDR
 
-    enforceEx!PNGException(source.length >= header_size, "PNG header too small");
-    enforceEx!PNGException(source[0 .. 8] == png_magic_number, 
+    enforceEx!PNGException(source.length >= headerSize, "PNG header too small");
+    enforceEx!PNGException(source[0 .. 8] == pngMagicNumber, 
                            "Invalid PNG header (PNG magic number does not match)");
-    enforceEx!PNGException(get_uint(source[12 .. 16]) == IHDR, 
+    enforceEx!PNGException(getUint(source[12 .. 16]) == IHDR, 
                            "Invalid PNG header (Header name does not match)");
-    enforceEx!PNGException(zlib_check_crc(get_uint(source[29 .. 33]), source[12 .. 29]), 
+    enforceEx!PNGException(zlibCheckCRC(getUint(source[29 .. 33]), source[12 .. 29]), 
                            "Invalid PNG CRC (file might be corrupted?)");
 
-    const uint width      = get_uint(source[16 .. 20]);
-    const uint height     = get_uint(source[20 .. 24]);
-    const ubyte bit_depth = source[24];
-    const color_type = cast(PNGColorType) source[25];
+    const uint width      = getUint(source[16 .. 20]);
+    const uint height     = getUint(source[20 .. 24]);
+    const ubyte bitDepth = source[24];
+    const colorType = cast(PNGColorType) source[25];
     enforceEx!PNGException(source[26] == 0, 
                            "Unsupported compression method in PNG header");
     enforceEx!PNGException(source[27] == 0, 
                            "Unsupported filter method in PNG header");
-    enforceEx!PNGException(validate_color(color_type, bit_depth), 
+    enforceEx!PNGException(validateColor(colorType, bitDepth), 
                            "Invalid color format in PNG header");
     interlace = source[28];
     enforceEx!PNGException(interlace < 2, 
                            "Invalid  interlace method in PNG header");
-    const ubyte bpp = cast(ubyte)(num_channels(color_type) * bit_depth);
-    return PNGImage(width, height, bit_depth, color_type);
+    const ubyte bpp = cast(ubyte)(numChannels(colorType) * bitDepth);
+    return PNGImage(width, height, bitDepth, colorType);
 }
 
 /**
@@ -247,7 +246,7 @@ PNGImage read_header(in ubyte[] source, out ubyte interlace)
  *
  * Returns: Estimated buffer size. Not exact.
  */
-uint buffer_size(in PNGImage image) pure
+uint bufferSize(const PNGImage image) pure
 {
     return ((image.width * image.bpp + 7) / 8) * image.height;
 }
@@ -261,16 +260,16 @@ class PNGChunkIterator
 
     public:
         ///Construct a PNGChunkIterator over specified stream (without header).
-        this(in ubyte[] stream){stream_ = stream;}
+        this(const ubyte[] stream){stream_ = stream;}
 
         ///Iterate over chunks. Chunks will be destroyed after their respective iterations.
         int opApply(int delegate(ref PNGChunk chunk) visitor)
         {
             int result = 0;
             uint pos = 0;
-            while(pos + chunk_min_size <= stream_.length)
+            while(pos + chunkMinSize <= stream_.length)
             {
-                PNGChunk chunk = PNGChunk.from_stream(stream_[pos .. $]);
+                PNGChunk chunk = PNGChunk.fromStream(stream_[pos .. $]);
                 if(chunk.type == IEND){break;}
                 result = visitor(chunk);
                 if(result){return result;}
@@ -283,38 +282,38 @@ class PNGChunkIterator
 /**
  * Unapply a filter on a line of image data.
  *
- * Params:  result      = Filtered result will be written here.
- *          line        = Current line in the image. Must not overlap with result.
- *          previous    = Previous, already filtered, line in the image. 
- *                        Must not overlap with result.
- *          pixel_bytes = Pixel size in bytes (1 if actual pixel size is below 1 byte).
- *          filter      = Filter to unapply.
+ * Params:  result     = Filtered result will be written here.
+ *          line       = Current line in the image. Must not overlap with result.
+ *          previous   = Previous, already filtered, line in the image. 
+ *                       Must not overlap with result.
+ *          pixelBytes = Pixel size in bytes (1 if actual pixel size is below 1 byte).
+ *          filter     = Filter to unapply.
  */
-void unfilter_line(ubyte[] result, in ubyte[] line, in ubyte[] previous, 
-                   uint pixel_bytes, in PNGFilter filter)
+void unfilterLine(ubyte[] result, const ubyte[] line, const ubyte[] previous, 
+                  uint pixelBytes, const PNGFilter filter) pure
 {
     switch(filter)
     {
         case PNGFilter.Paeth:
             result[0 .. line.length] = line;
             //first pixel
-            result[0 .. pixel_bytes] += previous[0 .. pixel_bytes];
+            result[0 .. pixelBytes] += previous[0 .. pixelBytes];
 
             //i is current pixel in this and previous line
             //o is previous pixel in this and previous line
-            for(uint i = pixel_bytes, o = 0; i < line.length; i++, o++)
+            for(uint i = pixelBytes, o = 0; i < line.length; i++, o++)
             {
-                result[i] += paeth_predictor(result[o], previous[i], previous[o]);
+                result[i] += paethPredictor(result[o], previous[i], previous[o]);
             }
             break;
         case PNGFilter.Average:
             result[0 .. line.length] = line[];
             //first pixel
-            foreach(i; 0 .. pixel_bytes){result[i] += previous[i] / 2;}
+            foreach(i; 0 .. pixelBytes){result[i] += previous[i] / 2;}
             //rest of the line
-            foreach(i; pixel_bytes .. line.length)
+            foreach(i; pixelBytes .. line.length)
             {
-                result[i] += (result[i - pixel_bytes] + previous[i]) / 2;
+                result[i] += (result[i - pixelBytes] + previous[i]) / 2;
             }
             break;
         case PNGFilter.Up:
@@ -322,11 +321,11 @@ void unfilter_line(ubyte[] result, in ubyte[] line, in ubyte[] previous,
             break;
         case PNGFilter.Sub:
             //first pixel
-            result[0 .. pixel_bytes] = line[0 .. pixel_bytes];
+            result[0 .. pixelBytes] = line[0 .. pixelBytes];
             //rest of the line
-            foreach(i; pixel_bytes .. line.length)
+            foreach(i; pixelBytes .. line.length)
             {
-                result[i] = cast(ubyte)(line[i] + result[i - pixel_bytes]);
+                result[i] = cast(ubyte)(line[i] + result[i - pixelBytes]);
             }
             break;
         case PNGFilter.None:
@@ -344,12 +343,12 @@ void unfilter_line(ubyte[] result, in ubyte[] line, in ubyte[] previous,
  *                   will be written here.
  *          image  = Image information.
  */
-void deinterlace(ref Vector!(ubyte) buffer, in PNGImage image)
+void deinterlace(ref Vector!(ubyte) buffer, const PNGImage image) 
 {
     //result buffer
     Vector!ubyte result;
     result.reserve(8);
-    result.length = buffer_size(image);
+    result.length = bufferSize(image);
 
     /**
      * Perform an adam7 deinterlacing pass.
@@ -362,45 +361,45 @@ void deinterlace(ref Vector!(ubyte) buffer, in PNGImage image)
      *                   horizontally or vertically.
      *          dim    = Dimensions of interlaced data.
      */
-    void adam7_pass(in ubyte[] source, in Vector2u start, in Vector2u dist, in Vector2u dim)
+    void adam7Pass(const ubyte[] source, const Vector2u start, const Vector2u dist, const Vector2u dim) 
     {
-        const uint pixel_bytes = (image.bpp + 7) / 8; // pixel_bytes is used for filtering
+        const uint pixelBytes = (image.bpp + 7) / 8; // pixelBytes is used for filtering
         //previous line
-        ubyte[] previous = new ubyte[image.width * pixel_bytes];
+        ubyte[] previous = new ubyte[image.width * pixelBytes];
         //current line
-        ubyte[] line     = new ubyte[image.width * pixel_bytes];
+        ubyte[] line     = new ubyte[image.width * pixelBytes];
 
-        ///Place pixels from the current line to result. line_idx is index of the current line.
-        void place_pixels(in uint line_idx)
+        ///Place pixels from the current line to result. lineIdx is index of the current line.
+        void placePixels(const uint lineIdx)
         {
             //ineffective, but relatively readable
             //pixels of the line
             foreach(px; 0 .. dim.x)
             {
                 //pixel offset in result without pixel size applied
-                const uint offset = image.width * (start.y + dist.y * line_idx) 
+                const uint offset = image.width * (start.y + dist.y * lineIdx) 
                                     + start.x + dist.x * px;
                 //working with bytes
                 if(image.bpp >= 8)
                 {
                     //offset of this pixel in result
-                    const uint r = pixel_bytes * offset;
+                    const uint r = pixelBytes * offset;
                     //offset of this pixel in line
-                    const uint l = pixel_bytes * px;
-                    result[r .. r + pixel_bytes] = line[l .. l + pixel_bytes];
+                    const uint l = pixelBytes * px;
+                    result[r .. r + pixelBytes] = line[l .. l + pixelBytes];
                 }
                 //untested, might not work
                 //working with bits
                 else
                 {
                     //offset of this pixel in bits, not bytes, in result
-                    const uint px_start = image.bpp * offset;
-                    const uint px_end = image.bpp * (offset + 1);
+                    const uint pxStart = image.bpp * offset;
+                    const uint pxEnd = image.bpp * (offset + 1);
                     //offset of this pixel in bits, not bytes, in line
-                    uint px_start_line = image.bpp * px;
+                    uint pxStartLine = image.bpp * px;
                     
                     //bits in the pixel - r in result, b in line
-                    for(uint r = px_start, l = px_start_line; r < px_end; r++, l++)
+                    for(uint r = pxStart, l = pxStartLine; r < pxEnd; r++, l++)
                     {
                         //bit position in result - 0 is the LSB, 7 is MSB of a byte
                         const uint rbitpos = 7 - (r & 0x7);
@@ -409,66 +408,66 @@ void deinterlace(ref Vector!(ubyte) buffer, in PNGImage image)
                         //bit value
                         const uint _bit = (line[l / 8] >> lbitpos) & 1;
                         //index of this byte in result
-                        const uint byte_idx = r / 8;
+                        const uint byteIdx = r / 8;
                         //set the bit
-                        result[byte_idx] = cast(ubyte)((result[byte_idx] & ~(1 << rbitpos)) 
+                        result[byteIdx] = cast(ubyte)((result[byteIdx] & ~(1 << rbitpos)) 
                                                       | (_bit << rbitpos));
                     }
                 }
             }
         }
 
-        const uint line_length = 1 + ((image.bpp * dim.x + 7) / 8);
+        const uint lineLength = 1 + ((image.bpp * dim.x + 7) / 8);
         //previous line to the first line is a zero line
         previous[] = 0;
-        foreach(line_idx; 0 .. dim.y)
+        foreach(lineIdx; 0 .. dim.y)
         {
-            const uint line_start = line_idx * line_length;
-            const PNGFilter filter = cast(PNGFilter)source[line_start];
-            const ubyte[] source_line = source[line_start + 1 .. line_start + line_length];
+            const uint lineStart = lineIdx * lineLength;
+            const PNGFilter filter = cast(PNGFilter)source[lineStart];
+            const ubyte[] sourceLine = source[lineStart + 1 .. lineStart + lineLength];
 
-            unfilter_line(line, source_line, previous, pixel_bytes, filter);
-            place_pixels(line_idx);
+            unfilterLine(line, sourceLine, previous, pixelBytes, filter);
+            placePixels(lineIdx);
             swap(line, previous);
         }
     }
 
     //dimensions of data for each pass
-    const Vector2u[7] pass_dim = [Vector2u((image.width + 7) / 8, (image.height + 7) / 8),
-                                  Vector2u((image.width + 3) / 8, (image.height + 7) / 8),
-                                  Vector2u((image.width + 3) / 4, (image.height + 3) / 8),
-                                  Vector2u((image.width + 1) / 4, (image.height + 3) / 4),
-                                  Vector2u((image.width + 1) / 2, (image.height + 1) / 4),
-                                  Vector2u((image.width + 0) / 2, (image.height + 1) / 2),
-                                  Vector2u((image.width + 0) / 1, (image.height + 0) / 2)];
+    const Vector2u[7] passDim = [Vector2u((image.width + 7) / 8, (image.height + 7) / 8),
+                                 Vector2u((image.width + 3) / 8, (image.height + 7) / 8),
+                                 Vector2u((image.width + 3) / 4, (image.height + 3) / 8),
+                                 Vector2u((image.width + 1) / 4, (image.height + 3) / 4),
+                                 Vector2u((image.width + 1) / 2, (image.height + 1) / 4),
+                                 Vector2u((image.width + 0) / 2, (image.height + 1) / 2),
+                                 Vector2u((image.width + 0) / 1, (image.height + 0) / 2)];
 
     //starting pixel for each pass
-    static immutable Vector2u[7] pass_start = [Vector2u(0, 0),
-                                               Vector2u(4, 0),
-                                               Vector2u(0, 4),
-                                               Vector2u(2, 0),
-                                               Vector2u(0, 2),
-                                               Vector2u(1, 0),
-                                               Vector2u(0, 1)];
+    static immutable Vector2u[7] passStart = [Vector2u(0, 0),
+                                              Vector2u(4, 0),
+                                              Vector2u(0, 4),
+                                              Vector2u(2, 0),
+                                              Vector2u(0, 2),
+                                              Vector2u(1, 0),
+                                              Vector2u(0, 1)];
                     
     //distance between deinterlaced pixels for each pass
-    static immutable Vector2u[7] pass_dist = [Vector2u(8, 8),
-                                              Vector2u(8, 8),
-                                              Vector2u(4, 8),
-                                              Vector2u(4, 4),
-                                              Vector2u(2, 4),
-                                              Vector2u(2, 2),
-                                              Vector2u(1, 2)]; 
+    static immutable Vector2u[7] passDist = [Vector2u(8, 8),
+                                             Vector2u(8, 8),
+                                             Vector2u(4, 8),
+                                             Vector2u(4, 4),
+                                             Vector2u(2, 4),
+                                             Vector2u(2, 2),
+                                             Vector2u(1, 2)]; 
 
     //adam7 passes. offset is start of the pass in source
     for(uint p = 0, offset = 0; p < 7; p++)
     {
         //empty pass
-        if(pass_dim[p].y * pass_dim[p].x == 0){continue;}
+        if(passDim[p].y * passDim[p].x == 0){continue;}
 
-        adam7_pass(buffer[offset .. buffer.length], pass_start[p], pass_dist[p], pass_dim[p]);
+        adam7Pass(buffer[offset .. buffer.length], passStart[p], passDist[p], passDim[p]);
 
-        offset += (pass_dim[p].y * (1 + (pass_dim[p].x * image.bpp + 7) / 8));
+        offset += (passDim[p].y * (1 + (passDim[p].x * image.bpp + 7) / 8));
     }
 
     buffer = result;
@@ -485,32 +484,32 @@ void deinterlace(ref Vector!(ubyte) buffer, in PNGImage image)
  *                   This might be done in place.
  *          image  = Information about the image.
  */
-void reconstruct(ref Vector!ubyte buffer, in PNGImage image)
+void reconstruct(ref Vector!ubyte buffer, const PNGImage image)
 {
     //we can work with the array directly as we do this in place
-    ubyte[] data = buffer.ptr_unsafe[0 .. buffer.length];
+    ubyte[] data = buffer.ptrUnsafe[0 .. buffer.length];
 
-    const uint pixel_bytes = (image.bpp + 7) / 8;
+    const uint pixelBytes = (image.bpp + 7) / 8;
     //bits are tightly packed, but lines are always padded to 1 byte boundaries
-    const uint line_length = ((image.width * image.bpp) + 7) / 8;
-    enforceEx!PNGException(data.length >= (line_length + 1) * image.height, "Invalid size of source data");
+    const uint lineLength = ((image.width * image.bpp) + 7) / 8;
+    enforceEx!PNGException(data.length >= (lineLength + 1) * image.height, "Invalid size of source data");
 
-    ubyte[] previous = new ubyte[line_length];
+    ubyte[] previous = new ubyte[lineLength];
     previous[] = 0;
-    ubyte[] line = new ubyte[line_length];
+    ubyte[] line = new ubyte[lineLength];
 
     //working with bytes, iterating over lines
-    if(image.bpp >= 8) for(uint l = 0, line_start = 0; l < image.height; ++l)
+    if(image.bpp >= 8) for(uint l = 0, lineStart = 0; l < image.height; ++l)
     {
         //line is preceded by a byte specifying filter used
-        const auto filter = cast(PNGFilter)data[line_start];
-        //copy from data to line to avoid sending overlapping arrays to unfilter_line
-        line[] = data[line_start + 1 .. line_start + 1 + line_length];
-        //line_start - 1 :in output, lines are packed together, we get rid of the filter bit
-        unfilter_line(data[line_start - l .. $], line, previous, pixel_bytes, filter);
-        previous = data[line_start - l .. $]; 
+        const auto filter = cast(PNGFilter)data[lineStart];
+        //copy from data to line to avoid sending overlapping arrays to unfilterLine
+        line[] = data[lineStart + 1 .. lineStart + 1 + lineLength];
+        //lineStart - 1 :in output, lines are packed together, we get rid of the filter bit
+        unfilterLine(data[lineStart - l .. $], line, previous, pixelBytes, filter);
+        previous = data[lineStart - l .. $]; 
         //go to start of next line
-        line_start += 1 + line_length;
+        lineStart += 1 + lineLength;
     }
     //untested, might not work
     //working with bits
@@ -519,16 +518,16 @@ void reconstruct(ref Vector!ubyte buffer, in PNGImage image)
         //index if bit (not byte) in output
         uint obit = 0;
         //temp line
-        ubyte[] temp = new ubyte[line_length];
+        ubyte[] temp = new ubyte[lineLength];
 
         //iterating over lines
-        for(uint l = 0, line_start = 0; l < image.height; ++l)
+        for(uint l = 0, lineStart = 0; l < image.height; ++l)
         {
             //line is preceded by a byte specifying filter used
-            const auto filter = cast(PNGFilter)data[line_start];
-            //copy from data to line to avoid sending overlapping arrays to unfilter_line
-            line[] = data[line_start + 1 .. line_start + 1 + line_length];
-            unfilter_line(temp, line, previous, pixel_bytes, filter);
+            const auto filter = cast(PNGFilter)data[lineStart];
+            //copy from data to line to avoid sending overlapping arrays to unfilterLine
+            line[] = data[lineStart + 1 .. lineStart + 1 + lineLength];
+            unfilterLine(temp, line, previous, pixelBytes, filter);
 
             //tbit is bit in temp line
             foreach(tbit; 0 .. image.width * image.bpp)
@@ -540,17 +539,17 @@ void reconstruct(ref Vector!ubyte buffer, in PNGImage image)
                 //bit value
                 const uint _bit = (temp[tbit / 8] >> tbitpos) & 1;
                 //index of this byte in output
-                const uint byte_idx = obit / 8;
+                const uint byteIdx = obit / 8;
                 //set the bit
-                data[byte_idx] = cast(ubyte)((data[byte_idx] & ~(1 << obitpos)) 
+                data[byteIdx] = cast(ubyte)((data[byteIdx] & ~(1 << obitpos)) 
                                                | (_bit << obitpos));
                 obit++;
             }
 
-            previous = data[line_start - l .. $]; 
+            previous = data[lineStart - l .. $]; 
             //go to start of next line
-            line_start += 1 + line_length;
+            lineStart += 1 + lineLength;
         }
     }
-    buffer.length = buffer_size(image); 
+    buffer.length = bufferSize(image); 
 }

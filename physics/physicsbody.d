@@ -7,7 +7,6 @@
 
 ///Base class for physics bodies.
 module physics.physicsbody;
-@safe
 
 
 import std.algorithm;
@@ -28,21 +27,21 @@ class PhysicsBody
         const Volume volume_;
 
         ///Position during previous update in world space, used for spatial management.
-        Vector2f position_old_;
+        Vector2f positionOld_;
         ///Position in world space.
         Vector2f position_;
         ///Velocity in world space.
         Vector2f velocity_;
 
         ///Inverse mass of this body. (0 means infinite mass)
-        real inverse_mass_;
+        real inverseMass_;
 
         //we could use a set here, if this is too slow
         ///Bodies we've collided with this frame.
         PhysicsBody[] colliders_;
 
         ///Index of update when the body is dead (to be removed).
-        size_t dead_at_update_ = size_t.max;
+        size_t deadAtUpdate_ = size_t.max;
 
     public:
         /**
@@ -55,10 +54,10 @@ class PhysicsBody
          *            mass     = Mass of the body. Can be infinite (immovable object).
          *                       Can't be zero or negative.
          */
-        this(in Volume volume, in Vector2f position, in Vector2f velocity, in real mass)
+        this(const Volume volume, const Vector2f position, const Vector2f velocity, const real mass)
         {
             volume_       = volume;
-            position_old_ = position_ = position;
+            positionOld_ = position_ = position;
             velocity_     = velocity;
             this.mass     = mass;
         }
@@ -67,70 +66,70 @@ class PhysicsBody
          * Destroy the body at the end of specified update.
          *
          * This can be used to destroy the body at the current update by passing
-         * current update_index from the SceneManager.
+         * current updateIndex from the SceneManager.
          * 
          * Note that the body will not be destroyed immediately -
-         * At the end of update, all dead bodies' on_die() methods are called 
+         * At the end of update, all dead bodies' onDie() methods are called 
          * first, and then the bodies are destroyed.
          *
-         * Params: update_index  = Update to destroy the body at.
+         * Params: updateIndex  = Update to destroy the body at.
          */
-        final void die(size_t update_index)
+        final void die(const size_t updateIndex) pure
         {
-            dead_at_update_ = update_index;
+            deadAtUpdate_ = updateIndex;
         }
 
         ///Get position of the body, in world space.
-        @property final Vector2f position() const {return position_;}
+        @property final Vector2f position() const pure {return position_;}
 
         ///Set position of the body, in world space.
-        @property final void position(in Vector2f p){position_ = p;}
+        @property final void position(const Vector2f p)pure {position_ = p;}
 
         ///Get velocity of the body, in world space.
-        @property final Vector2f velocity() const {return velocity_;}
+        @property final Vector2f velocity() const pure {return velocity_;}
 
         ///Set velocity of the body, in world space.
-        @property final void velocity(in Vector2f v){velocity_ = v;}
+        @property final void velocity(const Vector2f v) pure {velocity_ = v;}
 
         ///Set mass of the body. Mass must be positive and can be infinite.
-        @property final void mass(in real mass)
+        @property final void mass(const real mass) pure
         in{assert(mass >= 0.0, "Can't set physics body mass to zero or negative.");}
         body
         {
-            inverse_mass_ = (mass == real.infinity) ? 0.0 : 1.0 / mass;
+            inverseMass_ = (mass == real.infinity) ? 0.0 : 1.0 / mass;
         }
 
         ///Get inverse mass of the body.
-        @property final real inverse_mass() const {return inverse_mass_;}
+        @property final real inverseMass() const pure {return inverseMass_;}
 
         ///Get a reference to collision volume of this body.
-        @property final const(Volume) volume() const {return volume_;}
+        @property final const(Volume) volume() const pure {return volume_;}
 
         ///Return an array of bodies this body has collided with during last update.
-        @property PhysicsBody[] colliders(){return colliders_;} 
+        @property PhysicsBody[] colliders() pure {return colliders_;} 
 
         ///Has the body collided with anything during the last update?
-        @property bool collided() const {return colliders_.length > 0;}
+        @property bool collided() const pure {return colliders_.length > 0;}
 
     protected:
         /**
          * Update physics state of the body.
          *
-         * Params:  time_step = Time length of the update in seconds.
+         * Params:  timeStep = Time length of the update in seconds.
          *          spatial   = Spatial manager managing the body.
          */
-        void update(in real time_step, SpatialManager!PhysicsBody spatial)
+        void update(const real timeStep, SpatialManager!PhysicsBody spatial)
         {
-            assert(time_step >= 0.0, "Can't update a physics body with negative time step");
+            assert(timeStep >= 0.0, "Can't update a physics body with negative time step");
 
-            position_ += velocity_ * time_step;
+            position_ += velocity_ * timeStep;
             colliders_.length = 0; 
             //spatial manager does not manage bodies without volumes.
-            if(position_ != position_old_ && volume_ !is null)
+            if(position_ != positionOld_ && volume_ !is null)
             {
-                spatial.update_object(this, position_old_);
+                spatial.updateObject(this, positionOld_);
             }
-            position_old_ = position_;
+            positionOld_ = position_;
         }
 
         /**
@@ -138,14 +137,14 @@ class PhysicsBody
          *
          * Params:  contact = Contact to respond to. Must involve this body.
          */
-        void collision_response(ref Contact contact)
+        void collisionResponse(ref Contact contact)
         {
-            if(equals(inverse_mass_, 0.0L)){return;}
-            if(equals(contact.inverse_mass_total, 0.0L)){return;}
-            Vector2f scaled_normal = contact.contact_normal * contact.desired_delta_velocity;
-            Vector2f change = scaled_normal * (inverse_mass_ / contact.inverse_mass_total);
+            if(equals(inverseMass_, 0.0L)){return;}
+            if(equals(contact.inverseMassTotal, 0.0L)){return;}
+            Vector2f scaledNormal = contact.contactNormal * contact.desiredDeltaVelocity;
+            Vector2f change = scaledNormal * (inverseMass_ / contact.inverseMassTotal);
             if(change.length < 0.00001){change.zero();}
-            if(this is contact.body_a){velocity_ -= change;}
+            if(this is contact.bodyA){velocity_ -= change;}
             else{velocity_ += change;}
         }
 
@@ -155,45 +154,45 @@ class PhysicsBody
          * This is used to handle any game logic that needs to happen when a 
          * body dies.
          */
-        void on_die(){};
+        void onDie(){};
 
     package:
         ///Is the actor dead at specified update?
-        @property final bool dead (in size_t update_index) const
+        @property final bool dead (const size_t updateIndex) const pure
         {
-            return update_index >= dead_at_update_;
+            return updateIndex >= deadAtUpdate_;
         }
 
         /**
          * Used by PhysicsEngine to update the body.
          *
-         * Params:  time_step = Time length of the update in seconds.
+         * Params:  timeStep = Time length of the update in seconds.
          *          spatial   = Spatial manager managing the body.
          */
-        final void update_package(in real time_step, SpatialManager!PhysicsBody spatial)
+        final void updatePackage(const real timeStep, SpatialManager!PhysicsBody spatial)
         {
-            update(time_step, spatial);
+            update(timeStep, spatial);
         }
 
-        ///Used by PhysicsEngine to call on_die() of the body.
-        final void on_die_package(){on_die();}
+        ///Used by PhysicsEngine to call onDie() of the body.
+        final void onDiePackage(){onDie();}
 
         /**
-         * Enforces contract on all (even inherited) implementations of collision_response
+         * Enforces contract on all (even inherited) implementations of collisionResponse
          * and registers bodies this body has collided with.
          */
-        final void collision_response_contract(ref Contact contact)
+        final void collisionResponseContract(ref Contact contact)
         in
         {
-            assert(contact.body_a is this || contact.body_b is this,
+            assert(contact.bodyA is this || contact.bodyB is this,
                    "Trying to resolve collision with a contact that doesn't involve this body");
         }
         body
         {
-            auto other = this is contact.body_a ? contact.body_b : contact.body_a;
+            auto other = this is contact.bodyA ? contact.bodyB : contact.bodyA;
             //add this collider if we don't have it yet
             if(!canFind!"a is b"(colliders_, other)){colliders_ ~= other;}
-            collision_response(contact);
+            collisionResponse(contact);
         }
 
         /**
@@ -201,10 +200,10 @@ class PhysicsBody
          *
          * Params:  spatial = Spatial manager to add to.
          */
-        void add_to_spatial(SpatialManager!PhysicsBody spatial)
+        void addToSpatial(SpatialManager!PhysicsBody spatial)
         {
-            position_old_ = position_;
-            spatial.add_object(this);
+            positionOld_ = position_;
+            spatial.addObject(this);
         }
 
         /**
@@ -212,8 +211,8 @@ class PhysicsBody
          *
          * Params:  spatial = Spatial manager to remove from.
          */
-        void remove_from_spatial(SpatialManager!PhysicsBody spatial)
+        void removeFromSpatial(SpatialManager!PhysicsBody spatial)
         {
-            spatial.remove_object(this);
+            spatial.removeObject(this);
         }
 }

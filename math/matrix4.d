@@ -7,7 +7,6 @@
 
 ///4x4 matrix struct.
 module math.matrix4;
-@safe
 
 
 import std.math;
@@ -30,10 +29,10 @@ struct Matrix4(T)
 
     public:
         ///Get a pointer to matrix data. Useful for passing to OpenGL functions.
-        @property T* ptr(){return m_.ptr;}
+        @property T* ptr() pure {return m_.ptr;}
 
         ///Multiplication with a matrix.
-        Matrix4!T opMul(const ref Matrix4!T m) const
+        Matrix4!T opMul(const ref Matrix4!T m) const pure
         {
             Matrix4!T r;
 
@@ -65,7 +64,7 @@ struct Matrix4(T)
  *
  * Returns: Resulting translation matrix.
  */
-Matrix4!T translation_matrix(T)(in Vector2!T translate)
+Matrix4!T translationMatrix(T)(const Vector2!T translate)
 {
     Matrix4!T result;
     result.m_[12] = translate.x;
@@ -85,8 +84,8 @@ Matrix4!T translation_matrix(T)(in Vector2!T translate)
  *
  * Returns: Resulting projection matrix.
  */
-Matrix4!T ortho_matrix(T)(in T left, in T right, in T bottom, 
-                          in T top, in T near, in T far)
+Matrix4!T orthoMatrix(T)(const T left, const T right, const T bottom, 
+                         const T top, const T near, const T far) pure
 {
     Matrix4!T result;
     const T width = right - left;
