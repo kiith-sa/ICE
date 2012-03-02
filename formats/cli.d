@@ -543,7 +543,7 @@ class CLI
                 }
                 else
                 {
-                    write(ljustify(left, left_width));
+                    write(leftJustify(left, left_width));
                     write(wrap!string(option.help_, line_width_, null, indent));
                 }
                 if(option.default_args_.length > 0)

@@ -27,7 +27,6 @@ private alias file.file.File File;
 
 
 public:
-    //TODO Find other ways to simplify memory.d api, and see other TODOs (such as GC.addRange()).
     /**
      * Allocate space for and optionally initialize a primitive value or struct.
      *
@@ -150,7 +149,6 @@ private:
     ///Currently allocated memory, in bytes.
     ulong currently_allocated_ = 0;
 
-    ///48 bytes on 64-bit, 40 bytes on 32-bit
     /**
      * Struct holding information about a memory allocation.
      *

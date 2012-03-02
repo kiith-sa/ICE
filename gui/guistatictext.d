@@ -11,6 +11,7 @@ module gui.guistatictext;
 
 
 import std.algorithm;
+import std.ascii;
 import std.string;
 
 import gui.guielement;
@@ -90,7 +91,7 @@ class GUIStaticText : GUIElement
         @property void text(in string text)
         {
             if(text == text_){return;}
-            text_ = expandtabs(text);
+            text_ = detab(text);
             aligned_ = false;
         }
 
@@ -114,7 +115,7 @@ class GUIStaticText : GUIElement
         {
             super(params);
 
-            text_ = expandtabs(text);
+            text_ = detab(text);
 
             font_color_ = text_color;
             font_size_  = font_size;
@@ -184,7 +185,7 @@ class GUIStaticText : GUIElement
                 //get leading space
                 foreach(i, dchar c; text)
                 {
-                    if(!iswhite(c)){break;}
+                    if(!isWhite(c)){break;}
                     //break at newline
                     else if(c == '\n')
                     {
@@ -196,7 +197,7 @@ class GUIStaticText : GUIElement
                 //get the word
                 foreach(dchar c; text[end .. $])
                 {
-                    if(iswhite(c)){break;}
+                    if(isWhite(c)){break;}
                     //break at newline
                     else if(c == '\n')
                     {
@@ -249,7 +250,7 @@ class GUIStaticText : GUIElement
                                            
             lines_ ~= line;
             //strip leading space so the next line doesn't start with space
-            return stripl(text);
+            return stripLeft(text);
         }
         
         ///Align lines verically.

@@ -85,7 +85,7 @@ package final class Font
          *
          * Throws:  FontException if the font could not be loaded.
          */
-        this(FT_Library freetype_lib, ref Vector!(ubyte) font_data, in string name, 
+        this(FT_Library freetype_lib, ubyte[] font_data, in string name, 
              in uint size, in uint fast_glyphs, in bool antialiasing)
         {
             scope(failure){writefln("Could not load font " ~ name);}
@@ -97,7 +97,7 @@ package final class Font
             antialiasing_ = antialiasing;
 
             FT_Open_Args args;
-            args.memory_base = font_data.ptr_unsafe;
+            args.memory_base = font_data.ptr;
             args.memory_size = font_data.length;
             args.flags       = FT_OPEN_MEMORY;
             args.driver      = null;

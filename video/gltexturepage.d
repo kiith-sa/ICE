@@ -14,7 +14,6 @@ import std.conv;
 
 import derelict.opengl.gl;
 
-import video.gltexturepage;
 import video.binarytexturepacker;
 import math.math;
 import math.vector2;

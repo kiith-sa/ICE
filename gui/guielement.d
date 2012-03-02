@@ -147,7 +147,7 @@ class GUIElement
          *
          * Params:  params = Parameters for construction of the GUIElement.
          */
-        this(in GUIElementParams params)
+        this(const GUIElementParams params)
         {
             with(params)
             {
@@ -538,3 +538,4 @@ immutable struct GUIElementParams
         ///Draw border of the GUI element?
         bool draw_border;
 }
+

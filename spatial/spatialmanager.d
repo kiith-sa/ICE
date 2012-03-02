@@ -9,7 +9,6 @@
 module spatial.spatialmanager;
 @safe
 
-
 import monitor.monitorable;
 import math.vector2;
 import math.rectangle;

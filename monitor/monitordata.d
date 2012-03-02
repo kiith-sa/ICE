@@ -35,7 +35,6 @@ interface MonitorDataInterface
     SubMonitor get_monitor(in string name);
 }
 
-
 //needs better naming
 ///MonitorData implementation providing access to submonitors of monitorable of specified type.
 final class MonitorData(M) : MonitorDataInterface

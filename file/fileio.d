@@ -13,6 +13,7 @@ module file.fileio;
 import core.stdc.stdio;
 
 import std.algorithm;
+import std.ascii : lowercase, digits;
 import std.exception;
 import std.file;
 import std.string;

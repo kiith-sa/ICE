@@ -124,7 +124,7 @@ abstract class ParticleEmitter : ParticleSystem
 
             game_time_ = manager.game_time;
 
-            bool expired(ref Particle p){return p.timer.expired(manager.game_time);};
+            bool expired(ref Particle p){return p.timer.expired(manager.game_time);}
             //remove expired particles
             particles_.remove(&expired);
                               

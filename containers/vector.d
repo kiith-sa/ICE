@@ -33,11 +33,8 @@ import memory.memory;
 align(4) struct Vector(T)
 {
     private:
-        static enum T[] dummy_data_ = [];
-        //using dummy array for default initialization as we can't redefine
-        //default ctor
         ///Manually allocated data storage. More storage than used can be allocated.
-        T[] data_ = dummy_data_;
+        T[] data_ = null;
         ///Used storage (number of items in the vector).
         size_t used_ = 0;
 
@@ -58,10 +55,10 @@ align(4) struct Vector(T)
         ///Destroy the vector.
         ~this()
         {
-            if(data_ !is dummy_data_ && data_ !is null)
+            if(data_ !is null)
             {
                 free(data_);
-                data_ = dummy_data_;
+                data_ = null;
             }
         }
 
@@ -145,18 +142,28 @@ align(4) struct Vector(T)
          * Assign another vector to the vector. This will destroy any
          * data owned by this vector and copy data to this vector.
          *
-         * Params:  array = Array to assign.
+         * Params:  v = Vector to assign.
          */
         void opAssign(ref Vector v)
         {
-            auto array = v.data_[0 .. v.used_];
+            opAssign(v.data_[0 .. v.used_]);
+        }
+
+        /**
+         * Assign an array to the vector. This will destroy any
+         * data owned by this vector and copy data to this vector.
+         *
+         * Params:  array = Array to assign.
+         */
+        void opAssign(T[] array)
+        {
             reserve(array.length);
             static if(hasElaborateDestructor!T) if(array.length < data_.length) 
             {
                 foreach(ref elem; data_[array.length .. $]){clear(elem);}
             }
             data_[0 .. array.length] = array;
-            used_ = array.length;
+            used_ = array.length; 
         }
 
         /**
@@ -353,18 +360,19 @@ align(4) struct Vector(T)
                 }
                 return;
             }
-            data_ = (data_ != []) ? realloc(data_, length) 
-                                  : alloc_array!T(length);
+            data_ = (data_ !is null) ? realloc(data_, length) 
+                                     : alloc_array!T(length);
         }
 
         ///Reserve space for at least specified number of elements.
         void reserve(in size_t elements)
         {
-            //awkward control flow due to optimization. we realloc if elements > data_.length
+            //Awkward control flow due to optimization. 
+            //We realloc if elements > data_.length .
             if(elements <= data_.length){return;}
 
-            data_ = (data_ !is dummy_data_) ? realloc(data_, elements) 
-                                            : alloc_array!T(elements);
+            data_ = (data_ !is null) ? realloc(data_, elements) 
+                                     : alloc_array!T(elements);
         }
 
         ///Get currently allocated capacity.

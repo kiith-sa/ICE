@@ -143,7 +143,7 @@ final class FontManager
 
         ///Buffers storing font file data indexed by file names.
         //Vector!(ubyte)[string] font_files_; //can't use this due to compiler bug
-        alias Tuple!(string, "name", Vector!ubyte, "data") FontData;
+        alias Tuple!(string, "name", ubyte[], "data") FontData;
         FontData[] font_files_;
         
         ///Fallback font name.
@@ -254,7 +254,7 @@ final class FontManager
         {
             writeln("Destroying FontManager");
             foreach(ref font; fonts_){clear(font);}
-            foreach(ref pair; font_files_){clear(pair.data);}
+            foreach(ref pair; font_files_){free(pair.data);}
             clear(fonts_);
             clear(font_files_);
             FT_Done_FreeType(freetype_lib_);
@@ -326,15 +326,11 @@ final class FontManager
                 return;
             }
 
-
-            //TODO Get rid of Vector or improve it to be usable here
-            // (according to std.container.Array) 
-            // - either use refcounting or disable copying/assignment
             File file = File("fonts/" ~ name, FileMode.Read);
             auto bytes = cast(ubyte[])file.data;
-            font_files_ ~= FontData(name, Vector!ubyte());
-            clear(font_files_[$ - 1].data);
-            font_files_[$ - 1].data = Vector!ubyte(bytes);
+            font_files_ ~= FontData(name, cast(ubyte[])null);
+            font_files_[$ - 1].data = alloc_array!ubyte(bytes.length);
+            font_files_[$ - 1].data[] = bytes[];
         }
 
         /**
@@ -399,7 +395,7 @@ final class FontManager
         }
 
         ///Get data of font with specified name.
-        ref Vector!ubyte get_font(string name)
+        ubyte[] get_font(string name)
         {
             foreach(ref pair; font_files_) if(name == pair.name)
             {

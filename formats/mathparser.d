@@ -12,6 +12,7 @@ module formats.mathparser;
 
 import std.algorithm;
 import std.array;
+import std.ascii;
 import std.conv;                  
 import std.exception;
 import std.functional;
@@ -138,7 +139,7 @@ private:
         foreach(dchar c; expression)
         {
             //ignore spaces
-            if(iswhite(c)){continue;}
+            if(isWhite(c)){continue;}
             //not an operator
             if(!operators.canFind(c)){output ~= c;}
             //operator

@@ -15,7 +15,6 @@ import std.typecons;
 
 import util.stringctfe;
 
-
 /**
  * Generates data members and setters used in factory classes.
  *
@@ -40,12 +39,13 @@ string generate_factory(string[] parameter_strings ...)
 {
     alias Tuple!(string, "type", string, "name", string, "def_value") Parameter;
 
-    Parameter[] params;
-    foreach(param; parameter_strings)
+    //Preallocating because appending here causes a compiler error.
+    Parameter[] params = new Parameter[parameter_strings.length];
+    foreach(i, param; parameter_strings)
     { 
         string[] p = param.split("$");
         assert(p.length == 3, "Malformed parameter to generate factory code: " ~ param);
-        params ~= Parameter(p[0].strip_ctfe(), p[1].strip_ctfe(), p[2].strip_ctfe());
+        params[i] = Parameter(p[0].strip_ctfe(), p[1].strip_ctfe(), p[2].strip_ctfe());
     }
 
     string data, setters;
@@ -70,3 +70,4 @@ unittest
     assert(expected == generate_factory("string $ a $ \"default\"", "int $ b $ 42"),
            "Unexpected factory code generated");
 }
+

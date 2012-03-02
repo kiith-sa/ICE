@@ -9,7 +9,6 @@
 module monitor.submonitor;
 @safe
 
-
 import monitor.monitormanager;
 import gui.guielement;
 import gui.guimenu;

@@ -20,7 +20,6 @@ import spatial.volumecircle;
 import math.vector2;
 import math.rectangle;
 
-
 package:
 /**
  * Test for collision between two bodies.
