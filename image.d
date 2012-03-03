@@ -16,7 +16,6 @@ import color;
 import memory.memory;
 
 
-//will be an RAII struct in D2
 //could be optimized by adding a pitch data member (bytes per row)    
 ///Image object capable of storing images in various color formats.
 struct Image
