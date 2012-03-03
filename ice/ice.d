@@ -79,6 +79,8 @@ class IceGUI
         GUIMenu menu_;
         ///Credits screen (null unless shown).
         Credits credits_;
+        ///Platform for keyboard I/O.
+        Platform platform_;
 
     public:
         ///Emitted when the player clicks the button to start the game.
@@ -95,12 +97,14 @@ class IceGUI
         /**
          * Construct IceGUI with specified parameters.
          *
-         * Params:  parent  = GUI element to use as parent for all pong GUI elements.
-         *          monitor = Monitor subsystem, used to initialize monitor GUI view.
+         * Params:  parent   = GUI element to use as parent for all pong GUI elements.
+         *          monitor  = Monitor subsystem, used to initialize monitor GUI view.
+         *          platform = Platform for keyboard I/O.
          */
-        this(GUIElement parent, MonitorManager monitor)
+        this(GUIElement parent, MonitorManager monitor, Platform platform)
         {
-            parent_ = parent;
+            parent_   = parent;
+            platform_ = platform;
 
             with(new MonitorViewFactory(monitor))
             {
@@ -178,12 +182,14 @@ class IceGUI
             menuHide();
             credits_ = new Credits(parent_);
             credits_.closed.connect(&creditsHide);
+            platform_.key.connect(&credits_.keyHandler);
             creditsStart.emit();
         }
 
         ///Hide credits screen (and show main menu).
         void creditsHide()
         {
+            platform_.key.disconnect(&credits_.keyHandler);
             clear(credits_);
             credits_ = null;
             menuShow();
@@ -270,7 +276,7 @@ class Ice
             guiRoot_ = new GUIRoot(platform_);
 
             scope(failure){clear(gui_);}
-            gui_ = new IceGUI(guiRoot_.root, monitor_);
+            gui_ = new IceGUI(guiRoot_.root, monitor_, platform_);
             gui_.creditsStart.connect(&creditsStart);
             gui_.creditsEnd.connect(&creditsEnd);
             gui_.gameStart.connect(&gameStart);
@@ -393,10 +399,16 @@ class Ice
         }
 
         ///Show credits screen.
-        void creditsStart(){platform_.key.disconnect(&keyHandler);}
+        void creditsStart()
+        {
+            platform_.key.disconnect(&keyHandler);
+        }
 
         ///Hide (destroy) credits screen.
-        void creditsEnd(){platform_.key.connect(&keyHandler);}
+        void creditsEnd()
+        {
+            platform_.key.connect(&keyHandler);
+        }
 
         ///Exit Pong.
         void exit(){continue_ = false;}

@@ -11,6 +11,7 @@ module ice.credits;
 import gui.guielement;
 import gui.guibutton;
 import gui.guistatictext;
+import platform.platform;
 import util.signal;
 
 
@@ -86,5 +87,14 @@ class Credits
         {
             container_.die();
             closed.disconnectAll();
+        }
+
+        ///Key handler for the credits screen (so we can exit with Esc).
+        void keyHandler(KeyState state, Key key, dchar unicode)
+        {
+            if(state == KeyState.Pressed && key == Key.Escape)
+            {
+                closed.emit();
+            }
         }
 }
