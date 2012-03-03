@@ -164,7 +164,7 @@ final class GraphData
 
                     //guess the first value based on time resolution.
                     const real age = start - startTime;
-                    const size_t valueIdx = clamp(floorS32(age / timeResolution_),
+                    const size_t valueIdx = clamp(floor!int(age / timeResolution_),
                                                    0 , cast(int)values_.length - 1);
 
                     const(Value)* valuesStart = values_.ptrUnsafe;
@@ -208,7 +208,7 @@ final class GraphData
                     //iterate over values and aggregate data points
                     for(; value < valuesEnd; value++)
                     {
-                        index = floorS32((value.time - start) / period);
+                        index = floor!int((value.time - start) / period);
                         if(index >= numPoints){return;}
                         *(pointsPtr + index) += value.value;
                     }
@@ -244,7 +244,7 @@ final class GraphData
                     const(Value)* value = valuesStart + firstValueIndex(start); 
                     for(; value < valuesEnd; value++)
                     {
-                        index = floorS32((value.time - start) / period);
+                        index = floor!int((value.time - start) / period);
                         if(index >= numPoints){break;}
                         *(pointsPtr + index) += value.value;
                         *(valueCountsStart + index) += value.valueCount;

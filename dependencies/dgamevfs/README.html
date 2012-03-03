@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.7: http://docutils.sourceforge.net/" />
+<title>D:GameVFS 0.1</title>
+<style type="text/css">
+
+/*
+:Author: David Goodger (goodger@python.org)
+:Id: $Id: html4css1.css 6253 2010-03-02 00:24:53Z milde $
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+
+See http://docutils.sf.net/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+*/
+
+/* used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0 }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 ! important }
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin: 0 0 0.5em 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+img.align-left, .figure.align-left, object.align-left {
+  clear: left ;
+  float: left ;
+  margin-right: 1em }
+
+img.align-right, .figure.align-right, object.align-right {
+  clear: right ;
+  float: right ;
+  margin-left: 1em }
+
+img.align-center, .figure.align-center, object.align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.align-left {
+  text-align: left }
+
+.align-center {
+  clear: both ;
+  text-align: center }
+
+.align-right {
+  text-align: right }
+
+/* reset inner alignment in figures */
+div.align-right {
+  text-align: left }
+
+/* div.align-center * { */
+/*   text-align: left } */
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font: inherit }
+
+pre.literal-block, pre.doctest-block {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid 1px gray;
+  margin-left: 1px }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid 1px black;
+  margin-left: 1px }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+</head>
+<body>
+<div class="document" id="d-gamevfs-0-1">
+<h1 class="title">D:GameVFS 0.1</h1>
+
+<div class="section" id="introduction">
+<h1>Introduction</h1>
+<p>D:GameVFS is a minimalist open source virtual file system library for the
+D programming language oriented at game developers.</p>
+<p>Provided functionality is very basic - files and directories can be created,
+read and written, but not deleted. There are no security features - e.g.
+D:GameVFS can't handle a situation when a file it's working with is deleted
+outside the program. Only files in a physical file system are supported at the
+moment. There is no archive support right now.</p>
+<p>D:GameVFS is a work in progress and its API is not stable. There might be
+compatibility breaking changes in future versions.</p>
+</div>
+<div class="section" id="features">
+<h1>Features</h1>
+<ul class="simple">
+<li>File system independent, easy to use API for file/directory manipulation.</li>
+<li>Detailed API documentation with code examples.</li>
+<li>No external dependencies.</li>
+<li>Seamless access to multiple directories as if they were a single directory.</li>
+<li>Easy to extend with custom file system backend.</li>
+<li>There is no support for ZIP or similar archive formats at the moment.</li>
+<li>There is no support for deleting files/directories, and none is planned.</li>
+<li>There are no security features and none are planned.</li>
+</ul>
+</div>
+<div class="section" id="directory-structure">
+<h1>Directory structure</h1>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="83%" />
+</colgroup>
+<thead valign="bottom">
+<tr><th class="head">Directory</th>
+<th class="head">Contents</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr><td><tt class="docutils literal">./</tt></td>
+<td>This README file, utility scripts.</td>
+</tr>
+<tr><td><tt class="docutils literal">./doc</tt></td>
+<td>Documentation.</td>
+</tr>
+<tr><td><tt class="docutils literal">./dgamevfs</tt></td>
+<td>Source code.</td>
+</tr>
+<tr><td><tt class="docutils literal">./examples</tt></td>
+<td>Code examples.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="getting-started">
+<h1>Getting started</h1>
+<div class="section" id="install-the-dmd-compiler">
+<h2>Install the DMD compiler</h2>
+<p>Digital Mars D compiler, or DMD, is the most commonly used D compiler. You can
+find its newest version <a class="reference external" href="http://dlang.org/download.html">here</a>.
+Download the version of DMD for your operating system and install it.</p>
+<div class="note">
+<p class="first admonition-title">Note</p>
+<p class="last">Other D compilers exist, such as
+<a class="reference external" href="http://bitbucket.org/goshawk/gdc/wiki/Home">GDC</a> and
+<a class="reference external" href="http://www.dsource.org/projects/ldc/">LDC</a>. Setting up with either one of
+them should be similar to DMD, but they are not yet as stable.</p>
+</div>
+</div>
+<div class="section" id="download-and-compile-d-gamevfs">
+<h2>Download and compile D:GameVFS</h2>
+<p>The newest version of D:GameVFS can be found at
+<a class="reference external" href="https://github.com/Kiith-Sa/D-GameVFS">GitHub</a>. Download a source archive,
+extract it, and move to the extracted directory.</p>
+<p>D:GameVFS uses a modified version of the
+<a class="reference external" href="http://dsource.org/projects/cdc/">CDC</a> script for compilation. To compile
+D:GameVFS, you first need to build CDC. Do this by typing the following command
+into the console:</p>
+<pre class="literal-block">
+dmd cdc.d
+</pre>
+<p>Now compile D:GameVFS with CDC.
+To do this on Unix/Linux, use the following command:</p>
+<pre class="literal-block">
+./cdc
+</pre>
+<p>On Windows:</p>
+<pre class="literal-block">
+cdc.exe
+</pre>
+<p>This will compile the library to a file called <tt class="docutils literal">libdgamevfs.a</tt> on Unix/Linux
+or <tt class="docutils literal">libdgamevfs.lib</tt> on Windows.</p>
+</div>
+<div class="section" id="simple-d-gamevfs-project">
+<h2>Simple D:GameVFS project</h2>
+<p>Create a directory for your project. To have something for D:GameVFS to work
+with, create directories <tt class="docutils literal">main_data</tt> and <tt class="docutils literal">user_data</tt> in the project
+directory. In these directories, create some random files or subdirectories.
+Create a file called <tt class="docutils literal">main.d</tt> in your project directory. Paste the following
+code into the file:</p>
+<pre class="literal-block">
+import std.stdio;
+import std.typecons;
+import dgamevfs._;
+
+void main()
+{
+    //Two filesystem directories, one read-only and the other read-write.
+    auto main = new FSDir(&quot;main&quot;, &quot;main_data/&quot;, No.writable);
+    auto user = new FSDir(&quot;user&quot;, &quot;user_data/&quot;, Yes.writable);
+
+    //Stack directory where &quot;user&quot; overrides &quot;main&quot;.
+    auto stack = new StackDir(&quot;root&quot;);
+    stack.mount(main);
+    stack.mount(user);
+
+    //Iterate over all files recursively, printing their VFS paths.
+    foreach(file; stack.files(Yes.deep))
+    {
+        writeln(file.path);
+    }
+
+    VFSFile file = stack.file(&quot;new_file.txt&quot;);
+    //Creates &quot;new_file&quot; in &quot;user&quot; (which is on top of &quot;main&quot; in the stack).
+    file.output.write(cast(const void[])&quot;Hello World!&quot;);
+
+    //Read what we've written.
+    auto buffer = new char[file.bytes];
+    file.input.read(cast(void[]) buffer);
+
+    writeln(buffer);
+}
+</pre>
+<p>Code for this example can be found in the <tt class="docutils literal">examples/getting_started</tt>
+directory.</p>
+<p>See the API documentation in the <tt class="docutils literal">doc/html/</tt> directory (in particular, the
+<em>dgamevfs.vfs</em> module) for more code examples.</p>
+</div>
+<div class="section" id="explanation-of-the-code">
+<h2>Explanation of the code</h2>
+<p>We start by importing <em>dgamevfs._</em> which imports all needed D:GameVFS modules.
+D:GameVFS uses the <em>Flag</em> template instead of booleans for more descriptive
+parameters (such as <tt class="docutils literal">Yes.writable</tt> instead of <tt class="docutils literal">true</tt>). You need to import
+<em>std.typecons</em> to use <em>Flag</em>.</p>
+<p>We create two <em>FSDirs</em> - physical file system directory objects, which will be
+called <tt class="docutils literal">main</tt> and <tt class="docutils literal">user</tt> in the VFS and will represent the <tt class="docutils literal">main_data</tt> and
+<tt class="docutils literal">user_data</tt> directories which we've created in our project directory.
+We construct <tt class="docutils literal">main</tt> as a non-writable directory - it's read-only for the VFS.</p>
+<p>Next, we create a <em>StackDir</em> and <em>mount()</em> our directories to it. <em>StackDir</em>
+works with mounted directories as if they were a single directory - for
+instance, reading <tt class="docutils literal">file.txt</tt> from the StackDir, will first try to read
+<tt class="docutils literal">user_data/file.txt</tt>, and if that file does not exist, <tt class="docutils literal">main_data/file.txt</tt>.
+Files in directories mounted later take precedence over those mounted earlier.</p>
+<p><em>StackDir</em> makes it possible, for example, to have a main game directory with
+common files and a mod directory overriding some of those files.</p>
+<p>Then we iterate over all files in the <em>StackDir</em> recursively (using the
+<tt class="docutils literal">Yes.deep</tt> argument) - including files in subdirectories. Path of each file
+in the VFS is printed. You should see in the output that the files' paths
+specify <tt class="docutils literal">stack</tt> as their parent since <tt class="docutils literal">main</tt> and <tt class="docutils literal">user</tt> are mounted to
+<tt class="docutils literal">stack</tt>. (Note that the paths will refer to <tt class="docutils literal">stack</tt> as parent even if
+iterating over <tt class="docutils literal">main</tt> and <tt class="docutils literal">user</tt> - as those are now mounted to <tt class="docutils literal">stack</tt>.)</p>
+<p>Then we get a <em>VFSFile</em> - D:GameVFS file object - from the <tt class="docutils literal">stack</tt> directory.
+This file does not exist yet (unless you created it). It will be created when
+we write to it.</p>
+<p>To obtain writing access, we get the <em>VFSFileOutput</em> struct using the
+<em>VFSFile.output()</em> method. <em>VFSFileOutput</em> provides basic output functionality.
+It uses reference counting to automatically close the file when you are done
+with it. Since we just want to write some simple text, we call its <em>write()</em>
+method directly. <em>VFSFileOutput.write()</em> writes a raw buffer of data to the
+file, similarly to <em>fwrite()</em> from the C standard library.</p>
+<p>Note that we're working on a file from a <em>StackDir</em>. <em>StackDir</em> decides where to
+actually write the data. In our case, the newest mounted directory is <tt class="docutils literal">user</tt>,
+which is also writable, so the data is written to <tt class="docutils literal">user_data/new_file.txt</tt>.</p>
+<p>In the end, we read the data back using the <em>VFSFileInput</em> class - input
+equivalent of <em>VFSFileOutput</em> - which we get with the <em>VFSFile.input()</em> method.
+We read with the <em>VFSFileInput.read()</em> method, which reads data to provided
+buffer, up to the buffer length. We determine how large buffer we need to read
+the entire file with the <em>VFSFile.bytes()</em> method. The buffer might also be
+larger than the file - <em>read()</em> reads as much data as available and returns the
+part of the buffer containing the read data.</p>
+</div>
+<div class="section" id="compiling">
+<h2>Compiling</h2>
+<p>To compile your project, DMD needs to know the directories containing the
+imported modules and the library. The import directory should be the D:GameVFS
+package directory. You can specify it using the <tt class="docutils literal"><span class="pre">-I</span></tt> option of DMD. The
+library directory should point to the compiled D:GameVFS library. On Unix/Linux
+you can specify it using the <tt class="docutils literal"><span class="pre">-L-L</span></tt> option, and link with D:GameVFS using the
+<tt class="docutils literal"><span class="pre">-L-l</span></tt> option. On Windows, the import directory is used as the library
+directory. To link with the library on Windows, just add the path to it relative
+to the current directory.</p>
+<p>For example, if you extracted D:GameVFS in <tt class="docutils literal">/home/xxx/dgamevfs</tt>, your project
+is in <tt class="docutils literal"><span class="pre">/home/xxx/dgamevfs-project</span></tt>, and you are currently in that directory,
+compile the project with the following command on Unix/Linux:</p>
+<pre class="literal-block">
+dmd -I../dgamevfs -L-L../dgamevfs -L-ldgamevfs main.d
+</pre>
+<p>And the following on Windows:</p>
+<pre class="literal-block">
+dmd -I../dgamevfs ../dgamevfs/libdgamevfs.lib main.d
+</pre>
+<p>This will produce an executable called <tt class="docutils literal">main</tt> or <tt class="docutils literal">main.exe</tt> in your
+directory.</p>
+</div>
+</div>
+<div class="section" id="license">
+<h1>License</h1>
+<p>D:GameVFS is released under the terms of the
+<a class="reference external" href="http://www.boost.org/LICENSE_1_0.txt">Boost Software License 1.0</a>.
+This license allows you to use the source code in your own projects, open source
+or proprietary, and to modify it to suit your needs. However, in source
+distributions, you have to preserve the license headers in the source code and
+the accompanying license file.</p>
+<p>Full text of the license can be found in file <tt class="docutils literal">LICENSE_1_0.txt</tt> and is also
+displayed here:</p>
+<pre class="literal-block">
+Boost Software License - Version 1.0 - August 17th, 2003
+
+Permission is hereby granted, free of charge, to any person or organization
+obtaining a copy of the software and accompanying documentation covered by
+this license (the &quot;Software&quot;) to use, reproduce, display, distribute,
+execute, and transmit the Software, and to prepare derivative works of the
+Software, and to permit third-parties to whom the Software is furnished to
+do so, all subject to the following:
+
+The copyright notices in the Software and this entire statement, including
+the above license grant, this restriction and the following disclaimer,
+must be included in all copies of the Software, in whole or in part, and
+all derivative works of the Software, unless such copies or derivative
+works are solely in the form of machine-executable object code generated by
+a source language processor.
+
+THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, TITLE AND NON-INFRINGEMENT. IN NO EVENT
+SHALL THE COPYRIGHT HOLDERS OR ANYONE DISTRIBUTING THE SOFTWARE BE LIABLE
+FOR ANY DAMAGES OR OTHER LIABILITY, WHETHER IN CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+DEALINGS IN THE SOFTWARE.
+</pre>
+</div>
+<div class="section" id="credits">
+<h1>Credits</h1>
+<p>D:GameVFS was created by Ferdinand Majerech aka Kiith-Sa kiithsacmp[AT]gmail.com .</p>
+<p>The API was inspired the VFS API of the
+<a class="reference external" href="http://www.dsource.org/projects/tango/">Tango library</a>.</p>
+<p>D:GameVFS uses a modified version of the
+<a class="reference external" href="http://www.dsource.org/projects/cdc">CDC build script</a>.</p>
+<p>D:GameVFS was created using Vim and DMD on Debian and Ubuntu Linux as
+in the <a class="reference external" href="http://www.d-programming-language.org">D programming language</a>.</p>
+</div>
+</div>
+</body>
+</html>

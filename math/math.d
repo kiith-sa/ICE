@@ -69,53 +69,54 @@ unittest
 }
 
 /**
- * Round a float value to nearest signed 32-bit int.
+ * Round a number to the nearest integer of type U.
  *
  * Params:  f = Float to round.
  *
  * Returns: Nearest int to given value.
  */
-int roundS32(T)(const T f) if(isNumeric!T){return cast(int)round(f);}
+U round(U, T)(const T f)
+    if(isIntegral!U && isNumeric!T)
+{
+    return cast(U)std.math.round(f);
+}
 
 /**
- * Floor a float value to an unsigned 8-bit int.
+ * Floor a number to an integer of type U.
  *
- * Params:  f = Float to round. Must be less than 256 and greater or equal to 0.
+ * Params:  f = Float to round. Must be less than U.max and more or equal to U.min .
  *                                                                                   
  * Returns: Floor of given value as ubyte.
  */
-ubyte floorU8(float f) pure
+U floor(U, T)(T f)
+    if(isIntegral!U && isNumeric!T)
 {
-    f += 256.0f;
-    return cast(ubyte)(((*cast(uint*)&f)&0x7fffff)>>15);
+    static if(is(U == ubyte) && is(T == float))
+    {
+        f += 256.0f;
+        return cast(ubyte) (( (*cast(uint*)&f) & 0x7fffff) >> 15);
+    }
+    else static if(is(U == int) && is(T == double))
+    {
+        //2 ^ 36 * 1.5,  (52 - 16 == 36) uses limited precisicion to floor
+        f += 68719476736.0*1.5; 
+        return (*cast(int*)&f) >> 16;
+    }
+    else
+    {
+        return cast(U)std.math.floor(f);
+    }
 }
-///Unittest for floorU8.
+///Unittest for floor.
 unittest
 {
-    assert(floorU8(255.001) == 255);
-    assert(floorU8(8.001) == 8);
-    assert(floorU8(7.999) == 7);
-}
+    assert(floor!ubyte(255.001f) == 255);
+    assert(floor!ubyte(8.001f) == 8);
+    assert(floor!ubyte(7.999f) == 7);
 
-/**
- * Floor a double value to a signed 32-bit int
- *
- * Params:  f = Double to round. Must be less than 2^31 and greater or equal to -(2^31).
- *
- * Returns: Floor of given value as int.
- */
-int floorS32(double f) pure
-{
-    //2 ^ 36 * 1.5,  (52 - 16 == 36) uses limited precisicion to floor
-    f += 68719476736.0*1.5; 
-    return (*cast(int*)&f) >> 16;
-}                                                                                      
-///Unittest for floorS32.
-unittest
-{
-    assert(floorS32(8.00001) == 8);
-    assert(floorS32(7.99999) == 7);
-    assert(floorS32(-0.00001) == -1);
+    assert(floor!int(8.00001) == 8);
+    assert(floor!int(7.99999) == 7);
+    assert(floor!int(-0.00001) == -1);
 }
 
 ///Array of first 32 powers of 2.

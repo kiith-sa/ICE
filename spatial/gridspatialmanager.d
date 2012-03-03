@@ -240,10 +240,10 @@ class GridSpatialManager(T) : SpatialManager!T
 
             Cell*[] result;
             //get minimum and maximum cells containing the rectangle.
-            int cellXMin = floorS32(translated.min.x * mult);
-            int cellXMax = floorS32(translated.max.x * mult);
-            int cellYMin = floorS32(translated.min.y * mult);
-            int cellYMax = floorS32(translated.max.y * mult);
+            int cellXMin = floor!int(translated.min.x * mult);
+            int cellXMax = floor!int(translated.max.x * mult);
+            int cellYMin = floor!int(translated.min.y * mult);
+            int cellYMax = floor!int(translated.max.y * mult);
 
             //if outside the grid, add outer.
             if(cellXMin < 0 || cellYMin < 0 || 

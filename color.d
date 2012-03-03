@@ -96,7 +96,7 @@ struct Color
     @property ubyte average() const
     {
         const real average = (r + g + b) / 3.0L;
-        return cast(ubyte)roundS32(average);
+        return round!ubyte(average);
     }
     ///Unittest for average().
     unittest
@@ -117,13 +117,13 @@ struct Color
     @property ubyte lightness() const
     {
         uint d = max(r, g, b) + min(r, g, b);
-        return cast(ubyte)roundS32(0.5f * d); 
+        return round!ubyte(0.5f * d); 
     }
 
     ///Return luminance of the color.
     @property ubyte luminance() const
     {
-        return cast(ubyte)roundS32(0.3 * r + 0.59 * g + 0.11 * b);
+        return round!ubyte(0.3 * r + 0.59 * g + 0.11 * b);
     }
     ///Unittest for luminance().
     unittest
@@ -154,10 +154,10 @@ struct Color
     ///Multiply a color by a float (values are clamped to range 0 .. 255).
     Color opBinary(string op)(const float m) const if(op == "*")
     {
-        return Color(cast(ubyte)roundS32(clamp(r * m, 0.0f, 255.0f)), 
-                     cast(ubyte)roundS32(clamp(g * m, 0.0f, 255.0f)),
-                     cast(ubyte)roundS32(clamp(b * m, 0.0f, 255.0f)), 
-                     cast(ubyte)roundS32(clamp(a * m, 0.0f, 255.0f)));
+        return Color(round!ubyte(clamp(r * m, 0.0f, 255.0f)), 
+                     round!ubyte(clamp(g * m, 0.0f, 255.0f)),
+                     round!ubyte(clamp(b * m, 0.0f, 255.0f)), 
+                     round!ubyte(clamp(a * m, 0.0f, 255.0f)));
     }
     ///Unittest for opBinary!"*"
     unittest
@@ -210,12 +210,12 @@ struct Color
      *          d = Interpolation ratio. 1 is this color, 0 other color, 0.5 half in between.
      *              Must be in 0.0 .. 1.0 range.
      */
-    Color interpolated(const Color c, const float d) const pure
+    Color interpolated(const Color c, const float d) const
     in{assert(d >= 0.0 && d <= 1.0, "Color interpolation value must be between 0.0 and 1.0");}
     body
     {
-        const ubyte dByte = floorU8(d * 255.0);
-        const ubyte invByte = cast(ubyte)(255 - dByte);
+        const dByte   = floor!ubyte(d * 255.0);
+        const invByte = cast(ubyte)(255 - dByte);
 
         //ugly, but fast
         //colors are multiplied as ubytes from 0 to 255 and then divided by 256

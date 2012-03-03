@@ -41,7 +41,7 @@ in
 }
 body
 {
-    const uint totalS = roundS32(time);
+    const uint totalS = round!uint(time);
     const uint s = totalS % 60;
     uint m = totalS / 60;
     string sStr = to!string(s);
