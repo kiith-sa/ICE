@@ -162,9 +162,9 @@ void main(string[] args)
 
     if(targets.length == 0){targets = ["debug"];}
     
-    auto dbg          = ["-unittest", "-gc", "-debug", "-ofpong-debug"];
-    auto no_contracts = ["-release", "-gc", "-ofpong-no-contracts"];
-    auto release      = ["-O", "-inline", "-release", "-gc", "-ofpong-release"];
+    auto dbg          = ["-unittest", "-gc", "-debug", "-ofice-debug"];
+    auto no_contracts = ["-release", "-gc", "-ofice-no-contracts"];
+    auto release      = ["-O", "-inline", "-release", "-gc", "-ofice-release"];
     auto dependencies = ["dependencies/derelict/DerelictSDL",
                          "dependencies/derelict/DerelictGL",
                          "dependencies/derelict/DerelictFT",
@@ -173,8 +173,8 @@ void main(string[] args)
     auto sources      = ["physics/", "scene/", "file/", "formats/", "gui/", 
                          "math/", "memory/", "monitor/", "platform/", 
                          "spatial/", "time/", "video/", "containers/", "util/",
-                         "pong/", "color.d", "graphdata.d", "image.d", 
-                         "pong.d"];
+                         "ice/", "color.d", "graphdata.d", "image.d", 
+                         "ice.d"];
 
     void compile_(string[] args, string[] files)
     {
@@ -221,7 +221,7 @@ void main(string[] args)
 void help()
 {
     string help =
-        "Pong build script\n"
+        "ICE build script\n"
         "Changes Copyright (C) 2010-2011 Ferdinand Majerech\n"
         "Based on CDC script Copyright (C) 2009-2010 Eric Poggel\n"
         "Usage: cdc [OPTION ...] [EXTRA COMPILER OPTION ...] [TARGET ...]\n"
@@ -233,12 +233,12 @@ void help()
         "Optionally, build target can be specified, 'debug' is default.\n"
         "Available build targets:\n"
         "    debug           Debug information, unittests, contracts built in.\n"
-        "                    No optimizations. Target binary name: 'pong-debug'\n"
+        "                    No optimizations. Target binary name: 'ice-debug'\n"
         "    no-contracts    Debug information, no unittests, contracts, optimizations.\n"
-        "                    Target binary name: 'pong-no-contracts'\n"
+        "                    Target binary name: 'ice-no-contracts'\n"
         "    release         Debug information, no unittests, contracts.\n"
         "                    Optimizations, inlining enabled.\n"
-        "                    Target binary name: 'pong-release'\n"
+        "                    Target binary name: 'ice-release'\n"
         "    all             All of the above.\n"
         "\n"
         "Available options:\n"

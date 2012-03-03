@@ -95,7 +95,7 @@ abstract class Actor
          *
          * Params:  manager   = SceneManager to get time information from and/or add new actors.
          */
-        void update(SceneManager manager);
+        void update(SceneManager manager){assert(false, "Actor.update not overridden");}
 
         ///Draw this actor.
         void draw(VideoDriver driver);

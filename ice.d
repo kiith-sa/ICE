@@ -5,20 +5,20 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 /**
- * $(BIG DPong API documentation)
+ * $(BIG ICE API documentation)
  *
  * Introduction:
  * 
- * This is the complete API documentation for DPong. It describes
+ * This is the complete API documentation for ICE. It describes
  * all classes, structs, interfaces, functions and so on.
  * This API documentation is intended to serve developers who want to
- * improve the Pong engine, as well as those who want to modify it for
+ * improve the ICE engine, as well as those who want to modify it for
  * their own needs.
  */
 
 
 ///Program entry point.
-module main.pong;
+module main.ice;
 
 
 import core.stdc.stdlib: exit;     
@@ -30,7 +30,7 @@ import dgamevfs._;
 import file.fileio;
 import formats.cli;
 import ice.exceptions;
-import pong.pong;
+import ice.ice;
 
 
 ///Program entry point.
@@ -68,9 +68,9 @@ void main(string[] args)
         gameDir.mount(rootStack);
         gameDir.mount(userStack);
 
-        Pong pong = new Pong(gameDir);
-        scope(exit){clear(pong);}
-        pong.run();
+        auto ice = new Ice(gameDir);
+        scope(exit){clear(ice);}
+        ice.run();
     }
     catch(GameStartupException e)
     {

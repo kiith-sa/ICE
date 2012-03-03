@@ -5,7 +5,7 @@
 
 
 ///Main pong program class.
-module pong.pong;
+module ice.ice;
 
 
 import std.algorithm;
@@ -16,8 +16,8 @@ import std.string;
 import dgamevfs._;
 
 import ice.exceptions;
-import pong.game;
-import pong.credits;
+import ice.game;
+import ice.credits;
 import gui.guielement;
 import gui.guimenu;
 import video.videodriver;
@@ -39,7 +39,7 @@ import image;
 
 
 /** 
- * Class holding all GUI used by Pong (main menu, etc.).
+ * Class holding all GUI used by ICE (main menu, etc.).
  *
  * Signal:
  *     public mixin Signal!() gameStart
@@ -66,7 +66,7 @@ import image;
  *
  *     Emitted when the player clicks the button to reset video mode. 
  */
-class PongGUI
+class IceGUI
 {
     private:
         ///Parent of all Pong GUI elements.
@@ -93,7 +93,7 @@ class PongGUI
         mixin Signal!() resetVideo;
 
         /**
-         * Construct PongGUI with specified parameters.
+         * Construct IceGUI with specified parameters.
          *
          * Params:  parent  = GUI element to use as parent for all pong GUI elements.
          *          monitor = Monitor subsystem, used to initialize monitor GUI view.
@@ -139,7 +139,7 @@ class PongGUI
             menuContainer_.addChild(menu_);
         }
 
-        ///Destroy the PongGUI.
+        ///Destroy the IceGUI.
         ~this()
         {
             monitor_.die();
@@ -191,12 +191,10 @@ class PongGUI
         }
 }
 
-class Pong
+class Ice
 {
     mixin WeakSingleton;
     private:
-        alias std.conv.to to;
-
         ///FPS counter.
         EventCounter fpsCounter_;
         ///Continue running?
@@ -217,7 +215,7 @@ class Pong
         GUIRoot guiRoot_;
         
         ///Pong GUI.
-        PongGUI gui_;
+        IceGUI gui_;
        
         ///Used for memory monitoring.
         MemoryMonitorable memory_;
@@ -232,7 +230,7 @@ class Pong
 
     public:
         /**
-         * Initialize Pong.
+         * Initialize ICE.
          *
          * Params:  gameDir = Root directory of the game's virtual file system.
          *
@@ -242,8 +240,8 @@ class Pong
         {
             gameDir_ = gameDir;
 
-            writeln("Initializing Pong");
-            scope(failure){writeln("Pong initialization failed");}
+            writeln("Initializing Ice");
+            scope(failure){writeln("Ice initialization failed");}
 
             singletonCtor();
 
@@ -277,7 +275,7 @@ class Pong
             guiRoot_ = new GUIRoot(platform_);
 
             scope(failure){clear(gui_);}
-            gui_ = new PongGUI(guiRoot_.root, monitor_);
+            gui_ = new IceGUI(guiRoot_.root, monitor_);
             gui_.creditsStart.connect(&creditsStart);
             gui_.creditsEnd.connect(&creditsEnd);
             gui_.gameStart.connect(&gameStart);
@@ -291,10 +289,10 @@ class Pong
             fpsCounter_.update.connect(&fpsUpdate);
         }
 
-        ///Destroy Pong and all subsystems.
+        ///Destroy Ice and all subsystems.
         ~this()
         {
-            writeln("Destroying Pong");
+            writeln("Destroying ICE");
          
             //game might still be running if we're quitting
             //because the platform stopped to run
@@ -338,7 +336,7 @@ class Pong
 
             scope(failure)
             {
-                writeln("Failure in Pong main loop, iteration ", iterations);
+                writeln("Failure in ICE main loop, iteration ", iterations);
             }
 
             platform_.key.connect(&keyHandlerGlobal);
@@ -388,7 +386,7 @@ class Pong
             gui_.menuHide();
             platform_.key.disconnect(&keyHandler);
             game_ = gameContainer_.produce(platform_, monitor_, guiRoot_.root);
-            game_.intro();
+            game_.startGame();
         }
 
         ///End game.
@@ -512,7 +510,7 @@ class Pong
                 ensureDirectoryUser("main::screenshots");
 
                 //save screenshot with increasing suffix number.
-                for(uint s = 0; s < 100000; s++)
+                foreach(s; 0 .. 100000)
                 {
                     string fileName = format("main::screenshots/screenshot_%05d.png", s);
                     if(!fileExistsUser(fileName))
