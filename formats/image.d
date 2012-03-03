@@ -12,8 +12,9 @@ module formats.image;
 import std.string;
 import std.stdio;
 
+import dgamevfs._;
+
 import formats.png;
-import file.fileio;
 import memory.memory;
 import image;
 import color;
@@ -36,36 +37,35 @@ enum ImageFileFormat
 /**
  * Write an image to file.
  *
- * Params:  image       = Image to write.
- *          fileName   = In-engine name of the file to write to.
+ * Params:  image      = Image to write.
+ *          fileName   = File to write into.
  *          fileFormat = Image file format. Autodetected by default.
- *                        If the format can't be autodetected, PNG format is used.
+ *                       If the format can't be autodetected, PNG format is used.
  *
  * PNG is the only supported format at the moment (more formats may or may not be
  * added in future). Also, only 24-bit RGB and 32-bit RGBA color formats are supported
  * at the moment.
  *
- * Throws:  FileIOException if the image could not be written.
+ * Throws:  VFSException if the image could not be written.
  *          ImageFileException in the case of an encoding error, if the color format is not 
  *          supported or file format could not be detected in case of autodetection.
  */
-void writeImage(const ref Image image, const string fileName, 
-                 ImageFileFormat fileFormat = ImageFileFormat.Auto)
+void writeImage(const ref Image image, VFSFile file,
+                ImageFileFormat fileFormat = ImageFileFormat.Auto)
 {
-    scope(failure){writeln("Image writing failed: " ~ fileName);}
+    scope(failure){writeln("Image writing failed: " ~ file.name);}
 
     if(fileFormat == ImageFileFormat.Auto)
     {
-        fileFormat = detectImageFormat(fileName);
+        fileFormat = detectImageFormat(file.name);
     }
 
     try
     {
-        File file = File(fileName, FileMode.Write);
         if(fileFormat == ImageFileFormat.PNG)
         {
             ubyte[] data = encodePNG(image.data, image.width, image.height, image.format);
-            file.write(data);
+            file.output.write(cast(void[])data);
             free(data);
         }
         else{assert(false, "Unsupported image file format for writing");}
@@ -79,8 +79,8 @@ void writeImage(const ref Image image, const string fileName,
 /**
  * Read an image from a file.
  *
- * Params:  image       = Image to read to. Any existing contents will be cleared.
- *          fileName   = In-engine name of the file to read from.
+ * Params:  image      = Image to read to. Any existing contents will be cleared.
+ *          fileName   = File to read from.
  *          fileFormat = Image file format. Autodetected by default.
  *                        If the format can't be autodetected, PNG format is used.
  *
@@ -88,23 +88,21 @@ void writeImage(const ref Image image, const string fileName,
  * added in future). Also, only 8-bit grayscale, 24-bit RGB and 32-bit RGBA color 
  * formats are supported at the moment.
  *
- * Throws:  FileIOException if the file could not be read from.
+ * Throws:  VFSException if the file could not be read from.
  *          ImageFileException if image data was invalid.
  */
-void readImage(ref Image image, const string fileName, 
-                ImageFileFormat fileFormat = ImageFileFormat.Auto)
+void readImage(ref Image image, VFSFile file,
+               ImageFileFormat fileFormat = ImageFileFormat.Auto)
 {
-    scope(failure){writeln("Image reading failed: " ~ fileName);}
+    scope(failure){writeln("Image reading failed: " ~ file.name);}
 
     if(fileFormat == ImageFileFormat.Auto)
     {
-        fileFormat = detectImageFormat(fileName);
+        fileFormat = detectImageFormat(file.name);
     }
 
     try
     {
-        File file = File(fileName, FileMode.Read);
-
         //parameters of the loaded image will be written here
         uint width, height;
         ColorFormat format;
@@ -113,7 +111,9 @@ void readImage(ref Image image, const string fileName,
 
         if(fileFormat == ImageFileFormat.PNG)
         {
-            imageData = decodePNG(cast(ubyte[])file.data, width, height, format);
+            auto rawData = allocArray!ubyte(file.bytes);
+            file.input.read(cast(void[])rawData);
+            imageData = decodePNG(rawData, width, height, format);
         }
         else{assert(false, "Unsupported image file format for reading");}
 

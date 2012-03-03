@@ -152,8 +152,6 @@ class StackDir : VFSDir
                 {
                     return dir.file(rest);
                 }
-                throw notFound("Unable to find explicitly specified directory ", pkg, 
-                                " in directory ", this.path, " when looking for file ", path);
             }
 
             //no package
@@ -192,9 +190,6 @@ class StackDir : VFSDir
                 {
                     return dir.dir(rest);
                 }
-                throw notFound("Unable to find explicitly specified directory ",
-                                pkg, " in directory ", this.path, 
-                                " when looking for directory ", path);
             }
 
             //no package

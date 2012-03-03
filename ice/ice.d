@@ -200,33 +200,28 @@ class Ice
         ///Continue running?
         bool continue_ = true;
 
-        ///Platform used for user input.
-        Platform platform_;
-
-        ///Root directory of the game's virtual file system.
-        VFSDir gameDir_;
-
         ///Container managing video driver and its dependencies.
         VideoDriverContainer videoDriverContainer_;
+        ///Container managing game and its dependencies.
+        GameContainer gameContainer_;
+
+        ///Platform used for user input.
+        Platform platform_;
         ///Video driver.
         VideoDriver videoDriver_;
-
-        ///Root of the GUI.
+        ///Game.
+        Game game_;
+        ///Root directory of the game's virtual file system.
+        VFSDir gameDir_;
+        ///Root element of the GUI.
         GUIRoot guiRoot_;
-        
-        ///Pong GUI.
+        ///Monitor subsystem, providing debugging and profiling info.
+        MonitorManager monitor_;
+        ///ICE GUI.
         IceGUI gui_;
        
         ///Used for memory monitoring.
         MemoryMonitorable memory_;
-
-        ///Container managing game and its dependencies.
-        GameContainer gameContainer_;
-        ///Game.
-        Game game_;
-
-        ///Monitor subsystem, providing debugging and profiling info.
-        MonitorManager monitor_;
 
     public:
         /**
@@ -329,11 +324,10 @@ class Ice
             singletonDtor();
         }
 
-        ///Update Pong.
+        ///Main ICE event loop.
         void run()
         {                           
             ulong iterations = 0;
-
             scope(failure)
             {
                 writeln("Failure in ICE main loop, iteration ", iterations);
@@ -347,22 +341,21 @@ class Ice
                 //Count this frame
                 fpsCounter_.event();
 
-                const bool gameRun = game_ !is null && game_.run();
-                if(game_ !is null && !gameRun){gameEnd();}
-
-                //update game state
                 guiRoot_.update();
 
                 videoDriver_.startFrame();
-
-                if(gameRun){game_.draw(videoDriver_);}
-
+                if(game_ !is null)
+                {
+                    //update game state
+                    if(!game_.run()){gameEnd();}
+                    else{game_.draw(videoDriver_);}
+                }
                 guiRoot_.draw(videoDriver_);
                 videoDriver_.endFrame();
             
                 memory_.update();
             
-                iterations++;
+                ++iterations;
             }
             writeln("FPS statistics:\n", fpsCounter_.statistics, "\n");
         }
@@ -507,21 +500,22 @@ class Ice
 
             try
             {
-                ensureDirectoryUser("main::screenshots");
+                auto screenshotDir = gameDir_.dir("user_data::main::screenshots");
+                screenshotDir.create();
 
-                //save screenshot with increasing suffix number.
-                foreach(s; 0 .. 100000)
+                foreach(s; 0 .. 10000)
                 {
-                    string fileName = format("main::screenshots/screenshot_%05d.png", s);
-                    if(!fileExistsUser(fileName))
+                    string fileName = format("screenshot_%05d.png", s);
+                    auto file = screenshotDir.file(fileName);
+                    if(!file.exists)
                     {
-                        writeImage(screenshot, fileName);
+                        writeln("Writing screenshot " ~ fileName);
+                        writeImage(screenshot, file);
                         return;
                     }
                 }
-                writeln("Screenshot saving error: too many screenshots");
             }
-            catch(FileIOException e){writeln("Screenshot saving error: " ~ e.msg);}
+            catch(VFSException e){writeln("Screenshot saving error: " ~ e.msg);}
             catch(ImageFileException e){writeln("Screenshot saving error: " ~ e.msg);}
         }
 }
