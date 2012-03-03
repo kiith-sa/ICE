@@ -170,7 +170,7 @@ void main(string[] args)
                          "dependencies/derelict/DerelictFT",
                          "dependencies/derelict/DerelictUtil",
                          "dependencies/dgamevfs/dgamevfs"];
-    auto sources      = ["physics/", "scene/", "file/", "formats/", "gui/", 
+    auto sources      = ["physics/", "scene/", "formats/", "gui/", 
                          "math/", "memory/", "monitor/", "platform/", 
                          "spatial/", "time/", "video/", "containers/", "util/",
                          "ice/", "color.d", "graphdata.d", "image.d", 

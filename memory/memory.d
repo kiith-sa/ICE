@@ -20,9 +20,9 @@ import std.stdio;
 import std.string;
 import std.traits;
 
-import file.fileio;
+import dgamevfs._;
+
 debug{import time.time;}
-private alias file.file.File File;
 
 
 public:
@@ -135,6 +135,9 @@ public:
         assert(test.length == 8 && test[3] == 5 && test[7] == 0);
         free(test);
     }
+
+    ///VFSDir to output memory log to.
+    VFSDir gameDir;
 
 package:
     ///Get currently allocated memory in bytes.
@@ -492,19 +495,16 @@ private:
     static ~this()
     {
         scope(failure){writeln("Error logging memory usage");}
-        ensureDirectoryUser("main::logs");
         string stats = statistics();
 
-        //using a scope
-        {
-            File file = File("main::logs/memory.log", FileMode.Write);
-            file.write(stats);
-        }
+        auto logs = gameDir.dir("main::logs");
+        logs.create();
+        logs.file("memory.log").output.write(cast(void[]) stats);
 
         if(allocations_.length > 0)
         {
             writeln("WARNING: MEMORY LEAK DETECTED, FOR MORE INFO SEE:\n"
-                     "userdata::main::logs/memory.log");
+                     "user_data::main::logs/memory.log");
         }
     }
 

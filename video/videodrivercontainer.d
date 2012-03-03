@@ -29,21 +29,26 @@ class VideoDriverContainer
         FontManager fontManager_;
         ///Video driver managed.
         VideoDriver videoDriver_;
+        ///Game data directory.
+        VFSDir gameDir_;
 
     public:
         /**
          * Construct a VideoDriverContainer.
          *
+         * Params:  gameDir = Game data directory.
+         *
          * Throws:  VideoDriverException on failure.
          */
-        this()
+        this(VFSDir gameDir)
         {
-            try{fontManager_ = new FontManager;}
+            try{fontManager_ = new FontManager(gameDir);}
             catch(FontException e)
             {
                 throw new VideoDriverException("VideoDriverContainer could not be "
                                                "initialized: " ~ e.msg);
             }
+            gameDir_ = gameDir;
         }
 
         /**
@@ -53,19 +58,17 @@ class VideoDriverContainer
          *          height     = Height of initial video mode.
          *          format     = Color format of initial video mode.
          *          fullscreen = Should initial video mode be fullscreen?
-         *          gameDir    = Game data directory.
          *
          * Returns: Produced video driver or null on error.
          */
         VideoDriver produce(Driver)(const uint width, const uint height, 
-                                    const ColorFormat format, const bool fullscreen,
-                                    VFSDir gameDir)
+                                    const ColorFormat format, const bool fullscreen)
             if(is(Driver: VideoDriver))
         {
             auto typeString = typeid(Driver).toString();
             try
             {
-                videoDriver_ = new Driver(fontManager_, gameDir);
+                videoDriver_ = new Driver(fontManager_, gameDir_);
                 videoDriver_.setVideoMode(width, height, format, fullscreen);
             }
             catch(VideoDriverException e)

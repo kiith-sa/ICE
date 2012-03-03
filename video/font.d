@@ -20,7 +20,6 @@ import video.videodriver;
 import video.texture;
 import math.vector2;
 import math.math;
-import file.fileio;
 import memory.memory;
 import containers.vector;
 import color;

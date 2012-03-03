@@ -27,7 +27,6 @@ import platform.platform;
 import platform.sdlplatform;
 import monitor.monitormanager;
 import memory.memorymonitorable;
-import file.fileio;
 import formats.image;
 import time.eventcounter;
 import math.vector2;
@@ -331,9 +330,9 @@ class Ice
         ///Initialize the video subsystem. Throws GameStartupException on failure.
         void initVideo()
         {
-            videoDriverContainer_ = new VideoDriverContainer;
+            videoDriverContainer_ = new VideoDriverContainer(gameDir_);
             videoDriver_ = videoDriverContainer_.produce!SDLGLVideoDriver
-                            (800, 600, ColorFormat.RGBA_8, false, gameDir_);
+                            (800, 600, ColorFormat.RGBA_8, false);
             if(videoDriver_ is null)
             {
                 videoDriverContainer_.destroy();
@@ -509,7 +508,7 @@ class Ice
             scope(failure){videoDriver_ = null;}
 
             videoDriver_ = videoDriverContainer_.produce!SDLGLVideoDriver
-                           (width, height, format, false, gameDir_);
+                           (width, height, format, false);
 
             if(videoDriver_ is null)
             {

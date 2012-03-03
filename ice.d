@@ -27,10 +27,10 @@ import std.typecons;
 
 import dgamevfs._;
 
-import file.fileio;
 import formats.cli;
 import ice.exceptions;
 import ice.ice;
+import memory.memory;
 
 
 ///Program entry point.
@@ -38,9 +38,9 @@ void main(string[] args)
 {
     //will add -h/--help and generate usage info by itself
     auto cli = new CLI();
-    cli.description = "DPong 0.6.0\n"
-                      "Pong game written in D.\n"
-                      "Copyright (C) 2010-2011 Ferdinand Majerech";
+    cli.description = "ICE 0.1.0\n"
+                      "Top-down scrolling shooter written in D.\n"
+                      "Copyright (C) 2010-2012 Ferdinand Majerech, Libor Malis, David Horvath";
     cli.epilog = "Report errors at <kiithsacmp@gmail.com> (in English, Czech or Slovak).";
 
     string root = "./data";
@@ -55,19 +55,18 @@ void main(string[] args)
     scope(exit) writeln("Main exit");
     try
     {
-        rootData(root);
-        userData(user);
-
-        auto rootFS = new FSDir("root_data", root, No.writable);
-        auto userFS = new FSDir("user_data", user, Yes.writable);
+        auto rootFS    = new FSDir("root_data", root, No.writable);
+        auto userFS    = new FSDir("user_data", user, Yes.writable);
         auto rootStack = new StackDir("root_data");
-        rootStack.mount(rootFS.dir("main"));
         auto userStack = new StackDir("user_data");
+        auto gameDir   = new StackDir("root");
+
+        rootStack.mount(rootFS.dir("main"));
         userStack.mount(userFS.dir("main"));
-        auto gameDir = new StackDir("root");
         gameDir.mount(rootStack);
         gameDir.mount(userStack);
 
+        memory.memory.gameDir = gameDir;
         auto ice = new Ice(gameDir);
         scope(exit){clear(ice);}
         ice.run();

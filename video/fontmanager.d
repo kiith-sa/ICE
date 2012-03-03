@@ -19,17 +19,17 @@ import derelict.freetype.ft;
 import derelict.util.loader;
 import derelict.util.exception;
 
+import dgamevfs._;
+
 import video.videodriver;
 import video.font;
 import video.texture;
-import file.fileio;
 import math.math;
 import math.vector2;
 import memory.memory;
 import containers.vector;
 import util.weaksingleton;
 import color;
-alias file.file.File File;
 
 
 package:
@@ -137,6 +137,9 @@ final class FontManager
         ///FreeType library handle.
         FT_Library freetypeLib_;
 
+        ///Font data directory.
+        VFSDir fontDir_;
+
         ///All currently loaded fonts. fonts_[0] is the default font.
         Font[] fonts_;
 
@@ -174,51 +177,61 @@ final class FontManager
         /**
          * Construct the font manager, load default font.
          *
+         * Params:  gameDir = Game data directory.
+         *
          * Throws:  FontException on failure.
          */
-        this()
+        this(VFSDir gameDir)
         {
             writeln("Initializing FontManager");
             scope(failure){writeln("FontManager initialization failed");}
 
             singletonCtor();
+
+            try{fontDir_ = gameDir.dir("fonts");}
+            catch(VFSException e)
+            {
+                throw new Exception("Could not open font directory: " ~ e.msg);
+            }
+
             try
             {
-                //sometimes FreeType is missing a function we don't use, 
+                //Sometimes FreeType is missing a function we don't use, 
                 //we don't want to crash in that case.
-                Derelict_SetMissingProcCallback(function bool(string a, string b)
-                                                {return true;});
-                //load FreeType library
+                Derelict_SetMissingProcCallback((a, b) => true);
+                //Load FreeType library
                 DerelictFT.load(); 
                 Derelict_SetMissingProcCallback(null);
-                //initialize FreeType
-                if(FT_Init_FreeType(&freetypeLib_) != 0 || freetypeLib_ is null)
-                {
-                    throw new FontException("FreeType initialization error");
-                }
-                try
-                {
-                    loadFontFile(defaultFontName_);
-                    //load default font.
-                    fonts_ ~= new Font(freetypeLib_, getFont(defaultFontName_),
-                                       defaultFontName_, defaultFontSize_, 
-                                       fastGlyphs_, antialiasing_);
-                    currentFont_ = fonts_[$ - 1];
-                    fontName_    = defaultFontName_;
-                    fontSize_    = defaultFontSize_;
-                }
-                catch(FileIOException e)
-                {
-                    throw new FontException("Could not open file with default font: " ~ e.msg);
-                }
-                catch(FontException e)
-                {
-                    throw new FontException("Could not load default font: " ~ e.msg);
-                }
             }
             catch(SharedLibLoadException e)
             {
                 throw new FontException("Could not load FreeType library: " ~ e.msg);
+            }
+
+            //Initialize FreeType
+            if(FT_Init_FreeType(&freetypeLib_) != 0 || freetypeLib_ is null)
+            {
+                throw new FontException("FreeType initialization error");
+            }
+
+            //Load default font
+            try
+            {
+                loadFontFile(defaultFontName_);
+                fonts_ ~= new Font(freetypeLib_, getFont(defaultFontName_),
+                                   defaultFontName_, defaultFontSize_, 
+                                   fastGlyphs_, antialiasing_);
+                currentFont_ = fonts_[$ - 1];
+                fontName_    = defaultFontName_;
+                fontSize_    = defaultFontSize_;
+            }
+            catch(VFSException e)
+            {
+                throw new FontException("Could not open file with default font: " ~ e.msg);
+            }
+            catch(FontException e)
+            {
+                throw new FontException("Could not load default font: " ~ e.msg);
             }
         }
 
@@ -313,7 +326,7 @@ final class FontManager
          *
          * Params:  name = Name of the font in the fonts/ directory.
          * 
-         * Throws:  FileIOException if the font file name is invalid or it could not be opened.
+         * Throws:  VFSException if the font file name is invalid or it could not be opened.
          */
         void loadFontFile(const string name)
         {
@@ -325,11 +338,16 @@ final class FontManager
                 return;
             }
 
-            File file = File("fonts/" ~ name, FileMode.Read);
-            auto bytes = cast(ubyte[])file.data;
+            auto file = fontDir_.file(name);
+
             fontFiles_ ~= FontData(name, cast(ubyte[])null);
-            fontFiles_[$ - 1].data = allocArray!ubyte(bytes.length);
-            fontFiles_[$ - 1].data[] = bytes[];
+            fontFiles_[$ - 1].data = allocArray!ubyte(file.bytes);
+            scope(failure)
+            {
+                free(fontFiles_[$ - 1].data);
+                fontFiles_.length = fontFiles_.length - 1;
+            }
+            file.input.read(cast(void[])fontFiles_[$ - 1].data);
         }
 
         /**
@@ -389,7 +407,7 @@ final class FontManager
                 fonts_ ~= newFont;
                 currentFont_ = fonts_[$ - 1];
             }
-            catch(FileIOException e){fallback("Font file could not be read: " ~ e.msg);}
+            catch(VFSException e){fallback("Font file could not be read: " ~ e.msg);}
             catch(FontException e){fallback("FreeType error: " ~ e.msg);}
         }
 

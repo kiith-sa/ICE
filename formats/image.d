@@ -19,8 +19,6 @@ import memory.memory;
 import image;
 import color;
 
-private alias file.file.File File;
-
 
 ///Exception thrown at errors related to image files.
 class ImageFileException : Exception{this(string msg){super(msg);}} 
