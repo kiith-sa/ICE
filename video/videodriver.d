@@ -36,8 +36,6 @@ class VideoDriverException : Exception{this(string msg){super(msg);}}
  */
 enum DrawMode
 {
-    ///Each draw is applied separately.
-    Immediate,
     ///Draws are merged into buffers stored in RAM and applied together.
     RAMBuffers,
     ///Draws are merged into buffers stored in video RAM and applied together.

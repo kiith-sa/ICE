@@ -62,8 +62,7 @@ package struct GLVertexBuffer(Vertex)
         this(const GLDrawMode mode)
         in
         {
-            assert(mode == GLDrawMode.Immediate || 
-                   mode == GLDrawMode.VertexArray ||
+            assert(mode == GLDrawMode.VertexArray ||
                    mode == GLDrawMode.VertexBuffer, "Unsupported draw mode");
         }
         body
@@ -184,57 +183,42 @@ package struct GLVertexBuffer(Vertex)
                 if(texcoord < 0){return -1;}
             }
 
-            if(mode_ == GLDrawMode.Immediate)
+            //enable vertex attrib array for attibutes used
+            glEnableVertexAttribArray(position);
+            glEnableVertexAttribArray(color);
+            static if(textured){glEnableVertexAttribArray(texcoord);}                                 
+            
+            if(mode_ == GLDrawMode.VertexBuffer)
             {
-                glBegin(GL_TRIANGLES);
-                foreach(i; indices_[group.offset ..  group.offset + group.vertices])
-                {
-                    const Vertex* v = (vertices_.ptr + i);
-                    glVertexAttrib4Nubv(color, cast(ubyte*)&v.color);
-                    static if(textured){glVertexAttrib2fv(texcoord, cast(float*)&v.texcoord);}
-                    glVertexAttrib2fv(position, cast(float*)&v.vertex);
-                }
-                glEnd();
+                glBindBuffer(GL_ARRAY_BUFFER, vbo_);
+                glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_);
             }
-            else
+
+            //pointer to data for vertex arrays, offset in buffer for VBOs
+            const void* data = mode_ == GLDrawMode.VertexArray 
+                                        ? cast(void*)vertices_.ptr 
+                                        : cast(void*)0;
+
+            //specify data formats, locations
+            glVertexAttribPointer(position, 2, GL_FLOAT, GL_FALSE, Vertex.sizeof, 
+                                  data + Vertex.vertexOffset);
+            static if(textured)
             {
-                //enable vertex attrib array for attibutes used
-                glEnableVertexAttribArray(position);
-                glEnableVertexAttribArray(color);
-                static if(textured){glEnableVertexAttribArray(texcoord);}                                 
-                
-                if(mode_ == GLDrawMode.VertexBuffer)
-                {
-                    glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-                    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo_);
-                }
+                glVertexAttribPointer(texcoord, 2, GL_FLOAT, GL_FALSE, Vertex.sizeof, 
+                                      data + Vertex.texcoordOffset);
+            }                                 
+            glVertexAttribPointer(color, 4, GL_UNSIGNED_BYTE, GL_TRUE, Vertex.sizeof, 
+                                  data + Vertex.colorOffset);
+            
+            //draw
+            glDrawElements(GL_TRIANGLES, group.vertices, GL_UNSIGNED_INT, 
+                           (mode_ == GLDrawMode.VertexArray ? indices_.ptr
+                                                            : cast(void*)0) + group.offset);
 
-                //pointer to data for vertex arrays, offset in buffer for VBOs
-                const void* data = mode_ == GLDrawMode.VertexArray 
-                                            ? cast(void*)vertices_.ptr 
-                                            : cast(void*)0;
-
-                //specify data formats, locations
-                glVertexAttribPointer(position, 2, GL_FLOAT, GL_FALSE, Vertex.sizeof, 
-                                      data + Vertex.vertexOffset);
-                static if(textured)
-                {
-                    glVertexAttribPointer(texcoord, 2, GL_FLOAT, GL_FALSE, Vertex.sizeof, 
-                                          data + Vertex.texcoordOffset);
-                }                                 
-                glVertexAttribPointer(color, 4, GL_UNSIGNED_BYTE, GL_TRUE, Vertex.sizeof, 
-                                      data + Vertex.colorOffset);
-                
-                //draw
-                glDrawElements(GL_TRIANGLES, group.vertices, GL_UNSIGNED_INT, 
-                               (mode_ == GLDrawMode.VertexArray ? indices_.ptr
-                                                                : cast(void*)0) + group.offset);
-
-                //clean up
-                glDisableVertexAttribArray(position);
-                glDisableVertexAttribArray(color);
-                static if(textured){glDisableVertexAttribArray(texcoord);}
-            }
+            //clean up
+            glDisableVertexAttribArray(position);
+            glDisableVertexAttribArray(color);
+            static if(textured){glDisableVertexAttribArray(texcoord);}
             return 0;
         }
 

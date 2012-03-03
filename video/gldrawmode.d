@@ -7,18 +7,11 @@
 
 ///OpenGL draw mode.
 module video.gldrawmode;
-@safe
 
 
 ///OpenGL draw mode.
 enum GLDrawMode
 {
-    /**
-     * Immediate mode. Each vertex needs to be drawn in a separate function call.
-     *
-     * Obsolete, but good for old GPUs, some open source drivers and software GL.
-     */
-    Immediate,
     /**
      * Vertex arrays. Client memory (RAM) arrays drawn in a single function call.
      *

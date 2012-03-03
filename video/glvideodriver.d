@@ -346,15 +346,12 @@ abstract class GLVideoDriver : VideoDriver
             }
         }
 
-        final override DrawMode drawMode(in DrawMode mode)
+        final override DrawMode drawMode(const DrawMode mode)
         {
             assert(!frameInProgress_, "GLVideoDriver.drawMode called during a frame");
 
             final switch(mode)
             {
-                case DrawMode.Immediate:
-                    renderer_.drawMode(GLDrawMode.Immediate);
-                    break;
                 case DrawMode.RAMBuffers:
                     renderer_.drawMode(GLDrawMode.VertexArray);
                     break;

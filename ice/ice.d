@@ -371,6 +371,7 @@ class Ice
             {
                 throw new GameStartupException("Failed to initialize video driver.");
             }
+            rescaleViewport();
         }
 
         ///Start game.
@@ -431,9 +432,8 @@ class Ice
         {
             if(state == KeyState.Pressed) switch(key)
             {
-                case Key.K_1: videoDriver_.drawMode(DrawMode.Immediate);   break;
-                case Key.K_2: videoDriver_.drawMode(DrawMode.RAMBuffers);  break;
-                case Key.K_3: videoDriver_.drawMode(DrawMode.VRAMBuffers); break;
+                case Key.K_1: videoDriver_.drawMode(DrawMode.RAMBuffers);  break;
+                case Key.K_2: videoDriver_.drawMode(DrawMode.VRAMBuffers); break;
                 case Key.F10: gui_.monitorToggle();   break;
                 case Key.Scrollock: saveScreenshot(); break;
                 default: break;
@@ -456,18 +456,16 @@ class Ice
          *          height = Window/screen height to use.
          *          format = Color format of video mode.
          */
-        void resetVideoDriver(in uint width, in uint height, in ColorFormat format)
+        void resetVideoDriver(const uint width, const uint height, const ColorFormat format)
         {
-            //game area
-            const Rectf area = game_.gameArea;
-
             monitor_.removeMonitorable("Video");
 
             videoDriverContainer_.destroy();
-            scope(failure){(videoDriver_ = null);}
+            scope(failure){videoDriver_ = null;}
 
-            videoDriver_ = videoDriverContainer_.produce!(SDLGLVideoDriver)
+            videoDriver_ = videoDriverContainer_.produce!SDLGLVideoDriver
                            (width, height, format, false, gameDir_);
+
             if(videoDriver_ is null)
             {
                 writeln("Video driver reset failed.");
@@ -475,20 +473,27 @@ class Ice
                 return;
             }
 
+            rescaleViewport();
+
+            monitor_.addMonitorable(videoDriver_, "Video");
+        }
+
+        ///Rescale viewport according to current resolution and game area.
+        void rescaleViewport()
+        {
             //Zoom according to the new video mode.
-            const real wMult = width / area.width;
-            const real hMult = height / area.height;
-            const real zoom = min(wMult, hMult);
+            const area  = game_.gameArea;
+            const wMult = videoDriver_.screenWidth  / area.width;
+            const hMult = videoDriver_.screenHeight / area.height;
+            const zoom  = min(wMult, hMult);
 
             //Center game area on screen.
-            Vector2d offset;
-            offset.x = area.min.x + (wMult / zoom - 1.0) * 0.5 * area.width * -1.0; 
-            offset.y = area.min.y + (hMult / zoom - 1.0) * 0.5 * area.height * -1.0;
+            const offset = Vector2d(area.min.x - (wMult / zoom - 1.0) * 0.5 * area.width,
+                                    area.min.y - (hMult / zoom - 1.0) * 0.5 * area.height);
 
             videoDriver_.zoom(zoom);
             videoDriver_.viewOffset(offset);
-            guiRoot_.realign(videoDriver_);
-            monitor_.addMonitorable(videoDriver_, "Video");
+            if(guiRoot_ !is null){guiRoot_.realign(videoDriver_);}
         }
 
         ///Save screenshot (to data/main/screenshots).
