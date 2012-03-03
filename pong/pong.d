@@ -31,7 +31,7 @@ import file.fileio;
 import formats.image;
 import time.eventcounter;
 import math.vector2;
-import math.rectangle;
+import math.rect;
 import util.signal;
 import util.weaksingleton;
 import color;
@@ -468,7 +468,7 @@ class Pong
         void resetVideoDriver(in uint width, in uint height, in ColorFormat format)
         {
             //game area
-            const Rectanglef area = game_.gameArea;
+            const Rectf area = game_.gameArea;
 
             monitor_.removeMonitorable("Video");
 

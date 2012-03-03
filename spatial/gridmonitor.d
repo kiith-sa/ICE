@@ -18,7 +18,7 @@ import monitor.submonitor;
 import video.videodriver;
 import math.math;
 import math.vector2;
-import math.rectangle;
+import math.rect;
 import containers.array2d;
 import time.timer;
 import color;
@@ -127,23 +127,23 @@ final package class GridMonitorView(GridMonitor) : SubMonitorView
             const boundsMax = bounds.max.to!float + Vector2f(-1.0f, 0.0f); 
 
             //prevent drawing outside bounds.
-            driver.scissor(Rectanglei(boundsMin.to!int, boundsMax.to!int));
+            driver.scissor(Recti(boundsMin.to!int, boundsMax.to!int));
 
             //draw background.
-            driver.drawFilledRectangle(boundsMin, boundsMax, Color.black);
+            driver.drawFilledRect(boundsMin, boundsMax, Color.black);
             //Color of the current cell
             Color color = Color.blue;
             color.a = cast(ubyte)min(255u, 32 * monitor_.outerObjectCount);
 
             //draw outer.
-            driver.drawFilledRectangle(boundsMin, boundsMax, color);
+            driver.drawFilledRect(boundsMin, boundsMax, color);
 
             //grid size on screen.
             const gridSize = Vector2f(256.0f, 256.0f) * zoom_;
             const origin = bounds_.center.to!float - 0.5f * gridSize + offset_;
 
             //draw background for the grid.
-            driver.drawFilledRectangle(origin, origin + gridSize, Color.black);
+            driver.drawFilledRect(origin, origin + gridSize, Color.black);
 
             const float cellSize = gridSize.x / monitor_.gridSize;
 
@@ -156,7 +156,7 @@ final package class GridMonitorView(GridMonitor) : SubMonitorView
                 foreach(y; 0 .. monitor_.gridSize_)
                 {
                     color.a = cast(ubyte)min(255u, 32 * (*monitor_.objectCounts)[x, y]); 
-                    driver.drawFilledRectangle(cellMin, cellMax, color);
+                    driver.drawFilledRect(cellMin, cellMax, color);
 
                     cellMin.y += cellSize;
                     cellMax.y += cellSize;

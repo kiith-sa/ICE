@@ -22,7 +22,7 @@ import monitor.monitordata;
 import monitor.submonitor;
 import math.math;
 import math.vector2;
-import math.rectangle;
+import math.rect;
 import util.iterable;
 import memory.memory;
 import containers.array2d;
@@ -203,7 +203,7 @@ class GridSpatialManager(T) : SpatialManager!T
          */
         Cell*[] cellsAabbox(const Vector2f position, const VolumeAABBox box)
         {
-            return cellsRectangle(position, box.rectangle);
+            return cellsRect(position, box.rectangle);
         }
 
         /**
@@ -219,22 +219,22 @@ class GridSpatialManager(T) : SpatialManager!T
             //using rectangle test as it's faster and the overhead in
             //cells not significant.
             const offset = Vector2f(circle.radius, circle.radius);
-            const box    = Rectanglef(-offset, offset);
-            return cellsRectangle(position + circle.offset, box);
+            const box    = Rectf(-offset, offset);
+            return cellsRect(position + circle.offset, box);
         }
 
         /**
          * Get all cells a bounding circle is present in.
          *
          * Params:  position = Position of the rectangle in world space.
-         *          rect     = Rectangle to check.
+         *          rect     = Rect to check.
          *
          * Returns: Array of cells in which the rectangle is present.
          */
-        Cell*[] cellsRectangle(const Vector2f position, const ref Rectanglef rect)
+        Cell*[] cellsRect(const Vector2f position, const ref Rectf rect)
         {
             //translate relative to the grid.
-            const Rectanglef translated = rect + (position - origin_);
+            const Rectf translated = rect + (position - origin_);
 
             const float mult = 1.0f / cellSize_;
 
@@ -265,19 +265,19 @@ class GridSpatialManager(T) : SpatialManager!T
             }
             return result;
         }
-        ///Unittest for cellsRectangle.
+        ///Unittest for cellsRect.
         unittest
         {
             auto zero = Vector2f(0.0f, 0.0f);
             auto manager = new GridSpatialManager!PhysicsBody(zero, 16.0f, 4);
             scope(exit){clear(manager);}
 
-            auto rectangle = Rectanglef(-15.0, -17.0, 15.0, 15.0);
-            Cell*[] result = manager.cellsRectangle(zero, rectangle);
+            auto rectangle = Rectf(-15.0, -17.0, 15.0, 15.0);
+            Cell*[] result = manager.cellsRect(zero, rectangle);
             assert(result.length == 6);
             
-            rectangle = Rectanglef(-15.0, -15.0, 15.0, 33.0);
-            result = manager.cellsRectangle(zero, rectangle);
+            rectangle = Rectf(-15.0, -15.0, 15.0, 33.0);
+            result = manager.cellsRect(zero, rectangle);
             assert(result.length == 7);
             assert(canFind!"a is b"(result, &manager.outer_));
         }

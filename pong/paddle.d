@@ -20,7 +20,7 @@ import scene.particleemitter;
 import scene.scenemanager;
 import math.math;
 import math.vector2;
-import math.rectangle;
+import math.rect;
 import physics.physicsbody;
 import physics.contact;
 import spatial.volumeaabbox;
@@ -45,7 +45,7 @@ class PaddleBody : PhysicsBody
         immutable real maxXyRatio_ = 1.0;
 
         ///Limits of paddle body movement in world space.
-        immutable Rectanglef limits_;
+        immutable Rectf limits_;
 
     public:
         /**
@@ -60,7 +60,7 @@ class PaddleBody : PhysicsBody
         Vector2f reflectedBallVelocity (in BallBody ball) const
         {
             //Translate the aabbox to world space
-            const Rectanglef box = aabbox + position_;
+            const Rectf box = aabbox + position_;
 
             const Vector2f closest = box.clamp(ball.position);
 
@@ -96,7 +96,7 @@ class PaddleBody : PhysicsBody
         }
 
         ///Get movement limits of this paddle body.
-        @property final Rectanglef limits() const {return limits_;}
+        @property final Rectf limits() const {return limits_;}
 
     protected:
         /**
@@ -109,7 +109,7 @@ class PaddleBody : PhysicsBody
          *          limits   = Limits of body's movement
          */
         this(VolumeAABBox aabbox, in Vector2f position, in Vector2f velocity, 
-             in real mass, const ref Rectanglef limits)
+             in real mass, const ref Rectf limits)
         {
             super(aabbox, position, velocity, mass);
             limits_ = limits;
@@ -118,8 +118,8 @@ class PaddleBody : PhysicsBody
         override void update(in real timeStep, SpatialManager!PhysicsBody manager)
         {
             //keep the paddle within the limits
-            const Rectanglef box = aabbox;
-            const positionLimits = Rectanglef(limits_.min - box.min,
+            const Rectf box = aabbox;
+            const positionLimits = Rectf(limits_.min - box.min,
                                                limits_.max - box.max);
             position = positionLimits.clamp(position);
 
@@ -128,7 +128,7 @@ class PaddleBody : PhysicsBody
 
     private:
         ///Return rectangle representing bounding box of this body in world space.
-        @property final Rectanglef aabbox() const
+        @property final Rectf aabbox() const
         in
         {
             //checking here because invariant can't call public function members
@@ -146,7 +146,7 @@ class Paddle : Wall
         //this could be done by keeping reference to aabbox of the physics body
         //and translating that by physicsbody's position
         Vector2f position = physicsBody_.position;
-        Rectanglef box = box_ + position;
+        Rectf box = box_ + position;
 
         assert(equals(box.max.x - position.x, position.x - box.min.x, 1.0f),
                "Paddle not symmetric on the X axis");
@@ -186,7 +186,7 @@ class Paddle : Wall
         }
 
         ///Get movement limits of this paddle.
-        @property Rectanglef limits() const 
+        @property Rectf limits() const 
         {
             return (cast(PaddleBody)physicsBody_).limits;
         }
@@ -205,11 +205,11 @@ class Paddle : Wall
          * Construct a paddle.
          *
          * Params:  physicsBody = Physics body of the paddle.
-         *          box          = Rectangle used for graphics representation of the paddle.
+         *          box          = Rect used for graphics representation of the paddle.
          *          speed        = Speed of paddle movement.
          *          emitter      = Particle emitter of the paddle.
          */
-        this(PaddleBody physicsBody, const ref Rectanglef box,
+        this(PaddleBody physicsBody, const ref Rectf box,
              in real speed, ParticleEmitter emitter)
         {
             defaultColor_ = rgba!"0000FF20";
@@ -259,7 +259,7 @@ class PaddleFactory : WallFactoryBase!(Paddle)
 
     public override Paddle produce(SceneManager manager)
     {
-        auto limits = Rectanglef(limitsMin_, limitsMax_);
+        auto limits = Rectf(limitsMin_, limitsMax_);
         auto physicsBody = new PaddleBody(bbox, position_, velocity_, real.infinity, limits);
 
         //construct particle system of the paddle

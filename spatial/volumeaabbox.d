@@ -11,7 +11,7 @@ module spatial.volumeaabbox;
 
 import spatial.volume;
 import math.vector2;
-import math.rectangle;
+import math.rect;
 
 
 ///2D axis aligned bounding box (aka rectangle).
@@ -19,7 +19,7 @@ final immutable class VolumeAABBox : Volume
 {
     public:
         ///Bounding box rectangle in object space.
-        Rectanglef rectangle;
+        Rectf rectangle;
 
     public:
         /**
@@ -30,6 +30,6 @@ final immutable class VolumeAABBox : Volume
          */
         this(const Vector2f offset, const Vector2f size)
         {
-            rectangle = Rectanglef(offset, offset + size);
+            rectangle = Rectf(offset, offset + size);
         }
 }

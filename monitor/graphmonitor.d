@@ -19,7 +19,6 @@ import gui.guibutton;
 import gui.guimenu;
 import gui.guimousecontrollable;
 import math.vector2;
-import math.rectangle;
 import platform.platform;
 import util.signal;
 import graphdata;

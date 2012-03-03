@@ -13,7 +13,7 @@ import std.conv;
 
 import math.math;
 import math.vector2;
-import math.rectangle;
+import math.rect;
 import memory.memory;
 
 
@@ -32,7 +32,7 @@ package struct BinaryTexturePacker
         {
             public:
                 ///Area belonging to the node.
-                Rectangleu area;
+                Rectu area;
             
             private:
                 ///First child.
@@ -48,7 +48,7 @@ package struct BinaryTexturePacker
                  *
                  * Params:  area = Area of the node.
                  */
-                this(const ref Rectangleu area)
+                this(const ref Rectu area)
                 {
                     this.area = area;
                 }
@@ -115,7 +115,7 @@ package struct BinaryTexturePacker
                  *
                  * Returns: True on success, false on failure.
                  */
-                bool remove(const ref Rectangleu rect)
+                bool remove(const ref Rectu rect)
                 {
                     //exact fit, this is the area we want to free
                     if(rect == area && full_)
@@ -162,7 +162,7 @@ package struct BinaryTexturePacker
         this(const Vector2u size)
         {
             size_ = size;
-            root_ = alloc!Node(Rectangleu(Vector2u(0, 0), size));
+            root_ = alloc!Node(Rectu(Vector2u(0, 0), size));
         }
 
         ///Destroy this BinaryTexturePacker and its nodes.
@@ -180,7 +180,7 @@ package struct BinaryTexturePacker
          *        
          * Returns: True if successful, false otherwise.
          */
-        bool allocateSpace(const Vector2u size, out Rectangleu texArea)
+        bool allocateSpace(const Vector2u size, out Rectu texArea)
         {
             const Node* node = root_.insert(size);
             if(node is null){return false;}
@@ -193,7 +193,7 @@ package struct BinaryTexturePacker
          * 
          * Params:  area = Area of the texture to free.
          */
-        void freeSpace(const ref Rectangleu area)
+        void freeSpace(const ref Rectu area)
         {
             bool removed = root_.remove(area);
             assert(removed, "Trying to remove unallocated space from BinaryTexturePacker");

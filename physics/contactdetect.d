@@ -17,7 +17,7 @@ import spatial.volume;
 import spatial.volumeaabbox;
 import spatial.volumecircle;
 import math.vector2;
-import math.rectangle;
+import math.rect;
 
 package:
 /**

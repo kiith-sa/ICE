@@ -11,7 +11,6 @@ module spatial.spatialmanager;
 
 import monitor.monitorable;
 import math.vector2;
-import math.rectangle;
 import util.iterable;
 
 

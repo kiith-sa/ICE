@@ -15,7 +15,7 @@ import video.texture;
 import video.fontmanager;
 import math.math;
 import math.vector2;
-import math.rectangle;
+import math.rect;
 import platform.platform;
 import monitor.monitordata;
 import monitor.monitorable;
@@ -106,7 +106,7 @@ abstract class VideoDriver : Monitorable
          *
          * Params:  scissorArea = Scissor area in screen coordinates.
          */
-        void scissor(const ref Rectanglei scissorArea);
+        void scissor(const ref Recti scissorArea);
 
         /**
          * Disable scissor test.
@@ -202,7 +202,7 @@ abstract class VideoDriver : Monitorable
          *          max   = Maximum extents of the rectangle.
          *          color = Color of the rectangle stroke.
          */
-        void drawRectangle(const Vector2f min, const Vector2f max, const Color color)
+        void drawRect(const Vector2f min, const Vector2f max, const Color color)
         in
         {
             assert(min.x <= max.x && min.y <= max.y, 
@@ -230,7 +230,7 @@ abstract class VideoDriver : Monitorable
          *          max   = Maximum extents of the rectangle.
          *          color = Color of the rectangle.
          */
-        void drawFilledRectangle(const Vector2f min, const Vector2f max, const Color color);
+        void drawFilledRect(const Vector2f min, const Vector2f max, const Color color);
 
         /**
          * Draw a texture.

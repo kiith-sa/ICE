@@ -10,14 +10,14 @@ module video.gltexture;
 
 
 import math.vector2;
-import math.rectangle;
+import math.rect;
 
 
 ///OpenGL texture struct. Texture data is stored by texture page the texture is on.
 package struct GLTexture
 {
     ///Texture coordinates.
-    Rectanglef texCoords;
+    Rectf texCoords;
     ///Offset relative to the page.
     Vector2u offset;
     ///Index of the page.
@@ -30,9 +30,9 @@ package struct GLTexture
      *          pageSize  = Size of the page in pixels.
      *          pageIndex = Index if the texture page.
      */
-    this(ref const Rectangleu pageArea, const Vector2u pageSize, const uint pageIndex) pure
+    this(ref const Rectu pageArea, const Vector2u pageSize, const uint pageIndex) pure
     {
-        this.texCoords = Rectanglef((cast(float)pageArea.min.x) / pageSize.x, 
+        this.texCoords = Rectf((cast(float)pageArea.min.x) / pageSize.x, 
                                     (cast(float)pageArea.min.y) / pageSize.y,  
                                     (cast(float)pageArea.max.x) / pageSize.x,  
                                     (cast(float)pageArea.max.y) / pageSize.y);

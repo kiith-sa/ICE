@@ -37,7 +37,7 @@ import monitor.submonitor;
 import monitor.graphmonitor;
 import math.math;
 import math.vector2;
-import math.rectangle;
+import math.rect;
 import platform.platform;
 import memory.memory;
 import time.timer;
@@ -209,12 +209,12 @@ abstract class GLVideoDriver : VideoDriver
             glFlush();
         }
 
-        final override void scissor(const ref Rectanglei scissorArea)
+        final override void scissor(const ref Recti scissorArea)
         {
             assert(frameInProgress_, "GLVideoDriver.scissor called outside a frame");
 
             //convert to GL coords (origin on the bottom-left instead of top-left)
-            Rectanglei translated = scissorArea;
+            Recti translated = scissorArea;
             translated.min.y      = screenHeight_ - translated.max.y;
             translated.max.y      = translated.min.y + scissorArea.height;
             renderer_.scissor(translated);
@@ -244,17 +244,17 @@ abstract class GLVideoDriver : VideoDriver
             }
         }
 
-        final override void drawFilledRectangle(const Vector2f min, const Vector2f max, 
+        final override void drawFilledRect(const Vector2f min, const Vector2f max, 
                                                   const Color color)
         {
             assert(frameInProgress_, 
-                   "GLVideoDriver.drawFilledRectangle called outside a frame");
+                   "GLVideoDriver.drawFilledRect called outside a frame");
 
             statistics_.rectangles++;
 
             setShader(plainShader_);
 
-            renderer_.drawRectangle(min, max, color);
+            renderer_.drawRect(min, max, color);
         }
 
         final override void drawTexture(const Vector2i position, const ref Texture texture)
@@ -459,7 +459,7 @@ abstract class GLVideoDriver : VideoDriver
             }
 
             //create new GLTexture with specified parameters.
-            void newTexture(const size_t pageIndex, ref const Rectangleu pageArea,
+            void newTexture(const size_t pageIndex, ref const Rectu pageArea,
                             const Vector2u pageSize)
             {
                 textures_ ~= alloc!GLTexture(pageArea, pageSize, cast(uint)pageIndex);
@@ -468,11 +468,11 @@ abstract class GLVideoDriver : VideoDriver
             //if the texture needs its own page
             if(forcePage)
             {
-                Rectangleu pageArea;
+                Rectu pageArea;
                 createPage(image.size, image.format, forcePage);
                 pages_[$ - 1].insertTexture(image, pageArea);
                 newTexture(pages_.length - 1, pageArea, pages_[$ - 1].size);
-                assert(textures_[$ - 1].texCoords == Rectanglef(0.0, 0.0, 1.0, 1.0), 
+                assert(textures_[$ - 1].texCoords == Rectf(0.0, 0.0, 1.0, 1.0), 
                        "Texture coordinates of a single page texture must "
                        "span the whole texture");
                 return Texture(image.size, cast(uint)textures_.length - 1);
@@ -481,7 +481,7 @@ abstract class GLVideoDriver : VideoDriver
             //try to find a page to fit the new texture to
             foreach(index, ref page; pages_)
             {
-                Rectangleu pageArea;
+                Rectu pageArea;
                 if(page !is null && page.insertTexture(image, pageArea))
                 {
                     newTexture(index, pageArea, page.size);
@@ -502,7 +502,7 @@ abstract class GLVideoDriver : VideoDriver
             const uint pageIndex = glTexture.pageIndex;
             assert(pages_[pageIndex] !is null, "Trying to delete a texture from"
                                                " a nonexistent page");
-            pages_[pageIndex].removeTexture(Rectangleu(glTexture.offset,
+            pages_[pageIndex].removeTexture(Rectu(glTexture.offset,
                                                          glTexture.offset + 
                                                          texture.size));
             free(textures_[texture.index]);
@@ -617,8 +617,8 @@ abstract class GLVideoDriver : VideoDriver
 
     package:
         ///Debugging: draw specified area of a texture page on the specified quad.
-        final void drawPage(const uint pageIndex, const ref Rectanglef area,  
-                             const ref Rectanglef quad)
+        final void drawPage(const uint pageIndex, const ref Rectf area,  
+                             const ref Rectf quad)
         {
             setShader(textureShader_);
 

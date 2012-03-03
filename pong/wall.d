@@ -15,7 +15,7 @@ import physics.physicsbody;
 import spatial.volumeaabbox;
 import video.videodriver;
 import math.vector2;
-import math.rectangle;
+import math.rect;
 import util.signal;
 import util.factory;
 import color;
@@ -41,7 +41,7 @@ class Wall : Actor
         ///Current color of the wall border.                 
         Color colorBorder_;
         ///Area taken up by the wall.
-        Rectanglef box_;
+        Rectf box_;
 
     public:
         ///Emitted when a ball hits the wall. Will emit const BallBody after D2 move.
@@ -60,9 +60,9 @@ class Wall : Actor
          * Construct a wall.
          *
          * Params:  physicsBody = Physics body of the wall.
-         *          box          = Rectangle used for graphical representation of the wall.
+         *          box          = Rect used for graphical representation of the wall.
          */
-        this(PhysicsBody physicsBody, const ref Rectanglef box)
+        this(PhysicsBody physicsBody, const ref Rectf box)
         {
             super(physicsBody);
             box_          = box;
@@ -73,8 +73,8 @@ class Wall : Actor
         override void draw(VideoDriver driver)
         {
             const Vector2f position = physicsBody_.position;
-            driver.drawRectangle(position + box_.min, position + box_.max, colorBorder_);
-            driver.drawFilledRectangle(position + box_.min, position + box_.max, color_);
+            driver.drawRect(position + box_.min, position + box_.max, colorBorder_);
+            driver.drawFilledRect(position + box_.min, position + box_.max, color_);
         }
 
         override void update(SceneManager manager)
@@ -105,7 +105,7 @@ abstract class WallFactoryBase(T) : ActorFactory!T
         ///Get a collision aabbox based on factory parameters. Used in produce().
         VolumeAABBox bbox(){return new VolumeAABBox(boxMin_, boxMax_ - boxMin_);}
         ///Get a bounds rectangle based on factory parameters. Used in produce().
-        Rectanglef rectangle(){return Rectanglef(boxMin_, boxMax_);}
+        Rectf rectangle(){return Rectf(boxMin_, boxMax_);}
 }
 
 ///Factory used to construct walls.

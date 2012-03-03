@@ -16,7 +16,6 @@ import scene.scenemanager;
 import physics.physicsbody;
 import video.videodriver;
 import math.vector2;
-import math.rectangle;
 import util.factory;
 
 

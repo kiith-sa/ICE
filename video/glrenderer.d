@@ -21,7 +21,7 @@ import video.gltexture;
 import video.gltexturebackend;
 import math.vector2;
 import math.matrix4;
-import math.rectangle;
+import math.rect;
 import containers.vector;
 import color;
 
@@ -55,7 +55,7 @@ package struct GLRenderer
         bool flushGroup_;
 
         ///Scissor areas of scissor calls during the frame.
-        Vector!Rectanglei scissorAreas_;
+        Vector!Recti scissorAreas_;
         ///If true, current group is using scissor. (the last element of scissorAreas_)
         bool scissor_;
         ///Shader of the current group.
@@ -151,7 +151,7 @@ package struct GLRenderer
         }
 
         ///Set scissor area to use in following draw calls. Only this area will be drawn to.
-        void scissor(const ref Rectanglei scissorArea) 
+        void scissor(const ref Recti scissorArea) 
         {
             scissor_ = true;
             scissorAreas_ ~= scissorArea;
@@ -284,7 +284,7 @@ package struct GLRenderer
          *          max   = Maximum dimensions of the rectangle.
          *          color = Rectangle color.
          */
-        void drawRectangle(const Vector2f min, const Vector2f max, const Color color)
+        void drawRect(const Vector2f min, const Vector2f max, const Color color)
         {
             alias GLVertex2DColored Vertex;
 
@@ -373,7 +373,7 @@ package struct GLRenderer
                 //uint.max means no scissor
                 if(group.scissor != uint.max)
                 {
-                    Rectanglei scissor = scissorAreas_[group.scissor];
+                    Recti scissor = scissorAreas_[group.scissor];
                     glEnable(GL_SCISSOR_TEST);
                     glScissor(scissor.min.x, scissor.min.y,
                               scissor.width, scissor.height);

@@ -15,7 +15,7 @@ import std.stdio;
 
 import video.videodriver;
 import math.vector2;
-import math.rectangle;
+import math.rect;
 import platform.platform;
 import formats.mathparser;
 import color;
@@ -42,7 +42,7 @@ class GUIElement
         ///Color of the element's border.
         Color borderColor_ = rgba!"FFFFFF60";
         ///Bounds of this element in screen space.
-        Rectanglei bounds_;
+        Recti bounds_;
 
         ///Is this element visible?
         bool visible_ = true;
@@ -95,7 +95,7 @@ class GUIElement
         }
 
         ///Get bounding rectangle of this GUI element in screen space.
-        @property final Rectanglei boundsGlobal() const {return bounds_;}
+        @property final Recti boundsGlobal() const {return bounds_;}
 
         /**
          * Add a child element. 
@@ -172,7 +172,7 @@ class GUIElement
 
             if(drawBorder_)
             {
-                driver.drawRectangle(bounds_.min.to!float, bounds_.max.to!float, 
+                driver.drawRect(bounds_.min.to!float, bounds_.max.to!float, 
                                      borderColor_);
             }
 

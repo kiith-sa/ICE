@@ -21,7 +21,7 @@ import gui.guimousecontrollable;
 import monitor.monitormanager;
 import monitor.submonitor;
 import math.vector2;
-import math.rectangle;
+import math.rect;
 import math.math;
 import util.signal;
 import color;
@@ -123,7 +123,7 @@ final package class PageMonitor : SubMonitor
                  *          offset = Offset into the page in texture pixels (wraps).
                  *          zoom   = Zoom factor.
                  */
-                void draw(Rectanglei bounds, const Vector2f offset, const real zoom)
+                void draw(Recti bounds, const Vector2f offset, const real zoom)
                 {
                     //no page to draw
                     if(driver_.pages.length == 0){return;}
@@ -135,10 +135,10 @@ final package class PageMonitor : SubMonitor
 
                     //draw the page view
                     //texture area to draw
-                    const area = Rectanglef(Vector2f(0, 0), 
+                    const area = Rectf(Vector2f(0, 0), 
                                             bounds.size.to!float / zoom) - offset; 
                     //quad to map the texture area to
-                    const quad = Rectanglef(bounds.min.to!float, bounds.max.to!float);
+                    const quad = Rectf(bounds.min.to!float, bounds.max.to!float);
                     driver_.drawPage(currentPage_, area, quad);
                 }
         }

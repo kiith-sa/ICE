@@ -14,7 +14,7 @@ import std.conv;
 import color;
 import image;
 import math.math;
-import math.rectangle;
+import math.rect;
 import math.vector2;
 import memory.memory;
 
@@ -64,7 +64,7 @@ struct TexturePage(TexturePacker, TextureBackend)
          *
          * Returns: True on success, false on failure.
          */
-        bool insertTexture(const ref Image image, out Rectangleu pageArea)
+        bool insertTexture(const ref Image image, out Rectu pageArea)
         {
             //image format must match
             if(image.format != format_){return false;}
@@ -80,7 +80,7 @@ struct TexturePage(TexturePacker, TextureBackend)
         void start(){backend_.start();}
 
         ///Remove texture with specified bounds from this page.
-        void removeTexture(const ref Rectangleu bounds) {packer_.freeSpace(bounds);}
+        void removeTexture(const ref Rectu bounds) {packer_.freeSpace(bounds);}
 
         ///Determine if this page is empty (i.e. there are no textures on it).
         @property bool empty() const pure {return packer_.empty();}

@@ -27,7 +27,7 @@ import platform.platform;
 import time.timer;
 import math.math;
 import math.vector2;
-import math.rectangle;
+import math.rect;
 import monitor.monitormanager;
 import util.signal;
 import util.weaksingleton;
@@ -124,7 +124,7 @@ class Game
         SceneManager sceneManager_;
 
         ///Game area in world space.
-        static immutable Rectanglef gameArea_ = Rectanglef(0.0f, 0.0f, 800.0f, 600.0f);
+        static immutable Rectf gameArea_ = Rectf(0.0f, 0.0f, 800.0f, 600.0f);
         
         ///Current game ball.
         Ball ball_;
@@ -291,7 +291,7 @@ class Game
         void draw(VideoDriver driver){sceneManager_.draw(driver);}
 
         ///Get game area.
-        @property static Rectanglef gameArea(){return gameArea_;}
+        @property static Rectf gameArea(){return gameArea_;}
 
         ///End the game, regardless of whether it has been won or not.
         void endGame()

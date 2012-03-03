@@ -16,7 +16,6 @@ import std.string;
 import gui.guielement;
 import video.videodriver;
 import math.vector2;
-import math.rectangle;
 import color;
 import util.factory;
 
