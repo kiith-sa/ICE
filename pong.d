@@ -23,9 +23,13 @@ module main.pong;
 
 import core.stdc.stdlib: exit;     
 import std.stdio: writeln;
+import std.typecons;
+
+import dgamevfs._;
 
 import file.fileio;
 import formats.cli;
+import ice.exceptions;
 import pong.pong;
 
 
@@ -54,13 +58,34 @@ void main(string[] args)
         rootData(root);
         userData(user);
 
-        Pong pong = new Pong();
+        auto rootFS = new FSDir("root_data", root, No.writable);
+        auto userFS = new FSDir("user_data", user, Yes.writable);
+        auto rootStack = new StackDir("root_data");
+        rootStack.mount(rootFS.dir("main"));
+        auto userStack = new StackDir("user_data");
+        userStack.mount(userFS.dir("main"));
+        auto gameDir = new StackDir("root");
+        gameDir.mount(rootStack);
+        gameDir.mount(userStack);
+
+        Pong pong = new Pong(gameDir);
         scope(exit){clear(pong);}
         pong.run();
     }
+    catch(GameStartupException e)
+    {
+        writeln("Game failed to start: ", e.msg);
+        exit(-1);
+    }
+    catch(VFSException e)
+    {
+        writeln("Game failed due to a file system error "
+                "(maybe data directory is missing?): ", e.msg);
+        exit(-1);
+    }
     catch(Exception e)
     {
-        writeln("Unhandled exeption: ", e.toString(), " ", e.msg);
+        writeln("Game failed to start, with an unhandled exeption: ", e.toString(), " ", e.msg);
         exit(-1);
     }
 }

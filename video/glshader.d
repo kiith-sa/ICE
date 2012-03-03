@@ -9,25 +9,22 @@
 module video.glshader;
 
 
+import std.conv;
 import std.exception;
 import std.stdio;
 import std.string;
 
 import derelict.opengl.gl;
+import dgamevfs._;
 
+import memory.memory;
 import video.shader;
-import file.fileio;
 
            
 ///OpenGL (GLSL only right now) shader.
 package struct GLShader
 {
-    //commented out due to compiler bug
-    //invariant(){assert(program_ != 0, "Shader program is null");}
-
     private:
-        alias file.file.File File;
-
         ///Linked GLSL shader program.
         GLuint program_ = 0;
 
@@ -35,20 +32,24 @@ package struct GLShader
         /**
          * Construct (load) a shader.
          *
-         * Params:  name = File name of the shader in the "shaders/" subdirectory.
+         * Params:  name      = File name of the shader in the "shaders/" subdirectory.
+         *          shaderDir = Shader data directory.
          * 
          * Throws:  ShaderException if the shader could not be loaded or was invalid.
          */
-        this(const string name)
+        this(string name, VFSDir shaderDir)
         {
             scope(failure){writefln("Shader initialization failed: " ~ name);}
 
-            try{loadGLSL("shaders/" ~ name ~ ".vert", "shaders/" ~ name ~ ".frag");}
-            catch(FileIOException e)
+            try
+            {
+                loadGLSL(shaderDir.file(name ~ ".vert"), 
+                         shaderDir.file(name ~ ".frag"));
+            }
+            catch(VFSException e)
             {
                 throw new ShaderException("Shader could not be read: " ~ e.msg);
             }
-            catch(ShaderException e){writefln(e.msg); throw e;}
         }
 
         ///Destroy this shader.
@@ -85,48 +86,92 @@ package struct GLShader
         /**
          * Load a GLSL shader.
          *
-         * Params:  vfname = File name of the vertex shader.
-         *          ffname = File name of the fragment shader.
+         * Params:  vertex   = File to read the vertex shader from.
+         *          fragment = File to read the fragment shader from.
          *
-         * Throws:  FileIOException if a shader file could not be found or file name is invalid.
+         * Throws:  VFSException   if a shader file could not be read from.
          *          ShaderException if the shader could not be loaded, compiled or linked.
          */
-        void loadGLSL(const string vfname, const string ffname)
+        void loadGLSL(VFSFile vertex, VFSFile fragment)
         {
-            //opening and loading from files
-            File vfile    = File(vfname, FileMode.Read);
-            File ffile    = File(ffname, FileMode.Read);
+            auto error = glGetError();
+            if(error != GL_NO_ERROR)
+            {
+                writeln("GL error before loading shader: ", to!string(error));
+            }
 
-            const vsource = cast(string)vfile.data;
-            const fsource = cast(string)ffile.data;
-            const vlength = cast(int)vsource.length; 
-            const flength = cast(int)fsource.length; 
-            const vptr    = vsource.ptr;
-            const fptr    = fsource.ptr;
-            
-            //creating OpenGL objects for shaders
-            const GLuint vshader = glCreateShader(GL_VERTEX_SHADER);
-            const GLuint fshader = glCreateShader(GL_FRAGMENT_SHADER);
+            GLuint loadShader(GLenum type, VFSFile file)
+            {
+                const typeStr = type == GL_VERTEX_SHADER   ? "vertex"   : 
+                                type == GL_FRAGMENT_SHADER ? "fragment" :
+                                                             null;
+                assert(typeStr !is null, "Unknown shader type");
 
-            //passing shader code to OpenGL
-            glShaderSource(vshader, 1, &vptr, &vlength);
-            glShaderSource(fshader, 1, &fptr, &flength);
+                char[] source = allocArray!char(file.bytes);
+                scope(exit){free(source);}
 
-            //compiling shaders
-            int compiled;
-            glCompileShader(vshader);
-            glGetShaderiv(vshader, GL_COMPILE_STATUS, &compiled);
-            enforceEx!ShaderException(compiled, "Couldn't compile vertex shader " ~ vfname);
+                file.input.read(cast(void[])source);
 
-            glCompileShader(fshader);
-            glGetShaderiv(fshader, GL_COMPILE_STATUS, &compiled);
-            enforceEx!ShaderException(compiled, "Couldn't compile fragment shader " ~ ffname);
+                //opening and loading from files
+                const srcLength = cast(int)source.length; 
+                const srcPtr    = source.ptr;
+                
+                //creating OpenGL objects for shaders
+                const GLuint shader = glCreateShader(type);
+                scope(failure){glDeleteShader(shader);}
+                if(shader == 0)
+                {
+                    auto msg = 
+                        "Could not create " ~ typeStr ~ " shader object when loading "
+                        "shader " ~ file.path ~ ". This is not the shader's fault. "
+                        "Most likely the graphics drivers are old.";
+                    throw new ShaderException(msg);
+                }
+
+                //passing shader code to OpenGL
+                glShaderSource(shader, 1, &srcPtr, &srcLength);
+                error = glGetError();
+                if(error != GL_NO_ERROR)
+                {
+                    auto msg = 
+                        "Error loading " ~ typeStr ~ " shader source from file " ~ 
+                        file.path ~ " : " ~ to!string(error);
+                    throw new ShaderException(msg);
+                }
+
+                //compiling shaders
+                int compiled;
+                glCompileShader(shader);
+                glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled);
+                if(!compiled)
+                {
+                    char[1024] log;
+                    GLsizei logLength;
+                    glGetShaderInfoLog(shader, log.length,  &logLength, log.ptr);
+
+                    auto msg = 
+                        "Couldn't compile " ~ typeStr ~ " shader " ~ 
+                        file.path ~ ": info log: " ~ cast(string)log[0 .. logLength];  
+                    throw new ShaderException(msg);
+                }
+
+                return shader;
+            }
+
+
+            const vshader = loadShader(GL_VERTEX_SHADER, vertex);
+            scope(failure){glDeleteShader(vshader);}
+            const fshader = loadShader(GL_FRAGMENT_SHADER, fragment);
+            scope(failure){glDeleteShader(fshader);}
 
             program_ = glCreateProgram();
+            scope(failure){glDeleteProgram(program_);}
 
             //passing shaders to the program
             glAttachShader(program_, vshader);
+            scope(failure){glDetachShader(program_, vshader);}
             glAttachShader(program_, fshader);
+            scope(failure){glDetachShader(program_, fshader);}
 
             //linking shaders
             int linked;
@@ -134,8 +179,8 @@ package struct GLShader
             glGetProgramiv(program_, GL_LINK_STATUS, &linked);
             if(!linked)
             {
-                glDeleteProgram(program_);
-                throw new ShaderException("Couldn't link shaders " ~ vfname ~ " and " ~ ffname);
+                throw new ShaderException("Couldn't link shaders " ~ vertex.path ~ 
+                                          " and " ~ fragment.path);
             }
         }
 }

@@ -10,7 +10,6 @@ module video.binarytexturepacker;
 
 
 import std.conv;
-alias std.conv.to to;
 
 import math.math;
 import math.vector2;
@@ -176,23 +175,16 @@ package struct BinaryTexturePacker
         /**
          * Try to allocate space for a texture with given size.
          *
-         * Params:  size      = Size of texture space to allocate.
-         *          texcoords = Texture coords of the texture on the page will be written here.
-         *          offset    = Offset of the texture on the page will be written here.
+         * Params:  size    = Size of texture space to allocate.
+         *          texArea = Area taken by the texture will be returned here. 
          *        
          * Returns: True if successful, false otherwise.
          */
-        bool allocateSpace(const Vector2u size, out Rectanglef texcoords, out Vector2u offset)
+        bool allocateSpace(const Vector2u size, out Rectangleu texArea)
         {
             const Node* node = root_.insert(size);
             if(node is null){return false;}
-
-            const Vector2f min = node.area.min.to!float;
-            const Vector2f max = node.area.max.to!float;
-
-            texcoords.min = Vector2f(min.x / size_.x, min.y / size_.y);
-            texcoords.max = Vector2f(max.x / size_.x, max.y / size_.y);
-            offset = node.area.min;
+            texArea = node.area;
             return true;
         }
 

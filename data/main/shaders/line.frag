@@ -1,4 +1,4 @@
-in vec4 out_color;
+varying vec4 out_color;
 
 void main (void)
 {

@@ -9,10 +9,11 @@
 module video.sdlglvideodriver;
 
 
-import derelict.sdl.sdl;
-
 import std.stdio;
 import std.string;
+
+import derelict.sdl.sdl;
+import dgamevfs._;
 
 import video.videodriver;
 import video.glvideodriver;
@@ -28,11 +29,14 @@ final class SDLGLVideoDriver : GLVideoDriver
          * Construct a SDLGLVideoDriver.
          *
          * Params:  fontManager = Font manager to use for font rendering and management.
+         *          gameDir     = Game data directory.
+         *
+         * Throws:  VFSException if the shader directory (shaders/) was not found in gameDir.
          */
-        this(FontManager fontManager)
+        this(FontManager fontManager, VFSDir gameDir)
         {
             writeln("Initializing SDLGLVideoDriver");
-            super(fontManager);
+            super(fontManager, gameDir);
         }
 
         ~this()
@@ -41,7 +45,7 @@ final class SDLGLVideoDriver : GLVideoDriver
         }
 
         override void setVideoMode(const uint width, const uint height, 
-                                     const ColorFormat format, const bool fullscreen)
+                                   const ColorFormat format, const bool fullscreen)
         {
             assert(width >= 80 && width <= 65536, 
                    "Can't set video mode with such ridiculous width");

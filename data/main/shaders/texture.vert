@@ -1,6 +1,6 @@
-in vec2 in_position;
-in vec2 in_texcoord;
-in vec4 in_color;
+attribute vec2 in_position;
+attribute vec2 in_texcoord;
+attribute vec4 in_color;
 
 varying vec2 out_texcoord;
 varying vec4 out_color;

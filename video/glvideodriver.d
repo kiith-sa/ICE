@@ -18,17 +18,20 @@ import derelict.opengl.gl;
 import derelict.opengl.exttypes;
 import derelict.opengl.extfuncs;
 import derelict.util.exception;
+import dgamevfs._;
 
-import video.videodriver;
+import video.binarytexturepacker;
+import video.fontmanager;
+import video.gldrawmode;
+import video.glmonitor;
+import video.glrenderer;
 import video.glshader;
 import video.gltexture;
-import video.gltexturepage;
-import video.glrenderer;
-import video.gldrawmode;
+import video.gltexturebackend;
 import video.shader;
 import video.texture;
-import video.fontmanager;
-import video.glmonitor;
+import video.texturepage;
+import video.videodriver;
 import monitor.monitordata;
 import monitor.submonitor;
 import monitor.graphmonitor;
@@ -63,40 +66,42 @@ abstract class GLVideoDriver : VideoDriver
         uint screenHeight_ = 0;
     
     private:
-        ///Derelict OpenGL version.
+        //Derelict OpenGL version.
         GLVersion version_;
 
-        ///Shader used to draw lines and rectangles without textures.
+        //Shader used to draw lines and rectangles without textures.
         Shader plainShader_;
-        ///Shader used to draw textured surfaces.
+        //Shader used to draw textured surfaces.
         Shader textureShader_;
-        ///Shader used to draw fonts.
+        //Shader used to draw fonts.
         Shader fontShader_;
-        ///Shaders.
+        //Shaders.
         GLShader* [] shaders_;
-        ///Index of currently used shader; uint.max means none.
+        //Index of currently used shader; uint.max means none.
         uint currentShader_ = uint.max;
+        //Shader directory.
+        VFSDir shaderDir_;
 
-        ///Texture pages.
-        TexturePage* [] pages_;
-        ///Index of currently used page; uint.max means none.
+        //Texture pages.
+        GLTexturePage* [] pages_;
+        //Index of currently used page; uint.max means none.
         uint currentPage_ = uint.max;
-        ///Textures.
+        //Textures.
         GLTexture* [] textures_;
                               
-        ///Statistics data for monitoring.
+        //Statistics data for monitoring.
         Statistics statistics_;
 
-        ///Caches vertices and renders them at the end of frame.
+        //Caches vertices and renders them at the end of frame.
         GLRenderer renderer_;
 
-        ///Are we between startFrame and endFrame?
+        //Are we between startFrame and endFrame?
         bool frameInProgress_;
 
-        ///Has GL been initialized (through initGl) ?
+        //Has GL been initialized (through initGl) ?
         bool glInitialized_;
 
-        ///Timer used to measure FPS.
+        //Timer used to measure FPS.
         Timer fpsTimer_;
 
     package:
@@ -108,10 +113,19 @@ abstract class GLVideoDriver : VideoDriver
          * Construct a GLVideoDriver.
          *
          * Params:  fontManager = Font manager to use for font rendering and management.
+         *          gameDir     = Game data directory.
+         *
+         * Throws:  VFSException if the shader directory (shaders/) was not found in gameDir.
          */
-        this(FontManager fontManager)
+        this(FontManager fontManager, VFSDir gameDir)
         {
             super(fontManager);
+            try{shaderDir_ = gameDir.dir("shaders");}
+            catch(VFSException e)
+            {
+                throw new VideoDriverException("Could not found the shader directory "
+                                               "in the game directory");
+            }
             //dummy delay, not used
             fpsTimer_ = Timer(1.0);
             DerelictGL.load();
@@ -266,7 +280,7 @@ abstract class GLVideoDriver : VideoDriver
 
             const Vector2f vmin = position.to!float;
             renderer_.drawTexture(vmin, vmin + texture.size.to!float,
-                                   glTexture.texcoords.min, glTexture.texcoords.max);
+                                   glTexture.texCoords.min, glTexture.texCoords.max);
         }
         
         final override void drawText(const Vector2i position, const string text, const Color color)
@@ -320,9 +334,9 @@ abstract class GLVideoDriver : VideoDriver
                 vmax.y = vmin.y + texture.size.y;
 
                 renderer_.drawTexture(vmin, vmax, 
-                                       glTexture.texcoords.min, 
-                                       glTexture.texcoords.max, 
-                                       color);
+                                      glTexture.texCoords.min, 
+                                      glTexture.texCoords.max, 
+                                      color);
             }
             //error loading glyphs
             catch(TextureException e)
@@ -413,7 +427,7 @@ abstract class GLVideoDriver : VideoDriver
         {
             GLenum glFormat, type;
             GLint internalFormat;
-            glColorFormat(format, glFormat, type, internalFormat);
+            GLTextureBackend.glColorFormat(format, glFormat, type, internalFormat);
 
             uint size = 0;
 
@@ -444,23 +458,21 @@ abstract class GLVideoDriver : VideoDriver
                        "own page, power of two texture is required");
             }
 
-            Rectanglef texcoords;
-            //offset of the texture on the page
-            Vector2u offset;
-
             //create new GLTexture with specified parameters.
-            void newTexture(in size_t pageIndex)
+            void newTexture(const size_t pageIndex, ref const Rectangleu pageArea,
+                            const Vector2u pageSize)
             {
-                textures_ ~= alloc!GLTexture(texcoords, offset, cast(uint)pageIndex);
+                textures_ ~= alloc!GLTexture(pageArea, pageSize, cast(uint)pageIndex);
             }
 
             //if the texture needs its own page
             if(forcePage)
             {
+                Rectangleu pageArea;
                 createPage(image.size, image.format, forcePage);
-                pages_[$ - 1].insertTexture(image, texcoords, offset);
-                newTexture(pages_.length - 1);
-                assert(textures_[$ - 1].texcoords == Rectanglef(0.0, 0.0, 1.0, 1.0), 
+                pages_[$ - 1].insertTexture(image, pageArea);
+                newTexture(pages_.length - 1, pageArea, pages_[$ - 1].size);
+                assert(textures_[$ - 1].texCoords == Rectanglef(0.0, 0.0, 1.0, 1.0), 
                        "Texture coordinates of a single page texture must "
                        "span the whole texture");
                 return Texture(image.size, cast(uint)textures_.length - 1);
@@ -469,9 +481,10 @@ abstract class GLVideoDriver : VideoDriver
             //try to find a page to fit the new texture to
             foreach(index, ref page; pages_)
             {
-                if(page !is null && page.insertTexture(image, texcoords, offset))
+                Rectangleu pageArea;
+                if(page !is null && page.insertTexture(image, pageArea))
                 {
-                    newTexture(index);
+                    newTexture(index, pageArea, page.size);
                     return Texture(image.size, cast(uint)textures_.length - 1);
                 }
             }
@@ -524,8 +537,8 @@ abstract class GLVideoDriver : VideoDriver
 
             GLenum glFormat, type;
             GLint internalFormat;
-            glColorFormat(image.format, glFormat, type, internalFormat);
-            glPixelStorei(GL_PACK_ALIGNMENT, packAlignment(image.format));
+            GLTextureBackend.glColorFormat(image.format, glFormat, type, internalFormat);
+            glPixelStorei(GL_PACK_ALIGNMENT, GLTextureBackend.packAlignment(image.format));
 
             //directly read from the front buffer if we can't use FBO.
             //won't resize if the image is larger/smaller than the screen resolution,
@@ -626,7 +639,7 @@ abstract class GLVideoDriver : VideoDriver
             renderer_.drawTexture(quad.min, quad.max, tmin, tmax);
         }
 
-        @property TexturePage*[] pages() {return pages_;}
+        @property GLTexturePage*[] pages() {return pages_;}
 
     protected:
         /**
@@ -672,6 +685,12 @@ abstract class GLVideoDriver : VideoDriver
                 throw new VideoDriverException("Could not load default shaders: " ~ e.msg);
             }
 
+            const error = glGetError();
+            if(error != GL_NO_ERROR)
+            {
+                writeln("GL error after GL initialization: ", to!string(error));
+            }
+
             glInitialized_ = true;
         }
 
@@ -684,7 +703,7 @@ abstract class GLVideoDriver : VideoDriver
          */
         final Shader createShader(const string name)
         {
-            shaders_ ~= alloc!GLShader(name);
+            shaders_ ~= alloc!GLShader(name, shaderDir_);
             return Shader(cast(uint)shaders_.length - 1);
         }
 
@@ -749,10 +768,9 @@ abstract class GLVideoDriver : VideoDriver
             //1024*1024 is 1 MiB grayscale, 4MiB RGBA8
             const uint maxRecommended = min(max(1024u, supported / 4), supported);
 
-            Vector2u size = Vector2u(sizeMin, sizeMin);
-
-            void pageSize(size_t index)
+            Vector2u pageSize(size_t index)
             {
+                auto size = Vector2u(sizeMin, sizeMin);
                 index = min(powersOfTwo.length - 1, index);
                 //every page has double the page area of the previous one.
                 //i.e. page 0 is 255, 255, page 1 is 512, 255, etc;
@@ -765,17 +783,17 @@ abstract class GLVideoDriver : VideoDriver
                 size.y = max(min(size.y, maxRecommended), sizeImage.y);
 
                 if(forceSize){size = sizeImage;}
+
+                return size;
             }
             
             //Look for page indices with null pages to insert page there if possible
             foreach(index, ref page; pages_) if(page is null)
             {
-                pageSize(index);
-                page = alloc!TexturePage(size, format);
+                page = alloc!GLTexturePage(pageSize(index), format);
                 return;
             }
-            pageSize(pages_.length);
-            pages_ ~= alloc!TexturePage(size, format);
+            pages_ ~= alloc!GLTexturePage(pageSize(pages_.length), format);
         }
 
         ///Set up OpenGL viewport.

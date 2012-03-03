@@ -51,6 +51,11 @@ abstract class SpatialManager(T) : Monitorable
         void removeObject(T object);
 
         /**
+         * Remove all objects.
+         */
+        void clearObjects();
+
+        /**
          * Update an object in the manager.
          *
          * Volume of the object is expected to be immutable (or at least

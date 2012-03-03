@@ -14,7 +14,6 @@ import std.math;
 
 import video.videodriver;
 import video.glvideodriver;
-import video.gltexturepage;
 import gui.guielement;
 import gui.guimenu;
 import gui.guistatictext;

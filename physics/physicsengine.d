@@ -116,9 +116,9 @@ final class PhysicsEngine : Monitorable
             }
             foreach(physicsBody; bodies_)
             {
-                physicsBody.removeFromSpatial(spatialManager_);
                 clear(physicsBody);
             }
+            spatialManager_.clearObjects();
             clear(bodies_);
             sendStatistics.disconnectAll();
             singletonDtor();

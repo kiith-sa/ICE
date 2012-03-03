@@ -11,6 +11,8 @@ module video.videodrivercontainer;
 
 import std.stdio;
 
+import dgamevfs._;
+
 import video.videodriver;
 import video.sdlglvideodriver;
 import video.fontmanager;
@@ -51,27 +53,37 @@ class VideoDriverContainer
          *          height     = Height of initial video mode.
          *          format     = Color format of initial video mode.
          *          fullscreen = Should initial video mode be fullscreen?
+         *          gameDir    = Game data directory.
          *
-         * Throws:  VideoDriverException if the video driver could not be initialized.
+         * Returns: Produced video driver or null on error.
          */
         VideoDriver produce(Driver)(const uint width, const uint height, 
-                                    const ColorFormat format, const bool fullscreen)
+                                    const ColorFormat format, const bool fullscreen,
+                                    VFSDir gameDir)
             if(is(Driver: VideoDriver))
         {
-            scope(failure)
+            auto typeString = typeid(Driver).toString();
+            try
+            {
+                videoDriver_ = new Driver(fontManager_, gameDir);
+                videoDriver_.setVideoMode(width, height, format, fullscreen);
+            }
+            catch(VideoDriverException e)
             {
                 clear(videoDriver_);
                 videoDriver_ = null;
-                writeln("VideoDriver initialization failed");
+                writeln("Failed to construct a " ~ typeString ~ ": " ~ e.msg);
+                return null;
             }
-            videoDriver_ = new Driver(fontManager_);
-            videoDriver_.setVideoMode(width, height, format, fullscreen);
 
             try{fontManager_.reloadTextures(videoDriver_);}
             catch(TextureException e)
             {
-                throw new VideoDriverException("Video driver construction error: "
-                                               "Font textures could not be reloaded: " ~ e.msg);
+                clear(videoDriver_);
+                videoDriver_ = null;
+                writeln(typeString ~ " construction error: "
+                        "Font textures could not be reloaded: " ~ e.msg);
+                return null;
             }
             return videoDriver_;
         }

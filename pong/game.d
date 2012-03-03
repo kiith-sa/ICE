@@ -492,8 +492,8 @@ class GameContainer
                                    (Vector2f(400.0f, 300.0f), 25.0f, 32);
             physicsEngine_  = new PhysicsEngine(spatialPhysics_);
             sceneManager_   = new SceneManager(physicsEngine_);
-            gui_             = new GameGUI(guiParent, 300.0);
-            game_            = new Game(platform, sceneManager_, gui_, 10, 300.0);
+            gui_            = new GameGUI(guiParent, 300.0);
+            game_           = new Game(platform, sceneManager_, gui_, 10, 300.0);
             monitor_.addMonitorable(spatialPhysics_, "Spatial(P)");
             monitor_.addMonitorable(physicsEngine_, "Physics");
             monitor_.addMonitorable(sceneManager_, "Scene");

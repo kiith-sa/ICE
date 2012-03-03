@@ -131,6 +131,15 @@ class GridSpatialManager(T) : SpatialManager!T
             }
         }
 
+        override void clearObjects()
+        {
+            foreach(ref cell; grid_)
+            {
+                clear(cell.objects);
+            }
+            clear(outer_.objects);
+        }
+
         override void updateObject(T object, const Vector2f oldPosition)
         {
             assert(object.volume !is null, "Can't manage objects with null volumes");

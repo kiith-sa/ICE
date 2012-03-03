@@ -18,7 +18,7 @@ import video.glvertexbuffer;
 import video.gldrawmode;
 import video.glshader;
 import video.gltexture;
-import video.gltexturepage;
+import video.gltexturebackend;
 import math.vector2;
 import math.matrix4;
 import math.rectangle;
@@ -61,7 +61,7 @@ package struct GLRenderer
         ///Shader of the current group.
         GLShader* shader_ = null;
         ///Texture page of the current group.
-        TexturePage* texturePage_ = null;
+        GLTexturePage* texturePage_ = null;
         ///View zoom of the current group.
         Vector2f viewOffset_ = Vector2f(0.0f, 0.0f);
         ///View offset of the current group.
@@ -83,8 +83,6 @@ package struct GLRenderer
          */
         this(const GLDrawMode mode)
         {
-            vertexGroups_.reserve(8);
-            scissorAreas_.reserve(8);
             flushGroup_ = true;
             initialized_ = true;
             initBuffers(mode);
@@ -97,8 +95,8 @@ package struct GLRenderer
             texturedBuffer_.reset();
 
             texturePage_ = null;
-            shader_       = null;
-            scissor_      = false;
+            shader_      = null;
+            scissor_     = false;
 
             scissorAreas_.length = 0;
             vertexGroups_.length = 0;
@@ -141,12 +139,12 @@ package struct GLRenderer
         ///Set shader to use in following draw calls.
         void setShader(GLShader* shader) pure 
         {
-            shader_      = shader;
+            shader_     = shader;
             flushGroup_ = true;
         }
 
         ///Set texture page to use in following draw calls.
-        void setTexturePage(TexturePage* page) pure 
+        void setTexturePage(GLTexturePage* page) pure 
         {
             texturePage_ = page;
             flushGroup_  = true;

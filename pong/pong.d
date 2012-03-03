@@ -13,6 +13,9 @@ import std.conv;
 import std.stdio;
 import std.string;
 
+import dgamevfs._;
+
+import ice.exceptions;
 import pong.game;
 import pong.credits;
 import gui.guielement;
@@ -202,6 +205,9 @@ class Pong
         ///Platform used for user input.
         Platform platform_;
 
+        ///Root directory of the game's virtual file system.
+        VFSDir gameDir_;
+
         ///Container managing video driver and its dependencies.
         VideoDriverContainer videoDriverContainer_;
         ///Video driver.
@@ -225,9 +231,17 @@ class Pong
         MonitorManager monitor_;
 
     public:
-        ///Initialize Pong.
-        this()
+        /**
+         * Initialize Pong.
+         *
+         * Params:  gameDir = Root directory of the game's virtual file system.
+         *
+         * Throws GameStartupException on an expected, correctly handled failure.
+         */
+        this(VFSDir gameDir)
         {
+            gameDir_ = gameDir;
+
             writeln("Initializing Pong");
             scope(failure){writeln("Pong initialization failed");}
 
@@ -252,13 +266,9 @@ class Pong
             }
             platform_ = new SDLPlatform;
 
-            scope(failure)
-            {
-                clear(videoDriverContainer_);
-            }
-            videoDriverContainer_ = new VideoDriverContainer;
-            videoDriver_ = videoDriverContainer_.produce!(SDLGLVideoDriver)
-                            (800, 600, ColorFormat.RGBA_8, false);
+            scope(failure){clear(videoDriverContainer_);}
+            initVideo();
+
             scope(failure){monitor_.removeMonitorable("Video");}
             monitor_.addMonitorable(videoDriver_, "Video");
 
@@ -360,6 +370,18 @@ class Pong
         }
 
     private:
+        ///Initialize the video subsystem. Throws GameStartupException on failure.
+        void initVideo()
+        {
+            videoDriverContainer_ = new VideoDriverContainer;
+            videoDriver_ = videoDriverContainer_.produce!(SDLGLVideoDriver)
+                            (800, 600, ColorFormat.RGBA_8, false, gameDir_);
+            if(videoDriver_ is null)
+            {
+                throw new GameStartupException("Failed to initialize video driver.");
+            }
+        }
+
         ///Start game.
         void gameStart()
         {
@@ -452,14 +474,12 @@ class Pong
 
             videoDriverContainer_.destroy();
             scope(failure){(videoDriver_ = null);}
-            try
+
+            videoDriver_ = videoDriverContainer_.produce!(SDLGLVideoDriver)
+                           (width, height, format, false, gameDir_);
+            if(videoDriver_ is null)
             {
-                videoDriver_ = videoDriverContainer_.produce!(SDLGLVideoDriver)
-                                (width, height, format, false);
-            }
-            catch(VideoDriverException e)
-            {
-                writeln("Video driver reset failed:", e.msg);
+                writeln("Video driver reset failed.");
                 exit();
                 return;
             }

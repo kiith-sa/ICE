@@ -17,7 +17,7 @@ import math.rectangle;
 package struct GLTexture
 {
     ///Texture coordinates.
-    Rectanglef texcoords;
+    Rectanglef texCoords;
     ///Offset relative to the page.
     Vector2u offset;
     ///Index of the page.
@@ -26,14 +26,17 @@ package struct GLTexture
     /**
      * Construct a GLTexture.
      *
-     * Params:  texcoords  = Texture coordinates on the texture page.
-     *          offset     = Offset from the origin of texture page.
+     * Params:  pageArea  = Area taken by the texture on the texture page.
+     *          pageSize  = Size of the page in pixels.
      *          pageIndex = Index if the texture page.
      */
-    this(const Rectanglef texcoords, const Vector2u offset, const uint pageIndex) pure
+    this(ref const Rectangleu pageArea, const Vector2u pageSize, const uint pageIndex) pure
     {
-        this.texcoords = texcoords;
-        this.offset    = offset;
+        this.texCoords = Rectanglef((cast(float)pageArea.min.x) / pageSize.x, 
+                                    (cast(float)pageArea.min.y) / pageSize.y,  
+                                    (cast(float)pageArea.max.x) / pageSize.x,  
+                                    (cast(float)pageArea.max.y) / pageSize.y);
+        this.offset    = pageArea.min;
         this.pageIndex = pageIndex;
     }
 }

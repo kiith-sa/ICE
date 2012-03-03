@@ -1,7 +1,7 @@
 uniform sampler2D tex;
 
-in vec2 out_texcoord;
-in vec4 out_color;
+varying vec2 out_texcoord;
+varying vec4 out_color;
 
 void main (void)
 {

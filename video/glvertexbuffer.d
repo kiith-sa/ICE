@@ -11,12 +11,13 @@ module video.glvertexbuffer;
 
 import derelict.opengl.gl;
 
-import video.glvertex;
-import video.gldrawmode;
-import video.gltexturepage;
-import video.glshader;
-import math.vector2;
 import containers.vector;
+import math.vector2;
+import memory.memory;
+import video.gldrawmode;
+import video.glshader;
+import video.gltexturebackend;
+import video.glvertex;
 
 
 /**
@@ -31,10 +32,15 @@ package struct GLVertexBuffer(Vertex)
     if(is(Vertex == GLVertex2DColored) || is(Vertex == GLVertex2DTextured))
 {
     private:
+        ///Memory allocated for vertices.
+        Vertex[] verticesAllocated_ = null;
         ///Vertex data.
-        Vector!Vertex vertices_;
+        Vertex[] vertices_;
+
+        ///Memory allocated for indices.
+        uint[] indicesAllocated_ = null;
         ///Index data.
-        Vector!uint indices_;
+        uint[] indices_;
 
         ///VBO handle, used in VBO mode.
         GLuint vbo_;
@@ -43,6 +49,9 @@ package struct GLVertexBuffer(Vertex)
 
         ///Draw mode of the buffer.
         GLDrawMode mode_;
+
+        ///Is this vertex buffer null (uninitialized)?
+        bool isNull_ = true;
 
     public:
         /**
@@ -59,15 +68,21 @@ package struct GLVertexBuffer(Vertex)
         }
         body
         {
-            vertices_.reserve(8);
-            indices_.reserve(8);
-            mode_ = mode;
+            verticesAllocated_ = allocArray!Vertex(8);
+            indicesAllocated_  = allocArray!uint(8);
+            vertices_          = verticesAllocated_[0 .. 0];
+            indices_           = indicesAllocated_[0 .. 0];
+            mode_              = mode;
+            isNull_            = false;
             if(mode_ == GLDrawMode.VertexBuffer){initVBO();}
         }
 
         ///Destroy the GLVertexBuffer.
         ~this()
         {
+            if(isNull_){return;}
+            free(verticesAllocated_);
+            free(indicesAllocated_);
             if(mode_ == GLDrawMode.VertexBuffer){destroyVBO();}
         }
 
@@ -104,10 +119,10 @@ package struct GLVertexBuffer(Vertex)
         }
 
         ///Access vertex data as an array.
-        @property Vertex[] vertices(){return vertices_.ptrUnsafe[0 .. vertices_.length];}
+        @property Vertex[] vertices(){return vertices_;}
 
         ///Access index data as an array.
-        @property uint[] indices(){return indices_.ptrUnsafe[0 .. indices_.length];}
+        @property uint[] indices(){return indices_;}
 
         ///Get number of vertices in the buffer.
         @property uint vertexCount() const {return cast(uint)vertices_.length;}
@@ -116,23 +131,23 @@ package struct GLVertexBuffer(Vertex)
         @property uint indexCount() const {return cast(uint)indices_.length;}
 
         ///Set number of vertices in the buffer (to add more vertices).
-        @property void vertexCount(const size_t length)
+        @property void vertexCount(const size_t len)
         {
-            if(vertices_.allocated < length)
+            if(verticesAllocated_.length < len)
             {
-                vertices_.reserve(cast(size_t)(length * 1.5));
+                verticesAllocated_ = realloc(verticesAllocated_, len);
             }
-            vertices_.length = length;
+            vertices_ = verticesAllocated_[0 .. len];
         }
 
         ///Set number of indices in the buffer (to add more indices).
-        @property void indexCount(const size_t length)
+        @property void indexCount(const size_t len)
         {
-            if(indices_.allocated < length)
+            if(indicesAllocated_.length < len)
             {
-                indices_.reserve(cast(size_t)(length * 1.5));
+                indicesAllocated_ = realloc(indicesAllocated_, len);
             }
-            indices_.length = length;
+            indices_ = indicesAllocated_[0 .. len];
         }
 
         /**
@@ -174,7 +189,7 @@ package struct GLVertexBuffer(Vertex)
                 glBegin(GL_TRIANGLES);
                 foreach(i; indices_[group.offset ..  group.offset + group.vertices])
                 {
-                    const Vertex* v = vertices_.ptr(i);
+                    const Vertex* v = (vertices_.ptr + i);
                     glVertexAttrib4Nubv(color, cast(ubyte*)&v.color);
                     static if(textured){glVertexAttrib2fv(texcoord, cast(float*)&v.texcoord);}
                     glVertexAttrib2fv(position, cast(float*)&v.vertex);
@@ -226,8 +241,8 @@ package struct GLVertexBuffer(Vertex)
         ///Reset the buffer, deleting all vertices, indices.
         void reset()
         {
-            vertices_.length = 0;
-            indices_.length = 0;
+            vertices_ = verticesAllocated_[0 .. 0];
+            indices_  = indicesAllocated_[0 .. 0];
         }
 
     private:
@@ -248,7 +263,7 @@ package struct GLVertexBuffer(Vertex)
             //bind
             glBindBuffer(GL_ARRAY_BUFFER, vbo_);
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo_);
-            //BUG: On NVidia drivers, deleting buffer names will result in a
+            //BUG: On NVidia binary drivers, deleting buffer names will result in a
             //     crash once they are generated again. This might be some
             //     insidious bug in our code, but this has not been confirmed yet.
             //
@@ -284,7 +299,7 @@ package struct GLVertexGroup
     ///Shader used to draw the group.
     GLShader* shader;
     ///Texture page of the group if it uses texturing.
-    TexturePage* texturePage;
+    GLTexturePage* texturePage;
     ///Scissor index of the group. uint.max means no scissor is used.
     uint scissor = uint.max;
 

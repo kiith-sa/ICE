@@ -1,5 +1,5 @@
-in vec2 in_position;
-in vec4 in_color;
+attribute vec2 in_position;
+attribute vec4 in_color;
 
 varying vec4 out_color;
 
