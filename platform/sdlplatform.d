@@ -54,6 +54,7 @@ class SDLPlatform : Platform
 
             if(SDL_Init(SDL_INIT_VIDEO) < 0)
             {
+                DerelictSDL.unload();
                 throw new PlatformException("Could not initialize SDL: " 
                                             ~ to!string(SDL_GetError()));
             }

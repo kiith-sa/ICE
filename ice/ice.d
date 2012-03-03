@@ -245,45 +245,16 @@ class Ice
             scope(failure){writeln("Ice initialization failed");}
 
             singletonCtor();
+            scope(failure){singletonDtor();}
 
-            scope(failure)
-            {
-                clear(monitor_);
-                clear(memory_);
-                singletonDtor();
-            }
-            monitor_ = new MonitorManager();
-            memory_  = new MemoryMonitorable();
-
-            scope(failure){monitor_.removeMonitorable("Memory");}
-            monitor_.addMonitorable(memory_, "Memory");
-
-            scope(failure)
-            {
-                clear(platform_);
-                platform_ = null;
-            }
-            platform_ = new SDLPlatform;
-
-            scope(failure){clear(videoDriverContainer_);}
+            initPlatform();
+            scope(failure){destroyPlatform();}
             initVideo();
-
-            scope(failure){monitor_.removeMonitorable("Video");}
-            monitor_.addMonitorable(videoDriver_, "Video");
-
-            //initialize GUI
-            scope(failure){clear(guiRoot_);}
-            guiRoot_ = new GUIRoot(platform_);
-
-            scope(failure){clear(gui_);}
-            gui_ = new IceGUI(guiRoot_.root, monitor_, platform_);
-            gui_.creditsStart.connect(&creditsStart);
-            gui_.creditsEnd.connect(&creditsEnd);
-            gui_.gameStart.connect(&gameStart);
-            gui_.quit.connect(&exit);
-            gui_.resetVideo.connect(&resetVideo);
-
-            gameContainer_ = new GameContainer();
+            scope(failure){destroyVideo();}
+            initMonitor();
+            scope(failure){destroyMonitor();}
+            initGUI();
+            scope(failure){destroyGUI();}
 
             //Update FPS every second.
             fpsCounter_ = EventCounter(1.0);
@@ -295,37 +266,13 @@ class Ice
         {
             writeln("Destroying ICE");
          
-            //game might still be running if we're quitting
-            //because the platform stopped to run
-            if(game_ !is null)
-            {
-                game_.endGame();
-                gameContainer_.destroy();
-                game_ = null;
-            }
-
             clear(fpsCounter_);
 
-            monitor_.removeMonitorable("Memory");
-            //video driver might be already destroyed in exceptional circumstances
-            if(videoDriver_ !is null){monitor_.removeMonitorable("Video");}
-
-            clear(gui_);
-            clear(guiRoot_);
-            clear(monitor_);
-
-            //video driver might be already destroyed in exceptional circumstances
-            if(videoDriver_ !is null)
-            {
-                videoDriverContainer_.destroy();
-                clear(videoDriverContainer_);
-                videoDriver_ = null;
-            }
-
-            clear(platform_);
-            platform_ = null;
-
-            clear(memory_);
+            destroyGame();
+            destroyGUI();
+            destroyMonitor();
+            destroyVideo();
+            destroyPlatform();
 
             singletonDtor();
         }
@@ -367,17 +314,103 @@ class Ice
         }
 
     private:
+        ///Initialize the Platform subsystem.
+        void initPlatform()
+        {
+            try
+            {
+                platform_ = new SDLPlatform();
+            }
+            catch(PlatformException e)
+            {
+                platform_ = null;
+                throw new GameStartupException("Failed to initialize platform: " ~ e.msg);
+            }
+        }
+
         ///Initialize the video subsystem. Throws GameStartupException on failure.
         void initVideo()
         {
             videoDriverContainer_ = new VideoDriverContainer;
-            videoDriver_ = videoDriverContainer_.produce!(SDLGLVideoDriver)
+            videoDriver_ = videoDriverContainer_.produce!SDLGLVideoDriver
                             (800, 600, ColorFormat.RGBA_8, false, gameDir_);
             if(videoDriver_ is null)
             {
+                videoDriverContainer_.destroy();
+                clear(videoDriverContainer_);
                 throw new GameStartupException("Failed to initialize video driver.");
             }
             rescaleViewport();
+        }
+
+        ///Initialize the monitor subsystem.
+        void initMonitor()
+        {
+            monitor_ = new MonitorManager();
+            memory_  = new MemoryMonitorable();
+            monitor_.addMonitorable(memory_, "Memory");
+            monitor_.addMonitorable(videoDriver_, "Video");
+        }
+
+        ///Init GUI subsystem.
+        void initGUI()
+        {
+            guiRoot_ = new GUIRoot(platform_);
+
+            gui_ = new IceGUI(guiRoot_.root, monitor_, platform_);
+            gui_.creditsStart.connect(&creditsStart);
+            gui_.creditsEnd.connect(&creditsEnd);
+            gui_.gameStart.connect(&gameStart);
+            gui_.quit.connect(&exit);
+            gui_.resetVideo.connect(&resetVideo);
+
+            gameContainer_ = new GameContainer();
+        }
+
+        ///Destroy game.
+        void destroyGame()
+        {
+            //Game might still be running if we're quitting
+            //because the platform stopped to run
+            if(game_ is null){return;}
+            game_.endGame();
+            gameContainer_.destroy();
+            game_ = null;
+        }
+
+        ///Destroy GUI subsystem.
+        void destroyGUI()
+        {
+            clear(gui_);
+            clear(guiRoot_);
+        }
+
+        ///Destroy Monitor subsystem.
+        void destroyMonitor()
+        {
+            monitor_.removeMonitorable("Memory");
+            clear(memory_);
+            //video driver might be already destroyed in exceptional circumstances
+            if(videoDriver_ !is null){monitor_.removeMonitorable("Video");}
+            clear(monitor_);
+        }
+
+        ///Destroy Video subsystem.
+        void destroyVideo()
+        {
+            //Video driver might be already destroyed in exceptional circumstances
+            //such as a failed video driver reset.
+            if(videoDriver_ is null){return;}
+            videoDriverContainer_.destroy();
+            clear(videoDriverContainer_);
+            videoDriver_ = null;
+        }
+
+        ///Destroy Platform subsystem.
+        void destroyPlatform()
+        {
+            clear(platform_);
+            platform_ = null;
         }
 
         ///Start game.
