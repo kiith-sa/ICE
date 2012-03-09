@@ -83,7 +83,7 @@ class PhysicsBody
         @property final Vector2f position() const pure {return position_;}
 
         ///Set position of the body, in world space.
-        @property final void position(const Vector2f p)pure {position_ = p;}
+        @property final void position(const Vector2f p) pure {position_ = p;}
 
         ///Get velocity of the body, in world space.
         @property final Vector2f velocity() const pure {return velocity_;}
