@@ -61,9 +61,13 @@ abstract class GLVideoDriver : VideoDriver
 {
     protected:
         ///Video mode width in pixels.
-        uint screenWidth_ = 0;
+        uint screenWidth_  = 0;
         ///Video mode height in pixels.
         uint screenHeight_ = 0;
+        ///Video mode bit depth.
+        uint screenDepth_  = 0;
+        //Has GL been initialized (through initGL) ?
+        bool glInitialized_;
     
     private:
         //Derelict OpenGL version.
@@ -97,9 +101,6 @@ abstract class GLVideoDriver : VideoDriver
 
         //Are we between startFrame and endFrame?
         bool frameInProgress_;
-
-        //Has GL been initialized (through initGl) ?
-        bool glInitialized_;
 
         //Timer used to measure FPS.
         Timer fpsTimer_;

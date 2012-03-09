@@ -41,7 +41,7 @@ final class SDLGLVideoDriver : GLVideoDriver
 
         ~this()
         {
-            writeln("Destroying SDLGLVideoDriver");
+            writeln("Destroying SDLGLVideoDriver, restoring video mode");
         }
 
         override void setVideoMode(const uint width, const uint height, 
@@ -91,8 +91,9 @@ final class SDLGLVideoDriver : GLVideoDriver
                 throw new VideoDriverException(msg);
             }
 
-            screenWidth_ = width;
+            screenWidth_  = width;
             screenHeight_ = height;
+            screenDepth_  = bitDepth;
             
             initGL();
         }
