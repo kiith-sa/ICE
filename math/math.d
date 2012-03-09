@@ -175,3 +175,35 @@ bool isPot(const uint num)
 {
     return powersOfTwo.canFind(num);
 }
+
+/**
+ * Align an unsigned integer to upper multiple of mult.
+ *
+ * Examples:
+ * --------------------
+ * assert(alignToUpperMultipleOf(4u, 11u)  == 12);
+ * assert(alignToUpperMultipleOf(4u, 12u)  == 12);
+ * assert(alignToUpperMultipleOf(5u, 256u) == 260);
+ * assert(alignToUpperMultipleOf(5u, 261u) == 265);
+ * assert(alignToUpperMultipleOf(1u, 261u) == 261);
+ * --------------------
+ *
+ * Params:  mult = Multiplier to align to. Must not be 0.
+ *          num  = Number to align.
+ *
+ * Returns: Aligned result.
+ */
+T alignToUpperMultipleOf(T)(const T mult, const T num) pure nothrow
+    if(isUnsigned!T)
+{
+    assert(mult != 0, "Can't align to a multiple of 0");
+    return ((num + mult - 1) / mult) * mult;
+}
+unittest
+{
+    assert(alignToUpperMultipleOf(4u, 11u)  == 12);
+    assert(alignToUpperMultipleOf(4u, 12u)  == 12);
+    assert(alignToUpperMultipleOf(5u, 256u) == 260);
+    assert(alignToUpperMultipleOf(5u, 261u) == 265);
+    assert(alignToUpperMultipleOf(1u, 261u) == 261);
+}
