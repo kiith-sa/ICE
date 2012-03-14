@@ -88,15 +88,17 @@ struct Vector2(T)
     }
     
     ///Get angle of this vector in radians.
-    @property real angle() const pure
+    @property F angle(F = T)() const pure
+        if(isFloatingPoint!F)
     {
-        const real angle = atan2(cast(double)x, cast(double)y);
+        const F angle = atan2(cast(double)x, cast(double)y);
         if(angle < 0.0){return angle + 2 * PI;}
         return angle;
     }
 
     ///Set angle of this vector in radians, preserving its length.
-    @property void angle(const real angle) pure
+    @property void angle(F)(const F angle) pure
+        if(isFloatingPoint!F)
     {
         const length = length();
         y = cast(T)cos(cast(double)angle);
@@ -183,8 +185,15 @@ Vector2!T randomPosition(T)(Vector2!T center, T radius)
 Vector2!T randomDirection(T)()
     if(isNumeric!T)
 {
-    auto v = Vector2!T(cast(T)1, cast(T)0);
-    v.angle(uniform(0, 2 * PI));
+    return angleToVector(uniform(0, 2.0 * PI));
+}
+
+///Get a unit vector in direction of specified angle.
+Vector2!(Unqual!T) angleToVector(T)(T angle) pure
+    if(isFloatingPoint!T)
+{
+    auto v = Vector2!(Unqual!T)(cast(Unqual!T)1, cast(Unqual!T)0);
+    v.angle = angle;
     return v;
 }
 
