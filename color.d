@@ -327,7 +327,6 @@ unittest
            rgb!"FFF"       == Color(240, 240, 240, 255));
 }
 
-private:
 ///Get value of a 2-character hexadecimal sequence corresponding to single color channel.
 ubyte hexColor(string hex) pure
 {
@@ -336,6 +335,7 @@ ubyte hexColor(string hex) pure
     return cast(ubyte)(16 * hexDigit(hex[0]) + hexDigit(hex[1]));
 }
 
+private:
 ///Convert a hexadecimal digit to integer.
 auto hexDigit(const char hex) pure
 {
