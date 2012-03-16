@@ -143,7 +143,7 @@ class PhysicsBody
             if(equals(contact.inverseMassTotal, 0.0L)){return;}
             Vector2f scaledNormal = contact.contactNormal * contact.desiredDeltaVelocity;
             Vector2f change = scaledNormal * (inverseMass_ / contact.inverseMassTotal);
-            if(change.length < 0.00001){change.zero();}
+            if(change.length < 0.00001){change.setZero();}
             if(this is contact.bodyA){velocity_ -= change;}
             else{velocity_ += change;}
         }
