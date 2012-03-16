@@ -91,6 +91,16 @@ struct Color
         this.b = b;
         this.a = a;
     }
+                   
+    ///Comparison for sorting.
+    int opCmp(ref const Color c) const pure nothrow
+    {
+        return r != c.r ? r - c.r :
+               g != c.g ? g - c.g :
+               b != c.b ? b - c.b :
+               a != c.a ? a - c.a : 
+                          0;
+    }
 
     ///Return the average RGB intensity of the color.
     @property ubyte average() const
