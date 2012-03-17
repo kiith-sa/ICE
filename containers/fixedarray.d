@@ -1,0 +1,218 @@
+
+//          Copyright Ferdinand Majerech 2010 - 2012.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          http://www.boost.org/LICENSE_1_0.txt)
+
+
+///Fixed-size array struct.
+module containers.fixedarray;
+
+
+import core.stdc.string;
+import std.algorithm;
+import std.range;
+import std.traits;
+
+import memory.memory;
+
+
+///Simple fixed-size array with manually managed memory, with interface similar to D array.
+align(4) struct FixedArray(T)
+{
+    private:
+        ///Manually allocated data storage.
+        T[] data_ = null;
+
+    public:
+        this(size_t length) 
+        out(result)
+        {
+            assert(this.length == length, "Unexpected FixedArray length");
+        }
+        body
+        {
+                import std.stdio;
+                writeln("ctor");
+            data_ = allocArray!T(length);
+        }
+
+        ///Destroy the vector.
+        ~this()
+        {
+
+                import std.stdio;
+                writeln("dtor");
+            if(data_ !is null)
+            {
+                writeln("freeing");
+                free(data_);
+                data_ = null;
+            }
+        }
+
+        /**
+         * Assign to another array. This will destroy any
+         * data owned by this array and copy data to this array.
+         *
+         * Params:  v = Vector to assign.
+         */
+        void opAssign(ref const FixedArray a)
+        {
+            clear(this);
+            data_ = allocArray!T(a.length);
+            data_[] = a.data_[];
+        }
+
+        ///Postblit constructor.
+        this(this)
+        {
+            if(data_ is null){return;}
+            auto otherData = data_;
+            data_ = allocArray!T(otherData.length);
+            data_[] = otherData[];
+        }
+
+        ///Compute a hash.
+        hash_t toHash() const
+        {
+            static type = typeid(T);
+            return type.getHash(&data_[0 .. $]);
+        }
+
+        /**
+         * Used by foreach.
+         *
+         * Foreach will iterate over all elements of the array in linear order
+         * from start to end.
+         */
+        int opApply(int delegate(ref T) dg)
+        {
+            int result = 0;
+            foreach(i; 0 .. data_.length)
+            {
+                result = dg(data_[i]);
+                if(result){break;}
+            }
+            return result;
+        }
+
+        /**
+         * Used by foreach.
+         *
+         * Foreach will iterate over all elements of the array in linear order
+         * from start to end.
+         */
+        int opApply(int delegate(ref size_t, ref T) dg)
+        {
+            int result = 0;
+            foreach(i; 0 .. data_.length)
+            {
+                result = dg(i, data_[i]);
+                if(result){break;}
+            }
+            return result;
+        }
+
+        /**
+         * Get element at the specified index.
+         *
+         * Params:  index = Index of the element to get. Must be within bounds.
+         *
+         * Returns: Element at the specified index.
+         */
+        ref const(T) opIndex(const size_t index) const pure nothrow
+        in{assert(index < data_.length, "FixedArray index out of bounds");}
+        body{return data_[index];}
+
+        /**
+         * Set element at the specified index.
+         *
+         * Params:  index = Index of the element to set. Must be within bounds. 
+         */
+        void opIndexAssign(T value, const size_t index) pure nothrow
+        in{assert(index < data_.length, "FixedArray index out of bounds");}
+        body
+        {
+            data_[index] = value;
+        }
+
+        ///Set all elements in the array to specified value.
+        void opSliceAssign()(T value) pure nothrow
+        {
+            data_[0 .. $] = value;
+        }
+
+        /**
+         * Get a slice of the array as a D array.
+         *
+         * Params:  start = Start of the slice.
+         *          end   = End of the slice.
+         */
+        const(T[]) opSlice(const size_t start, const size_t end) const pure nothrow
+        in
+        {
+            assert(end <= data_.length, "FixedArray slice index out of bounds");
+            assert(start <= end, "Slice start greater than slice end");
+        }
+        body{return data_[start .. end];}
+
+        ///Get a slice of the whole array as a D array.
+        const(T[]) opSlice() const pure nothrow {return data_[0 .. $];}
+
+        ///Access the first element of the array.
+        ref const(T) front() const pure nothrow {return data_[0];}
+
+        ///Access the last element of the array.
+        ref const(T) back() const pure nothrow {return data_[$ - 1];}
+/++
+        /**
+         * Determine whether or not does the array contain an element.
+         *
+         * Params:  element = Element to look for.
+         *          ident   = If true, look exactly for elem (is elem) instead 
+         *                    of anything equal to elem (== elem).
+         *                    Only makes sense for reference types.
+         *
+         * Returns: True if the array contains the element, false otherwise.
+         */
+        bool contains(T element, const bool ident = false) const
+        {
+            foreach(i; 0 .. used_)
+            {
+                if(ident ? data_[i] is element : data_[i] == element){return true;}
+            }
+            return false;
+        }
+++/
+        ///Get number of elements in the array.
+        @property size_t length() const pure {return data_.length;}
+
+        ///Is the array empty?
+        @property bool empty() const pure {return data_.length == 0;}
+}
+///Unittest for FixedArray.
+unittest
+{
+    auto fixed = FixedArray!uint(4);
+    assert(fixed.length == 4);
+    fixed[0] = 1;
+    fixed[1] = 2;
+    fixed[2] = 3;
+    fixed[3] = 4;
+    assert(fixed.length == 4);
+
+    assert(fixed[0] == 1);
+
+    uint i = 1;
+    foreach(elem; fixed)
+    {
+        assert(i == elem);
+        assert(canFind(fixed[], i));
+        i++;
+    }
+
+    fixed[] = 1;
+    assert(fixed[] == [1, 1, 1, 1]);
+}
+
