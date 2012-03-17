@@ -25,27 +25,22 @@ align(4) struct FixedArray(T)
         T[] data_ = null;
 
     public:
-        this(size_t length) 
+        ///Construct a FixedArray with specified length.
+        this(const size_t length) 
         out(result)
         {
             assert(this.length == length, "Unexpected FixedArray length");
         }
         body
         {
-                import std.stdio;
-                writeln("ctor");
             data_ = allocArray!T(length);
         }
 
-        ///Destroy the vector.
+        ///Destroy the array.
         ~this()
         {
-
-                import std.stdio;
-                writeln("dtor");
             if(data_ !is null)
             {
-                writeln("freeing");
                 free(data_);
                 data_ = null;
             }
@@ -57,11 +52,11 @@ align(4) struct FixedArray(T)
          *
          * Params:  v = Vector to assign.
          */
-        void opAssign(ref const FixedArray a)
+        void opAssign(FixedArray rhs)
         {
-            clear(this);
-            data_ = allocArray!T(a.length);
-            data_[] = a.data_[];
+            //We can swap because a is copied by postblit since it's by-value.
+            //Subsequently, rhs will own our original data and deallocate it at dtor.
+            swap(data_, rhs.data_);
         }
 
         ///Postblit constructor.
@@ -69,7 +64,7 @@ align(4) struct FixedArray(T)
         {
             if(data_ is null){return;}
             auto otherData = data_;
-            data_ = allocArray!T(otherData.length);
+            data_   = allocArray!T(otherData.length);
             data_[] = otherData[];
         }
 
@@ -121,7 +116,7 @@ align(4) struct FixedArray(T)
          *
          * Returns: Element at the specified index.
          */
-        ref const(T) opIndex(const size_t index) const pure nothrow
+        ref inout(T) opIndex(const size_t index) inout pure nothrow
         in{assert(index < data_.length, "FixedArray index out of bounds");}
         body{return data_[index];}
 
@@ -130,7 +125,7 @@ align(4) struct FixedArray(T)
          *
          * Params:  index = Index of the element to set. Must be within bounds. 
          */
-        void opIndexAssign(T value, const size_t index) pure nothrow
+        void opIndexAssign(T value, const size_t index)
         in{assert(index < data_.length, "FixedArray index out of bounds");}
         body
         {
@@ -138,9 +133,28 @@ align(4) struct FixedArray(T)
         }
 
         ///Set all elements in the array to specified value.
-        void opSliceAssign()(T value) pure nothrow
+        void opSliceAssign(T value) nothrow
         {
             data_[0 .. $] = value;
+        }
+
+        /**
+         * Assign a slice of the array from a D array.
+         *
+         * Params:  array = Array to assign to.
+         *          start = Start of the slice.
+         *          end   = End of the slice.
+         */
+        void opSliceAssign(T[] array, const size_t start, const size_t end) 
+        in
+        {
+            assert(array.length == end - start, "Slice lengths for assignment don't match");
+            assert(end <= data_.length, "Array slice index out of bounds");
+            assert(start <= end, "Slice start greater than slice end");
+        }
+        body
+        {
+            data_[start .. end] = array[0 .. $];
         }
 
         /**
@@ -149,7 +163,7 @@ align(4) struct FixedArray(T)
          * Params:  start = Start of the slice.
          *          end   = End of the slice.
          */
-        const(T[]) opSlice(const size_t start, const size_t end) const pure nothrow
+        inout(T[]) opSlice(const size_t start, const size_t end) inout pure nothrow
         in
         {
             assert(end <= data_.length, "FixedArray slice index out of bounds");
@@ -158,33 +172,14 @@ align(4) struct FixedArray(T)
         body{return data_[start .. end];}
 
         ///Get a slice of the whole array as a D array.
-        const(T[]) opSlice() const pure nothrow {return data_[0 .. $];}
+        inout(T)[] opSlice() inout pure nothrow {return data_[0 .. $];}
 
         ///Access the first element of the array.
         ref const(T) front() const pure nothrow {return data_[0];}
 
         ///Access the last element of the array.
         ref const(T) back() const pure nothrow {return data_[$ - 1];}
-/++
-        /**
-         * Determine whether or not does the array contain an element.
-         *
-         * Params:  element = Element to look for.
-         *          ident   = If true, look exactly for elem (is elem) instead 
-         *                    of anything equal to elem (== elem).
-         *                    Only makes sense for reference types.
-         *
-         * Returns: True if the array contains the element, false otherwise.
-         */
-        bool contains(T element, const bool ident = false) const
-        {
-            foreach(i; 0 .. used_)
-            {
-                if(ident ? data_[i] is element : data_[i] == element){return true;}
-            }
-            return false;
-        }
-++/
+
         ///Get number of elements in the array.
         @property size_t length() const pure {return data_.length;}
 
@@ -194,6 +189,9 @@ align(4) struct FixedArray(T)
 ///Unittest for FixedArray.
 unittest
 {
+    {
+        FixedArray!float scopeNull;
+    }
     auto fixed = FixedArray!uint(4);
     assert(fixed.length == 4);
     fixed[0] = 1;
