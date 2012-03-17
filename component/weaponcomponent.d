@@ -9,6 +9,7 @@
 module component.weaponcomponent;
 
 
+import containers.lazyarray;
 import containers.fixedarray;
 import util.yaml;
 
@@ -26,11 +27,11 @@ struct WeaponComponent
     {
         ///Weapon slot taken by the weapon (there are 256 slots).
         ubyte  weaponSlot;
-        ///Name of the weapon resource.
-        string weaponName;
+        ///Index to a lazy array in the weapon system storing weapon data.
+        LazyArrayIndex dataIndex;
 
         ///Ammo used up since last reload.
-        uint  ammoConsumed        = 0;
+        uint  ammoConsumed         = 0;
         ///Time remaining before we're reloaded. Zero or negative means we're not reloading.
         double reloadTimeRemaining = 0.0f;
         ///Time since last burst. If greater than the weapon's burstPeriod, we can fire.
@@ -47,17 +48,17 @@ struct WeaponComponent
     }
 
     //Weapons owned by the entity.
-    Weapon[] weapons;
+    FixedArray!Weapon weapons;
 
     ///Load from a YAML node. Throws YAMLException on error.
     this(ref YAMLNode yaml)
     {
-        weapons = new Weapon[yaml.length];
+        //weapons.length = yaml.length;
+        weapons = FixedArray!Weapon(yaml.length);
         size_t i = 0;
-        foreach(ubyte slot, string weaponName; yaml)
+        foreach(ubyte slot, string resourceName; yaml)
         {
-            weapons[i++] = Weapon(slot, weaponName);
+            weapons[i++] = Weapon(slot, LazyArrayIndex(resourceName));
         }
     }
 }
-
