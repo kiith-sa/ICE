@@ -273,8 +273,15 @@ private:
         ptr = cast(T*)malloc(bytes);
         debugAllocate!(T, file, line)(ptr, 1); 
 
-        static if(args.length == 0){*ptr = T.init;}
-        else                       {emplace(ptr, args);}
+        static if(args.length == 0)
+        {
+            static init = T.init;
+            memcpy(cast(void*)ptr, cast(void*)&init, T.sizeof);
+        }
+        else                       
+        {
+            emplace(ptr, args);
+        }
 
         static if(hasIndirections!T){GC.addRange(cast(void*)ptr, T.sizeof);}
 
@@ -320,7 +327,11 @@ private:
         //default-initialize the array.
         //using memset for ubytes as it's faster and ubytes are often used for large arrays.
         static if (is(T == ubyte)){memset(array.ptr, 0, bytes);}
-        else{array[] = T.init;}
+        else foreach(ref item; array)
+        {
+            static init = T.init;
+            memcpy(cast(void*)&item, cast(void*)&init, T.sizeof);
+        }
 
         return array;
     }
@@ -386,9 +397,10 @@ private:
             }
             else
             {
-                if(array.length > oldLength)
+                if(array.length > oldLength) foreach(ref item; array[oldLength .. $])
                 {
-                    array[oldLength .. $] = T.init;
+                    static init = T.init;
+                    memcpy(cast(void*)&item, cast(void*)&init, T.sizeof);
                 }
             }
         }
