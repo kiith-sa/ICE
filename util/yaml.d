@@ -28,7 +28,14 @@ import color;
 import math.vector2;
 
 
-///Load a YAML file with support for ICE data types.
+/**
+ * Load a YAML file with support for ICE data types.
+ *
+ * Params:  file = File to load from.
+ *
+ * Throws:  YAMLException if the YAML could not be parsed or other YAML related
+ *          errors. VFSException if the file could not be read from.
+ */
 YAMLNode loadYAML(VFSFile file)
 {
     auto stream = VFSStream(file.input, file.bytes);
