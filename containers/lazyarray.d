@@ -68,7 +68,11 @@ struct LazyArray(T, ID = string)
 
     private:
         ///Item with a resource ID.
-        alias Tuple!(ID, "id", T, "value") Item;
+        struct Item
+        {
+            ID id;
+            T value;
+        }
 
         ///Allocated storage.
         FixedArray!Item storage_;
@@ -80,6 +84,7 @@ struct LazyArray(T, ID = string)
         bool delegate(ID, out T) loadData_ = null;
 
     public:
+        ///Get the item at specified index, loading it if needed. Returns null on failure.
         T* opIndex(ref LazyArrayIndex_!ID index)
         in
         {
@@ -101,10 +106,13 @@ struct LazyArray(T, ID = string)
 
                 //Check if we've already loaded this resource.
                 long storageIdx = -1;
-                foreach(idx, item; storage_[0 .. used_]) if(item.id == index.id)
+                foreach(size_t idx, ref Item item; storage_[0 .. used_])
                 {
-                    storageIdx = idx;
-                    break;
+                    if(item.id == index.id) 
+                    {
+                        storageIdx = idx;
+                        break;
+                    }
                 }
 
                 if(storageIdx >= 0)
@@ -119,9 +127,7 @@ struct LazyArray(T, ID = string)
                     //Reallocate if needed.
                     if(storage_.length == used_)
                     {
-                        auto newStorage = FixedArray!Item(storage_.length * 2 + 1);
-                        newStorage[0 .. storage_.length] = storage_[];
-                        storage_ = newStorage;
+                        reallocate();
                     }
 
                     //Add the new item, and clear it if we fail.
@@ -143,6 +149,23 @@ struct LazyArray(T, ID = string)
         }
 
         /**
+         * Used by foreach.
+         *
+         * Foreach will iterate over all elements of the array in linear order
+         * from start to end.
+         */
+        int opApply(int delegate(ref T) dg)
+        {
+            int result = 0;
+            foreach(ref item; storage_[0 .. used_])
+            {
+                result = dg(item.value);
+                if(result){break;}
+            }
+            return result;
+        }
+
+        /**
          * Set the delegate used to load elements.
          *
          * The delegate must take a resource ID and an output argument to write 
@@ -156,5 +179,36 @@ struct LazyArray(T, ID = string)
         @property void loaderDelegate(bool delegate(ID, out T) rhs) pure nothrow 
         {
             loadData_ = rhs;
+        }
+
+    private:
+        ///Reallocate the array to add more capacity.
+        void reallocate()
+        {
+            auto newStorage = FixedArray!Item(storage_.length * 2 + 1);
+
+            //Using move();
+            //Postblit constructors don't always get called as of DMD 2.058
+            //which can result to two instances of a FixedArray
+            //pointing to same data that both get destroyed, causing a double free.
+            //
+            //move() just moves the data without calling dtor,
+            //so it's destroyed only once in the function it was moved to.
+            //
+            //This might need to be rewritten if any problems appear once the bug 
+            //has been fixed.
+
+            static if(hasElaborateDestructor!T)
+            {
+                foreach(size_t i, ref Item item; storage_[0 .. used_])
+                {
+                    newStorage[i] = move(item);
+                }
+            }
+            else
+            {
+                newStorage[0 .. used_] = storage_[0 .. used_];
+            }
+            storage_ = move(newStorage);
         }
 }

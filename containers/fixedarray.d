@@ -116,7 +116,7 @@ align(4) struct FixedArray(T)
          *
          * Returns: Element at the specified index.
          */
-        ref inout(T) opIndex(const size_t index) inout pure nothrow
+        auto ref inout(T) opIndex(const size_t index) inout pure nothrow
         in{assert(index < data_.length, "FixedArray index out of bounds");}
         body{return data_[index];}
 
@@ -192,6 +192,21 @@ unittest
     {
         FixedArray!float scopeNull;
     }
+    {
+        alias FixedArray!float I;
+        auto nested = FixedArray!I(5);
+        nested[0] = FixedArray!float(5);
+        nested[1] = FixedArray!float(5);
+        nested[3] = FixedArray!float(5);
+        nested[4] = FixedArray!float(5);
+
+        auto newNested = FixedArray!I(11);
+
+        newNested[0] = move(nested[0]);
+
+        nested = move(newNested);
+    }
+
     auto fixed = FixedArray!uint(4);
     assert(fixed.length == 4);
     fixed[0] = 1;
