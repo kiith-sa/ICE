@@ -416,7 +416,8 @@ private:
         //must be in a separate function due to a compiler bug
         bool match(ref Allocation a){return a.ptr == cast(void*)ptr;}
         assert(canFind!match(allocations_),
-               "Trying to free a pointer that isn't allocated (or has been freed)");
+               "Trying to free a pointer that isn't allocated (or has been freed): " ~
+               to!string(ptr));
         }
     }
     body
@@ -447,7 +448,8 @@ private:
         {
         bool match(ref Allocation a){return a.ptr == cast(void*)array.ptr;}
         assert(canFind!match(allocations_),
-               "Trying to free a pointer that isn't allocated (or has been freed)");
+               "Trying to free a pointer that isn't allocated (or has been freed): " ~
+               to!string(array.ptr));
         }
     }
     body
