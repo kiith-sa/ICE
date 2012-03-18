@@ -37,9 +37,9 @@ align(4) struct PhysicsComponent
     ///Construct manually.
     this(Vector2f pos, float rot, Vector2f velocity)
     {
-        position = pos;
-        rotation = rot;
-        velocity = velocity;
+        position      = pos;
+        rotation      = rot;
+        this.velocity = velocity;
     }
 }
 

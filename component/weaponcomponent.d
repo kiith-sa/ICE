@@ -45,6 +45,19 @@ struct WeaponComponent
         {
             return shotsSoFarThisBurst != uint.max;
         }
+
+        ///Start a burst (called when we're not reloading and done with the previous burst).
+        void startBurst() pure nothrow
+        {
+            shotsSoFarThisBurst = 0;
+            timeSinceLastBurst  = 0.0;
+        }
+
+        ///End a burst (called when shotsSoFarThisBurst == shots in weapon burst).
+        void finishBurst() pure nothrow
+        {
+            shotsSoFarThisBurst = uint.max;
+        }
     }
 
     //Weapons owned by the entity.
