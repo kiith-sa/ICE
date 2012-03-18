@@ -1,0 +1,5 @@
+deathTimeout: 1.3
+engine : 
+  maxSpeed       : 2000
+  acceleration   : 1000  #-1 is instant
+visual:   projectiles/defaultbulletvisual.yaml

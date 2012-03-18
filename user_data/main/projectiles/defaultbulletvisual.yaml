@@ -1,0 +1,14 @@
+type: lines
+vertices:
+  - x:     -2.0
+    y:     0.0
+    color: rgba10000000
+  - x:     -2.0
+    y:     -12.0
+    color: rgbA0A0FF
+  - x:     2.0
+    y:     -12.0
+    color: rgbA0A0FF
+  - x:     2.0
+    y:     0.0
+    color: rgba10000000

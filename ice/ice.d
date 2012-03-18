@@ -15,9 +15,7 @@ import std.string;
 
 import dgamevfs._;
 
-import dyaml.exception;
-import dyaml.loader;
-import dyaml.node;
+import util.yaml;
 
 import ice.exceptions;
 import ice.game;
@@ -230,7 +228,7 @@ class Ice
         IceGUI gui_;
 
         ///Main ICE config file (YAML).
-        Node config_;
+        YAMLNode config_;
        
         ///Used for memory monitoring.
         MemoryMonitorable memory_;
@@ -308,7 +306,7 @@ class Ice
                 {
                     //update game state
                     if(!game_.run()){gameEnd();}
-                    else{game_.draw(videoDriver_);}
+                    //else{game_.draw(videoDriver_);}
                 }
                 guiRoot_.draw(videoDriver_);
                 videoDriver_.endFrame();
@@ -324,10 +322,18 @@ class Ice
         ///Load ICE configuration from YAML.
         void initConfig()
         {    
-            auto file   = gameDir_.file("config.yaml");
-            auto stream = VFSStream(file.input, file.bytes);
-            auto loader = Loader(stream);
-            config_ = loader.load(); 
+            try
+            {
+                config_ = loadYAML(gameDir_.file("config.yaml"));
+            }
+            catch(YAMLException e)
+            {
+                throw new GameStartupException("Failed to load main ICE config file: " ~ e.msg);
+            }
+            catch(VFSException e)
+            {
+                throw new GameStartupException("Failed to load main ICE config file: " ~ e.msg);
+            }
         }
 
         ///Initialize the Platform subsystem.
@@ -433,8 +439,21 @@ class Ice
         {
             gui_.menuHide();
             platform_.key.disconnect(&keyHandler);
-            game_ = gameContainer_.produce(platform_, monitor_, guiRoot_.root);
-            game_.startGame();
+            game_ = gameContainer_.produce(platform_, 
+                                           monitor_, 
+                                           guiRoot_.root);
+            game_.videoDriver = videoDriver_;
+            game_.gameDir     = gameDir_;
+
+            try
+            {
+                game_.startGame();
+            }
+            catch(GameStartException e)
+            {
+                writeln("Game failed to start: " ~ e.msg);
+                gameEnd();
+            }
         }
 
         ///End game.
@@ -569,6 +588,11 @@ class Ice
                         "Falling back to 800x600 32bit windowed");
                 videoDriver_ = videoDriverContainer_.produce!SDLGLVideoDriver
                                (800, 600, ColorFormat.RGBA_8, false);
+            }
+
+            if(game_ !is null)
+            {
+                game_.videoDriver = videoDriver_;
             }
         }
 
