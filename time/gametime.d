@@ -84,4 +84,10 @@ class GameTime
 
         ///Get current time step (always constant, but kept non-static just in case).
         @property real timeStep() const pure nothrow {return timeStep_;}
+
+        ///Get time speed.
+        @property real timeSpeed() const pure nothrow {return timeSpeed_;}
+
+        ///Set time speed.
+        @property void timeSpeed(const real rhs) pure nothrow {timeSpeed_ = rhs;}
 }
