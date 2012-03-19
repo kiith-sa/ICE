@@ -165,7 +165,7 @@ struct VFSStream
                     assert(input_ !is null, 
                            "Output VFSStream trying to get length of available data to read");
 
-                    return max(0, bytes_ - position_);
+                    return max(0, cast(size_t)(bytes_ - position_));
                 }
         }
 

@@ -313,8 +313,21 @@ class FSFile : VFSFile
                     ioError("Trying to seek before the beginning of file: " ~ path));
             enforce(position <= length,
                     ioError("Trying to seek beyond the end of file: " ~ path));
+            enforce(offset <= int.max, 
+                    ioError("Seeking beyond 2 GiB not supported. File: " ~ path));
 
-            if(fseek(file_, offset, 
+            static if(size_t.sizeof == 4)
+            {
+                enforce(offset <= int.max, 
+                        ioError("Seeking beyond 2 GiB not supported on 32bit. File: " ~ path));
+                const platformOffset = cast(int)offset;
+            }
+            else
+            {
+                alias offset platformOffset;
+            }
+
+            if(fseek(file_, platformOffset, 
                      origin == Seek.Set     ? SEEK_SET :
                      origin == Seek.Current ? SEEK_CUR :
                                               SEEK_END))

@@ -109,7 +109,7 @@ void readImage(ref Image image, VFSFile file,
 
         if(fileFormat == ImageFileFormat.PNG)
         {
-            auto rawData = allocArray!ubyte(file.bytes);
+            auto rawData = allocArray!ubyte(cast(size_t)file.bytes);
             file.input.read(cast(void[])rawData);
             imageData = decodePNG(rawData, width, height, format);
         }

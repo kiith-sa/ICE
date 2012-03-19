@@ -341,7 +341,7 @@ final class FontManager
             auto file = fontDir_.file(name);
 
             fontFiles_ ~= FontData(name, cast(ubyte[])null);
-            fontFiles_[$ - 1].data = allocArray!ubyte(file.bytes);
+            fontFiles_[$ - 1].data = allocArray!ubyte(cast(size_t)file.bytes);
             scope(failure)
             {
                 free(fontFiles_[$ - 1].data);

@@ -292,9 +292,9 @@ class MemoryFile : VFSFile
             assert(mode_ == Mode.Read, 
                    "Trying to read from a file not opened for reading: " ~ path);
 
-            const long seek = seekPosition_;
-            const read_size = max(0L, min(cast(long)buffer_.length - seek,
-                                          cast(long)target.length));
+            const seek = cast(size_t)seekPosition_;
+            const read_size =  max(cast(size_t)0, min(buffer_.length - seek,
+                                                      target.length));
             target[0 .. read_size] = buffer_[seek .. seek + read_size];
             seekPosition_ += read_size;
             return target[0 .. read_size];
@@ -314,9 +314,9 @@ class MemoryFile : VFSFile
                 seekPosition_ = buffer_.length;
                 return;
             }
-            const needed = seekPosition_ + data_bytes.length;
+            const needed = cast(size_t)seekPosition_ + data_bytes.length;
             buffer_.length = max(buffer_.length, needed);
-            buffer_[seekPosition_ .. needed] = data_bytes[0 .. $];
+            buffer_[cast(size_t)seekPosition_ .. needed] = data_bytes[0 .. $];
             seekPosition_ += data_bytes.length;
         }
 
