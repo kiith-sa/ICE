@@ -3,9 +3,9 @@
 *~
 dsss.last
 dsss_objs/
-pong-debug
-pong-no-contracts
-pong-release
+ice-debug
+ice-no-contracts
+ice-release
 wrapper
 glxtrace.so
 oprofile/
