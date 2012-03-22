@@ -214,8 +214,8 @@ void main(string[] args)
     }
 
     try{build(targets);}
-    catch(CompileException e){writeln("Could not compile: " ~ e.msg);}
-    catch(ProcessException e){writeln("Compilation failed: " ~ e.msg);}
+    catch(CompileException e){writeln("Could not compile: ",  e.msg);}
+    catch(ProcessException e){writeln("Compilation failed: ", e.msg);}
 
     writeln("DONE");
 }
@@ -580,7 +580,16 @@ void execute_compiler(string compiler, string[] arguments)
     {
         version(Windows)
         {    
-            write("compile", arguments.join(" "));
+            {
+                import std.stdio;
+                auto f = File("compile", "w");
+                foreach(arg; arguments)
+                {
+                    writeln(arg);
+                    f.write(arg, " ");
+                    f.flush();
+                }
+            }
             scope(exit){remove("compile");}
             execute(compiler ~ " ", ["@compile"]);
         } 
