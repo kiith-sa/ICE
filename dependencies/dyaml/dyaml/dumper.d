@@ -113,18 +113,6 @@ struct Dumper
     }
 
     private:
-        ///Resolver used by default.
-        static Resolver defaultResolver_;
-        ///Representer used by default.
-        static Representer defaultRepresenter_;
-
-        static this()
-        {
-            defaultResolver_ = new Resolver;
-            defaultRepresenter_ = new Representer;
-        }
-
-
         ///Resolver to resolve tags.
         Resolver resolver_;
         ///Representer to represent data types.
