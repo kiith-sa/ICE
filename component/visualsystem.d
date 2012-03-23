@@ -76,7 +76,7 @@ class VisualSystem : System
             visualData_.loaderDelegate(&loadVisualData);
         }
 
-        ///Destroy a VisualSystem, freeing all loaded visual data.
+        ///Destroy the VisualSystem, freeing all loaded visual data.
         ~this()
         {
             foreach(ref data; visualData_) switch(data.type)
