@@ -7,14 +7,22 @@
 
 ///Compile time traits.
 module util.traits;
-@safe:
 
 
 import std.traits;
 
 
 ///Determine if T is a "primitive" type, i.e. a bool, builtin numeric or string type.
-template is_primitive(T)
+template isPrimitive(T)
 {
-    enum bool is_primitive = is(bool == T) || isNumeric!T || isSomeString!T;
+    enum bool isPrimitive = is(bool == T) || isNumeric!T || isSomeString!T;
 }
+
+///Convert a type tuple to an array of strings with its types' names.
+string[] tupleToStrings(Types ...)() pure nothrow
+{
+    string[] result;
+    foreach(T; Types){result ~= (Unqual!T).stringof;}
+    return result;
+}
+

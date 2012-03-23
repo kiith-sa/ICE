@@ -15,6 +15,8 @@ import std.string;
 
 import dgamevfs._;
 
+import util.yaml;
+
 import ice.exceptions;
 import ice.game;
 import ice.credits;
@@ -224,6 +226,9 @@ class Ice
         MonitorManager monitor_;
         ///ICE GUI.
         IceGUI gui_;
+
+        ///Main ICE config file (YAML).
+        YAMLNode config_;
        
         ///Used for memory monitoring.
         MemoryMonitorable memory_;
@@ -246,6 +251,7 @@ class Ice
             singletonCtor();
             scope(failure){singletonDtor();}
 
+            initConfig();
             initPlatform();
             scope(failure){destroyPlatform();}
             initVideo();
@@ -300,7 +306,7 @@ class Ice
                 {
                     //update game state
                     if(!game_.run()){gameEnd();}
-                    else{game_.draw(videoDriver_);}
+                    //else{game_.draw(videoDriver_);}
                 }
                 guiRoot_.draw(videoDriver_);
                 videoDriver_.endFrame();
@@ -313,6 +319,23 @@ class Ice
         }
 
     private:
+        ///Load ICE configuration from YAML.
+        void initConfig()
+        {    
+            try
+            {
+                config_ = loadYAML(gameDir_.file("config.yaml"));
+            }
+            catch(YAMLException e)
+            {
+                throw new GameStartupException("Failed to load main ICE config file: " ~ e.msg);
+            }
+            catch(VFSException e)
+            {
+                throw new GameStartupException("Failed to load main ICE config file: " ~ e.msg);
+            }
+        }
+
         ///Initialize the Platform subsystem.
         void initPlatform()
         {
@@ -330,9 +353,13 @@ class Ice
         ///Initialize the video subsystem. Throws GameStartupException on failure.
         void initVideo()
         {
-            videoDriverContainer_ = new VideoDriverContainer(gameDir_);
-            videoDriver_ = videoDriverContainer_.produce!SDLGLVideoDriver
-                            (800, 600, ColorFormat.RGBA_8, false);
+            try{videoDriverContainer_ = new VideoDriverContainer(gameDir_);}
+            catch(VideoDriverException e)
+            {
+                throw new GameStartupException("Failed to initialize video "
+                                               "driver dependencies: " ~ e.msg);
+            }
+            initVideoDriverFromConfig();
             if(videoDriver_ is null)
             {
                 videoDriverContainer_.destroy();
@@ -361,7 +388,7 @@ class Ice
             gui_.creditsEnd.connect(&creditsEnd);
             gui_.gameStart.connect(&gameStart);
             gui_.quit.connect(&exit);
-            gui_.resetVideo.connect(&resetVideo);
+            gui_.resetVideo.connect(&resetVideoMode);
 
             gameContainer_ = new GameContainer();
         }
@@ -417,8 +444,21 @@ class Ice
         {
             gui_.menuHide();
             platform_.key.disconnect(&keyHandler);
-            game_ = gameContainer_.produce(platform_, monitor_, guiRoot_.root);
-            game_.startGame();
+            game_ = gameContainer_.produce(platform_, 
+                                           monitor_, 
+                                           guiRoot_.root);
+            game_.videoDriver = videoDriver_;
+            game_.gameDir     = gameDir_;
+
+            try
+            {
+                game_.startGame();
+            }
+            catch(GameStartException e)
+            {
+                writeln("Game failed to start: " ~ e.msg);
+                gameEnd();
+            }
         }
 
         ///End game.
@@ -476,8 +516,8 @@ class Ice
         {
             if(state == KeyState.Pressed) switch(key)
             {
-                case Key.K_1: videoDriver_.drawMode(DrawMode.RAMBuffers);  break;
-                case Key.K_2: videoDriver_.drawMode(DrawMode.VRAMBuffers); break;
+                case Key.K_1: videoDriver_.drawMode = DrawMode.RAMBuffers;  break;
+                case Key.K_2: videoDriver_.drawMode = DrawMode.VRAMBuffers; break;
                 case Key.F10: gui_.monitorToggle();   break;
                 case Key.Scrollock: saveScreenshot(); break;
                 default: break;
@@ -490,25 +530,15 @@ class Ice
             platform_.windowCaption = "FPS: " ~ to!string(fps);
         }
 
-        ///Reset video mode.
-        void resetVideo(){resetVideoDriver(800, 600, ColorFormat.RGBA_8);}
-
-        /**
-         * Reset video driver with specified video mode.
-         *
-         * Params:  width  = Window/screen width to use.
-         *          height = Window/screen height to use.
-         *          format = Color format of video mode.
-         */
-        void resetVideoDriver(const uint width, const uint height, const ColorFormat format)
+        ///Reset the video driver.
+        void resetVideoMode()
         {
             monitor_.removeMonitorable("Video");
 
             videoDriverContainer_.destroy();
             scope(failure){videoDriver_ = null;}
 
-            videoDriver_ = videoDriverContainer_.produce!SDLGLVideoDriver
-                           (width, height, format, false);
+            initVideoDriverFromConfig();
 
             if(videoDriver_ is null)
             {
@@ -520,6 +550,55 @@ class Ice
             rescaleViewport();
 
             monitor_.addMonitorable(videoDriver_, "Video");
+        }
+
+        /**
+         * Initialize video driver fromm YAML config.
+         *
+         * This only loads configuration and uses videoDriverContainer_ to
+         * produce the driver. videoDriverContainer_ must not store any 
+         * VideoDriver already.
+         */
+        void initVideoDriverFromConfig()
+        {
+            try
+            {
+                auto video       = config_["video"];
+                const width      = video["width"].as!uint;
+                const height     = video["height"].as!uint;
+                const depth      = video["depth"].as!uint;
+                const format     = depth == 16 ? ColorFormat.RGB_565 : ColorFormat.RGBA_8;
+                const modeStr    = video["drawMode"].as!string;
+                const drawMode   = modeStr == "RAMBuffers" ? DrawMode.RAMBuffers 
+                                                           : DrawMode.VRAMBuffers;
+                const fullscreen = video["fullscreen"].as!bool;
+
+                if(![16, 32].canFind(depth))
+                {
+                    writeln("Unsupported video mode depth: ", depth,
+                            " - falling back to 32bit");
+                }
+                if(!["RAMBuffers", "VRAMBuffers"].canFind(modeStr))
+                {
+                    writeln("Unknown draw mode: ", modeStr,
+                            " - falling back to VRAMBuffers");
+                }
+                videoDriver_ = videoDriverContainer_.produce!SDLGLVideoDriver
+                               (width, height, format, fullscreen);
+                videoDriver_.drawMode = drawMode;
+            }
+            catch(YAMLException e)
+            {
+                writeln("Error initializing video mode from YAML configuration. "
+                        "Falling back to 800x600 32bit windowed");
+                videoDriver_ = videoDriverContainer_.produce!SDLGLVideoDriver
+                               (800, 600, ColorFormat.RGBA_8, false);
+            }
+
+            if(game_ !is null)
+            {
+                game_.videoDriver = videoDriver_;
+            }
         }
 
         ///Rescale viewport according to current resolution and game area.

@@ -91,6 +91,16 @@ struct Color
         this.b = b;
         this.a = a;
     }
+                   
+    ///Comparison for sorting.
+    int opCmp(ref const Color c) const pure nothrow
+    {
+        return r != c.r ? r - c.r :
+               g != c.g ? g - c.g :
+               b != c.b ? b - c.b :
+               a != c.a ? a - c.a : 
+                          0;
+    }
 
     ///Return the average RGB intensity of the color.
     @property ubyte average() const
@@ -317,7 +327,6 @@ unittest
            rgb!"FFF"       == Color(240, 240, 240, 255));
 }
 
-private:
 ///Get value of a 2-character hexadecimal sequence corresponding to single color channel.
 ubyte hexColor(string hex) pure
 {
@@ -326,6 +335,7 @@ ubyte hexColor(string hex) pure
     return cast(ubyte)(16 * hexDigit(hex[0]) + hexDigit(hex[1]));
 }
 
+private:
 ///Convert a hexadecimal digit to integer.
 auto hexDigit(const char hex) pure
 {

@@ -8,11 +8,12 @@
 module ice.player;
 
 
-import ice.game;
-import platform.platform;
-import time.timer;
+import component.controllercomponent;
+import component.entitysystem;
 import math.math;
 import math.vector2;
+import platform.platform;
+import time.timer;
 
 
 ///Parent class for all players.
@@ -33,7 +34,10 @@ abstract class Player
          * 
          * Params:  game = Reference to the game.
          */
-        void update(Game game){}
+        void update(){}
+
+        ///Control entity with specified ID through its ControllerComponent.
+        void control(EntityID id, ref ControllerComponent control) pure nothrow;
 
     protected:
         /**
@@ -69,13 +73,18 @@ final class AIPlayer : Player
             updateTimer_ = Timer(updatePeriod);
         }
 
-        override void update(Game game)
+        override void control(EntityID id, ref ControllerComponent control) pure nothrow
+        {
+            assert(false, "AIPlayer.control() : not yet implemented");
+        }
+
+        override void update()
         {
             if(updateTimer_.expired())
             {
                 updateTimer_.reset();
 
-                //TODO currently does nothing
+                assert(false, "AI Player update(): not yet implemented");
             }
         }
 }
@@ -100,6 +109,17 @@ final class HumanPlayer : Player
             platform_ = platform;
             platform_.key.connect(&keyHandler);
         }
+
+        override void control(EntityID id, ref ControllerComponent control) pure nothrow
+        {
+            bool kp(Key key) nothrow {return platform_.isKeyPressed(key);}
+
+            control.left      = kp(Key.Left)  || kp(Key.Left);
+            control.right     = kp(Key.Right) || kp(Key.Right);
+            control.up        = kp(Key.Up)    || kp(Key.Up);
+            control.down      = kp(Key.Down)  || kp(Key.Down);
+            control.firing[0] = kp(Key.Space) || kp(Key.Lctrl);
+        }
         
         ///Destroy this HumanPlayer.
         ~this(){platform_.key.disconnect(&keyHandler);}
@@ -113,5 +133,45 @@ final class HumanPlayer : Player
          */
         void keyHandler(KeyState state, Key key, dchar unicode)
         {
+            /*
+            if(state == KeyState.Pressed)
+            {
+                switch(key)
+                {
+                    case Key.Right: controller.right = true; return;
+                    case Key.Left:  controller.left  = true; return;
+                    default:                                 return;
+                }
+            }
+            else if(state == KeyState.Released)
+            {
+                switch(key)
+                {
+                    case Key.Right: controller.right = false; return;
+                    case Key.Left:  controller.left  = false; return;
+                    default:                                 return;
+                }
+                if(key == Key.Right)
+                {
+                    if(platform_.is_key_pressed(Key.Left))
+                    {
+                        paddle_.move_left();
+                        return;
+                    }
+                    paddle_.stop();
+                    return;
+                }
+                if(key == Key.Left)
+                {
+                    if(platform_.is_key_pressed(Key.Right))
+                    {
+                        paddle_.move_right();
+                        return;
+                    }
+                    paddle_.stop();
+                    return;
+                }
+            }
+            */
         }
 }

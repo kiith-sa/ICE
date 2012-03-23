@@ -1,0 +1,10 @@
+visual: ships/playershipvisual.yaml
+engine:
+  maxSpeed: 300
+  acceleration   : 2100  #-1 default 
+volume:
+  aabbox: 
+    min: [-32, -32]
+    max: [32,  0]
+weapon:
+  0: weapons/defaultweapon.yaml

@@ -88,27 +88,58 @@ struct Vector2(T)
     }
     
     ///Get angle of this vector in radians.
-    @property real angle() const pure
+    @property F angle(F = T)() const pure
+        if(isFloatingPoint!F)
+    in
     {
-        const real angle = atan2(cast(double)x, cast(double)y);
+        assert(!isZero, "Trying to get angle of a zero vector");
+    }
+    body
+    {
+        const F angle = atan2(cast(double)x, cast(double)y);
         if(angle < 0.0){return angle + 2 * PI;}
         return angle;
     }
 
     ///Set angle of this vector in radians, preserving its length.
-    @property void angle(const real angle) pure
+    @property void angle(F)(const F angle) pure
+        if(isFloatingPoint!F)
     {
         const length = length();
         y = cast(T)cos(cast(double)angle);
         x = cast(T)sin(cast(double)angle);
         this *= length;
     }
+    unittest
+    {
+        auto v = Vector2f(1.0f, 0.0f);
+        v.angle = 1.0f;
+        assert(equals(v.angle, 1.0f));
+    }
+
+    ///Rotate by specified angle, in radians.
+    void rotate(F)(const F angle) pure
+        if(isFloatingPoint!F)
+    {
+        if(isZero){return;}
+        this.angle = this.angle + angle;
+    }
 
     ///Get squared length of the vector.
-    @property T lengthSquared() const pure {return cast(T)(x * x + y * y);}
+    @property T lengthSquared() const pure nothrow {return cast(T)(x * x + y * y);}
 
     ///Get length of the vector.
-    @property T length() const pure {return cast(T)(sqrt(cast(real)lengthSquared));}
+    @property T length() const pure nothrow {return cast(T)(sqrt(cast(real)lengthSquared));}
+
+    ///Set length of the vector, resizing it but preserving its direction.
+    @property void length(T length) pure nothrow 
+    {
+        const thisLength = this.length;
+        assert(!equals(thisLength, cast(T)0), "Cannot set length of a zero vector!");
+        const ratio = length / thisLength;
+        x *= ratio;
+        y *= ratio;
+    }
 
     /**
      * Dot (scalar) product with another vector.
@@ -143,7 +174,10 @@ struct Vector2(T)
     }
 
     ///Turn this vector into a zero vector.
-    void zero() pure {x = y = cast(T)0;}
+    void setZero() pure {x = y = cast(T)0;}
+
+    ///Is this a zero vector?
+    bool isZero() pure const nothrow {return equals(x, cast(T)0) && equals(y, cast(T)0);}
 
     /**
      * Convert a Vector2 of one type to other. 
@@ -183,8 +217,15 @@ Vector2!T randomPosition(T)(Vector2!T center, T radius)
 Vector2!T randomDirection(T)()
     if(isNumeric!T)
 {
-    auto v = Vector2!T(cast(T)1, cast(T)0);
-    v.angle(uniform(0, 2 * PI));
+    return angleToVector(uniform(0, 2.0 * PI));
+}
+
+///Get a unit vector in direction of specified angle.
+Vector2!(Unqual!T) angleToVector(T)(T angle) pure
+    if(isFloatingPoint!T)
+{
+    auto v = Vector2!(Unqual!T)(cast(Unqual!T)1, cast(Unqual!T)0);
+    v.angle = angle;
     return v;
 }
 

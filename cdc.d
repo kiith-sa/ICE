@@ -169,8 +169,9 @@ void main(string[] args)
                          "dependencies/derelict/DerelictGL",
                          "dependencies/derelict/DerelictFT",
                          "dependencies/derelict/DerelictUtil",
-                         "dependencies/dgamevfs/dgamevfs"];
-    auto sources      = ["physics/", "scene/", "formats/", "gui/", 
+                         "dependencies/dgamevfs/dgamevfs",
+                         "dependencies/dyaml/dyaml"];
+    auto sources      = ["physics/", "scene/", "component/", "formats/", "gui/", 
                          "math/", "memory/", "monitor/", "platform/", 
                          "spatial/", "time/", "video/", "containers/", "util/",
                          "ice/", "color.d", "graphdata.d", "image.d", 
@@ -213,8 +214,10 @@ void main(string[] args)
     }
 
     try{build(targets);}
-    catch(CompileException e){writeln("Could not compile: " ~ e.msg);}
-    catch(ProcessException e){writeln("Compilation failed: " ~ e.msg);}
+    catch(CompileException e){writeln("Could not compile: ",  e.msg);}
+    catch(ProcessException e){writeln("Compilation failed: ", e.msg);}
+
+    writeln("DONE");
 }
 
 ///Print help information.
@@ -481,11 +484,11 @@ struct CompileOptions
             }
             version (Windows)
             {    
-                //TODO needs testing
-                //{    if (find(this.out_file, ".") <= rfind(this.out_file, "/"))
-                if(out_file.find('.') <= out_file.retro().find('/').retro())
+                auto dot = find(out_file, '.');
+                auto backslash = retro(find(retro(out_file), '/'));
+                if(dot <= backslash)
                 {
-                   out_file ~= bin_ext;
+                    out_file ~= bin_ext;
                 }
             }
         }
@@ -577,7 +580,16 @@ void execute_compiler(string compiler, string[] arguments)
     {
         version(Windows)
         {    
-            write("compile", arguments.join(" "));
+            {
+                import std.stdio;
+                auto f = File("compile", "w");
+                foreach(arg; arguments)
+                {
+                    writeln(arg);
+                    f.write(arg, " ");
+                    f.flush();
+                }
+            }
             scope(exit){remove("compile");}
             execute(compiler ~ " ", ["@compile"]);
         } 
@@ -609,7 +621,7 @@ void execute(string command, string[] args)
 
     string full = command ~ " " ~ args.join(" ");
     writeln("CDC:  " ~ full);
-    if(int status = system(full) != 0)
+    if(int status = system(full ~ "\0") != 0)
     {
         throw new ProcessException("Process " ~ command ~ " exited with status " ~ 
                                    to!string(status));

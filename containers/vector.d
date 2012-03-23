@@ -23,11 +23,10 @@ import memory.memory;
  *
  * Only bare requirements are implemented. Can be improved if needed.
  *
- * If storing references to classes, arrays or pointers to garbage collected 
- * memory, it should be ensured that these don't accidentally get collected 
- * as the garbage collector does not see manually allocated memory.
- * This could be done for instance by having other references to
- * those classes/arrays/memory outside manually allocated memory.
+ * Note:
+ *
+ * Vector is buggy, in particular with respect to copying. It will be rewritten
+ * or replaced by std.containers.array in future. Use FixedArray if possible.
  */
 align(4) struct Vector(T)
 {

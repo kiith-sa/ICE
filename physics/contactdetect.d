@@ -159,7 +159,7 @@ bool aabboxAabbox(const Vector2f box1Position, const Vector2f box2Position,
     //magnitude of the normal vector is determined by the overlap of aabboxes
     const normalMag = combined - distanceAbs;
  
-    contact.contactNormal.zero();
+    contact.contactNormal.setZero();
     //only adjust the contact normal in the direction of the smallest overlap
     if(normalMag.x < normalMag.y)
     {

@@ -92,7 +92,7 @@ struct CLIOption
          * Params:  target = Target variable to write option argument to.
          */
         @property ref CLIOption target(T)(T* target)
-            if(is_primitive!T)
+            if(isPrimitive!T)
         {
             assert(action_ is null, "Target of a CLIOption specified more than once");
             action_ = (string[] args){return storeAction(args, (T t){*target = t;});};
@@ -114,7 +114,7 @@ struct CLIOption
         @property ref CLIOption target(T)(T target)
             if(isSomeFunction!T && 
                ParameterTypeTuple!T.length == 1 &&
-               is_primitive!(ParameterTypeTuple!T[0]) &&
+               isPrimitive!(ParameterTypeTuple!T[0]) &&
                (functionAttributes!T & FunctionAttribute.nothrow_) &&
                is(ReturnType!T == void))
         {
@@ -139,7 +139,7 @@ struct CLIOption
          * Params:  target = Target array to write option arguments to.
          */
         @property ref CLIOption target(T)(ref T[] target)
-            if(is_primitive!T)
+            if(isPrimitive!T)
         {
             assert(action_ is null, "Target of a CLIOption specified more than once");
             action_ = (string[] args){return arrayStoreAction(args, target);};

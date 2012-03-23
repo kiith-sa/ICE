@@ -1,0 +1,270 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang='en'>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" >
+<title>spatial.gridspatialmanager - ICE 0.1 API documentation</title>
+<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body><div id="top">
+<div id="header">
+<a id="main-heading" href="index.html">ICE 0.1 API documentation</a>
+</div>
+</div>
+
+<div id="navigation">
+<div class="navblock">
+<div id="toctop">
+<ul><li><a href="../index.html">Documentation home</a></li>
+</ul>
+</div>
+</div>
+<div class="navblock">
+<ul><li><a href="index.html">Main page</a></li>
+<li><a href="color.html">color</a></li>
+<li><a href="component.controllercomponent.html">component.controllercomponent</a></li>
+<li><a href="component.controllersystem.html">component.controllersystem</a></li>
+<li><a href="component.deathtimeoutcomponent.html">component.deathtimeoutcomponent</a></li>
+<li><a href="component.enginecomponent.html">component.enginecomponent</a></li>
+<li><a href="component.enginesystem.html">component.enginesystem</a></li>
+<li><a href="component.entitysystem.html">component.entitysystem</a></li>
+<li><a href="component.exceptions.html">component.exceptions</a></li>
+<li><a href="component.physicscomponent.html">component.physicscomponent</a></li>
+<li><a href="component.physicssystem.html">component.physicssystem</a></li>
+<li><a href="component.system.html">component.system</a></li>
+<li><a href="component.timeoutsystem.html">component.timeoutsystem</a></li>
+<li><a href="component.visualcomponent.html">component.visualcomponent</a></li>
+<li><a href="component.visualsystem.html">component.visualsystem</a></li>
+<li><a href="component.weaponcomponent.html">component.weaponcomponent</a></li>
+<li><a href="component.weaponsystem.html">component.weaponsystem</a></li>
+<li><a href="containers.array2d.html">containers.array2d</a></li>
+<li><a href="containers.fixedarray.html">containers.fixedarray</a></li>
+<li><a href="containers.lazyarray.html">containers.lazyarray</a></li>
+<li><a href="containers.vector.html">containers.vector</a></li>
+<li><a href="formats.cli.html">formats.cli</a></li>
+<li><a href="formats.image.html">formats.image</a></li>
+<li><a href="formats.mathparser.html">formats.mathparser</a></li>
+<li><a href="formats.png.html">formats.png</a></li>
+<li><a href="formats.pngcommon.html">formats.pngcommon</a></li>
+<li><a href="formats.pngdecoder.html">formats.pngdecoder</a></li>
+<li><a href="formats.pngencoder.html">formats.pngencoder</a></li>
+<li><a href="formats.zlib.html">formats.zlib</a></li>
+<li><a href="graphdata.html">graphdata</a></li>
+<li><a href="gui.guibutton.html">gui.guibutton</a></li>
+<li><a href="gui.guielement.html">gui.guielement</a></li>
+<li><a href="gui.guilinegraph.html">gui.guilinegraph</a></li>
+<li><a href="gui.guimenu.html">gui.guimenu</a></li>
+<li><a href="gui.guimousecontrollable.html">gui.guimousecontrollable</a></li>
+<li><a href="gui.guistatictext.html">gui.guistatictext</a></li>
+<li><a href="ice.html">ice</a></li>
+<li><a href="ice.credits.html">ice.credits</a></li>
+<li><a href="ice.exceptions.html">ice.exceptions</a></li>
+<li><a href="ice.game.html">ice.game</a></li>
+<li><a href="ice.hud.html">ice.hud</a></li>
+<li><a href="ice.ice.html">ice.ice</a></li>
+<li><a href="ice.player.html">ice.player</a></li>
+<li><a href="image.html">image</a></li>
+<li><a href="math.math.html">math.math</a></li>
+<li><a href="math.matrix4.html">math.matrix4</a></li>
+<li><a href="math.rect.html">math.rect</a></li>
+<li><a href="math.vector2.html">math.vector2</a></li>
+<li><a href="memory.memory.html">memory.memory</a></li>
+<li><a href="memory.memorymonitorable.html">memory.memorymonitorable</a></li>
+<li><a href="memory.pool.html">memory.pool</a></li>
+<li><a href="monitor.graphmonitor.html">monitor.graphmonitor</a></li>
+<li><a href="monitor.monitorable.html">monitor.monitorable</a></li>
+<li><a href="monitor.monitordata.html">monitor.monitordata</a></li>
+<li><a href="monitor.monitormanager.html">monitor.monitormanager</a></li>
+<li><a href="monitor.submonitor.html">monitor.submonitor</a></li>
+<li><a href="physics.contact.html">physics.contact</a></li>
+<li><a href="physics.contactdetect.html">physics.contactdetect</a></li>
+<li><a href="physics.physicsbody.html">physics.physicsbody</a></li>
+<li><a href="physics.physicsengine.html">physics.physicsengine</a></li>
+<li><a href="physics.physicsmonitor.html">physics.physicsmonitor</a></li>
+<li><a href="platform.key.html">platform.key</a></li>
+<li><a href="platform.platform.html">platform.platform</a></li>
+<li><a href="platform.sdlplatform.html">platform.sdlplatform</a></li>
+<li><a href="scene.actor.html">scene.actor</a></li>
+<li><a href="scene.scenemanager.html">scene.scenemanager</a></li>
+<li><a href="spatial.gridmonitor.html">spatial.gridmonitor</a></li>
+<li><a href="spatial.gridspatialmanager.html">spatial.gridspatialmanager</a></li>
+<li><a href="spatial.spatialmanager.html">spatial.spatialmanager</a></li>
+<li><a href="spatial.volume.html">spatial.volume</a></li>
+<li><a href="spatial.volumeaabbox.html">spatial.volumeaabbox</a></li>
+<li><a href="spatial.volumecircle.html">spatial.volumecircle</a></li>
+<li><a href="time.eventcounter.html">time.eventcounter</a></li>
+<li><a href="time.gametime.html">time.gametime</a></li>
+<li><a href="time.time.html">time.time</a></li>
+<li><a href="time.timer.html">time.timer</a></li>
+<li><a href="util.bits.html">util.bits</a></li>
+<li><a href="util.factory.html">util.factory</a></li>
+<li><a href="util.iterable.html">util.iterable</a></li>
+<li><a href="util.signal.html">util.signal</a></li>
+<li><a href="util.stringctfe.html">util.stringctfe</a></li>
+<li><a href="util.traits.html">util.traits</a></li>
+<li><a href="util.typeinfo.html">util.typeinfo</a></li>
+<li><a href="util.weaksingleton.html">util.weaksingleton</a></li>
+<li><a href="util.yaml.html">util.yaml</a></li>
+<li><a href="video.binarytexturepacker.html">video.binarytexturepacker</a></li>
+<li><a href="video.font.html">video.font</a></li>
+<li><a href="video.fontmanager.html">video.fontmanager</a></li>
+<li><a href="video.gldrawmode.html">video.gldrawmode</a></li>
+<li><a href="video.glmonitor.html">video.glmonitor</a></li>
+<li><a href="video.glrenderer.html">video.glrenderer</a></li>
+<li><a href="video.glshader.html">video.glshader</a></li>
+<li><a href="video.gltexture.html">video.gltexture</a></li>
+<li><a href="video.gltexturebackend.html">video.gltexturebackend</a></li>
+<li><a href="video.glvertex.html">video.glvertex</a></li>
+<li><a href="video.glvertexbuffer.html">video.glvertexbuffer</a></li>
+<li><a href="video.glvideodriver.html">video.glvideodriver</a></li>
+<li><a href="video.sdlglvideodriver.html">video.sdlglvideodriver</a></li>
+<li><a href="video.shader.html">video.shader</a></li>
+<li><a href="video.texture.html">video.texture</a></li>
+<li><a href="video.texturepage.html">video.texturepage</a></li>
+<li><a href="video.videodriver.html">video.videodriver</a></li>
+<li><a href="video.videodrivercontainer.html">video.videodrivercontainer</a></li>
+</ul>
+</div>
+</div>
+
+<div id="content">
+<h1>spatial.gridspatialmanager</h1>
+<!-- Generated by Ddoc from spatial/gridspatialmanager.d -->
+<p>Spatial manager based on a simple grid.</p>
+
+<dl><dt class="d_decl">class <a name="GridSpatialManager"></a><span class="ddoc_psymbol">GridSpatialManager</span>(T): SpatialManager!(T);
+</dt>
+<dd><p>Implementation of spatial manager storing objects in a simple square grid.</p>
+
+<dl><dt class="d_decl">struct <a name="Cell"></a><span class="ddoc_psymbol">Cell</span>;
+</dt>
+<dd><p>Grid cell.</p>
+
+<dl><dt class="d_decl">Vector!(T) <a name="objects"></a><span class="ddoc_psymbol">objects</span>;
+</dt>
+<dd><p>Objects in the cell.</p>
+
+</dd>
+</dl>
+</dd>
+<dt class="d_decl">Array2D!(Cell) <a name="grid_"></a><span class="ddoc_psymbol">grid_</span>;
+</dt>
+<dd><p>Cells of the grid.</p>
+
+</dd>
+<dt class="d_decl">Cell <a name="outer_"></a><span class="ddoc_psymbol">outer_</span>;
+</dt>
+<dd><p>Cell representing the area outside the grid.</p>
+
+</dd>
+<dt class="d_decl">class <a name="ObjectIterable"></a><span class="ddoc_psymbol">ObjectIterable</span>(T): Iterable!(T[]);
+</dt>
+<dd><p>Iterable used to iterate over groups of spatially close objects (cells).</p>
+
+<dl><dt class="d_decl">int <a name="opApply"></a><span class="ddoc_psymbol">opApply</span>(int delegate(ref T[]) <b>dg</b>);
+</dt>
+<dd><p>Used by foreach</p>
+
+</dd>
+</dl>
+</dd>
+<dt class="d_decl">Vector2f <a name="origin_"></a><span class="ddoc_psymbol">origin_</span>;
+</dt>
+<dd><p>Origin of the grid (top-left corner) in world space.</p>
+
+</dd>
+<dt class="d_decl">float <a name="cellSize_"></a><span class="ddoc_psymbol">cellSize_</span>;
+</dt>
+<dd><p>Size of a single cell (both x and y).</p>
+
+</dd>
+<dt class="d_decl">uint <a name="gridSize_"></a><span class="ddoc_psymbol">gridSize_</span>;
+</dt>
+<dd><p>Size of the grid in cells (both x and y).</p>
+
+</dd>
+<dt class="d_decl">this(const Vector2f <b>center</b>, const float <b>cellSize</b>, const uint <b>gridSize</b>);
+</dt>
+<dd><p>Construct a grid spatial manager with specified parameters.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>Vector2f <b>center</b></td>
+<td valign=top>Center of the grid in world space.</td></tr>
+<tr><td valign=top>float <b>cellSize</b></td>
+<td valign=top>Size of a grid cell (both x and y).</td></tr>
+<tr><td valign=top>uint <b>gridSize</b></td>
+<td valign=top>Size of the grid in cells (both x and y).</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">const pure uint <a name="gridSize"></a><span class="ddoc_psymbol">gridSize</span>();
+</dt>
+<dd><p>Get grid size (both X and Y) in cells.</p>
+
+</dd>
+<dt class="d_decl">Cell*[] <a name="cells"></a><span class="ddoc_psymbol">cells</span>(const Vector2f <b>position</b>, const Volume <b>volume</b>);
+</dt>
+<dd><p>Get all <a name="cells"></a><span class="ddoc_psymbol">cells</span> a <b>volume</b> is present in.
+</p>
+<p>More <a name="cells"></a><span class="ddoc_psymbol">cells</span> than needed might be returned, but all <a name="cells"></a><span class="ddoc_psymbol">cells</span> in which the <b>volume</b>
+ is present will be returned.
+
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>Vector2f <b>position</b></td>
+<td valign=top>Position of the <b>volume</b> in world space.</td></tr>
+<tr><td valign=top>Volume <b>volume</b></td>
+<td valign=top>Volume to check.</td></tr>
+</table></div>
+<b>Returns:</b><div class="pbr">Array of <a name="cells"></a><span class="ddoc_psymbol">cells</span> in which the <b>volume</b> is present.</div>
+
+</dd>
+<dt class="d_decl">Cell*[] <a name="cellsAabbox"></a><span class="ddoc_psymbol">cellsAabbox</span>(const Vector2f <b>position</b>, const VolumeAABBox <b>box</b>);
+</dt>
+<dd><p>Get all cells an axis aligned bounding <b>box</b> is present in.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>Vector2f <b>position</b></td>
+<td valign=top>Position of the <b>box</b> in world space.</td></tr>
+<tr><td valign=top>VolumeAABBox <b>box</b></td>
+<td valign=top>Bounding <b>box</b> to check.</td></tr>
+</table></div>
+<b>Returns:</b><div class="pbr">Array of cells in which the <b>box</b> is present.</div>
+
+</dd>
+<dt class="d_decl">Cell*[] <a name="cellsCircle"></a><span class="ddoc_psymbol">cellsCircle</span>(const Vector2f <b>position</b>, const VolumeCircle <b>circle</b>);
+</dt>
+<dd><p>Get all cells a bounding <b>circle</b> is present in.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>Vector2f <b>position</b></td>
+<td valign=top>Position of the <b>circle</b> in world space.</td></tr>
+<tr><td valign=top>VolumeCircle <b>circle</b></td>
+<td valign=top>Bounding <b>circle</b> to check.</td></tr>
+</table></div>
+<b>Returns:</b><div class="pbr">Array of cells in which the <b>circle</b> is present.</div>
+
+</dd>
+<dt class="d_decl">Cell*[] <a name="cellsRect"></a><span class="ddoc_psymbol">cellsRect</span>(const Vector2f <b>position</b>, ref const Rectf <b>rect</b>);
+</dt>
+<dd><p>Get all cells a bounding circle is present in.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>Vector2f <b>position</b></td>
+<td valign=top>Position of the rectangle in world space.</td></tr>
+<tr><td valign=top>Rectf <b>rect</b></td>
+<td valign=top>Rect to check.</td></tr>
+</table></div>
+<b>Returns:</b><div class="pbr">Array of cells in which the rectangle is present.</div>
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</div>
+
+<div id="copyright">
+Copyright &copy; Ferdinand Majerech 2011. |
+Page generated by AutoDDoc and <a href="http://www.digitalmars.com/d/2.0/ddoc.html">Ddoc</a>.
+</div>
+
+</body>
+</html>

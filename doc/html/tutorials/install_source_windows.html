@@ -1,0 +1,160 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installing from source on Windows &mdash; ICE 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ICE 0.1 documentation" href="../index.html" />
+    <link rel="prev" title="Installing from source on Linux" href="install_source_linux.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="install_source_linux.html" title="Installing from source on Linux"
+             accesskey="P">previous</a></li>
+        <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installing-from-source-on-windows">
+<h1>Installing from source on Windows<a class="headerlink" href="#installing-from-source-on-windows" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="using-dmd-digital-mars-d-compiler">
+<h2>Using DMD (Digital Mars D Compiler)<a class="headerlink" href="#using-dmd-digital-mars-d-compiler" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic">
+<li><p class="first">Download and install DMD</p>
+<p>Get the newest DMD 2 zip archive from
+<a class="reference external" href="http://dlang.org/download.html">here</a>, and unpack it.</p>
+</li>
+<li><p class="first">Set the <tt class="docutils literal"><span class="pre">PATH</span></tt> environment variable</p>
+<p>You need to add DMD to the <tt class="docutils literal"><span class="pre">PATH</span></tt> environment variable so you can use it
+directly.</p>
+<p>To do this on Windows XP:</p>
+<ul>
+<li><p class="first">Right-click <em>My Computer</em></p>
+</li>
+<li><p class="first">Click <em>Properties</em></p>
+</li>
+<li><p class="first">Go to the <em>Advanced</em> tab</p>
+</li>
+<li><p class="first">Click the <em>Environment Variables</em> button</p>
+</li>
+<li><p class="first">From <em>System Variables</em>, select <em>Path</em>, and click <em>Edit</em></p>
+</li>
+<li><p class="first">Assuming you unpacked DMD to <tt class="docutils literal"><span class="pre">C:\dmd2</span></tt>, add this to the end of <em>Variable value</em>:</p>
+<div class="highlight-python"><pre>;C:\dmd2\windows\bin</pre>
+</div>
+</li>
+</ul>
+<p>On Windows 7:</p>
+<ul>
+<li><p class="first">Right-click <em>Computer</em></p>
+</li>
+<li><p class="first">Click <em>Properties</em></p>
+</li>
+<li><p class="first">Go to the <em>Advanced system settings</em> tab</p>
+</li>
+<li><p class="first">Click the <em>Environment Variables</em> button</p>
+</li>
+<li><p class="first">From <em>System Variables</em>, select <em>Path</em>, and click <em>Edit</em></p>
+</li>
+<li><p class="first">Assuming you installed Python to <tt class="docutils literal"><span class="pre">C:\dmd2</span></tt>, add this to the end of <em>Variable value</em>:</p>
+<div class="highlight-python"><pre>;C:\dmd2\windows\bin</pre>
+</div>
+</li>
+</ul>
+</li>
+<li><p class="first">Get ICE</p>
+<p>You can download and extract ICE source tarball from its
+<a class="reference external" href="https://github.com/kiith-sa/ICE">GitHub page</a>.</p>
+<p>Or you can download the source repository using git:</p>
+<div class="highlight-python"><pre>git clone git://github.com/kiith-sa/ICE.git</pre>
+</div>
+</li>
+<li><p class="first">Get ICE dependencies</p>
+<p>ICE requires SDL and FreeType DLLs to run on Windows. Download the zip archive
+from
+<a class="reference external" href="https://github.com/downloads/kiith-sa/ICE/ice_win32_dependencies.zip">here</a>
+and extract it to the folder folder you downloaded ICE source into (this is the
+folder that contains the <tt class="docutils literal"><span class="pre">cdc.d</span></tt> file).</p>
+</li>
+<li><p class="first">Compile and install ICE</p>
+<p>Launch the command line (<tt class="docutils literal"><span class="pre">Start</span> <span class="pre">-&gt;</span> <span class="pre">Run</span> <span class="pre">-&gt;</span> <span class="pre">cmd</span></tt> on both WinXP and Win7 or
+Powershell on Win7). Move to to the folder where you downloaded ICE source.</p>
+<p>First, compile the CDC build script:</p>
+<div class="highlight-python"><pre>dmd cdc.d</pre>
+</div>
+<p>Now, you need to compile ICE:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">cdc</span><span class="o">.</span><span class="n">exe</span>
+</pre></div>
+</div>
+<p>This will compile a debug build, called <tt class="docutils literal"><span class="pre">ice-debug.exe</span></tt>. A release build
+can be compiled as well. For more info about ICE build targets, type
+<tt class="docutils literal"><span class="pre">cdc.exe</span> <span class="pre">--help</span></tt>.</p>
+<p>You can now run ICE by clicking the compiled .exe .</p>
+</li>
+</ol>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installing from source on Windows</a><ul>
+<li><a class="reference internal" href="#using-dmd-digital-mars-d-compiler">Using DMD (Digital Mars D Compiler)</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="install_source_linux.html" title="Installing from source on Linux"
+             >previous</a></li>
+        <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010-2012, Dávid Horváth, Ferdinand Majerech, Libor Mališ..
+      Last updated on Mar 23, 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.2.
+    </div>
+  </body>
+</html>

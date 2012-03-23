@@ -123,6 +123,12 @@ struct Rect(T)
         max.x = .max(max.x, point.x);
         max.y = .max(max.y, point.y);
     }
+
+    ///Is this rectangle valid?
+    @property bool valid() const pure nothrow 
+    {
+        return min.x <= max.x && min.y <= max.y;
+    }
 }
 
 ///Rect of floats.

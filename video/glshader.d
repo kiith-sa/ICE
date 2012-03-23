@@ -107,7 +107,7 @@ package struct GLShader
                                                              null;
                 assert(typeStr !is null, "Unknown shader type");
 
-                char[] source = allocArray!char(file.bytes);
+                char[] source = allocArray!char(cast(size_t)file.bytes);
                 scope(exit){free(source);}
 
                 file.input.read(cast(void[])source);

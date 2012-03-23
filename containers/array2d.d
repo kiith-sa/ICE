@@ -21,6 +21,9 @@ import memory.memory;
  * This could be done for instance by having other references to
  * those classes/arrays/memory outside manually allocated memory.
  *
+ *
+ * For simplicity and safety, Array2D can not be copied.
+ *
  * Examples:
  * --------------------
  * //Construct a 4*4 2D array of uints. Contents will be default initialized,
@@ -37,6 +40,7 @@ import memory.memory;
  */
 align(4) struct Array2D(T)
 {
+    @disable this(this);
     private:
         ///Manually allocated data storage.
         T[] data_ = null;

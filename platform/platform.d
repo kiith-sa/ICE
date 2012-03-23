@@ -91,7 +91,7 @@ abstract class Platform
         void showCursor();
 
         ///Determine if specified key is pressed.
-        final bool isKeyPressed(const Key key) const 
+        final bool isKeyPressed(const Key key) const pure nothrow
         {
             return keysPressed_[cast(uint)key];
         }

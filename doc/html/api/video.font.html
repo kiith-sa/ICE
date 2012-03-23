@@ -1,0 +1,305 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang='en'>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" >
+<title>video.font - ICE 0.1 API documentation</title>
+<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body><div id="top">
+<div id="header">
+<a id="main-heading" href="index.html">ICE 0.1 API documentation</a>
+</div>
+</div>
+
+<div id="navigation">
+<div class="navblock">
+<div id="toctop">
+<ul><li><a href="../index.html">Documentation home</a></li>
+</ul>
+</div>
+</div>
+<div class="navblock">
+<ul><li><a href="index.html">Main page</a></li>
+<li><a href="color.html">color</a></li>
+<li><a href="component.controllercomponent.html">component.controllercomponent</a></li>
+<li><a href="component.controllersystem.html">component.controllersystem</a></li>
+<li><a href="component.deathtimeoutcomponent.html">component.deathtimeoutcomponent</a></li>
+<li><a href="component.enginecomponent.html">component.enginecomponent</a></li>
+<li><a href="component.enginesystem.html">component.enginesystem</a></li>
+<li><a href="component.entitysystem.html">component.entitysystem</a></li>
+<li><a href="component.exceptions.html">component.exceptions</a></li>
+<li><a href="component.physicscomponent.html">component.physicscomponent</a></li>
+<li><a href="component.physicssystem.html">component.physicssystem</a></li>
+<li><a href="component.system.html">component.system</a></li>
+<li><a href="component.timeoutsystem.html">component.timeoutsystem</a></li>
+<li><a href="component.visualcomponent.html">component.visualcomponent</a></li>
+<li><a href="component.visualsystem.html">component.visualsystem</a></li>
+<li><a href="component.weaponcomponent.html">component.weaponcomponent</a></li>
+<li><a href="component.weaponsystem.html">component.weaponsystem</a></li>
+<li><a href="containers.array2d.html">containers.array2d</a></li>
+<li><a href="containers.fixedarray.html">containers.fixedarray</a></li>
+<li><a href="containers.lazyarray.html">containers.lazyarray</a></li>
+<li><a href="containers.vector.html">containers.vector</a></li>
+<li><a href="formats.cli.html">formats.cli</a></li>
+<li><a href="formats.image.html">formats.image</a></li>
+<li><a href="formats.mathparser.html">formats.mathparser</a></li>
+<li><a href="formats.png.html">formats.png</a></li>
+<li><a href="formats.pngcommon.html">formats.pngcommon</a></li>
+<li><a href="formats.pngdecoder.html">formats.pngdecoder</a></li>
+<li><a href="formats.pngencoder.html">formats.pngencoder</a></li>
+<li><a href="formats.zlib.html">formats.zlib</a></li>
+<li><a href="graphdata.html">graphdata</a></li>
+<li><a href="gui.guibutton.html">gui.guibutton</a></li>
+<li><a href="gui.guielement.html">gui.guielement</a></li>
+<li><a href="gui.guilinegraph.html">gui.guilinegraph</a></li>
+<li><a href="gui.guimenu.html">gui.guimenu</a></li>
+<li><a href="gui.guimousecontrollable.html">gui.guimousecontrollable</a></li>
+<li><a href="gui.guistatictext.html">gui.guistatictext</a></li>
+<li><a href="ice.html">ice</a></li>
+<li><a href="ice.credits.html">ice.credits</a></li>
+<li><a href="ice.exceptions.html">ice.exceptions</a></li>
+<li><a href="ice.game.html">ice.game</a></li>
+<li><a href="ice.hud.html">ice.hud</a></li>
+<li><a href="ice.ice.html">ice.ice</a></li>
+<li><a href="ice.player.html">ice.player</a></li>
+<li><a href="image.html">image</a></li>
+<li><a href="math.math.html">math.math</a></li>
+<li><a href="math.matrix4.html">math.matrix4</a></li>
+<li><a href="math.rect.html">math.rect</a></li>
+<li><a href="math.vector2.html">math.vector2</a></li>
+<li><a href="memory.memory.html">memory.memory</a></li>
+<li><a href="memory.memorymonitorable.html">memory.memorymonitorable</a></li>
+<li><a href="memory.pool.html">memory.pool</a></li>
+<li><a href="monitor.graphmonitor.html">monitor.graphmonitor</a></li>
+<li><a href="monitor.monitorable.html">monitor.monitorable</a></li>
+<li><a href="monitor.monitordata.html">monitor.monitordata</a></li>
+<li><a href="monitor.monitormanager.html">monitor.monitormanager</a></li>
+<li><a href="monitor.submonitor.html">monitor.submonitor</a></li>
+<li><a href="physics.contact.html">physics.contact</a></li>
+<li><a href="physics.contactdetect.html">physics.contactdetect</a></li>
+<li><a href="physics.physicsbody.html">physics.physicsbody</a></li>
+<li><a href="physics.physicsengine.html">physics.physicsengine</a></li>
+<li><a href="physics.physicsmonitor.html">physics.physicsmonitor</a></li>
+<li><a href="platform.key.html">platform.key</a></li>
+<li><a href="platform.platform.html">platform.platform</a></li>
+<li><a href="platform.sdlplatform.html">platform.sdlplatform</a></li>
+<li><a href="scene.actor.html">scene.actor</a></li>
+<li><a href="scene.scenemanager.html">scene.scenemanager</a></li>
+<li><a href="spatial.gridmonitor.html">spatial.gridmonitor</a></li>
+<li><a href="spatial.gridspatialmanager.html">spatial.gridspatialmanager</a></li>
+<li><a href="spatial.spatialmanager.html">spatial.spatialmanager</a></li>
+<li><a href="spatial.volume.html">spatial.volume</a></li>
+<li><a href="spatial.volumeaabbox.html">spatial.volumeaabbox</a></li>
+<li><a href="spatial.volumecircle.html">spatial.volumecircle</a></li>
+<li><a href="time.eventcounter.html">time.eventcounter</a></li>
+<li><a href="time.gametime.html">time.gametime</a></li>
+<li><a href="time.time.html">time.time</a></li>
+<li><a href="time.timer.html">time.timer</a></li>
+<li><a href="util.bits.html">util.bits</a></li>
+<li><a href="util.factory.html">util.factory</a></li>
+<li><a href="util.iterable.html">util.iterable</a></li>
+<li><a href="util.signal.html">util.signal</a></li>
+<li><a href="util.stringctfe.html">util.stringctfe</a></li>
+<li><a href="util.traits.html">util.traits</a></li>
+<li><a href="util.typeinfo.html">util.typeinfo</a></li>
+<li><a href="util.weaksingleton.html">util.weaksingleton</a></li>
+<li><a href="util.yaml.html">util.yaml</a></li>
+<li><a href="video.binarytexturepacker.html">video.binarytexturepacker</a></li>
+<li><a href="video.font.html">video.font</a></li>
+<li><a href="video.fontmanager.html">video.fontmanager</a></li>
+<li><a href="video.gldrawmode.html">video.gldrawmode</a></li>
+<li><a href="video.glmonitor.html">video.glmonitor</a></li>
+<li><a href="video.glrenderer.html">video.glrenderer</a></li>
+<li><a href="video.glshader.html">video.glshader</a></li>
+<li><a href="video.gltexture.html">video.gltexture</a></li>
+<li><a href="video.gltexturebackend.html">video.gltexturebackend</a></li>
+<li><a href="video.glvertex.html">video.glvertex</a></li>
+<li><a href="video.glvertexbuffer.html">video.glvertexbuffer</a></li>
+<li><a href="video.glvideodriver.html">video.glvideodriver</a></li>
+<li><a href="video.sdlglvideodriver.html">video.sdlglvideodriver</a></li>
+<li><a href="video.shader.html">video.shader</a></li>
+<li><a href="video.texture.html">video.texture</a></li>
+<li><a href="video.texturepage.html">video.texturepage</a></li>
+<li><a href="video.videodriver.html">video.videodriver</a></li>
+<li><a href="video.videodrivercontainer.html">video.videodrivercontainer</a></li>
+</ul>
+</div>
+</div>
+
+<div id="content">
+<h1>video.font</h1>
+<!-- Generated by Ddoc from video/font.d -->
+<p>Font class.</p>
+
+<dl><dt class="d_decl">class <a name="FontException"></a><span class="ddoc_psymbol">FontException</span>: object.Exception;
+</dt>
+<dd><p>Exception thrown at font related errors.</p>
+
+</dd>
+<dt class="d_decl">struct <a name="Glyph"></a><span class="ddoc_psymbol">Glyph</span>;
+</dt>
+<dd><p>Immutable font glyph structure.</p>
+
+<dl><dt class="d_decl">Texture <a name="texture"></a><span class="ddoc_psymbol">texture</span>;
+</dt>
+<dd><p>Texture handle of the glyph.</p>
+
+</dd>
+<dt class="d_decl">uint <a name="freetypeIndex"></a><span class="ddoc_psymbol">freetypeIndex</span>;
+</dt>
+<dd><p>Freetype glyph index.</p>
+
+</dd>
+<dt class="d_decl">Vector2b <a name="offset"></a><span class="ddoc_psymbol">offset</span>;
+</dt>
+<dd><p>Offset from the pen to the bottom-left corner of glyph image.</p>
+
+</dd>
+<dt class="d_decl">byte <a name="advance"></a><span class="ddoc_psymbol">advance</span>;
+</dt>
+<dd><p>Pixels to <a name="advance"></a><span class="ddoc_psymbol">advance</span> the pen after drawing this glyph.</p>
+
+</dd>
+</dl>
+</dd>
+<dt class="d_decl">class <a name="Font"></a><span class="ddoc_psymbol">Font</span>;
+</dt>
+<dd><p>Stores one font with one size (e.g. Inconsolata size 16 and 18 will be two <a name="Font"></a><span class="ddoc_psymbol">Font</span> objects).</p>
+
+<dl><dt class="d_decl">this(FT_LibraryRec* <b>freetypeLib</b>, ubyte[] <b>fontData</b>, const(immutable(char)[]) <b>name</b>, const(uint) <b>size</b>, const(uint) <b>fastGlyphs</b>, const(bool) <b>antialiasing</b>);
+</dt>
+<dd><p>Construct a font.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>FT_LibraryRec* <b>freetypeLib</b></td>
+<td valign=top>Handle to the freetype library used to work with fonts.</td></tr>
+<tr><td valign=top>ubyte[] <b>fontData</b></td>
+<td valign=top>Font data (loaded from a font file).</td></tr>
+<tr><td valign=top>const(immutable(char)[]) <b>name</b></td>
+<td valign=top>Name of the font.</td></tr>
+<tr><td valign=top>const(uint) <b>size</b></td>
+<td valign=top>Size of the font in points.</td></tr>
+<tr><td valign=top>const(uint) <b>fastGlyphs</b></td>
+<td valign=top>Number of glyphs to store in fast access array,
+                         from glyph 0. E.g. 128 means 0-127, i.e. ASCII.</td></tr>
+<tr><td valign=top>const(bool) <b>antialiasing</b></td>
+<td valign=top>Should the font be antialiased?</td></tr>
+</table></div>
+<b>Throws:</b><div class="pbr">FontException if the font could not be loaded.</div>
+
+</dd>
+<dt class="d_decl">const pure @property uint <a name="size"></a><span class="ddoc_psymbol">size</span>();
+</dt>
+<dd><p>Get <a name="size"></a><span class="ddoc_psymbol">size</span> of the font in pixels.</p>
+
+</dd>
+<dt class="d_decl">const pure @property uint <a name="height"></a><span class="ddoc_psymbol">height</span>();
+</dt>
+<dd><p>Get <a name="height"></a><span class="ddoc_psymbol">height</span> of the font in pixels (currently the same as size).</p>
+
+</dd>
+<dt class="d_decl">const pure @property string <a name="name"></a><span class="ddoc_psymbol">name</span>();
+</dt>
+<dd><p>Get <a name="name"></a><span class="ddoc_psymbol">name</span> of the font.</p>
+
+</dd>
+<dt class="d_decl">const pure @property bool <a name="kerning"></a><span class="ddoc_psymbol">kerning</span>();
+</dt>
+<dd><p>Does the font support <a name="kerning"></a><span class="ddoc_psymbol">kerning</span>?</p>
+
+</dd>
+<dt class="d_decl">pure @property FT_Face <a name="fontFace"></a><span class="ddoc_psymbol">fontFace</span>();
+</dt>
+<dd><p>Get FreeType font face of the font.</p>
+
+</dd>
+<dt class="d_decl">void <a name="unloadTextures"></a><span class="ddoc_psymbol">unloadTextures</span>(VideoDriver <b>driver</b>);
+</dt>
+<dd><p>Delete glyph textures.
+</p>
+<p>Textures have to be reloaded before any further
+ glyph rendering with the font.
+
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>VideoDriver <b>driver</b></td>
+<td valign=top>Video <b>driver</b> to delete textures from.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">void <a name="reloadTextures"></a><span class="ddoc_psymbol">reloadTextures</span>(VideoDriver <b>driver</b>);
+</dt>
+<dd><p>Load glyph textures back to video <b>driver</b>.
+</p>
+<p>Can only be used after textures were unloaded.
+
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>VideoDriver <b>driver</b></td>
+<td valign=top>Video <b>driver</b> to load textures to.</td></tr>
+</table></div>
+<b>Throws:</b><div class="pbr">TextureException if the glyph textures could not be reloaded.</div>
+
+</dd>
+<dt class="d_decl">package uint <a name="textWidth"></a><span class="ddoc_psymbol">textWidth</span>(const string <b>str</b>, const bool <b>useKerning</b>);
+</dt>
+<dd><p>Returns width of text as it would be drawn.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>string <b>str</b></td>
+<td valign=top>Text to measure.</td></tr>
+<tr><td valign=top>bool <b>useKerning</b></td>
+<td valign=top>Should kerning be used?
+                        Should only be <b>true</b> if the font supports kerning.</td></tr>
+</table></div>
+<b>Returns:</b><div class="pbr">Width of the text in pixels.</div>
+
+</dd>
+<dt class="d_decl">package const const(Glyph*) <a name="getGlyph"></a><span class="ddoc_psymbol">getGlyph</span>(const dchar <b>c</b>);
+</dt>
+<dd><p>Access glyph of a (UTF-32) character.
+</p>
+<p>The glyph has to be loaded, otherwise a call to <a name="getGlyph"></a><span class="ddoc_psymbol">getGlyph</span>()
+ will result in undefined behavior.
+
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>dchar <b>c</b></td>
+<td valign=top>Character to get glyph for.</td></tr>
+</table></div>
+<b>Returns:</b><div class="pbr">Pointer to glyph corresponding to the character.</div>
+
+</dd>
+<dt class="d_decl">package const bool <a name="hasGlyph"></a><span class="ddoc_psymbol">hasGlyph</span>(const dchar <b>c</b>);
+</dt>
+<dd><p>Determines if the glyph of a character is loaded.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>dchar <b>c</b></td>
+<td valign=top>Character to check for.</td></tr>
+</table></div>
+<b>Returns:</b><div class="pbr">True if the glyph is loaded, <b>false</b> otherwise.</div>
+
+</dd>
+<dt class="d_decl">package void <a name="loadGlyph"></a><span class="ddoc_psymbol">loadGlyph</span>(VideoDriver <b>driver</b>, const dchar <b>c</b>);
+</dt>
+<dd><p>Load glyph of a character.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>VideoDriver <b>driver</b></td>
+<td valign=top>Video <b>driver</b> to use for texture creation.</td></tr>
+<tr><td valign=top>dchar <b>c</b></td>
+<td valign=top>Character to load glyph for.</td></tr>
+</table></div>
+<b>Throws:</b><div class="pbr">TextureException if the glyph texture could not be created.</div>
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</div>
+
+<div id="copyright">
+Copyright &copy; Ferdinand Majerech 2011. |
+Page generated by AutoDDoc and <a href="http://www.digitalmars.com/d/2.0/ddoc.html">Ddoc</a>.
+</div>
+
+</body>
+</html>

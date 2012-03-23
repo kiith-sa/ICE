@@ -231,7 +231,7 @@ class GridSpatialManager(T) : SpatialManager!T
          *
          * Returns: Array of cells in which the rectangle is present.
          */
-        Cell*[] cellsRect(const Vector2f position, const ref Rectf rect)
+        Cell*[] cellsRect(const Vector2f position, ref const Rectf rect)
         {
             //translate relative to the grid.
             const Rectf translated = rect + (position - origin_);
