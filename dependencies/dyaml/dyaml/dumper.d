@@ -169,8 +169,8 @@ struct Dumper
         ///Construct a Dumper writing to a _stream. This is useful to e.g. write to memory.
         this(Stream stream)
         {
-            resolver_ = defaultResolver_;
-            representer_ = defaultRepresenter_;
+            resolver_ = new Resolver();
+            representer_ = new Representer();
             stream_ = stream;
         }
 
