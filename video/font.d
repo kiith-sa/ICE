@@ -319,11 +319,13 @@ package final class Font
             {
                 //empty image is transparent
                 auto image             = Image(height_ / 2, height_, ColorFormat.GRAY_8);
-                defaultGlyph_         = alloc!Glyph();
-                defaultGlyph_.texture = driver.createTexture(image);
-                defaultGlyph_.offset  = Vector2b(0, cast(byte)-height_);
-                defaultGlyph_.advance = cast(byte)(height_ / 2);
-                defaultGlyph_.freetypeIndex = 0;
+                auto defaultGlyph    = alloc!Glyph();
+                scope(failure){free(defaultGlyph);}
+                defaultGlyph.texture = driver.createTexture(image);
+                defaultGlyph.offset  = Vector2b(0, cast(byte)-height_);
+                defaultGlyph.advance = cast(byte)(height_ / 2);
+                defaultGlyph.freetypeIndex = 0;
+                defaultGlyph_ = defaultGlyph;
             }
             return *defaultGlyph_;
         }
