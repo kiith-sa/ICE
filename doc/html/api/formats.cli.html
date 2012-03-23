@@ -1,0 +1,403 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang='en'>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" >
+<title>formats.cli - ICE 0.1 API documentation</title>
+<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body><div id="top">
+<div id="header">
+<a id="main-heading" href="index.html">ICE 0.1 API documentation</a>
+</div>
+</div>
+
+<div id="navigation">
+<div class="navblock">
+<div id="toctop">
+<ul><li><a href="../index.html">Documentation home</a></li>
+</ul>
+</div>
+</div>
+<div class="navblock">
+<ul><li><a href="index.html">Main page</a></li>
+<li><a href="color.html">color</a></li>
+<li><a href="component.controllercomponent.html">component.controllercomponent</a></li>
+<li><a href="component.controllersystem.html">component.controllersystem</a></li>
+<li><a href="component.deathtimeoutcomponent.html">component.deathtimeoutcomponent</a></li>
+<li><a href="component.enginecomponent.html">component.enginecomponent</a></li>
+<li><a href="component.enginesystem.html">component.enginesystem</a></li>
+<li><a href="component.entitysystem.html">component.entitysystem</a></li>
+<li><a href="component.exceptions.html">component.exceptions</a></li>
+<li><a href="component.physicscomponent.html">component.physicscomponent</a></li>
+<li><a href="component.physicssystem.html">component.physicssystem</a></li>
+<li><a href="component.system.html">component.system</a></li>
+<li><a href="component.timeoutsystem.html">component.timeoutsystem</a></li>
+<li><a href="component.visualcomponent.html">component.visualcomponent</a></li>
+<li><a href="component.visualsystem.html">component.visualsystem</a></li>
+<li><a href="component.weaponcomponent.html">component.weaponcomponent</a></li>
+<li><a href="component.weaponsystem.html">component.weaponsystem</a></li>
+<li><a href="containers.array2d.html">containers.array2d</a></li>
+<li><a href="containers.fixedarray.html">containers.fixedarray</a></li>
+<li><a href="containers.lazyarray.html">containers.lazyarray</a></li>
+<li><a href="containers.vector.html">containers.vector</a></li>
+<li><a href="formats.cli.html">formats.cli</a></li>
+<li><a href="formats.image.html">formats.image</a></li>
+<li><a href="formats.mathparser.html">formats.mathparser</a></li>
+<li><a href="formats.png.html">formats.png</a></li>
+<li><a href="formats.pngcommon.html">formats.pngcommon</a></li>
+<li><a href="formats.pngdecoder.html">formats.pngdecoder</a></li>
+<li><a href="formats.pngencoder.html">formats.pngencoder</a></li>
+<li><a href="formats.zlib.html">formats.zlib</a></li>
+<li><a href="graphdata.html">graphdata</a></li>
+<li><a href="gui.guibutton.html">gui.guibutton</a></li>
+<li><a href="gui.guielement.html">gui.guielement</a></li>
+<li><a href="gui.guilinegraph.html">gui.guilinegraph</a></li>
+<li><a href="gui.guimenu.html">gui.guimenu</a></li>
+<li><a href="gui.guimousecontrollable.html">gui.guimousecontrollable</a></li>
+<li><a href="gui.guistatictext.html">gui.guistatictext</a></li>
+<li><a href="ice.html">ice</a></li>
+<li><a href="ice.credits.html">ice.credits</a></li>
+<li><a href="ice.exceptions.html">ice.exceptions</a></li>
+<li><a href="ice.game.html">ice.game</a></li>
+<li><a href="ice.hud.html">ice.hud</a></li>
+<li><a href="ice.ice.html">ice.ice</a></li>
+<li><a href="ice.player.html">ice.player</a></li>
+<li><a href="image.html">image</a></li>
+<li><a href="math.math.html">math.math</a></li>
+<li><a href="math.matrix4.html">math.matrix4</a></li>
+<li><a href="math.rect.html">math.rect</a></li>
+<li><a href="math.vector2.html">math.vector2</a></li>
+<li><a href="memory.memory.html">memory.memory</a></li>
+<li><a href="memory.memorymonitorable.html">memory.memorymonitorable</a></li>
+<li><a href="memory.pool.html">memory.pool</a></li>
+<li><a href="monitor.graphmonitor.html">monitor.graphmonitor</a></li>
+<li><a href="monitor.monitorable.html">monitor.monitorable</a></li>
+<li><a href="monitor.monitordata.html">monitor.monitordata</a></li>
+<li><a href="monitor.monitormanager.html">monitor.monitormanager</a></li>
+<li><a href="monitor.submonitor.html">monitor.submonitor</a></li>
+<li><a href="physics.contact.html">physics.contact</a></li>
+<li><a href="physics.contactdetect.html">physics.contactdetect</a></li>
+<li><a href="physics.physicsbody.html">physics.physicsbody</a></li>
+<li><a href="physics.physicsengine.html">physics.physicsengine</a></li>
+<li><a href="physics.physicsmonitor.html">physics.physicsmonitor</a></li>
+<li><a href="platform.key.html">platform.key</a></li>
+<li><a href="platform.platform.html">platform.platform</a></li>
+<li><a href="platform.sdlplatform.html">platform.sdlplatform</a></li>
+<li><a href="scene.actor.html">scene.actor</a></li>
+<li><a href="scene.scenemanager.html">scene.scenemanager</a></li>
+<li><a href="spatial.gridmonitor.html">spatial.gridmonitor</a></li>
+<li><a href="spatial.gridspatialmanager.html">spatial.gridspatialmanager</a></li>
+<li><a href="spatial.spatialmanager.html">spatial.spatialmanager</a></li>
+<li><a href="spatial.volume.html">spatial.volume</a></li>
+<li><a href="spatial.volumeaabbox.html">spatial.volumeaabbox</a></li>
+<li><a href="spatial.volumecircle.html">spatial.volumecircle</a></li>
+<li><a href="time.eventcounter.html">time.eventcounter</a></li>
+<li><a href="time.gametime.html">time.gametime</a></li>
+<li><a href="time.time.html">time.time</a></li>
+<li><a href="time.timer.html">time.timer</a></li>
+<li><a href="util.bits.html">util.bits</a></li>
+<li><a href="util.factory.html">util.factory</a></li>
+<li><a href="util.iterable.html">util.iterable</a></li>
+<li><a href="util.signal.html">util.signal</a></li>
+<li><a href="util.stringctfe.html">util.stringctfe</a></li>
+<li><a href="util.traits.html">util.traits</a></li>
+<li><a href="util.typeinfo.html">util.typeinfo</a></li>
+<li><a href="util.weaksingleton.html">util.weaksingleton</a></li>
+<li><a href="util.yaml.html">util.yaml</a></li>
+<li><a href="video.binarytexturepacker.html">video.binarytexturepacker</a></li>
+<li><a href="video.font.html">video.font</a></li>
+<li><a href="video.fontmanager.html">video.fontmanager</a></li>
+<li><a href="video.gldrawmode.html">video.gldrawmode</a></li>
+<li><a href="video.glmonitor.html">video.glmonitor</a></li>
+<li><a href="video.glrenderer.html">video.glrenderer</a></li>
+<li><a href="video.glshader.html">video.glshader</a></li>
+<li><a href="video.gltexture.html">video.gltexture</a></li>
+<li><a href="video.gltexturebackend.html">video.gltexturebackend</a></li>
+<li><a href="video.glvertex.html">video.glvertex</a></li>
+<li><a href="video.glvertexbuffer.html">video.glvertexbuffer</a></li>
+<li><a href="video.glvideodriver.html">video.glvideodriver</a></li>
+<li><a href="video.sdlglvideodriver.html">video.sdlglvideodriver</a></li>
+<li><a href="video.shader.html">video.shader</a></li>
+<li><a href="video.texture.html">video.texture</a></li>
+<li><a href="video.texturepage.html">video.texturepage</a></li>
+<li><a href="video.videodriver.html">video.videodriver</a></li>
+<li><a href="video.videodrivercontainer.html">video.videodrivercontainer</a></li>
+</ul>
+</div>
+</div>
+
+<div id="content">
+<h1>formats.cli</h1>
+<!-- Generated by Ddoc from formats/cli.d -->
+<p>Command line parser.</p>
+
+<dl><dt class="d_decl">struct <a name="CLIOption"></a><span class="ddoc_psymbol">CLIOption</span>;
+</dt>
+<dd><p>Command line option.
+</p>
+<p>Methods of this struct are used to specify parameters of the option.
+ The option is then added to a CLI using its addOption() method.</p>
+
+<dl><dt class="d_decl">this(const(immutable(char)[]) <b>name</b>);
+</dt>
+<dd><p>Construct a CLIOption with specified <b>name</b>.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>const(immutable(char)[]) <b>name</b></td>
+<td valign=top>Long <b>name</b> of the option. (Will automatically be prefixed with "--" .)
+                 Must not be parsable as a number.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">pure @property ref CLIOption <a name="shortName"></a><span class="ddoc_psymbol">shortName</span>(const char <b>name</b>);
+</dt>
+<dd><p>Set short <b>name</b> of the option. (Will be prefixed by "-" .)
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>char <b>name</b></td>
+<td valign=top>Short <b>name</b> (one character). Must be from the alphabet.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">pure @property ref CLIOption <a name="help"></a><span class="ddoc_psymbol">help</span>(const string <a name="help"></a><span class="ddoc_psymbol">help</span>);
+</dt>
+<dd><p>Set <a name="help"></a><span class="ddoc_psymbol">help</span> string of the option.</p>
+
+</dd>
+<dt class="d_decl">CLIOption <a name="target"></a><span class="ddoc_psymbol">target</span>(T)(T* <a name="target"></a><span class="ddoc_psymbol">target</span>);
+</dt>
+<dd><p>Set value <a name="target"></a><span class="ddoc_psymbol">target</span>.
+</p>
+<p>Parse single argument of the option as <a name="target"></a><span class="ddoc_psymbol">target</span> type and write it to the <a name="target"></a><span class="ddoc_psymbol">target</span>.
+<br>
+
+ Target must be specified (by any of the <a name="target"></a><span class="ddoc_psymbol">target</span>() methods)
+<br>
+
+ Target type must be a bool, number or a string.
+
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top><a name="target"></a><span class="ddoc_psymbol">target</span></td>
+<td valign=top>Target variable to write option argument to.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">CLIOption <a name="target"></a><span class="ddoc_psymbol">target</span>(T)(T <a name="target"></a><span class="ddoc_psymbol">target</span>);
+</dt>
+<dd><p>Set setter function <a name="target"></a><span class="ddoc_psymbol">target</span>.
+</p>
+<p>Parse single argument of the option as <a name="target"></a><span class="ddoc_psymbol">target</span> type and pass it to specified function.
+<br>
+
+ Target must be specified (by any of the <a name="target"></a><span class="ddoc_psymbol">target</span>() methods).
+<br>
+
+ Target type must be function taking single bool, number or a string.
+
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top><a name="target"></a><span class="ddoc_psymbol">target</span></td>
+<td valign=top>Target setter to pass option argument to.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">CLIOption <a name="target"></a><span class="ddoc_psymbol">target</span>(T)(ref T[] <a name="target"></a><span class="ddoc_psymbol">target</span>);
+</dt>
+<dd><p>Set array <a name="target"></a><span class="ddoc_psymbol">target</span>.
+</p>
+<p>Parse arguments of the option as <a name="target"></a><span class="ddoc_psymbol">target</span> type and write them to specified array.
+ If the option is specified more than once, arguments from all instances
+ of the option are written to the array.
+<br>
+
+ Target must be specified (by any of the <a name="target"></a><span class="ddoc_psymbol">target</span>() methods).
+<br>
+
+ Target type must an arrao of bools, numbers, strings.
+
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top><a name="target"></a><span class="ddoc_psymbol">target</span></td>
+<td valign=top>Target array to write option arguments to.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">CLIOption <a name="target"></a><span class="ddoc_psymbol">target</span>(T)(T <a name="target"></a><span class="ddoc_psymbol">target</span>, const int <b>argCount</b> = -1);
+</dt>
+<dd><p>Set function <a name="target"></a><span class="ddoc_psymbol">target</span>.
+</p>
+<p>Pass arguments of the option to specified function without any parsing.
+ Optionally, required number of arguments can be specified.
+<br>
+
+ Target must be specified (by any of the <a name="target"></a><span class="ddoc_psymbol">target</span>() methods).
+<br>
+
+ Target must be a void function taking an array of strings as its parameter.
+
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top><a name="target"></a><span class="ddoc_psymbol">target</span></td>
+<td valign=top>Target function to pass option arguments to.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">ref CLIOption <a name="defaultArgs"></a><span class="ddoc_psymbol">defaultArgs</span>(string[] <b>args</b>...);
+</dt>
+<dd><p>Specify default arguments for this option.
+</p>
+<p>Option's action will be executed with specified arguments
+ if the option is not present.
+ If default arguments are not specified, and the option is not present,
+ option's action will not be executed.
+
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>string[] <b>args</b></td>
+<td valign=top>Default arguments for the option.</td></tr>
+</table></div>
+<b>Returns:</b><div class="pbr">Resulting CLIOption.</div>
+
+</dd>
+</dl>
+</dd>
+<dt class="d_decl">class <a name="CLI"></a><span class="ddoc_psymbol">CLI</span>;
+</dt>
+<dd><p>Command line parser.
+</p>
+<p>Options are specified using the Option struct and added using the addOption() method.
+<br>
+
+ Each option has a long, GNU-style name automatically prefixed by "--" and
+ optionally a short, one character name automatically prefixed by "-".
+ Long option names can be abbreviated as long as the abbreviation uniquely
+ identifies an option.
+<br>
+
+ Short options can be chained; Option arguments can be separated from options by spaces
+ or '='; Array options accept comma separated arguments; Boolean flags can have
+ optional argument, e.g. "-f0" will set flag -f to <b>false</b>.
+<br>
+
+ A help option (-h, --help) is automatically generated from help info specified
+ for each option.
+
+</p>
+<b>Examples:</b><div class="pbr"><pre class="d_code"> <span class="d_keyword">void</span> main(string[] args)
+ {
+     <span class="d_psymbol">CLI</span> cli = <span class="d_keyword">new</span> <span class="d_psymbol">CLI</span>();
+     cli.description = <span class="d_string">"Example 1.0\n Written in D by E. Xample"</span>;
+     cli.epilog = <span class="d_string">"Find more info at www.example.com"</span>;
+
+     <span class="d_keyword">bool</span> flag;
+     <span class="d_keyword">int</span> val;
+     <span class="d_keyword">int</span> setter_val;
+     <span class="d_keyword">void</span> setter(<span class="d_keyword">int</span> i){setter_val = i;}
+     <span class="d_keyword">int</span>[] array;
+
+     <span class="d_comment">//bool flag
+</span>     cli.addOption(CLIOption(<span class="d_string">"flag"</span>).target(&amp;flag).shortName('f'));
+     <span class="d_comment">//value, with defaults
+</span>     cli.addOption(CLIOption(<span class="d_string">"value"</span>).target(&amp;flag).shortName('v').defaultArgs(<span class="d_string">"1"</span>));
+     <span class="d_comment">//setter
+</span>     cli.addOption(CLIOption(<span class="d_string">"setter"</span>).target(&amp;setter).shortName('s');
+     <span class="d_comment">//array
+</span>     cli.addOption(CLIOption(<span class="d_string">"array"</span>).target(array).shortName('a');
+     <span class="d_comment">//custom function
+</span>     cli.addOption(CLIOption(<span class="d_string">"custom"</span>)
+                        .target((string[] args){<span class="d_keyword">foreach</span>(arg; args){writeln(arg);}})
+                        .shortName('c');
+
+     <span class="d_comment">//parse arguments
+</span>     <span class="d_keyword">if</span>(!cli.parse(args)){<span class="d_keyword">return</span>;}
+
+     ...
+
+ }
+</pre>
+</div>
+
+<dl><dt class="d_decl">this();
+</dt>
+<dd><p>Construct a CLI.</p>
+
+</dd>
+<dt class="d_decl">pure @property void <a name="description"></a><span class="ddoc_psymbol">description</span>(const string <b>text</b>);
+</dt>
+<dd><p>Set program <a name="description"></a><span class="ddoc_psymbol">description</span> (start of the help <b>text</b>).</p>
+
+</dd>
+<dt class="d_decl">pure @property void <a name="epilog"></a><span class="ddoc_psymbol">epilog</span>(const string <b>text</b>);
+</dt>
+<dd><p>Set <a name="epilog"></a><span class="ddoc_psymbol">epilog</span> of the help <b>text</b>.</p>
+
+</dd>
+<dt class="d_decl">pure void <a name="addOption"></a><span class="ddoc_psymbol">addOption</span>(CLIOption <b>option</b>);
+</dt>
+<dd><p>Add a command line <b>option</b>.
+</p>
+<p>Every <b>option</b> must have an unique long (and short, if any) name.
+
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>CLIOption <b>option</b></td>
+<td valign=top>Option to add.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">bool <a name="parse"></a><span class="ddoc_psymbol">parse</span>(string[] <b>args</b>);
+</dt>
+<dd><p>Parse command line arguments.
+</p>
+<p>Command line options' targets are written to/executed as the options are parsed.
+ If an error occurs, parsing is aborted and <b>false</b> is returned.
+
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>string[] <b>args</b></td>
+<td valign=top>Command line arguments to <a name="parse"></a><span class="ddoc_psymbol">parse</span>. Must be at least one (program name).</td></tr>
+</table></div>
+<b>Returns:</b><div class="pbr">False in case of error or if help was requested. False otherwise.</div>
+
+</dd>
+</dl>
+</dd>
+<dt class="d_decl">string[] <a name="storeAction"></a><span class="ddoc_psymbol">storeAction</span>(T)(string[] <b>args</b>, void delegate(T) <b>target</b>);
+</dt>
+<dd><p>Action that parses the first argument and passes it to a delegate.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>args</td>
+<td valign=top>Option arguments.</td></tr>
+<tr><td valign=top>target</td>
+<td valign=top>Target delegate to pass parsed argument to.</td></tr>
+</table></div>
+<b>Returns:</b><div class="pbr">Arguments that were not parsed.
+
+</div>
+<b>Throws:</b><div class="pbr">CLIException if there weren't enough arguments.
+          ConvOverflowException on a parsing overflow error (e.g. to large int).
+          ConvException on a parsing error.</div>
+
+</dd>
+<dt class="d_decl">string[] <a name="arrayStoreAction"></a><span class="ddoc_psymbol">arrayStoreAction</span>(T)(string[] <b>args</b>, ref T[] <b>target</b>);
+</dt>
+<dd><p>Action that parses any number of arguments and saves them in an array.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>args</td>
+<td valign=top>Option arguments.</td></tr>
+<tr><td valign=top>target</td>
+<td valign=top>Target array to add parsed arguments to.</td></tr>
+</table></div>
+<b>Returns:</b><div class="pbr">Empty array.
+
+</div>
+<b>Throws:</b><div class="pbr">ConvOverflowException on a parsing overflow error (e.g. to large int).
+          ConvException on a parsing error.</div>
+
+</dd>
+</dl>
+
+</div>
+
+<div id="copyright">
+Copyright &copy; Ferdinand Majerech 2011. |
+Page generated by AutoDDoc and <a href="http://www.digitalmars.com/d/2.0/ddoc.html">Ddoc</a>.
+</div>
+
+</body>
+</html>

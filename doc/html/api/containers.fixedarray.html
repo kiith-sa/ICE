@@ -1,0 +1,267 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang='en'>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" >
+<title>containers.fixedarray - ICE 0.1 API documentation</title>
+<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body><div id="top">
+<div id="header">
+<a id="main-heading" href="index.html">ICE 0.1 API documentation</a>
+</div>
+</div>
+
+<div id="navigation">
+<div class="navblock">
+<div id="toctop">
+<ul><li><a href="../index.html">Documentation home</a></li>
+</ul>
+</div>
+</div>
+<div class="navblock">
+<ul><li><a href="index.html">Main page</a></li>
+<li><a href="color.html">color</a></li>
+<li><a href="component.controllercomponent.html">component.controllercomponent</a></li>
+<li><a href="component.controllersystem.html">component.controllersystem</a></li>
+<li><a href="component.deathtimeoutcomponent.html">component.deathtimeoutcomponent</a></li>
+<li><a href="component.enginecomponent.html">component.enginecomponent</a></li>
+<li><a href="component.enginesystem.html">component.enginesystem</a></li>
+<li><a href="component.entitysystem.html">component.entitysystem</a></li>
+<li><a href="component.exceptions.html">component.exceptions</a></li>
+<li><a href="component.physicscomponent.html">component.physicscomponent</a></li>
+<li><a href="component.physicssystem.html">component.physicssystem</a></li>
+<li><a href="component.system.html">component.system</a></li>
+<li><a href="component.timeoutsystem.html">component.timeoutsystem</a></li>
+<li><a href="component.visualcomponent.html">component.visualcomponent</a></li>
+<li><a href="component.visualsystem.html">component.visualsystem</a></li>
+<li><a href="component.weaponcomponent.html">component.weaponcomponent</a></li>
+<li><a href="component.weaponsystem.html">component.weaponsystem</a></li>
+<li><a href="containers.array2d.html">containers.array2d</a></li>
+<li><a href="containers.fixedarray.html">containers.fixedarray</a></li>
+<li><a href="containers.lazyarray.html">containers.lazyarray</a></li>
+<li><a href="containers.vector.html">containers.vector</a></li>
+<li><a href="formats.cli.html">formats.cli</a></li>
+<li><a href="formats.image.html">formats.image</a></li>
+<li><a href="formats.mathparser.html">formats.mathparser</a></li>
+<li><a href="formats.png.html">formats.png</a></li>
+<li><a href="formats.pngcommon.html">formats.pngcommon</a></li>
+<li><a href="formats.pngdecoder.html">formats.pngdecoder</a></li>
+<li><a href="formats.pngencoder.html">formats.pngencoder</a></li>
+<li><a href="formats.zlib.html">formats.zlib</a></li>
+<li><a href="graphdata.html">graphdata</a></li>
+<li><a href="gui.guibutton.html">gui.guibutton</a></li>
+<li><a href="gui.guielement.html">gui.guielement</a></li>
+<li><a href="gui.guilinegraph.html">gui.guilinegraph</a></li>
+<li><a href="gui.guimenu.html">gui.guimenu</a></li>
+<li><a href="gui.guimousecontrollable.html">gui.guimousecontrollable</a></li>
+<li><a href="gui.guistatictext.html">gui.guistatictext</a></li>
+<li><a href="ice.html">ice</a></li>
+<li><a href="ice.credits.html">ice.credits</a></li>
+<li><a href="ice.exceptions.html">ice.exceptions</a></li>
+<li><a href="ice.game.html">ice.game</a></li>
+<li><a href="ice.hud.html">ice.hud</a></li>
+<li><a href="ice.ice.html">ice.ice</a></li>
+<li><a href="ice.player.html">ice.player</a></li>
+<li><a href="image.html">image</a></li>
+<li><a href="math.math.html">math.math</a></li>
+<li><a href="math.matrix4.html">math.matrix4</a></li>
+<li><a href="math.rect.html">math.rect</a></li>
+<li><a href="math.vector2.html">math.vector2</a></li>
+<li><a href="memory.memory.html">memory.memory</a></li>
+<li><a href="memory.memorymonitorable.html">memory.memorymonitorable</a></li>
+<li><a href="memory.pool.html">memory.pool</a></li>
+<li><a href="monitor.graphmonitor.html">monitor.graphmonitor</a></li>
+<li><a href="monitor.monitorable.html">monitor.monitorable</a></li>
+<li><a href="monitor.monitordata.html">monitor.monitordata</a></li>
+<li><a href="monitor.monitormanager.html">monitor.monitormanager</a></li>
+<li><a href="monitor.submonitor.html">monitor.submonitor</a></li>
+<li><a href="physics.contact.html">physics.contact</a></li>
+<li><a href="physics.contactdetect.html">physics.contactdetect</a></li>
+<li><a href="physics.physicsbody.html">physics.physicsbody</a></li>
+<li><a href="physics.physicsengine.html">physics.physicsengine</a></li>
+<li><a href="physics.physicsmonitor.html">physics.physicsmonitor</a></li>
+<li><a href="platform.key.html">platform.key</a></li>
+<li><a href="platform.platform.html">platform.platform</a></li>
+<li><a href="platform.sdlplatform.html">platform.sdlplatform</a></li>
+<li><a href="scene.actor.html">scene.actor</a></li>
+<li><a href="scene.scenemanager.html">scene.scenemanager</a></li>
+<li><a href="spatial.gridmonitor.html">spatial.gridmonitor</a></li>
+<li><a href="spatial.gridspatialmanager.html">spatial.gridspatialmanager</a></li>
+<li><a href="spatial.spatialmanager.html">spatial.spatialmanager</a></li>
+<li><a href="spatial.volume.html">spatial.volume</a></li>
+<li><a href="spatial.volumeaabbox.html">spatial.volumeaabbox</a></li>
+<li><a href="spatial.volumecircle.html">spatial.volumecircle</a></li>
+<li><a href="time.eventcounter.html">time.eventcounter</a></li>
+<li><a href="time.gametime.html">time.gametime</a></li>
+<li><a href="time.time.html">time.time</a></li>
+<li><a href="time.timer.html">time.timer</a></li>
+<li><a href="util.bits.html">util.bits</a></li>
+<li><a href="util.factory.html">util.factory</a></li>
+<li><a href="util.iterable.html">util.iterable</a></li>
+<li><a href="util.signal.html">util.signal</a></li>
+<li><a href="util.stringctfe.html">util.stringctfe</a></li>
+<li><a href="util.traits.html">util.traits</a></li>
+<li><a href="util.typeinfo.html">util.typeinfo</a></li>
+<li><a href="util.weaksingleton.html">util.weaksingleton</a></li>
+<li><a href="util.yaml.html">util.yaml</a></li>
+<li><a href="video.binarytexturepacker.html">video.binarytexturepacker</a></li>
+<li><a href="video.font.html">video.font</a></li>
+<li><a href="video.fontmanager.html">video.fontmanager</a></li>
+<li><a href="video.gldrawmode.html">video.gldrawmode</a></li>
+<li><a href="video.glmonitor.html">video.glmonitor</a></li>
+<li><a href="video.glrenderer.html">video.glrenderer</a></li>
+<li><a href="video.glshader.html">video.glshader</a></li>
+<li><a href="video.gltexture.html">video.gltexture</a></li>
+<li><a href="video.gltexturebackend.html">video.gltexturebackend</a></li>
+<li><a href="video.glvertex.html">video.glvertex</a></li>
+<li><a href="video.glvertexbuffer.html">video.glvertexbuffer</a></li>
+<li><a href="video.glvideodriver.html">video.glvideodriver</a></li>
+<li><a href="video.sdlglvideodriver.html">video.sdlglvideodriver</a></li>
+<li><a href="video.shader.html">video.shader</a></li>
+<li><a href="video.texture.html">video.texture</a></li>
+<li><a href="video.texturepage.html">video.texturepage</a></li>
+<li><a href="video.videodriver.html">video.videodriver</a></li>
+<li><a href="video.videodrivercontainer.html">video.videodrivercontainer</a></li>
+</ul>
+</div>
+</div>
+
+<div id="content">
+<h1>containers.fixedarray</h1>
+<!-- Generated by Ddoc from containers/fixedarray.d -->
+<p>Fixed-size array struct.</p>
+
+<dl><dt class="d_decl">struct <a name="FixedArray"></a><span class="ddoc_psymbol">FixedArray</span>(T);
+</dt>
+<dd><p>Simple fixed-size array with manually managed memory, with interface similar to D array.</p>
+
+<dl><dt class="d_decl">T[] <a name="data_"></a><span class="ddoc_psymbol">data_</span>;
+</dt>
+<dd><p>Manually allocated data storage.</p>
+
+</dd>
+<dt class="d_decl">this(const size_t <b>length</b>);
+</dt>
+<dd><p>Construct a FixedArray with specified <b>length</b>.</p>
+
+</dd>
+<dt class="d_decl">void <a name="opAssign"></a><span class="ddoc_psymbol">opAssign</span>(FixedArray <b>rhs</b>);
+</dt>
+<dd><p>Assign to another array. This will destroy any
+ data owned by this array and copy data to this array.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>v</td>
+<td valign=top>Vector to assign.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">const hash_t <a name="toHash"></a><span class="ddoc_psymbol">toHash</span>();
+</dt>
+<dd><p>Compute a hash.</p>
+
+</dd>
+<dt class="d_decl">int <a name="opApply"></a><span class="ddoc_psymbol">opApply</span>(int delegate(ref T) <b>dg</b>);
+</dt>
+<dd><p>Used by foreach.
+</p>
+<p>Foreach will iterate over all elements of the array in linear order
+ from start to end.</p>
+
+</dd>
+<dt class="d_decl">int <a name="opApply"></a><span class="ddoc_psymbol">opApply</span>(int delegate(ref size_t, ref T) <b>dg</b>);
+</dt>
+<dd><p>Used by foreach.
+</p>
+<p>Foreach will iterate over all elements of the array in linear order
+ from start to end.</p>
+
+</dd>
+<dt class="d_decl">inout pure nothrow inout(T) <a name="opIndex"></a><span class="ddoc_psymbol">opIndex</span>(const size_t <b>index</b>);
+</dt>
+<dd><p>Get element at the specified <b>index</b>.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>size_t <b>index</b></td>
+<td valign=top>Index of the element to get. Must be within bounds.</td></tr>
+</table></div>
+<b>Returns:</b><div class="pbr">Element at the specified <b>index</b>.</div>
+
+</dd>
+<dt class="d_decl">void <a name="opIndexAssign"></a><span class="ddoc_psymbol">opIndexAssign</span>(T <b>value</b>, const size_t <b>index</b>);
+</dt>
+<dd><p>Set element at the specified <b>index</b>.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>size_t <b>index</b></td>
+<td valign=top>Index of the element to set. Must be within bounds.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">nothrow void <a name="opSliceAssign"></a><span class="ddoc_psymbol">opSliceAssign</span>(T <b>value</b>);
+</dt>
+<dd><p>Set all elements in the array to specified <b>value</b>.</p>
+
+</dd>
+<dt class="d_decl">void <a name="opSliceAssign"></a><span class="ddoc_psymbol">opSliceAssign</span>(T[] <b>array</b>, const size_t <b>start</b>, const size_t <b>end</b>);
+</dt>
+<dd><p>Assign a slice of the <b>array</b> from a D <b>array</b>.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>T[] <b>array</b></td>
+<td valign=top>Array to assign to.</td></tr>
+<tr><td valign=top>size_t <b>start</b></td>
+<td valign=top>Start of the slice.</td></tr>
+<tr><td valign=top>size_t <b>end</b></td>
+<td valign=top>End of the slice.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">inout pure nothrow inout(T[]) <a name="opSlice"></a><span class="ddoc_psymbol">opSlice</span>(const size_t <b>start</b>, const size_t <b>end</b>);
+</dt>
+<dd><p>Get a slice of the array as a D array.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>size_t <b>start</b></td>
+<td valign=top>Start of the slice.</td></tr>
+<tr><td valign=top>size_t <b>end</b></td>
+<td valign=top>End of the slice.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">inout pure nothrow inout(T)[] <a name="opSlice"></a><span class="ddoc_psymbol">opSlice</span>();
+</dt>
+<dd><p>Get a slice of the whole array as a D array.</p>
+
+</dd>
+<dt class="d_decl">const pure nothrow const(T) <a name="front"></a><span class="ddoc_psymbol">front</span>();
+</dt>
+<dd><p>Access the first element of the array.</p>
+
+</dd>
+<dt class="d_decl">const pure nothrow const(T) <a name="back"></a><span class="ddoc_psymbol">back</span>();
+</dt>
+<dd><p>Access the last element of the array.</p>
+
+</dd>
+<dt class="d_decl">const pure size_t <a name="length"></a><span class="ddoc_psymbol">length</span>();
+</dt>
+<dd><p>Get number of elements in the array.</p>
+
+</dd>
+<dt class="d_decl">const pure bool <a name="empty"></a><span class="ddoc_psymbol">empty</span>();
+</dt>
+<dd><p>Is the array <a name="empty"></a><span class="ddoc_psymbol">empty</span>?</p>
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</div>
+
+<div id="copyright">
+Copyright &copy; Ferdinand Majerech 2011. |
+Page generated by AutoDDoc and <a href="http://www.digitalmars.com/d/2.0/ddoc.html">Ddoc</a>.
+</div>
+
+</body>
+</html>

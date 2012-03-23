@@ -1,0 +1,11 @@
+Ddoc
+
+$(P
+This is the complete API documentation for ICE. It describes all classes, 
+methods and global functions in the engine. It is aimed at people who wish
+to develop ICE.
+)
+
+Macros:
+    TITLE=$(PROJECT_NAME) $(PROJECT_VERSION) API documentation
+

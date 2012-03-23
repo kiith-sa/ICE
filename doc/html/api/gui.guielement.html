@@ -1,0 +1,497 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang='en'>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" >
+<title>gui.guielement - ICE 0.1 API documentation</title>
+<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body><div id="top">
+<div id="header">
+<a id="main-heading" href="index.html">ICE 0.1 API documentation</a>
+</div>
+</div>
+
+<div id="navigation">
+<div class="navblock">
+<div id="toctop">
+<ul><li><a href="../index.html">Documentation home</a></li>
+</ul>
+</div>
+</div>
+<div class="navblock">
+<ul><li><a href="index.html">Main page</a></li>
+<li><a href="color.html">color</a></li>
+<li><a href="component.controllercomponent.html">component.controllercomponent</a></li>
+<li><a href="component.controllersystem.html">component.controllersystem</a></li>
+<li><a href="component.deathtimeoutcomponent.html">component.deathtimeoutcomponent</a></li>
+<li><a href="component.enginecomponent.html">component.enginecomponent</a></li>
+<li><a href="component.enginesystem.html">component.enginesystem</a></li>
+<li><a href="component.entitysystem.html">component.entitysystem</a></li>
+<li><a href="component.exceptions.html">component.exceptions</a></li>
+<li><a href="component.physicscomponent.html">component.physicscomponent</a></li>
+<li><a href="component.physicssystem.html">component.physicssystem</a></li>
+<li><a href="component.system.html">component.system</a></li>
+<li><a href="component.timeoutsystem.html">component.timeoutsystem</a></li>
+<li><a href="component.visualcomponent.html">component.visualcomponent</a></li>
+<li><a href="component.visualsystem.html">component.visualsystem</a></li>
+<li><a href="component.weaponcomponent.html">component.weaponcomponent</a></li>
+<li><a href="component.weaponsystem.html">component.weaponsystem</a></li>
+<li><a href="containers.array2d.html">containers.array2d</a></li>
+<li><a href="containers.fixedarray.html">containers.fixedarray</a></li>
+<li><a href="containers.lazyarray.html">containers.lazyarray</a></li>
+<li><a href="containers.vector.html">containers.vector</a></li>
+<li><a href="formats.cli.html">formats.cli</a></li>
+<li><a href="formats.image.html">formats.image</a></li>
+<li><a href="formats.mathparser.html">formats.mathparser</a></li>
+<li><a href="formats.png.html">formats.png</a></li>
+<li><a href="formats.pngcommon.html">formats.pngcommon</a></li>
+<li><a href="formats.pngdecoder.html">formats.pngdecoder</a></li>
+<li><a href="formats.pngencoder.html">formats.pngencoder</a></li>
+<li><a href="formats.zlib.html">formats.zlib</a></li>
+<li><a href="graphdata.html">graphdata</a></li>
+<li><a href="gui.guibutton.html">gui.guibutton</a></li>
+<li><a href="gui.guielement.html">gui.guielement</a></li>
+<li><a href="gui.guilinegraph.html">gui.guilinegraph</a></li>
+<li><a href="gui.guimenu.html">gui.guimenu</a></li>
+<li><a href="gui.guimousecontrollable.html">gui.guimousecontrollable</a></li>
+<li><a href="gui.guistatictext.html">gui.guistatictext</a></li>
+<li><a href="ice.html">ice</a></li>
+<li><a href="ice.credits.html">ice.credits</a></li>
+<li><a href="ice.exceptions.html">ice.exceptions</a></li>
+<li><a href="ice.game.html">ice.game</a></li>
+<li><a href="ice.hud.html">ice.hud</a></li>
+<li><a href="ice.ice.html">ice.ice</a></li>
+<li><a href="ice.player.html">ice.player</a></li>
+<li><a href="image.html">image</a></li>
+<li><a href="math.math.html">math.math</a></li>
+<li><a href="math.matrix4.html">math.matrix4</a></li>
+<li><a href="math.rect.html">math.rect</a></li>
+<li><a href="math.vector2.html">math.vector2</a></li>
+<li><a href="memory.memory.html">memory.memory</a></li>
+<li><a href="memory.memorymonitorable.html">memory.memorymonitorable</a></li>
+<li><a href="memory.pool.html">memory.pool</a></li>
+<li><a href="monitor.graphmonitor.html">monitor.graphmonitor</a></li>
+<li><a href="monitor.monitorable.html">monitor.monitorable</a></li>
+<li><a href="monitor.monitordata.html">monitor.monitordata</a></li>
+<li><a href="monitor.monitormanager.html">monitor.monitormanager</a></li>
+<li><a href="monitor.submonitor.html">monitor.submonitor</a></li>
+<li><a href="physics.contact.html">physics.contact</a></li>
+<li><a href="physics.contactdetect.html">physics.contactdetect</a></li>
+<li><a href="physics.physicsbody.html">physics.physicsbody</a></li>
+<li><a href="physics.physicsengine.html">physics.physicsengine</a></li>
+<li><a href="physics.physicsmonitor.html">physics.physicsmonitor</a></li>
+<li><a href="platform.key.html">platform.key</a></li>
+<li><a href="platform.platform.html">platform.platform</a></li>
+<li><a href="platform.sdlplatform.html">platform.sdlplatform</a></li>
+<li><a href="scene.actor.html">scene.actor</a></li>
+<li><a href="scene.scenemanager.html">scene.scenemanager</a></li>
+<li><a href="spatial.gridmonitor.html">spatial.gridmonitor</a></li>
+<li><a href="spatial.gridspatialmanager.html">spatial.gridspatialmanager</a></li>
+<li><a href="spatial.spatialmanager.html">spatial.spatialmanager</a></li>
+<li><a href="spatial.volume.html">spatial.volume</a></li>
+<li><a href="spatial.volumeaabbox.html">spatial.volumeaabbox</a></li>
+<li><a href="spatial.volumecircle.html">spatial.volumecircle</a></li>
+<li><a href="time.eventcounter.html">time.eventcounter</a></li>
+<li><a href="time.gametime.html">time.gametime</a></li>
+<li><a href="time.time.html">time.time</a></li>
+<li><a href="time.timer.html">time.timer</a></li>
+<li><a href="util.bits.html">util.bits</a></li>
+<li><a href="util.factory.html">util.factory</a></li>
+<li><a href="util.iterable.html">util.iterable</a></li>
+<li><a href="util.signal.html">util.signal</a></li>
+<li><a href="util.stringctfe.html">util.stringctfe</a></li>
+<li><a href="util.traits.html">util.traits</a></li>
+<li><a href="util.typeinfo.html">util.typeinfo</a></li>
+<li><a href="util.weaksingleton.html">util.weaksingleton</a></li>
+<li><a href="util.yaml.html">util.yaml</a></li>
+<li><a href="video.binarytexturepacker.html">video.binarytexturepacker</a></li>
+<li><a href="video.font.html">video.font</a></li>
+<li><a href="video.fontmanager.html">video.fontmanager</a></li>
+<li><a href="video.gldrawmode.html">video.gldrawmode</a></li>
+<li><a href="video.glmonitor.html">video.glmonitor</a></li>
+<li><a href="video.glrenderer.html">video.glrenderer</a></li>
+<li><a href="video.glshader.html">video.glshader</a></li>
+<li><a href="video.gltexture.html">video.gltexture</a></li>
+<li><a href="video.gltexturebackend.html">video.gltexturebackend</a></li>
+<li><a href="video.glvertex.html">video.glvertex</a></li>
+<li><a href="video.glvertexbuffer.html">video.glvertexbuffer</a></li>
+<li><a href="video.glvideodriver.html">video.glvideodriver</a></li>
+<li><a href="video.sdlglvideodriver.html">video.sdlglvideodriver</a></li>
+<li><a href="video.shader.html">video.shader</a></li>
+<li><a href="video.texture.html">video.texture</a></li>
+<li><a href="video.texturepage.html">video.texturepage</a></li>
+<li><a href="video.videodriver.html">video.videodriver</a></li>
+<li><a href="video.videodrivercontainer.html">video.videodrivercontainer</a></li>
+</ul>
+</div>
+</div>
+
+<div id="content">
+<h1>gui.guielement</h1>
+<!-- Generated by Ddoc from gui/guielement.d -->
+<p>Base class for all widgets.</p>
+
+<dl><dt class="d_decl">class <a name="GUIElement"></a><span class="ddoc_psymbol">GUIElement</span>;
+</dt>
+<dd><p>Base class for all GUI elements. Can be used directly to draw empty elements.</p>
+
+<dl><dt class="d_decl">protected GUIElement <a name="parent_"></a><span class="ddoc_psymbol">parent_</span>;
+</dt>
+<dd><p>Parent element of this element.</p>
+
+</dd>
+<dt class="d_decl">protected GUIElement[] <a name="children_"></a><span class="ddoc_psymbol">children_</span>;
+</dt>
+<dd><p>Children elements of this element.</p>
+
+</dd>
+<dt class="d_decl">protected Color <a name="borderColor_"></a><span class="ddoc_psymbol">borderColor_</span>;
+</dt>
+<dd><p>Color of the element's border.</p>
+
+</dd>
+<dt class="d_decl">protected Recti <a name="bounds_"></a><span class="ddoc_psymbol">bounds_</span>;
+</dt>
+<dd><p>Bounds of this element in screen space.</p>
+
+</dd>
+<dt class="d_decl">protected bool <a name="visible_"></a><span class="ddoc_psymbol">visible_</span>;
+</dt>
+<dd><p>Is this element visible?</p>
+
+</dd>
+<dt class="d_decl">protected bool <a name="drawBorder_"></a><span class="ddoc_psymbol">drawBorder_</span>;
+</dt>
+<dd><p>Draw border of this element?</p>
+
+</dd>
+<dt class="d_decl">protected bool <a name="aligned_"></a><span class="ddoc_psymbol">aligned_</span>;
+</dt>
+<dd><p>Are the contents of this element aligned based on its current properties?</p>
+
+</dd>
+<dt class="d_decl">protected string <a name="xString_"></a><span class="ddoc_psymbol">xString_</span>;
+</dt>
+<dd><p>Math expression used to calculate X position of the element.</p>
+
+</dd>
+<dt class="d_decl">protected string <a name="yString_"></a><span class="ddoc_psymbol">yString_</span>;
+</dt>
+<dd><p>Math expression used to calculate Y position of the element.</p>
+
+</dd>
+<dt class="d_decl">protected string <a name="widthString_"></a><span class="ddoc_psymbol">widthString_</span>;
+</dt>
+<dd><p>Math expression used to calculate width of the element.</p>
+
+</dd>
+<dt class="d_decl">protected string <a name="heightString_"></a><span class="ddoc_psymbol">heightString_</span>;
+</dt>
+<dd><p>Math expression used to calculate height of the element.</p>
+
+</dd>
+<dt class="d_decl">final void <a name="die"></a><span class="ddoc_psymbol">die</span>();
+</dt>
+<dd><p>Destroy this element and all its children.</p>
+
+</dd>
+<dt class="d_decl">final const @property Vector2i <a name="positionGlobal"></a><span class="ddoc_psymbol">positionGlobal</span>();
+</dt>
+<dd><p>Get position in screen space.</p>
+
+</dd>
+<dt class="d_decl">final const @property Vector2i <a name="positionLocal"></a><span class="ddoc_psymbol">positionLocal</span>();
+</dt>
+<dd><p>Get position relative to parent element.</p>
+
+</dd>
+<dt class="d_decl">final const @property Vector2u <a name="size"></a><span class="ddoc_psymbol">size</span>();
+</dt>
+<dd><p>Get <a name="size"></a><span class="ddoc_psymbol">size</span> of this element in screen space.</p>
+
+</dd>
+<dt class="d_decl">final const @property Recti <a name="boundsGlobal"></a><span class="ddoc_psymbol">boundsGlobal</span>();
+</dt>
+<dd><p>Get bounding rectangle of this GUI element in screen space.</p>
+
+</dd>
+<dt class="d_decl">final void <a name="addChild"></a><span class="ddoc_psymbol">addChild</span>(GUIElement <b>child</b>);
+</dt>
+<dd><p>Add a <b>child</b> element.
+</p>
+<p>A single <b>child</b> can't be added twice to the same element or to
+ two different GUI elements at the same time.
+
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>GUIElement <b>child</b></td>
+<td valign=top>Child to add.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">final void <a name="removeChild"></a><span class="ddoc_psymbol">removeChild</span>(GUIElement <b>child</b>);
+</dt>
+<dd><p>Remove a <b>child</b> element. The specified element must be a <b>child</b> of this element.</p>
+
+</dd>
+<dt class="d_decl">final const @property bool <a name="visible"></a><span class="ddoc_psymbol">visible</span>();
+</dt>
+<dd><p>Is this element <a name="visible"></a><span class="ddoc_psymbol">visible</span>?</p>
+
+</dd>
+<dt class="d_decl">final @property void <a name="hide"></a><span class="ddoc_psymbol">hide</span>();
+</dt>
+<dd><p>Hide this element and its children.</p>
+
+</dd>
+<dt class="d_decl">final @property void <a name="show"></a><span class="ddoc_psymbol">show</span>();
+</dt>
+<dd><p>Make this element and its children visible.</p>
+
+</dd>
+<dt class="d_decl">protected  this(const(GUIElementParams) <b>params</b>);
+</dt>
+<dd><p>Construct a GUIElement with specified parameters.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>const(GUIElementParams) <b>params</b></td>
+<td valign=top>Parameters for construction of the GUIElement.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">protected void <a name="draw"></a><span class="ddoc_psymbol">draw</span>(VideoDriver <b>driver</b>);
+</dt>
+<dd><p>Draw this GUIElement and its children, if visible.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>VideoDriver <b>driver</b></td>
+<td valign=top>Driver to <a name="draw"></a><span class="ddoc_psymbol">draw</span> with.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">protected void <a name="update"></a><span class="ddoc_psymbol">update</span>();
+</dt>
+<dd><p>Update this GUIElement and its children.</p>
+
+</dd>
+<dt class="d_decl">protected void <a name="key"></a><span class="ddoc_psymbol">key</span>(KeyState <b>state</b>, Key <a name="key"></a><span class="ddoc_psymbol">key</span>, dchar <b>unicode</b>);
+</dt>
+<dd><p>Process keyboard input.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>KeyState <b>state</b></td>
+<td valign=top>State of the <a name="key"></a><span class="ddoc_psymbol">key</span>.</td></tr>
+<tr><td valign=top>Key <a name="key"></a><span class="ddoc_psymbol">key</span></td>
+<td valign=top>Keyboard <a name="key"></a><span class="ddoc_psymbol">key</span>.</td></tr>
+<tr><td valign=top>dchar <b>unicode</b></td>
+<td valign=top>Unicode value of the <a name="key"></a><span class="ddoc_psymbol">key</span>.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">protected void <a name="mouseKey"></a><span class="ddoc_psymbol">mouseKey</span>(KeyState <b>state</b>, MouseKey <b>key</b>, Vector2u <b>position</b>);
+</dt>
+<dd><p>Process mouse <b>key</b> input.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>KeyState <b>state</b></td>
+<td valign=top>State of the <b>key</b>.</td></tr>
+<tr><td valign=top>MouseKey <b>key</b></td>
+<td valign=top>Mouse <b>key</b>.</td></tr>
+<tr><td valign=top>Vector2u <b>position</b></td>
+<td valign=top>Position of the mouse.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">protected void <a name="mouseMove"></a><span class="ddoc_psymbol">mouseMove</span>(Vector2u <b>position</b>, Vector2i <b>relative</b>);
+</dt>
+<dd><p>Process mouse movement.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>Vector2u <b>position</b></td>
+<td valign=top>Position of the mouse in screen coordinates.</td></tr>
+<tr><td valign=top>Vector2i <b>relative</b></td>
+<td valign=top>Relative movement of the mouse.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">protected void <a name="realign"></a><span class="ddoc_psymbol">realign</span>(VideoDriver <b>driver</b>);
+</dt>
+<dd><p>Realign contents of this element according to its dimensions.</p>
+
+</dd>
+</dl>
+</dd>
+<dt class="d_decl">class <a name="GUIRoot"></a><span class="ddoc_psymbol">GUIRoot</span>;
+</dt>
+<dd><p>GUI root container. Contains drawing and input handling methods.</p>
+
+<dl><dt class="d_decl">this(Platform <b>platform</b>);
+</dt>
+<dd><p>Construct the GUI root.
+</p>
+<p>Size of the root GUI element will be identical to window size.
+
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>Platform <b>platform</b></td>
+<td valign=top>Platform to use for input.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">void <a name="draw"></a><span class="ddoc_psymbol">draw</span>(VideoDriver <b>driver</b>);
+</dt>
+<dd><p>Draw the GUI.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>VideoDriver <b>driver</b></td>
+<td valign=top>VideoDriver to <a name="draw"></a><span class="ddoc_psymbol">draw</span> with.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">@property GUIElement <a name="root"></a><span class="ddoc_psymbol">root</span>();
+</dt>
+<dd><p>Get the <a name="root"></a><span class="ddoc_psymbol">root</span> element of the GUI.</p>
+
+</dd>
+<dt class="d_decl">void <a name="update"></a><span class="ddoc_psymbol">update</span>();
+</dt>
+<dd><p>Update the GUI.</p>
+
+</dd>
+<dt class="d_decl">void <a name="addChild"></a><span class="ddoc_psymbol">addChild</span>(GUIElement <b>child</b>);
+</dt>
+<dd><p>Add a <b>child</b> element.</p>
+
+</dd>
+<dt class="d_decl">void <a name="removeChild"></a><span class="ddoc_psymbol">removeChild</span>(GUIElement <b>child</b>);
+</dt>
+<dd><p>Remove a <b>child</b> element.</p>
+
+</dd>
+<dt class="d_decl">void <a name="realign"></a><span class="ddoc_psymbol">realign</span>(VideoDriver <b>driver</b>);
+</dt>
+<dd><p>Realign the GUI.</p>
+
+</dd>
+</dl>
+</dd>
+<dt class="d_decl">class <a name="GUIElementFactory"></a><span class="ddoc_psymbol">GUIElementFactory</span>: gui.guielement.GUIElementFactoryBase!(GUIElement).GUIElementFactoryBase;
+</dt>
+<dd><p>Factory used for GUI element construction.
+</p>
+<b>See Also:</b><div class="pbr">GUIElementFactoryBase</div>
+
+</dd>
+<dt class="d_decl">class <a name="GUIElementFactoryBase"></a><span class="ddoc_psymbol">GUIElementFactoryBase</span>(T);
+</dt>
+<dd><p>Template base class for all GUI element factories, template type T
+ specifies type of GUI element constructed by the factory.
+</p>
+<p>Position and size of GUI elements are specified with
+ strings containing simple math expressions which
+ are evaluated to determine the actual coordinates.
+<br>
+
+ Supported operators are +,-,*,/ as well as parentheses.
+<br>
+
+ Furthermore, there are builtin macros representing window and parent
+ coordinates. These are:
+<br>
+
+ w_right  : Window right end (left end is always 0, so this is window width)<br>
+ w_bottom : Window bottom end (top end is always 0, so this is window height)<br>
+ p_left   : Parent left end<br>
+ p_right  : Parent right end<br>
+ p_top    : Parent top end<br>
+ p_bottom : Parent bottom end<br>
+
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>x</td>
+<td valign=top>X position math expression.
+                        Default; "p_left"</td></tr>
+<tr><td valign=top>y</td>
+<td valign=top>Y position math expression.
+                        Default; "p_top"</td></tr>
+<tr><td valign=top>width</td>
+<td valign=top>Width math expression.
+                        Default; "64"</td></tr>
+<tr><td valign=top>height</td>
+<td valign=top>Height math expression.
+                        Default; "64"</td></tr>
+<tr><td valign=top>drawBorder</td>
+<td valign=top>Draw border of the element?
+                        Default; <b>true</b></td></tr>
+</table></div>
+<b>Examples:</b><div class="pbr">Example of usage of GUIElementFactory, which is used
+ to construct instances of GUIElement, but the principle is
+ the same for every GUI element class factory.
+<br>
+
+<pre class="d_code"> <span class="d_comment">//Assuming other is some GUI element we already have or root GUI element
+</span>
+ <span class="d_comment">//construction of a GUI element:
+</span>
+ GUIElement element;
+
+ <span class="d_keyword">with</span>(<span class="d_keyword">new</span> GUIElementFactory)
+ {
+     x = <span class="d_string">"p_left + 96"</span>;
+     y = <span class="d_string">"p_top + 16"</span>;
+     width = <span class="d_string">"p_right - 192"</span>;
+     height = <span class="d_string">"p_bottom - 32"</span>;
+     element = produce();
+     other.addChild(element);
+ }
+
+
+ <span class="d_comment">//destruction:
+</span> other.removeChild(element);
+ element.die();
+ <span class="d_comment">//(alternatively, we could just destroy other, which would also destroy element)
+</span></pre>
+</div>
+
+<dl><dt class="d_decl">const GUIElementParams <a name="guiElementParams"></a><span class="ddoc_psymbol">guiElementParams</span>();
+</dt>
+<dd><p>Return a struct containing factory parameters packaged for GUIElement ctor.</p>
+
+</dd>
+<dt class="d_decl">void <a name="margin"></a><span class="ddoc_psymbol">margin</span>(in int <b>top</b>, in int <b>right</b>, in int <b>bottom</b>, in int <b>left</b>);
+</dt>
+<dd><p>Set dimensions of the element relative to the parent.
+</p>
+<p>Can be used instead of manually specifying x, y, width and height.
+ Works similarly to HTML <a name="margin"></a><span class="ddoc_psymbol">margin</span>, but only takes the parent to account,
+ NOT the siblings.
+
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>int <b>top</b></td>
+<td valign=top>Width of <b>top</b> y <a name="margin"></a><span class="ddoc_psymbol">margin</span> relative to parent <b>top</b> y.</td></tr>
+<tr><td valign=top>int <b>right</b></td>
+<td valign=top>Width of <b>right</b> x <a name="margin"></a><span class="ddoc_psymbol">margin</span> relative to parent <b>right</b> y.</td></tr>
+<tr><td valign=top>int <b>bottom</b></td>
+<td valign=top>Width of <b>bottom</b> y <a name="margin"></a><span class="ddoc_psymbol">margin</span> relative to parent <b>bottom</b> y.</td></tr>
+<tr><td valign=top>int <b>left</b></td>
+<td valign=top>Width of <b>left</b> y <a name="margin"></a><span class="ddoc_psymbol">margin</span> relative to parent <b>left</b> y.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">T <a name="produce"></a><span class="ddoc_psymbol">produce</span>();
+</dt>
+<dd><p>Return a new instance of the class produced by the factory with parameters of the factory.</p>
+
+</dd>
+</dl>
+</dd>
+<dt class="d_decl">struct <a name="GUIElementParams"></a><span class="ddoc_psymbol">GUIElementParams</span>;
+</dt>
+<dd><p>GUI element constructor parameters</p>
+
+</dd>
+</dl>
+
+</div>
+
+<div id="copyright">
+Copyright &copy; Ferdinand Majerech 2011. |
+Page generated by AutoDDoc and <a href="http://www.digitalmars.com/d/2.0/ddoc.html">Ddoc</a>.
+</div>
+
+</body>
+</html>
