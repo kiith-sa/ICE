@@ -353,7 +353,12 @@ class Ice
         ///Initialize the video subsystem. Throws GameStartupException on failure.
         void initVideo()
         {
-            videoDriverContainer_ = new VideoDriverContainer(gameDir_);
+            try{videoDriverContainer_ = new VideoDriverContainer(gameDir_);}
+            catch(VideoDriverException e)
+            {
+                throw new GameStartupException("Failed to initialize video "
+                                               "driver dependencies: " ~ e.msg);
+            }
             initVideoDriverFromConfig();
             if(videoDriver_ is null)
             {
