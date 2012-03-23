@@ -288,7 +288,14 @@ package final class Font
         {
             if(c < fastGlyphCount_)
             {
-                if(fastGlyphs_[c] is null){fastGlyphs_[c] = alloc!Glyph();}
+                if(fastGlyphs_[c] is null)
+                {
+                    auto newGlyph  = alloc!Glyph();
+                    scope(failure){free(newGlyph);}
+                    *newGlyph = renderGlyph(driver, c);
+                    fastGlyphs_[c] = newGlyph;
+                    return;
+                }
                 *fastGlyphs_[c] = renderGlyph(driver, c);
                 return;
             }
