@@ -10,7 +10,6 @@ module component.enginecomponent;
 
 
 import math.vector2;
-
 import util.yaml;
 
 
