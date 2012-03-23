@@ -27,6 +27,7 @@ import component.enginecomponent;
 import component.exceptions;
 import component.physicscomponent;
 import component.visualcomponent;
+import component.volumecomponent;
 import component.weaponcomponent;
 
 
@@ -48,7 +49,8 @@ tuple
     "ControllerComponent",
     "EngineComponent",
     "DeathTimeoutComponent",
-    "WeaponComponent"
+    "WeaponComponent",
+    "VolumeComponent"
 );
 
 ///Enforce at compile time that all component type names are valid.
