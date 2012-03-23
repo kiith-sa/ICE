@@ -86,7 +86,7 @@ package final class Font
         this(FT_Library freetypeLib, ubyte[] fontData, const string name, 
              const uint size, const uint fastGlyphs, const bool antialiasing)
         {
-            scope(failure){writefln("Could not load font " ~ name);}
+            scope(failure){writeln("Could not load font " ~ name);}
 
             fastGlyphs_ = new Glyph*[fastGlyphs];
             fastGlyphCount_ = fastGlyphs;
@@ -391,7 +391,7 @@ package final class Font
                 try{glyph.texture = driver.createTexture(image);}
                 catch(TextureException e)
                 {
-                    writefln("Could not create glyph texture, falling back to default");
+                    writeln("Could not create glyph texture, falling back to default");
                     return getDefaultGlyph(driver);
                 }
 

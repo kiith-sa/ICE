@@ -287,7 +287,7 @@ abstract class GLVideoDriver : VideoDriver
         final override void drawText(const Vector2i position, const string text, const Color color)
         {
             assert(frameInProgress_, "GLVideoDriver.drawText called outside a frame");
-            scope(failure){writefln("Error drawing text: " ~ text);}
+            scope(failure){writeln("Error drawing text: " ~ text);}
 
             ++statistics_.texts;
 
@@ -342,7 +342,7 @@ abstract class GLVideoDriver : VideoDriver
             //error loading glyphs
             catch(TextureException e)
             {
-                writefln(e.msg);
+                writeln(e.msg);
                 return;
             }
         }
@@ -365,7 +365,7 @@ abstract class GLVideoDriver : VideoDriver
         
         final override Vector2u textSize(const string text)
         {
-            scope(failure){writefln("Error measuring text size: " ~ text);}
+            scope(failure){writeln("Error measuring text size: " ~ text);}
 
             auto renderer = fontManager_.renderer();
             //load any glyphs that aren't loaded yet
@@ -376,7 +376,7 @@ abstract class GLVideoDriver : VideoDriver
             //error loading glyphs
             catch(TextureException e)
             {
-                writefln(e.msg);
+                writeln(e.msg);
                 return Vector2u(0,0);
             }
             return renderer.textSize(text);
@@ -433,16 +433,22 @@ abstract class GLVideoDriver : VideoDriver
             foreach(index; 0 .. powersOfTwo.length)
             {
                 size = powersOfTwo[index];
+                //Create a proxy texture.
                 glTexImage2D(GL_PROXY_TEXTURE_2D, 0, internalFormat,
                              size, size, 0, glFormat, type, null);
                 GLint width  = size;
                 GLint height = size;
+
+                //If the proxy width and height are zero, such texture is not supported.
                 glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0,
                                          GL_TEXTURE_WIDTH, &width);
                 glGetTexLevelParameteriv(GL_PROXY_TEXTURE_2D, 0,
                                          GL_TEXTURE_HEIGHT, &height);
 
-                if(width == 0 || height == 0){return powersOfTwo[index - 1];}
+                if(width == 0 || height == 0)
+                {
+                    return index == 0 ? 0 : powersOfTwo[index - 1];
+                }
             }
             return size;
         }
@@ -543,7 +549,7 @@ abstract class GLVideoDriver : VideoDriver
             //will just chop.
             void fallback()
             {
-                writefln("Couldn't get screenshot using FBO: falling back to "
+                writeln("Couldn't get screenshot using FBO: falling back to "
                          "glReadPixels from the framebuffer");
 
                 //get front buffer as we do this after endFrame
@@ -647,7 +653,7 @@ abstract class GLVideoDriver : VideoDriver
          */
         final void initGL()
         {
-            scope(failure){writefln("OpenGL initialization failed");}
+            scope(failure){writeln("OpenGL initialization failed");}
 
             try
             {
@@ -750,13 +756,13 @@ abstract class GLVideoDriver : VideoDriver
             //1/16 MiB grayscale, 1/4 MiB RGBA8
             static immutable uint sizeMin = 256;
             const supported = maxTextureSize(format);
-            enforceEx!(TextureException)(sizeMin <= supported,
+            enforceEx!TextureException(sizeMin <= supported,
                                          "GL Video driver doesn't support minimum "
                                          "texture size for color format " ~ to!string(format));
 
             sizeImage.x = potCeil(sizeImage.x);
             sizeImage.y = potCeil(sizeImage.y);
-            enforceEx!(TextureException)(sizeImage.x <= supported && sizeImage.y <= supported,
+            enforceEx!TextureException(sizeImage.x <= supported && sizeImage.y <= supported,
                                          "GL Video driver doesn't support requested "
                                          "texture size for specified color " ~ to!string(format));
 
