@@ -195,20 +195,22 @@ class SpatialSystem : System
                     ///Foreach over neighbors.
                     int opApply(int delegate(ref Entity, ref PhysicsComponent, ref VolumeComponent) dg)
                     {    
-                        //Used to ensure we never iterate over the same thing twice.
-                        //If too much overhead, we might have to remove 
-                        //that guarantee or devise a data structure that does this
-                        //job better for small quantities
-                        //(it's unlikely to have a lot of objects in a cell)
-                        auto iterated = redBlackTree!(Entity*)();
-                        scope(exit){.clear(iterated);}
-
                         //Foreach result.
                         int result = 0;
 
-                        final switch(type_)
+                        with(cellsAABBox_) final switch(type_)
                         {
                             case VolumeComponent.Type.AABBox:
+                                const bool oneCell = 1 == (cellXMax_ - cellXMin_) * (cellYMax_ - cellYMin_);
+
+                                //Used to ensure we never iterate over the same thing twice.
+                                //If too much overhead, we might have to remove 
+                                //that guarantee or devise a data structure that does this
+                                //job better for small quantities
+                                //(it's unlikely to have a lot of objects in a cell)
+                                auto iterated = oneCell ? null : redBlackTree!(Entity*)();
+                                scope(exit) if(oneCell){.clear(iterated);}
+
                                 //Iterate over cells in the AABBox.
                                 foreach(x, y, ref cell; cellsAABBox_) 
                                 {
@@ -216,10 +218,10 @@ class SpatialSystem : System
                                     foreach(ref e; cell[])
                                     {
                                         //Only iterate over an entity once.
-                                        if(e.entity in iterated){continue;}
+                                        if(!oneCell && e.entity in iterated){continue;}
                                         result = dg(*(e.entity), *(e.physics), *(e.volume));
                                         if(result){return result;}
-                                        iterated.insert(e.entity);
+                                        if(!oneCell){iterated.insert(e.entity);}
                                     }
                                 }
                                 break;
