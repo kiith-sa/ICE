@@ -100,7 +100,8 @@ struct PNGEncoder
             chunks.sort;
             chunks ~= PNGChunk(IEND, []);
 
-            auto buffer = Vector!ubyte(pngMagicNumber.dup);
+            Vector!ubyte buffer;
+            buffer = pngMagicNumber.dup;
             //write chunks to buffer
             foreach(chunk; chunks){writeChunk(buffer, chunk);}
 
