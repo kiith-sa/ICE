@@ -664,7 +664,8 @@ abstract class GLVideoDriver : VideoDriver
             }
             catch(DerelictException e)
             {
-                throw new VideoDriverException("Could not load OpenGL: " ~ e.msg);
+                throw new VideoDriverException("Could not load OpenGL: " ~ e.msg ~
+                                               "\nPerhaps you need to install new graphics drivers?");
             } 
 
             glEnable(GL_CULL_FACE);

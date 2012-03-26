@@ -306,7 +306,6 @@ class Ice
                 {
                     //update game state
                     if(!game_.run()){gameEnd();}
-                    //else{game_.draw(videoDriver_);}
                 }
                 guiRoot_.draw(videoDriver_);
                 videoDriver_.endFrame();
