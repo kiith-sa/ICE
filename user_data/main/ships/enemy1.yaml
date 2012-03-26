@@ -1,12 +1,13 @@
-visual: visual/player.yaml
+visual: visual/enemy1.yaml
 engine:
   maxSpeed: 300
   acceleration   : 2100  #-1 default 
 volume:
   aabbox: 
-    min: [-32, -32]
-    max: [32,  0]
+    min: [-7, -4]
+    max: [7,  12]
 weapon:
   0: weapons/defaultweapon.yaml
 collidable:
 health: 500
+
