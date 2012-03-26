@@ -268,19 +268,13 @@ align(4) struct Vector(T)
          */
         @property void length(const size_t elements)
         {
-            used_ = elements;
-            //Awkward control flow due to optimization. 
-            //We realloc if elements > data_.length .
-            if(elements <= data_.length)
+            static if(hasElaborateDestructor!T) if(elements < used_)
             {
-                static if(hasElaborateDestructor!T)
-                {
-                    foreach(ref elem; data_[elements .. $]){clear(elem);}
-                }
-                return;
+                foreach(ref elem; data_[elements .. used_]){clear(elem);}
             }
-            data_ = (data_ !is null) ? realloc(data_, elements) 
-                                     : allocArray!T(elements);
+
+            used_ = elements;
+            reserve(elements);
         }
 
         ///Reserve space for at least specified number of elements.
