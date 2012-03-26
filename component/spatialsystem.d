@@ -57,8 +57,13 @@ class SpatialSystem : System
         ///Size of a single cell (both x and y).
         const float cellSize_;
 
-        ///Size of the grid in cells (both x and y).
-        const ushort gridSize_;
+        /**
+         * Size of the grid in cells (both x and y). 
+         *
+         * Must be <= 254 because max x and y coords in CellsAABBox are 
+         * the actual max coord + 1.
+         */
+        const ubyte gridSize_;
 
         ///Origin of the grid (top-left corner) in world space.
         const Vector2f origin_;
@@ -71,15 +76,16 @@ class SpatialSystem : System
          *          center       = Center of the grid in world space.
          *          cellSize     = Size of a single cell of the grid (both x and y).
          *          gridSize     = Size of the grid in cells (both x and y).
+         *                         Must be > 0 and <= 254 (yes, 254, not 255).
          */
         this(EntitySystem entitySystem, 
-             const Vector2f center, const float cellSize, const ushort gridSize)
+             const Vector2f center, const float cellSize, const ubyte gridSize)
         in
         {
             assert(!equals(cellSize, 0.0f), 
                    "Can't construct a SpatialSystem with a cell size of 0");
-            assert(gridSize != 0,
-                   "Can't construct a SpatialSystem with a grid size of 0");
+            assert(gridSize > 0 && gridSize < 255,
+                   "Can't construct a SpatialSystem with a grid size of 0 or 255");
         }
         body
         {
@@ -224,9 +230,10 @@ class SpatialSystem : System
                         return result;
                     }
             }
+            static assert(Foreach.sizeof == 16);
 
             //So, even for any entity with volume that is in one cell only, we do this:
-            //* Return a 32-byte struct.
+            //* Return a 16-byte struct.
             //* Call opApply on it.
             //* Call opApply on the internal Cells struct.
             //* For the one cell within, call opApply over SpatialEntity[].
@@ -252,60 +259,76 @@ class SpatialSystem : System
         }
 
         ///Struct that iterates over all cells intersecting with an AABBox.
-        align(8) struct CellsAABBox
+        align(2) struct CellsAABBox
         {
             ///Spatial system we're iterating over.
             SpatialSystem spatial_;
 
             ///AABBox relative to origin of spatial_.
-            Rectf aabbox_;
+            ubyte cellXMin_ = 0;
+            ubyte cellXMax_ = 0;
+            ubyte cellYMin_ = 0;
+            ubyte cellYMax_ = 0;
+            bool outer_ = false;
 
-            int opApply(int delegate(int x, int y, ref Cell) dg)
-            {    
-                const float mult = 1.0f / spatial_.cellSize_;
+
+            this(SpatialSystem spatial, ref const Rectf aabbox) 
+            {
+                spatial_ = spatial;
+
+                const mult = 1.0 / spatial_.cellSize_;
                 const gridSize   = spatial_.gridSize_;
 
-                //Foreach result.
-                int result = 0;
-
                 //Get minimum and maximum cells containing the rectangle.
-                const cellXMin = floor!int(aabbox_.min.x * mult);
-                const cellXMax = floor!int(aabbox_.max.x * mult);
-                const cellYMin = floor!int(aabbox_.min.y * mult);
-                const cellYMax = floor!int(aabbox_.max.y * mult);
+                const xMin = floor!int(aabbox.min.x * mult);
+                const xMax = floor!int(aabbox.max.x * mult);
+                const yMin = floor!int(aabbox.min.y * mult);
+                const yMax = floor!int(aabbox.max.y * mult);
 
                 //Everything is within the grid.
-                if(cellXMin >= 0 &&
-                   cellYMin >= 0 &&
-                   cellXMax < gridSize &&
-                   cellYMax < gridSize)
+                if(xMin >= 0 &&
+                   yMin >= 0 &&
+                   xMax < gridSize &&
+                   yMax < gridSize)
                 {
-                    //Iterate over all the cells that contain the rectangle.
-                    foreach(x; cellXMin .. cellXMax + 1) foreach(y; cellYMin .. cellYMax + 1)
-                    {
-                        result = dg(x, y, spatial_.grid_[x, y]);
-                        if(result){break;}
-                    }
-                    return result;
+                    cellXMin_ = cast(ubyte)xMin;
+                    cellXMax_ = cast(ubyte)(xMax + 1);
+                    cellYMin_ = cast(ubyte)yMin;
+                    cellYMax_ = cast(ubyte)(yMax + 1);
+                    return;
                 }
 
                 //If outside the grid, iterate over outer.
-                result = dg(-1, -1, spatial_.outer_);
-                if(result){return result;}
+                outer_ = true;
 
                 //Completely outside the grid, so we're done.
-                if(cellXMax < 0 || 
-                   cellYMax < 0 ||
-                   cellXMin >= gridSize ||
-                   cellYMin >= gridSize)
+                if(xMax < 0 || 
+                   yMax < 0 ||
+                   xMin >= gridSize ||
+                   yMin >= gridSize)
                 {
-                    return result;
+                    return;
                 }
 
-                //Iterate over all the cells that contain the rectangle.
-                foreach(x; max(0, cellXMin) .. min(cellXMax, gridSize - 1) + 1) 
+                cellXMin_ = cast(ubyte)max(0, xMin);
+                cellXMax_ = cast(ubyte)(min(xMax, gridSize - 1) + 1);
+                cellYMin_ = cast(ubyte)max(0, yMin);
+                cellYMax_ = cast(ubyte)(min(yMax, gridSize - 1) + 1);
+            }
+
+
+            int opApply(int delegate(int x, int y, ref Cell) dg)
+            {    
+                int result;
+                if(outer_)
                 {
-                    foreach(y; max(0, cellYMin) .. min(cellYMax, gridSize - 1) + 1) 
+                    result = dg(-1, -1, spatial_.outer_);
+                    if(result){return result;}
+                }
+                //Iterate over all the cells that contain the rectangle.
+                foreach(x; cellXMin_ .. cellXMax_) 
+                {
+                    foreach(y; cellYMin_ .. cellYMax_) 
                     {
                         result = dg(x, y, spatial_.grid_[x, y]);
                         if(result){break;}
@@ -323,7 +346,8 @@ class SpatialSystem : System
         auto cells(const Vector2f position, ref const Rectf aabbox)
         {
             //Translate relative to the grid.
-            return CellsAABBox(this, aabbox + (position - origin_));
+            const translated = aabbox + (position - origin_);
+            return CellsAABBox(this, translated);
         }
         unittest
         {
@@ -336,7 +360,6 @@ class SpatialSystem : System
                                              Rectf(-32.0f, -32.0f, 32.5f, 31.0f)))
             {
                 cells ~= tuple(x, y);
-                
             }
             assert(cells == [tuple(14, 15), tuple(14, 16),
                              tuple(15, 15), tuple(15, 16),

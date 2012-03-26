@@ -86,7 +86,7 @@ U round(U, T)(const T f)
  *
  * Params:  f = Float to round. Must be less than U.max and more or equal to U.min .
  *                                                                                   
- * Returns: Floor of given value as ubyte.
+ * Returns: Floor of given value as U.
  */
 U floor(U, T)(T f)
     if(isIntegral!U && isNumeric!T)

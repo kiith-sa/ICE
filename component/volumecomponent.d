@@ -24,7 +24,7 @@ struct VolumeComponent
 {
     public:
         ///Volume types.
-        enum Type 
+        enum Type : ubyte
         {
             Uninitialized,
             AABBox
