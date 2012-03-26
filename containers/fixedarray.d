@@ -76,7 +76,7 @@ align(4) struct FixedArray(T)
         }
 
         /**
-         * Used by foreach.
+         * Foreach over values.
          *
          * Foreach will iterate over all elements of the array in linear order
          * from start to end.
@@ -93,7 +93,7 @@ align(4) struct FixedArray(T)
         }
 
         /**
-         * Used by foreach.
+         * Foreach over indices and values.
          *
          * Foreach will iterate over all elements of the array in linear order
          * from start to end.
@@ -175,10 +175,10 @@ align(4) struct FixedArray(T)
         inout(T)[] opSlice() inout pure nothrow {return data_[0 .. $];}
 
         ///Access the first element of the array.
-        ref const(T) front() const pure nothrow {return data_[0];}
+        ref inout(T) front() inout pure nothrow {return data_[0];}
 
         ///Access the last element of the array.
-        ref const(T) back() const pure nothrow {return data_[$ - 1];}
+        ref inout(T) back() inout pure nothrow {return data_[$ - 1];}
 
         ///Get number of elements in the array.
         @property size_t length() const pure {return data_.length;}
