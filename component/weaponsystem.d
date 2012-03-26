@@ -23,6 +23,7 @@ import component.controllercomponent;
 import component.entitysystem;
 import component.deathtimeoutcomponent;
 import component.enginecomponent;
+import component.ownercomponent;
 import component.physicscomponent;
 import component.visualcomponent;
 import component.weaponcomponent;
@@ -186,10 +187,6 @@ class WeaponSystem : System
                     //Are we firing this weapon?
                     const firePressed  = control.firing[weaponSlot];
 
-                    //OK: IF weapon.ammo >= 0, we need to check if we're reloading
-
-                    //THEN we need to increase timeSinceLastBurst 
-
                     //At initialization, timeSinceLastBurst is infinite so assert that works.
                     static assert(double.infinity + 0.1 == double.infinity);
                     timeSinceLastBurst  += timeStep;
@@ -212,7 +209,7 @@ class WeaponSystem : System
                                 break;
                             }
 
-                            fire(physics, shot);
+                            fire(e.id, physics, shot);
 
                             ++shotsSoFarThisBurst;
                         }
@@ -261,10 +258,11 @@ class WeaponSystem : System
          *
          * In practice, firing means spawning a new, projectile, entity.
          *
-         * Params:  physics = Physics component of the entity that fired the shot
+         * Params:  owner   = ID of the entity that fired the shot.
+         *          physics = Physics component of the entity that fired the shot
          *          shot    = Shot to fire.
          */
-        void fire(ref PhysicsComponent physics, ref WeaponData.Shot shot) 
+        void fire(EntityID owner, ref PhysicsComponent physics, ref WeaponData.Shot shot) 
         {
             EntityPrototype* prototype = projectilePrototypes_[shot.projectileIndex];
             if(prototype is null)
@@ -288,6 +286,7 @@ class WeaponSystem : System
             prototype.physics = PhysicsComponent(physics.position + shot.position, 
                                                  direction, 
                                                  angleToVector(direction) * shotSpeed);  
+            prototype.owner   = OwnerComponent(owner); 
             entitySystem_.newEntity(*prototype);
         }
 
