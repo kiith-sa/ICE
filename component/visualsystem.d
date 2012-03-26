@@ -101,7 +101,7 @@ class VisualSystem : System
         void update()
         {
             assert(videoDriver_ !is null, "Updating VisualSystem with no VideoDriver");
-            foreach(Entity e, 
+            foreach(ref Entity e, 
                     ref PhysicsComponent physics, 
                     ref VisualComponent  visual; 
                     entitySystem_)

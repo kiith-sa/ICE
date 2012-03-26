@@ -67,7 +67,7 @@ class ControllerSystem : System
          */
         void update()
         {
-            foreach(Entity e, 
+            foreach(ref Entity e, 
                     ref ControllerComponent control, 
                     ref EngineComponent     engine;
                     entitySystem_)
