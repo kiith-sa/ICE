@@ -18,11 +18,15 @@ import std.traits;
 import dgamevfs._;
 
 import color;
+import component.collisionsystem;
 import component.controllersystem;
 import component.enginesystem;
 import component.entitysystem;
+import component.healthsystem;
 import component.physicssystem;
+import component.spatialsystem;
 import component.timeoutsystem;
+import component.warheadsystem;
 import component.weaponsystem;
 import component.system;
 import component.visualsystem;
@@ -33,10 +37,6 @@ import math.rect;
 import memory.memory;
 import memory.pool;
 import monitor.monitormanager;
-import scene.scenemanager;
-import spatial.spatialmanager;
-import spatial.gridspatialmanager;
-import physics.physicsengine;
 import platform.platform;
 import time.gametime;
 import util.yaml;
@@ -126,6 +126,18 @@ EntityID constructPlayerShip(string name, EntitySystem system, Vector2f position
     return system.newEntity(prototype);
 }
 
+///Construct an enemy ship from specified prototype at specified position, and return its ID.
+EntityID constructEnemyShip(EntitySystem system, EntityPrototype prototype, Vector2f position)
+{
+    import component.physicscomponent;
+    with(prototype)
+    {
+        physics    = PhysicsComponent(position, Vector2f(0.0f, 1.0f).angle,
+                                      Vector2f(0.0f, 0.0f));
+    }
+    return system.newEntity(prototype);
+}
+
 ///Class managing a single game between players.
 class Game
 {
@@ -133,8 +145,6 @@ class Game
     private:
         ///Platform used for input.
         Platform platform_;
-        ///Scene manager.
-        SceneManager sceneManager_;
 
         ///Game area in world space.
         static immutable Rectf gameArea_ = Rectf(0.0f, 0.0f, 800.0f, 600.0f);
@@ -160,9 +170,6 @@ class Game
         ///Game entity system.
         EntitySystem entitySystem_;
 
-        ///Systems operating on entities.
-        System[] systems_;
-
         ///Visual subsystem, draws entities.
         VisualSystem     visualSystem_;
         ///Controller subsystem, allows players to control ships.
@@ -175,6 +182,22 @@ class Game
         WeaponSystem     weaponSystem_;
         ///Handles engine components of the entities, allowing them to move.
         EngineSystem     engineSystem_;
+        ///Handles spatial relations between entities.
+        SpatialSystem    spatialSystem_;
+        ///Handles collision detection.
+        CollisionSystem  collisionSystem_;
+        ///Handles damage caused by warheads.
+        WarheadSystem    warheadSystem_;
+        ///Handles entity health and kills entities when they run out of health.
+        HealthSystem     healthSystem_;
+
+        ///Prototype of enemy ships.
+        EntityPrototype enemyPrototype1_;
+
+        ///IDs of enemy ships.
+        EntityID[] enemies_;
+
+
 
     public:
         /**
@@ -199,6 +222,10 @@ class Game
                 engineSystem_.update();
                 weaponSystem_.update();
                 physicsSystem_.update();
+                spatialSystem_.update();
+                collisionSystem_.update();
+                warheadSystem_.update();
+                healthSystem_.update();
                 timeoutSystem_.update();
             });
 
@@ -212,22 +239,25 @@ class Game
         {
             assert(gameDir_ !is null, "Starting Game but gameDir_ has not been set");
 
-            //Initialize player ship.
+            //Initialize player and enemy ships.
             try
             {
                 playerShipID_ = constructPlayerShip("playership", entitySystem_,
                                                     Vector2f(400.0f, 536.0f),
                                                     loadYAML(gameDir_.file("ships/playership.yaml")));
+                enemyPrototype1_ = EntityPrototype("enemy1", loadYAML(gameDir_.file("ships/enemy1.yaml")));
+
+                enemies_ ~= constructEnemyShip(entitySystem_, enemyPrototype1_, Vector2f(400.0f, 64.0f));
             }
             catch(YAMLException e)
             {
                 throw new GameStartException("Failed to start game: could not " ~
-                                             "initialize player ship: " ~ e.msg);
+                                             "initialize ships: " ~ e.msg);
             }
             catch(VFSException e)
             {
                 throw new GameStartException("Failed to start game: could not " ~
-                                             "initialize player ship: " ~ e.msg);
+                                             "initialize ships: " ~ e.msg);
             }
 
             continue_ = true;
@@ -240,7 +270,6 @@ class Game
         ///End the game, regardless of whether it has been won or not.
         void endGame()
         {
-            sceneManager_.clear();
             clear(player1_);
             continue_ = false;
             platform_.key.disconnect(&keyHandler);
@@ -268,15 +297,13 @@ class Game
          * Construct a Game.
          *
          * Params:  platform     = Platform used for input.
-         *          sceneManager = SceneManager managing actors.
          *          gui          = Game GUI.
          */
-        this(Platform platform, SceneManager sceneManager, GameGUI gui)
+        this(Platform platform, GameGUI gui)
         {
             singletonCtor();
             gui_              = gui;
             platform_         = platform;
-            sceneManager_     = sceneManager;
             
             gameTime_         = new GameTime();
 
@@ -288,23 +315,26 @@ class Game
             timeoutSystem_    = new TimeoutSystem(entitySystem_, gameTime_);
             weaponSystem_     = new WeaponSystem(entitySystem_, gameTime_);
             engineSystem_     = new EngineSystem(entitySystem_, gameTime_);
-
-            systems_ ~= visualSystem_;
-            systems_ ~= controllerSystem_;
-            systems_ ~= physicsSystem_;
-            systems_ ~= timeoutSystem_;
-            systems_ ~= weaponSystem_;
-            systems_ ~= engineSystem_;
+            spatialSystem_    = new SpatialSystem(entitySystem_, 
+                                                  Vector2f(400.0f, 300.0f), 32.0f, 32);
+            collisionSystem_  = new CollisionSystem(entitySystem_, spatialSystem_);
+            warheadSystem_    = new WarheadSystem(entitySystem_);
+            healthSystem_     = new HealthSystem(entitySystem_);
         }
 
         ///Destroy the Game.
         ~this()
         {
-            //Destroy game subsystems.
-            foreach(system; systems_)
-            {
-                clear(system);
-            }
+            clear(visualSystem_);
+            clear(controllerSystem_);
+            clear(physicsSystem_);
+            clear(timeoutSystem_);
+            clear(weaponSystem_);
+            clear(engineSystem_);
+            clear(collisionSystem_);
+            clear(spatialSystem_);
+            clear(warheadSystem_);
+            clear(healthSystem_);
 
             entitySystem_.destroy();
 
@@ -340,12 +370,6 @@ class GameContainer
 {
     import physics.physicsbody;
     private:
-        ///Spatial manager used by the physics engine for coarse collision detection.
-        SpatialManager!PhysicsBody spatialPhysics_;
-        ///Physics engine used by the scene manager.
-        PhysicsEngine physicsEngine_;
-        ///Scene manager used by the game.
-        SceneManager sceneManager_;
         ///GUI of the game.
         GameGUI gui_;
         ///Game itself.
@@ -366,22 +390,14 @@ class GameContainer
         Game produce(Platform platform, MonitorManager monitor, GUIElement guiParent)
         in
         {
-            assert(spatialPhysics_ is null && physicsEngine_ is null && 
-                   sceneManager_ is null && game_ is null,
+            assert(game_ is null,
                    "Can't produce two games at once with GameContainer");
         }
         body
         {
             monitor_ = monitor;
-            spatialPhysics_ = new GridSpatialManager!PhysicsBody
-                                   (Vector2f(400.0f, 300.0f), 25.0f, 32);
-            physicsEngine_  = new PhysicsEngine(spatialPhysics_);
-            sceneManager_   = new SceneManager(physicsEngine_);
             gui_            = new GameGUI(guiParent);
-            game_           = new Game(platform, sceneManager_, gui_);
-            monitor_.addMonitorable(spatialPhysics_, "Spatial(P)");
-            monitor_.addMonitorable(physicsEngine_, "Physics");
-            monitor_.addMonitorable(sceneManager_, "Scene");
+            game_           = new Game(platform, gui_);
             return game_;
         }
 
@@ -390,16 +406,7 @@ class GameContainer
         {
             clear(game_);
             clear(gui_);
-            monitor_.removeMonitorable("Scene");
-            clear(sceneManager_);
-            monitor_.removeMonitorable("Physics");
-            clear(physicsEngine_);
-            monitor_.removeMonitorable("Spatial(P)");
-            clear(spatialPhysics_);
             game_           = null;
-            sceneManager_   = null;
-            physicsEngine_  = null;
-            spatialPhysics_ = null;
             monitor_        = null;
         }
 }
