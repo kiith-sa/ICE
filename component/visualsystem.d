@@ -68,6 +68,9 @@ class VisualSystem : System
         ///Lazily loads and stores visual data.
         LazyArray!VisualData visualData_;
 
+        ///Draw volume components of objects? (debugging)
+        bool drawVolumeComponents_;
+
     public:
         ///Construct a VisualSystem working on entities from specified EntitySystem.
         this(EntitySystem entitySystem)
@@ -95,7 +98,29 @@ class VisualSystem : System
         @property void videoDriver(VideoDriver rhs) pure nothrow {videoDriver_ = rhs;}
 
         ///Set the game directory to load video data from.
-        @property void gameDir(VFSDir rhs) pure nothrow {gameDir_ = rhs;}
+        @property void gameDir(VFSDir rhs) 
+        {
+            gameDir_ = rhs;
+
+            import std.stdio;
+            //Load configuration from the game directory.
+            try
+            {
+                YAMLNode yaml = loadYAML(gameDir_.file("visualsystem.yaml"));
+                if(yaml.containsKey("drawVolumeComponents"))
+                {
+                    drawVolumeComponents_ = yaml["drawVolumeComponents"].as!bool;
+                }
+            }
+            catch(VFSException e)
+            {
+                writeln("WARNING: Could not load VisualSystem configuration: ", e.msg);
+            }
+            catch(YAMLException e)
+            {
+                writeln("WARNING: Could not load VisualSystem configuration: ", e.msg);
+            }
+        }
 
         ///Render entities' visual representations.
         void update()
@@ -106,6 +131,23 @@ class VisualSystem : System
                     ref VisualComponent  visual; 
                     entitySystem_)
             {
+                if(drawVolumeComponents_)
+                {
+                    import component.volumecomponent;
+                    auto volume = e.volume;
+                    if(volume !is null) final switch(volume.type)
+                    {
+                        case VolumeComponent.Type.AABBox:
+                            videoDriver_.drawRect(physics.position + volume.aabbox.min, 
+                                                  physics.position + volume.aabbox.max,
+                                                  Color.red);
+                            break;
+                        case VolumeComponent.Type.Uninitialized:
+                            assert(false, "Uninitialized VolumeComponent");
+                    }
+                }
+
+
                 ///Loads visual data if not yet loaded.
                 VisualData* data = visualData_[visual.dataIndex];
                 if(data == null)
