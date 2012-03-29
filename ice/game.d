@@ -19,6 +19,7 @@ import dgamevfs._;
 
 import color;
 import component.collisionsystem;
+import component.collisionresponsesystem;
 import component.controllersystem;
 import component.enginesystem;
 import component.entitysystem;
@@ -171,25 +172,27 @@ class Game
         EntitySystem entitySystem_;
 
         ///Visual subsystem, draws entities.
-        VisualSystem     visualSystem_;
+        VisualSystem            visualSystem_;
         ///Controller subsystem, allows players to control ships.
-        ControllerSystem controllerSystem_;
+        ControllerSystem        controllerSystem_;
         ///Physics subsystem. Handles movement and physics interaction.
-        PhysicsSystem    physicsSystem_;
+        PhysicsSystem           physicsSystem_;
         ///Handles various delayed events.
-        TimeoutSystem    timeoutSystem_;
+        TimeoutSystem           timeoutSystem_;
         ///Handles weapons and firing.
-        WeaponSystem     weaponSystem_;
+        WeaponSystem            weaponSystem_;
         ///Handles engine components of the entities, allowing them to move.
-        EngineSystem     engineSystem_;
+        EngineSystem            engineSystem_;
         ///Handles spatial relations between entities.
-        SpatialSystem    spatialSystem_;
+        SpatialSystem           spatialSystem_;
         ///Handles collision detection.
-        CollisionSystem  collisionSystem_;
+        CollisionSystem         collisionSystem_;
+        ///Handles collision response.
+        CollisionResponseSystem collisionResponseSystem_;
         ///Handles damage caused by warheads.
-        WarheadSystem    warheadSystem_;
+        WarheadSystem           warheadSystem_;
         ///Handles entity health and kills entities when they run out of health.
-        HealthSystem     healthSystem_;
+        HealthSystem            healthSystem_;
 
         ///Prototype of enemy ships.
         EntityPrototype enemyPrototype1_;
@@ -225,6 +228,7 @@ class Game
                 spatialSystem_.update();
                 collisionSystem_.update();
                 warheadSystem_.update();
+                collisionResponseSystem_.update();
                 healthSystem_.update();
                 timeoutSystem_.update();
             });
@@ -282,7 +286,7 @@ class Game
         }
 
         ///Set the game data directory.
-        @property void gameDir(VFSDir rhs) pure nothrow 
+        @property void gameDir(VFSDir rhs) 
         {
             gameDir_              = rhs;
             visualSystem_.gameDir  = rhs;
@@ -308,18 +312,21 @@ class Game
             gameTime_         = new GameTime();
 
             //Initialize entity system and game subsystems.
-            entitySystem_     = new EntitySystem();
-            visualSystem_     = new VisualSystem(entitySystem_);
-            controllerSystem_ = new ControllerSystem(entitySystem_);
-            physicsSystem_    = new PhysicsSystem(entitySystem_, gameTime_);
-            timeoutSystem_    = new TimeoutSystem(entitySystem_, gameTime_);
-            weaponSystem_     = new WeaponSystem(entitySystem_, gameTime_);
-            engineSystem_     = new EngineSystem(entitySystem_, gameTime_);
-            spatialSystem_    = new SpatialSystem(entitySystem_, 
-                                                  Vector2f(400.0f, 300.0f), 32.0f, 32);
-            collisionSystem_  = new CollisionSystem(entitySystem_, spatialSystem_);
-            warheadSystem_    = new WarheadSystem(entitySystem_);
-            healthSystem_     = new HealthSystem(entitySystem_);
+            entitySystem_            = new EntitySystem();
+            visualSystem_            = new VisualSystem(entitySystem_);
+            controllerSystem_        = new ControllerSystem(entitySystem_);
+            physicsSystem_           = new PhysicsSystem(entitySystem_, gameTime_);
+            timeoutSystem_           = new TimeoutSystem(entitySystem_, gameTime_);
+            weaponSystem_            = new WeaponSystem(entitySystem_, gameTime_);
+            engineSystem_            = new EngineSystem(entitySystem_, gameTime_);
+            spatialSystem_           = new SpatialSystem(entitySystem_, 
+                                                         Vector2f(400.0f, 300.0f), 
+                                                         32.0f, 
+                                                         32);
+            collisionSystem_         = new CollisionSystem(entitySystem_, spatialSystem_);
+            collisionResponseSystem_ = new CollisionResponseSystem(entitySystem_);
+            warheadSystem_           = new WarheadSystem(entitySystem_);
+            healthSystem_            = new HealthSystem(entitySystem_);
         }
 
         ///Destroy the Game.
@@ -332,6 +339,7 @@ class Game
             clear(weaponSystem_);
             clear(engineSystem_);
             clear(collisionSystem_);
+            clear(collisionResponseSystem_);
             clear(spatialSystem_);
             clear(warheadSystem_);
             clear(healthSystem_);
