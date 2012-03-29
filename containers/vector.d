@@ -21,6 +21,10 @@ import memory.memory;
  * Simple dynamic array with manually managed memory, with interface similar to D array.
  *
  *
+ * Vector reallocates its storage as new elements are added, moving its contents
+ * in memory. It is therefore unsafe to keep pointers to its contents. If you
+ * need such functionality, use SegmentedVector instead.
+ *
  * Only bare requirements are implemented. Can be improved if needed.
  */
 align(4) struct Vector(T)
@@ -62,8 +66,13 @@ align(4) struct Vector(T)
         int opApply(int delegate(ref T) dg)
         {
             int result = 0;
+            debug{const dataptr = data_.ptr;}
             foreach(i; 0 .. used_)
             {
+                assert(dataptr is data_.ptr, 
+                       "Reallocation during foreach over Vector.\n"
+                       "You probably added or removed elements to/from\n"
+                       "the vector, which is illegal.");
                 result = dg(data_[i]);
                 if(result){break;}
             }
@@ -79,8 +88,13 @@ align(4) struct Vector(T)
         int opApply(int delegate(size_t, ref T) dg)
         {
             int result = 0;
+            debug{const dataptr = data_.ptr;}
             foreach(i; 0 .. used_)
             {
+                assert(dataptr is data_.ptr, 
+                       "Reallocation during foreach over Vector.\n"
+                       "You probably added or removed elements to/from\n"
+                       "the vector, which is illegal.");
                 result = dg(i, data_[i]);
                 if(result){break;}
             }
@@ -230,25 +244,19 @@ align(4) struct Vector(T)
         void popBack() {length = length - 1;}
 
         /**
-         * Get a const pointer to element at the specified index.
+         * Access vector contents through a const pointer.
          *
-         * Params:  index = Index of the element to get. Must be within bounds.  
-         *
-         * Returns: Pointer to the element at the specified index.
+         * Note that the returned pointer will become invalid once
+         * the vector is reallocated.
          */
-        const(T*) ptr(const size_t index) const pure
-        in{assert(index < used_, "Vector index out of bounds");}
-        out(result)
-        {
-            assert(result >= data_.ptr && result < data_.ptr + data_.length,
-                   "Pointer returned by vector access is out of bounds");
-        }
-        body{return &data_[index];}
-
-        ///Access vector contents through a const pointer.
         const(T*) ptr() const pure nothrow {return data_.ptr;}
         
-        ///Access vector contents through a non-const pointer.
+        /**
+         * Access vector contents through a non-const pointer.
+         *
+         * Note that the returned pointer will become invalid once
+         * the vector is reallocated.
+         */
         T* ptrUnsafe() pure nothrow {return data_.ptr;}
 
         ///Get number of elements in the vector.
@@ -301,7 +309,7 @@ unittest
     vector ~= 4;
     assert(vector.length == 4);
 
-    assert(vector[0] == 1 && *vector.ptr(0) == 1);
+    assert(vector[0] == 1);
 
     uint i = 1;
     foreach(elem; vector)
