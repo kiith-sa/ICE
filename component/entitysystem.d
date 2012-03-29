@@ -17,8 +17,9 @@ import std.string;
 import std.traits;
 import std.typecons;
 
-import containers.vector;
+import containers.segmentedvector;
 import math.vector2;
+import util.stringctfe;
 import util.traits;
 import util.yaml;
 
@@ -85,32 +86,36 @@ void assertIsComponent(string componentType) pure nothrow
 }
 
 ///Is T a known component type?
-bool knownComponentType(T)() pure nothrow
+template knownComponentType(T)
 {
-    foreach(type; componentTypes) if(type == T.stringof){return true;}
-    return false;
+    string knownComponentType_(T)() pure 
+    {
+        foreach(type; componentTypes) if(type == T.stringof){return "true";}
+        return "false";
+    }
+    mixin("enum knownComponentType = " ~ knownComponentType_!T ~ ";");
 }
 
 ///Get name of a component type (strip the "Component" part).
-string name(string componentType) nothrow
+string name(string componentType) pure nothrow
 {
     assertIsComponent(componentType);
     return componentType[0 .. $ - "Component".length];
 }
 
 ///Get camelCased name of a component type.
-string nameCamelCased(string componentType)
+string nameCamelCased(string componentType) pure nothrow
 {
     auto name = componentType.name;
-    return name[0 .. 1].toLower() ~ name[1 .. $];
+    return toLowerCtfe(name[0]) ~ name[1 .. $];
 }
 static assert(nameCamelCased("DeathTimeoutComponent") == "deathTimeout");
 
 ///Get name of an array containing components of specified type.
-string arrayName(string componentType) 
+string arrayName(string componentType) pure nothrow
 {
     assertIsComponent(componentType);
-    return componentType[0 .. 1].toLower() ~ componentType[1 .. $] ~ "s_";
+    return toLowerCtfe(componentType[0]) ~ componentType[1 .. $] ~ "s_";
 }
 
 ///Generate an component type ID enum. Each value has the bit corresponding to its type set.
@@ -422,18 +427,16 @@ struct EntityPrototype
  * This works similarly to a select in a relational database that only selects
  * rows where specified columns are nonnull.
  *
- * Note that Entities and their Components might be moved around in memory, so
- * keeping pointers to them is not safe.
- *
- * However, they are never moved in memory between updates, so it is safe to use
- * such pointers within a game update.
- *
+ * Note that Entities and their Components might be moved around in memory 
+ * between updates, so keeping pointers to them is not safe.
+ * It is safe for duration of one update, so that pointers can be stored for
+ * various in-update operations.
  */
 class EntitySystem
 {
     private:
         ///Game entities.
-        Vector!Entity entities_;
+        SegmentedVector!Entity entities_;
 
         ///Are we currently constructing a new entity (used for contracts)?
         bool constructing_ = false;
@@ -442,7 +445,7 @@ class EntitySystem
         static string ctfeComponentArrays() 
         {
             string result = "";
-            foreach(c; componentTypes){result ~= "Vector!" ~ c ~ " " ~ c.arrayName ~ ";\n";}
+            foreach(c; componentTypes){result ~= "SegmentedVector!" ~ c ~ " " ~ c.arrayName ~ ";\n";}
             return result;
         }
         mixin(ctfeComponentArrays());
@@ -522,7 +525,7 @@ class EntitySystem
                    "Trying to iterate over entities while constructing an entity");
             foreach(T; Types)
             {
-                static assert(knownComponentType!T(), "Unknown component type: " ~ T.stringof);
+                static assert(knownComponentType!T, "Unknown component type: " ~ T.stringof);
             }
         }
         body
@@ -531,6 +534,13 @@ class EntitySystem
         }
 
     private:
+        ///Get the component array of specified type.
+        ref inout(SegmentedVector!T) componentArray(T)() inout pure
+            if(knownComponentType!T)
+        {
+            mixin("return " ~ T.stringof.arrayName ~ ";");
+        }
+
         ///Start constructing a new entity.
         final void entityConstructStart() 
         in
@@ -548,7 +558,7 @@ class EntitySystem
         ///Add a component to an entity that is currently being constructed.
         final void entityConstructAddComponent(T)(ref T component)
         {
-            static assert(knownComponentType!T(), "Unknown component type: " ~ T.stringof);
+            static assert(knownComponentType!T, "Unknown component type: " ~ T.stringof);
             enum type   = T.stringof;
             enum array  = T.stringof.arrayName;
             enum entity = "entities_.back";
@@ -593,9 +603,9 @@ class EntitySystem
             }
 
             //Generate name of the index into the array of specified component type.
-            static string typeIndex(string type)
+            static string typeIndex(string type) pure nothrow
             {
-                return toLower(type[0 .. 1]) ~ type[1 .. $] ~ "Idx";
+                return toLowerCtfe(type[0]) ~ type[1 .. $] ~ "Idx";
             }
 
             //Generate code that declares indices into component arrays.
@@ -639,14 +649,16 @@ class EntitySystem
             result ~= "ulong componentFlags = " ~ componentFlags(types) ~ ";\n";
             //Declare indices to arrays of all component types we're iterating.
             result ~= declareIndices(types);
-            result ~= "foreach(ref entity; entities_)\n";
+            result ~= "const entityCount = entities_.length;\n";
+            result ~= "foreach(size_t e; 0 .. entityCount)\n";
             result ~= "{\n";
+            result ~= "    auto entity = &entities_[e];\n";
             //If the entity is valid and its components_ match componentFlags,
             //pass it to the foreach delegate.
             result ~= "    if(!(entity.components_ & ComponentType.INVALID_ENTITY) &&\n";
             result ~= "        ((entity.components_ & componentFlags) == componentFlags))\n";
             result ~= "    {\n";
-            result ~= "        result = dg(entity" ~ foreachParameters(types) ~ ");\n";
+            result ~= "        result = dg(*entity" ~ foreachParameters(types) ~ ");\n";
             result ~= "        if(result){break;}\n";
             result ~= "    }\n";
             //Increase component array indices to move to the next entity.
