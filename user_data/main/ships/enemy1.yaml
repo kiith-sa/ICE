@@ -9,5 +9,7 @@ volume:
 weapon:
   0: weapons/defaultweapon.yaml
 collidable:
-health: 500
-
+health: 100
+warhead:
+  damage: 10
+  killsEntity: false

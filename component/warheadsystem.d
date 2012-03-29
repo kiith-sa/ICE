@@ -24,8 +24,8 @@ import component.warheadcomponent;
  * If the collider has a Warhead, the warhead's effect is
  * applied to the collidable (e.g. damage affects HealthComponent).
  *
- * Possibly, HealthComponent might not be required to allow different warhead 
- * effects.
+ * Possibly, HealthComponent might not be required to allow warheads
+ * affecting entities without health.
  */
 class WarheadSystem : System 
 {
@@ -40,7 +40,7 @@ class WarheadSystem : System
             entitySystem_  = entitySystem;
         }
 
-        ///Apply warhead's damage and kill entities whose warheads have been applied.
+        ///Apply warhead's damage.
         void update()
         {
             //For each collidable with health:
@@ -66,7 +66,7 @@ class WarheadSystem : System
 
                     //Apply damage of the collider, and destroy it.
                     health.applyDamage(warhead.damage);
-                    collider.kill();
+                    if(warhead.killsEntity){collider.kill();}
                 }
             }
         }

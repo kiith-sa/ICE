@@ -10,3 +10,6 @@ weapon:
   0: weapons/defaultweapon.yaml
 collidable:
 health: 500
+warhead:
+  damage: 10
+  killsEntity: false
