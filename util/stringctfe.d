@@ -7,7 +7,6 @@
 
 ///String functions used in CTFE.
 module util.stringctfe;
-@safe
 
 
 import std.array;
@@ -27,4 +26,10 @@ string stripCtfe(string str)
     while(str.length && str.front == ' '){str.popFront();}
     while(str.length && str.back == ' ') {str.popBack();}
     return str;
+}
+
+///Convert a character to lowercase (if not lowercase already).
+char toLowerCtfe(const char c) pure nothrow
+{
+    return (c >= 'A' && c <= 'Z') ? cast(char)('a' + (c - 'A')) : c;
 }
