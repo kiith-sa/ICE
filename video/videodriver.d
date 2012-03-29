@@ -9,6 +9,7 @@
 module video.videodriver;
 
 
+import std.conv;
 import std.math;
 
 import video.texture;
@@ -204,7 +205,8 @@ abstract class VideoDriver : Monitorable
         in
         {
             assert(min.x <= max.x && min.y <= max.y, 
-                  "Can't draw a rectangle with min bounds greater than max");
+                  "Can't draw a rectangle with min bounds greater than max\n"
+                  "min: " ~ to!string(min) ~ "\nmax: " ~ to!string(max));
         }
         body
         {
