@@ -26,7 +26,7 @@ struct CollidableComponent
 {
     private:
         /**
-         * IDs of entities that collided with this entity last CollisionSystem update.
+         * Entities that collided with this entity last CollisionSystem update.
          *
          * This is a slice into FixedArray storage.
          */

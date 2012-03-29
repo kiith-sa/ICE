@@ -210,7 +210,6 @@ class WeaponSystem : System
                             }
 
                             fire(e.id, physics, shot);
-
                             ++shotsSoFarThisBurst;
                         }
 

@@ -156,17 +156,17 @@ bool collides(ref PhysicsComponent physics1, ref VolumeComponent volume1,
         const Vector2f combined = (volume1.aabbox.size + volume2.aabbox.size) * 0.5f;
 
         //Distance between centers of the rectangles.
-        const Vector2f distance = (physics1.position + volume2.aabbox.center) - 
-                                  (physics2.position + volume1.aabbox.center);
+        const Vector2f distance = (physics2.position + volume2.aabbox.center) - 
+                                  (physics1.position + volume1.aabbox.center);
      
         //Calculate absolute distance coords
         //this is used to determine collision.
         const distanceAbs = Vector2f(abs(distance.x), abs(distance.y));
 
         //AABBoxes are intersecting if:
-        //either their x distance is less than their combined halfwidths
-        //or their y distance is less than their combined halfheights
-        return distanceAbs.x < combined.x || distanceAbs.y < combined.y;
+        //their x distance is less than their combined halfwidths
+        //AND their y distance is less than their combined halfheights
+        return distanceAbs.x < combined.x && distanceAbs.y < combined.y;
     }
     assert(false, "Unknown volume type combination or uninitialized volume/s");
 }
