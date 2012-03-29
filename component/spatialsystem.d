@@ -82,8 +82,8 @@ class SpatialSystem : System
              const Vector2f center, const float cellSize, const ubyte gridSize)
         in
         {
-            assert(!equals(cellSize, 0.0f), 
-                   "Can't construct a SpatialSystem with a cell size of 0");
+            assert(cellSize > 0,
+                   "Can't construct a SpatialSystem with a negative or zero cell size");
             assert(gridSize > 0 && gridSize < 255,
                    "Can't construct a SpatialSystem with a grid size of 0 or 255");
         }
@@ -219,7 +219,7 @@ class SpatialSystem : System
                                     {
                                         //Only iterate over an entity once.
                                         if(!oneCell && e.entity in iterated){continue;}
-                                        result = dg(*(e.entity), *(e.physics), *(e.volume));
+                                        result = dg(*e.entity, *e.physics, *e.volume);
                                         if(result){return result;}
                                         if(!oneCell){iterated.insert(e.entity);}
                                     }
@@ -266,13 +266,16 @@ class SpatialSystem : System
             ///Spatial system we're iterating over.
             SpatialSystem spatial_;
 
-            ///AABBox relative to origin of spatial_.
+            ///Minimum X cell to iterate.
             ubyte cellXMin_ = 0;
+            ///Maximum X cell to iterate + 1.
             ubyte cellXMax_ = 0;
+            ///Minimum Y cell to iterate.
             ubyte cellYMin_ = 0;
+            ///Maximum Y cell to iterate + 1.
             ubyte cellYMax_ = 0;
+            ///Iterate outer cell?
             bool outer_ = false;
-
 
             this(SpatialSystem spatial, ref const Rectf aabbox) 
             {
@@ -317,7 +320,6 @@ class SpatialSystem : System
                 cellYMin_ = cast(ubyte)max(0, yMin);
                 cellYMax_ = cast(ubyte)(min(yMax, gridSize - 1) + 1);
             }
-
 
             int opApply(int delegate(int x, int y, ref Cell) dg)
             {    
