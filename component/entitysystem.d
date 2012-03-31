@@ -17,17 +17,23 @@ import std.string;
 import std.traits;
 import std.typecons;
 
+import containers.segmentedvector;
 import math.vector2;
+import util.stringctfe;
 import util.traits;
 import util.yaml;
 
+import component.collidablecomponent;
 import component.controllercomponent;
 import component.deathtimeoutcomponent;
 import component.enginecomponent;
 import component.exceptions;
+import component.healthcomponent;
+import component.ownercomponent;
 import component.physicscomponent;
 import component.visualcomponent;
 import component.volumecomponent;
+import component.warheadcomponent;
 import component.weaponcomponent;
 
 
@@ -50,7 +56,11 @@ tuple
     "EngineComponent",
     "DeathTimeoutComponent",
     "WeaponComponent",
-    "VolumeComponent"
+    "VolumeComponent",
+    "CollidableComponent",
+    "WarheadComponent",
+    "HealthComponent",
+    "OwnerComponent"
 );
 
 ///Enforce at compile time that all component type names are valid.
@@ -76,32 +86,36 @@ void assertIsComponent(string componentType) pure nothrow
 }
 
 ///Is T a known component type?
-bool knownComponentType(T)() pure nothrow
+template knownComponentType(T)
 {
-    foreach(type; componentTypes) if(type == T.stringof){return true;}
-    return false;
+    string knownComponentType_(T)() pure 
+    {
+        foreach(type; componentTypes) if(type == T.stringof){return "true";}
+        return "false";
+    }
+    mixin("enum knownComponentType = " ~ knownComponentType_!T ~ ";");
 }
 
 ///Get name of a component type (strip the "Component" part).
-string name(string componentType) nothrow
+string name(string componentType) pure nothrow
 {
     assertIsComponent(componentType);
     return componentType[0 .. $ - "Component".length];
 }
 
 ///Get camelCased name of a component type.
-string nameCamelCased(string componentType)
+string nameCamelCased(string componentType) pure nothrow
 {
     auto name = componentType.name;
-    return name[0 .. 1].toLower() ~ name[1 .. $];
+    return toLowerCtfe(name[0]) ~ name[1 .. $];
 }
 static assert(nameCamelCased("DeathTimeoutComponent") == "deathTimeout");
 
 ///Get name of an array containing components of specified type.
-string arrayName(string componentType) 
+string arrayName(string componentType) pure nothrow
 {
     assertIsComponent(componentType);
-    return componentType[0 .. 1].toLower() ~ componentType[1 .. $] ~ "s_";
+    return toLowerCtfe(componentType[0]) ~ componentType[1 .. $] ~ "s_";
 }
 
 ///Generate an component type ID enum. Each value has the bit corresponding to its type set.
@@ -158,6 +172,12 @@ struct EntityID
             return id_ == rhs.id_;
         }
 
+        ///Comparison for sorting.
+        long opCmp(EntityID rhs) const pure nothrow
+        {
+            return cast(long)id_ - cast(long)rhs.id_;
+        }
+
         ///Get string representation for debugging.
         string toString() const 
         {
@@ -168,8 +188,10 @@ struct EntityID
 /**
  * Game entity.
  *
- * Entity is an extremely lightweight struct that just specifies what
- * components it has, in an on/off fashion. The only way to access the 
+ * Entity is specifies what components it has, in an on/off fashion, 
+ * as well as indices to its components stored in the EntitySystem.
+ *
+ * The most effective way to access the 
  * components of a particular entity is by iterating the entity and component 
  * arrays in lockstep in EntitySystem.
  */
@@ -182,6 +204,21 @@ struct Entity
         ///Unique ID of the entity.
         EntityID id_;
 
+        ///EntitySystem that owns this entity.
+        EntitySystem entitySystem_;
+
+        ///Indices to components of this entity.
+        static ctfeComponentIndices() 
+        {
+            string result;
+            foreach(type; componentTypes)
+            {
+                result ~= "uint " ~ type.nameCamelCased ~ "Idx_ = uint.max;\n";
+            }
+            return result;
+        }
+        mixin(ctfeComponentIndices());
+
     public:
         ///Is the entity valid (alive)?
         @property bool valid() const pure nothrow
@@ -190,11 +227,10 @@ struct Entity
         }
 
         ///Get the ID of the entity.
-        EntityID id() const pure nothrow
+        @property EntityID id() const pure nothrow
         {
             return id_;
         }
-
 
         /**
          * Kill the entity.
@@ -212,15 +248,35 @@ struct Entity
             components_ |= ComponentType.FLIP_VALIDITY;
         }
 
+        ///Getters to access components of this entity.
+        static ctfeComponentGetters()
+        {
+            string result;
+            foreach(type; componentTypes)
+            {
+                result ~= "@property " ~ type ~ "* " ~ type.nameCamelCased ~ "() pure nothrow\n";
+                result ~= "{\n";
+                result ~= "    const idx = " ~ type.nameCamelCased ~ "Idx_;\n";
+                result ~= "    if(idx == uint.max){return null;}\n";
+                result ~= "    assert(entitySystem_." ~ type.arrayName ~ ".length > idx,\n";
+                result ~= "           \"" ~ type ~ " index out of range\");\n";
+                result ~= "    return &(entitySystem_." ~ type.arrayName ~ "[idx]);\n";
+                result ~= "}\n";
+            }
+            return result;
+        }
+        mixin(ctfeComponentGetters());
+
     private:
         @disable this();
 
-        ///Construct an Entity with specified ID.
-        this(const ulong id) pure nothrow
+        ///Construct an Entity with specified ID owned by specified EntitySystem.
+        this(const ulong id, EntitySystem entitySystem) pure nothrow
         {
             //Will only be valid on next EntitySystem update.
-            components_ = ComponentType.INVALID_ENTITY | ComponentType.FLIP_VALIDITY;
-            id_.id_     = id;
+            components_   = ComponentType.INVALID_ENTITY | ComponentType.FLIP_VALIDITY;
+            id_.id_       = id;
+            entitySystem_ = entitySystem;
         }
 
         ///Flip entity validity (making it dead/alive) and disable the FLIP_VALIDITY bit.
@@ -245,7 +301,7 @@ struct Entity
         }
         unittest
         {
-            auto entity = Entity(0);
+            auto entity = Entity(0, null);
             assert(!entity.valid);
             entity.valid = true;
             assert(entity.valid);
@@ -253,6 +309,7 @@ struct Entity
             assert(!entity.valid);
         }
 }
+pragma(msg, "Entity size is " ~ to!string(Entity.sizeof));
 
 /**
  * Prototype for game entities.
@@ -286,7 +343,7 @@ struct EntityPrototype
          *
          * Throws:  YAMLException if the EntityPrototype could not be loaded.
          */
-        this(string name, ref YAMLNode yaml)
+        this(string name, YAMLNode yaml)
         {
             try foreach(string key, ref YAMLNode value; yaml) 
             {
@@ -307,7 +364,7 @@ struct EntityPrototype
         }
 
         ///Get a reference to the component of specified type.
-        @property auto ref component(string componentType)() 
+        @property ref auto component(string componentType)() 
         {
             mixin("return " ~ componentType.nameCamelCased ~ ".get;");
         }
@@ -370,18 +427,16 @@ struct EntityPrototype
  * This works similarly to a select in a relational database that only selects
  * rows where specified columns are nonnull.
  *
- * Note that Entities and their Components might be moved around in memory, so
- * keeping pointers to them is not safe.
- *
- * However, they are never moved in memory between updates, so it is safe to use
- * such pointers within a game update.
- *
+ * Note that Entities and their Components might be moved around in memory 
+ * between updates, so keeping pointers to them is not safe.
+ * It is safe for duration of one update, so that pointers can be stored for
+ * various in-update operations.
  */
 class EntitySystem
 {
     private:
         ///Game entities.
-        Entity[] entities_;
+        SegmentedVector!Entity entities_;
 
         ///Are we currently constructing a new entity (used for contracts)?
         bool constructing_ = false;
@@ -390,7 +445,7 @@ class EntitySystem
         static string ctfeComponentArrays() 
         {
             string result = "";
-            foreach(c; componentTypes){result ~= c ~ "[] " ~ c.arrayName ~ ";\n";}
+            foreach(c; componentTypes){result ~= "SegmentedVector!" ~ c ~ " " ~ c.arrayName ~ ";\n";}
             return result;
         }
         mixin(ctfeComponentArrays());
@@ -470,7 +525,7 @@ class EntitySystem
                    "Trying to iterate over entities while constructing an entity");
             foreach(T; Types)
             {
-                static assert(knownComponentType!T(), "Unknown component type: " ~ T.stringof);
+                static assert(knownComponentType!T, "Unknown component type: " ~ T.stringof);
             }
         }
         body
@@ -479,8 +534,15 @@ class EntitySystem
         }
 
     private:
+        ///Get the component array of specified type.
+        ref inout(SegmentedVector!T) componentArray(T)() inout pure
+            if(knownComponentType!T)
+        {
+            mixin("return " ~ T.stringof.arrayName ~ ";");
+        }
+
         ///Start constructing a new entity.
-        final void entityConstructStart() pure nothrow
+        final void entityConstructStart() 
         in
         {
             assert(!constructing_, 
@@ -490,15 +552,19 @@ class EntitySystem
         body
         {
             constructing_ = true;
-            entities_ ~= Entity(nextEntityID_++);
+            entities_ ~= Entity(nextEntityID_++, this);
         }
 
         ///Add a component to an entity that is currently being constructed.
-        final void entityConstructAddComponent(T)(auto ref T component)
+        final void entityConstructAddComponent(T)(ref T component)
         {
-            static assert(knownComponentType!T(), "Unknown component type: " ~ T.stringof);
-            mixin("entities_[$ - 1].components_ |= " ~ ctfeTypeEnum(T.stringof) ~ ";\n");
-            mixin(T.stringof.arrayName ~ " ~= component;\n"); 
+            static assert(knownComponentType!T, "Unknown component type: " ~ T.stringof);
+            enum type   = T.stringof;
+            enum array  = T.stringof.arrayName;
+            enum entity = "entities_.back";
+            mixin(entity ~ ".components_ |= " ~ ctfeTypeEnum(type) ~ ";\n");
+            mixin(entity ~ "." ~ type.nameCamelCased ~ "Idx_ = cast(uint)" ~ array ~ ".length;\n");
+            mixin(array ~ " ~= component;\n"); 
         }
 
         ///Finish constructing a new entity and return its ID.
@@ -512,7 +578,7 @@ class EntitySystem
         body
         {
             constructing_ = false;
-            return entities_[$ - 1].id_;
+            return entities_.back.id_;
         }
 
         ///Return string represenation of ComponentType enum value matching specified type.
@@ -529,15 +595,17 @@ class EntitySystem
             //visual and physics components)
             static string componentFlags(string[] types)
             {
+                //Matches any entity
+                if(types.empty){return "0";}
                 string[] result;
                 foreach(type; types){result ~= ctfeTypeEnum(type);}
                 return result.join(" | ");
             }
 
             //Generate name of the index into the array of specified component type.
-            static string typeIndex(string type)
+            static string typeIndex(string type) pure nothrow
             {
-                return toLower(type[0 .. 1]) ~ type[1 .. $] ~ "Idx";
+                return toLowerCtfe(type[0]) ~ type[1 .. $] ~ "Idx";
             }
 
             //Generate code that declares indices into component arrays.
@@ -566,12 +634,13 @@ class EntitySystem
             //Generate parameters to the foreach delegate.
             static string foreachParameters(string[] types)
             {
-                string[] result;
+                if(types.empty){return "";}
+                string result;
                 foreach(type; types)
                 {
-                    result ~= type.arrayName ~ "[" ~ typeIndex(type) ~ "]";
+                    result ~= ", " ~ type.arrayName ~ "[" ~ typeIndex(type) ~ "]";
                 }
-                return result.join(", ");
+                return result;
             }
 
             string result;
@@ -580,14 +649,16 @@ class EntitySystem
             result ~= "ulong componentFlags = " ~ componentFlags(types) ~ ";\n";
             //Declare indices to arrays of all component types we're iterating.
             result ~= declareIndices(types);
-            result ~= "foreach(ref entity; entities_)\n";
+            result ~= "const entityCount = entities_.length;\n";
+            result ~= "foreach(size_t e; 0 .. entityCount)\n";
             result ~= "{\n";
+            result ~= "    auto entity = &entities_[e];\n";
             //If the entity is valid and its components_ match componentFlags,
             //pass it to the foreach delegate.
             result ~= "    if(!(entity.components_ & ComponentType.INVALID_ENTITY) &&\n";
             result ~= "        ((entity.components_ & componentFlags) == componentFlags))\n";
             result ~= "    {\n";
-            result ~= "        result = dg(entity, " ~ foreachParameters(types) ~ ");\n";
+            result ~= "        result = dg(*entity" ~ foreachParameters(types) ~ ");\n";
             result ~= "        if(result){break;}\n";
             result ~= "    }\n";
             //Increase component array indices to move to the next entity.
@@ -601,6 +672,7 @@ class EntitySystem
 unittest
 {
     EntitySystem system = new EntitySystem();
+    scope(exit){system.destroy();}
 
     void constructPos()
     {
@@ -626,16 +698,21 @@ unittest
     system.update();
 
     uint posvis = 0;
-    foreach(Entity e, ref VisualComponent v, ref PhysicsComponent p; system)
+    foreach(ref Entity e, ref VisualComponent v, ref PhysicsComponent p; system)
     {
         assert(p.position == Vector2f(1.0f, 0.0f));
+        assert(e.visual  is &v);
+        assert(e.physics is &p);
+        assert(e.deathTimeout is null);
         ++posvis;
     }
     assert(posvis == 2);
     uint pos = 0;
-    foreach(Entity e, ref PhysicsComponent p; system)
+    foreach(ref Entity e, ref PhysicsComponent p; system)
     {
         assert(p.position.x == 1.0f);
+        assert(e.physics is &p);
+        assert(e.deathTimeout is null);
         ++pos;
     }
     assert(pos == 6);

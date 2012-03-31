@@ -5,7 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
-///Component that provides a collidable spatial volume to an entity.
+///Component that provides a spatial volume to an entity.
 module component.volumecomponent;
 
 
@@ -19,26 +19,26 @@ import math.vector2;
 import util.yaml;
 
 
-///Component that provides a collidable spatial volume to an entity.
+///Component that provides a spatial volume to an entity.
 struct VolumeComponent 
 {
     public:
         ///Volume types.
-        enum Type 
+        enum Type : ubyte
         {
             Uninitialized,
             AABBox
         }
 
     private:
-        ///Type of the volume.
-        Type type_ = Type.Uninitialized;
-
         union
         {
             ///Axis-aligned bounding box.
             Rectf aabbox_;
         }
+
+        ///Type of the volume.
+        Type type_ = Type.Uninitialized;
 
     public:
         ///Load from a YAML node. Throws YAMLException on error.
@@ -61,6 +61,13 @@ struct VolumeComponent
                 throw new YAMLException("Volume YAML node with no known volume"
                                         " type (known types: aabbox)");
             }
+        }
+
+        ///Construct an axis aligned bounding box from a rectangle.
+        this(const Rectf aabbox)
+        {
+            type_ = Type.AABBox;
+            aabbox_ = aabbox;
         }
 
         ///Get type of the volume.

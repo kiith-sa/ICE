@@ -10,9 +10,10 @@ module component.spatialsystem;
 
 
 import std.algorithm;
+import std.container;
 
 import containers.array2d;
-import containers.fixedarray;
+import containers.vector;
 import math.math;
 import math.rect;
 import math.vector2;
@@ -35,55 +36,18 @@ class SpatialSystem : System
         ///Represents an entity in the spatial grid.
         struct SpatialEntity
         {
-            ///ID of the entity.
-            EntityID id;
+            ///Pointer to the entity.
+            Entity* entity;
             ///Physics component of the entity. This is only valid for one update.
             PhysicsComponent* physics;
             ///Spatial volume of the entity. This is only valid for one update.
             VolumeComponent*  volume;
         }
 
-        ///A cell in the spatial grid.
-        struct Cell
-        {
-            private:
-                ///Storage of entities in this cell.
-                FixedArray!SpatialEntity data_;
-
-                ///Number of entities in the cell.
-                uint used_;
-
-            public:
-                ///Clear all entities from the cell.
-                void clear() pure nothrow
-                {
-                    used_ = 0;
-                }
-
-                ///Add an entity to the cell.
-                void add(ref SpatialEntity entity)
-                {
-                    //Reallocate if needed.
-                    if(used_ == data_.length)
-                    {
-                        auto newData_ = FixedArray!SpatialEntity(data_.length * 2 + 1);
-                        newData_[0 .. used_] = data_[0 .. used_];
-                        data_ = move(newData_);
-                    }
-                    data_[used_] = entity;
-                    ++used_;
-                }
-
-                ///Get a slice to all entities in this cell.
-                const(SpatialEntity[]) get()
-                {
-                    return data_[0 .. used_];
-                }
-        }
-
         ///Entity system whose data we're processing.
         EntitySystem entitySystem_;
 
+        alias Vector!SpatialEntity Cell;
         ///Cells of the spatial grid. This is rebuilt every frame.
         Array2D!Cell grid_;
 
@@ -93,15 +57,37 @@ class SpatialSystem : System
         ///Size of a single cell (both x and y).
         const float cellSize_;
 
-        ///Size of the grid in cells (both x and y).
-        const uint gridSize_;
+        /**
+         * Size of the grid in cells (both x and y). 
+         *
+         * Must be <= 254 because max x and y coords in CellsAABBox are 
+         * the actual max coord + 1.
+         */
+        const ubyte gridSize_;
 
         ///Origin of the grid (top-left corner) in world space.
         const Vector2f origin_;
 
     public:
+        /**
+         * Construct a SpatialSystem.
+         *
+         * Params:  entitySystem = EntitySystem whose entities we're processing.
+         *          center       = Center of the grid in world space.
+         *          cellSize     = Size of a single cell of the grid (both x and y).
+         *          gridSize     = Size of the grid in cells (both x and y).
+         *                         Must be > 0 and <= 254 (yes, 254, not 255).
+         */
         this(EntitySystem entitySystem, 
-             const Vector2f center, const float cellSize, const uint gridSize)
+             const Vector2f center, const float cellSize, const ubyte gridSize)
+        in
+        {
+            assert(cellSize > 0,
+                   "Can't construct a SpatialSystem with a negative or zero cell size");
+            assert(gridSize > 0 && gridSize < 255,
+                   "Can't construct a SpatialSystem with a grid size of 0 or 255");
+        }
+        body
         {
             entitySystem_ = entitySystem;
 
@@ -117,8 +103,7 @@ class SpatialSystem : System
         ///Destroy the SpatialSystem, freeing all used memory.
         ~this()
         {
-            .clear(grid_);
-            .clear(outer_);
+            //Grid, outer get destryed implicitly.
         }
 
         ///Determine spatial relations between entities.
@@ -127,7 +112,8 @@ class SpatialSystem : System
             //Clear spatial data from the previous update.
             clear();
 
-            foreach(Entity e,
+            static t = 0;
+            foreach(ref Entity e,
                     ref PhysicsComponent physics,
                     ref VolumeComponent volume; 
                     entitySystem_)
@@ -142,16 +128,127 @@ class SpatialSystem : System
                 final switch(volume.type)
                 {
                     case VolumeComponent.Type.AABBox:
-                        foreach(ref cell; cells(physics.position, volume.aabbox))
+                        foreach(x, y, ref cell; cells(physics.position, volume.aabbox))
                         {
-                            cell.add(SpatialEntity(e.id, &physics, &volume));
+                            cell ~= SpatialEntity(&e, &physics, &volume);
                         }
                         break;
                     case VolumeComponent.Type.Uninitialized:
                         assert(false, 
                                "Uninitialized VolumeComponent during SpatialSystem update");
-                        break;
                 }
+            }
+        }
+
+        /*
+         * If this is too inefficient, users will have to iterate over cells 
+         * and entities within instead of getting neigbors of each entity.
+         */
+
+        /**
+         * Iterate over all neighbors of entity with specified physics and volume component.
+         *
+         * This iterates over a ref Entity, ref PhysicsComponent and ref VolumeComponent.
+         *
+         * Note that if physics and volume belong to an entity, that entity will
+         * be iterated as well.
+         *
+         * Examples:
+         * --------------------
+         * //spatial is our SpatialSystem
+         * //ourPhysics is our PhysicsComponent
+         * //ourVolume is our VolumeComponent
+         * 
+         * foreach(ref Entity entity, 
+         *         ref PhysicsComponent physics,
+         *         ref VolumeComponent volume;
+         *         spatial.neighbors(ourPhysics, ourVolume))   
+         * {
+         *     //do stuff
+         * }
+         * --------------------
+         */
+        final auto neighbors(ref PhysicsComponent physics, ref VolumeComponent volume)
+        {
+            struct Foreach
+            {
+                @disable this(this);
+                @disable void opAssign(ref Foreach);
+
+                private:
+                    union 
+                    {
+                        ///Cells within an AABBox.
+                        CellsAABBox cellsAABBox_;
+                    }
+                    ///Type of the volume whose neighbors we're iterating.
+                    VolumeComponent.Type type_;
+
+                public:
+                    ///Construct from CellsAABBox.
+                    this(CellsAABBox cells)
+                    {
+                        cellsAABBox_ = cells;
+                        type_ = VolumeComponent.Type.AABBox;
+                    }
+
+                    ///Foreach over neighbors.
+                    int opApply(int delegate(ref Entity, ref PhysicsComponent, ref VolumeComponent) dg)
+                    {    
+                        //Foreach result.
+                        int result = 0;
+
+                        with(cellsAABBox_) final switch(type_)
+                        {
+                            case VolumeComponent.Type.AABBox:
+                                const bool oneCell = 1 == (cellXMax_ - cellXMin_) * (cellYMax_ - cellYMin_);
+
+                                //Used to ensure we never iterate over the same thing twice.
+                                //If too much overhead, we might have to remove 
+                                //that guarantee or devise a data structure that does this
+                                //job better for small quantities
+                                //(it's unlikely to have a lot of objects in a cell)
+                                auto iterated = oneCell ? null : redBlackTree!(Entity*)();
+                                scope(exit) if(oneCell){.clear(iterated);}
+
+                                //Iterate over cells in the AABBox.
+                                foreach(x, y, ref cell; cellsAABBox_) 
+                                {
+                                    //Iterate over entities in the cell.
+                                    foreach(ref e; cell[])
+                                    {
+                                        //Only iterate over an entity once.
+                                        if(!oneCell && e.entity in iterated){continue;}
+                                        result = dg(*e.entity, *e.physics, *e.volume);
+                                        if(result){return result;}
+                                        if(!oneCell){iterated.insert(e.entity);}
+                                    }
+                                }
+                                break;
+                            case VolumeComponent.Type.Uninitialized:
+                                assert(false, 
+                                       "Iterating over neighbors of an uninitialized VolumeComponent");
+                        }
+                        return result;
+                    }
+            }
+            static assert(Foreach.sizeof == 16);
+
+            //So, even for any entity with volume that is in one cell only, we do this:
+            //* Return a 16-byte struct.
+            //* Call opApply on it.
+            //* Call opApply on the internal Cells struct.
+            //* For the one cell within, call opApply over SpatialEntity[].
+            //
+            //This is kinda heavyweight, but fast enough for now.
+            //If benchmarks prove otherwise, we might need to change this.
+            final switch(volume.type)
+            {
+                case VolumeComponent.Type.AABBox:
+                    return Foreach(cells(physics.position, volume.aabbox));
+                case VolumeComponent.Type.Uninitialized:
+                    assert(false, 
+                           "Trying to get neighbors of an uninitialized VolumeComponent");
             }
         }
 
@@ -159,61 +256,187 @@ class SpatialSystem : System
         ///Clear spatial data. Called on each update.
         void clear() 
         {
-            foreach(ref cell; grid_){cell.clear();}
-            outer_.clear();
+            foreach(ref cell; grid_){cell.length = 0;}
+            outer_.length = 0;
         }
 
-        ///Iterate over all cells that intersect with aabbox at specified position.
-        auto cells(const Vector2f position, ref const Rectf aabbox)
+        ///Struct that iterates over all cells intersecting with an AABBox.
+        align(2) struct CellsAABBox
         {
-            struct Foreach
+            ///Spatial system we're iterating over.
+            SpatialSystem spatial_;
+
+            ///Minimum X cell to iterate.
+            ubyte cellXMin_ = 0;
+            ///Maximum X cell to iterate + 1.
+            ubyte cellXMax_ = 0;
+            ///Minimum Y cell to iterate.
+            ubyte cellYMin_ = 0;
+            ///Maximum Y cell to iterate + 1.
+            ubyte cellYMax_ = 0;
+            ///Iterate outer cell?
+            bool outer_ = false;
+
+            this(SpatialSystem spatial, ref const Rectf aabbox) 
             {
-                SpatialSystem spatial_;
+                spatial_ = spatial;
 
-                //AABBox relative to origin of spatial_.
-                Rectf aabbox_;
+                const mult = 1.0 / spatial_.cellSize_;
+                const gridSize   = spatial_.gridSize_;
 
-                int opApply(int delegate(ref Cell) dg)
-                {    
-                    const float mult = 1.0f / spatial_.cellSize_;
-                    const gridSize   = spatial_.gridSize_;
+                //Get minimum and maximum cells containing the rectangle.
+                const xMin = floor!int(aabbox.min.x * mult);
+                const xMax = floor!int(aabbox.max.x * mult);
+                const yMin = floor!int(aabbox.min.y * mult);
+                const yMax = floor!int(aabbox.max.y * mult);
 
-                    //Foreach result.
-                    int result = 0;
-
-                    //Get minimum and maximum cells containing the rectangle.
-                    int cellXMin = floor!int(aabbox_.min.x * mult);
-                    int cellXMax = floor!int(aabbox_.max.x * mult);
-                    int cellYMin = floor!int(aabbox_.min.y * mult);
-                    int cellYMax = floor!int(aabbox_.max.y * mult);
-
-                    //If outside the grid, iterate over outer.
-                    if(cellXMin < 0 || 
-                       cellYMin < 0 || 
-                       cellXMax >= gridSize || 
-                       cellYMax >= gridSize)
-                    {
-                        result = dg(spatial_.outer_);
-                        if(result){return result;}
-                    }
-
-                    //Now that we handled outer we can clamp to grid.
-                    cellXMin = clamp(cellXMin, 0, cast(int)gridSize - 1);
-                    cellYMin = clamp(cellYMin, 0, cast(int)gridSize - 1);
-                    cellXMax = clamp(cellXMax, 0, cast(int)gridSize - 1);
-                    cellYMax = clamp(cellYMax, 0, cast(int)gridSize - 1);
-
-                    //Iterate over the cells that contain the rectangle and add all of them.
-                    foreach(x; cellXMin .. cellXMax + 1) foreach(y; cellYMin .. cellYMax + 1)
-                    {
-                        result = dg(spatial_.grid_[x, y]);
-                        if(result){break;}
-                    }
-                    return result;
+                //Everything is within the grid.
+                if(xMin >= 0 &&
+                   yMin >= 0 &&
+                   xMax < gridSize &&
+                   yMax < gridSize)
+                {
+                    cellXMin_ = cast(ubyte)xMin;
+                    cellXMax_ = cast(ubyte)(xMax + 1);
+                    cellYMin_ = cast(ubyte)yMin;
+                    cellYMax_ = cast(ubyte)(yMax + 1);
+                    return;
                 }
+
+                //If outside the grid, iterate over outer.
+                outer_ = true;
+
+                //Completely outside the grid, so we're done.
+                if(xMax < 0 || 
+                   yMax < 0 ||
+                   xMin >= gridSize ||
+                   yMin >= gridSize)
+                {
+                    return;
+                }
+
+                cellXMin_ = cast(ubyte)max(0, xMin);
+                cellXMax_ = cast(ubyte)(min(xMax, gridSize - 1) + 1);
+                cellYMin_ = cast(ubyte)max(0, yMin);
+                cellYMax_ = cast(ubyte)(min(yMax, gridSize - 1) + 1);
             }
 
-            //Translate relative to the grid.
-            return Foreach(this, aabbox + (position - origin_));
+            int opApply(int delegate(int x, int y, ref Cell) dg)
+            {    
+                int result;
+                if(outer_)
+                {
+                    result = dg(-1, -1, spatial_.outer_);
+                    if(result){return result;}
+                }
+                //Iterate over all the cells that contain the rectangle.
+                foreach(x; cellXMin_ .. cellXMax_) 
+                {
+                    foreach(y; cellYMin_ .. cellYMax_) 
+                    {
+                        result = dg(x, y, spatial_.grid_[x, y]);
+                        if(result){break;}
+                    }
+                }
+                return result;
+            }
         }
+
+        /**
+         * Iterate over all cells that intersect with aabbox at specified position.
+         *
+         * Iterates over int (x coordinate), int (y coordinate) and ref Cell (celly coordinate) and ref Cell (cell).
+         */
+        auto cells(const Vector2f position, ref const Rectf aabbox)
+        {
+            //Translate relative to the grid.
+            const translated = aabbox + (position - origin_);
+            return CellsAABBox(this, translated);
+        }
+        unittest
+        {
+            import std.typecons;
+            auto system = new SpatialSystem(null, Vector2f(0.0f, 0.0f), 32.0f, 32);
+            scope(exit){.clear(system);}
+
+            Tuple!(int, int)[] cells;
+            foreach(x, y, cell; system.cells(Vector2f(-1.0f, 0.0f),
+                                             Rectf(-32.0f, -32.0f, 32.5f, 31.0f)))
+            {
+                cells ~= tuple(x, y);
+            }
+            assert(cells == [tuple(14, 15), tuple(14, 16),
+                             tuple(15, 15), tuple(15, 16),
+                             tuple(16, 15), tuple(16, 16)]);
+            .clear(cells);
+            foreach(x, y, cell; system.cells(Vector2f(511.0f, 512.0f),
+                                             Rectf(-32.0f, -32.0f, 32.5f, 31.0f)))
+            {
+                cells ~= tuple(x, y);
+            }
+            assert(cells == [tuple(-1, -1), tuple(30, 31), tuple(31, 31)]);
+        }
+}
+unittest
+{
+    auto eSystem = new EntitySystem;
+    scope(exit){eSystem.destroy();}
+
+    const velocity = Vector2f(5.0f, 0.0f);
+    alias PhysicsComponent P;
+    alias VolumeComponent V;
+    auto pos1 = P(Vector2f(-1.0f, 0.0f), 0.0f, velocity);
+    auto pos2 = P(Vector2f(511.0f, 512.0f), 0.0f, velocity);
+    auto rect = V(Rectf(-32.0f, -32.0f, 32.5f, 31.0f));
+    auto id1 = eSystem.entityConstruct(pos1, rect);
+    auto id2 = eSystem.entityConstruct(pos2, rect);
+    auto spatial = new SpatialSystem(eSystem, Vector2f(0.0f, 0.0f), 32.0f, 32);
+    scope(exit){.clear(spatial);}
+
+    eSystem.update();
+    spatial.update();
+
+    EntityID[] ids;
+    foreach(ref Entity entity, 
+            ref PhysicsComponent physics, 
+            ref VolumeComponent volume;
+            spatial.neighbors(pos1, rect))
+    {
+        ids ~= entity.id;
+    }
+    assert(ids == [id1]);
+    foreach(ref Entity entity, 
+            ref PhysicsComponent physics, 
+            ref VolumeComponent volume;
+            spatial.neighbors(pos2, rect))
+    {
+        ids ~= entity.id;
+    }
+    assert(ids == [id1, id2]);
+    clear(ids);
+
+    foreach(ref Entity e; eSystem)
+    {
+        if(e.id == id1)
+        {
+            e.kill();
+        }
+    }
+    eSystem.update();
+    spatial.update();
+    foreach(ref Entity entity, 
+            ref PhysicsComponent physics, 
+            ref VolumeComponent volume;
+            spatial.neighbors(pos1, rect))
+    {
+        ids ~= entity.id;
+    }
+    foreach(ref Entity entity, 
+            ref PhysicsComponent physics, 
+            ref VolumeComponent volume;
+            spatial.neighbors(pos2, rect))
+    {
+        ids ~= entity.id;
+    }
+    assert(ids == [id2]);
 }

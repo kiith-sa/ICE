@@ -44,7 +44,7 @@ class EngineSystem : System
         ///Update entities' velocities based on their engines.
         void update()
         {
-            foreach(Entity e, 
+            foreach(ref Entity e, 
                     ref EngineComponent  engine,
                     ref PhysicsComponent physics;
                     entitySystem_)

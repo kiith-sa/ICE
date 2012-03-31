@@ -13,7 +13,7 @@ import std.algorithm;
 import std.traits;
 import std.typecons;
 
-import containers.fixedarray;
+import containers.vector;
 
 
 ///Index to a LazyArray. ID specifies type of resource identifier.
@@ -75,10 +75,7 @@ struct LazyArray(T, ID = string)
         }
 
         ///Allocated storage.
-        FixedArray!Item storage_;
-
-        ///Used storage (number of items in the aray).
-        uint used_;
+        Vector!Item storage_;
 
         ///Delegate used to load data if it's requested and not loaded yet.
         bool delegate(ID, out T) loadData_ = null;
@@ -106,7 +103,7 @@ struct LazyArray(T, ID = string)
 
                 //Check if we've already loaded this resource.
                 long storageIdx = -1;
-                foreach(size_t idx, ref Item item; storage_[0 .. used_])
+                foreach(size_t idx, ref Item item; storage_)
                 {
                     if(item.id == index.id) 
                     {
@@ -121,30 +118,19 @@ struct LazyArray(T, ID = string)
                 }
                 else
                 {
-                    assert(storage_.length <= used_, 
-                           "Storage length lower than number of used items");
-
-                    //Reallocate if needed.
-                    if(storage_.length == used_)
-                    {
-                        reallocate();
-                    }
-
+                    storage_.length = storage_.length + 1;
+                    storage_.back.id = index.id;
                     //Add the new item, and clear it if we fail.
-                    storage_[used_].id = index.id;
-                    if(!loadData_(index.id, storage_[used_].value))
+                    if(!loadData_(index.id, storage_.back.value))
                     {
-                        clear(storage_[used_]);
+                        clear(storage_.back);
+                        storage_.length = storage_.length - 1;
                         return null;
                     }
-                    index.index_ = used_;
-
-                    //Successfully added the new item.
-                    ++used_;
+                    index.index_ = cast(uint)storage_.length - 1;
                 }
             }
 
-            assert(index.index_ < used_, "LazyArray index out of bounds");
             return &(storage_[index.index_].value);
         }
 
@@ -157,7 +143,7 @@ struct LazyArray(T, ID = string)
         int opApply(int delegate(ref T) dg)
         {
             int result = 0;
-            foreach(ref item; storage_[0 .. used_])
+            foreach(ref item; storage_)
             {
                 result = dg(item.value);
                 if(result){break;}
@@ -179,36 +165,5 @@ struct LazyArray(T, ID = string)
         @property void loaderDelegate(bool delegate(ID, out T) rhs) pure nothrow 
         {
             loadData_ = rhs;
-        }
-
-    private:
-        ///Reallocate the array to add more capacity.
-        void reallocate()
-        {
-            auto newStorage = FixedArray!Item(storage_.length * 2 + 1);
-
-            //Using move();
-            //Postblit constructors don't always get called as of DMD 2.058
-            //which can result to two instances of a FixedArray
-            //pointing to same data that both get destroyed, causing a double free.
-            //
-            //move() just moves the data without calling dtor,
-            //so it's destroyed only once in the function it was moved to.
-            //
-            //This might need to be rewritten if any problems appear once the bug 
-            //has been fixed.
-
-            static if(hasElaborateDestructor!T)
-            {
-                foreach(size_t i, ref Item item; storage_[0 .. used_])
-                {
-                    newStorage[i] = move(item);
-                }
-            }
-            else
-            {
-                newStorage[0 .. used_] = storage_[0 .. used_];
-            }
-            storage_ = move(newStorage);
         }
 }

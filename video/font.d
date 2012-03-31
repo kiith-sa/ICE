@@ -86,7 +86,7 @@ package final class Font
         this(FT_Library freetypeLib, ubyte[] fontData, const string name, 
              const uint size, const uint fastGlyphs, const bool antialiasing)
         {
-            scope(failure){writefln("Could not load font " ~ name);}
+            scope(failure){writeln("Could not load font " ~ name);}
 
             fastGlyphs_ = new Glyph*[fastGlyphs];
             fastGlyphCount_ = fastGlyphs;
@@ -288,7 +288,14 @@ package final class Font
         {
             if(c < fastGlyphCount_)
             {
-                if(fastGlyphs_[c] is null){fastGlyphs_[c] = alloc!Glyph();}
+                if(fastGlyphs_[c] is null)
+                {
+                    auto newGlyph  = alloc!Glyph();
+                    scope(failure){free(newGlyph);}
+                    *newGlyph = renderGlyph(driver, c);
+                    fastGlyphs_[c] = newGlyph;
+                    return;
+                }
                 *fastGlyphs_[c] = renderGlyph(driver, c);
                 return;
             }
@@ -312,11 +319,13 @@ package final class Font
             {
                 //empty image is transparent
                 auto image             = Image(height_ / 2, height_, ColorFormat.GRAY_8);
-                defaultGlyph_         = alloc!Glyph();
-                defaultGlyph_.texture = driver.createTexture(image);
-                defaultGlyph_.offset  = Vector2b(0, cast(byte)-height_);
-                defaultGlyph_.advance = cast(byte)(height_ / 2);
-                defaultGlyph_.freetypeIndex = 0;
+                auto defaultGlyph    = alloc!Glyph();
+                scope(failure){free(defaultGlyph);}
+                defaultGlyph.texture = driver.createTexture(image);
+                defaultGlyph.offset  = Vector2b(0, cast(byte)-height_);
+                defaultGlyph.advance = cast(byte)(height_ / 2);
+                defaultGlyph.freetypeIndex = 0;
+                defaultGlyph_ = defaultGlyph;
             }
             return *defaultGlyph_;
         }
@@ -391,7 +400,7 @@ package final class Font
                 try{glyph.texture = driver.createTexture(image);}
                 catch(TextureException e)
                 {
-                    writefln("Could not create glyph texture, falling back to default");
+                    writeln("Could not create glyph texture, falling back to default");
                     return getDefaultGlyph(driver);
                 }
 
