@@ -108,21 +108,29 @@ class GameStartException : Exception
 /**
  * Construct the player ship entity and return its ID.
  *
- * Params:  name     = Name, used for debugging.
- *          system   = Game entity system.
- *          position = Starting position of the ship.
- *          yaml     = YAML node to load the ship from.
+ * Params:  name      = Name, used for debugging.
+ *          system    = Game entity system.
+ *          position  = Starting position of the ship.
+ *          shipOwner = Player that controls the entity.
+ *          yaml      = YAML node to load the ship from.
  */
-EntityID constructPlayerShip(string name, EntitySystem system, Vector2f position, YAMLNode yaml)
+EntityID constructPlayerShip(string name, 
+                             EntitySystem system, 
+                             Vector2f position, 
+                             Player shipOwner,
+                             YAMLNode yaml)
 {
-    import component.physicscomponent;
     import component.controllercomponent;
+    import component.physicscomponent;
+    import component.playercomponent;
+
     auto prototype = EntityPrototype(name, yaml);
     with(prototype)
     {
         physics    = PhysicsComponent(position, Vector2f(0.0f, -1.0f).angle,
                                       Vector2f(0.0f, 0.0f));
         controller = ControllerComponent();
+        player     = PlayerComponent(shipOwner);
     }
     return system.newEntity(prototype);
 }
@@ -201,7 +209,6 @@ class Game
         EntityID[] enemies_;
 
 
-
     public:
         /**
          * Update the game.
@@ -243,11 +250,14 @@ class Game
         {
             assert(gameDir_ !is null, "Starting Game but gameDir_ has not been set");
 
+            player1_  = new HumanPlayer(platform_, "Human");
+
             //Initialize player and enemy ships.
             try
             {
                 playerShipID_ = constructPlayerShip("playership", entitySystem_,
                                                     Vector2f(400.0f, 536.0f),
+                                                    player1_,
                                                     loadYAML(gameDir_.file("ships/playership.yaml")));
                 enemyPrototype1_ = EntityPrototype("enemy1", loadYAML(gameDir_.file("ships/enemy1.yaml")));
 
@@ -265,10 +275,7 @@ class Game
             }
 
             continue_ = true;
-            player1_  = new HumanPlayer(platform_, "Human");
             platform_.key.connect(&keyHandler);
-
-            controllerSystem_.setEntityController(playerShipID_, player1_);
         }
 
         ///End the game, regardless of whether it has been won or not.

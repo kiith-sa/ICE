@@ -31,6 +31,7 @@ import component.exceptions;
 import component.healthcomponent;
 import component.ownercomponent;
 import component.physicscomponent;
+import component.playercomponent;
 import component.visualcomponent;
 import component.volumecomponent;
 import component.warheadcomponent;
@@ -60,7 +61,8 @@ tuple
     "CollidableComponent",
     "WarheadComponent",
     "HealthComponent",
-    "OwnerComponent"
+    "OwnerComponent",
+    "PlayerComponent"
 );
 
 ///Enforce at compile time that all component type names are valid.
