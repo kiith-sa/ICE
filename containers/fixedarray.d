@@ -181,10 +181,10 @@ align(4) struct FixedArray(T)
         ref inout(T) back() inout pure nothrow {return data_[$ - 1];}
 
         ///Get number of elements in the array.
-        @property size_t length() const pure {return data_.length;}
+        @property size_t length() const pure nothrow {return data_.length;}
 
         ///Is the array empty?
-        @property bool empty() const pure {return data_.length == 0;}
+        @property bool empty() const pure nothrow {return data_.length == 0;}
 }
 ///Unittest for FixedArray.
 unittest
