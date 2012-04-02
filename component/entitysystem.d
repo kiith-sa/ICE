@@ -26,6 +26,7 @@ import util.yaml;
 import component.collidablecomponent;
 import component.controllercomponent;
 import component.deathtimeoutcomponent;
+import component.dumbscriptcomponent;
 import component.enginecomponent;
 import component.exceptions;
 import component.healthcomponent;
@@ -62,7 +63,8 @@ tuple
     "WarheadComponent",
     "HealthComponent",
     "OwnerComponent",
-    "PlayerComponent"
+    "PlayerComponent",
+    "DumbScriptComponent"
 );
 
 ///Enforce at compile time that all component type names are valid.
