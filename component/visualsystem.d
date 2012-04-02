@@ -185,7 +185,14 @@ class VisualSystem : System
         }
 
     private:
-        ///Load visual data from a YAML file with specified name to output.
+        /**
+         * Load visual data from a YAML file with specified name to output. 
+         *
+         * Params:  name   = Name of the visual data YAML file in the game directory.
+         *          output = Loaded data will be written here.
+         *
+         * Returns: true on success, false on failure.
+         */
         bool loadVisualData(string name, out VisualData output)
         {
             string fail(){return "Failed to load visual data " ~ name ~ ": ";}
@@ -228,16 +235,8 @@ class VisualSystem : System
                     return false;
                 }
             }
-            catch(YAMLException e)
-            {
-                writeln(fail(), e.msg);
-                return false;
-            }
-            catch(VFSException e)
-            {
-                writeln(fail(), e.msg);
-                return false;
-            }
+            catch(YAMLException e){writeln(fail(), e.msg); return false;}
+            catch(VFSException e) {writeln(fail(), e.msg); return false;}
             return true;
         }
 }
