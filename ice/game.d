@@ -105,6 +105,9 @@ class GameStartException : Exception
     }
 }
 
+import component.controllercomponent;
+import component.physicscomponent;
+
 /**
  * Construct the player ship entity and return its ID.
  *
@@ -120,8 +123,6 @@ EntityID constructPlayerShip(string name,
                              Player shipOwner,
                              YAMLNode yaml)
 {
-    import component.controllercomponent;
-    import component.physicscomponent;
     import component.playercomponent;
 
     auto prototype = EntityPrototype(name, yaml);
@@ -138,11 +139,11 @@ EntityID constructPlayerShip(string name,
 ///Construct an enemy ship from specified prototype at specified position, and return its ID.
 EntityID constructEnemyShip(EntitySystem system, EntityPrototype prototype, Vector2f position)
 {
-    import component.physicscomponent;
     with(prototype)
     {
         physics    = PhysicsComponent(position, Vector2f(0.0f, 1.0f).angle,
                                       Vector2f(0.0f, 0.0f));
+        controller = ControllerComponent();
     }
     return system.newEntity(prototype);
 }
@@ -295,9 +296,10 @@ class Game
         ///Set the game data directory.
         @property void gameDir(VFSDir rhs) 
         {
-            gameDir_              = rhs;
-            visualSystem_.gameDir  = rhs;
-            weaponSystem_.gameDir = rhs;
+            gameDir_                  = rhs;
+            controllerSystem_.gameDir = rhs;
+            visualSystem_.gameDir     = rhs;
+            weaponSystem_.gameDir     = rhs;
         }
 
         ///Get game area.
@@ -321,11 +323,11 @@ class Game
             //Initialize entity system and game subsystems.
             entitySystem_            = new EntitySystem();
             visualSystem_            = new VisualSystem(entitySystem_);
-            controllerSystem_        = new ControllerSystem(entitySystem_);
-            physicsSystem_           = new PhysicsSystem(entitySystem_, gameTime_);
-            timeoutSystem_           = new TimeoutSystem(entitySystem_, gameTime_);
-            weaponSystem_            = new WeaponSystem(entitySystem_, gameTime_);
-            engineSystem_            = new EngineSystem(entitySystem_, gameTime_);
+            controllerSystem_        = new ControllerSystem(entitySystem_, gameTime_);
+            physicsSystem_           = new PhysicsSystem   (entitySystem_, gameTime_);
+            timeoutSystem_           = new TimeoutSystem   (entitySystem_, gameTime_);
+            weaponSystem_            = new WeaponSystem    (entitySystem_, gameTime_);
+            engineSystem_            = new EngineSystem    (entitySystem_, gameTime_);
             spatialSystem_           = new SpatialSystem(entitySystem_, 
                                                          Vector2f(400.0f, 300.0f), 
                                                          32.0f, 

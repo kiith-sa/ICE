@@ -114,10 +114,14 @@ final class HumanPlayer : Player
         {
             bool kp(Key key) nothrow {return platform_.isKeyPressed(key);}
 
-            control.left      = kp(Key.Left)  || kp(Key.Left);
-            control.right     = kp(Key.Right) || kp(Key.Right);
-            control.up        = kp(Key.Up)    || kp(Key.Up);
-            control.down      = kp(Key.Down)  || kp(Key.Down);
+            //Aggregate input from direction buttons into a direction vector.
+            auto direction = Vector2f(0.0f, 0.0f);
+            if(kp(Key.K_A) || kp(Key.Left))  {direction += Vector2f(1.0f, 0.0f);}
+            if(kp(Key.K_D) || kp(Key.Right)) {direction += Vector2f(-1.0f, 0.0f);}
+            if(kp(Key.K_W) || kp(Key.Up))    {direction += Vector2f(0.0f, 1.0f);}
+            if(kp(Key.K_S) || kp(Key.Down))  {direction += Vector2f(0.0f, -1.0f);}
+            control.movementDirection = direction.normalized;
+
             control.firing[0] = kp(Key.Space) || kp(Key.Lctrl);
         }
         

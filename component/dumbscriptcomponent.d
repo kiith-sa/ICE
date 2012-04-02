@@ -37,10 +37,16 @@ align(4) struct DumbScriptComponent
     ///Set the script to done, i.e. finished.
     void finish() pure nothrow {instruction = uint.max;}
 
-    ///Move to the next instruction in script.
-    void nextInstruction() pure nothrow 
+    /**
+     * Move to the next instruction in script.
+     *
+     * Params:  instructionCount = Instruction count. If we get to this 
+     *                             number of instructions, the script is done.
+     */
+    void nextInstruction(const size_t instructionCount) pure nothrow 
     {
         ++instruction;
+        if(instruction >= instructionCount){finish();}
         instructionTime = 0.0f;
     }
 }
