@@ -147,10 +147,9 @@ class VisualSystem : System
                     }
                 }
 
-
                 ///Loads visual data if not yet loaded.
                 VisualData* data = visualData_[visual.dataIndex];
-                if(data == null)
+                if(data is null)
                 {
                     writeln("WARNING: Could not load visual data ", visual.dataIndex.id);
                     writeln("Falling back to placeholder visual data...");
@@ -225,18 +224,18 @@ class VisualSystem : System
                 }   
                 else
                 {
-                    writeln(fail() ~ "Unknown visual component type: " ~ type);
+                    writeln(fail(), "Unknown visual component type: ", type);
                     return false;
                 }
             }
             catch(YAMLException e)
             {
-                writeln(fail() ~ e.msg);
+                writeln(fail(), e.msg);
                 return false;
             }
             catch(VFSException e)
             {
-                writeln(fail() ~ e.msg);
+                writeln(fail(), e.msg);
                 return false;
             }
             return true;

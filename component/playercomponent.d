@@ -36,4 +36,3 @@ struct PlayerComponent
         this.player = player;
     }
 }
-
