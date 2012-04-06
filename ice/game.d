@@ -137,7 +137,7 @@ EntityID constructPlayerShip(string name,
 }
 
 ///Construct an enemy ship from specified prototype at specified position, and return its ID.
-EntityID constructEnemyShip(EntitySystem system, EntityPrototype prototype, Vector2f position)
+EntityID constructEnemyShip(EntitySystem system, ref EntityPrototype prototype, Vector2f position)
 {
     with(prototype)
     {
@@ -204,7 +204,7 @@ class Game
         HealthSystem            healthSystem_;
 
         ///Prototype of enemy ships.
-        EntityPrototype enemyPrototype1_;
+        EntityPrototype* enemyPrototype1_;
 
         ///IDs of enemy ships.
         EntityID[] enemies_;
@@ -260,9 +260,9 @@ class Game
                                                     Vector2f(400.0f, 536.0f),
                                                     player1_,
                                                     loadYAML(gameDir_.file("ships/playership.yaml")));
-                enemyPrototype1_ = EntityPrototype("enemy1", loadYAML(gameDir_.file("ships/enemy1.yaml")));
+                enemyPrototype1_ = alloc!EntityPrototype("enemy1", loadYAML(gameDir_.file("ships/enemy1.yaml")));
 
-                enemies_ ~= constructEnemyShip(entitySystem_, enemyPrototype1_, Vector2f(400.0f, 64.0f));
+                enemies_ ~= constructEnemyShip(entitySystem_, *enemyPrototype1_, Vector2f(400.0f, 64.0f));
             }
             catch(YAMLException e)
             {
@@ -282,6 +282,7 @@ class Game
         ///End the game, regardless of whether it has been won or not.
         void endGame()
         {
+            free(enemyPrototype1_);
             clear(player1_);
             continue_ = false;
             platform_.key.disconnect(&keyHandler);

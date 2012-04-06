@@ -336,6 +336,10 @@ struct EntityPrototype
             return result;
         }
 
+        @disable this(this);
+
+        @disable void opAssign(ref EntityPrototype);
+
     public:
         mixin(ctfeComponents());
 
@@ -359,6 +363,31 @@ struct EntityPrototype
                                         " from YAML: " ~ e.msg);
             }
         }
+                     
+        ///Return a string represenation of the prototype.
+        string toString() const
+        {
+            string result = "EntityPrototype:\n";
+            foreach(c; componentTypes)
+            {
+                mixin("enum hasToString = hasMember!(" ~ c ~ ", \"toString\");");
+                mixin("const isNull = " ~ c.nameCamelCased ~ ".isNull;");
+                if(!isNull)
+                {
+                    static if(hasToString)
+                    {
+                        result ~= "  " ~ c ~ ":\n" ~
+                                  "    " ~ this.component!(c).toString() ~ "\n";
+                    }
+                    else 
+                    {
+                        result ~= "  " ~ c ~ ":\n" ~
+                                  "    " ~ to!string(this.component!(c)()) ~ "\n";
+                    }
+                }
+            }
+            return result;
+        }
 
     private:
         ///Does this prototype have a component of specified type?
@@ -368,7 +397,13 @@ struct EntityPrototype
         }
 
         ///Get a reference to the component of specified type.
-        @property ref auto component(string componentType)() 
+        @property ref auto component(string componentType)()
+        {
+            mixin("return " ~ componentType.nameCamelCased ~ ".get;");
+        }
+
+        ///Get a const reference to the component of specified type.
+        @property ref const auto component(string componentType)() const
         {
             mixin("return " ~ componentType.nameCamelCased ~ ".get;");
         }
@@ -394,6 +429,7 @@ struct EntityPrototype
             writeln("WARNING: unknown component type: \"", name, "\". Ignoring.");
         }
 }
+pragma(msg, "EntityPrototype size is " ~ to!string(EntityPrototype.sizeof));
 
 /**
  * Stores game entities and their components and provides access to them.

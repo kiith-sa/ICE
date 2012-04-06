@@ -9,6 +9,9 @@
 module component.weaponcomponent;
 
 
+import std.array;
+import std.conv;
+
 import containers.lazyarray;
 import containers.fixedarray;
 import util.yaml;
@@ -23,22 +26,29 @@ struct WeaponComponent
      * Data about the weapon itself, such as ammo capacity, reload time and
      * burst data, is lazily loaded and stored by WeaponSystem.
      */
-    align(4) struct Weapon
+    struct Weapon
     {
-        ///Weapon slot taken by the weapon (there are 256 slots).
-        ubyte  weaponSlot;
         ///Index to a lazy array in the weapon system storing weapon data.
         LazyArrayIndex dataIndex;
 
-        ///Ammo used up since last reload.
-        uint  ammoConsumed         = 0;
         ///Time remaining before we're reloaded. Zero or negative means we're not reloading.
         double reloadTimeRemaining = 0.0f;
         ///Time since last burst. If greater than the weapon's burstPeriod, we can fire.
         double timeSinceLastBurst  = double.infinity;
+        ///Ammo used up since last reload.
+        uint  ammoConsumed         = 0;
 
         ///Number of shots fired so far in the current burst. uint.max means not in burst.
         uint shotsSoFarThisBurst  = uint.max;
+
+        ///Weapon slot taken by the weapon (there are 256 slots).
+        ubyte  weaponSlot;
+
+        this(const ubyte weaponSlot, string weaponFileName) pure nothrow
+        {
+            this.weaponSlot = weaponSlot;
+            dataIndex = LazyArrayIndex(weaponFileName);
+        }
 
         ///Are we currently in the middle of a burst?
         @property bool burstInProgress() const pure nothrow 
@@ -71,7 +81,18 @@ struct WeaponComponent
         size_t i = 0;
         foreach(ubyte slot, string resourceName; yaml)
         {
-            weapons[i++] = Weapon(slot, LazyArrayIndex(resourceName));
+            weapons[i++] = Weapon(slot, resourceName);
         }
+    }
+
+    ///Get a string representation of the WeaponComponent.
+    string toString() const
+    {
+        string[] weaponStrings;
+        foreach(w; 0 .. weapons.length)
+        {
+            weaponStrings ~= to!string(weapons[w]);
+        }
+        return "WeaponComponent(" ~ weaponStrings.join(", ") ~ ")";
     }
 }

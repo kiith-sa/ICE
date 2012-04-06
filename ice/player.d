@@ -27,7 +27,7 @@ abstract class Player
 
     public:
         ///Get name of this player.
-        @property string name() const {return name_;}
+        @property string name() const pure nothrow {return name_;}
 
         /**
          * Update player state.
@@ -38,6 +38,12 @@ abstract class Player
 
         ///Control entity with specified ID through its ControllerComponent.
         void control(EntityID id, ref ControllerComponent control) pure nothrow;
+
+        ///String representation of the player (currently just returns player name).
+        override string toString() const pure nothrow
+        {
+            return name_;
+        }
 
     protected:
         /**
