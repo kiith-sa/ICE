@@ -1,14 +1,11 @@
 !!pairs
-- move:
-    for: 0.5
-    direction: 0.5
-- move:
-    for: 0.5
-    direction: -0.5
-- move:
-    for: 0.5
-    direction: 0.5
-- move:
-    for: 0.5
-    direction: -0.5
+- for 0.5:
+    move-direction: 0.5
+- for 0.5:
+    move-direction: -0.5
+- for 0.5:
+- for 0.5:
+    move-direction: 0.5
+- for 0.5:
+    move-direction: -0.5
 - die:

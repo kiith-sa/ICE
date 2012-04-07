@@ -9,6 +9,7 @@
 module component.controllersystem;
 
 
+import std.algorithm;
 import std.conv;
 import std.math;
 
@@ -51,10 +52,10 @@ class ControllerSystem : System
          *
          * Current DumbScript instructions:
          *
-         * Move:
+         * ForTime:
          *
-         * Move in direction specified by a "direction" tag (in radians) for 
-         * for duration spefified by a "for" tag (in seconds).
+         * Move in direction specified by a "direction" tag (in radians) 
+         * for specified duration.
          *
          * Die:
          *
@@ -72,13 +73,13 @@ class ControllerSystem : System
                 ///Die instruction. Currently has no parameters.
                 struct Die {}
 
-                ///Move instruction.
-                struct Move
+                ///Performs specified actions for specified time.
+                struct ForTime
                 {
                     ///Duration of movement in seconds.
                     float duration;
-                    ///Direction of movement in radians.
-                    float direction;
+                    ///Direction vector of movement.
+                    Vector2f direction;
                 }
 
                 ///Represents one instruction in the script.
@@ -93,19 +94,19 @@ class ControllerSystem : System
                     enum Type : ubyte
                     {
                         Uninitialized = 0,
-                        Move,
+                        ForTime,
                         Die
                     }
 
                     //Can't use a union due to initialization during memory allocation.
                     ///Storage of the instruction, essentially a union.
-                    ubyte[max(Move.sizeof, Die.sizeof)] storage;
+                    ubyte[max(ForTime.sizeof, Die.sizeof)] storage;
 
                     ///Type of the instruction.
                     Type type;
 
 
-                    ///Construct from a specific instruction (e.g. Move, etc).
+                    ///Construct from a specific instruction (e.g. ForTime, etc).
                     this(T)(T rhs) pure nothrow
                     {
                         *(cast(Unqual!T*)storage.ptr) = rhs;
@@ -115,7 +116,7 @@ class ControllerSystem : System
                     /**
                      * Read the stored instruction as type specified in camelCase.
                      *
-                     * E.g. to read as Move, use Instruction.move . 
+                     * E.g. to read as ForTime, use Instruction.forTime . 
                      * This will automatically assert that the instruction has 
                      * specified type.
                      */
@@ -140,19 +141,31 @@ class ControllerSystem : System
                 {
                     instructions_ = FixedArray!Instruction(yaml.length);
                     uint idx = 0;
-                    foreach(string type, ref YAMLNode args; yaml) switch(type) 
+                    foreach(string type, ref YAMLNode args; yaml) //switch(type) 
                     {
-                        case "move":
-                            const move = Move(args["for"].as!float,
-                                              args["direction"].as!float);
-                            instructions_[idx++] = Instruction(move);
-                            break;
-                        case "die":
+                        if(type == "die")
+                        {
                             instructions_[idx++] = Instruction(Die());
-                            break;
-                        default:
+                        }
+                        else if(type.startsWith("for"))
+                        {
+                            Vector2f dir;
+                            if(!args.isNull)
+                            {
+                                if(args.containsKey("move-direction"))
+                                {
+                                    dir = angleToVector(args["move-direction"].as!float);
+                                }
+                            }
+                            const f = ForTime(to!float(type[4 .. $]),  
+                                              dir);
+                            instructions_[idx++] = Instruction(f);
+                        }
+                        else
+                        {
                             throw new YAMLException("Unknown dumb script "
                                                     "instruction type: " ~ type);
+                        }
                     }
                 }
 
@@ -180,9 +193,9 @@ class ControllerSystem : System
                         {
                             case Instruction.Type.Uninitialized:
                                 assert(false, "Uninitialized dumb script instruction");
-                            case Instruction.Type.Move:
-                                direction += angleToVector(instruction.move.direction);
-                                const duration = instruction.move.duration;
+                            case Instruction.Type.ForTime:
+                                direction += instruction.forTime.direction;
+                                const duration = instruction.forTime.duration;
                                 if(script.instructionTime > duration)
                                 {
                                     script.instructionTime -= duration;
