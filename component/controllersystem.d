@@ -66,6 +66,9 @@ class ControllerSystem : System
             import std.algorithm;
             import std.ascii;
             import std.traits;
+
+            import util.bits;
+
             private:
                 //Each instruction is represented by a struct, which must 
                 //match a value of the Instruction.Type enum.
@@ -80,6 +83,8 @@ class ControllerSystem : System
                     float duration;
                     ///Direction vector of movement.
                     Vector2f direction;
+                    ///Which weapons to fire, if any?
+                    Bits!256 fire;
                 }
 
                 ///Represents one instruction in the script.
@@ -141,7 +146,7 @@ class ControllerSystem : System
                 {
                     instructions_ = FixedArray!Instruction(yaml.length);
                     uint idx = 0;
-                    foreach(string type, ref YAMLNode args; yaml) //switch(type) 
+                    foreach(string type, ref YAMLNode args; yaml)
                     {
                         if(type == "die")
                         {
@@ -149,16 +154,30 @@ class ControllerSystem : System
                         }
                         else if(type.startsWith("for"))
                         {
+                            ForTime f;
                             Vector2f dir;
+                            float speed = 1.0;
                             if(!args.isNull)
                             {
                                 if(args.containsKey("move-direction"))
                                 {
                                     dir = angleToVector(args["move-direction"].as!float);
                                 }
+                                if(args.containsKey("fire"))
+                                {
+                                    foreach(ubyte weapon; args["fire"])
+                                    {
+                                        f.fire[weapon] = true;
+                                    }
+                                }
+                                if(args.containsKey("move-speed"))
+                                {
+                                    speed = fromYAML!(float, "a >= -1.0f && a <= 1.0f")
+                                                     (args["move-speed"], "move-speed");
+                                }
                             }
-                            const f = ForTime(to!float(type[4 .. $]),  
-                                              dir);
+                            f.direction = dir * speed;
+                            f.duration = to!float(type[4 .. $]);
                             instructions_[idx++] = Instruction(f);
                         }
                         else
@@ -181,7 +200,6 @@ class ControllerSystem : System
                              ref DumbScriptComponent script,
                              const real timeStep)
                 {
-                    auto direction = Vector2f(0.0f, 0.0f);
                     //We even increase this when the script is done, 
                     //but that has no effect. (except for measuring time 
                     //since the script's beed done, I guess).
@@ -194,11 +212,16 @@ class ControllerSystem : System
                             case Instruction.Type.Uninitialized:
                                 assert(false, "Uninitialized dumb script instruction");
                             case Instruction.Type.ForTime:
-                                direction += instruction.forTime.direction;
+
+                                //Set the ControllerComponent's movement direction.
+                                //based on any movement instructions in the script.
+                                //Note that if more movement instructions happen in
+                                //one update, only the last one sets the movement.
+                                control.movementDirection = instruction.forTime.direction;
+                                control.firing = instruction.forTime.fire;
                                 const duration = instruction.forTime.duration;
                                 if(script.instructionTime > duration)
                                 {
-                                    script.instructionTime -= duration;
                                     script.nextInstruction(instructions_.length);
                                     //We're done with this instruction and 
                                     //still have time for the next (if any) instruction
@@ -218,12 +241,6 @@ class ControllerSystem : System
                                 break interrupt;
                         }
                     }
-
-                    //Set the ControllerComponent's movement direction.
-                    //based on any movement instructions in the scripts
-                    //(Or to 0 in case of no such instructions - equivalent
-                    //of a player not pressing any buttons)
-                    control.movementDirection = direction.normalized();
                 }
         }
 
