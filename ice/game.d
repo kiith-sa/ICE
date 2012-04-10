@@ -45,8 +45,9 @@ import util.signal;
 import util.weaksingleton;
 import video.videodriver;
 
-import ice.player;
 import ice.hud;
+import ice.level;
+import ice.player;
 
 
 /**
@@ -136,18 +137,6 @@ EntityID constructPlayerShip(string name,
     return system.newEntity(prototype);
 }
 
-///Construct an enemy ship from specified prototype at specified position, and return its ID.
-EntityID constructEnemyShip(EntitySystem system, ref EntityPrototype prototype, Vector2f position)
-{
-    with(prototype)
-    {
-        physics    = PhysicsComponent(position, Vector2f(0.0f, 1.0f).angle,
-                                      Vector2f(0.0f, 0.0f));
-        controller = ControllerComponent();
-    }
-    return system.newEntity(prototype);
-}
-
 ///Class managing a single game between players.
 class Game
 {
@@ -203,11 +192,8 @@ class Game
         ///Handles entity health and kills entities when they run out of health.
         HealthSystem            healthSystem_;
 
-        ///Prototype of enemy ships.
-        EntityPrototype* enemyPrototype1_;
-
-        ///IDs of enemy ships.
-        EntityID[] enemies_;
+        ///Level the game is running.
+        Level level_;
 
 
     public:
@@ -229,6 +215,12 @@ class Game
             gameTime_.doGameUpdates
             ({
                 entitySystem_.update();
+
+                if(!level_.update())
+                {
+                    continue_ = false;
+                }
+
                 controllerSystem_.update();
                 engineSystem_.update();
                 weaponSystem_.update();
@@ -251,18 +243,29 @@ class Game
         {
             assert(gameDir_ !is null, "Starting Game but gameDir_ has not been set");
 
-            player1_  = new HumanPlayer(platform_, "Human");
 
-            //Initialize player and enemy ships.
+            player1_  = new HumanPlayer(platform_, "Human");
+            auto levelName = "levels/level1.yaml";
+
+            //Initialize the level.
+            try
+            {
+                level_ = new DumbLevel(levelName, loadYAML(gameDir_.file(levelName)),
+                                       entitySystem_, gameTime_, gameDir_);
+            }
+            catch(LevelInitializationFailureException e)
+            {
+                throw new GameStartException("Failed to initialize level " ~
+                                             levelName ~ " : " ~ e.msg);
+            }
+
+            //Initialize player ship.
             try
             {
                 playerShipID_ = constructPlayerShip("playership", entitySystem_,
                                                     Vector2f(400.0f, 536.0f),
                                                     player1_,
                                                     loadYAML(gameDir_.file("ships/playership.yaml")));
-                enemyPrototype1_ = alloc!EntityPrototype("enemy1", loadYAML(gameDir_.file("ships/enemy1.yaml")));
-
-                enemies_ ~= constructEnemyShip(entitySystem_, *enemyPrototype1_, Vector2f(400.0f, 64.0f));
             }
             catch(YAMLException e)
             {
@@ -282,8 +285,8 @@ class Game
         ///End the game, regardless of whether it has been won or not.
         void endGame()
         {
-            free(enemyPrototype1_);
             clear(player1_);
+            clear(level_);
             continue_ = false;
             platform_.key.disconnect(&keyHandler);
         }
@@ -301,6 +304,7 @@ class Game
             controllerSystem_.gameDir = rhs;
             visualSystem_.gameDir     = rhs;
             weaponSystem_.gameDir     = rhs;
+            if(level_ !is null){level_.gameDir            = rhs;}
         }
 
         ///Get game area.
@@ -353,6 +357,8 @@ class Game
             clear(spatialSystem_);
             clear(warheadSystem_);
             clear(healthSystem_);
+
+            clear(player1_);
 
             entitySystem_.destroy();
 
