@@ -54,10 +54,29 @@ class ControllerSystem : System
          *
          * ForTime:
          *
-         * Move in direction specified by a "direction" tag (in radians) 
-         * for specified duration.
-         *
+         * Example:
+         * --------------------
+         * - for 1.0:   #For duration of one second
+         *     move-direction: 0.5 #move in direction of 0.5 radians relative to current rotation
+         *     move-speed: 0.5     #move at 50% speed
+         *     fire [0, 2]         #fire weapons 0 and 2
+         * --------------------
+         * 
+         * Perform an action for specified time (in seconds):
+         * 
+         * Params:
+         *     move-direction = Move in direction specified in radians relative to current
+         *                      direction.
+         *     move-speed     = Movement speed relative to max speed. Must be >= -1 and <= 1 . 
+         *     fire           = Fire weapons specified in the sequence. As there are only
+         *                      256 weapon slots, the values must be between >= 0 and  <= 255 .
+         * 
          * Die:
+         *
+         * Example:
+         * --------------------
+         * - die: #Kill the entity.
+         * --------------------
          *
          * Kill the entity. Any instructions after this are not executed.
          */
