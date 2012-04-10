@@ -31,7 +31,10 @@ align(4) struct PhysicsComponent
     {
         position = fromYAML!Vector2f(node["position"], "position");
         rotation = fromYAML!float   (node["rotation"], "rotation");
-        velocity = fromYAML!Vector2f(node["velocity"], "velocity");
+        if(node.containsKey("velocity"))
+        {
+            velocity = fromYAML!Vector2f(node["velocity"], "velocity");
+        }
     }
 
     ///Construct manually.
