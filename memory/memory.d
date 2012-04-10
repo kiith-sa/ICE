@@ -32,6 +32,26 @@ public:
      * For now, if allocating a struct, that struct must not have its empty 
      * constructor disabled.
      *
+     * Note: 
+     * 
+     * Some types, such as unions, can't be initialized since their default 
+     * initializer (T.init) is ambiguous. Data of such types can still be 
+     * initialized to zero bytes by adding an "annotation" static variable to 
+     * the type, like in this example:
+     *
+     * Example:
+     * --------------------
+     * struct ZeroInitialized
+     * {
+     *     static bool CAN_INITIALIZE_WITH_ZEROES;
+     *     union 
+     *     {
+     *         int i;
+     *         float f;
+     *     }
+     * }
+     * --------------------
+     *
      * Params:  args = Arguments to value's initializer/constructor.
      *                 If no arguments are specified, the value is default-initialized.
      *
@@ -273,10 +293,15 @@ private:
         ptr = cast(T*)malloc(bytes);
         debugAllocate!(T, file, line)(ptr, 1); 
 
+        enum zeroInit = __traits(hasMember, T, "CAN_INITIALIZE_WITH_ZEROES");
         static if(args.length == 0)
         {
             static init = T.init;
             memcpy(cast(void*)ptr, cast(void*)&init, T.sizeof);
+        }
+        else static if(zeroInit)
+        {
+            memset(cast(void*)ptr, 0, T.sizeof);
         }
         else                       
         {
@@ -324,9 +349,14 @@ private:
             GC.addRange(cast(void*)array.ptr, T.sizeof * array.length);
         }
 
+        enum zeroInit = __traits(hasMember, T, "CAN_INITIALIZE_WITH_ZEROES");
+
         //default-initialize the array.
         //using memset for ubytes as it's faster and ubytes are often used for large arrays.
-        static if (is(T == ubyte)){memset(array.ptr, 0, bytes);}
+        static if (is(T == ubyte) || zeroInit)
+        {
+            memset(array.ptr, 0, bytes);
+        }
         else foreach(ref item; array)
         {
             static init = T.init;
@@ -390,14 +420,15 @@ private:
         //default-initialize new elements, if any
         if(array.length > oldLength)
         {
+            enum zeroInit = __traits(hasMember, T, "CAN_INITIALIZE_WITH_ZEROES");
             //using memset for ubytes as it's faster and ubytes are often used for large arrays.
-            static if (is(T == ubyte))
+            static if (is(T == ubyte) || zeroInit)
             {
                 memset(array.ptr + oldLength, 0, newBytes - oldBytes);
             }
-            else
+            else if(array.length > oldLength) 
             {
-                if(array.length > oldLength) foreach(ref item; array[oldLength .. $])
+                foreach(ref item; array[oldLength .. $])
                 {
                     static init = T.init;
                     memcpy(cast(void*)&item, cast(void*)&init, T.sizeof);
