@@ -122,6 +122,17 @@ string arrayName(string componentType) pure nothrow
     return toLowerCtfe(componentType[0]) ~ componentType[1 .. $] ~ "s_";
 }
 
+///Is name a camelCased name of a component type (e.g. a component member in a prototype)?
+bool isCamelCasedComponentName(string name)
+{
+    foreach(c; componentTypes)
+    {
+        enum camelCased = c.nameCamelCased;
+        if(camelCased == name){return true;}
+    }
+    return false;
+}
+
 ///Generate an component type ID enum. Each value has the bit corresponding to its type set.
 string ctfeComponentTypeEnum() 
 {
@@ -344,8 +355,12 @@ struct EntityPrototype
         mixin(ctfeComponents());
 
         /**
-         * Load an EntityPrototype from YAML.
+         * Load an EntityPrototype from a YAML mapping.
          *
+         * Keys in the mapping must be camelCased component type names.
+         * E.g. physics for PhysicsComponent or deathTimeout for 
+         * DeathTimeoutComponent.
+         * 
          * Params:  name = Name of the prototype (used for debugging).
          *          yaml = YAML node to load from.
          *
@@ -363,6 +378,45 @@ struct EntityPrototype
                                         " from YAML: " ~ e.msg);
             }
         }
+
+        ///Turn this prototype into a clone of rhs (i.e. copy rhs's components).
+        void clone(ref EntityPrototype rhs)
+        {
+            foreach(c; componentTypes)
+            {
+                if(rhs.component!c.isNull)
+                {
+                    component!c.nullify();
+                }
+                else
+                {
+                    //This should be the following code:
+                    //
+                    //component!c = rhs.component!c;
+                    //
+                    //It's written in this way to avoid a compiler bug
+                    //that prevents postblit constructor from being called.
+                    auto proxy = move(rhs.component!c);
+                    component!c = proxy;
+                }
+            }
+        }
+
+        /**
+         * Override components of this prototype from specified YAML mapping.
+         *
+         * Any keys in the mapping that don't match a component name will be ignored.
+         */
+        void overrideComponents(ref YAMLNode yaml)
+        {
+            foreach(string key, ref YAMLNode value; yaml)
+            {
+                if(isCamelCasedComponentName(key))
+                {
+                    loadComponent(key, value);
+                }
+            }
+        }
                      
         ///Return a string represenation of the prototype.
         string toString() const
@@ -377,12 +431,12 @@ struct EntityPrototype
                     static if(hasToString)
                     {
                         result ~= "  " ~ c ~ ":\n" ~
-                                  "    " ~ this.component!(c).toString() ~ "\n";
+                                  "    " ~ this.componentConst!(c).toString() ~ "\n";
                     }
                     else 
                     {
                         result ~= "  " ~ c ~ ":\n" ~
-                                  "    " ~ to!string(this.component!(c)()) ~ "\n";
+                                  "    " ~ to!string(this.componentConst!(c)()) ~ "\n";
                     }
                 }
             }
@@ -399,13 +453,13 @@ struct EntityPrototype
         ///Get a reference to the component of specified type.
         @property ref auto component(string componentType)()
         {
-            mixin("return " ~ componentType.nameCamelCased ~ ".get;");
+            mixin("return " ~ componentType.nameCamelCased ~ ";");
         }
 
         ///Get a const reference to the component of specified type.
-        @property ref const auto component(string componentType)() const
+        @property ref const auto componentConst(string componentType)() const
         {
-            mixin("return " ~ componentType.nameCamelCased ~ ".get;");
+            mixin("return " ~ componentType.nameCamelCased ~ ";");
         }
 
         /**
@@ -518,7 +572,7 @@ class EntitySystem
             entityConstructStart();
             foreach(type; componentTypes) if(proto.hasComponent!type)
             {
-                entityConstructAddComponent(proto.component!type);
+                entityConstructAddComponent(proto.component!type.get);
             }
             return entityConstructFinish();
         }
