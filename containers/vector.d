@@ -178,6 +178,13 @@ align(4) struct Vector(T)
         in{assert(index < used_, "Vector index out of bounds");}
         body{return data_[index];}
 
+    /* Disable for non-copyable data types 
+     *
+     * We also require T.init here, but we already require that
+     * for the FixedArray itself.
+     */
+    static if(__traits(compiles, Vector!T().data_[0] = T.init))
+    {
         /**
          * Set element at the specified index.
          *
@@ -216,6 +223,7 @@ align(4) struct Vector(T)
         {
             data_[0 .. used_] = value;
         }
+    }
 
         /**
          * Get a slice of the vector as a D array.
