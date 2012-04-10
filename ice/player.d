@@ -16,7 +16,12 @@ import platform.platform;
 import time.timer;
 
 
-///Parent class for all players.
+/**
+ * Parent class for all players.
+ *
+ * Note that it is expected to explicitly destroy the Player using clear()
+ * once it is not used anymore.
+ */
 abstract class Player
 {
     protected:
