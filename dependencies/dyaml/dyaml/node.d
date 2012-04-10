@@ -738,7 +738,8 @@ struct Node
                     return cast(Node)value_.get!(Pair[])[idx].value;
                 }
 
-                string msg = "Mapping index not found" ~ (isSomeString!T ? ": " ~ to!string(index) : "");
+                string msg = "Mapping index not found " ~ 
+                             (isSomeString!T ? ": " ~ to!string(index) : "");
                 throw new Error(msg, startMark_);
             }
             throw new Error("Trying to index a " ~ nodeTypeString ~ " node", startMark_);
