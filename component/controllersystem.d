@@ -50,9 +50,25 @@ class ControllerSystem : System
          * DumbScripts have no flow control and they are composed from a sequence
          * of simple instructions. They are started when the entity is created.
          *
+         * The script is composed from pairs of instructions with their parameters.
+         *
+         * Example:
+         * --------------------
+         * !!pairs
+         * - for 0.25:
+         *     move-direction: 0.5
+         * - for 0.5:
+         *     move-direction: -0.5
+         *     move-speed: 0.5
+         * - for 0.5:
+         *     fire: [0, 1]
+         * - die:
+         * --------------------
+         * 
+         *
          * Current DumbScript instructions:
          *
-         * ForTime:
+         * for time:
          *
          * Example:
          * --------------------
@@ -71,7 +87,7 @@ class ControllerSystem : System
          *     fire           = Fire weapons specified in the sequence. As there are only
          *                      256 weapon slots, the values must be between >= 0 and  <= 255 .
          * 
-         * Die:
+         * die:
          *
          * Example:
          * --------------------
@@ -197,11 +213,16 @@ class ControllerSystem : System
                             }
                             f.direction = dir * speed;
                             f.duration = to!float(type[4 .. $]);
+                            if(f.duration < 0.0)
+                            {
+                                throw new YAMLException("Negative dumbscript " ~
+                                                        "for duration");
+                            }
                             instructions_[idx++] = Instruction(f);
                         }
                         else
                         {
-                            throw new YAMLException("Unknown dumb script "
+                            throw new YAMLException("Unknown dumb script " ~
                                                     "instruction type: " ~ type);
                         }
                     }
