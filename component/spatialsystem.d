@@ -232,7 +232,7 @@ class SpatialSystem : System
                         return result;
                     }
             }
-            static assert(Foreach.sizeof == 16);
+            static assert(Foreach.sizeof <= 16);
 
             //So, even for any entity with volume that is in one cell only, we do this:
             //* Return a 16-byte struct.
