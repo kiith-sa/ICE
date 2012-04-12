@@ -157,7 +157,7 @@ align(4) struct SegmentedVector(T, long segmentSize = 1024)
         {
             const result = segmentSize * (cast(long)segments_.length - 1) + usedInLastSegment_;
             assert(result >= 0, "SegmentedVector returned length is less than 0");
-            return result;
+            return cast(size_t)result;
         }
 
         ///Is the vector empty?
