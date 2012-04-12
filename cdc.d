@@ -162,9 +162,19 @@ void main(string[] args)
 
     if(targets.length == 0){targets = ["debug"];}
     
-    auto dbg          = ["-unittest", "-gc", "-debug", "-ofice-debug"];
-    auto no_contracts = ["-release", "-gc", "-ofice-no-contracts"];
-    auto release      = ["-O", "-inline", "-release", "-gc", "-ofice-release"];
+    //No debugging symbols to avoid an OPTLINK bug on Windows.
+    version(Windows)
+    {
+        auto dbg          = ["-unittest", "-debug", "-ofice-debug"];
+        auto no_contracts = ["-release", "-ofice-no-contracts"];
+        auto release      = ["-O", "-inline", "-release", "-ofice-release"];
+    }
+    else
+    {
+        auto dbg          = ["-unittest", "-gc", "-debug", "-ofice-debug"];
+        auto no_contracts = ["-release", "-gc", "-ofice-no-contracts"];
+        auto release      = ["-O", "-inline", "-release", "-gc", "-ofice-release"];
+    }
     auto dependencies = ["dependencies/derelict/DerelictSDL",
                          "dependencies/derelict/DerelictGL",
                          "dependencies/derelict/DerelictFT",
