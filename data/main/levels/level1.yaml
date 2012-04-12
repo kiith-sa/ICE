@@ -1,0 +1,21 @@
+wave wave1:
+  spawn:
+    - unit: ships/enemy1.yaml
+      physics: 
+          position: [360, 32]
+          rotation: 0
+    - unit: ships/playership.yaml
+      physics: 
+          position: [440, 64]
+          rotation: 0
+      dumbScript: dumbscripts/enemy1.yaml
+
+level:
+  !!pairs
+  - wait: 2.0
+  - wave: wave1
+  - wait: 5.0
+  - text: Lorem Ipsum  #in HUD
+  - wait: 5.0
+  - text: Level done!
+

@@ -82,9 +82,4 @@ void main(string[] args)
                 "(maybe data directory is missing?): ", e.msg);
         exit(-1);
     }
-    catch(Exception e)
-    {
-        writeln("Game failed to start, with an unhandled exeption: ", e.toString(), " ", e.msg);
-        exit(-1);
-    }
 }

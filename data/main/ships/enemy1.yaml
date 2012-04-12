@@ -1,15 +1,17 @@
 visual: visual/enemy1.yaml
 engine:
   maxSpeed: 300
-  acceleration   : 2100  #-1 default 
+#acceleration   : 2100  #-1 default 
 volume:
   aabbox: 
     min: [-7, -4]
     max: [7,  12]
 weapon:
-  0: weapons/defaultweapon.yaml
+  0: weapons/enemy1w1.yaml
+  1: weapons/default.yaml
 collidable:
 health: 100
 warhead:
   damage: 10
   killsEntity: false
+dumbScript: dumbscripts/enemy1.yaml

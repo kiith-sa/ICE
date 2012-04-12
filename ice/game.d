@@ -45,8 +45,9 @@ import util.signal;
 import util.weaksingleton;
 import video.videodriver;
 
-import ice.player;
 import ice.hud;
+import ice.level;
+import ice.player;
 
 
 /**
@@ -66,6 +67,16 @@ class GameGUI
         HUD hud_;
 
     public:
+        ///Show the HUD.
+        void showHUD(){hud_.show();}
+
+        ///Set the message text on the bottom of the HUD for specified time in seconds.
+        void messageText(string text, float time) 
+        {
+            hud_.messageText(text, time);
+        }
+
+    private:
         /**
          * Construct a GameGUI with specified parameters.
          *
@@ -78,15 +89,12 @@ class GameGUI
             hud_.hide();
         }
 
-        ///Show the HUD.
-        void showHUD(){hud_.show();}
-
         /**
-         * Update the game GUI.
+         * Update the game GUI, using game time subsystem to measure time.
          */
-        void update()
+        void update(const GameTime gameTime)
         {
-            hud_.update();
+            hud_.update(gameTime);
         }
 
         ///Destroy the game GUI.
@@ -105,36 +113,33 @@ class GameStartException : Exception
     }
 }
 
+import component.controllercomponent;
+import component.physicscomponent;
+
 /**
  * Construct the player ship entity and return its ID.
  *
- * Params:  name     = Name, used for debugging.
- *          system   = Game entity system.
- *          position = Starting position of the ship.
- *          yaml     = YAML node to load the ship from.
+ * Params:  name      = Name, used for debugging.
+ *          system    = Game entity system.
+ *          position  = Starting position of the ship.
+ *          shipOwner = Player that controls the entity.
+ *          yaml      = YAML node to load the ship from.
  */
-EntityID constructPlayerShip(string name, EntitySystem system, Vector2f position, YAMLNode yaml)
+EntityID constructPlayerShip(string name, 
+                             EntitySystem system, 
+                             Vector2f position, 
+                             Player shipOwner,
+                             YAMLNode yaml)
 {
-    import component.physicscomponent;
-    import component.controllercomponent;
+    import component.playercomponent;
+
     auto prototype = EntityPrototype(name, yaml);
     with(prototype)
     {
         physics    = PhysicsComponent(position, Vector2f(0.0f, -1.0f).angle,
                                       Vector2f(0.0f, 0.0f));
         controller = ControllerComponent();
-    }
-    return system.newEntity(prototype);
-}
-
-///Construct an enemy ship from specified prototype at specified position, and return its ID.
-EntityID constructEnemyShip(EntitySystem system, EntityPrototype prototype, Vector2f position)
-{
-    import component.physicscomponent;
-    with(prototype)
-    {
-        physics    = PhysicsComponent(position, Vector2f(0.0f, 1.0f).angle,
-                                      Vector2f(0.0f, 0.0f));
+        player     = PlayerComponent(shipOwner);
     }
     return system.newEntity(prototype);
 }
@@ -194,12 +199,8 @@ class Game
         ///Handles entity health and kills entities when they run out of health.
         HealthSystem            healthSystem_;
 
-        ///Prototype of enemy ships.
-        EntityPrototype enemyPrototype1_;
-
-        ///IDs of enemy ships.
-        EntityID[] enemies_;
-
+        ///Level the game is running.
+        Level level_;
 
 
     public:
@@ -212,15 +213,21 @@ class Game
         {
             if(!continue_){return false;}
 
-            player1_.update();
-
-            gui_.update();
-
             //Does as many game logic updates as needed (even zero)
             //to keep constant game update tick.
             gameTime_.doGameUpdates
             ({
+                player1_.update();
+                gui_.update(gameTime_);
+
                 entitySystem_.update();
+
+                if(!level_.update(gui_))
+                {
+                    endGame();
+                    return 1;
+                }
+
                 controllerSystem_.update();
                 engineSystem_.update();
                 weaponSystem_.update();
@@ -231,7 +238,14 @@ class Game
                 collisionResponseSystem_.update();
                 healthSystem_.update();
                 timeoutSystem_.update();
+
+                return 0;
             });
+
+            //Game might have been ended after a level update,
+            //which left the component subsystems w/o update,
+            //so don't draw either.
+            if(!continue_){return false;}
 
             visualSystem_.update();
 
@@ -243,15 +257,29 @@ class Game
         {
             assert(gameDir_ !is null, "Starting Game but gameDir_ has not been set");
 
-            //Initialize player and enemy ships.
+
+            player1_  = new HumanPlayer(platform_, "Human");
+            auto levelName = "levels/level1.yaml";
+
+            //Initialize the level.
+            try
+            {
+                level_ = new DumbLevel(levelName, loadYAML(gameDir_.file(levelName)),
+                                       entitySystem_, gameTime_, gameDir_);
+            }
+            catch(LevelInitializationFailureException e)
+            {
+                throw new GameStartException("Failed to initialize level " ~
+                                             levelName ~ " : " ~ e.msg);
+            }
+
+            //Initialize player ship.
             try
             {
                 playerShipID_ = constructPlayerShip("playership", entitySystem_,
                                                     Vector2f(400.0f, 536.0f),
+                                                    player1_,
                                                     loadYAML(gameDir_.file("ships/playership.yaml")));
-                enemyPrototype1_ = EntityPrototype("enemy1", loadYAML(gameDir_.file("ships/enemy1.yaml")));
-
-                enemies_ ~= constructEnemyShip(entitySystem_, enemyPrototype1_, Vector2f(400.0f, 64.0f));
             }
             catch(YAMLException e)
             {
@@ -264,17 +292,17 @@ class Game
                                              "initialize ships: " ~ e.msg);
             }
 
-            continue_ = true;
-            player1_  = new HumanPlayer(platform_, "Human");
-            platform_.key.connect(&keyHandler);
+            gui_.showHUD();
 
-            controllerSystem_.setEntityController(playerShipID_, player1_);
+            continue_ = true;
+            platform_.key.connect(&keyHandler);
         }
 
         ///End the game, regardless of whether it has been won or not.
         void endGame()
         {
             clear(player1_);
+            clear(level_);
             continue_ = false;
             platform_.key.disconnect(&keyHandler);
         }
@@ -288,9 +316,11 @@ class Game
         ///Set the game data directory.
         @property void gameDir(VFSDir rhs) 
         {
-            gameDir_              = rhs;
-            visualSystem_.gameDir  = rhs;
-            weaponSystem_.gameDir = rhs;
+            gameDir_                  = rhs;
+            controllerSystem_.gameDir = rhs;
+            visualSystem_.gameDir     = rhs;
+            weaponSystem_.gameDir     = rhs;
+            if(level_ !is null){level_.gameDir            = rhs;}
         }
 
         ///Get game area.
@@ -300,8 +330,8 @@ class Game
         /**
          * Construct a Game.
          *
-         * Params:  platform     = Platform used for input.
-         *          gui          = Game GUI.
+         * Params:  platform = Platform used for input.
+         *          gui      = Game GUI.
          */
         this(Platform platform, GameGUI gui)
         {
@@ -314,11 +344,11 @@ class Game
             //Initialize entity system and game subsystems.
             entitySystem_            = new EntitySystem();
             visualSystem_            = new VisualSystem(entitySystem_);
-            controllerSystem_        = new ControllerSystem(entitySystem_);
-            physicsSystem_           = new PhysicsSystem(entitySystem_, gameTime_);
-            timeoutSystem_           = new TimeoutSystem(entitySystem_, gameTime_);
-            weaponSystem_            = new WeaponSystem(entitySystem_, gameTime_);
-            engineSystem_            = new EngineSystem(entitySystem_, gameTime_);
+            controllerSystem_        = new ControllerSystem(entitySystem_, gameTime_);
+            physicsSystem_           = new PhysicsSystem   (entitySystem_, gameTime_);
+            timeoutSystem_           = new TimeoutSystem   (entitySystem_, gameTime_);
+            weaponSystem_            = new WeaponSystem    (entitySystem_, gameTime_);
+            engineSystem_            = new EngineSystem    (entitySystem_, gameTime_);
             spatialSystem_           = new SpatialSystem(entitySystem_, 
                                                          Vector2f(400.0f, 300.0f), 
                                                          32.0f, 
@@ -343,6 +373,8 @@ class Game
             clear(spatialSystem_);
             clear(warheadSystem_);
             clear(healthSystem_);
+
+            clear(player1_);
 
             entitySystem_.destroy();
 

@@ -36,7 +36,7 @@ align(4) struct SegmentedVector(T, long segmentSize = 1024)
         Vector!(FixedArray!T) segments_;
 
         //segmentSize means we need to allocate a new segment (which we do need at start).
-        uint lastSegmentUsed_ = segmentSize;
+        uint usedInLastSegment_ = segmentSize;
 
         @disable this(T[]);
 
@@ -65,7 +65,7 @@ align(4) struct SegmentedVector(T, long segmentSize = 1024)
                 result = dg(elem);
                 if(result){break;}
             }
-            if(s > 0) foreach(ref elem; segments_.back[0 .. lastSegmentUsed_])
+            if(s > 0) foreach(ref elem; segments_.back[0 .. usedInLastSegment_])
             {
                 result = dg(elem);
                 if(result){break;}
@@ -89,7 +89,7 @@ align(4) struct SegmentedVector(T, long segmentSize = 1024)
                 if(result){break;}
                 ++i;
             }
-            if(s > 0) foreach(ref elem; segments_.back[0 .. lastSegmentUsed_])
+            if(s > 0) foreach(ref elem; segments_.back[0 .. usedInLastSegment_])
             {
                 result = dg(i, elem);
                 if(result){break;}
@@ -101,14 +101,20 @@ align(4) struct SegmentedVector(T, long segmentSize = 1024)
         ///Append an element to the vector. (operator ~=)
         void opCatAssign(U : T)(U element) 
                if(isImplicitlyConvertible!(T, U))
+        in
         {
-            if(lastSegmentUsed_ == segmentSize)
+            assert(usedInLastSegment_ <= segmentSize,
+                   "More items than segmentSize used in the last segment");
+        }
+        body
+        {
+            if(usedInLastSegment_ == segmentSize)
             {
                 segments_ ~= FixedArray!T(segmentSize);
-                lastSegmentUsed_ = 0;
+                usedInLastSegment_ = 0;
             }
-            segments_.back[lastSegmentUsed_] = element;
-            ++lastSegmentUsed_;
+            segments_.back[usedInLastSegment_] = element;
+            ++usedInLastSegment_;
         }
 
         /**
@@ -149,7 +155,7 @@ align(4) struct SegmentedVector(T, long segmentSize = 1024)
         ///Get number of elements in the vector.
         @property size_t length() const pure nothrow 
         {
-            const result = segmentSize * (cast(long)segments_.length - 1) + lastSegmentUsed_;
+            const result = segmentSize * (cast(long)segments_.length - 1) + usedInLastSegment_;
             assert(result >= 0, "SegmentedVector returned length is less than 0");
             return result;
         }
@@ -171,29 +177,29 @@ align(4) struct SegmentedVector(T, long segmentSize = 1024)
             if(elements > length)
             {
                 auto elementsLeft = elements - length;
-                const lastSegmentFree = segmentSize - lastSegmentUsed_;
+                const lastSegmentFree = segmentSize - usedInLastSegment_;
                 const addedToLastSegment = min(elementsLeft, lastSegmentFree);
 
-                lastSegmentUsed_ += addedToLastSegment;
+                usedInLastSegment_ += addedToLastSegment;
                 elementsLeft -= addedToLastSegment;
 
                 while(elementsLeft > 0)
                 {
                     segments_ ~= FixedArray!T(segmentSize);
-                    lastSegmentUsed_ = cast(uint)min(elementsLeft, segmentSize);
-                    elementsLeft -= lastSegmentUsed_;
+                    usedInLastSegment_ = cast(uint)min(elementsLeft, segmentSize);
+                    elementsLeft -= usedInLastSegment_;
                 }
             }
             else if(elements < length)
             {
                 auto elementsLeft = length - elements;
-                const removedFromLastSegment = min(elementsLeft, lastSegmentUsed_);
-                const oldLastSegmentUsed = lastSegmentUsed_;
-                lastSegmentUsed_ -= removedFromLastSegment;
+                const removedFromLastSegment = min(elementsLeft, usedInLastSegment_);
+                const oldLastSegmentUsed = usedInLastSegment_;
+                usedInLastSegment_ -= removedFromLastSegment;
                 elementsLeft -= removedFromLastSegment;
 
                 //Destroy removed elements.
-                foreach(ref elem; segments_.back[lastSegmentUsed_ .. oldLastSegmentUsed])
+                foreach(ref elem; segments_.back[usedInLastSegment_ .. oldLastSegmentUsed])
                 {
                     clear(elem);
                 }
@@ -202,8 +208,8 @@ align(4) struct SegmentedVector(T, long segmentSize = 1024)
                 {
                     //Destroys elements automatically.
                     segments_.length = segments_.length - 1;
-                    lastSegmentUsed_ = cast(uint)max(0, segmentSize - cast(long)elementsLeft);
-                    elementsLeft -= (segmentSize - lastSegmentUsed_);
+                    usedInLastSegment_ = cast(uint)max(0, segmentSize - cast(long)elementsLeft);
+                    elementsLeft -= (segmentSize - usedInLastSegment_);
                 }
             }
         }

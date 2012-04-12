@@ -148,15 +148,15 @@ struct Vector2(T)
      *
      * Returns: Dot product of this and the other vector.
      */
-    T dotProduct(const Vector2 v) const pure {return cast(T)(x * v.x + y * v.y);}
+    T dotProduct(const Vector2 v) const pure nothrow {return cast(T)(x * v.x + y * v.y);}
 
     ///Get normal of this vector (a pependicular vector).
-    @property Vector2 normal() const pure {return Vector2(-y, x);}
+    @property Vector2 normal() const pure nothrow {return Vector2(-y, x);}
 
     /**
      * Turns this into a unit vector.
      */
-    void normalize() pure
+    void normalize() pure nothrow
     {
         const len = length();
         if(equals(length, cast(T)0)){return;}
@@ -166,7 +166,7 @@ struct Vector2(T)
     }
 
     ///Get unit vector of this vector. Result is undefined if this is a zero vector.
-    @property Vector2 normalized() const pure
+    @property Vector2 normalized() const pure nothrow
     {
         Vector2 normalized = this;
         normalized.normalize();
@@ -174,7 +174,7 @@ struct Vector2(T)
     }
 
     ///Turn this vector into a zero vector.
-    void setZero() pure {x = y = cast(T)0;}
+    void setZero() pure nothrow {x = y = cast(T)0;}
 
     ///Is this a zero vector?
     bool isZero() pure const nothrow {return equals(x, cast(T)0) && equals(y, cast(T)0);}
@@ -189,7 +189,7 @@ struct Vector2(T)
      * Vector2f V_float = v_uint.to!float
      * --------------------
      */                  
-    @property Vector2!T to(T)() const pure if(isNumeric!T)
+    @property Vector2!T to(T)() const pure nothrow if(isNumeric!T)
     {
         return Vector2!T(cast(T)x, cast(T)y);
     }

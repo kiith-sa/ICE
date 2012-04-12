@@ -26,11 +26,13 @@ import util.yaml;
 import component.collidablecomponent;
 import component.controllercomponent;
 import component.deathtimeoutcomponent;
+import component.dumbscriptcomponent;
 import component.enginecomponent;
 import component.exceptions;
 import component.healthcomponent;
 import component.ownercomponent;
 import component.physicscomponent;
+import component.playercomponent;
 import component.visualcomponent;
 import component.volumecomponent;
 import component.warheadcomponent;
@@ -60,7 +62,9 @@ tuple
     "CollidableComponent",
     "WarheadComponent",
     "HealthComponent",
-    "OwnerComponent"
+    "OwnerComponent",
+    "PlayerComponent",
+    "DumbScriptComponent"
 );
 
 ///Enforce at compile time that all component type names are valid.
@@ -116,6 +120,17 @@ string arrayName(string componentType) pure nothrow
 {
     assertIsComponent(componentType);
     return toLowerCtfe(componentType[0]) ~ componentType[1 .. $] ~ "s_";
+}
+
+///Is name a camelCased name of a component type (e.g. a component member in a prototype)?
+bool isCamelCasedComponentName(string name)
+{
+    foreach(c; componentTypes)
+    {
+        enum camelCased = c.nameCamelCased;
+        if(camelCased == name){return true;}
+    }
+    return false;
 }
 
 ///Generate an component type ID enum. Each value has the bit corresponding to its type set.
@@ -332,12 +347,20 @@ struct EntityPrototype
             return result;
         }
 
+        @disable this(this);
+
+        @disable void opAssign(ref EntityPrototype);
+
     public:
         mixin(ctfeComponents());
 
         /**
-         * Load an EntityPrototype from YAML.
+         * Load an EntityPrototype from a YAML mapping.
          *
+         * Keys in the mapping must be camelCased component type names.
+         * E.g. physics for PhysicsComponent or deathTimeout for 
+         * DeathTimeoutComponent.
+         * 
          * Params:  name = Name of the prototype (used for debugging).
          *          yaml = YAML node to load from.
          *
@@ -356,6 +379,70 @@ struct EntityPrototype
             }
         }
 
+        ///Turn this prototype into a clone of rhs (i.e. copy rhs's components).
+        void clone(ref EntityPrototype rhs)
+        {
+            foreach(c; componentTypes)
+            {
+                if(rhs.component!c.isNull)
+                {
+                    component!c.nullify();
+                }
+                else
+                {
+                    //This should be the following code:
+                    //
+                    //component!c = rhs.component!c;
+                    //
+                    //It's written in this way to avoid a compiler bug
+                    //that prevents postblit constructor from being called.
+                    auto proxy = move(rhs.component!c);
+                    component!c = proxy;
+                }
+            }
+        }
+
+        /**
+         * Override components of this prototype from specified YAML mapping.
+         *
+         * Any keys in the mapping that don't match a component name will be ignored.
+         */
+        void overrideComponents(ref YAMLNode yaml)
+        {
+            foreach(string key, ref YAMLNode value; yaml)
+            {
+                if(isCamelCasedComponentName(key))
+                {
+                    loadComponent(key, value);
+                }
+            }
+        }
+                     
+        ///Return a string represenation of the prototype.
+        string toString() const
+        {
+            string result = "EntityPrototype:\n";
+            foreach(c; componentTypes)
+            {
+                mixin("enum hasToString = hasMember!(" ~ c ~ ", \"toString\");");
+                mixin("const isNull = " ~ c.nameCamelCased ~ ".isNull;");
+                if(!isNull)
+                {
+                    static if(hasToString)
+                    {
+                        result ~= "  " ~ c ~ ":\n" ~
+                                  "    " ~ this.componentConst!(c).toString() ~ "\n";
+                    }
+                    else 
+                    {
+                        result ~= "  " ~ c ~ ":\n" ~
+                                  "    " ~ to!string(this.componentConst!(c)()) ~ "\n";
+                    }
+                }
+            }
+            return result;
+        }
+
     private:
         ///Does this prototype have a component of specified type?
         @property bool hasComponent(string componentType)() const
@@ -364,9 +451,15 @@ struct EntityPrototype
         }
 
         ///Get a reference to the component of specified type.
-        @property ref auto component(string componentType)() 
+        @property ref auto component(string componentType)()
         {
-            mixin("return " ~ componentType.nameCamelCased ~ ".get;");
+            mixin("return " ~ componentType.nameCamelCased ~ ";");
+        }
+
+        ///Get a const reference to the component of specified type.
+        @property ref const auto componentConst(string componentType)() const
+        {
+            mixin("return " ~ componentType.nameCamelCased ~ ";");
         }
 
         /**
@@ -390,6 +483,7 @@ struct EntityPrototype
             writeln("WARNING: unknown component type: \"", name, "\". Ignoring.");
         }
 }
+pragma(msg, "EntityPrototype size is " ~ to!string(EntityPrototype.sizeof));
 
 /**
  * Stores game entities and their components and provides access to them.
@@ -478,7 +572,7 @@ class EntitySystem
             entityConstructStart();
             foreach(type; componentTypes) if(proto.hasComponent!type)
             {
-                entityConstructAddComponent(proto.component!type);
+                entityConstructAddComponent(proto.component!type.get);
             }
             return entityConstructFinish();
         }

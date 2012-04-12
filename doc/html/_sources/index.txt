@@ -11,3 +11,4 @@ Tutorials:
 
    tutorials/install_source_linux
    tutorials/install_source_windows
+   tutorials/modding

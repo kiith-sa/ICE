@@ -24,24 +24,37 @@
 <div class="navblock">
 <ul><li><a href="index.html">Main page</a></li>
 <li><a href="color.html">color</a></li>
+<li><a href="component.collidablecomponent.html">component.collidablecomponent</a></li>
+<li><a href="component.collisionresponsesystem.html">component.collisionresponsesystem</a></li>
+<li><a href="component.collisionsystem.html">component.collisionsystem</a></li>
 <li><a href="component.controllercomponent.html">component.controllercomponent</a></li>
 <li><a href="component.controllersystem.html">component.controllersystem</a></li>
 <li><a href="component.deathtimeoutcomponent.html">component.deathtimeoutcomponent</a></li>
+<li><a href="component.dumbscriptcomponent.html">component.dumbscriptcomponent</a></li>
 <li><a href="component.enginecomponent.html">component.enginecomponent</a></li>
 <li><a href="component.enginesystem.html">component.enginesystem</a></li>
 <li><a href="component.entitysystem.html">component.entitysystem</a></li>
 <li><a href="component.exceptions.html">component.exceptions</a></li>
+<li><a href="component.healthcomponent.html">component.healthcomponent</a></li>
+<li><a href="component.healthsystem.html">component.healthsystem</a></li>
+<li><a href="component.ownercomponent.html">component.ownercomponent</a></li>
 <li><a href="component.physicscomponent.html">component.physicscomponent</a></li>
 <li><a href="component.physicssystem.html">component.physicssystem</a></li>
+<li><a href="component.playercomponent.html">component.playercomponent</a></li>
+<li><a href="component.spatialsystem.html">component.spatialsystem</a></li>
 <li><a href="component.system.html">component.system</a></li>
 <li><a href="component.timeoutsystem.html">component.timeoutsystem</a></li>
 <li><a href="component.visualcomponent.html">component.visualcomponent</a></li>
 <li><a href="component.visualsystem.html">component.visualsystem</a></li>
+<li><a href="component.volumecomponent.html">component.volumecomponent</a></li>
+<li><a href="component.warheadcomponent.html">component.warheadcomponent</a></li>
+<li><a href="component.warheadsystem.html">component.warheadsystem</a></li>
 <li><a href="component.weaponcomponent.html">component.weaponcomponent</a></li>
 <li><a href="component.weaponsystem.html">component.weaponsystem</a></li>
 <li><a href="containers.array2d.html">containers.array2d</a></li>
 <li><a href="containers.fixedarray.html">containers.fixedarray</a></li>
 <li><a href="containers.lazyarray.html">containers.lazyarray</a></li>
+<li><a href="containers.segmentedvector.html">containers.segmentedvector</a></li>
 <li><a href="containers.vector.html">containers.vector</a></li>
 <li><a href="formats.cli.html">formats.cli</a></li>
 <li><a href="formats.image.html">formats.image</a></li>
@@ -64,6 +77,7 @@
 <li><a href="ice.game.html">ice.game</a></li>
 <li><a href="ice.hud.html">ice.hud</a></li>
 <li><a href="ice.ice.html">ice.ice</a></li>
+<li><a href="ice.level.html">ice.level</a></li>
 <li><a href="ice.player.html">ice.player</a></li>
 <li><a href="image.html">image</a></li>
 <li><a href="math.math.html">math.math</a></li>
@@ -148,7 +162,7 @@
 <dd><p>Lower-right corner of the rectangle.</p>
 
 </dd>
-<dt class="d_decl">pure  this(const T <b>minX</b>, const T <b>minY</b>, const T <b>maxX</b>, const T <b>maxY</b>);
+<dt class="d_decl">pure nothrow  this(const T <b>minX</b>, const T <b>minY</b>, const T <b>maxX</b>, const T <b>maxY</b>);
 </dt>
 <dd><p>Construct a rectangle from 4 bounds.
 </p>
@@ -163,7 +177,7 @@
 </table></div>
 
 </dd>
-<dt class="d_decl">pure  this(const Vector2!(T) <b>min</b>, const Vector2!(T) <b>max</b>);
+<dt class="d_decl">pure nothrow  this(const Vector2!(T) <b>min</b>, const Vector2!(T) <b>max</b>);
 </dt>
 <dd><p>Construct a rectangle from 2 points.
 </p>
@@ -174,52 +188,52 @@
 </table></div>
 
 </dd>
-<dt class="d_decl">const pure Rect <a name="opBinary"></a><span class="ddoc_psymbol">opBinary</span>(string op)(const Vector2!(T) <b>v</b>);
+<dt class="d_decl">const pure nothrow Rect <a name="opBinary"></a><span class="ddoc_psymbol">opBinary</span>(string op)(const Vector2!(T) <b>v</b>);
 </dt>
 <dd><p>Addition/subtraction with a vector - used to move the rectangle. </p>
 
 </dd>
-<dt class="d_decl">pure void <a name="opOpAssign"></a><span class="ddoc_psymbol">opOpAssign</span>(string op)(const Vector2!(T) <b>v</b>);
+<dt class="d_decl">pure nothrow void <a name="opOpAssign"></a><span class="ddoc_psymbol">opOpAssign</span>(string op)(const Vector2!(T) <b>v</b>);
 </dt>
 <dd><p>Addition/subtraction with a vector - used to move the rectangle. </p>
 
 </dd>
-<dt class="d_decl">const pure Vector2!(T) <a name="center"></a><span class="ddoc_psymbol">center</span>();
+<dt class="d_decl">const pure nothrow Vector2!(T) <a name="center"></a><span class="ddoc_psymbol">center</span>();
 </dt>
 <dd><p>Returns <a name="center"></a><span class="ddoc_psymbol">center</span> of the rectangle.</p>
 
 </dd>
-<dt class="d_decl">const pure T <a name="width"></a><span class="ddoc_psymbol">width</span>();
+<dt class="d_decl">const pure nothrow T <a name="width"></a><span class="ddoc_psymbol">width</span>();
 </dt>
 <dd><p>Returns <a name="width"></a><span class="ddoc_psymbol">width</span> of the rectangle.</p>
 
 </dd>
-<dt class="d_decl">const pure T <a name="height"></a><span class="ddoc_psymbol">height</span>();
+<dt class="d_decl">const pure nothrow T <a name="height"></a><span class="ddoc_psymbol">height</span>();
 </dt>
 <dd><p>Returns <a name="height"></a><span class="ddoc_psymbol">height</span> of the rectangle.</p>
 
 </dd>
-<dt class="d_decl">const pure Vector2!(T) <a name="size"></a><span class="ddoc_psymbol">size</span>();
+<dt class="d_decl">const pure nothrow Vector2!(T) <a name="size"></a><span class="ddoc_psymbol">size</span>();
 </dt>
 <dd><p>Returns <a name="size"></a><span class="ddoc_psymbol">size</span> of the rectangle.</p>
 
 </dd>
-<dt class="d_decl">const pure T <a name="area"></a><span class="ddoc_psymbol">area</span>();
+<dt class="d_decl">const pure nothrow T <a name="area"></a><span class="ddoc_psymbol">area</span>();
 </dt>
 <dd><p>Returns <a name="area"></a><span class="ddoc_psymbol">area</span> of the rectangle.</p>
 
 </dd>
-<dt class="d_decl">const pure Vector2!(T) <a name="minMax"></a><span class="ddoc_psymbol">minMax</span>();
+<dt class="d_decl">const pure nothrow Vector2!(T) <a name="minMax"></a><span class="ddoc_psymbol">minMax</span>();
 </dt>
 <dd><p>Returns the lower-left corner of the rectangle.</p>
 
 </dd>
-<dt class="d_decl">const pure Vector2!(T) <a name="maxMin"></a><span class="ddoc_psymbol">maxMin</span>();
+<dt class="d_decl">const pure nothrow Vector2!(T) <a name="maxMin"></a><span class="ddoc_psymbol">maxMin</span>();
 </dt>
 <dd><p>Returns the upper-right corner of the rectangle.</p>
 
 </dd>
-<dt class="d_decl">const pure Vector2!(T) <a name="clamp"></a><span class="ddoc_psymbol">clamp</span>(const Vector2!(T) <b>point</b>);
+<dt class="d_decl">const pure nothrow Vector2!(T) <a name="clamp"></a><span class="ddoc_psymbol">clamp</span>(const Vector2!(T) <b>point</b>);
 </dt>
 <dd><p>Clamps <b>point</b> to be within the rectangle. (Returns the closest <b>point</b> in the rectangle)
 </p>
@@ -229,7 +243,7 @@
 <b>Returns:</b><div class="pbr">Clamped <b>point</b>.</div>
 
 </dd>
-<dt class="d_decl">const pure T <a name="distance"></a><span class="ddoc_psymbol">distance</span>(const Vector2!(T) <b>point</b>);
+<dt class="d_decl">const pure nothrow T <a name="distance"></a><span class="ddoc_psymbol">distance</span>(const Vector2!(T) <b>point</b>);
 </dt>
 <dd><p>Get <a name="distance"></a><span class="ddoc_psymbol">distance</span> from the <b>point</b> to the rectangle.
 </p>
@@ -239,7 +253,7 @@
 <b>Returns:</b><div class="pbr">Distance from the <b>point</b> to the rectangle.</div>
 
 </dd>
-<dt class="d_decl">const pure bool <a name="intersect"></a><span class="ddoc_psymbol">intersect</span>(const Vector2!(T) <b>point</b>);
+<dt class="d_decl">const pure nothrow bool <a name="intersect"></a><span class="ddoc_psymbol">intersect</span>(const Vector2!(T) <b>point</b>);
 </dt>
 <dd><p>Determines if a <b>point</b> intersects with the rectangle.
 </p>
@@ -249,9 +263,14 @@
 <b>Returns:</b><div class="pbr">True in case of intersection, <b>false</b> otherwise.</div>
 
 </dd>
-<dt class="d_decl">pure void <a name="addInternalPoint"></a><span class="ddoc_psymbol">addInternalPoint</span>(const Vector2!(T) <b>point</b>);
+<dt class="d_decl">pure nothrow void <a name="addInternalPoint"></a><span class="ddoc_psymbol">addInternalPoint</span>(const Vector2!(T) <b>point</b>);
 </dt>
 <dd><p>If the <b>point</b> is not in this rectangle, grow the rectangle to include it.</p>
+
+</dd>
+<dt class="d_decl">const pure nothrow bool <a name="valid"></a><span class="ddoc_psymbol">valid</span>();
+</dt>
+<dd><p>Is this rectangle <a name="valid"></a><span class="ddoc_psymbol">valid</span>?</p>
 
 </dd>
 </dl>

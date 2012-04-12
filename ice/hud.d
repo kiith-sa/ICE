@@ -9,11 +9,13 @@ module ice.hud;
 
 
 import std.algorithm;
+import std.array;
 import std.conv;
 
 import gui.guielement;
 import gui.guistatictext;
 import math.math;
+import time.gametime;
 
 
 ///In game HUD.
@@ -23,8 +25,11 @@ class HUD
         ///Parent of all HUD elements.
         GUIElement parent_;
 
-        ///Placeholder to show that the HUD exists.
-        GUIStaticText placeholder_;
+        ///Message text at the bottom of the HUD.
+        GUIStaticText messageText_;
+
+        ///Time left for the current message text to stay on the HUD.
+        float messageTextTimeLeft_ = 0.0f;
 
     public:
         /**
@@ -39,41 +44,55 @@ class HUD
             with(new GUIStaticTextFactory)
             {
                 x           = "p_left + 8";
-                y           = "p_top + 8";
-                width       = "96";
+                y           = "p_bottom - 24";
+                width       = "p_width - 16";
                 height      = "16";
-                fontSize    = 16;
+                fontSize    = 12;
                 font        = "orbitron-light.ttf";
                 alignX      = AlignX.Right;
-                placeholder_ = produce();
+                messageText_ = produce();
             }
 
-            parent_.addChild(placeholder_);
-            placeholder_.text = "HUD dummy";
+            parent_.addChild(messageText_);
         }
 
         ///Destroy the HUD.
         ~this()
         {
-            placeholder_.die();
+            messageText_.die();
         }
 
         /**
-         * Update the HUD.
+         * Update the game GUI, using game time subsystem to measure time.
          */
-        void update()
+        void update(const GameTime gameTime)
         {
+            if(!messageText_.text.empty)
+            {
+                messageTextTimeLeft_ -= gameTime.timeStep;
+                if(messageTextTimeLeft_ <= 0)
+                {
+                    messageText_.text = "";
+                }
+            }
         }
 
         ///Hide the HUD.
         void hide()
         {
-            placeholder_.hide();
+            messageText_.hide();
         }
 
         ///Show the HUD.
         void show()
         {
-            placeholder_.show();
+            messageText_.show();
+        }
+        
+        ///Set the message text on the bottom of the HUD for specified (game) time.
+        void messageText(string rhs, float time) 
+        {
+            messageText_.text = rhs;
+            messageTextTimeLeft_ = time;
         }
 }

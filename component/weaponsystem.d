@@ -16,6 +16,7 @@ import dgamevfs._;
 import containers.fixedarray;
 import containers.lazyarray;
 import math.vector2;
+import memory.memory;
 import time.gametime;
 import util.yaml;
 
@@ -141,7 +142,7 @@ class WeaponSystem : System
         LazyArray!WeaponData weaponData_;
 
         ///Lazily loads and stores projectile entity prototypes.
-        LazyArray!EntityPrototype projectilePrototypes_;
+        LazyArray!(EntityPrototype*) projectilePrototypes_;
 
     public:
         /**
@@ -154,6 +155,14 @@ class WeaponSystem : System
             gameTime_     = gameTime;
             weaponData_.loaderDelegate = &loadWeaponData;
             projectilePrototypes_.loaderDelegate = &loadProjectileData;
+        }
+
+        ~this()
+        {
+            foreach(prototypePtr; projectilePrototypes_)
+            {
+                free(prototypePtr);
+            }
         }
 
         ///Set game directory to load weapons and projectiles from.
@@ -263,14 +272,16 @@ class WeaponSystem : System
          */
         void fire(EntityID owner, ref PhysicsComponent physics, ref WeaponData.Shot shot) 
         {
-            EntityPrototype* prototype = projectilePrototypes_[shot.projectileIndex];
-            if(prototype is null)
+            EntityPrototype** prototypePtr = projectilePrototypes_[shot.projectileIndex];
+            if(prototypePtr is null)
             {
                 import std.stdio;
                 writeln("WARNING: Could not load projectile data ", shot.projectileIndex.id);
                 writeln("Falling back to placeholder projectile data...");
                 assert(false, "TODO - Placeholder projectile data not implemented");
             }
+
+            EntityPrototype* prototype = *prototypePtr;
 
             const direction = physics.rotation + shot.direction;
 
@@ -290,17 +301,19 @@ class WeaponSystem : System
         }
 
         ///Load projectile data from file with specified name to output.
-        bool loadProjectileData(string name, out EntityPrototype output)
+        bool loadProjectileData(string name, out EntityPrototype* output)
         {
             try 
             {
                 assert(gameDir_ !is null, 
                        "Trying to load a projectile but game directory has not been set");
                 auto yaml = loadYAML(gameDir_.file(name));
-                output = EntityPrototype(name, yaml);                                                
-                with(output) if(!engine.isNull)
+
+                output = alloc!EntityPrototype(name, yaml);
+
+                if(!output.engine.isNull)
                 {
-                    engine.get.accelerationDirection = Vector2f(0.0f, 1.0f);
+                    output.engine.get.accelerationDirection = Vector2f(0.0f, 1.0f);
                 }
             }
             catch(YAMLException e){return false;}

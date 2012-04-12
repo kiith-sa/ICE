@@ -24,24 +24,37 @@
 <div class="navblock">
 <ul><li><a href="index.html">Main page</a></li>
 <li><a href="color.html">color</a></li>
+<li><a href="component.collidablecomponent.html">component.collidablecomponent</a></li>
+<li><a href="component.collisionresponsesystem.html">component.collisionresponsesystem</a></li>
+<li><a href="component.collisionsystem.html">component.collisionsystem</a></li>
 <li><a href="component.controllercomponent.html">component.controllercomponent</a></li>
 <li><a href="component.controllersystem.html">component.controllersystem</a></li>
 <li><a href="component.deathtimeoutcomponent.html">component.deathtimeoutcomponent</a></li>
+<li><a href="component.dumbscriptcomponent.html">component.dumbscriptcomponent</a></li>
 <li><a href="component.enginecomponent.html">component.enginecomponent</a></li>
 <li><a href="component.enginesystem.html">component.enginesystem</a></li>
 <li><a href="component.entitysystem.html">component.entitysystem</a></li>
 <li><a href="component.exceptions.html">component.exceptions</a></li>
+<li><a href="component.healthcomponent.html">component.healthcomponent</a></li>
+<li><a href="component.healthsystem.html">component.healthsystem</a></li>
+<li><a href="component.ownercomponent.html">component.ownercomponent</a></li>
 <li><a href="component.physicscomponent.html">component.physicscomponent</a></li>
 <li><a href="component.physicssystem.html">component.physicssystem</a></li>
+<li><a href="component.playercomponent.html">component.playercomponent</a></li>
+<li><a href="component.spatialsystem.html">component.spatialsystem</a></li>
 <li><a href="component.system.html">component.system</a></li>
 <li><a href="component.timeoutsystem.html">component.timeoutsystem</a></li>
 <li><a href="component.visualcomponent.html">component.visualcomponent</a></li>
 <li><a href="component.visualsystem.html">component.visualsystem</a></li>
+<li><a href="component.volumecomponent.html">component.volumecomponent</a></li>
+<li><a href="component.warheadcomponent.html">component.warheadcomponent</a></li>
+<li><a href="component.warheadsystem.html">component.warheadsystem</a></li>
 <li><a href="component.weaponcomponent.html">component.weaponcomponent</a></li>
 <li><a href="component.weaponsystem.html">component.weaponsystem</a></li>
 <li><a href="containers.array2d.html">containers.array2d</a></li>
 <li><a href="containers.fixedarray.html">containers.fixedarray</a></li>
 <li><a href="containers.lazyarray.html">containers.lazyarray</a></li>
+<li><a href="containers.segmentedvector.html">containers.segmentedvector</a></li>
 <li><a href="containers.vector.html">containers.vector</a></li>
 <li><a href="formats.cli.html">formats.cli</a></li>
 <li><a href="formats.image.html">formats.image</a></li>
@@ -64,6 +77,7 @@
 <li><a href="ice.game.html">ice.game</a></li>
 <li><a href="ice.hud.html">ice.hud</a></li>
 <li><a href="ice.ice.html">ice.ice</a></li>
+<li><a href="ice.level.html">ice.level</a></li>
 <li><a href="ice.player.html">ice.player</a></li>
 <li><a href="image.html">image</a></li>
 <li><a href="math.math.html">math.math</a></li>
@@ -151,15 +165,19 @@
  If game updates get too slow, they slow down while the game tick length
  is preserved, resulting in a gameplay slowdown.</p>
 
-<dl><dt class="d_decl">void <a name="doGameUpdates"></a><span class="ddoc_psymbol">doGameUpdates</span>(void delegate() <b>updateDeleg</b>);
+<dl><dt class="d_decl">void <a name="doGameUpdates"></a><span class="ddoc_psymbol">doGameUpdates</span>(int delegate() <b>updateDeleg</b>);
 </dt>
 <dd><p>Run as many game updates as needed based on how much time has passed.
 </p>
 <p>Passed delegate should update any game subsystems or other state that
  needs to be updated in synchronization with game ticks.
+<br>
+
+ The delegate should return 0 normally, and 1 if the game updates
+ must be interrupted (e.g. at the end of game).
 
 </p>
-<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>void delegate() <b>updateDeleg</b></td>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>int delegate() <b>updateDeleg</b></td>
 <td valign=top>Delegate used to update game state.</td></tr>
 </table></div>
 

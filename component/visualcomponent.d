@@ -21,7 +21,7 @@ import util.yaml;
  * VisualComponent only has a name of a graphics resource, which is lazily 
  * loaded by VisualSystem.
  */
-align(4) struct VisualComponent
+struct VisualComponent
 {
     ///Index to visual data in a lazy array in VisualSystem.
     LazyArrayIndex dataIndex;

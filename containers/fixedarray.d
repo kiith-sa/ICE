@@ -120,8 +120,17 @@ align(4) struct FixedArray(T)
         in{assert(index < data_.length, "FixedArray index out of bounds");}
         body{return data_[index];}
 
+    /* Disable for non-copyable data types 
+     *
+     * We also require T.init here, but we already require that
+     * for the FixedArray itself.
+     */
+    static if(__traits(compiles, FixedArray!T().data_[0] = T.init))
+    {
         /**
          * Set element at the specified index.
+         *
+         * This method only exists if T is copyable.
          *
          * Params:  index = Index of the element to set. Must be within bounds. 
          */
@@ -132,14 +141,10 @@ align(4) struct FixedArray(T)
             data_[index] = value;
         }
 
-        ///Set all elements in the array to specified value.
-        void opSliceAssign(T value) nothrow
-        {
-            data_[0 .. $] = value;
-        }
-
         /**
          * Assign a slice of the array from a D array.
+         *
+         * This method only exists if T is copyable.
          *
          * Params:  array = Array to assign to.
          *          start = Start of the slice.
@@ -156,6 +161,7 @@ align(4) struct FixedArray(T)
         {
             data_[start .. end] = array[0 .. $];
         }
+    }
 
         /**
          * Get a slice of the array as a D array.
@@ -181,10 +187,10 @@ align(4) struct FixedArray(T)
         ref inout(T) back() inout pure nothrow {return data_[$ - 1];}
 
         ///Get number of elements in the array.
-        @property size_t length() const pure {return data_.length;}
+        @property size_t length() const pure nothrow {return data_.length;}
 
         ///Is the array empty?
-        @property bool empty() const pure {return data_.length == 0;}
+        @property bool empty() const pure nothrow {return data_.length == 0;}
 }
 ///Unittest for FixedArray.
 unittest
@@ -224,8 +230,5 @@ unittest
         assert(canFind(fixed[], i));
         i++;
     }
-
-    fixed[] = 1;
-    assert(fixed[] == [1, 1, 1, 1]);
 }
 

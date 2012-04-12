@@ -16,8 +16,14 @@ import std.typecons;
 import containers.vector;
 
 
-///Index to a LazyArray. ID specifies type of resource identifier.
-align(4) struct LazyArrayIndex_(ID = string)
+/**
+ * Index to a LazyArray. ID specifies type of resource identifier.
+ *
+ * Note: DO NOT change alignment here as it causes a gc bug
+ *       that garbage collects the id_ string even if it's
+ *       still used.
+ */
+struct LazyArrayIndex_(ID = string)
 {
     private:
         ///Identifier of the resource.
@@ -28,7 +34,7 @@ align(4) struct LazyArrayIndex_(ID = string)
 
     public:
         ///Get the resource identitifer.
-        @property ID id() const pure nothrow {return id_;}
+        @property const(ID) id() const pure nothrow {return id_;}
 
         ///Is the resource loaded?
         @property bool loaded() const pure nothrow {return index_ != uint.max;}
@@ -96,7 +102,7 @@ struct LazyArray(T, ID = string)
                 //Resource id must be valid.
                 static if(isArray!ID || is(ID == class))
                 {
-                    assert(index.id_ !is null, 
+                    assert(index.id !is null, 
                            "Indexing a lazy array with an index that has a null "
                            "resource identifier");
                 }

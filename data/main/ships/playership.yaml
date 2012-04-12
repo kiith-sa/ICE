@@ -7,7 +7,7 @@ volume:
     min: [-32, -32]
     max: [32,  0]
 weapon:
-  0: weapons/defaultweapon.yaml
+  0: weapons/default.yaml
 collidable:
 health: 500
 warhead:
