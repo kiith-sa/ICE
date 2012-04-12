@@ -1,0 +1,11 @@
+type: lines
+vertices:
+  !!pairs
+  - color:  rgba10000000
+  - vertex: [-2.0, 0.0]
+  - color:  rgbA0A0FF
+  - vertex: [-2.0, -12.0]
+
+  - vertex: [2.0,  -12.0]
+  - color:  rgba10000000
+  - vertex: [2.0,  0.0]

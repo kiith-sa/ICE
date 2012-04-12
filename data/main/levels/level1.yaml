@@ -15,7 +15,7 @@ level:
   - wait: 2.0
   - wave: wave1
   - wait: 5.0
-  - text: Lorem Ipsum  #at top or bottom of screen 
+  - text: Lorem Ipsum  #in HUD
   - wait: 5.0
   - text: Level done!
 
