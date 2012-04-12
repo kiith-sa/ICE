@@ -66,7 +66,7 @@ align(4) struct Vector(T)
         int opApply(int delegate(ref T) dg)
         {
             int result = 0;
-            debug{const dataptr = data_.ptr;}
+            const dataptr = data_.ptr;
             foreach(i; 0 .. used_)
             {
                 assert(dataptr is data_.ptr, 
@@ -88,7 +88,7 @@ align(4) struct Vector(T)
         int opApply(int delegate(size_t, ref T) dg)
         {
             int result = 0;
-            debug{const dataptr = data_.ptr;}
+            const dataptr = data_.ptr;
             foreach(i; 0 .. used_)
             {
                 assert(dataptr is data_.ptr, 
