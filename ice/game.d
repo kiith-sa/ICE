@@ -67,6 +67,16 @@ class GameGUI
         HUD hud_;
 
     public:
+        ///Show the HUD.
+        void showHUD(){hud_.show();}
+
+        ///Set the message text on the bottom of the HUD for specified time in seconds.
+        void messageText(string text, float time) 
+        {
+            hud_.messageText(text, time);
+        }
+
+    private:
         /**
          * Construct a GameGUI with specified parameters.
          *
@@ -79,15 +89,12 @@ class GameGUI
             hud_.hide();
         }
 
-        ///Show the HUD.
-        void showHUD(){hud_.show();}
-
         /**
-         * Update the game GUI.
+         * Update the game GUI, using game time subsystem to measure time.
          */
-        void update()
+        void update(const GameTime gameTime)
         {
-            hud_.update();
+            hud_.update(gameTime);
         }
 
         ///Destroy the game GUI.
@@ -206,19 +213,19 @@ class Game
         {
             if(!continue_){return false;}
 
-            player1_.update();
-
-            gui_.update();
-
             //Does as many game logic updates as needed (even zero)
             //to keep constant game update tick.
             gameTime_.doGameUpdates
             ({
+                player1_.update();
+                gui_.update(gameTime_);
+
                 entitySystem_.update();
 
-                if(!level_.update())
+                if(!level_.update(gui_))
                 {
-                    continue_ = false;
+                    endGame();
+                    return 1;
                 }
 
                 controllerSystem_.update();
@@ -231,7 +238,14 @@ class Game
                 collisionResponseSystem_.update();
                 healthSystem_.update();
                 timeoutSystem_.update();
+
+                return 0;
             });
+
+            //Game might have been ended after a level update,
+            //which left the component subsystems w/o update,
+            //so don't draw either.
+            if(!continue_){return false;}
 
             visualSystem_.update();
 
@@ -278,6 +292,8 @@ class Game
                                              "initialize ships: " ~ e.msg);
             }
 
+            gui_.showHUD();
+
             continue_ = true;
             platform_.key.connect(&keyHandler);
         }
@@ -314,8 +330,8 @@ class Game
         /**
          * Construct a Game.
          *
-         * Params:  platform     = Platform used for input.
-         *          gui          = Game GUI.
+         * Params:  platform = Platform used for input.
+         *          gui      = Game GUI.
          */
         this(Platform platform, GameGUI gui)
         {

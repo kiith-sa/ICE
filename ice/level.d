@@ -26,6 +26,8 @@ import memory.memory;
 import time.gametime;
 import util.yaml;
 
+import ice.game;
+
 
 ///Thrown when the level fails to initialize.
 class LevelInitializationFailureException : Exception 
@@ -93,14 +95,14 @@ abstract class Level
          * Returns: true if the level is still running, false if the level has been 
          *          finished.
          */
-        bool update();
+        bool update(GameGUI gui);
 }
 
 /**
  * Level implementation based on a dumb YAML script.
  *
- * The level script is composed of definitions of "waves" (groups of enemies
- * spawned simultaneously) and of the script itself, which specifies when to 
+ * A level is composed of definitions of "waves" (groups of enemies
+ * spawned simultaneously) and of a level script, which specifies when to 
  * spawn a wave.
  *
  * Example:
@@ -129,7 +131,7 @@ abstract class Level
  *
  * Wave definition:
  *
- * A wave definition starts by a mapping key named $(B wave xxx) where xxx is 
+ * A wave definition starts with a mapping key named $(B wave xxx) where xxx is 
  * the name of the wave. Wave names $(B must not contain spaces) .
  *
  * There can be any number of wave definitions, but there must not be two 
@@ -144,7 +146,7 @@ abstract class Level
  *
  * Level script:
  *
- * The level script starts by a mapping key named $(B level), and is composed of
+ * The level script starts with a mapping key named $(B level), and is composed of
  * pairs of instructions and their parameters.
  *
  * Current DumbLevel instructions:
@@ -394,7 +396,7 @@ class DumbLevel : Level
             }
         }
 
-        override bool update() 
+        override bool update(GameGUI gui) 
         {
             instructionTime_ += gameTime_.timeStep;
             //Process the instructions until we're done with the level script
@@ -423,8 +425,7 @@ class DumbLevel : Level
                         //so interrupt execution for now.
                         break interrupt;
                     case Instruction.Type.Text:
-                        writeln("Level text (TODO this should be in HUD):",
-                                instruction.as!Text.text);
+                        gui.messageText(instruction.as!Text.text, 3.0f);
                         nextInstruction();
                         break;
                 }

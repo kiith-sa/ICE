@@ -82,7 +82,7 @@ abstract class VideoDriver : Monitorable
          * Throws: VideoDriverException on failure.   
          */ 
         void setVideoMode(const uint width, const uint height, 
-                            const ColorFormat format, const bool fullscreen);
+                          const ColorFormat format, const bool fullscreen);
 
         /**
          * Start drawing a frame. 
