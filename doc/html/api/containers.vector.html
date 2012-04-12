@@ -24,24 +24,37 @@
 <div class="navblock">
 <ul><li><a href="index.html">Main page</a></li>
 <li><a href="color.html">color</a></li>
+<li><a href="component.collidablecomponent.html">component.collidablecomponent</a></li>
+<li><a href="component.collisionresponsesystem.html">component.collisionresponsesystem</a></li>
+<li><a href="component.collisionsystem.html">component.collisionsystem</a></li>
 <li><a href="component.controllercomponent.html">component.controllercomponent</a></li>
 <li><a href="component.controllersystem.html">component.controllersystem</a></li>
 <li><a href="component.deathtimeoutcomponent.html">component.deathtimeoutcomponent</a></li>
+<li><a href="component.dumbscriptcomponent.html">component.dumbscriptcomponent</a></li>
 <li><a href="component.enginecomponent.html">component.enginecomponent</a></li>
 <li><a href="component.enginesystem.html">component.enginesystem</a></li>
 <li><a href="component.entitysystem.html">component.entitysystem</a></li>
 <li><a href="component.exceptions.html">component.exceptions</a></li>
+<li><a href="component.healthcomponent.html">component.healthcomponent</a></li>
+<li><a href="component.healthsystem.html">component.healthsystem</a></li>
+<li><a href="component.ownercomponent.html">component.ownercomponent</a></li>
 <li><a href="component.physicscomponent.html">component.physicscomponent</a></li>
 <li><a href="component.physicssystem.html">component.physicssystem</a></li>
+<li><a href="component.playercomponent.html">component.playercomponent</a></li>
+<li><a href="component.spatialsystem.html">component.spatialsystem</a></li>
 <li><a href="component.system.html">component.system</a></li>
 <li><a href="component.timeoutsystem.html">component.timeoutsystem</a></li>
 <li><a href="component.visualcomponent.html">component.visualcomponent</a></li>
 <li><a href="component.visualsystem.html">component.visualsystem</a></li>
+<li><a href="component.volumecomponent.html">component.volumecomponent</a></li>
+<li><a href="component.warheadcomponent.html">component.warheadcomponent</a></li>
+<li><a href="component.warheadsystem.html">component.warheadsystem</a></li>
 <li><a href="component.weaponcomponent.html">component.weaponcomponent</a></li>
 <li><a href="component.weaponsystem.html">component.weaponsystem</a></li>
 <li><a href="containers.array2d.html">containers.array2d</a></li>
 <li><a href="containers.fixedarray.html">containers.fixedarray</a></li>
 <li><a href="containers.lazyarray.html">containers.lazyarray</a></li>
+<li><a href="containers.segmentedvector.html">containers.segmentedvector</a></li>
 <li><a href="containers.vector.html">containers.vector</a></li>
 <li><a href="formats.cli.html">formats.cli</a></li>
 <li><a href="formats.image.html">formats.image</a></li>
@@ -64,6 +77,7 @@
 <li><a href="ice.game.html">ice.game</a></li>
 <li><a href="ice.hud.html">ice.hud</a></li>
 <li><a href="ice.ice.html">ice.ice</a></li>
+<li><a href="ice.level.html">ice.level</a></li>
 <li><a href="ice.player.html">ice.player</a></li>
 <li><a href="image.html">image</a></li>
 <li><a href="math.math.html">math.math</a></li>
@@ -138,12 +152,12 @@
 </dt>
 <dd><p>Simple dynamic array with manually managed memory, with interface similar to D array.
 </p>
-<p>Only bare requirements are implemented. Can be improved if needed.
+<p><a name="Vector"></a><span class="ddoc_psymbol">Vector</span> reallocates its storage as new elements are added, moving its contents
+ in memory. It is therefore unsafe to keep pointers to its contents. If you
+ need such functionality, use SegmentedVector instead.
+<br>
 
-</p>
-<p><b>Note:</b><br>
-<a name="Vector"></a><span class="ddoc_psymbol">Vector</span> is buggy, in particular with respect to copying. It will be rewritten
- or replaced by std.containers.array in future. Use FixedArray if possible.</p>
+ Only bare requirements are implemented. Can be improved if needed.</p>
 
 <dl><dt class="d_decl">T[] <a name="data_"></a><span class="ddoc_psymbol">data_</span>;
 </dt>
@@ -155,11 +169,6 @@
 <dd><p>Used storage (number of items in the vector).</p>
 
 </dd>
-<dt class="d_decl">this(R)(R <b>range</b>);
-</dt>
-<dd><p>Construct a vector from a range.</p>
-
-</dd>
 <dt class="d_decl">const hash_t <a name="toHash"></a><span class="ddoc_psymbol">toHash</span>();
 </dt>
 <dd><p>Compute a hash.</p>
@@ -167,15 +176,15 @@
 </dd>
 <dt class="d_decl">int <a name="opApply"></a><span class="ddoc_psymbol">opApply</span>(int delegate(ref T) <b>dg</b>);
 </dt>
-<dd><p>Used by foreach.
+<dd><p>Foreach over values.
 </p>
 <p>Foreach will iterate over all elements of the vector in linear order
  from start to end.</p>
 
 </dd>
-<dt class="d_decl">int <a name="opApply"></a><span class="ddoc_psymbol">opApply</span>(int delegate(ref size_t, ref T) <b>dg</b>);
+<dt class="d_decl">int <a name="opApply"></a><span class="ddoc_psymbol">opApply</span>(int delegate(size_t, ref T) <b>dg</b>);
 </dt>
-<dd><p>Used by foreach.
+<dd><p>Foreach over indices and values.
 </p>
 <p>Foreach will iterate over all elements of the vector in linear order
  from start to end.</p>
@@ -186,9 +195,9 @@
 <dd><p>Append an element to the vector. (operator ~=)</p>
 
 </dd>
-<dt class="d_decl">void <a name="opCatAssign"></a><span class="ddoc_psymbol">opCatAssign</span>(R)(ref R <b>range</b>);
+<dt class="d_decl">void <a name="opCatAssign"></a><span class="ddoc_psymbol">opCatAssign</span>(A)(ref A <b>array</b>);
 </dt>
-<dd><p>Append contents of a range to the vector. (~= operator)</p>
+<dd><p>Append contents of a vector or an array to the vector.</p>
 
 </dd>
 <dt class="d_decl">void <a name="opAssign"></a><span class="ddoc_psymbol">opAssign</span>(ref Vector <b>v</b>);
@@ -211,7 +220,7 @@
 </table></div>
 
 </dd>
-<dt class="d_decl">const pure const(T) <a name="opIndex"></a><span class="ddoc_psymbol">opIndex</span>(const size_t <b>index</b>);
+<dt class="d_decl">inout pure nothrow inout(T) <a name="opIndex"></a><span class="ddoc_psymbol">opIndex</span>(const size_t <b>index</b>);
 </dt>
 <dd><p>Get element at the specified <b>index</b>.
 </p>
@@ -230,28 +239,28 @@
 </table></div>
 
 </dd>
-<dt class="d_decl">void <a name="opSliceAssign"></a><span class="ddoc_psymbol">opSliceAssign</span>(R)(R <b>range</b>, const size_t <b>start</b>, const size_t <b>end</b>);
+<dt class="d_decl">void <a name="opSliceAssign"></a><span class="ddoc_psymbol">opSliceAssign</span>(T[] <b>array</b>, const size_t <b>start</b>, const size_t <b>end</b>);
 </dt>
-<dd><p>Copy range to specified slice of the vector.
+<dd><p>Copy an <b>array</b> to specified slice of the vector.
 </p>
-<p>Range and slice length must match.
+<p>Array and slice length must match.
 
 </p>
-<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>range</td>
-<td valign=top>Range to copy.</td></tr>
-<tr><td valign=top>start</td>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>T[] <b>array</b></td>
+<td valign=top>Array to copy.</td></tr>
+<tr><td valign=top>size_t <b>start</b></td>
 <td valign=top>Start of the slice.</td></tr>
-<tr><td valign=top>end</td>
+<tr><td valign=top>size_t <b>end</b></td>
 <td valign=top>End of the slice.</td></tr>
 </table></div>
 
 </dd>
-<dt class="d_decl">void <a name="opSliceAssign"></a><span class="ddoc_psymbol">opSliceAssign</span>()(T <b>value</b>);
+<dt class="d_decl">nothrow void <a name="opSliceAssign"></a><span class="ddoc_psymbol">opSliceAssign</span>(T <b>value</b>);
 </dt>
-<dd><p>Set all elements in the vector to specified value.</p>
+<dd><p>Set all elements in the vector to specified <b>value</b>.</p>
 
 </dd>
-<dt class="d_decl">const const(T[]) <a name="opSlice"></a><span class="ddoc_psymbol">opSlice</span>(const size_t <b>start</b>, const size_t <b>end</b>);
+<dt class="d_decl">inout pure nothrow inout(T[]) <a name="opSlice"></a><span class="ddoc_psymbol">opSlice</span>(const size_t <b>start</b>, const size_t <b>end</b>);
 </dt>
 <dd><p>Get a slice of the vector as a D array.
 </p>
@@ -262,17 +271,17 @@
 </table></div>
 
 </dd>
-<dt class="d_decl">const const(T[]) <a name="opSlice"></a><span class="ddoc_psymbol">opSlice</span>();
+<dt class="d_decl">inout pure nothrow inout(T[]) <a name="opSlice"></a><span class="ddoc_psymbol">opSlice</span>();
 </dt>
 <dd><p>Get a slice of the whole vector as a D array.</p>
 
 </dd>
-<dt class="d_decl">const pure const(T) <a name="front"></a><span class="ddoc_psymbol">front</span>();
+<dt class="d_decl">inout pure nothrow inout(T) <a name="front"></a><span class="ddoc_psymbol">front</span>();
 </dt>
 <dd><p>Access the first element of the vector.</p>
 
 </dd>
-<dt class="d_decl">const pure const(T) <a name="back"></a><span class="ddoc_psymbol">back</span>();
+<dt class="d_decl">inout pure nothrow inout(T) <a name="back"></a><span class="ddoc_psymbol">back</span>();
 </dt>
 <dd><p>Access the last element of the vector.</p>
 
@@ -282,95 +291,42 @@
 <dd><p>Remove the last element of the vector.</p>
 
 </dd>
-<dt class="d_decl">const pure const(T*) <a name="ptr"></a><span class="ddoc_psymbol">ptr</span>(const size_t <b>index</b>);
+<dt class="d_decl">const pure nothrow const(T*) <a name="ptr"></a><span class="ddoc_psymbol">ptr</span>();
 </dt>
-<dd><p>Get a const pointer to element at the specified <b>index</b>.
+<dd><p>Access vector contents through a const pointer.
 </p>
-<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>size_t <b>index</b></td>
-<td valign=top>Index of the element to get. Must be within bounds.</td></tr>
-</table></div>
-<b>Returns:</b><div class="pbr">Pointer to the element at the specified <b>index</b>.</div>
+<p>Note that the returned pointer will become invalid once
+ the vector is reallocated.</p>
 
 </dd>
-<dt class="d_decl">const pure const(T*) <a name="ptr"></a><span class="ddoc_psymbol">ptr</span>();
+<dt class="d_decl">pure nothrow T* <a name="ptrUnsafe"></a><span class="ddoc_psymbol">ptrUnsafe</span>();
 </dt>
-<dd><p>Access vector contents through a const pointer.</p>
-
-</dd>
-<dt class="d_decl">pure T* <a name="ptrUnsafe"></a><span class="ddoc_psymbol">ptrUnsafe</span>();
-</dt>
-<dd><p>Access vector contents through a non-const pointer.</p>
-
-</dd>
-<dt class="d_decl">void <a name="remove"></a><span class="ddoc_psymbol">remove</span>(T <b>element</b>, const bool <b>ident</b> = false);
-</dt>
-<dd><p>Remove <b>element</b> from the vector.
+<dd><p>Access vector contents through a non-const pointer.
 </p>
-<p>All matching elements will be removed.
-
-</p>
-<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>T <b>element</b></td>
-<td valign=top>Element to <a name="remove"></a><span class="ddoc_psymbol">remove</span>.</td></tr>
-<tr><td valign=top>bool <b>ident</b></td>
-<td valign=top>If <b>true</b>, <a name="remove"></a><span class="ddoc_psymbol">remove</span> exactly elem (is elem) instead
-                    of anything equal to elem (== elem).
-                    Only makes sense for reference types.</td></tr>
-</table></div>
+<p>Note that the returned pointer will become invalid once
+ the vector is reallocated.</p>
 
 </dd>
-<dt class="d_decl">void <a name="remove"></a><span class="ddoc_psymbol">remove</span>(const bool delegate(ref T) <b>deleg</b>);
-</dt>
-<dd><p>Remove elements from vector with a function.
-</p>
-<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>bool delegate(ref T) <b>deleg</b></td>
-<td valign=top>Function determining whether to <a name="remove"></a><span class="ddoc_psymbol">remove</span> an element.
-                  Any element for which this function returns <b>true</b> is removed.</td></tr>
-</table></div>
-
-</dd>
-<dt class="d_decl">void <a name="removeAtIndex"></a><span class="ddoc_psymbol">removeAtIndex</span>(const size_t <b>index</b>);
-</dt>
-<dd><p>Remove element at specified <b>index</b>.
-</p>
-<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>size_t <b>index</b></td>
-<td valign=top>Index to remove at. Must be within bounds.</td></tr>
-</table></div>
-
-</dd>
-<dt class="d_decl">const bool <a name="contains"></a><span class="ddoc_psymbol">contains</span>(T <b>element</b>, const bool <b>ident</b> = false);
-</dt>
-<dd><p>Determine whether or not does the vector contain an <b>element</b>.
-</p>
-<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>T <b>element</b></td>
-<td valign=top>Element to look for.</td></tr>
-<tr><td valign=top>bool <b>ident</b></td>
-<td valign=top>If <b>true</b>, look exactly for elem (is elem) instead
-                    of anything equal to elem (== elem).
-                    Only makes sense for reference types.</td></tr>
-</table></div>
-<b>Returns:</b><div class="pbr">True if the vector <a name="contains"></a><span class="ddoc_psymbol">contains</span> the <b>element</b>, <b>false</b> otherwise.</div>
-
-</dd>
-<dt class="d_decl">const pure size_t <a name="length"></a><span class="ddoc_psymbol">length</span>();
+<dt class="d_decl">const pure nothrow size_t <a name="length"></a><span class="ddoc_psymbol">length</span>();
 </dt>
 <dd><p>Get number of elements in the vector.</p>
 
 </dd>
-<dt class="d_decl">const pure bool <a name="empty"></a><span class="ddoc_psymbol">empty</span>();
+<dt class="d_decl">const pure nothrow bool <a name="empty"></a><span class="ddoc_psymbol">empty</span>();
 </dt>
 <dd><p>Is the vector <a name="empty"></a><span class="ddoc_psymbol">empty</span>?</p>
 
 </dd>
-<dt class="d_decl">void <a name="length"></a><span class="ddoc_psymbol">length</span>(const size_t <a name="length"></a><span class="ddoc_psymbol">length</span>);
+<dt class="d_decl">void <a name="length"></a><span class="ddoc_psymbol">length</span>(const size_t <b>elements</b>);
 </dt>
 <dd><p>Change <a name="length"></a><span class="ddoc_psymbol">length</span> of the vector.
 </p>
-<p>If the <a name="length"></a><span class="ddoc_psymbol">length</span> will be lower than current <a name="length"></a><span class="ddoc_psymbol">length</span>, trailing elements will
+<p>If the <a name="length"></a><span class="ddoc_psymbol">length</span> will be lower than current <a name="length"></a><span class="ddoc_psymbol">length</span>, trailing <b>elements</b> will
  be erased. If higher, the vector will be expanded. Values of the extra
- elements after expansion are NOT defined.
+ <b>elements</b> after expansion are NOT defined.
 
 </p>
-<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>size_t <a name="length"></a><span class="ddoc_psymbol">length</span></td>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>size_t <b>elements</b></td>
 <td valign=top><a name="length"></a><span class="ddoc_psymbol">length</span> to set.</td></tr>
 </table></div>
 
@@ -380,7 +336,7 @@
 <dd><p>Reserve space for at least specified number of <b>elements</b>.</p>
 
 </dd>
-<dt class="d_decl">const pure size_t <a name="allocated"></a><span class="ddoc_psymbol">allocated</span>();
+<dt class="d_decl">const pure nothrow size_t <a name="allocated"></a><span class="ddoc_psymbol">allocated</span>();
 </dt>
 <dd><p>Get currently <a name="allocated"></a><span class="ddoc_psymbol">allocated</span> capacity.</p>
 
