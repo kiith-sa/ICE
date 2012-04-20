@@ -24,6 +24,7 @@ import component.controllersystem;
 import component.enginesystem;
 import component.entitysystem;
 import component.healthsystem;
+import component.ondeathsystem;
 import component.physicssystem;
 import component.spatialsystem;
 import component.timeoutsystem;
@@ -133,6 +134,10 @@ EntityID constructPlayerShip(string name,
 {
     import component.playercomponent;
 
+    //TEMP, replace this with useful on player death code.
+    import component.ondeathcomponent;
+    import std.stdio;
+
     auto prototype = EntityPrototype(name, yaml);
     with(prototype)
     {
@@ -140,6 +145,8 @@ EntityID constructPlayerShip(string name,
                                       Vector2f(0.0f, 0.0f));
         controller = ControllerComponent();
         player     = PlayerComponent(shipOwner);
+
+        onDeath    = OnDeathComponent((ref Entity dummy){writeln("PlayerShip onDeath");});
     }
     return system.newEntity(prototype);
 }
@@ -198,10 +205,11 @@ class Game
         WarheadSystem           warheadSystem_;
         ///Handles entity health and kills entities when they run out of health.
         HealthSystem            healthSystem_;
+        ///Handles callbacks on death of entities.
+        OnDeathSystem           onDeathSystem_;
 
         ///Level the game is running.
         Level level_;
-
 
     public:
         /**
@@ -238,6 +246,7 @@ class Game
                 collisionResponseSystem_.update();
                 healthSystem_.update();
                 timeoutSystem_.update();
+                onDeathSystem_.update();
 
                 return 0;
             });
@@ -357,6 +366,7 @@ class Game
             collisionResponseSystem_ = new CollisionResponseSystem(entitySystem_);
             warheadSystem_           = new WarheadSystem(entitySystem_);
             healthSystem_            = new HealthSystem(entitySystem_);
+            onDeathSystem_           = new OnDeathSystem(entitySystem_);
         }
 
         ///Destroy the Game.
@@ -373,6 +383,7 @@ class Game
             clear(spatialSystem_);
             clear(warheadSystem_);
             clear(healthSystem_);
+            clear(onDeathSystem_);
 
             clear(player1_);
 
