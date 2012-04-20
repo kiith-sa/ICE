@@ -30,6 +30,7 @@ import component.dumbscriptcomponent;
 import component.enginecomponent;
 import component.exceptions;
 import component.healthcomponent;
+import component.ondeathcomponent;
 import component.ownercomponent;
 import component.physicscomponent;
 import component.playercomponent;
@@ -64,7 +65,8 @@ tuple
     "HealthComponent",
     "OwnerComponent",
     "PlayerComponent",
-    "DumbScriptComponent"
+    "DumbScriptComponent",
+    "OnDeathComponent"
 );
 
 ///Enforce at compile time that all component type names are valid.
@@ -261,6 +263,17 @@ struct Entity
         body
         {
             components_ |= ComponentType.FLIP_VALIDITY;
+        }
+
+        ///Has this entity been killed during current update?
+        @property bool killed() const pure nothrow 
+        in
+        {
+            assert(valid, "Determining if an invalid entity has been killed this update");
+        }
+        body
+        {
+            return cast(bool)(components_ & ComponentType.FLIP_VALIDITY);
         }
 
         ///Getters to access components of this entity.
