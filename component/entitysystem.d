@@ -562,11 +562,15 @@ class EntitySystem
         ///ID of the next entity to construct.
         ulong nextEntityID_ = 0;
 
+        ///Maps entity IDs to entity pointers.
+        Entity*[EntityID] idToEntity_;
+
     public:
         ///Destroy all entities and components, returning to initial state.
         void destroy()
         {
             clear(entities_);
+            clear(idToEntity_);
             foreach(type; componentTypes)
             {
                 mixin
@@ -604,6 +608,23 @@ class EntitySystem
         }
 
         /**
+         * Get a reference to the entity with specified ID.
+         *
+         * This is the safe way to keep "pointers" to entities between game updates.
+         */
+        final ref Entity entityWithID(const ref EntityID id)
+        in
+        {
+            assert(null !is (id in idToEntity_) &&
+                   null !is *(id in idToEntity_),
+                   "Trying to get an entity with nonexistent ID " ~ to!string(id));
+        }
+        body
+        {
+            return *(idToEntity_[id]);
+        }
+
+        /**
          * Update the EntitySystem.
          *
          * This should be called once per game logic update. This is where 
@@ -616,6 +637,28 @@ class EntitySystem
             {
                 if(entity.components_ & ComponentType.FLIP_VALIDITY)
                 {
+                    if(entity.valid)
+                    {
+                        assert(null !is (entity.id in idToEntity_) &&
+                               null !is *(entity.id in idToEntity_),
+                               "Removing entity ID that doesn't exist");
+
+                        //TEMP:
+                        //Due to a compiler bug, we're setting to null 
+                        //instead of removing here.
+                        //Once the bug is fixed, use remove and remove checks for 
+                        //null in all idToEntity_ related code/asserts.
+
+                        //idToEntity_.remove(entity.id);
+                        idToEntity_[entity.id] = null;
+                    }
+                    else
+                    {
+                        assert(null is (entity.id in idToEntity_) ||
+                               null is *(entity.id in idToEntity_),
+                               "Adding entity ID that already exists");
+                        idToEntity_[entity.id] = &entity;
+                    }
                     entity.flipValidity();
                 }
             }
