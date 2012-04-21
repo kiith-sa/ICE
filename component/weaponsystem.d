@@ -26,6 +26,7 @@ import component.deathtimeoutcomponent;
 import component.enginecomponent;
 import component.ownercomponent;
 import component.physicscomponent;
+import component.statisticscomponent;
 import component.visualcomponent;
 import component.weaponcomponent;
 import component.system;
@@ -202,65 +203,120 @@ class WeaponSystem : System
                     //Negative reloadTimeRemaining is no problem - we can reload if <= 0;
                     reloadTimeRemaining -= timeStep;
 
-                    //Handle a burst 
                     if(burstInProgress)
                     {
-                        assert(shotsSoFarThisBurst < weapon.shots.length, 
-                               "We seem to have shot more shots this burst than we have");
-                        //If we're out of time, force-shoot all remaining shots.
-                        bool flush = timeSinceLastBurst >= weapon.burstPeriod;
-                        //Fire anything with delay < timeSinceLastBurst .
-                        foreach(ref shot; weapon.shots[shotsSoFarThisBurst .. weapon.shots.length])
-                        {
-                            //Weapon[shots] is sorted by delay so we can break.
-                            if(!flush && shot.delay > timeSinceLastBurst)
-                            {
-                                break;
-                            }
-
-                            fire(e.id, physics, shot);
-                            ++shotsSoFarThisBurst;
-                        }
-
-                        //Done shooting.
-                        if(shotsSoFarThisBurst == weapon.shots.length)
-                        {
-                            finishBurst();
-                        }
+                        processBurst(weaponInstance, *weapon, physics, e.id);
                     }
 
                     //Start a burst if the player is firing and the time is right.
-                    if(firePressed && 
+                    if(firePressed &&
                        reloadTimeRemaining <= 0.0f &&
                        timeSinceLastBurst >= weapon.burstPeriod)
                     {
-                        //If weapon has limited ammo (0 means infinite), use up one unit.
-                        if(weapon.ammo > 0)
-                        {
-                            assert(ammoConsumed < weapon.ammo, 
-                                   "Firing but we've consumed all our ammo");
-                            ++ammoConsumed;
-
-                            //We've used up all ammo, start reloading.
-                            if(ammoConsumed == weapon.ammo)
-                            {
-                                reloadTimeRemaining = weapon.reloadTime;
-                                ammoConsumed        = 0;
-                            }
-                        }
-
-                        //We can only start a new burst after shooting out all
-                        //projectiles from the previous one.
-                        assert(!burstInProgress, 
-                               "Starting a burst but previous burst is still in "
-                               "progress");
-                        startBurst();
+                        initiateBurst(weaponInstance, *weapon, e.statistics);
                     }
                 }
             }
         }
 
     private:
+        /**
+         * Limited ammo logic called from weapon handling code when starting a burst.
+         *
+         * Params:  weaponInstance = Instance of the weapon we're processing.
+         *          weapon         = "Class" of the weapon.
+         */
+        static void processAmmo(ref WeaponComponent.Weapon weaponInstance,
+                                ref const WeaponData weapon) pure nothrow
+        {
+            assert(weapon.ammo != 0, "Calling processAmmo on a weapon with infinite ammo");
+
+            //Use up one unit if ammo and start reloading if we used all of it.
+            with(weaponInstance)
+            {
+                assert(ammoConsumed < weapon.ammo, 
+                       "Firing but we've consumed all our ammo");
+                ++ammoConsumed;
+
+                if(ammoConsumed < weapon.ammo){return;}
+
+                //We've used up all ammo, start reloading.
+                reloadTimeRemaining = weapon.reloadTime;
+                ammoConsumed        = 0;
+            }
+        }
+
+        /**
+         * Handles a burtst in progress, firing projectiles according to their delays.
+         *
+         * Params:  weaponInstance = Instance of the weapon we're processing.
+         *          weapon         = "Class" of the weapon.
+         *          physics        = Physics component of the firing entity.
+         *          id             = ID of the firing entity.
+         */
+        void processBurst(ref WeaponComponent.Weapon weaponInstance,
+                          ref WeaponData weapon,
+                          ref const PhysicsComponent physics,
+                          const EntityID id)
+        {
+            with(weaponInstance)
+            {
+                assert(shotsSoFarThisBurst < weapon.shots.length, 
+                       "We seem to have shot more shots this burst than we have");
+                //If we're out of time, force-shoot all remaining shots.
+                const flush = timeSinceLastBurst >= weapon.burstPeriod;
+                //Fire anything with delay < timeSinceLastBurst .
+                foreach(ref shot; weapon.shots[shotsSoFarThisBurst .. weapon.shots.length])
+                {
+                    const tooSoon = shot.delay > timeSinceLastBurst;
+                    //Weapon[shots] is sorted by delay so we can break.
+                    if(!flush && tooSoon){break;}
+
+                    fire(id, physics, shot);
+                    ++shotsSoFarThisBurst;
+                }
+
+                //Done shooting.
+                const doneAllShots = shotsSoFarThisBurst == weapon.shots.length;
+                if(doneAllShots){finishBurst();}
+            }
+        }
+
+        /**
+         * Start a burst, using up ammo and handling statistics if needed. 
+         *
+         * Params:  weaponInstance = Instance of the weapon we're processing.
+         *          weapon         = "Class" of the weapon.
+         *          statistics     = StatisticsComponent of the firing entity.
+         *                           null if there is no such component.
+         */
+        static void initiateBurst(ref WeaponComponent.Weapon weaponInstance,
+                                  ref const WeaponData weapon, 
+                                  StatisticsComponent* statistics)
+        {
+            with(weaponInstance)
+            {
+                //If the ammo is not infinite (0), use up ammo.
+                if(weapon.ammo != 0)
+                {
+                    processAmmo(weaponInstance, weapon);
+                }
+
+                //We can only start a new burst after shooting out all
+                //projectiles from the previous one.
+                assert(!burstInProgress, 
+                       "Starting a burst but previous burst is still in "
+                       "progress");
+
+                if(null !is statistics)
+                {
+                    ++statistics.burstsFired;
+                }
+
+                startBurst();
+            }
+        }
+
         /**
          * Fire a shot.
          *
@@ -270,7 +326,9 @@ class WeaponSystem : System
          *          physics = Physics component of the entity that fired the shot
          *          shot    = Shot to fire.
          */
-        void fire(EntityID owner, ref PhysicsComponent physics, ref WeaponData.Shot shot) 
+        void fire(const EntityID owner, 
+                  ref const PhysicsComponent physics,
+                  ref WeaponData.Shot shot) 
         {
             EntityPrototype** prototypePtr = projectilePrototypes_[shot.projectileIndex];
             if(prototypePtr is null)
