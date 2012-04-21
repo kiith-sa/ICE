@@ -114,43 +114,6 @@ class GameStartException : Exception
     }
 }
 
-import component.controllercomponent;
-import component.physicscomponent;
-
-/**
- * Construct the player ship entity and return its ID.
- *
- * Params:  name      = Name, used for debugging.
- *          system    = Game entity system.
- *          position  = Starting position of the ship.
- *          shipOwner = Player that controls the entity.
- *          yaml      = YAML node to load the ship from.
- */
-EntityID constructPlayerShip(string name, 
-                             EntitySystem system, 
-                             Vector2f position, 
-                             Player shipOwner,
-                             YAMLNode yaml)
-{
-    import component.playercomponent;
-
-    //TEMP, replace this with useful on player death code.
-    import component.ondeathcomponent;
-    import std.stdio;
-
-    auto prototype = EntityPrototype(name, yaml);
-    with(prototype)
-    {
-        physics    = PhysicsComponent(position, Vector2f(0.0f, -1.0f).angle,
-                                      Vector2f(0.0f, 0.0f));
-        controller = ControllerComponent();
-        player     = PlayerComponent(shipOwner);
-
-        onDeath    = OnDeathComponent((ref Entity dummy){writeln("PlayerShip onDeath");});
-    }
-    return system.newEntity(prototype);
-}
-
 ///Class managing a single game between players.
 class Game
 {
@@ -285,9 +248,8 @@ class Game
             //Initialize player ship.
             try
             {
-                playerShipID_ = constructPlayerShip("playership", entitySystem_,
+                playerShipID_ = constructPlayerShip("playership", 
                                                     Vector2f(400.0f, 536.0f),
-                                                    player1_,
                                                     loadYAML(gameDir_.file("ships/playership.yaml")));
             }
             catch(YAMLException e)
@@ -414,6 +376,40 @@ class Game
                     break;
             }
         }
+
+        import component.controllercomponent;
+        import component.physicscomponent;
+
+        /**
+         * Construct the player ship entity and return its ID.
+         *
+         * Params:  name      = Name, used for debugging.
+         *          position  = Starting position of the ship.
+         *          yaml      = YAML node to load the ship from.
+         */
+        EntityID constructPlayerShip(string name, 
+                                     Vector2f position, 
+                                     YAMLNode yaml)
+        {
+            import component.playercomponent;
+
+            //TEMP XXX XXX, replace this with useful on player death code.
+            import component.ondeathcomponent;
+            import std.stdio;
+
+            auto prototype = EntityPrototype(name, yaml);
+            with(prototype)
+            {
+                physics    = PhysicsComponent(position, Vector2f(0.0f, -1.0f).angle,
+                                              Vector2f(0.0f, 0.0f));
+                controller = ControllerComponent();
+                player     = PlayerComponent(player1_);
+
+                onDeath    = OnDeathComponent((ref Entity dummy){writeln("PlayerShip onDeath");});
+            }
+            return entitySystem_.newEntity(prototype);
+        }
+
 }
 
 ///Container managing dependencies and construction of Game.
