@@ -65,7 +65,7 @@ class WarheadSystem : System
                     if(warhead is null){continue;}
 
                     //Apply damage of the collider, and destroy it.
-                    health.applyDamage(warhead.damage);
+                    health.applyDamage(collider.id, warhead.damage);
                     if(warhead.killsEntity){collider.kill();}
                 }
             }

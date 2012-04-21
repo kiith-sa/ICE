@@ -9,6 +9,8 @@
 module component.healthcomponent;
 
 
+import component.entitysystem;
+
 import math.math;
 import util.yaml;
 
@@ -22,6 +24,12 @@ struct HealthComponent
     ///Current health.
     uint health;
 
+    ///ID of the last entity we've been damaged by.
+    EntityID mostRecentlyDamagedBy;
+
+    ///Have we've been damaged during this update?
+    bool damagedThisUpdate = false;
+
     ///Load from a YAML node. Throws YAMLException on error.
     this(ref YAMLNode yaml)
     {
@@ -29,8 +37,10 @@ struct HealthComponent
     }
 
     ///Apply damage (or healing, if negative).
-    void applyDamage(const int damage)
+    void applyDamage(const EntityID damagedBy, const int damage)
     {
+        mostRecentlyDamagedBy = damagedBy;
+        damagedThisUpdate = true;
         health = clamp(0, cast(int)health - damage, cast(int)maxHealth);
     }
 }

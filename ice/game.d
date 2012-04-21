@@ -418,7 +418,8 @@ class Game
         {
             import std.stdio;
             continue_ = false;
-            writeln("Player died");
+
+            writeln("Player died: ", playerShip.statistics.entitiesKilled);
         }
 
 }
