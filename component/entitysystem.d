@@ -34,6 +34,7 @@ import component.ondeathcomponent;
 import component.ownercomponent;
 import component.physicscomponent;
 import component.playercomponent;
+import component.statisticscomponent;
 import component.visualcomponent;
 import component.volumecomponent;
 import component.warheadcomponent;
@@ -66,7 +67,8 @@ tuple
     "OwnerComponent",
     "PlayerComponent",
     "DumbScriptComponent",
-    "OnDeathComponent"
+    "OnDeathComponent",
+    "StatisticsComponent"
 );
 
 ///Enforce at compile time that all component type names are valid.
