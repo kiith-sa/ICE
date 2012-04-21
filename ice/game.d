@@ -195,7 +195,7 @@ class Game
 
                 if(!level_.update(gui_))
                 {
-                    endGame();
+                    continue_ = false;
                     return 1;
                 }
 
@@ -217,7 +217,11 @@ class Game
             //Game might have been ended after a level update,
             //which left the component subsystems w/o update,
             //so don't draw either.
-            if(!continue_){return false;}
+            if(!continue_)
+            {
+                endGame();
+                return false;
+            }
 
             visualSystem_.update();
 
@@ -377,9 +381,6 @@ class Game
             }
         }
 
-        import component.controllercomponent;
-        import component.physicscomponent;
-
         /**
          * Construct the player ship entity and return its ID.
          *
@@ -391,11 +392,11 @@ class Game
                                      Vector2f position, 
                                      YAMLNode yaml)
         {
-            import component.playercomponent;
-
-            //TEMP XXX XXX, replace this with useful on player death code.
+            import component.controllercomponent;
             import component.ondeathcomponent;
-            import std.stdio;
+            import component.physicscomponent;
+            import component.playercomponent;
+            import component.statisticscomponent;
 
             auto prototype = EntityPrototype(name, yaml);
             with(prototype)
@@ -405,9 +406,19 @@ class Game
                 controller = ControllerComponent();
                 player     = PlayerComponent(player1_);
 
-                onDeath    = OnDeathComponent((ref Entity dummy){writeln("PlayerShip onDeath");});
+                onDeath    = OnDeathComponent(&playerDied);
+
+                statistics = StatisticsComponent();
             }
             return entitySystem_.newEntity(prototype);
+        }
+
+        ///Called when the player ship has died.
+        void playerDied(ref Entity playerShip)
+        {
+            import std.stdio;
+            continue_ = false;
+            writeln("Player died");
         }
 
 }
