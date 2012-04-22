@@ -540,6 +540,7 @@ private:
     static ~this()
     {
         scope(failure){writeln("Error logging memory usage");}
+
         string stats = statistics();
 
         auto logs = gameDir.dir("main::logs");

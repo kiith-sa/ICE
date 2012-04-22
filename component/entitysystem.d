@@ -613,20 +613,21 @@ class EntitySystem
         }
 
         /**
-         * Get a reference to the entity with specified ID.
+         * Get a pointer to the entity with specified ID.
          *
          * This is the safe way to keep "pointers" to entities between game updates.
+         *
+         * If the entity with specified ID doesn't exist (e.g. was destroyed),
+         * this returns null.
          */
-        final ref Entity entityWithID(const ref EntityID id)
-        in
+        final Entity* entityWithID(const ref EntityID id)
         {
-            assert(null !is (id in idToEntity_) &&
-                   null !is *(id in idToEntity_),
-                   "Trying to get an entity with nonexistent ID " ~ to!string(id));
-        }
-        body
-        {
-            return *(idToEntity_[id]);
+            if(null is (id in idToEntity_) ||
+               null is *(id in idToEntity_))
+            {
+                return null;
+            }
+            return idToEntity_[id];
         }
 
         /**
