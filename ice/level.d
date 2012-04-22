@@ -210,6 +210,7 @@ class DumbLevel : Level
                     auto spawns = yaml["spawn"];
                     spawns_ = FixedArray!(EntityPrototype*)(spawns.length);
                     uint spawnIdx = 0;
+
                     foreach(ref YAMLNode spawn; spawns)
                     {
                         auto name = spawn["unit"].as!string;
@@ -350,7 +351,6 @@ class DumbLevel : Level
         float instructionTime_ = 0.0f;
 
     public:
-
         /**
          * Construct a DumbLevel.
          *

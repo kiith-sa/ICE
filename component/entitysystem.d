@@ -399,7 +399,7 @@ struct EntityPrototype
         {
             foreach(c; componentTypes)
             {
-                if(rhs.component!c.isNull)
+                if(rhs.componentConst!c.isNull)
                 {
                     component!c.nullify();
                 }
@@ -411,7 +411,12 @@ struct EntityPrototype
                     //
                     //It's written in this way to avoid a compiler bug
                     //that prevents postblit constructor from being called.
+
+                    //Move rhs to proxy. rhs is destroyed, postblit not called.
                     auto proxy = move(rhs.component!c);
+                    //Copy proxy to rhs. Postblit is called on rhs.
+                    rhs.component!c = proxy;
+                    //Copy proxy to this. Postblit is called on this.
                     component!c = proxy;
                 }
             }
