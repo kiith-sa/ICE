@@ -25,3 +25,4 @@ align(4) struct Texture
         ///Index of the texture in the VideoDriver implementation.
         uint index;
 }
+static assert(Texture.sizeof <= 12);

@@ -29,8 +29,6 @@ import image;
 ///Exception thrown at font related errors.
 class FontException : Exception{this(string msg){super(msg);}} 
 
-//use of bytes here limits font size to about 128 pixels,
-//but it also decreases struct size to 20 bytes allowing faster copying.
 ///Immutable font glyph structure.
 package align(4) struct Glyph
 {
@@ -39,10 +37,11 @@ package align(4) struct Glyph
     ///Freetype glyph index.
     uint freetypeIndex;
     ///Offset from the pen to the bottom-left corner of glyph image.
-    Vector2b offset;
+    Vector2s offset;
     ///Pixels to advance the pen after drawing this glyph.
-    byte advance;
+    short advance;
 }
+static assert(Glyph.sizeof <= 24);
 
 ///Stores one font with one size (e.g. Inconsolata size 16 and 18 will be two Font objects).
 package final class Font
@@ -322,8 +321,8 @@ package final class Font
                 auto defaultGlyph    = alloc!Glyph();
                 scope(failure){free(defaultGlyph);}
                 defaultGlyph.texture = driver.createTexture(image);
-                defaultGlyph.offset  = Vector2b(0, cast(byte)-height_);
-                defaultGlyph.advance = cast(byte)(height_ / 2);
+                defaultGlyph.offset  = Vector2s(0, cast(short)-height_);
+                defaultGlyph.advance = cast(short)(height_ / 2);
                 defaultGlyph.freetypeIndex = 0;
                 defaultGlyph_ = defaultGlyph;
             }
@@ -357,16 +356,14 @@ package final class Font
             //convert fontFace_.glyph to image
             if(FT_Render_Glyph(slot, renderMode()) == 0) 
             {
-                glyph.advance  = cast(byte)(fontFace_.glyph.advance.x / 64);
-                glyph.offset.x = cast(byte)slot.bitmap_left;
-                glyph.offset.y = cast(byte)-slot.bitmap_top;
+                glyph.advance  = cast(short)(fontFace_.glyph.advance.x / 64);
+                glyph.offset.x = cast(short)slot.bitmap_left;
+                glyph.offset.y = cast(short)-slot.bitmap_top;
 
                 FT_Bitmap bitmap = slot.bitmap;
                 const size = Vector2u(bitmap.width, bitmap.rows);
-                assert(size.x < 128 && size.y < 128, 
-                       "Can't draw a glyph wider or taller than 127 pixels");
-                //we don't want to crash or cause bugs in optimized builds
-                if(size.x >= 128 || size.y >= 128 || size.x == 0 || size.y == 0)
+
+                if(size.x == 0 || size.y == 0)
                 {
                     glyph.texture = getDefaultGlyph(driver).texture;
                     return glyph;
