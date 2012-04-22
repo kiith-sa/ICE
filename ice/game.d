@@ -43,9 +43,9 @@ import platform.platform;
 import time.gametime;
 import util.yaml;
 import util.signal;
-import util.weaksingleton;
 import video.videodriver;
 
+import ice.graphicseffect;
 import ice.hud;
 import ice.level;
 import ice.player;
@@ -53,11 +53,6 @@ import ice.player;
 
 /**
  * Class holding all GUI used by Game (HUD, etc.).
- *
- * Signal:
- *     public mixin Signal!() scoreExpired
- *
- *     Emitted when the score screen expires. 
  */
 class GameGUI
 {
@@ -117,8 +112,15 @@ class GameStartException : Exception
 ///Class managing a single game between players.
 class Game
 {
-    mixin WeakSingleton;
     private:
+        enum GamePhase
+        {
+            Playing,
+            Over
+        }
+
+        GamePhase gamePhase_ = GamePhase.Playing;
+
         ///Platform used for input.
         Platform platform_;
 
@@ -131,6 +133,9 @@ class Game
         ///Player ship entity ID (temp, until we have levels).
         EntityID playerShipID_;
      
+        ///Was initGameState successful?
+        bool gameStateInitialized_;
+
         ///Continue running?
         bool continue_;
 
@@ -174,11 +179,17 @@ class Game
         ///Level the game is running.
         Level level_;
 
+        ///Used to make draw calls.
+        VideoDriver videoDriver_;
+
+        ///Manages graphics effects.
+        GraphicsEffectManager effectManager_;
+
     public:
         /**
          * Update the game.
          *
-         * Returns: True if the game should continue to run, false otherwise.
+         * Returns: true if the game should continue to run, false otherwise.
          */
         bool run()
         {
@@ -193,10 +204,13 @@ class Game
 
                 entitySystem_.update();
 
-                if(!level_.update(gui_))
+                if(gamePhase_ == GamePhase.Playing)
                 {
-                    continue_ = false;
-                    return 1;
+                    if(!level_.update(gui_))
+                    {
+                        continue_ = false;
+                        return 1;
+                    }
                 }
 
                 controllerSystem_.update();
@@ -217,25 +231,87 @@ class Game
             //Game might have been ended after a level update,
             //which left the component subsystems w/o update,
             //so don't draw either.
-            if(!continue_)
-            {
-                endGame();
-                return false;
-            }
+            if(!continue_){return false;}
 
             visualSystem_.update();
+
+            effectManager_.draw(videoDriver_, gameTime_);
 
             return true;
         }
 
-        ///Start game.
-        void startGame()
+        ///Set the VideoDriver used to draw game.
+        @property void videoDriver(VideoDriver rhs) pure nothrow
         {
-            assert(gameDir_ !is null, "Starting Game but gameDir_ has not been set");
+            videoDriver_ = rhs;
+            visualSystem_.videoDriver = rhs;
+        }
 
+        ///Set the game data directory.
+        @property void gameDir(VFSDir rhs) 
+        {
+            gameDir_                  = rhs;
+            controllerSystem_.gameDir = rhs;
+            visualSystem_.gameDir     = rhs;
+            weaponSystem_.gameDir     = rhs;
+            if(level_ !is null){level_.gameDir = rhs;}
+        }
 
+        ///Get game area.
+        @property static Rectf gameArea(){return gameArea_;}
+
+    private:
+        /**
+         * Construct a Game.
+         *
+         * Params:  platform = Platform used for input.
+         *          gui      = Game GUI.
+         *          video    = Video driver used to draw the game.
+         *          gameDir  = Game data directory.
+         */
+        this(Platform platform, GameGUI gui, VideoDriver video, VFSDir gameDir)
+        {
+            gui_             = gui;
+            platform_        = platform;
+
+            initSystems();
+
+            this.videoDriver = video;
+            this.gameDir     = gameDir;
+
+            scope(failure){destroySystems();}
+
+            initGameState();
+        }
+
+        ///Destroy the Game.
+        ~this()
+        {
+            if(gameStateInitialized_)
+            {
+                clear(player1_);
+                clear(level_);
+                platform_.key.disconnect(&keyHandler);
+            }
+            destroySystems();
+        }
+
+        /**
+         * Initialize game state.
+         *
+         * At the end of this method, we've either succeeded and level 
+         * and player are initialized, or we've failed and they are not 
+         * (they are cleaned up if they are already initialized but initGameState fails)
+         * 
+         * Throws:  GameStartException on failure.
+         */
+        void initGameState()
+        {
+            scope(failure){clear(player1_);}
             player1_  = new HumanPlayer(platform_, "Human");
             auto levelName = "levels/level1.yaml";
+
+            scope(failure){clear(level_);}
 
             //Initialize the level.
             try
@@ -271,50 +347,14 @@ class Game
 
             continue_ = true;
             platform_.key.connect(&keyHandler);
+
+            gameStateInitialized_ = true;
         }
 
-        ///End the game, regardless of whether it has been won or not.
-        void endGame()
+        ///Initialize game subsystems.
+        void initSystems()
         {
-            clear(player1_);
-            clear(level_);
-            continue_ = false;
-            platform_.key.disconnect(&keyHandler);
-        }
-
-        ///Set the VideoDriver used to draw game.
-        @property void videoDriver(VideoDriver rhs) pure nothrow
-        {
-            visualSystem_.videoDriver = rhs;
-        }
-
-        ///Set the game data directory.
-        @property void gameDir(VFSDir rhs) 
-        {
-            gameDir_                  = rhs;
-            controllerSystem_.gameDir = rhs;
-            visualSystem_.gameDir     = rhs;
-            weaponSystem_.gameDir     = rhs;
-            if(level_ !is null){level_.gameDir            = rhs;}
-        }
-
-        ///Get game area.
-        @property static Rectf gameArea(){return gameArea_;}
-
-    private:
-        /**
-         * Construct a Game.
-         *
-         * Params:  platform = Platform used for input.
-         *          gui      = Game GUI.
-         */
-        this(Platform platform, GameGUI gui)
-        {
-            singletonCtor();
-            gui_              = gui;
-            platform_         = platform;
-            
-            gameTime_         = new GameTime();
+            gameTime_        = new GameTime();
 
             //Initialize entity system and game subsystems.
             entitySystem_            = new EntitySystem();
@@ -333,10 +373,12 @@ class Game
             warheadSystem_           = new WarheadSystem(entitySystem_);
             healthSystem_            = new HealthSystem(entitySystem_);
             onDeathSystem_           = new OnDeathSystem(entitySystem_);
+
+            effectManager_           = new GraphicsEffectManager();
         }
 
-        ///Destroy the Game.
-        ~this()
+        ///Destroy game subsystems.
+        void destroySystems()
         {
             clear(visualSystem_);
             clear(controllerSystem_);
@@ -349,13 +391,14 @@ class Game
             clear(spatialSystem_);
             clear(warheadSystem_);
             clear(healthSystem_);
-            clear(onDeathSystem_);
 
-            clear(player1_);
-
-            entitySystem_.destroy();
-
-            singletonDtor();
+            clear(effectManager_);
+            if(entitySystem_ !is null)
+            {
+                entitySystem_.destroy();
+                clear(entitySystem_);
+                entitySystem_ = null;
+            }
         }
 
         /**
@@ -370,7 +413,7 @@ class Game
             if(state == KeyState.Pressed) switch(key)
             {
                 case Key.Escape:
-                    endGame();
+                    continue_ = false;
                     break;
                 case Key.K_P: //Pause.
                     const paused = equals(gameTime_.timeSpeed, cast(real)0.0);
@@ -416,12 +459,67 @@ class Game
         ///Called when the player ship has died.
         void playerDied(ref Entity playerShip)
         {
-            import std.stdio;
-            continue_ = false;
+            //Game over enlarging text effect.
+            GraphicsEffect effect = new TextEffect(gameTime_.gameTime,
+               (const real startTime,
+                const GameTime gameTime, 
+                ref TextEffect.Parameters params)
+               {
+                   const double timeRatio = (gameTime.gameTime - startTime) / 1.0;
+                   if(timeRatio > 1.0){return true;}
 
-            writeln("Player died: ", playerShip.statistics.entitiesKilled);
+                   auto gameOver = "GAME OVER";
+
+                   const chars = round!uint(timeRatio * 5.0 * (gameOver.length));
+                   params.text = gameOver[0 .. min(gameOver.length, chars)];
+
+                   params.font = "default";
+                   params.fontSize = 80 + round!uint(max(0.0, (timeRatio - 0.2) * 16.0) ^^ 2); 
+
+                   //Must set videodriver font and font size to measure text size.
+                   videoDriver_.font     = "default";
+                   videoDriver_.fontSize = params.fontSize;
+                   const textSize        = videoDriver_.textSize(params.text).to!float;
+                   const area            = Game.gameArea;
+                   params.offset         = (area.min + (area.size - textSize) * 0.5).to!int;
+
+                   params.color = rgba!"8080F0FF".interpolated(rgba!"8080F000", 
+                                                               1.0 - timeRatio ^^ 2);
+                   return false;
+               });
+
+            //After the first effect ends, destroy all entities and move to the game over phase.
+            effect.onExpired.connect(
+            { 
+                entitySystem_.destroy();
+                gamePhase_ = GamePhase.Over;
+            });
+            effectManager_.addEffect(effect);
+
+            //Start the random lines effect,
+            //which will increase while displaying the game over text and decrease 
+            //after that.
+            effect = new RandomLinesEffect(gameTime_.gameTime,
+            (const real startTime,
+             const GameTime gameTime, 
+             ref RandomLinesEffect.Parameters params)
+            {
+                const double timeRatio = (gameTime.gameTime - startTime) / 2.0;
+                if(timeRatio > 1.0){return true;}
+                params.bounds   = Game.gameArea;
+                params.minWidth = 0.3;
+                params.maxWidth = 2.0;
+
+                const linesBase = timeRatio > 0.5 ? 1.0 - 2.0 * (timeRatio - 0.5)
+                                                  : 2.0 * (timeRatio); 
+                const linesSqrt = 40 * clamp(linesBase, 0.0, 1.0);
+                params.lineCount = round!uint(linesSqrt ^^ 2);
+                params.color    = rgba!"8080F040";
+                return false;
+            });
+            effect.onExpired.connect({continue_ = false;});
+            effectManager_.addEffect(effect);
         }
-
 }
 
 ///Container managing dependencies and construction of Game.
@@ -440,13 +538,21 @@ class GameContainer
         /**
          * Produce a Game and return a reference to it.
          *
-         * Params:  platform   = Platform to use for user input.
-         *          monitor    = MonitorManager to monitor game subsystems.
-         *          guiParent  = Parent for all GUI elements used by the game.
+         * Params:  platform    = Platform to use for user input.
+         *          monitor     = MonitorManager to monitor game subsystems.
+         *          guiParent   = Parent for all GUI elements used by the game.
+         *          videoDriver = Video driver to draw graphics with.
+         *          gameDir     = Game data directory.
          *
          * Returns: Produced Game.
+         *
+         * Throws:  GameStartException if the game fails to start.
          */
-        Game produce(Platform platform, MonitorManager monitor, GUIElement guiParent)
+        Game produce(Platform platform, 
+                     MonitorManager monitor, 
+                     GUIElement guiParent,
+                     VideoDriver videoDriver,
+                     VFSDir gameDir)
         in
         {
             assert(game_ is null,
@@ -455,8 +561,15 @@ class GameContainer
         body
         {
             monitor_ = monitor;
-            gui_            = new GameGUI(guiParent);
-            game_           = new Game(platform, gui_);
+            gui_ = new GameGUI(guiParent);
+            scope(failure)
+            {
+                clear(gui_);
+                game_    = null;
+                gui_     = null;
+                monitor_ = null;
+            }
+            game_ = new Game(platform, gui_, videoDriver, gameDir);
             return game_;
         }
 
@@ -465,7 +578,8 @@ class GameContainer
         {
             clear(game_);
             clear(gui_);
-            game_           = null;
-            monitor_        = null;
+            game_    = null;
+            gui_     = null;
+            monitor_ = null;
         }
 }

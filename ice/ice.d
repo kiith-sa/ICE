@@ -273,7 +273,7 @@ class Ice
          
             clear(fpsCounter_);
 
-            destroyGame();
+            if(game_ !is null){destroyGame();}
             destroyGUI();
             destroyMonitor();
             destroyVideo();
@@ -305,7 +305,7 @@ class Ice
                 if(game_ !is null)
                 {
                     //update game state
-                    if(!game_.run()){gameEnd();}
+                    if(!game_.run()){destroyGame();}
                 }
                 guiRoot_.draw(videoDriver_);
                 videoDriver_.endFrame();
@@ -385,22 +385,11 @@ class Ice
             gui_ = new IceGUI(guiRoot_.root, monitor_, platform_);
             gui_.creditsStart.connect(&creditsStart);
             gui_.creditsEnd.connect(&creditsEnd);
-            gui_.gameStart.connect(&gameStart);
+            gui_.gameStart.connect(&initGame);
             gui_.quit.connect(&exit);
             gui_.resetVideo.connect(&resetVideoMode);
 
             gameContainer_ = new GameContainer();
-        }
-
-        ///Destroy game.
-        void destroyGame()
-        {
-            //Game might still be running if we're quitting
-            //because the platform stopped to run
-            if(game_ is null){return;}
-            game_.endGame();
-            gameContainer_.destroy();
-            game_ = null;
         }
 
         ///Destroy GUI subsystem.
@@ -439,29 +428,30 @@ class Ice
         }
 
         ///Start game.
-        void gameStart()
+        void initGame()
         {
             gui_.menuHide();
             platform_.key.disconnect(&keyHandler);
-            game_ = gameContainer_.produce(platform_, 
-                                           monitor_, 
-                                           guiRoot_.root);
-            game_.videoDriver = videoDriver_;
-            game_.gameDir     = gameDir_;
 
             try
             {
-                game_.startGame();
+                game_ = gameContainer_.produce(platform_, 
+                                               monitor_, 
+                                               guiRoot_.root,
+                                               videoDriver_,
+                                               gameDir_);
             }
             catch(GameStartException e)
             {
                 writeln("Game failed to start: " ~ e.msg);
-                gameEnd();
+
+                gui_.menuShow();
+                platform_.key.connect(&keyHandler);
             }
         }
 
         ///End game.
-        void gameEnd()
+        void destroyGame()
         {
             gameContainer_.destroy();
             game_ = null;
@@ -496,7 +486,7 @@ class Ice
             if(state == KeyState.Pressed) switch(key)
             {
                 case Key.Escape: exit(); break;
-                case Key.Return: gameStart(); break;
+                case Key.Return: initGame(); break;
                 default: break;
             }
         }
