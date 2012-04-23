@@ -59,6 +59,8 @@ class GameGUI
     private:
         ///Parent of all game GUI elements.
         GUIElement parent_;
+        ///Game over screen (with stats, etc). Null if not shown.
+        GUIElement gameOver_;
         ///HUD.
         HUD hud_;
 
@@ -70,6 +72,27 @@ class GameGUI
         void messageText(string text, float time) 
         {
             hud_.messageText(text, time);
+        }
+
+        /**
+         * Show the game over screen, with statistics, etc.
+         *
+         * Params:  playerShip = Player ship to get player statistics from.
+         *          totalTime  = Total time taken by the game, in game time
+         *                       seconds (i.e. not measuring pauses).
+         */
+        void showGameOverScreen(ref const Entity playerShip, 
+                                const real totalTime) 
+        {
+            with(new GUIElementFactory)
+            {
+                x      = "p_left + p_width / 2 - 300";
+                y      = "p_top + p_height / 2 - 200";
+                width  = "600";
+                height = "400";
+                gameOver_ = produce();
+            }
+            parent_.addChild(gameOver_);
         }
 
     private:
@@ -97,6 +120,11 @@ class GameGUI
         ~this()
         {
             clear(hud_);
+            if(gameOver_ !is null)
+            {
+                gameOver_.die();
+                gameOver_ = null;
+            }
         }
 }
 
@@ -144,6 +172,9 @@ class Game
 
         ///Game data directory.
         VFSDir gameDir_;
+
+        ///Game time when the game started.
+        real startTime_;
 
         ///Game time subsystem, schedules updates.
         GameTime gameTime_;
@@ -354,7 +385,8 @@ class Game
         ///Initialize game subsystems.
         void initSystems()
         {
-            gameTime_        = new GameTime();
+            gameTime_  = new GameTime();
+            startTime_ = gameTime_.gameTime;      
 
             //Initialize entity system and game subsystems.
             entitySystem_            = new EntitySystem();
@@ -414,6 +446,12 @@ class Game
             {
                 case Key.Escape:
                     continue_ = false;
+                    break;
+                case Key.Return:
+                    if(gamePhase_ == GamePhase.Over)
+                    {
+                        continue_ = false;
+                    }
                     break;
                 case Key.K_P: //Pause.
                     const paused = equals(gameTime_.timeSpeed, cast(real)0.0);
@@ -493,6 +531,7 @@ class Game
             { 
                 entitySystem_.destroy();
                 gamePhase_ = GamePhase.Over;
+                gui_.showGameOverScreen(playerShip, gameTime_.gameTime - startTime_);
             });
             effectManager_.addEffect(effect);
 
@@ -517,7 +556,7 @@ class Game
                 params.color    = rgba!"8080F040";
                 return false;
             });
-            effect.onExpired.connect({continue_ = false;});
+            //effect.onExpired.connect({continue_ = false;});
             effectManager_.addEffect(effect);
         }
 }
