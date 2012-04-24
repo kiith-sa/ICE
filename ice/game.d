@@ -12,6 +12,7 @@ import std.algorithm;
 import std.array;
 import std.conv;
 import std.exception;
+import std.random;
 import std.string;
 import std.traits;
 
@@ -27,12 +28,14 @@ import component.healthsystem;
 import component.ondeathsystem;
 import component.physicssystem;
 import component.spatialsystem;
+import component.statisticscomponent;
 import component.timeoutsystem;
 import component.warheadsystem;
 import component.weaponsystem;
 import component.system;
 import component.visualsystem;
 import gui.guielement;
+import gui.guistatictext;
 import math.math;
 import math.vector2;
 import math.rect;
@@ -77,11 +80,11 @@ class GameGUI
         /**
          * Show the game over screen, with statistics, etc.
          *
-         * Params:  playerShip = Player ship to get player statistics from.
+         * Params:  statistics = Player statistics.
          *          totalTime  = Total time taken by the game, in game time
          *                       seconds (i.e. not measuring pauses).
          */
-        void showGameOverScreen(ref const Entity playerShip, 
+        void showGameOverScreen(const StatisticsComponent statistics,
                                 const real totalTime) 
         {
             with(new GUIElementFactory)
@@ -92,6 +95,53 @@ class GameGUI
                 height = "400";
                 gameOver_ = produce();
             }
+
+            with(new GUIStaticTextFactory)
+            {
+                //Death message.
+                x        = "p_left + 16";
+                y        = "p_top + 16";
+                width    = "p_width - 32";
+                height   = "24";
+                font     = "orbitron-bold.ttf";
+                fontSize = 20;
+                alignX   = AlignX.Center;
+                text     = randomDeathMessage();
+                gameOver_.addChild(produce());
+
+                //Time elapsed.
+                y        = "p_top + 64";
+                alignX   = AlignX.Left;
+                font     = "orbitron-light.ttf";
+                fontSize = 16;
+                text     = "Time elapsed:";
+                gameOver_.addChild(produce());
+
+                alignX   = AlignX.Right;
+                text     = format("%.2f", totalTime);
+                gameOver_.addChild(produce());
+
+                //Shots fired.
+                y        = "p_top + 88";
+                alignX   = AlignX.Left;
+                text     = "Shots fired:";
+                gameOver_.addChild(produce());
+
+                alignX   = AlignX.Right;
+                text     = to!string(statistics.burstsFired);
+                gameOver_.addChild(produce());
+
+                //Ships killed.
+                y        = "p_top + 112";
+                alignX   = AlignX.Left;
+                text     = "Ships killed:";
+                gameOver_.addChild(produce());
+
+                alignX   = AlignX.Right;
+                text     = to!string(statistics.entitiesKilled);
+                gameOver_.addChild(produce());
+            }
+
             parent_.addChild(gameOver_);
         }
 
@@ -125,6 +175,18 @@ class GameGUI
                 gameOver_.die();
                 gameOver_ = null;
             }
+        }
+
+        ///Get a random death message.
+        static string randomDeathMessage()
+        {
+            static messages = ["You have been murderized",
+                               "Fail",
+                               "LOL U MAD?",
+                               "You were killed",
+                               "You are dead"];
+
+            return messages[uniform(0, messages.length)];
         }
 }
 
@@ -511,11 +573,11 @@ class Game
                    const chars = round!uint(timeRatio * 5.0 * (gameOver.length));
                    params.text = gameOver[0 .. min(gameOver.length, chars)];
 
-                   params.font = "default";
+                   params.font = "orbitron-bold.ttf";
                    params.fontSize = 80 + round!uint(max(0.0, (timeRatio - 0.2) * 16.0) ^^ 2); 
 
                    //Must set videodriver font and font size to measure text size.
-                   videoDriver_.font     = "default";
+                   videoDriver_.font     = "orbitron-bold.ttf";
                    videoDriver_.fontSize = params.fontSize;
                    const textSize        = videoDriver_.textSize(params.text).to!float;
                    const area            = Game.gameArea;
@@ -526,12 +588,16 @@ class Game
                    return false;
                });
 
+            //Must copy here as the entity system, with the player ship,
+            //will be destroyed by the time the effect expires and
+            //statistics are passed to the GUI.
+            const statistics = *(playerShip.statistics);
             //After the first effect ends, destroy all entities and move to the game over phase.
             effect.onExpired.connect(
             { 
                 entitySystem_.destroy();
                 gamePhase_ = GamePhase.Over;
-                gui_.showGameOverScreen(playerShip, gameTime_.gameTime - startTime_);
+                gui_.showGameOverScreen(statistics, gameTime_.gameTime - startTime_);
             });
             effectManager_.addEffect(effect);
 
