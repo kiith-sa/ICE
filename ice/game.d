@@ -441,6 +441,30 @@ class Game
             continue_ = true;
             platform_.key.connect(&keyHandler);
 
+
+            //Background scrolling starfield effect.
+            auto effect = new RandomLinesEffect(gameTime_.gameTime,
+            (const real startTime,
+             const GameTime gameTime, 
+             ref RandomLinesEffect.Parameters params)
+            {
+                if(gamePhase_ == GamePhase.Over){return true;}
+                params.bounds   = Rectf(gameArea.min.x, gameArea.min.y - 64.0f,
+                                        gameArea.max.x, gameArea.max.y + 64.0f);
+                params.minWidth = 0.3;
+                params.maxWidth = 1.2;
+                params.minLength = 4.0;
+                params.maxLength = 16.0;
+                params.verticalScrollingSpeed = 250.0f;
+
+                params.linesPerPixel = 0.005;
+                params.detailLevel = 2;
+                params.color    = rgba!"C8C8FF38";
+                return false;
+            });
+
+            effectManager_.addEffect(effect);
+
             gameStateInitialized_ = true;
         }
 
@@ -614,15 +638,22 @@ class Game
                 params.bounds   = Game.gameArea;
                 params.minWidth = 0.3;
                 params.maxWidth = 2.0;
+                //This speed ensures we always see completely random lines.
+                params.verticalScrollingSpeed = 72000.0f;
+                //Full screen width.
+                params.minLength = 5000.0f;
+                params.maxLength = 10000.0f;
+                params.detailLevel = 1;
+
+                params.lineDirection = Vector2f(1.0f, 0.0f);
 
                 const linesBase = timeRatio > 0.5 ? 1.0 - 2.0 * (timeRatio - 0.5)
                                                   : 2.0 * (timeRatio); 
                 const linesSqrt = 40 * clamp(linesBase, 0.0, 1.0);
-                params.lineCount = round!uint(linesSqrt ^^ 2);
+                params.linesPerPixel = (linesSqrt ^^ 2) / round!uint(gameArea_.area)/*100000.0f*/;
                 params.color    = rgba!"8080F040";
                 return false;
             });
-            //effect.onExpired.connect({continue_ = false;});
             effectManager_.addEffect(effect);
         }
 }

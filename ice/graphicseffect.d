@@ -10,6 +10,7 @@ module ice.graphicseffect;
 
 
 import std.algorithm;
+import std.math : fmod;
 import std.random;
 
 import color;
@@ -60,7 +61,7 @@ abstract class GraphicsEffect
 }
 
 /**
- * Effect that draws horizontal lines at random Y coordinates.
+ * Effect that draws lines at random coordinates, optionally vertically scrolling them.
  *
  * Effect parameters are specified each frame by a delegate.
  *
@@ -70,7 +71,7 @@ abstract class GraphicsEffect
  *
  * Example:
  * --------------------
- * //This draws an an increasing number of lines, in the game area.
+ * //This draws an an increasing number of slowly moving vertical lines in the game area.
  * //It is taken from the Game class, and uses its data member.
  * //Anyone is welcome to create a simpler example not depending on Game.
  * 
@@ -84,9 +85,14 @@ abstract class GraphicsEffect
  *     params.bounds   = Game.gameArea;
  *     params.minWidth = 0.3;
  *     params.maxWidth = 2.0;
- * 
- *     params.lineCount = round!uint((40 * clamp(timeRatio, 0.0, 1.0)) ^^ 2);
+ *     params.minLength = 4.0f;
+ *     params.maxLength = 16.0f;
+ *
+ *     params.linesPerPixel = round!uint((40 * clamp(timeRatio, 0.0, 1.0)) ^^ 2)
+ *                            Game.gameArea.area;
  *     params.color    = rgba!"8080F040";
+ *     params.detailLevel = 4;
+ *     params.verticalScrollingSpeed = 100.0f;
  *     return false;
  * });
  * --------------------
@@ -99,14 +105,46 @@ class RandomLinesEffect : GraphicsEffect
         {
             ///Bounds of the area where the lines are drawn.
             Rectf bounds   = Rectf(0.0f, 0.0f, 100.0f, 100.0f);
+            ///Direction of the lines. Must be a unit (length == 1) vector.
+            Vector2f lineDirection = Vector2f(0.0f, 1.0f);
             ///Minimum line width.
             float minWidth = 0.1f;
-            ///Maximum line width.
+            ///Maximum line width. Must be > minWidth.
             float maxWidth = 10.0f;
-            ///Number of lines to draw.
-            uint lineCount = 100;
+            ///Minimum line length.
+            float minLength = 16.0f;
+            ///Maximum line length. Must be > minLength.
+            float maxLength = 64.0f;
+            /**
+             * Average number of lines per "pixel" of area specified by bounds. 
+             *
+             * "Pixel" is a square of distance of 1.0 unit.
+             * Must be <= 1.0;
+             */
+            float linesPerPixel = 0.001f;
+            ///Speed of vertical scrolling in units per second.
+            float verticalScrollingSpeed = 0.0f;
+
+            /**
+             * Higher values result in less random, less "detailed" effect but less overhead.
+             *
+             * 0 is "full" detail and rather CPU-intensive. 
+             * 1 is less detail but a lot cheaper performance-wise.
+             * Higher values are even cheaper.
+             */
+            uint detailLevel = 2;
             ///Color of lines.
             Color color    = rgb!"FFFFFF";
+
+            ///Determine if all of the parameters are valid.
+            bool valid() const pure nothrow
+            {
+                return bounds.valid &&
+                       minWidth > 0.0f && minWidth <= maxWidth && maxWidth > 0.0f &&
+                       minLength > 0.0f && minLength <= maxLength && maxLength > 0.0f &&
+                       linesPerPixel >= 0.0f && linesPerPixel <= 1.0f  &&
+                       equals(lineDirection.length, 1.0f);
+            }
         }
 
     private:
@@ -119,6 +157,12 @@ class RandomLinesEffect : GraphicsEffect
         ///Game time when the effect was constructed.
         const real startTime_;
 
+        ///Random number generator we're using. Must be cheap and fast, not perfect.
+        alias Xorshift64 Random;
+
+        ///Used to randomly generate lines' positions.
+        Random randomGenerator_;
+
     public:
         ///Construct a RandomLinesEffect starting at startTime using controlDelegate to set its parameters.
         this(const real startTime, 
@@ -126,25 +170,82 @@ class RandomLinesEffect : GraphicsEffect
         {
             startTime_ = startTime;
             controlDelegate_ = controlDelegate;
+            randomGenerator_ = Random();
         }
 
         override void draw(VideoDriver video, const GameTime gameTime)
         {
+            //Get the parameters.
             done_ = controlDelegate_(startTime_, gameTime, parameters_);
             if(done){return;}
 
+            assert(parameters_.valid, "Invalid RandomLinesEffect parameters");
+
             video.lineAA = true;
-            with(parameters_) foreach(l; 0 .. lineCount)
+            const bounds = parameters_.bounds.to!int;
+
+            //Skip rows and columns based on detail level.
+            const skip = parameters_.detailLevel + 1;
+            //We're not storing any of the lines. Rather,
+            //we're computing RNG seed based on vertical scrolling speed and
+            //incrementing seed for every row.
+            //When the effect scrolls, the rows' seeds scroll accordingly.
+
+            uint seed  = -round!uint(gameTime.gameTime * parameters_.verticalScrollingSpeed / skip);
+            //We're not necessarily iterating each "pixel", so update per-pixel probability
+            //with skip in mind.
+            const lineProbability = parameters_.linesPerPixel * skip ^^ 2;
+
+            //Processing "pixels" within bounds and generating lines' centers.
+            for(int y = bounds.min.y; y < bounds.max.y; y += skip, ++seed)
             {
-                video.lineWidth = uniform(minWidth, maxWidth);
-                float y = uniform(bounds.min.y, bounds.max.y);
-                video.drawLine(Vector2f(bounds.min.x, y), Vector2f(bounds.max.x, y),
-                               color, color);
+                randomGenerator_.seed(seed);
+
+                for(int x = bounds.min.x; x < bounds.max.x; x += skip) 
+                {
+                    const random = uniform(0.0f, 1.0f, randomGenerator_);
+                    if(random < lineProbability) with(parameters_)
+                    {
+                        //Get line width.
+                        //Optimization: Getting a random number by applying modulo to random.
+                        const widthRatio = (10.0f / lineProbability) * 
+                                           fmod(random, lineProbability * 0.1f);
+                        const width = minWidth + (maxWidth - minWidth) * widthRatio;
+                        video.lineWidth = width;
+
+                        //Get line length.
+                        //Optimization: Getting a random number by applying modulo to random.
+                        const lengthRatio = (100.0f / lineProbability) * 
+                                            fmod(random, lineProbability * 0.01f);
+                        const halfLength = 0.5f * (minLength + (maxLength - minLength) * lengthRatio);
+
+                        //Randomly nudge x, y of each line by a 
+                        //random value, at most skip / 2
+                        //Optimization: Getting a random number by applying modulo to random.
+                        const xNudge = skip * (1000.0f / lineProbability) * 
+                                       fmod(random, lineProbability * 0.001f)
+                                       - skip * 0.5f;
+                        //Optimization: Getting a random number by applying modulo to random.
+                        const yNudge = skip * (10000.0f / lineProbability) * 
+                                       fmod(random, lineProbability * 0.0001f)
+                                       - skip * 0.5f;
+                        const center = Vector2f(x + xNudge, y + yNudge);
+
+                        //Finally, draw the line.
+                        video.drawLine(center - halfLength * lineDirection,
+                                       center + halfLength * lineDirection,
+                                       color, 
+                                       color);
+                    }
+                }
             }
+
+            //Restore video driver state.
             video.lineWidth = 1.0f;
             video.lineAA = false;
         }
 }
+
 
 /**
  * Text effect.
