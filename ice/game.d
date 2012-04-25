@@ -24,6 +24,7 @@ import component.controllersystem;
 import component.enginesystem;
 import component.entitysystem;
 import component.healthsystem;
+import component.ondeathsystem;
 import component.physicssystem;
 import component.spatialsystem;
 import component.timeoutsystem;
@@ -113,37 +114,6 @@ class GameStartException : Exception
     }
 }
 
-import component.controllercomponent;
-import component.physicscomponent;
-
-/**
- * Construct the player ship entity and return its ID.
- *
- * Params:  name      = Name, used for debugging.
- *          system    = Game entity system.
- *          position  = Starting position of the ship.
- *          shipOwner = Player that controls the entity.
- *          yaml      = YAML node to load the ship from.
- */
-EntityID constructPlayerShip(string name, 
-                             EntitySystem system, 
-                             Vector2f position, 
-                             Player shipOwner,
-                             YAMLNode yaml)
-{
-    import component.playercomponent;
-
-    auto prototype = EntityPrototype(name, yaml);
-    with(prototype)
-    {
-        physics    = PhysicsComponent(position, Vector2f(0.0f, -1.0f).angle,
-                                      Vector2f(0.0f, 0.0f));
-        controller = ControllerComponent();
-        player     = PlayerComponent(shipOwner);
-    }
-    return system.newEntity(prototype);
-}
-
 ///Class managing a single game between players.
 class Game
 {
@@ -198,10 +168,11 @@ class Game
         WarheadSystem           warheadSystem_;
         ///Handles entity health and kills entities when they run out of health.
         HealthSystem            healthSystem_;
+        ///Handles callbacks on death of entities.
+        OnDeathSystem           onDeathSystem_;
 
         ///Level the game is running.
         Level level_;
-
 
     public:
         /**
@@ -224,7 +195,7 @@ class Game
 
                 if(!level_.update(gui_))
                 {
-                    endGame();
+                    continue_ = false;
                     return 1;
                 }
 
@@ -238,6 +209,7 @@ class Game
                 collisionResponseSystem_.update();
                 healthSystem_.update();
                 timeoutSystem_.update();
+                onDeathSystem_.update();
 
                 return 0;
             });
@@ -245,7 +217,11 @@ class Game
             //Game might have been ended after a level update,
             //which left the component subsystems w/o update,
             //so don't draw either.
-            if(!continue_){return false;}
+            if(!continue_)
+            {
+                endGame();
+                return false;
+            }
 
             visualSystem_.update();
 
@@ -276,9 +252,8 @@ class Game
             //Initialize player ship.
             try
             {
-                playerShipID_ = constructPlayerShip("playership", entitySystem_,
+                playerShipID_ = constructPlayerShip("playership", 
                                                     Vector2f(400.0f, 536.0f),
-                                                    player1_,
                                                     loadYAML(gameDir_.file("ships/playership.yaml")));
             }
             catch(YAMLException e)
@@ -357,6 +332,7 @@ class Game
             collisionResponseSystem_ = new CollisionResponseSystem(entitySystem_);
             warheadSystem_           = new WarheadSystem(entitySystem_);
             healthSystem_            = new HealthSystem(entitySystem_);
+            onDeathSystem_           = new OnDeathSystem(entitySystem_);
         }
 
         ///Destroy the Game.
@@ -373,6 +349,7 @@ class Game
             clear(spatialSystem_);
             clear(warheadSystem_);
             clear(healthSystem_);
+            clear(onDeathSystem_);
 
             clear(player1_);
 
@@ -403,6 +380,48 @@ class Game
                     break;
             }
         }
+
+        /**
+         * Construct the player ship entity and return its ID.
+         *
+         * Params:  name      = Name, used for debugging.
+         *          position  = Starting position of the ship.
+         *          yaml      = YAML node to load the ship from.
+         */
+        EntityID constructPlayerShip(string name, 
+                                     Vector2f position, 
+                                     YAMLNode yaml)
+        {
+            import component.controllercomponent;
+            import component.ondeathcomponent;
+            import component.physicscomponent;
+            import component.playercomponent;
+            import component.statisticscomponent;
+
+            auto prototype = EntityPrototype(name, yaml);
+            with(prototype)
+            {
+                physics    = PhysicsComponent(position, Vector2f(0.0f, -1.0f).angle,
+                                              Vector2f(0.0f, 0.0f));
+                controller = ControllerComponent();
+                player     = PlayerComponent(player1_);
+
+                onDeath    = OnDeathComponent(&playerDied);
+
+                statistics = StatisticsComponent();
+            }
+            return entitySystem_.newEntity(prototype);
+        }
+
+        ///Called when the player ship has died.
+        void playerDied(ref Entity playerShip)
+        {
+            import std.stdio;
+            continue_ = false;
+
+            writeln("Player died: ", playerShip.statistics.entitiesKilled);
+        }
+
 }
 
 ///Container managing dependencies and construction of Game.

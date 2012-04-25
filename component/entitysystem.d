@@ -30,9 +30,11 @@ import component.dumbscriptcomponent;
 import component.enginecomponent;
 import component.exceptions;
 import component.healthcomponent;
+import component.ondeathcomponent;
 import component.ownercomponent;
 import component.physicscomponent;
 import component.playercomponent;
+import component.statisticscomponent;
 import component.visualcomponent;
 import component.volumecomponent;
 import component.warheadcomponent;
@@ -64,7 +66,9 @@ tuple
     "HealthComponent",
     "OwnerComponent",
     "PlayerComponent",
-    "DumbScriptComponent"
+    "DumbScriptComponent",
+    "OnDeathComponent",
+    "StatisticsComponent"
 );
 
 ///Enforce at compile time that all component type names are valid.
@@ -263,6 +267,17 @@ struct Entity
             components_ |= ComponentType.FLIP_VALIDITY;
         }
 
+        ///Has this entity been killed during current update?
+        @property bool killed() const pure nothrow 
+        in
+        {
+            assert(valid, "Determining if an invalid entity has been killed this update");
+        }
+        body
+        {
+            return cast(bool)(components_ & ComponentType.FLIP_VALIDITY);
+        }
+
         ///Getters to access components of this entity.
         static ctfeComponentGetters()
         {
@@ -384,7 +399,7 @@ struct EntityPrototype
         {
             foreach(c; componentTypes)
             {
-                if(rhs.component!c.isNull)
+                if(rhs.componentConst!c.isNull)
                 {
                     component!c.nullify();
                 }
@@ -396,7 +411,12 @@ struct EntityPrototype
                     //
                     //It's written in this way to avoid a compiler bug
                     //that prevents postblit constructor from being called.
+
+                    //Move rhs to proxy. rhs is destroyed, postblit not called.
                     auto proxy = move(rhs.component!c);
+                    //Copy proxy to rhs. Postblit is called on rhs.
+                    rhs.component!c = proxy;
+                    //Copy proxy to this. Postblit is called on this.
                     component!c = proxy;
                 }
             }
@@ -547,11 +567,15 @@ class EntitySystem
         ///ID of the next entity to construct.
         ulong nextEntityID_ = 0;
 
+        ///Maps entity IDs to entity pointers.
+        Entity*[EntityID] idToEntity_;
+
     public:
         ///Destroy all entities and components, returning to initial state.
         void destroy()
         {
             clear(entities_);
+            clear(idToEntity_);
             foreach(type; componentTypes)
             {
                 mixin
@@ -589,6 +613,23 @@ class EntitySystem
         }
 
         /**
+         * Get a reference to the entity with specified ID.
+         *
+         * This is the safe way to keep "pointers" to entities between game updates.
+         */
+        final ref Entity entityWithID(const ref EntityID id)
+        in
+        {
+            assert(null !is (id in idToEntity_) &&
+                   null !is *(id in idToEntity_),
+                   "Trying to get an entity with nonexistent ID " ~ to!string(id));
+        }
+        body
+        {
+            return *(idToEntity_[id]);
+        }
+
+        /**
          * Update the EntitySystem.
          *
          * This should be called once per game logic update. This is where 
@@ -601,6 +642,28 @@ class EntitySystem
             {
                 if(entity.components_ & ComponentType.FLIP_VALIDITY)
                 {
+                    if(entity.valid)
+                    {
+                        assert(null !is (entity.id in idToEntity_) &&
+                               null !is *(entity.id in idToEntity_),
+                               "Removing entity ID that doesn't exist");
+
+                        //TEMP:
+                        //Due to a compiler bug, we're setting to null 
+                        //instead of removing here.
+                        //Once the bug is fixed, use remove and remove checks for 
+                        //null in all idToEntity_ related code/asserts.
+
+                        //idToEntity_.remove(entity.id);
+                        idToEntity_[entity.id] = null;
+                    }
+                    else
+                    {
+                        assert(null is (entity.id in idToEntity_) ||
+                               null is *(entity.id in idToEntity_),
+                               "Adding entity ID that already exists");
+                        idToEntity_[entity.id] = &entity;
+                    }
                     entity.flipValidity();
                 }
             }

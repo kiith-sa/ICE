@@ -34,7 +34,35 @@ class HealthSystem : System
         {
             foreach(ref Entity e, ref HealthComponent health; entitySystem_)
             {
-                if(health.health == 0){e.kill();}
+                if(health.health == 0)
+                {
+                    //Update statistics of whoever killed us.
+                    if(health.damagedThisUpdate)
+                    {
+                        EntityID id = health.mostRecentlyDamagedBy;
+                        Entity* damagedBy;
+
+                        //If damagedBy has an owner, get the owner, if the owner
+                        //has an owner, get that, etc.
+                        for(;;)
+                        {
+                            damagedBy = &(entitySystem_.entityWithID(id));
+                            auto owner = damagedBy.owner;
+                            if(owner is null){break;}
+                            id = owner.ownerID;
+                        }
+
+                        auto statistics = damagedBy.statistics;
+                        if(statistics !is null)
+                        {
+                            ++statistics.entitiesKilled;
+                        }
+                    }
+
+
+                    e.kill();
+                }
+                health.damagedThisUpdate = false;
             }
         }
 }
