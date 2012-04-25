@@ -442,8 +442,30 @@ class Game
             platform_.key.connect(&keyHandler);
 
 
-            //Background scrolling starfield effect.
+            //Background scrolling starfield effect (each effect is a single layer).
             auto effect = new RandomLinesEffect(gameTime_.gameTime,
+            (const real startTime,
+             const GameTime gameTime, 
+             ref RandomLinesEffect.Parameters params)
+            {
+                if(gamePhase_ == GamePhase.Over){return true;}
+                params.bounds   = Rectf(gameArea.min.x, gameArea.min.y - 64.0f,
+                                        gameArea.max.x, gameArea.max.y + 64.0f);
+                params.minWidth = 0.6;
+                params.maxWidth = 1.2;
+                params.minLength = 6.0;
+                params.maxLength = 24.0;
+                params.verticalScrollingSpeed = 1000.0f;
+
+                params.linesPerPixel = 0.000005;
+                params.detailLevel = 8;
+                params.color    = rgba!"F0F0E0A0";
+                return false;
+            });
+
+            effectManager_.addEffect(effect);
+
+            effect = new RandomLinesEffect(gameTime_.gameTime,
             (const real startTime,
              const GameTime gameTime, 
              ref RandomLinesEffect.Parameters params)
@@ -457,14 +479,79 @@ class Game
                 params.maxLength = 16.0;
                 params.verticalScrollingSpeed = 250.0f;
 
-                params.linesPerPixel = 0.005;
-                params.detailLevel = 2;
+                params.linesPerPixel = 0.0015;
+                params.detailLevel = 6;
                 params.color    = rgba!"C8C8FF38";
                 return false;
             });
 
             effectManager_.addEffect(effect);
 
+            effect = new RandomLinesEffect(gameTime_.gameTime,
+            (const real startTime,
+             const GameTime gameTime, 
+             ref RandomLinesEffect.Parameters params)
+            {
+                if(gamePhase_ == GamePhase.Over){return true;}
+                params.bounds   = Rectf(gameArea.min.x, gameArea.min.y - 64.0f,
+                                        gameArea.max.x, gameArea.max.y + 64.0f);
+                params.minWidth = 0.225;
+                params.maxWidth = 0.9;
+                params.minLength = 3.0;
+                params.maxLength = 12.0;
+                params.verticalScrollingSpeed = 187.5f;
+
+                params.linesPerPixel = 0.00225;
+                params.detailLevel = 5;
+                params.color    = rgba!"D0D0FF2A";
+                return false;
+            });
+
+            effectManager_.addEffect(effect);
+
+            effect = new RandomLinesEffect(gameTime_.gameTime,
+            (const real startTime,
+             const GameTime gameTime, 
+             ref RandomLinesEffect.Parameters params)
+            {
+                if(gamePhase_ == GamePhase.Over){return true;}
+                params.bounds   = Rectf(gameArea.min.x, gameArea.min.y - 64.0f,
+                                        gameArea.max.x, gameArea.max.y + 64.0f);
+                params.minWidth = 0.15;
+                params.maxWidth = 0.6;
+                params.minLength = 2.0;
+                params.maxLength = 8.0;
+                params.verticalScrollingSpeed = 125.0f;
+
+                params.linesPerPixel = 0.003;
+                params.detailLevel = 4;
+                params.color    = rgba!"D8D8FF1C";
+                return false;
+            });
+
+            effectManager_.addEffect(effect);
+
+            effect = new RandomLinesEffect(gameTime_.gameTime,
+            (const real startTime,
+             const GameTime gameTime, 
+             ref RandomLinesEffect.Parameters params)
+            {
+                if(gamePhase_ == GamePhase.Over){return true;}
+                params.bounds   = Rectf(gameArea.min.x, gameArea.min.y - 64.0f,
+                                        gameArea.max.x, gameArea.max.y + 64.0f);
+                params.minWidth = 0.10;
+                params.maxWidth = 0.4;
+                params.minLength = 1.0;
+                params.maxLength = 4.0;
+                params.verticalScrollingSpeed = 75.0f;
+
+                params.linesPerPixel = 0.005;
+                params.detailLevel = 3;
+                params.color    = rgba!"FFFFFF0C";
+                return false;
+            });
+
+            effectManager_.addEffect(effect);
             gameStateInitialized_ = true;
         }
 
