@@ -199,16 +199,58 @@ class GameStartException : Exception
     }
 }
 
+/**
+ * Provided by Game to allow access its subsystems.
+ *
+ * Passed to classes that need access to many game subsystems 
+ * but shouldn't be able to e.g. update the game state.
+ */
+struct GameSubsystems
+{
+    private:
+        ///Game whose subsystems we're accessing.
+        Game game_;
+
+    public:
+        ///Get a reference to the game GUI.
+        @property GameGUI gui() pure nothrow {return game_.gui_;}
+
+        ///Get a reference to the video driver used to draw the game.
+        @property VideoDriver videoDriver() pure nothrow {return game_.videoDriver_;}
+
+        ///Get a const reference to the game time subsystem.
+        @property const(GameTime) gameTime() const pure nothrow {return game_.gameTime_;}
+
+        ///Get the game data directory.
+        @property VFSDir gameDir() pure nothrow {return game_.gameDir_;}
+
+        ///Get a reference to the graphics effect manager.
+        @property GraphicsEffectManager effectManager() pure nothrow 
+        {
+            return game_.effectManager_;
+        }
+
+        ///Get the game area.
+        @property Rectf gameArea() const nothrow {return game_.gameArea;}
+
+        ///Get a reference to the entity system (e.g. to add new entities).
+        @property EntitySystem entitySystem() pure nothrow {return game_.entitySystem_;}
+}
+
 ///Class managing a single game between players.
 class Game
 {
     private:
+        ///Game phases.
         enum GamePhase
         {
+            ///Gameplay phase.
             Playing,
+            ///Game over - we're not playing but we still aren't out of the game (e.g. score screen).
             Over
         }
 
+        ///Game phase we're currently in.
         GamePhase gamePhase_ = GamePhase.Playing;
 
         ///Platform used for input.
@@ -299,7 +341,7 @@ class Game
 
                 if(gamePhase_ == GamePhase.Playing)
                 {
-                    if(!level_.update(gui_))
+                    if(!level_.update(/*gui_*/))
                     {
                         continue_ = false;
                         return 1;
@@ -336,7 +378,7 @@ class Game
         ///Set the VideoDriver used to draw game.
         @property void videoDriver(VideoDriver rhs) pure nothrow
         {
-            videoDriver_ = rhs;
+            videoDriver_              = rhs;
             visualSystem_.videoDriver = rhs;
         }
 
@@ -347,11 +389,10 @@ class Game
             controllerSystem_.gameDir = rhs;
             visualSystem_.gameDir     = rhs;
             weaponSystem_.gameDir     = rhs;
-            if(level_ !is null){level_.gameDir = rhs;}
         }
 
         ///Get game area.
-        @property static Rectf gameArea(){return gameArea_;}
+        @property static Rectf gameArea() nothrow {return gameArea_;}
 
     private:
         /**
@@ -410,7 +451,7 @@ class Game
             try
             {
                 level_ = new DumbLevel(levelName, loadYAML(gameDir_.file(levelName)),
-                                       entitySystem_, gameTime_, gameDir_);
+                                       GameSubsystems(this));
             }
             catch(LevelInitializationFailureException e)
             {
@@ -441,117 +482,6 @@ class Game
             continue_ = true;
             platform_.key.connect(&keyHandler);
 
-
-            //Background scrolling starfield effect (each effect is a single layer).
-            auto effect = new RandomLinesEffect(gameTime_.gameTime,
-            (const real startTime,
-             const GameTime gameTime, 
-             ref RandomLinesEffect.Parameters params)
-            {
-                if(gamePhase_ == GamePhase.Over){return true;}
-                params.bounds   = Rectf(gameArea.min.x, gameArea.min.y - 64.0f,
-                                        gameArea.max.x, gameArea.max.y + 64.0f);
-                params.minWidth = 0.6;
-                params.maxWidth = 1.2;
-                params.minLength = 6.0;
-                params.maxLength = 24.0;
-                params.verticalScrollingSpeed = 1000.0f;
-
-                params.linesPerPixel = 0.000005;
-                params.detailLevel = 8;
-                params.color    = rgba!"F0F0E0A0";
-                return false;
-            });
-
-            effectManager_.addEffect(effect);
-
-            effect = new RandomLinesEffect(gameTime_.gameTime,
-            (const real startTime,
-             const GameTime gameTime, 
-             ref RandomLinesEffect.Parameters params)
-            {
-                if(gamePhase_ == GamePhase.Over){return true;}
-                params.bounds   = Rectf(gameArea.min.x, gameArea.min.y - 64.0f,
-                                        gameArea.max.x, gameArea.max.y + 64.0f);
-                params.minWidth = 0.3;
-                params.maxWidth = 1.2;
-                params.minLength = 4.0;
-                params.maxLength = 16.0;
-                params.verticalScrollingSpeed = 250.0f;
-
-                params.linesPerPixel = 0.0015;
-                params.detailLevel = 6;
-                params.color    = rgba!"C8C8FF38";
-                return false;
-            });
-
-            effectManager_.addEffect(effect);
-
-            effect = new RandomLinesEffect(gameTime_.gameTime,
-            (const real startTime,
-             const GameTime gameTime, 
-             ref RandomLinesEffect.Parameters params)
-            {
-                if(gamePhase_ == GamePhase.Over){return true;}
-                params.bounds   = Rectf(gameArea.min.x, gameArea.min.y - 64.0f,
-                                        gameArea.max.x, gameArea.max.y + 64.0f);
-                params.minWidth = 0.225;
-                params.maxWidth = 0.9;
-                params.minLength = 3.0;
-                params.maxLength = 12.0;
-                params.verticalScrollingSpeed = 187.5f;
-
-                params.linesPerPixel = 0.00225;
-                params.detailLevel = 5;
-                params.color    = rgba!"D0D0FF2A";
-                return false;
-            });
-
-            effectManager_.addEffect(effect);
-
-            effect = new RandomLinesEffect(gameTime_.gameTime,
-            (const real startTime,
-             const GameTime gameTime, 
-             ref RandomLinesEffect.Parameters params)
-            {
-                if(gamePhase_ == GamePhase.Over){return true;}
-                params.bounds   = Rectf(gameArea.min.x, gameArea.min.y - 64.0f,
-                                        gameArea.max.x, gameArea.max.y + 64.0f);
-                params.minWidth = 0.15;
-                params.maxWidth = 0.6;
-                params.minLength = 2.0;
-                params.maxLength = 8.0;
-                params.verticalScrollingSpeed = 125.0f;
-
-                params.linesPerPixel = 0.003;
-                params.detailLevel = 4;
-                params.color    = rgba!"D8D8FF1C";
-                return false;
-            });
-
-            effectManager_.addEffect(effect);
-
-            effect = new RandomLinesEffect(gameTime_.gameTime,
-            (const real startTime,
-             const GameTime gameTime, 
-             ref RandomLinesEffect.Parameters params)
-            {
-                if(gamePhase_ == GamePhase.Over){return true;}
-                params.bounds   = Rectf(gameArea.min.x, gameArea.min.y - 64.0f,
-                                        gameArea.max.x, gameArea.max.y + 64.0f);
-                params.minWidth = 0.10;
-                params.maxWidth = 0.4;
-                params.minLength = 1.0;
-                params.maxLength = 4.0;
-                params.verticalScrollingSpeed = 75.0f;
-
-                params.linesPerPixel = 0.005;
-                params.detailLevel = 3;
-                params.color    = rgba!"FFFFFF0C";
-                return false;
-            });
-
-            effectManager_.addEffect(effect);
             gameStateInitialized_ = true;
         }
 

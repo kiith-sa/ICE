@@ -166,7 +166,7 @@ class RandomLinesEffect : GraphicsEffect
     public:
         ///Construct a RandomLinesEffect starting at startTime using controlDelegate to set its parameters.
         this(const real startTime, 
-             bool delegate(const real, const GameTime, ref Parameters) controlDelegate)
+             bool delegate(const real, const GameTime, ref Parameters) controlDelegate) pure nothrow
         {
             startTime_ = startTime;
             controlDelegate_ = controlDelegate;
@@ -321,7 +321,7 @@ class TextEffect : GraphicsEffect
     public:
         ///Construct a TextEffect starting at startTime using controlDelegate to set its parameters.
         this(const real startTime, 
-             bool delegate(const real, const GameTime, ref Parameters) controlDelegate)
+             bool delegate(const real, const GameTime, ref Parameters) controlDelegate) pure nothrow
         {
             startTime_ = startTime;
             controlDelegate_ = controlDelegate;
