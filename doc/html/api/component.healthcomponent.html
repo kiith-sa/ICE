@@ -37,11 +37,14 @@
 <li><a href="component.exceptions.html">component.exceptions</a></li>
 <li><a href="component.healthcomponent.html">component.healthcomponent</a></li>
 <li><a href="component.healthsystem.html">component.healthsystem</a></li>
+<li><a href="component.ondeathcomponent.html">component.ondeathcomponent</a></li>
+<li><a href="component.ondeathsystem.html">component.ondeathsystem</a></li>
 <li><a href="component.ownercomponent.html">component.ownercomponent</a></li>
 <li><a href="component.physicscomponent.html">component.physicscomponent</a></li>
 <li><a href="component.physicssystem.html">component.physicssystem</a></li>
 <li><a href="component.playercomponent.html">component.playercomponent</a></li>
 <li><a href="component.spatialsystem.html">component.spatialsystem</a></li>
+<li><a href="component.statisticscomponent.html">component.statisticscomponent</a></li>
 <li><a href="component.system.html">component.system</a></li>
 <li><a href="component.timeoutsystem.html">component.timeoutsystem</a></li>
 <li><a href="component.visualcomponent.html">component.visualcomponent</a></li>
@@ -75,6 +78,7 @@
 <li><a href="ice.credits.html">ice.credits</a></li>
 <li><a href="ice.exceptions.html">ice.exceptions</a></li>
 <li><a href="ice.game.html">ice.game</a></li>
+<li><a href="ice.graphicseffect.html">ice.graphicseffect</a></li>
 <li><a href="ice.hud.html">ice.hud</a></li>
 <li><a href="ice.ice.html">ice.ice</a></li>
 <li><a href="ice.level.html">ice.level</a></li>
@@ -162,12 +166,22 @@
 <dd><p>Current <a name="health"></a><span class="ddoc_psymbol">health</span>.</p>
 
 </dd>
+<dt class="d_decl">EntityID <a name="mostRecentlyDamagedBy"></a><span class="ddoc_psymbol">mostRecentlyDamagedBy</span>;
+</dt>
+<dd><p>ID of the last entity we've been damaged by.</p>
+
+</dd>
+<dt class="d_decl">bool <a name="damagedThisUpdate"></a><span class="ddoc_psymbol">damagedThisUpdate</span>;
+</dt>
+<dd><p>Have we've been damaged during this update?</p>
+
+</dd>
 <dt class="d_decl">this(ref Node <b>yaml</b>);
 </dt>
 <dd><p>Load from a YAML node. Throws YAMLException on error.</p>
 
 </dd>
-<dt class="d_decl">void <a name="applyDamage"></a><span class="ddoc_psymbol">applyDamage</span>(const int <b>damage</b>);
+<dt class="d_decl">void <a name="applyDamage"></a><span class="ddoc_psymbol">applyDamage</span>(const EntityID <b>damagedBy</b>, const int <b>damage</b>);
 </dt>
 <dd><p>Apply <b>damage</b> (or healing, if negative).</p>
 
