@@ -1,0 +1,9 @@
+type: lines
+vertices:
+  !!pairs
+
+  - color:  rgba10000000
+  - vertex: [0.0, 0.0]
+  - color:  rgb30FF0C
+  - vertex: [0.0, 20.0]
+

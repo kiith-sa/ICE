@@ -1,0 +1,9 @@
+burstPeriod: 0.12
+ammo: 10
+reloadTime: 1.0
+burst:
+ - projectile: projectiles/defaultbullet.yaml 
+   delay: 0.4
+   position: [-8.0, 0.0]
+   direction: 0.00
+   speed: 50.0

@@ -1,0 +1,145 @@
+wave wave1:
+  spawn:
+    - unit: ships/turtle.yaml
+      physics: 
+          position: [160, 64]
+          rotation: 0
+    - unit: ships/turtle.yaml
+      physics: 
+          position: [300, 32]
+          rotation: 0
+    - unit: ships/turtle.yaml
+      physics: 
+          position: [440, 64]
+          rotation: 0
+      dumbScript: dumbscripts/enemy1.yaml
+
+wave wave2:
+  spawn:
+    - unit: ships/turtle.yaml
+      physics: 
+          position: [100, 32]
+          rotation: 0
+      dumbScript: dumbscripts/toright.yaml
+    - unit: ships/turtle.yaml
+      physics: 
+          position: [150, 50]
+          rotation: 0
+      dumbScript: dumbscripts/toright.yaml
+    - unit: ships/turtle.yaml
+      physics: 
+          position: [200, 68]
+          rotation: 0
+      dumbScript: dumbscripts/toright.yaml
+
+wave wave3:
+  spawn:
+    - unit: ships/turtle.yaml
+      physics: 
+          position: [600, 68]
+          rotation: 0
+      dumbScript: dumbscripts/toleft.yaml
+    - unit: ships/turtle.yaml
+      physics: 
+          position: [650, 50]
+          rotation: 0
+      dumbScript: dumbscripts/toleft.yaml
+    - unit: ships/turtle.yaml
+      physics: 
+          position: [700, 32]
+          rotation: 0
+      dumbScript: dumbscripts/toleft.yaml
+
+wave wave4:
+  spawn:
+    - unit: ships/jet.yaml
+      physics: 
+          position: [450, 68]
+          rotation: 0
+    - unit: ships/jet.yaml
+      physics: 
+          position: [550, 32]
+          rotation: 0
+    - unit: ships/jet.yaml
+      physics: 
+          position: [350, 32]
+          rotation: 0
+
+wave wave5:
+  spawn:
+    - unit: ships/jet.yaml
+      physics: 
+          position: [100, -90]
+          rotation: 0
+      dumbScript: dumbscripts/toright.yaml
+    - unit: ships/jet.yaml
+      physics: 
+          position: [100, 0]
+          rotation: 0
+      dumbScript: dumbscripts/toright.yaml
+    - unit: ships/jet.yaml
+      physics: 
+          position: [100, -180]
+          rotation: 0
+      dumbScript: dumbscripts/toright.yaml
+
+wave wave6:
+  spawn:
+    - unit: ships/jet.yaml
+      physics: 
+          position: [700, -90]
+          rotation: 0
+      dumbScript: dumbscripts/toleft.yaml
+    - unit: ships/jet.yaml
+      physics: 
+          position: [700, 0]
+          rotation: 0
+      dumbScript: dumbscripts/toleft.yaml
+    - unit: ships/jet.yaml
+      physics: 
+          position: [700, -180]
+          rotation: 0
+      dumbScript: dumbscripts/toleft.yaml
+
+level:
+  !!pairs
+  - wave: wave1
+  - wait: 3.0
+  - wave: wave1
+  - wait: 3.0
+  - wave: wave2
+  - wait: 0.5
+  - wave: wave3
+  - wait: 0.5
+  - wave: wave2
+  - wait: 0.5
+  - wave: wave3
+  - wait: 1.0
+  - wave: wave4
+  - wait: 3.5
+  - wave: wave1
+  - wait: 3.0
+  - wave: wave2
+  - wait: 0.5
+  - wave: wave2
+  - wait: 0.5
+  - wave: wave2
+  - wait: 0.5
+  - wave: wave3
+  - wait: 0.5
+  - wave: wave3
+  - wait: 0.5
+  - wave: wave4
+  - wait: 3.5
+  - wave: wave5
+  - wait: 5
+  - wave: wave6
+  - wait: 3.5
+  - wave: wave5
+  - wait: 0.3
+  - wave: wave6
+  - text: Lorem Ipsum   #in HUD
+  - wait: 3.5
+  - text: Level done!
+  - wait: 1.0
+

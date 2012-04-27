@@ -1,0 +1,25 @@
+type: lines
+vertices:
+  !!pairs
+
+  - color:  rgb331100
+  - width: 15
+  - vertex: [-30, 0]
+  - vertex: [30, 0]
+  - width: 5
+  - vertex: [-20, 10]
+  - vertex: [20, 10]
+
+  - width: 2
+  - vertex: [-8, 1]
+  - vertex: [-8, 17]
+  - vertex: [8, 1]
+  - vertex: [8, 17]
+
+  - color:  rgb2266FF
+  - width: 5
+  - vertex: [-7, -1]
+  - vertex: [7, -1]
+  - width: 7
+  - vertex: [-5, 1]
+  - vertex: [5, 1]

@@ -1,0 +1,25 @@
+type: lines
+vertices:
+  !!pairs
+  - color:  rgbFF0000
+  - vertex: [-32.0, 0.0]
+  - color:  rgbFFFF00
+  - vertex: [0.0, -32.0]
+
+  - vertex: [0.0, -32.0]
+  - color:  rgbFF0000
+  - vertex: [32.0, 0.0]
+
+  - vertex: [32.0, 0.0]
+  - color:  rgbFFFF00
+  - vertex: [0.0, -20.0]
+
+  - vertex: [0.0, -20.0]
+  - color:  rgbFF0000
+  - vertex: [-32.0, 0.0]
+
+  - vertex: [-32.0, 0.0]
+  - vertex: [-32.0, -15.0]
+
+  - vertex: [32.0, 0.0]
+  - vertex: [32.0, -15.0]

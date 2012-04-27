@@ -1,0 +1,9 @@
+burstPeriod: 2
+ammo: 5
+reloadTime: 2.0
+burst:
+ - projectile: projectiles/rocket.yaml 
+   delay: 0.5
+   position: [0.0, 0.0]
+   direction: 0.00
+   speed: 25.0
