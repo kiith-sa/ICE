@@ -1,0 +1,393 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang='en'>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" >
+<title>component.entitysystem - ICE 0.1 API documentation</title>
+<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body><div id="top">
+<div id="header">
+<a id="main-heading" href="index.html">ICE 0.1 API documentation</a>
+</div>
+</div>
+
+<div id="navigation">
+<div class="navblock">
+<div id="toctop">
+<ul><li><a href="../index.html">Documentation home</a></li>
+</ul>
+</div>
+</div>
+<div class="navblock">
+<ul><li><a href="index.html">Main page</a></li>
+<li><a href="color.html">color</a></li>
+<li><a href="component.collidablecomponent.html">component.collidablecomponent</a></li>
+<li><a href="component.collisionresponsesystem.html">component.collisionresponsesystem</a></li>
+<li><a href="component.collisionsystem.html">component.collisionsystem</a></li>
+<li><a href="component.controllercomponent.html">component.controllercomponent</a></li>
+<li><a href="component.controllersystem.html">component.controllersystem</a></li>
+<li><a href="component.deathtimeoutcomponent.html">component.deathtimeoutcomponent</a></li>
+<li><a href="component.dumbscriptcomponent.html">component.dumbscriptcomponent</a></li>
+<li><a href="component.enginecomponent.html">component.enginecomponent</a></li>
+<li><a href="component.enginesystem.html">component.enginesystem</a></li>
+<li><a href="component.entitysystem.html">component.entitysystem</a></li>
+<li><a href="component.exceptions.html">component.exceptions</a></li>
+<li><a href="component.healthcomponent.html">component.healthcomponent</a></li>
+<li><a href="component.healthsystem.html">component.healthsystem</a></li>
+<li><a href="component.ondeathcomponent.html">component.ondeathcomponent</a></li>
+<li><a href="component.ondeathsystem.html">component.ondeathsystem</a></li>
+<li><a href="component.ownercomponent.html">component.ownercomponent</a></li>
+<li><a href="component.physicscomponent.html">component.physicscomponent</a></li>
+<li><a href="component.physicssystem.html">component.physicssystem</a></li>
+<li><a href="component.playercomponent.html">component.playercomponent</a></li>
+<li><a href="component.spatialsystem.html">component.spatialsystem</a></li>
+<li><a href="component.statisticscomponent.html">component.statisticscomponent</a></li>
+<li><a href="component.system.html">component.system</a></li>
+<li><a href="component.timeoutsystem.html">component.timeoutsystem</a></li>
+<li><a href="component.visualcomponent.html">component.visualcomponent</a></li>
+<li><a href="component.visualsystem.html">component.visualsystem</a></li>
+<li><a href="component.volumecomponent.html">component.volumecomponent</a></li>
+<li><a href="component.warheadcomponent.html">component.warheadcomponent</a></li>
+<li><a href="component.warheadsystem.html">component.warheadsystem</a></li>
+<li><a href="component.weaponcomponent.html">component.weaponcomponent</a></li>
+<li><a href="component.weaponsystem.html">component.weaponsystem</a></li>
+<li><a href="containers.array2d.html">containers.array2d</a></li>
+<li><a href="containers.fixedarray.html">containers.fixedarray</a></li>
+<li><a href="containers.lazyarray.html">containers.lazyarray</a></li>
+<li><a href="containers.segmentedvector.html">containers.segmentedvector</a></li>
+<li><a href="containers.vector.html">containers.vector</a></li>
+<li><a href="formats.cli.html">formats.cli</a></li>
+<li><a href="formats.image.html">formats.image</a></li>
+<li><a href="formats.mathparser.html">formats.mathparser</a></li>
+<li><a href="formats.png.html">formats.png</a></li>
+<li><a href="formats.pngcommon.html">formats.pngcommon</a></li>
+<li><a href="formats.pngdecoder.html">formats.pngdecoder</a></li>
+<li><a href="formats.pngencoder.html">formats.pngencoder</a></li>
+<li><a href="formats.zlib.html">formats.zlib</a></li>
+<li><a href="graphdata.html">graphdata</a></li>
+<li><a href="gui.guibutton.html">gui.guibutton</a></li>
+<li><a href="gui.guielement.html">gui.guielement</a></li>
+<li><a href="gui.guilinegraph.html">gui.guilinegraph</a></li>
+<li><a href="gui.guimenu.html">gui.guimenu</a></li>
+<li><a href="gui.guimousecontrollable.html">gui.guimousecontrollable</a></li>
+<li><a href="gui.guistatictext.html">gui.guistatictext</a></li>
+<li><a href="ice.html">ice</a></li>
+<li><a href="ice.credits.html">ice.credits</a></li>
+<li><a href="ice.exceptions.html">ice.exceptions</a></li>
+<li><a href="ice.game.html">ice.game</a></li>
+<li><a href="ice.graphicseffect.html">ice.graphicseffect</a></li>
+<li><a href="ice.hud.html">ice.hud</a></li>
+<li><a href="ice.ice.html">ice.ice</a></li>
+<li><a href="ice.level.html">ice.level</a></li>
+<li><a href="ice.player.html">ice.player</a></li>
+<li><a href="image.html">image</a></li>
+<li><a href="math.math.html">math.math</a></li>
+<li><a href="math.matrix4.html">math.matrix4</a></li>
+<li><a href="math.rect.html">math.rect</a></li>
+<li><a href="math.vector2.html">math.vector2</a></li>
+<li><a href="memory.memory.html">memory.memory</a></li>
+<li><a href="memory.memorymonitorable.html">memory.memorymonitorable</a></li>
+<li><a href="memory.pool.html">memory.pool</a></li>
+<li><a href="monitor.graphmonitor.html">monitor.graphmonitor</a></li>
+<li><a href="monitor.monitorable.html">monitor.monitorable</a></li>
+<li><a href="monitor.monitordata.html">monitor.monitordata</a></li>
+<li><a href="monitor.monitormanager.html">monitor.monitormanager</a></li>
+<li><a href="monitor.submonitor.html">monitor.submonitor</a></li>
+<li><a href="physics.contact.html">physics.contact</a></li>
+<li><a href="physics.contactdetect.html">physics.contactdetect</a></li>
+<li><a href="physics.physicsbody.html">physics.physicsbody</a></li>
+<li><a href="physics.physicsengine.html">physics.physicsengine</a></li>
+<li><a href="physics.physicsmonitor.html">physics.physicsmonitor</a></li>
+<li><a href="platform.key.html">platform.key</a></li>
+<li><a href="platform.platform.html">platform.platform</a></li>
+<li><a href="platform.sdlplatform.html">platform.sdlplatform</a></li>
+<li><a href="scene.actor.html">scene.actor</a></li>
+<li><a href="scene.scenemanager.html">scene.scenemanager</a></li>
+<li><a href="spatial.gridmonitor.html">spatial.gridmonitor</a></li>
+<li><a href="spatial.gridspatialmanager.html">spatial.gridspatialmanager</a></li>
+<li><a href="spatial.spatialmanager.html">spatial.spatialmanager</a></li>
+<li><a href="spatial.volume.html">spatial.volume</a></li>
+<li><a href="spatial.volumeaabbox.html">spatial.volumeaabbox</a></li>
+<li><a href="spatial.volumecircle.html">spatial.volumecircle</a></li>
+<li><a href="time.eventcounter.html">time.eventcounter</a></li>
+<li><a href="time.gametime.html">time.gametime</a></li>
+<li><a href="time.time.html">time.time</a></li>
+<li><a href="time.timer.html">time.timer</a></li>
+<li><a href="util.bits.html">util.bits</a></li>
+<li><a href="util.factory.html">util.factory</a></li>
+<li><a href="util.iterable.html">util.iterable</a></li>
+<li><a href="util.signal.html">util.signal</a></li>
+<li><a href="util.stringctfe.html">util.stringctfe</a></li>
+<li><a href="util.traits.html">util.traits</a></li>
+<li><a href="util.typeinfo.html">util.typeinfo</a></li>
+<li><a href="util.weaksingleton.html">util.weaksingleton</a></li>
+<li><a href="util.yaml.html">util.yaml</a></li>
+<li><a href="video.binarytexturepacker.html">video.binarytexturepacker</a></li>
+<li><a href="video.font.html">video.font</a></li>
+<li><a href="video.fontmanager.html">video.fontmanager</a></li>
+<li><a href="video.gldrawmode.html">video.gldrawmode</a></li>
+<li><a href="video.glmonitor.html">video.glmonitor</a></li>
+<li><a href="video.glrenderer.html">video.glrenderer</a></li>
+<li><a href="video.glshader.html">video.glshader</a></li>
+<li><a href="video.gltexture.html">video.gltexture</a></li>
+<li><a href="video.gltexturebackend.html">video.gltexturebackend</a></li>
+<li><a href="video.glvertex.html">video.glvertex</a></li>
+<li><a href="video.glvertexbuffer.html">video.glvertexbuffer</a></li>
+<li><a href="video.glvideodriver.html">video.glvideodriver</a></li>
+<li><a href="video.sdlglvideodriver.html">video.sdlglvideodriver</a></li>
+<li><a href="video.shader.html">video.shader</a></li>
+<li><a href="video.texture.html">video.texture</a></li>
+<li><a href="video.texturepage.html">video.texturepage</a></li>
+<li><a href="video.videodriver.html">video.videodriver</a></li>
+<li><a href="video.videodrivercontainer.html">video.videodrivercontainer</a></li>
+</ul>
+</div>
+</div>
+
+<div id="content">
+<h1>component.entitysystem</h1>
+<!-- Generated by Ddoc from component/entitysystem.d -->
+<p>Component based entity system.</p>
+
+<dl><dt class="d_decl">template <a name="knownComponentType"></a><span class="ddoc_psymbol">knownComponentType</span>(T)</dt>
+<dd><p>Is T a known component type?</p>
+
+</dd>
+<dt class="d_decl">struct <a name="EntityID"></a><span class="ddoc_psymbol">EntityID</span>;
+</dt>
+<dd><p>Uniquely identifies an entity in an entity system.</p>
+
+<dl><dt class="d_decl">const pure nothrow bool <a name="opEquals"></a><span class="ddoc_psymbol">opEquals</span>(EntityID <b>rhs</b>);
+</dt>
+<dd><p>Equality comparison with another ID.</p>
+
+</dd>
+<dt class="d_decl">const pure nothrow long <a name="opCmp"></a><span class="ddoc_psymbol">opCmp</span>(EntityID <b>rhs</b>);
+</dt>
+<dd><p>Comparison for sorting.</p>
+
+</dd>
+<dt class="d_decl">const string <a name="toString"></a><span class="ddoc_psymbol">toString</span>();
+</dt>
+<dd><p>Get string representation for debugging.</p>
+
+</dd>
+</dl>
+</dd>
+<dt class="d_decl">struct <a name="Entity"></a><span class="ddoc_psymbol">Entity</span>;
+</dt>
+<dd><p>Game entity.
+</p>
+<p><a name="Entity"></a><span class="ddoc_psymbol">Entity</span> is specifies what components it has, in an on/off fashion,
+ as well as indices to its components stored in the EntitySystem.
+<br>
+
+ The most effective way to access the
+ components of a particular entity is by iterating the entity and component
+ arrays in lockstep in EntitySystem.</p>
+
+<dl><dt class="d_decl">const pure nothrow @property bool <a name="valid"></a><span class="ddoc_psymbol">valid</span>();
+</dt>
+<dd><p>Is the entity <a name="valid"></a><span class="ddoc_psymbol">valid</span> (alive)?</p>
+
+</dd>
+<dt class="d_decl">const pure nothrow @property EntityID <a name="id"></a><span class="ddoc_psymbol">id</span>();
+</dt>
+<dd><p>Get the ID of the entity.</p>
+
+</dd>
+<dt class="d_decl">void <a name="kill"></a><span class="ddoc_psymbol">kill</span>();
+</dt>
+<dd><p>Kill the entity.
+</p>
+<p>This will make the entity invalid on next EntitySystem update.
+ The entity stays valid during the current update.</p>
+
+</dd>
+<dt class="d_decl">const pure nothrow @property bool <a name="killed"></a><span class="ddoc_psymbol">killed</span>();
+</dt>
+<dd><p>Has this entity been <a name="killed"></a><span class="ddoc_psymbol">killed</span> during current update?</p>
+
+</dd>
+<dt class="d_decl">static auto <a name="ctfeComponentGetters"></a><span class="ddoc_psymbol">ctfeComponentGetters</span>();
+</dt>
+<dd><p>Getters to access components of this entity.</p>
+
+</dd>
+</dl>
+</dd>
+<dt class="d_decl">struct <a name="EntityPrototype"></a><span class="ddoc_psymbol">EntityPrototype</span>;
+</dt>
+<dd><p>Prototype for game entities.
+</p>
+<p>The prototype is passed to EntitySystem to construct an entity which will
+ copy its components. The prototype's components are loaded from YAML and/or
+ manually specified in code.</p>
+
+<dl><dt class="d_decl">this(string <b>name</b>, Node <b>yaml</b>);
+</dt>
+<dd><p>Load an EntityPrototype from a YAML mapping.
+</p>
+<p>Keys in the mapping must be camelCased component type names.
+ E.g. physics for PhysicsComponent or deathTimeout for
+ DeathTimeoutComponent.
+
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>string <b>name</b></td>
+<td valign=top>Name of the prototype (used for debugging).</td></tr>
+<tr><td valign=top>Node <b>yaml</b></td>
+<td valign=top>YAML node to load from.</td></tr>
+</table></div>
+<b>Throws:</b><div class="pbr">YAMLException if the EntityPrototype could not be loaded.</div>
+
+</dd>
+<dt class="d_decl">void <a name="clone"></a><span class="ddoc_psymbol">clone</span>(ref EntityPrototype <b>rhs</b>);
+</dt>
+<dd><p>Turn this prototype into a <a name="clone"></a><span class="ddoc_psymbol">clone</span> of <b>rhs</b> (i.e. copy <b>rhs</b>'s components).</p>
+
+</dd>
+<dt class="d_decl">void <a name="overrideComponents"></a><span class="ddoc_psymbol">overrideComponents</span>(ref YAMLNode <b>yaml</b>);
+</dt>
+<dd><p>Override components of this prototype from specified YAML mapping.
+</p>
+<p>Any keys in the mapping that don't match a component name will be ignored.</p>
+
+</dd>
+<dt class="d_decl">const string <a name="toString"></a><span class="ddoc_psymbol">toString</span>();
+</dt>
+<dd><p>Return a string represenation of the prototype.</p>
+
+</dd>
+<dt class="d_decl">const bool <a name="hasComponent"></a><span class="ddoc_psymbol">hasComponent</span>(string componentType)();
+</dt>
+<dd><p>Does this prototype have a component of specified type?</p>
+
+</dd>
+<dt class="d_decl">@property ref auto <a name="component"></a><span class="ddoc_psymbol">component</span>(string componentType)();
+</dt>
+<dd><p>Get a reference to the <a name="component"></a><span class="ddoc_psymbol">component</span> of specified type.</p>
+
+</dd>
+<dt class="d_decl">const @property ref auto <a name="componentConst"></a><span class="ddoc_psymbol">componentConst</span>(string componentType)();
+</dt>
+<dd><p>Get a const reference to the component of specified type.</p>
+
+</dd>
+</dl>
+</dd>
+<dt class="d_decl">class <a name="EntitySystem"></a><span class="ddoc_psymbol">EntitySystem</span>;
+</dt>
+<dd><p>Stores game entities and their components and provides access to them.
+</p>
+<p>An Entity is a collection of components with zero or one component of each
+ type.
+<br>
+
+ A Component is a simple struct with public data members and no
+ functionality at all (setters might be used, though).
+<br>
+
+ To add a new Component type, you must import it in this file and add it to
+ the componentTypes tuple on top of the file.
+<br>
+
+ Every component type must be copiable without invalidating its state -
+ it is copied between EntityPrototype and <a name="EntitySystem"></a><span class="ddoc_psymbol">EntitySystem</span>.
+<br>
+
+<br>
+
+ The only way to access entities is to iterate using foreach over Entity
+ and one or more component types. This iterates only over entities that have
+ all of the specified components.
+
+</p>
+<b>Examples:</b><div class="pbr"><pre class="d_code"> <span class="d_psymbol">EntitySystem</span> system; <span class="d_comment">//set elsewhere
+</span>
+ <span class="d_keyword">foreach</span>(<span class="d_keyword">ref</span> Entity entity,
+         <span class="d_keyword">ref</span> PhysicsComponent physics,
+         <span class="d_keyword">ref</span> VisualComponent visual;
+         system)
+ {
+     <span class="d_comment">//Do stuff with physics and visual.
+</span> }
+</pre>
+
+ This works similarly to a select in a relational database that only selects
+ rows where specified columns are nonnull.
+<br>
+
+ Note that Entities and their Components might be moved around in memory
+ between updates, so keeping pointers to them is not safe.
+ It is safe for duration of one update, so that pointers can be stored for
+ various in-update operations.</div>
+
+<dl><dt class="d_decl">void <a name="destroy"></a><span class="ddoc_psymbol">destroy</span>();
+</dt>
+<dd><p>Destroy all entities and components, returning to initial state.</p>
+
+</dd>
+<dt class="d_decl">final EntityID <a name="newEntity"></a><span class="ddoc_psymbol">newEntity</span>(ref EntityPrototype <b>proto</b>);
+</dt>
+<dd><p>Construct an entity with components from specified prototype.</p>
+
+</dd>
+<dt class="d_decl">EntityID <a name="entityConstruct"></a><span class="ddoc_psymbol">entityConstruct</span>(Types...)(auto ref Types <b>args</b>);
+</dt>
+<dd><p>Construct an entity by explicitly passing components.</p>
+
+</dd>
+<dt class="d_decl">final Entity* <a name="entityWithID"></a><span class="ddoc_psymbol">entityWithID</span>(ref const EntityID <b>id</b>);
+</dt>
+<dd><p>Get a pointer to the entity with specified ID.
+</p>
+<p>This is the safe way to keep "pointers" to entities between game updates.
+<br>
+
+ If the entity with specified ID doesn't exist (e.g. was destroyed),
+ this returns <b>null</b>.</p>
+
+</dd>
+<dt class="d_decl">final void <a name="update"></a><span class="ddoc_psymbol">update</span>();
+</dt>
+<dd><p>Update the EntitySystem.
+</p>
+<p>This should be called once per game logic <a name="update"></a><span class="ddoc_psymbol">update</span>. This is where
+ entities created or killed in previous frame are actually
+ added/removed.</p>
+
+</dd>
+<dt class="d_decl">int <a name="opApply"></a><span class="ddoc_psymbol">opApply</span>(Types...)(int delegate(ref Entity, ref Types) <b>dg</b>);
+</dt>
+<dd><p>Iterate over entities with specified components.
+</p>
+<p>This will only iterate over entities that have all of specified
+ component types.</p>
+
+</dd>
+<dt class="d_decl">inout pure inout(SegmentedVector!(T)) <a name="componentArray"></a><span class="ddoc_psymbol">componentArray</span>(T)();
+</dt>
+<dd><p>Get the component array of specified type.</p>
+
+</dd>
+<dt class="d_decl">void <a name="entityConstructAddComponent"></a><span class="ddoc_psymbol">entityConstructAddComponent</span>(T)(ref T <b>component</b>);
+</dt>
+<dd><p>Add a component to an entity that is currently being constructed.</p>
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</div>
+
+<div id="copyright">
+Copyright &copy; Ferdinand Majerech 2011. |
+Page generated by AutoDDoc and <a href="http://www.digitalmars.com/d/2.0/ddoc.html">Ddoc</a>.
+</div>
+
+</body>
+</html>

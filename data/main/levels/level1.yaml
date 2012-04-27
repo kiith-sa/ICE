@@ -10,10 +10,108 @@ wave wave1:
           rotation: 0
       dumbScript: dumbscripts/enemy1.yaml
 
+wave wave2:
+  spawn:
+    - unit: ships/enemy1.yaml
+      physics: 
+          position: [360, 32]
+          rotation: 0
+    - unit: ships/playership.yaml
+      physics: 
+          position: [440, 64]
+          rotation: 0
+      dumbScript: dumbscripts/enemy1.yaml
 level:
   !!pairs
+  - effect text:
+      text: 42
+      font: default 
+      fontSize: 512
+      color: rgbaFF000001
+      time: 1.0
+
+      
+  - effect lines:
+      minWidth: 0.6
+      maxWidth: 1.0
+      minLength: 16.0
+      maxLength: 32.0
+      verticalScrollingSpeed: 1500.0
+      linesPerPixel: 0.000003
+      detailLevel: 8
+      color: rgbaF8F8ECA0
+  - effect lines:
+      minWidth: 0.3
+      maxWidth: 1.0
+      minLength: 4.0
+      maxLength: 16.0
+      verticalScrollingSpeed: 300.0
+      linesPerPixel: 0.001
+      detailLevel: 7
+      color: rgbaC8C8FF30
+  - effect lines:
+      minWidth: 0.225
+      maxWidth: 0.9
+      minLength: 3.0
+      maxLength: 12.0
+      verticalScrollingSpeed: 225.0
+      linesPerPixel: 0.0015
+      detailLevel: 6
+      color: rgbaD0D0FF24
+  - effect lines:
+      minWidth: 0.15
+      maxWidth: 0.6
+      minLength: 2.0
+      maxLength: 8.0
+      verticalScrollingSpeed: 150.0
+      linesPerPixel: 0.002
+      detailLevel: 5
+      color: rgbaD8D8FF18
+  - effect lines:
+      minWidth: 0.1
+      maxWidth: 0.4
+      minLength: 1.0
+      maxLength: 4.0
+      verticalScrollingSpeed: 90.0
+      linesPerPixel: 0.003
+      detailLevel: 4
+      color: rgbaFFFFFF0B
+  - effect lines:
+      minWidth: 20.0
+      maxWidth: 30.0
+      minLength: 1000.0
+      maxLength: 2000.0
+      verticalScrollingSpeed: 300.0
+      linesPerPixel: 0.0001
+      detailLevel: 6
+      color: rgba2008A001
+  - effect lines:
+      lineDirection: 0.7853
+      minWidth: 50.0
+      maxWidth: 80.0
+      minLength: 1000.0
+      maxLength: 2000.0
+      verticalScrollingSpeed: 80.0
+      linesPerPixel: 0.000005
+      detailLevel: 8
+      color: rgba98989801
+  - effect lines:
+      lineDirection: -0.7853
+      minWidth: 50.0
+      maxWidth: 80.0
+      minLength: 1000.0
+      maxLength: 2000.0
+      verticalScrollingSpeed: 80.0
+      linesPerPixel: 0.000005
+      detailLevel: 8
+      color: rgba98989801
+
   - wait: 2.0
   - wave: wave1
+  - wait: 2.0
+  - wave: wave1
+  - wait: 2.0
+  - wave: wave2
   - wait: 5.0
   - text: Lorem Ipsum  #in HUD
   - wait: 5.0

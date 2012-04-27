@@ -214,7 +214,7 @@ struct Color
     }
 
     /**
-     * Interpolate the color to another color.
+     * Interpolate this color to another color.
      *
      * Params:  c = Color to interpolate with.
      *          d = Interpolation ratio. 1 is this color, 0 other color, 0.5 half in between.

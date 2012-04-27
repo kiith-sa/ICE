@@ -1,0 +1,415 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+
+<html lang='en'>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" >
+<title>ice.graphicseffect - ICE 0.1 API documentation</title>
+<link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+
+<body><div id="top">
+<div id="header">
+<a id="main-heading" href="index.html">ICE 0.1 API documentation</a>
+</div>
+</div>
+
+<div id="navigation">
+<div class="navblock">
+<div id="toctop">
+<ul><li><a href="../index.html">Documentation home</a></li>
+</ul>
+</div>
+</div>
+<div class="navblock">
+<ul><li><a href="index.html">Main page</a></li>
+<li><a href="color.html">color</a></li>
+<li><a href="component.collidablecomponent.html">component.collidablecomponent</a></li>
+<li><a href="component.collisionresponsesystem.html">component.collisionresponsesystem</a></li>
+<li><a href="component.collisionsystem.html">component.collisionsystem</a></li>
+<li><a href="component.controllercomponent.html">component.controllercomponent</a></li>
+<li><a href="component.controllersystem.html">component.controllersystem</a></li>
+<li><a href="component.deathtimeoutcomponent.html">component.deathtimeoutcomponent</a></li>
+<li><a href="component.dumbscriptcomponent.html">component.dumbscriptcomponent</a></li>
+<li><a href="component.enginecomponent.html">component.enginecomponent</a></li>
+<li><a href="component.enginesystem.html">component.enginesystem</a></li>
+<li><a href="component.entitysystem.html">component.entitysystem</a></li>
+<li><a href="component.exceptions.html">component.exceptions</a></li>
+<li><a href="component.healthcomponent.html">component.healthcomponent</a></li>
+<li><a href="component.healthsystem.html">component.healthsystem</a></li>
+<li><a href="component.ondeathcomponent.html">component.ondeathcomponent</a></li>
+<li><a href="component.ondeathsystem.html">component.ondeathsystem</a></li>
+<li><a href="component.ownercomponent.html">component.ownercomponent</a></li>
+<li><a href="component.physicscomponent.html">component.physicscomponent</a></li>
+<li><a href="component.physicssystem.html">component.physicssystem</a></li>
+<li><a href="component.playercomponent.html">component.playercomponent</a></li>
+<li><a href="component.spatialsystem.html">component.spatialsystem</a></li>
+<li><a href="component.statisticscomponent.html">component.statisticscomponent</a></li>
+<li><a href="component.system.html">component.system</a></li>
+<li><a href="component.timeoutsystem.html">component.timeoutsystem</a></li>
+<li><a href="component.visualcomponent.html">component.visualcomponent</a></li>
+<li><a href="component.visualsystem.html">component.visualsystem</a></li>
+<li><a href="component.volumecomponent.html">component.volumecomponent</a></li>
+<li><a href="component.warheadcomponent.html">component.warheadcomponent</a></li>
+<li><a href="component.warheadsystem.html">component.warheadsystem</a></li>
+<li><a href="component.weaponcomponent.html">component.weaponcomponent</a></li>
+<li><a href="component.weaponsystem.html">component.weaponsystem</a></li>
+<li><a href="containers.array2d.html">containers.array2d</a></li>
+<li><a href="containers.fixedarray.html">containers.fixedarray</a></li>
+<li><a href="containers.lazyarray.html">containers.lazyarray</a></li>
+<li><a href="containers.segmentedvector.html">containers.segmentedvector</a></li>
+<li><a href="containers.vector.html">containers.vector</a></li>
+<li><a href="formats.cli.html">formats.cli</a></li>
+<li><a href="formats.image.html">formats.image</a></li>
+<li><a href="formats.mathparser.html">formats.mathparser</a></li>
+<li><a href="formats.png.html">formats.png</a></li>
+<li><a href="formats.pngcommon.html">formats.pngcommon</a></li>
+<li><a href="formats.pngdecoder.html">formats.pngdecoder</a></li>
+<li><a href="formats.pngencoder.html">formats.pngencoder</a></li>
+<li><a href="formats.zlib.html">formats.zlib</a></li>
+<li><a href="graphdata.html">graphdata</a></li>
+<li><a href="gui.guibutton.html">gui.guibutton</a></li>
+<li><a href="gui.guielement.html">gui.guielement</a></li>
+<li><a href="gui.guilinegraph.html">gui.guilinegraph</a></li>
+<li><a href="gui.guimenu.html">gui.guimenu</a></li>
+<li><a href="gui.guimousecontrollable.html">gui.guimousecontrollable</a></li>
+<li><a href="gui.guistatictext.html">gui.guistatictext</a></li>
+<li><a href="ice.html">ice</a></li>
+<li><a href="ice.credits.html">ice.credits</a></li>
+<li><a href="ice.exceptions.html">ice.exceptions</a></li>
+<li><a href="ice.game.html">ice.game</a></li>
+<li><a href="ice.graphicseffect.html">ice.graphicseffect</a></li>
+<li><a href="ice.hud.html">ice.hud</a></li>
+<li><a href="ice.ice.html">ice.ice</a></li>
+<li><a href="ice.level.html">ice.level</a></li>
+<li><a href="ice.player.html">ice.player</a></li>
+<li><a href="image.html">image</a></li>
+<li><a href="math.math.html">math.math</a></li>
+<li><a href="math.matrix4.html">math.matrix4</a></li>
+<li><a href="math.rect.html">math.rect</a></li>
+<li><a href="math.vector2.html">math.vector2</a></li>
+<li><a href="memory.memory.html">memory.memory</a></li>
+<li><a href="memory.memorymonitorable.html">memory.memorymonitorable</a></li>
+<li><a href="memory.pool.html">memory.pool</a></li>
+<li><a href="monitor.graphmonitor.html">monitor.graphmonitor</a></li>
+<li><a href="monitor.monitorable.html">monitor.monitorable</a></li>
+<li><a href="monitor.monitordata.html">monitor.monitordata</a></li>
+<li><a href="monitor.monitormanager.html">monitor.monitormanager</a></li>
+<li><a href="monitor.submonitor.html">monitor.submonitor</a></li>
+<li><a href="physics.contact.html">physics.contact</a></li>
+<li><a href="physics.contactdetect.html">physics.contactdetect</a></li>
+<li><a href="physics.physicsbody.html">physics.physicsbody</a></li>
+<li><a href="physics.physicsengine.html">physics.physicsengine</a></li>
+<li><a href="physics.physicsmonitor.html">physics.physicsmonitor</a></li>
+<li><a href="platform.key.html">platform.key</a></li>
+<li><a href="platform.platform.html">platform.platform</a></li>
+<li><a href="platform.sdlplatform.html">platform.sdlplatform</a></li>
+<li><a href="scene.actor.html">scene.actor</a></li>
+<li><a href="scene.scenemanager.html">scene.scenemanager</a></li>
+<li><a href="spatial.gridmonitor.html">spatial.gridmonitor</a></li>
+<li><a href="spatial.gridspatialmanager.html">spatial.gridspatialmanager</a></li>
+<li><a href="spatial.spatialmanager.html">spatial.spatialmanager</a></li>
+<li><a href="spatial.volume.html">spatial.volume</a></li>
+<li><a href="spatial.volumeaabbox.html">spatial.volumeaabbox</a></li>
+<li><a href="spatial.volumecircle.html">spatial.volumecircle</a></li>
+<li><a href="time.eventcounter.html">time.eventcounter</a></li>
+<li><a href="time.gametime.html">time.gametime</a></li>
+<li><a href="time.time.html">time.time</a></li>
+<li><a href="time.timer.html">time.timer</a></li>
+<li><a href="util.bits.html">util.bits</a></li>
+<li><a href="util.factory.html">util.factory</a></li>
+<li><a href="util.iterable.html">util.iterable</a></li>
+<li><a href="util.signal.html">util.signal</a></li>
+<li><a href="util.stringctfe.html">util.stringctfe</a></li>
+<li><a href="util.traits.html">util.traits</a></li>
+<li><a href="util.typeinfo.html">util.typeinfo</a></li>
+<li><a href="util.weaksingleton.html">util.weaksingleton</a></li>
+<li><a href="util.yaml.html">util.yaml</a></li>
+<li><a href="video.binarytexturepacker.html">video.binarytexturepacker</a></li>
+<li><a href="video.font.html">video.font</a></li>
+<li><a href="video.fontmanager.html">video.fontmanager</a></li>
+<li><a href="video.gldrawmode.html">video.gldrawmode</a></li>
+<li><a href="video.glmonitor.html">video.glmonitor</a></li>
+<li><a href="video.glrenderer.html">video.glrenderer</a></li>
+<li><a href="video.glshader.html">video.glshader</a></li>
+<li><a href="video.gltexture.html">video.gltexture</a></li>
+<li><a href="video.gltexturebackend.html">video.gltexturebackend</a></li>
+<li><a href="video.glvertex.html">video.glvertex</a></li>
+<li><a href="video.glvertexbuffer.html">video.glvertexbuffer</a></li>
+<li><a href="video.glvideodriver.html">video.glvideodriver</a></li>
+<li><a href="video.sdlglvideodriver.html">video.sdlglvideodriver</a></li>
+<li><a href="video.shader.html">video.shader</a></li>
+<li><a href="video.texture.html">video.texture</a></li>
+<li><a href="video.texturepage.html">video.texturepage</a></li>
+<li><a href="video.videodriver.html">video.videodriver</a></li>
+<li><a href="video.videodrivercontainer.html">video.videodrivercontainer</a></li>
+</ul>
+</div>
+</div>
+
+<div id="content">
+<h1>ice.graphicseffect</h1>
+<!-- Generated by Ddoc from ice/graphicseffect.d -->
+<p>Procedural graphics effects.</p>
+
+<dl><dt class="d_decl">abstract class <a name="GraphicsEffect"></a><span class="ddoc_psymbol">GraphicsEffect</span>;
+</dt>
+<dd><p>Base class for procedural graphics effects.
+</p>
+<p>These are usually used for various fullscreen effects that don't depend
+ on game entities.
+<br>
+
+ Managed and drawn by GraphicsEffectManager.
+
+</p>
+<p><b>Signal:</b><br>
+public mixin Signal!() onExpired
+<br>
+
+     Emitted when the effect expires.</p>
+
+<dl><dt class="d_decl">protected bool <a name="done_"></a><span class="ddoc_psymbol">done_</span>;
+</dt>
+<dd><p>Are we done drawing this effect?</p>
+
+</dd>
+<dt class="d_decl">void <a name="draw"></a><span class="ddoc_psymbol">draw</span>(VideoDriver <b>video</b>, const GameTime <b>gameTime</b>);
+</dt>
+<dd><p>Draw the effect.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>VideoDriver <b>video</b></td>
+<td valign=top>VideoDriver to <a name="draw"></a><span class="ddoc_psymbol">draw</span> the effect with.</td></tr>
+<tr><td valign=top>GameTime <b>gameTime</b></td>
+<td valign=top>Game time subsystem to get current time.</td></tr>
+</table></div>
+
+</dd>
+</dl>
+</dd>
+<dt class="d_decl">class <a name="RandomLinesEffect"></a><span class="ddoc_psymbol">RandomLinesEffect</span>: ice.graphicseffect.GraphicsEffect;
+</dt>
+<dd><p>Effect that draws lines at random coordinates, optionally vertically scrolling them.
+</p>
+<p>Effect parameters are specified each frame by a delegate.
+<br>
+
+ The delegate takes a real specifying game time when the effect started,
+ a reference to the game time subsystem and a reference to effect parameters.
+ It returns a boolean that is <b>true</b> when the effect is done and should expire.
+
+</p>
+<p><b>Example:</b><br>
+<pre class="d_code"> <span class="d_comment">//This draws an an increasing number of slowly moving vertical lines in the game area.
+</span> <span class="d_comment">//It is taken from the Game class, and uses its data member.
+</span> <span class="d_comment">//Anyone is welcome to create a simpler example not depending on Game.
+</span>
+ GraphicsEffect effect = <span class="d_keyword">new</span> <span class="d_psymbol">RandomLinesEffect</span>(gameTime_.gameTime,
+ (<span class="d_keyword">const</span> <span class="d_keyword">real</span> startTime,
+  <span class="d_keyword">const</span> GameTime gameTime,
+  <span class="d_keyword">ref</span> <span class="d_psymbol">RandomLinesEffect</span>.Parameters params)
+ {
+     <span class="d_keyword">const</span> <span class="d_keyword">double</span> timeRatio = (gameTime.gameTime - startTime) / 3.0;
+     <span class="d_keyword">if</span>(timeRatio &gt; 1.0){<span class="d_keyword">return</span> <span class="d_keyword">true</span>;}
+     params.bounds   = Game.gameArea;
+     params.minWidth = 0.3;
+     params.maxWidth = 2.0;
+     params.minLength = 4.0f;
+     params.maxLength = 16.0f;
+
+     params.linesPerPixel = round!<span class="d_keyword">uint</span>((40 * clamp(timeRatio, 0.0, 1.0)) ^^ 2)
+                            Game.gameArea.area;
+     params.color    = rgba!<span class="d_string">"8080F040"</span>;
+     params.detailLevel = 4;
+     params.verticalScrollingSpeed = 100.0f;
+     <span class="d_keyword">return</span> <span class="d_keyword">false</span>;
+ });
+</pre>
+</p>
+
+<dl><dt class="d_decl">struct <a name="Parameters"></a><span class="ddoc_psymbol">Parameters</span>;
+</dt>
+<dd><p><a name="Parameters"></a><span class="ddoc_psymbol">Parameters</span> of a text effect.</p>
+
+<dl><dt class="d_decl">Rectf <a name="bounds"></a><span class="ddoc_psymbol">bounds</span>;
+</dt>
+<dd><p>Bounds of the area where the lines are drawn.</p>
+
+</dd>
+<dt class="d_decl">Vector2f <a name="lineDirection"></a><span class="ddoc_psymbol">lineDirection</span>;
+</dt>
+<dd><p>Direction of the lines. Must be a unit (length == 1) vector.</p>
+
+</dd>
+<dt class="d_decl">float <a name="minWidth"></a><span class="ddoc_psymbol">minWidth</span>;
+</dt>
+<dd><p>Minimum line width.</p>
+
+</dd>
+<dt class="d_decl">float <a name="maxWidth"></a><span class="ddoc_psymbol">maxWidth</span>;
+</dt>
+<dd><p>Maximum line width. Must be &gt; minWidth.</p>
+
+</dd>
+<dt class="d_decl">float <a name="minLength"></a><span class="ddoc_psymbol">minLength</span>;
+</dt>
+<dd><p>Minimum line length.</p>
+
+</dd>
+<dt class="d_decl">float <a name="maxLength"></a><span class="ddoc_psymbol">maxLength</span>;
+</dt>
+<dd><p>Maximum line length. Must be &gt; minLength.</p>
+
+</dd>
+<dt class="d_decl">float <a name="linesPerPixel"></a><span class="ddoc_psymbol">linesPerPixel</span>;
+</dt>
+<dd><p>Average number of lines per "pixel" of area specified by bounds.
+</p>
+<p>"Pixel" is a square of distance of 1.0 unit.
+ Must be &lt;= 1.0;</p>
+
+</dd>
+<dt class="d_decl">float <a name="verticalScrollingSpeed"></a><span class="ddoc_psymbol">verticalScrollingSpeed</span>;
+</dt>
+<dd><p>Speed of vertical scrolling in units per second.</p>
+
+</dd>
+<dt class="d_decl">uint <a name="detailLevel"></a><span class="ddoc_psymbol">detailLevel</span>;
+</dt>
+<dd><p>Higher values result in less random, less "detailed" effect but less overhead.
+</p>
+<p>0 is "full" detail and rather CPU-intensive.
+ 1 is less detail but a lot cheaper performance-wise.
+ Higher values are even cheaper.</p>
+
+</dd>
+<dt class="d_decl">Color <a name="color"></a><span class="ddoc_psymbol">color</span>;
+</dt>
+<dd><p>Color of lines.</p>
+
+</dd>
+<dt class="d_decl">const pure nothrow bool <a name="valid"></a><span class="ddoc_psymbol">valid</span>();
+</dt>
+<dd><p>Determine if all of the parameters are <a name="valid"></a><span class="ddoc_psymbol">valid</span>.</p>
+
+</dd>
+</dl>
+</dd>
+<dt class="d_decl">pure nothrow  this(const(real) <b>startTime</b>, bool delegate(const(real), const(GameTime), ref Parameters) <b>controlDelegate</b>);
+</dt>
+<dd><p>Construct a RandomLinesEffect starting at <b>startTime</b> using <b>controlDelegate</b> to set its parameters.</p>
+
+</dd>
+</dl>
+</dd>
+<dt class="d_decl">class <a name="TextEffect"></a><span class="ddoc_psymbol">TextEffect</span>: ice.graphicseffect.GraphicsEffect;
+</dt>
+<dd><p>Text effect.
+</p>
+<p>Draws text with parameters specified each frame by a delegate.
+<br>
+
+ The delegate takes a real specifying game time when the effect started,
+ a reference to the game time subsystem and a reference to effect parameters.
+ It returns a boolean that is <b>true</b> when the effect is done and should expire.
+
+</p>
+<p><b>Example:</b><br>
+<pre class="d_code"> <span class="d_comment">//This draws an enlarging, fading text in the middle of the game area.
+</span> <span class="d_comment">//It is taken from the Game class, and uses its data member.
+</span> <span class="d_comment">//Anyone is welcome to create a simpler example not depending on Game.
+</span>
+ GraphicsEffect effect = <span class="d_keyword">new</span> <span class="d_psymbol">TextEffect</span>(gameTime_.gameTime,
+    (<span class="d_keyword">const</span> <span class="d_keyword">real</span> startTime,
+     <span class="d_keyword">const</span> GameTime gameTime,
+     <span class="d_keyword">ref</span> <span class="d_psymbol">TextEffect</span>.Parameters params)
+    {
+        <span class="d_keyword">const</span> <span class="d_keyword">double</span> timeRatio = (gameTime.gameTime - startTime) / 1.5;
+        <span class="d_keyword">if</span>(timeRatio &gt; 1.0){<span class="d_keyword">return</span> <span class="d_keyword">true</span>;}
+
+        <span class="d_keyword">auto</span> gameOver = <span class="d_string">"GAME OVER"</span>;
+
+        params.text = gameOver;
+
+        params.font = <span class="d_string">"default"</span>;
+        params.fontSize = 80 + round!<span class="d_keyword">uint</span>(max(0.0, timeRatio * 16.0) ^^ 2);
+
+        <span class="d_comment">//Must set videodriver font and font size to measure text size.
+</span>        videoDriver_.font     = <span class="d_string">"default"</span>;
+        videoDriver_.fontSize = params.fontSize;
+        <span class="d_keyword">const</span> textSize        = videoDriver_.textSize(params.text).to!<span class="d_keyword">float</span>;
+        <span class="d_keyword">const</span> area            = Game.gameArea;
+        params.offset         = (area.min + (area.size - textSize) * 0.5).to!<span class="d_keyword">int</span>;
+
+        params.color = rgba!<span class="d_string">"8080F080"</span>.interpolated(rgba!<span class="d_string">"8080F000"</span>,
+                                                    1.0 - timeRatio ^^ 2);
+        <span class="d_keyword">return</span> <span class="d_keyword">false</span>;
+    });
+</pre>
+</p>
+
+<dl><dt class="d_decl">struct <a name="Parameters"></a><span class="ddoc_psymbol">Parameters</span>;
+</dt>
+<dd><p><a name="Parameters"></a><span class="ddoc_psymbol">Parameters</span> of a text effect.</p>
+
+<dl><dt class="d_decl">string <a name="text"></a><span class="ddoc_psymbol">text</span>;
+</dt>
+<dd><p>Text to draw.</p>
+
+</dd>
+<dt class="d_decl">string <a name="font"></a><span class="ddoc_psymbol">font</span>;
+</dt>
+<dd><p>Font to draw with.</p>
+
+</dd>
+<dt class="d_decl">Vector2i <a name="offset"></a><span class="ddoc_psymbol">offset</span>;
+</dt>
+<dd><p>Left-upper corner of the text on screen.</p>
+
+</dd>
+<dt class="d_decl">uint <a name="fontSize"></a><span class="ddoc_psymbol">fontSize</span>;
+</dt>
+<dd><p>Font size.</p>
+
+</dd>
+<dt class="d_decl">Color <a name="color"></a><span class="ddoc_psymbol">color</span>;
+</dt>
+<dd><p>Font <a name="color"></a><span class="ddoc_psymbol">color</span>.</p>
+
+</dd>
+</dl>
+</dd>
+<dt class="d_decl">pure nothrow  this(const(real) <b>startTime</b>, bool delegate(const(real), const(GameTime), ref Parameters) <b>controlDelegate</b>);
+</dt>
+<dd><p>Construct a TextEffect starting at <b>startTime</b> using <b>controlDelegate</b> to set its parameters.</p>
+
+</dd>
+</dl>
+</dd>
+<dt class="d_decl">class <a name="GraphicsEffectManager"></a><span class="ddoc_psymbol">GraphicsEffectManager</span>;
+</dt>
+<dd><p>Manages graphics effects.</p>
+
+<dl><dt class="d_decl">void <a name="draw"></a><span class="ddoc_psymbol">draw</span>(VideoDriver <b>video</b>, const GameTime <b>gameTime</b>);
+</dt>
+<dd><p>Draw graphics effects with specified <b>video</b> driver and game time subsystem.</p>
+
+</dd>
+<dt class="d_decl">pure nothrow void <a name="addEffect"></a><span class="ddoc_psymbol">addEffect</span>(GraphicsEffect <b>effect</b>);
+</dt>
+<dd><p>Add a new graphics <b>effect</b>.</p>
+
+</dd>
+</dl>
+</dd>
+</dl>
+
+</div>
+
+<div id="copyright">
+Copyright &copy; Ferdinand Majerech 2011. |
+Page generated by AutoDDoc and <a href="http://www.digitalmars.com/d/2.0/ddoc.html">Ddoc</a>.
+</div>
+
+</body>
+</html>

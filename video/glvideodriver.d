@@ -329,10 +329,10 @@ abstract class GLVideoDriver : VideoDriver
                 }
 
                 //generate vertices, texcoords
-                vmin.x = pos.x + offset.x;
-                vmin.y = pos.y + offset.y;
-                vmax.x = vmin.x + texture.size.x;
-                vmax.y = vmin.y + texture.size.y;
+                vmin.x = pos.x  + cast(int)offset.x;
+                vmin.y = pos.y  + cast(int)offset.y;
+                vmax.x = vmin.x + cast(int)texture.size.x;
+                vmax.y = vmin.y + cast(int)texture.size.y;
 
                 renderer_.drawTexture(vmin, vmax, 
                                       glTexture.texCoords.min, 
@@ -507,8 +507,7 @@ abstract class GLVideoDriver : VideoDriver
             assert(pages_[pageIndex] !is null, "Trying to delete a texture from"
                                                " a nonexistent page");
             pages_[pageIndex].removeTexture(Rectu(glTexture.offset,
-                                                         glTexture.offset + 
-                                                         texture.size));
+                                            glTexture.offset + texture.size));
             free(textures_[texture.index]);
             textures_[texture.index] = null;
 

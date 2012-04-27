@@ -176,12 +176,13 @@ class VisualSystem : System
                         lineStart < vertexCount; 
                         lineStart += 2, ++line)
                     {
-                        videoDriver_.lineWidth((*widths)[line]);
+                        videoDriver_.lineWidth = (*widths)[line];
                         videoDriver_.drawLine(pos + (*vertices)[lineStart],
                                               pos + (*vertices)[lineStart + 1],
                                               (*colors)[lineStart],
                                               (*colors)[lineStart + 1]);
                     }
+                    videoDriver_.lineWidth = 1.0f;
                 }
                 else
                 {
@@ -213,15 +214,6 @@ class VisualSystem : System
 
                     Color currentColor = Color.white;
                     float currentWidth = 1.0f;
-
-                    /*TODO REMOVE
-                    const vertexCount = vertices.length;
-                    if(vertexCount % 2 != 0)
-                    {
-                        writeln(fail() ~ "Lines must have an even number of verices.");
-                        return false;
-                    }
-                    */
 
                     scope(failure)
                     {
@@ -264,21 +256,6 @@ class VisualSystem : System
                            output.vertices.length == output.widths.length * 2,
                            "Lines' vertex, color and weight counts don't match");
 
-
-                    /*
-                    //Load vertex data.
-                    output.vertices = FixedArray!Vector2f(vertexCount);
-                    output.colors   = FixedArray!Color(vertexCount);
-                    size_t i = 0;
-                    foreach(ref YAMLNode v; vertices)
-                    {
-                        output.vertices[i] = Vector2f(fromYAML!float(v["x"], "x"),
-                                                      fromYAML!float(v["y"], "y"));
-                        output.colors[i]   = v["color"].as!Color;
-                        output.widths[i]   = 2.0f;
-                        ++i;
-                    }
-                    */
                     output.type = VisualData.Type.Lines;
                 }   
                 else

@@ -57,7 +57,7 @@ align(4) struct FontRenderer
         void start()
         {
             fontFace_      = drawFont_.fontFace;
-            kerning_        = drawFont_.kerning && kerning_;
+            kerning_       = drawFont_.kerning && kerning_;
             previousIndex_ = PenX = 0;
         }
 
@@ -105,8 +105,8 @@ align(4) struct FontRenderer
                 PenX += kerning.x / 64;
             }
 
-            offset.x        = PenX + glyph.offset.x;
-            offset.y        = glyph.offset.y;
+            offset.x       = PenX + glyph.offset.x;
+            offset.y       = glyph.offset.y;
             previousIndex_ = glyphIndex;
 
             //move pen to the next glyph
@@ -292,16 +292,12 @@ final class FontManager
         /**
          * Set font size to use.
          *
-         * Params:  size       = Font size to set.
+         * Params:  size      = Font size to set.
          *          forceLoad = Force the font size to be set right now and font loaded
-         *                       if it's not loaded yet.
+         *                      if it's not loaded yet.
          */
         void fontSize(uint size, const bool forceLoad = false)
-        in{assert(size < 128, "Font sizes greater than 127 are not supported");}
-        body
         {
-            //In optimized build, we don't have the assert so force size to at most 127
-            size = min(size, 127u);
             fontSize_ = size;
             if(forceLoad){loadFont();}
         }
@@ -402,7 +398,7 @@ final class FontManager
             {
                 loadFontFile(fontName_);
                 newFont = new Font(freetypeLib_, getFont(fontName_), fontName_, 
-                                    fontSize_, fastGlyphs_, antialiasing_);
+                                   fontSize_, fastGlyphs_, antialiasing_);
                 //Font was succesfully loaded, set it
                 fonts_ ~= newFont;
                 currentFont_ = fonts_[$ - 1];

@@ -281,6 +281,15 @@ Example::
    
    level:
      !!pairs
+     - effect lines:
+         minWidth: 0.3
+         maxWidth: 1.0
+         minLength: 4.0
+         maxLength: 16.0
+         verticalScrollingSpeed: 300.0
+         linesPerPixel: 0.001
+         detailLevel: 7
+         color: rgbaC8C8FF30
      - wait: 2.0
      - wave: wave1
      - wait: 5.0
@@ -315,9 +324,12 @@ Level script
 ^^^^^^^^^^^^
 
 The level script starts with a mapping key named ``level``, and is composed of
-pairs of instructions and their parameters. This level is very simple - 
-it composes of a single wave spawned after 2 seconds and some text displayed 
-later. Once the script is done, the level ends (the player wins the level).
+pairs of instructions and their parameters. 
+
+This level is very simple. First, we start a "lines" effect that draws a
+scrolling starfield background composed of randomly generated lines.
+After 2 seconds, we spawn a single wave and later we display some text.
+Once the script is done, the level ends (the player wins the level).
 The player loses if their ship gets destroyed before the level is over.
 
 

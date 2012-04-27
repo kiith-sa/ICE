@@ -36,33 +36,41 @@ class HealthSystem : System
             {
                 if(health.health == 0)
                 {
-                    //Update statistics of whoever killed us.
-                    if(health.damagedThisUpdate)
-                    {
-                        EntityID id = health.mostRecentlyDamagedBy;
-                        Entity* damagedBy;
-
-                        //If damagedBy has an owner, get the owner, if the owner
-                        //has an owner, get that, etc.
-                        for(;;)
-                        {
-                            damagedBy = &(entitySystem_.entityWithID(id));
-                            auto owner = damagedBy.owner;
-                            if(owner is null){break;}
-                            id = owner.ownerID;
-                        }
-
-                        auto statistics = damagedBy.statistics;
-                        if(statistics !is null)
-                        {
-                            ++statistics.entitiesKilled;
-                        }
-                    }
-
+                    updateStatisticsOfKiller(health);
 
                     e.kill();
                 }
                 health.damagedThisUpdate = false;
+            }
+        }
+
+    private:
+        ///Update statistics of the entity that killed the entity with specified HealthComponent.
+        void updateStatisticsOfKiller(ref HealthComponent health)
+        {
+            //Update statistics of whoever killed us.
+            if(health.damagedThisUpdate)
+            {
+                EntityID id = health.mostRecentlyDamagedBy;
+                Entity* damagedBy;
+
+                //If damagedBy has an owner, get the owner, if the owner
+                //has an owner, get that, etc.
+                for(;;)
+                {
+                    damagedBy = entitySystem_.entityWithID(id);
+                    //The entity was destroyed.
+                    if(damagedBy is null){return;}
+                    auto owner = damagedBy.owner;
+                    if(owner is null){break;}
+                    id = owner.ownerID;
+                }
+
+                auto statistics = damagedBy.statistics;
+                if(statistics !is null)
+                {
+                    ++statistics.entitiesKilled;
+                }
             }
         }
 }

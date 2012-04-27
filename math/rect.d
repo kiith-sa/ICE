@@ -10,6 +10,8 @@ module math.rect;
 
 
 import std.algorithm;
+import std.traits;
+
 import math.math;
 import math.vector2;
 
@@ -128,6 +130,25 @@ struct Rect(T)
     @property bool valid() const pure nothrow 
     {
         return min.x <= max.x && min.y <= max.y;
+    }
+
+    /**
+     * Convert a Rect of one type to other. 
+     *
+     * Examples: 
+     * --------------------
+     * Rectu r_uint = Rectu(4, 2, 5, 3);
+     * //convert to Rectf
+     * Rectf r_float = r_uint.to!float
+     * --------------------
+     */                  
+    @property Rect!T to(T)() const pure nothrow if(isNumeric!T)
+    {
+        return Rect!T(min.to!T, max.to!T);
+    }
+    unittest
+    {
+        assert(Rectf(1.1f, 1.1f, 2.1f, 2.1f).to!int == Recti(1, 1, 2, 2));
     }
 }
 
