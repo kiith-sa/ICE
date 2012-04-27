@@ -1,0 +1,36 @@
+burstPeriod: 0.35
+ammo: 15
+reloadTime: 1.15
+burst:
+ - projectile: projectiles/enemy3bullet.yaml 
+   delay: 0.0
+   position: [-8.0, 0.0]
+   direction: 0.0
+ - projectile: projectiles/enemy3bullet.yaml 
+   delay: 0.0
+   position: [8.0, 0.0]
+   direction: 3.141592654
+ - projectile: projectiles/enemy3bullet.yaml 
+   delay: 0.0
+   position: [0.0, 8.0]
+   direction: 1.570796327
+ - projectile: projectiles/enemy3bullet.yaml 
+   delay: 0.0
+   position: [0.0, -8.0]
+   direction: -1.570796327
+ - projectile: projectiles/enemy3bullet.yaml 
+   delay: 0.2
+   position: [-4.0, 4.0]
+   direction: -2.35619449
+ - projectile: projectiles/enemy3bullet.yaml 
+   delay: 0.2
+   position: [4.0, 4.0]
+   direction: 2.35619449
+ - projectile: projectiles/enemy3bullet.yaml 
+   delay: 0.2
+   position: [4.0, -4.0]
+   direction: 0.785398163
+ - projectile: projectiles/enemy3bullet.yaml 
+   delay: 0.2
+   position: [-4.0, -4.0]
+   direction: -0.785398163
