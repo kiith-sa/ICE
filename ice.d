@@ -57,12 +57,17 @@ void main(string[] args)
     {
         auto rootFS    = new FSDir("root_data", root, No.writable);
         auto userFS    = new FSDir("user_data", user, Yes.writable);
+        //Create userFS if it doesn't exist. rootFS not existing is an error.
+        userFS.create();
+
         auto rootStack = new StackDir("root_data");
         auto userStack = new StackDir("user_data");
         auto gameDir   = new StackDir("root");
 
         rootStack.mount(rootFS.dir("main"));
-        userStack.mount(userFS.dir("main"));
+        auto userMain = userFS.dir("main");
+        userMain.create();
+        userStack.mount(userMain);
         gameDir.mount(rootStack);
         gameDir.mount(userStack);
 

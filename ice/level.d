@@ -609,7 +609,7 @@ class DumbLevel : Level
                 switch(parts[0])
                 {
                     case "wave":  loadWaveDefinition(parts[1], value); break;
-                    case "level": loadLevelScript(value);          break;
+                    case "level": loadLevelScript(value);              break;
                     default: throw new E("Unknown top-level key in level \"" ~
                                          name_ ~ "\": " ~ key);
                 }
