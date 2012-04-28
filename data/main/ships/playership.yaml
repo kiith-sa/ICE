@@ -14,3 +14,5 @@ health: 500
 warhead:
   damage: 10
   killsEntity: false
+movementConstraint:
+  aabbox: [64, 64, 736, 568]
