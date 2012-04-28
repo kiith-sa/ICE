@@ -26,6 +26,7 @@ public import dyaml.node : YAMLNode = Node;
 
 import color;
 import math.vector2;
+import math.rect;
 
 
 /**
@@ -94,6 +95,19 @@ T fromYAML(T, string cond = "")(ref YAMLNode yaml, string context = "")
                       "Context: " ~ context));
         T val = Vector2f(fromYAML!float(yaml[0], context), 
                          fromYAML!float(yaml[1], context));
+    }
+    else static if(is(T == Rectf))
+    {
+        enforce(yaml.length == 4,
+                new E("Rectangle with an unexpected number of components. "
+                      "Context: " ~ context));
+        T val = Rectf(fromYAML!float(yaml[0], context), 
+                      fromYAML!float(yaml[1], context),
+                      fromYAML!float(yaml[2], context),
+                      fromYAML!float(yaml[3], context));
+        enforce(val.valid,
+                new E("Invalid rectangle (minimum x or y greater than" ~
+                      "maximum). Context: " ~ context));
     }
     else static assert(false, "Unsupported type for fromYAML" ~ T.stringof);
 

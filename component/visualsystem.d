@@ -166,6 +166,8 @@ class VisualSystem : System
                     const widths      = &data.widths;
                     const vertexCount = vertices.length;
 
+                    videoDriver_.lineAA = true;
+
                     assert(vertexCount % 2 == 0, 
                            "Uneven number of vertices in a lines visual component");
                     assert(vertexCount == colors.length && widths.length == vertexCount / 2, 
@@ -183,6 +185,7 @@ class VisualSystem : System
                                               (*colors)[lineStart + 1]);
                     }
                     videoDriver_.lineWidth = 1.0f;
+                    videoDriver_.lineAA = false;
                 }
                 else
                 {
