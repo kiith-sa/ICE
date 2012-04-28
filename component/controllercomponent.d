@@ -15,7 +15,7 @@ import util.yaml;
 
 
 /**
- * Comoponent that makes an entity controllable, as if through user input.
+ * Component that makes an entity controllable, as if through user input.
  *
  * Logically emulates a controller with buttons used to control a ship.
  */

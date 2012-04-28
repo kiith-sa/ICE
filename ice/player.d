@@ -134,6 +134,11 @@ final class HumanPlayer : Player
             control.movementDirection = direction.normalized;
 
             control.firing[0] = kp(Key.Space) || kp(Key.Lctrl);
+
+            control.firing[1] = kp(Key.K_H) || kp(Key.NP_4);
+            control.firing[2] = kp(Key.K_J) || kp(Key.NP_2);
+            control.firing[3] = kp(Key.K_K) || kp(Key.NP_6);
+            control.firing[4] = kp(Key.K_U) || kp(Key.NP_8);
         }
         
         ///Destroy this HumanPlayer.
@@ -148,45 +153,5 @@ final class HumanPlayer : Player
          */
         void keyHandler(KeyState state, Key key, dchar unicode)
         {
-            /*
-            if(state == KeyState.Pressed)
-            {
-                switch(key)
-                {
-                    case Key.Right: controller.right = true; return;
-                    case Key.Left:  controller.left  = true; return;
-                    default:                                 return;
-                }
-            }
-            else if(state == KeyState.Released)
-            {
-                switch(key)
-                {
-                    case Key.Right: controller.right = false; return;
-                    case Key.Left:  controller.left  = false; return;
-                    default:                                 return;
-                }
-                if(key == Key.Right)
-                {
-                    if(platform_.is_key_pressed(Key.Left))
-                    {
-                        paddle_.move_left();
-                        return;
-                    }
-                    paddle_.stop();
-                    return;
-                }
-                if(key == Key.Left)
-                {
-                    if(platform_.is_key_pressed(Key.Right))
-                    {
-                        paddle_.move_right();
-                        return;
-                    }
-                    paddle_.stop();
-                    return;
-                }
-            }
-            */
         }
 }
