@@ -25,6 +25,7 @@ import component.controllersystem;
 import component.enginesystem;
 import component.entitysystem;
 import component.healthsystem;
+import component.movementconstraintsystem;
 import component.ondeathsystem;
 import component.physicssystem;
 import component.spatialsystem;
@@ -310,6 +311,8 @@ class Game
         HealthSystem            healthSystem_;
         ///Handles callbacks on death of entities.
         OnDeathSystem           onDeathSystem_;
+        ///Handles movement  constraints (such as player being limited to the screen).
+        MovementConstraintSystem movementConstraintSystem_;
 
         ///Level the game is running.
         Level level_;
@@ -352,6 +355,7 @@ class Game
                 engineSystem_.update();
                 weaponSystem_.update();
                 physicsSystem_.update();
+                movementConstraintSystem_.update();
                 spatialSystem_.update();
                 collisionSystem_.update();
                 warheadSystem_.update();
@@ -492,22 +496,23 @@ class Game
             startTime_ = gameTime_.gameTime;      
 
             //Initialize entity system and game subsystems.
-            entitySystem_            = new EntitySystem();
-            visualSystem_            = new VisualSystem(entitySystem_);
-            controllerSystem_        = new ControllerSystem(entitySystem_, gameTime_);
-            physicsSystem_           = new PhysicsSystem   (entitySystem_, gameTime_);
-            timeoutSystem_           = new TimeoutSystem   (entitySystem_, gameTime_);
-            weaponSystem_            = new WeaponSystem    (entitySystem_, gameTime_);
-            engineSystem_            = new EngineSystem    (entitySystem_, gameTime_);
-            spatialSystem_           = new SpatialSystem(entitySystem_, 
-                                                         Vector2f(400.0f, 300.0f), 
-                                                         32.0f, 
-                                                         32);
-            collisionSystem_         = new CollisionSystem(entitySystem_, spatialSystem_);
-            collisionResponseSystem_ = new CollisionResponseSystem(entitySystem_);
-            warheadSystem_           = new WarheadSystem(entitySystem_);
-            healthSystem_            = new HealthSystem(entitySystem_);
-            onDeathSystem_           = new OnDeathSystem(entitySystem_);
+            entitySystem_             = new EntitySystem();
+            visualSystem_             = new VisualSystem(entitySystem_);
+            controllerSystem_         = new ControllerSystem(entitySystem_, gameTime_);
+            physicsSystem_            = new PhysicsSystem   (entitySystem_, gameTime_);
+            timeoutSystem_            = new TimeoutSystem   (entitySystem_, gameTime_);
+            weaponSystem_             = new WeaponSystem    (entitySystem_, gameTime_);
+            engineSystem_             = new EngineSystem    (entitySystem_, gameTime_);
+            spatialSystem_            = new SpatialSystem(entitySystem_, 
+                                                          Vector2f(400.0f, 300.0f), 
+                                                          32.0f, 
+                                                          32);
+            collisionSystem_          = new CollisionSystem(entitySystem_, spatialSystem_);
+            collisionResponseSystem_  = new CollisionResponseSystem(entitySystem_);
+            warheadSystem_            = new WarheadSystem(entitySystem_);
+            healthSystem_             = new HealthSystem(entitySystem_);
+            onDeathSystem_            = new OnDeathSystem(entitySystem_);
+            movementConstraintSystem_ = new MovementConstraintSystem(entitySystem_);
 
             effectManager_           = new GraphicsEffectManager();
         }
@@ -526,6 +531,8 @@ class Game
             clear(spatialSystem_);
             clear(warheadSystem_);
             clear(healthSystem_);
+            clear(onDeathSystem_);
+            clear(movementConstraintSystem_);
 
             clear(effectManager_);
             if(entitySystem_ !is null)
