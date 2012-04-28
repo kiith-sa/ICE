@@ -1,0 +1,28 @@
+burstPeriod: 0.4
+ammo: 10
+reloadTime: 0.7
+burst:
+  - projectile: projectiles/enemy2bullet.yaml
+    delay: 0.007
+    position: [9.0, 9.0]
+    direction: 0.785398163
+  - projectile: projectiles/enemy2bullet.yaml
+    delay: 0.003
+    position: [0.0, 9.0]
+    direction: 0.392699081
+  - projectile: projectiles/enemy2bullet.yaml
+    delay: 0.0
+    position: [0.0, 9.0]
+    direction: 0.0
+  - projectile: projectiles/enemy2bullet.yaml
+    delay: 0.0
+    position: [0.0, 9.0]
+    direction: 0.0
+  - projectile: projectiles/enemy2bullet.yaml
+    delay: 0.003
+    position: [0.0, 9.0]
+    direction: -0.392699081
+  - projectile: projectiles/enemy2bullet.yaml
+    delay: 0.007
+    position: [-9.0, 9.0]
+    direction: -0.785398163
