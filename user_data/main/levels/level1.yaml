@@ -2,15 +2,15 @@ wave wave1:
   spawn:
     - unit: ships/turtle.yaml
       physics: 
-          position: [160, 64]
+          position: [520, 32]
           rotation: 0
     - unit: ships/turtle.yaml
       physics: 
-          position: [300, 32]
+          position: [280, 32]
           rotation: 0
     - unit: ships/turtle.yaml
       physics: 
-          position: [440, 64]
+          position: [400, 64]
           rotation: 0
       dumbScript: dumbscripts/enemy1.yaml
 
@@ -18,37 +18,20 @@ wave wave2:
   spawn:
     - unit: ships/turtle.yaml
       physics: 
-          position: [100, 32]
+          position: [100, 30]
           rotation: 0
       dumbScript: dumbscripts/toright.yaml
-    - unit: ships/turtle.yaml
-      physics: 
-          position: [150, 50]
-          rotation: 0
-      dumbScript: dumbscripts/toright.yaml
-    - unit: ships/turtle.yaml
-      physics: 
-          position: [200, 68]
-          rotation: 0
-      dumbScript: dumbscripts/toright.yaml
+
 
 wave wave3:
   spawn:
     - unit: ships/turtle.yaml
       physics: 
-          position: [600, 68]
+          position: [700, 90]
           rotation: 0
       dumbScript: dumbscripts/toleft.yaml
     - unit: ships/turtle.yaml
-      physics: 
-          position: [650, 50]
-          rotation: 0
-      dumbScript: dumbscripts/toleft.yaml
-    - unit: ships/turtle.yaml
-      physics: 
-          position: [700, 32]
-          rotation: 0
-      dumbScript: dumbscripts/toleft.yaml
+
 
 wave wave4:
   spawn:
@@ -101,34 +84,118 @@ wave wave6:
           rotation: 0
       dumbScript: dumbscripts/toleft.yaml
 
+wave wave7:
+  spawn:
+    - unit: ships/triton.yaml
+      physics: 
+          position: [600, -90]
+          rotation: 0
+      dumbScript: dumbscripts/enemy1.yaml
+    - unit: ships/triton.yaml
+      physics: 
+          position: [200, -90]
+          rotation: 0
+      dumbScript: dumbscripts/enemy1.yaml
+
+wave wave8:
+  spawn:
+    - unit: ships/triton.yaml
+      physics: 
+          position: [400, -30]
+          rotation: 0
+      dumbScript: dumbscripts/enemy1.yaml
+
 level:
   !!pairs
-  - wave: wave1
-  - wait: 3.0
-  - wave: wave1
-  - wait: 3.0
-  - wave: wave2
-  - wait: 0.5
+
+  - effect text:
+      text: 42
+      font: default 
+      fontSize: 512
+      color: rgbaFF000001
+      time: 1.0
+
+      
+
+  - effect lines:
+      minWidth: 0.225
+      maxWidth: 0.9
+      minLength: 3.0
+      maxLength: 12.0
+      verticalScrollingSpeed: 225.0
+      linesPerPixel: 0.0015
+      detailLevel: 6
+      color: rgbaD0D0FF24
+  - effect lines:
+      minWidth: 0.15
+      maxWidth: 0.6
+      minLength: 2.0
+      maxLength: 8.0
+      verticalScrollingSpeed: 150.0
+      linesPerPixel: 0.002
+      detailLevel: 5
+      color: rgbaD8D8FF18
+
+  - text: Enemy appears in 3 
+  - wait: 1
+  - text: Enemy appears in 2
+  - wait: 1
+  - text: Enemy appears in 1
+  - wait: 1
+  - wave: wave8
+  - wait: 2
   - wave: wave3
-  - wait: 0.5
+  - wait: 0.2
+  - wave: wave3
+  - wait: 0.2
+  - wave: wave3
+  - wait: 1
   - wave: wave2
+  - wait: 0.2
+  - wave: wave2
+  - wait: 0.2
+  - wave: wave2
+  - wait: 2
+  - wave: wave3
+  - wait: 0.2
+  - wave: wave3
+  - wait: 0.2
+  - wave: wave3
+  - wait: 1.8
+  - wave: wave1
+  - wait: 3.0
+  - wave: wave8
   - wait: 0.5
+  - wave: wave7
+  - wait: 3.0
+  - wave: wave8
+  - wait: 0.5
+  - wave: wave7
+  - wait: 3.0
+  - wave: wave3
+  - wait: 0.2
+  - wave: wave2
+  - wait: 0.2
+  - wave: wave3
+  - wait: 0.2
+  - wave: wave2
+  - wait: 0.2
+  - wave: wave3
+  - wait: 0.2
+  - wave: wave2
+  - wait: 0.2
   - wave: wave3
   - wait: 1.0
   - wave: wave4
   - wait: 3.5
   - wave: wave1
   - wait: 3.0
-  - wave: wave2
-  - wait: 0.5
-  - wave: wave2
-  - wait: 0.5
-  - wave: wave2
-  - wait: 0.5
+  - wave: wave8
+  - wait: 2.5
   - wave: wave3
-  - wait: 0.5
-  - wave: wave3
-  - wait: 0.5
+  - wait: 0.2
+  - wave: wave2
+  - wait: 0.2
   - wave: wave4
   - wait: 3.5
   - wave: wave5
@@ -138,8 +205,25 @@ level:
   - wave: wave5
   - wait: 0.3
   - wave: wave6
-  - text: Lorem Ipsum   #in HUD
   - wait: 3.5
-  - text: Level done!
+  - wave: wave7
+  - wait: 3.0
+  - wave: wave8
+  - wait: 3.0
+  - wave: wave8
+  - wait: 3.0
+  - text: Well done soldier!   #in HUD
+  - wait: 1.5
+  - text: You survived!
+  - wait: 2.0
+  - text: No wait!
+  - wait: 0.5
+  - text: There comes another! Prepare!
+  - wait: 0.5
+  - wave: wave2
+  - wait: 0.2
+  - wave: wave3
   - wait: 1.0
+  - wave: wave8
+  - wait: 3.5
 

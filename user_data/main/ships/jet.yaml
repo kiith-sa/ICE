@@ -9,8 +9,8 @@ volume:
 weapon:
   1: weapons/rocketlauncher.yaml
 collidable:
-health: 200
+health: 100
 warhead:
-  damage: 30
+  damage: 100
   killsEntity: false
 dumbScript: dumbscripts/jets1.yaml

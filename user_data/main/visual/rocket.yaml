@@ -11,9 +11,10 @@ vertices:
   - vertex: [1.0, -10.0]
   - vertex: [-5.0, 0.0]
 
-  - color:  rgb999999
+  - color:  rgb333333
   - width: 13
   - vertex: [0.0, 0.5]
+  - color:  rgb999999
   - vertex: [0.0, 20.5]
 
   - color:  rgbDDDDDD

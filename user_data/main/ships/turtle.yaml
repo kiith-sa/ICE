@@ -11,6 +11,6 @@ weapon:
 collidable:
 health: 50
 warhead:
-  damage: 10
+  damage: 50
   killsEntity: true
 dumbScript: dumbscripts/enemy1.yaml
