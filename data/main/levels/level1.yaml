@@ -4,7 +4,7 @@ wave wave1:
       physics: 
           position: [360, 32]
           rotation: 0
-    - unit: ships/playership.yaml
+    - unit: ships/enemy1.yaml
       physics: 
           position: [440, 64]
           rotation: 0
@@ -16,7 +16,7 @@ wave wave2:
       physics: 
           position: [360, 32]
           rotation: 0
-    - unit: ships/playership.yaml
+    - unit: ships/enemy1.yaml
       physics: 
           position: [440, 64]
           rotation: 0

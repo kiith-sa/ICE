@@ -1,11 +1,12 @@
 type: lines
 vertices:
   !!pairs
-  - color:  rgbFF0000
+  - width: 1.8
+  - color:  rgba8080FF80
   - vertex: [-32.0, 0.0]
-  - color:  rgbFFFFFF
+  - color:  rgbaA0A0FF80
   - vertex: [0.0, -32.0]
 
   - vertex: [0.0, -32.0]
-  - color:  rgbFF0000
+  - color:  rgba8080FF80
   - vertex: [32.0, 0.0]

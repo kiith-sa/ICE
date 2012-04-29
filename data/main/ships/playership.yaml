@@ -8,11 +8,11 @@ volume:
     max: [32,  0]
 weapon:
   0: weapons/default.yaml
-  1: weapons/enemy1w1.yaml
+  1: weapons/activeshield.yaml
 collidable:
 health: 500
 warhead:
-  damage: 10
+  damage: 100
   killsEntity: false
 movementConstraint:
   aabbox: [64, 64, 736, 568]

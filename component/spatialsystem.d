@@ -68,6 +68,9 @@ class SpatialSystem : System
         ///Origin of the grid (top-left corner) in world space.
         const Vector2f origin_;
 
+        ///Used as a temporary buffer by neighbors iteration to check for duplicate neighbors.
+        Vector!(Entity*) tempEntities_;
+
     public:
         /**
          * Construct a SpatialSystem.
@@ -98,12 +101,14 @@ class SpatialSystem : System
             origin_ = center - Vector2f(halfSize_, halfSize_);
 
             grid_ = Array2D!Cell(gridSize_, gridSize_);
+
+            tempEntities_.reserve(256);
         }
 
         ///Destroy the SpatialSystem, freeing all used memory.
         ~this()
         {
-            //Grid, outer get destryed implicitly.
+            //Grid, outer, tempEntities_ get destryed implicitly.
         }
 
         ///Determine spatial relations between entities.
@@ -142,7 +147,7 @@ class SpatialSystem : System
 
         /*
          * If this is too inefficient, users will have to iterate over cells 
-         * and entities within instead of getting neigbors of each entity.
+         * and entities within instead of getting neihgbors of each entity.
          */
 
         /**
@@ -203,13 +208,17 @@ class SpatialSystem : System
                             case VolumeComponent.Type.AABBox:
                                 const bool oneCell = 1 == (cellXMax_ - cellXMin_) * (cellYMax_ - cellYMin_);
 
-                                //Used to ensure we never iterate over the same thing twice.
+                                //Used to ensure we never iterate over the same neighbor twice.
                                 //If too much overhead, we might have to remove 
-                                //that guarantee or devise a data structure that does this
-                                //job better for small quantities
-                                //(it's unlikely to have a lot of objects in a cell)
-                                auto iterated = oneCell ? null : redBlackTree!(Entity*)();
-                                scope(exit) if(oneCell){.clear(iterated);}
+                                //that guarantee.
+
+                                //Vector has a bad complexity here (O(n^^2)), but is 
+                                //faster than RBTree due to no GC usage.
+                                //Binary heap in an array might be even better.
+                                //static Vector!(Entity*) iterated;
+
+                                auto iterated = &(spatial_.tempEntities_);
+                                scope(exit) if(!oneCell) {iterated.length = 0;}
 
                                 //Iterate over cells in the AABBox.
                                 foreach(x, y, ref cell; cellsAABBox_) 
@@ -218,10 +227,10 @@ class SpatialSystem : System
                                     foreach(ref e; cell[])
                                     {
                                         //Only iterate over an entity once.
-                                        if(!oneCell && e.entity in iterated){continue;}
+                                        if(!oneCell && (*iterated)[].canFind(e.entity)){continue;}
                                         result = dg(*e.entity, *e.physics, *e.volume);
                                         if(result){return result;}
-                                        if(!oneCell){iterated.insert(e.entity);}
+                                        if(!oneCell){(*iterated) ~= e.entity;}
                                     }
                                 }
                                 break;

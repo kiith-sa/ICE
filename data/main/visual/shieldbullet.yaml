@@ -1,0 +1,13 @@
+type: lines
+vertices:
+  !!pairs
+  - width: 1.0
+  - color:  rgbaFFFFA0A0
+  - vertex: [-2.0, -2.0]
+  - vertex: [-2.0, 2.0]
+  - vertex: [-2.0, 2.0]
+  - vertex: [2.0,  2.0]
+  - vertex: [2.0,  2.0]
+  - vertex: [2.0,  -2.0]
+  - vertex: [2.0,  -2.0]
+  - vertex: [-2.0, -2.0]
