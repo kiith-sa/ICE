@@ -14,6 +14,7 @@ import std.conv;
 
 import containers.lazyarray;
 import containers.fixedarray;
+import util.bits;
 import util.yaml;
 
 
@@ -70,8 +71,11 @@ struct WeaponComponent
         }
     }
 
-    //Weapons owned by the entity.
+    ///Weapons owned by the entity.
     FixedArray!Weapon weapons;
+
+    ///Weapons whose bursts started this frame.
+    Bits!256 burstStarted;
 
     ///Load from a YAML node. Throws YAMLException on error.
     this(ref YAMLNode yaml)
