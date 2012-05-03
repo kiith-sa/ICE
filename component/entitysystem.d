@@ -35,6 +35,7 @@ import component.ondeathcomponent;
 import component.ownercomponent;
 import component.physicscomponent;
 import component.playercomponent;
+import component.spawnercomponent;
 import component.statisticscomponent;
 import component.visualcomponent;
 import component.volumecomponent;
@@ -70,7 +71,8 @@ tuple
     "DumbScriptComponent",
     "OnDeathComponent",
     "StatisticsComponent",
-    "MovementConstraintComponent"
+    "MovementConstraintComponent",
+    "SpawnerComponent"
 );
 
 ///Enforce at compile time that all component type names are valid.
