@@ -29,6 +29,7 @@ import component.movementconstraintsystem;
 import component.ondeathsystem;
 import component.physicssystem;
 import component.spatialsystem;
+import component.spawnersystem;
 import component.statisticscomponent;
 import component.timeoutsystem;
 import component.warheadsystem;
@@ -288,31 +289,33 @@ class Game
         EntitySystem entitySystem_;
 
         ///Visual subsystem, draws entities.
-        VisualSystem            visualSystem_;
+        VisualSystem             visualSystem_;
         ///Controller subsystem, allows players to control ships.
-        ControllerSystem        controllerSystem_;
+        ControllerSystem         controllerSystem_;
         ///Physics subsystem. Handles movement and physics interaction.
-        PhysicsSystem           physicsSystem_;
+        PhysicsSystem            physicsSystem_;
         ///Handles various delayed events.
-        TimeoutSystem           timeoutSystem_;
+        TimeoutSystem            timeoutSystem_;
         ///Handles weapons and firing.
-        WeaponSystem            weaponSystem_;
+        WeaponSystem             weaponSystem_;
         ///Handles engine components of the entities, allowing them to move.
-        EngineSystem            engineSystem_;
+        EngineSystem             engineSystem_;
         ///Handles spatial relations between entities.
-        SpatialSystem           spatialSystem_;
+        SpatialSystem            spatialSystem_;
         ///Handles collision detection.
-        CollisionSystem         collisionSystem_;
+        CollisionSystem          collisionSystem_;
         ///Handles collision response.
-        CollisionResponseSystem collisionResponseSystem_;
+        CollisionResponseSystem  collisionResponseSystem_;
         ///Handles damage caused by warheads.
-        WarheadSystem           warheadSystem_;
+        WarheadSystem            warheadSystem_;
         ///Handles entity health and kills entities when they run out of health.
-        HealthSystem            healthSystem_;
+        HealthSystem             healthSystem_;
         ///Handles callbacks on death of entities.
-        OnDeathSystem           onDeathSystem_;
-        ///Handles movement  constraints (such as player being limited to the screen).
+        OnDeathSystem            onDeathSystem_;
+        ///Handles movement constraints (such as player being limited to the screen).
         MovementConstraintSystem movementConstraintSystem_;
+        ///Handles spawning of entities.
+        SpawnerSystem            spawnerSystem_;
 
         ///Level the game is running.
         Level level_;
@@ -362,6 +365,8 @@ class Game
                 collisionResponseSystem_.update();
                 healthSystem_.update();
                 timeoutSystem_.update();
+
+                spawnerSystem_.update();
                 onDeathSystem_.update();
 
                 return 0;
@@ -393,6 +398,7 @@ class Game
             controllerSystem_.gameDir = rhs;
             visualSystem_.gameDir     = rhs;
             weaponSystem_.gameDir     = rhs;
+            spawnerSystem_.gameDir    = rhs;
         }
 
         ///Get game area.
@@ -513,8 +519,9 @@ class Game
             healthSystem_             = new HealthSystem(entitySystem_);
             onDeathSystem_            = new OnDeathSystem(entitySystem_);
             movementConstraintSystem_ = new MovementConstraintSystem(entitySystem_);
+            spawnerSystem_            = new SpawnerSystem(entitySystem_, gameTime_);
 
-            effectManager_           = new GraphicsEffectManager();
+            effectManager_            = new GraphicsEffectManager();
         }
 
         ///Destroy game subsystems.
@@ -533,6 +540,7 @@ class Game
             clear(healthSystem_);
             clear(onDeathSystem_);
             clear(movementConstraintSystem_);
+            clear(spawnerSystem_);
 
             clear(effectManager_);
             if(entitySystem_ !is null)
