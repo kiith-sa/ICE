@@ -83,7 +83,6 @@ class WeaponSystem : System
             {
                 burstPeriod = fromYAML!(double, "a > 0.0")(yaml["burstPeriod"], "burstPeriod");
 
-
                 //0 means unlimited ammo.
                 ammo = yaml.containsKey("ammo") ? yaml["ammo"].as!uint : 0;
                 reloadTime = yaml.containsKey("reloadTime")
@@ -182,8 +181,9 @@ class WeaponSystem : System
                     ref PhysicsComponent physics; 
                     entitySystem_)
             {
+                weapons.burstStarted.zeroOut();
                 import std.stdio;
-                foreach(ref weaponInstance; weapons.weapons) with(weaponInstance)
+                foreach(idx, ref weaponInstance; weapons.weapons) with(weaponInstance)
                 {
                     ///Loads weapon data if needed.
                     WeaponData* weapon = weaponData_[weaponInstance.dataIndex];
@@ -214,6 +214,7 @@ class WeaponSystem : System
                        timeSinceLastBurst >= weapon.burstPeriod)
                     {
                         initiateBurst(weaponInstance, *weapon, e.statistics);
+                        weapons.burstStarted[idx] = true;
                     }
                 }
             }
