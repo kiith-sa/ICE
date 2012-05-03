@@ -30,11 +30,12 @@ align(4) struct PhysicsComponent
     this(ref YAMLNode node)
     {
         position = fromYAML!Vector2f(node["position"], "position");
-        rotation = fromYAML!float   (node["rotation"], "rotation");
-        if(node.containsKey("velocity"))
-        {
-            velocity = fromYAML!Vector2f(node["velocity"], "velocity");
-        }
+        rotation = node.containsKey("rotation") 
+                 ? fromYAML!float   (node["rotation"], "rotation")
+                 : 0.0f;
+        velocity = node.containsKey("velocity") 
+                 ? fromYAML!Vector2f(node["velocity"], "velocity")
+                 : Vector2f(0.0f, 0.0f);
     }
 
     ///Construct manually.
@@ -43,6 +44,22 @@ align(4) struct PhysicsComponent
         position      = pos;
         rotation      = rot;
         this.velocity = velocity;
+    }
+
+    /**
+     * Set this component as relative to specified component.
+     *
+     * E.g if position of rhs is (1, 0), and position of this component is 
+     * (2, 0), the resulting position is (3, 0) (assuming no rotation).
+     *
+     * I.e. this component was at (1, 0) relative to rhs, and now it is (3, 0)
+     * - in global coordinates.
+     */
+    void setRelativeTo(ref PhysicsComponent rhs)
+    {
+        rotation += rhs.rotation;
+        position = rhs.position + position.rotated(rhs.rotation);
+        velocity = rhs.velocity + velocity.rotated(rhs.rotation);
     }
 }
 
