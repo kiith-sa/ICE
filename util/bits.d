@@ -57,6 +57,12 @@ struct Bits(uint length)
             data_[dataIdx] = value ? (data_[dataIdx] | (1L << bitIdx))
                                    : (data_[dataIdx] & ~(1L << bitIdx));
         }
+
+        ///Set all bits to zero.
+        void zeroOut() pure nothrow
+        {
+            data_[] = 0;
+        }
 }
 unittest
 {
