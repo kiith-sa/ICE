@@ -15,3 +15,11 @@ warhead:
   damage: 10
   killsEntity: false
 dumbScript: dumbscripts/enemy1.yaml
+spawner:
+  - spawn:
+    entity: ships/playership.yaml
+    condition: death
+    delay: 0.5
+    components:
+      physics:
+        position: [0, 64] 
