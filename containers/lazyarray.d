@@ -26,23 +26,54 @@ import containers.vector;
 struct LazyArrayIndex_(ID = string)
 {
     private:
-        ///Identifier of the resource.
+        ///Identifier of the resource. This is cleared after the resource is loaded.
         ID id_;
 
-        ///Index of the resource in the LazyArray.
+        ///Index of the resource in the LazyArray once loaded (uint.max when not loaded).
         uint index_ = uint.max;
 
     public:
         ///Get the resource identitifer.
-        @property const(ID) id() const pure nothrow {return id_;}
+        @property const(ID) id() const pure nothrow 
+        in
+        {
+            assert(!loaded, 
+                   "Accessing the ID of a LazyArrayIndex after its resource "
+                   "has been loaded - the ID is now cleared, replaced by index.");
+        }
+        body
+        {
+            return id_;
+        }
 
         ///Is the resource loaded?
         @property bool loaded() const pure nothrow {return index_ != uint.max;}
 
         ///Construct a LazyArrayIndex_ pointing to resource with specified identifier.
-        this(const ID id) pure nothrow
+        this(ID id) pure nothrow
         {
             id_ = id;
+        }
+
+    private:
+        ///Set the index once the resource is loaded.
+        @property void index(const uint rhs) 
+        {
+            clear(id_);
+            index_ = rhs;
+        }
+
+        ///Get the resource identitifer (non-const version).
+        @property ID idNonConst() pure nothrow 
+        in
+        {
+            assert(!loaded, 
+                   "Accessing the ID of a LazyArrayIndex after its resource "
+                   "has been loaded - the ID is now cleared, replaced by index.");
+        }
+        body
+        {
+            return id_;
         }
 }
 
@@ -102,7 +133,7 @@ struct LazyArray(T, ID = string)
                 //Resource id must be valid.
                 static if(isArray!ID || is(ID == class))
                 {
-                    assert(index.id !is null, 
+                    assert(index.idNonConst !is null, 
                            "Indexing a lazy array with an index that has a null "
                            "resource identifier");
                 }
@@ -111,7 +142,7 @@ struct LazyArray(T, ID = string)
                 long storageIdx = -1;
                 foreach(size_t idx, ref Item item; storage_)
                 {
-                    if(item.id == index.id) 
+                    if(item.id == index.idNonConst) 
                     {
                         storageIdx = idx;
                         break;
@@ -120,20 +151,20 @@ struct LazyArray(T, ID = string)
 
                 if(storageIdx >= 0)
                 {
-                    index.index_ = cast(uint)storageIdx;
+                    index.index = cast(uint)storageIdx;
                 }
                 else
                 {
                     storage_.length = storage_.length + 1;
-                    storage_.back.id = index.id;
+                    storage_.back.id = index.idNonConst;
                     //Add the new item, and clear it if we fail.
-                    if(!loadData_(index.id, storage_.back.value))
+                    if(!loadData_(index.idNonConst, storage_.back.value))
                     {
                         clear(storage_.back);
                         storage_.length = storage_.length - 1;
                         return null;
                     }
-                    index.index_ = cast(uint)storage_.length - 1;
+                    index.index = cast(uint)storage_.length - 1;
                 }
             }
 
