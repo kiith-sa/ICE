@@ -89,7 +89,7 @@ struct Vector2(T)
     
     ///Get angle of this vector in radians.
     @property F angle(F = T)() const pure
-        if(isFloatingPoint!F)
+        if(isFloatingPoint!F)       
     in
     {
         assert(!isZero, "Trying to get angle of a zero vector");
@@ -123,6 +123,16 @@ struct Vector2(T)
     {
         if(isZero){return;}
         this.angle = this.angle + angle;
+    }
+
+    ///Return this vector rotated by specified angle, in radians.
+    Vector2!T rotated(F)(const F angle) pure const nothrow
+        if(isFloatingPoint!F)
+    {
+        if(isZero){return this;}
+        Vector2 result = this;
+        result.angle = result.angle + angle;
+        return result;
     }
 
     ///Get squared length of the vector.
