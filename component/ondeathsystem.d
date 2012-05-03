@@ -15,9 +15,9 @@ import component.system;
 
 
 /**
- * Allows callbacks when an entity (with a OnDeathComponent) dies.
+ * Allows callbacks when an entity (with an OnDeathComponent) dies.
  *
- * Must be updated $(B after) all other subsystems,
+ * Must be updated $(B after) all subsystems that might kill an entity.
  */
 class OnDeathSystem : System 
 {
