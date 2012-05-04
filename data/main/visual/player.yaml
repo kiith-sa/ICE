@@ -42,19 +42,4 @@ vertices:
 
   - width: 2
   - color:  rgbEA0000
-  - vertex: [32.0, 0.0]
-  - color: rgbFFFFFF
-  - vertex: [42.0, -5.0]
 
-  - vertex: [42.0, -5.0]
-  - color:  rgbEA0000
-  - vertex: [52.0, 0.0]
-
-  - color:  rgbEA0000
-  - vertex: [-32.0, 0.0]
-  - color: rgbFFFFFF
-  - vertex: [-42.0, -5.0]
-
-  - vertex: [-42.0, -5.0]
-  - color:  rgbEA0000
-  - vertex: [-52.0, 0.0]

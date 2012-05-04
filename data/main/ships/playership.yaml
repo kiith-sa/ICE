@@ -12,11 +12,7 @@ weapon:
 collidable:
 health: 3000
 warhead:
-<<<<<<< HEAD
-  damage: 20
-=======
   damage: 100
->>>>>>> upstream/master
   killsEntity: false
 movementConstraint:
   aabbox: [64, 64, 736, 568]
