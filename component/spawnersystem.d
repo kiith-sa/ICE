@@ -205,6 +205,13 @@ class SpawnerSystem : System
                     sPhysics.setRelativeTo(*ePhysics);
                 }
             }
+
+            //WeaponComponent requires (extends) SpawnerComponent.
+            if(!timedSpawn.spawn.weapon.isNull && 
+               timedSpawn.spawn.spawner.isNull)
+            {
+                timedSpawn.spawn.spawner = SpawnerComponent();
+            }
         }
 
         ///Get unused spawn in spawnStorage_, allocating new one if needed.

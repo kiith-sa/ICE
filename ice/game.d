@@ -595,6 +595,7 @@ class Game
             import component.ondeathcomponent;
             import component.physicscomponent;
             import component.playercomponent;
+            import component.spawnercomponent;
             import component.statisticscomponent;
 
             auto prototype = EntityPrototype(name, yaml);
@@ -602,6 +603,12 @@ class Game
             {
                 physics    = PhysicsComponent(position, Vector2f(0.0f, -1.0f).angle,
                                               Vector2f(0.0f, 0.0f));
+
+                if(!prototype.weapon.isNull && prototype.spawner.isNull)
+                {
+                    spawner = SpawnerComponent();
+                }
+
                 controller = ControllerComponent();
                 player     = PlayerComponent(player1_);
 

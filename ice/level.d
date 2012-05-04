@@ -21,6 +21,8 @@ import dgamevfs._;
 
 import color;
 import component.entitysystem;
+import component.controllercomponent;
+import component.spawnercomponent;
 import containers.fixedarray;
 import containers.vector;
 import math.rect;
@@ -256,8 +258,6 @@ class DumbLevel : Level
                  */
                 this(DumbLevel level, ref YAMLNode yaml)
                 {
-                    import component.controllercomponent;
-
                     auto spawns = yaml["spawn"];
                     spawns_ = FixedArray!(EntityPrototype*)(spawns.length);
                     uint spawnIdx = 0;
@@ -266,10 +266,21 @@ class DumbLevel : Level
                     {
                         auto name = spawn["unit"].as!string;
                         EntityPrototype* prototype = level.unitPrototype(name);
-                        spawns_[spawnIdx] = alloc!EntityPrototype;
-                        spawns_[spawnIdx].clone(*prototype);
-                        spawns_[spawnIdx].controller = ControllerComponent();
-                        spawns_[spawnIdx].overrideComponents(spawn);
+
+                        auto newSpawn = alloc!EntityPrototype;
+                        scope(failure){free(newSpawn);}
+                        newSpawn.clone(*prototype);
+                        newSpawn.controller = ControllerComponent();
+                        newSpawn.overrideComponents(spawn);
+
+                        //WeaponComponent requires (extends) SpawnerComponent.
+                        if(!newSpawn.weapon.isNull && newSpawn.spawner.isNull)
+                        {
+                            newSpawn.spawner = SpawnerComponent();
+                        }
+
+                        spawns_[spawnIdx] = newSpawn;
+
                         ++spawnIdx;
                     }
                 }
@@ -277,7 +288,8 @@ class DumbLevel : Level
                 ///Destroy the WaveDefinition, freeing all memory it uses.
                 ~this()
                 {
-                    foreach(ref spawn; spawns_)
+                    //If ctor failed in the middle, some spawns might still be null.
+                    foreach(ref spawn; spawns_) if(spawn !is null)
                     {
                         free(spawn);
                     }
