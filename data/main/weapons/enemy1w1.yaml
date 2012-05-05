@@ -2,19 +2,27 @@ burstPeriod: 0.06
 ammo: 2
 reloadTime: 0.2
 burst:
-  - projectile: projectiles/defaultbullet.yaml 
+  - entity: projectiles/defaultbullet.yaml 
     delay: 0.02
-    position: [8.0, 8.0]
-    direction: -0.1
-  - projectile: projectiles/defaultbullet.yaml 
+    components:
+      physics:
+        position: [8.0, 8.0]
+        rotation: -0.1
+  - entity: projectiles/defaultbullet.yaml 
     delay: 0.0
-    position: [0.0, -8.0] 
-    direction: 0.0
-  - projectile: projectiles/defaultbullet.yaml 
+    components:
+      physics:
+        position: [0.0, -8.0]
+        rotation: 0.0
+  - entity: projectiles/defaultbullet.yaml 
     delay: 0.0
-    position: [0.0, -8.0] 
-    direction: 0.0
-  - projectile: projectiles/defaultbullet.yaml 
+    components:
+      physics:
+        position: [0.0, -8.0]
+        rotation: 0.0
+  - entity: projectiles/defaultbullet.yaml 
     delay: 0.02
-    position: [-8.0, 8.0] 
-    direction: 0.1
+    components:
+      physics:
+        position: [-8.0, 8.0]
+        rotation: 0.1
