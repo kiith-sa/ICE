@@ -701,7 +701,6 @@ class Game
 ///Container managing dependencies and construction of Game.
 class GameContainer
 {
-    import physics.physicsbody;
     private:
         ///GUI of the game.
         GameGUI gui_;

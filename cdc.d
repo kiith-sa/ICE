@@ -181,9 +181,9 @@ void main(string[] args)
                          "dependencies/derelict/DerelictUtil",
                          "dependencies/dgamevfs/dgamevfs",
                          "dependencies/dyaml/dyaml"];
-    auto sources      = ["physics/", "scene/", "component/", "formats/", "gui/", 
+    auto sources      = ["component/", "formats/", "gui/", 
                          "math/", "memory/", "monitor/", "platform/", 
-                         "spatial/", "time/", "video/", "containers/", "util/",
+                         "time/", "video/", "containers/", "util/",
                          "ice/", "color.d", "graphdata.d", "image.d", 
                          "ice.d"];
 
