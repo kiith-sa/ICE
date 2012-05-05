@@ -393,7 +393,7 @@ struct CheapRandomGenerator
         uint offset_;
 
         ///Size of table_ and offsets_.
-        const uint size_;
+        uint size_;
 
     public:
         ///Create a CheapRandomGenerator. Larger size means more randomness but also memory usage.
