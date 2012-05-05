@@ -15,6 +15,7 @@ import dgamevfs.exceptions;
 import dgamevfs.vfs;
 
 import component.entitysystem;
+import component.ownercomponent;
 import component.spawnercomponent;
 import component.system;
 
@@ -204,6 +205,16 @@ class SpawnerSystem : System
                 {
                     sPhysics.setRelativeTo(*ePhysics);
                 }
+            }
+
+            if(spawn.spawnerIsOwner)
+            {
+                timedSpawn.spawn.owner = OwnerComponent(spawner.id);
+            }
+
+            if(spawn.accelerateForward && !timedSpawn.spawn.engine.isNull)
+            {
+                timedSpawn.spawn.engine.accelerationDirection = Vector2f(0.0f, 1.0f);
             }
 
             //WeaponComponent requires (extends) SpawnerComponent.

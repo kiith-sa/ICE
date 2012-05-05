@@ -11,12 +11,12 @@ module component.spawnercomponent;
 
 import std.conv;
 import std.exception;
+import std.stdio;
 import std.string;
-import std.typecons;
 
 import containers.lazyarray;
 import containers.vector;
-
+import math.vector2;
 import util.yaml;
 
 
@@ -110,24 +110,33 @@ struct SpawnerComponent
         ///Should PhysicsComponent (e.g. position) of the spawnee be relative to the spawner?
         bool relativePhysics;
 
+        ///Is the spawner spawnee's owner?
+        bool spawnerIsOwner;
+
+        /**
+         * Should the spawnee's engine (if any) accelerationDirection 
+         * be set to (0, 1) after spawn?
+         *
+         * (Used by projectiles)
+         */
+        bool accelerateForward = false;
+
         /**
          * Load a Spawn from YAML.
          *
-         * Params:  yaml          = YAML node to load fromYAML
-         *          loadCondition = Should the spawn condition be loaded?
-         *                          (false for projectile spawns in weapons as the
-         *                          WeaponSystem decides their spawn conditions)
+         * Params:  yaml = YAML node to load fromYAML
          */
-        this(ref YAMLNode yaml, Flag!"LoadCondition" loadCondition)
+        this(ref YAMLNode yaml)
         {
             spawnee = LazyArrayIndex(yaml["entity"].as!string);
-            if(loadCondition) 
-            {
-                condition = SpawnCondition(yaml["condition"]);
-            }
+            condition = SpawnCondition(yaml["condition"]);
+
             relativePhysics = yaml.containsKey("relativePhysics")
                             ? yaml["relativePhysics"].as!bool 
                             : true;
+            spawnerIsOwner = yaml.containsKey("spawnerIsOwner")
+                           ? yaml["spawnerIsOwner"].as!bool 
+                           : true;
             delay = yaml.containsKey("delay")
                   ? fromYAML!(float, "a >= 0.0f")(yaml["delay"], "spawn constructor")
                   : 0.0f;
@@ -136,6 +145,122 @@ struct SpawnerComponent
                 hasComponentOverrides = true;
                 componentOverrides = yaml["components"];
             }
+        }
+
+        /**
+         * Specialized function to load a projectile spawn from YAML.
+         *
+         * The major differences are that spawn condition is not loaded 
+         * (WeaponBurst depending on which weapon is used will be the 
+         * spawn condition), and that accelerateForward is set to true.
+         *
+         * Params:  yaml = YAML node to load fromYAML
+         */
+        static Spawn loadProjectileSpawn(ref YAMLNode yaml)
+        {
+            Spawn result;
+            with(result)
+            {
+                spawnee = LazyArrayIndex(loadProjectileEntity(yaml));
+                relativePhysics = yaml.containsKey("relativePhysics")
+                                ? yaml["relativePhysics"].as!bool 
+                                : true;
+                spawnerIsOwner = yaml.containsKey("spawnerIsOwner")
+                               ? yaml["spawnerIsOwner"].as!bool 
+                               : true;
+                delay = yaml.containsKey("delay")
+                      ? fromYAML!(float, "a >= 0.0f")(yaml["delay"], "loadProjectileSpawn")
+                      : 0.0f;
+
+                if(yaml.containsKey("components"))
+                {
+                    hasComponentOverrides = true;
+                    componentOverrides = yaml["components"];
+                }
+
+                loadProjectileLegacy(result, yaml);
+                accelerateForward = true;
+            }
+
+            return result;
+
+        }
+
+        ///Backwards compatibility - load old projectile spawning YAML tags.
+        static void loadProjectileLegacy(ref Spawn spawn, ref YAMLNode yaml)
+        {
+            const hasPosition  = yaml.containsKey("position");
+            const hasDirection = yaml.containsKey("direction");
+            const hasSpeed     = yaml.containsKey("speed");
+
+            if(!hasPosition && !hasDirection && !hasSpeed){return;}
+
+            if(spawn.hasComponentOverrides && 
+               spawn.componentOverrides.containsKey("physics"))
+            {
+                return;
+            }
+
+            if(!spawn.hasComponentOverrides)
+            {
+                spawn.hasComponentOverrides = 1;
+                //rotation/0.0f is a placeholder so we can call YAMLNode ctor.
+                spawn.componentOverrides = YAMLNode([YAMLNode("physics")],
+                                                    [YAMLNode(["rotation"], [0.0f])]);
+            }
+            else 
+            {
+                //rotation/0.0f is a placeholder so we can call YAMLNode ctor.
+                spawn.componentOverrides["physics"] = YAMLNode(["rotation"], [0.0f]);
+            }
+
+            writeln("WARNING: position, direction and speed tags in weapon "  ~ 
+                    "bursts are deprecated and will be removed.\nCode using " ~
+                    "them must be rewritten by overriding components.\n\n\n"  ~
+                    "Example:\n"                                              ~
+                    "\nold:\n"                                                ~
+                    " - projectile: projectiles/shieldbullet.yaml\n"          ~
+                    "   delay: 0.0\n"                                         ~
+                    "   position: [0.0, 35.0]\n"                              ~
+                    "   direction: 0.8\n"                                     ~
+                    "   speed: 50.0\n"                                        ~
+                    "\nnew:\n"                                                ~
+                    " - projectile: projectiles/shieldbullet.yaml\n"          ~
+                    "   delay: 0.0\n"                                         ~
+                    "   components:\n"                                        ~
+                    "     physics:\n"                                         ~
+                    "       position: [0.0, 35.0]\n"                          ~
+                    "       rotation: 0.8\n"                                  ~
+                    "       speed:    50.0\n");
+            stdout.flush();
+
+            auto physics = &(spawn.componentOverrides["physics"]);
+
+            if(hasPosition)
+            {
+                (*physics)["position"] = yaml["position"];
+            }
+
+            if(hasDirection)
+            {
+                (*physics)["rotation"] = yaml["direction"];
+            }
+
+            if(hasSpeed)
+            {
+                const rotation = hasDirection ? (*physics)["rotation"].as!float : 0.0f;
+                const velocity = angleToVector(rotation) * yaml["speed"].as!float;
+                (*physics)["velocity"] = YAMLNode([velocity.x, velocity.y]);
+            }
+        }
+
+        ///Backward compatibility - use "projectile" as synonym for "entity".
+        static string loadProjectileEntity(ref YAMLNode yaml)
+        {
+            if(yaml.containsKey("entity")){return yaml["entity"].as!string;}
+            writeln("WARNING: Weapon projectile name should now be specified "
+                    "under the \"entity\" key, not \"projectile\"");
+            return yaml["projectile"].as!string;
         }
     }
     
@@ -148,7 +273,7 @@ struct SpawnerComponent
         spawns.reserve(yaml.length);
         foreach(ref YAMLNode spawn; yaml)
         {
-            spawns ~= Spawn(spawn, Yes.LoadCondition);
+            spawns ~= Spawn(spawn);
         }
     }
 
