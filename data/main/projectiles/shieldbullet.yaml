@@ -1,14 +1,14 @@
-deathTimeout: 2.0
+deathTimeout: 1.5
 engine : 
-  maxSpeed       : 1000
-  acceleration   : 200  #-1 is instant
+  maxSpeed       : 1500
+  acceleration   : 300  #-1 is instant
 volume:
   aabbox:
     min: [-2, -2]
     max: [2,  2]
 visual:   visual/shieldbullet.yaml
 warhead:
-  damage: 4
+  damage: 6
 movementConstraint:
-  aabbox: [-384, -80, 384, 800]
+  aabbox: [-1024, -80, 1024, 800]
   constrainedToOwner: true
