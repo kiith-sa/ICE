@@ -158,19 +158,16 @@ class RandomLinesEffect : GraphicsEffect
         const real startTime_;
 
         ///Random number generator we're using. Must be cheap and fast, not perfect.
-        alias Xorshift64 Random;
-
-        ///Used to randomly generate lines' positions.
-        Random randomGenerator_;
+        CheapRandomGenerator randomGenerator_;
 
     public:
         ///Construct a RandomLinesEffect starting at startTime using controlDelegate to set its parameters.
         this(const real startTime, 
-             bool delegate(const real, const GameTime, ref Parameters) controlDelegate) pure nothrow
+             bool delegate(const real, const GameTime, ref Parameters) controlDelegate) 
         {
             startTime_ = startTime;
             controlDelegate_ = controlDelegate;
-            randomGenerator_ = Random();
+            randomGenerator_ = CheapRandomGenerator(32768);
         }
 
         override void draw(VideoDriver video, const GameTime gameTime)
@@ -203,7 +200,7 @@ class RandomLinesEffect : GraphicsEffect
 
                 for(int x = bounds.min.x; x < bounds.max.x; x += skip) 
                 {
-                    const random = uniform(0.0f, 1.0f, randomGenerator_);
+                    const random = randomGenerator_.random();
                     if(random < lineProbability) with(parameters_)
                     {
                         //Get line width.
@@ -348,7 +345,14 @@ class GraphicsEffectManager
 
     public:
         ///Destroy all remaining effects and the manager.
-        ~this() {clear(effects_);}
+        ~this() 
+        {
+            foreach(ref effect; effects_)
+            {
+                clear(effect);
+            }
+            clear(effects_);
+        }
 
         ///Draw graphics effects with specified video driver and game time subsystem.
         void draw(VideoDriver video, const GameTime gameTime)
@@ -368,3 +372,53 @@ class GraphicsEffectManager
         void addEffect(GraphicsEffect effect) pure nothrow {effects_ ~= effect;}
 }
 
+private:
+import containers.fixedarray;
+
+///Cheap random number generator used by graphics effects. Returns randoms between 0.0 and 1.0 .
+struct CheapRandomGenerator
+{
+    private:
+        ///Table of random numbers generated at construction.
+        FixedArray!float table_;
+
+        ///Table of offsets into table_ used when seeding.
+        FixedArray!uint offsets_;
+
+        /**
+         * Current offset_ into table_. 
+         *
+         * Set to offsets_[seed % size_] at seed() and incremented at random().
+         */
+        uint offset_;
+
+        ///Size of table_ and offsets_.
+        const uint size_;
+
+    public:
+        ///Create a CheapRandomGenerator. Larger size means more randomness but also memory usage.
+        this(const uint size)
+        {
+            size_ = size;
+            table_ = FixedArray!float(size_);
+            offsets_ = FixedArray!uint(size_);
+
+            foreach(i; 0 .. size_)
+            {
+                table_[i] = uniform(0.0f, 1.0f);
+                offsets_[i] = uniform(0, size_);
+            }
+        }
+
+        ///Seed the generator.
+        void seed(const uint seed) pure nothrow
+        {
+            offset_ = offsets_[seed % size_];
+        }
+
+        ///Get a random number between 0.0f and 1.0f.
+        float random() pure nothrow
+        {
+            return table_[(offset_++) % size_];
+        }
+}

@@ -707,7 +707,7 @@ class DumbLevel : Level
         }
 
         ///Execute an Effect instruction. Returns true on interrupt, false otherwise.
-        bool executeEffect(ref Effect instruction) pure nothrow
+        bool executeEffect(ref Effect instruction) 
         {
             GraphicsEffect effect;
             final switch(instruction.type)

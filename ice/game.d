@@ -543,6 +543,7 @@ class Game
             clear(spawnerSystem_);
 
             clear(effectManager_);
+
             if(entitySystem_ !is null)
             {
                 entitySystem_.destroy();
