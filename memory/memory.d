@@ -178,21 +178,23 @@ private:
      * In debug mode, it holds detailed information about the allocation
      * and takes 48 bytes on 64-bit, 40 bytes on 32-bit.
      */
-    align(1) struct Allocation
+    struct Allocation
     {
         private:
         debug
         {
             ///Time when the program started.
             static real startTime_;
-            ///Information about allocated type.
-            TypeInfo type_; 
             ///Number of objects allocated.
             uint objects_;
             ///Line number where the allocation happened.
             ushort line_;
             ///Time, in seconds since start, when the allocation happened.
             ushort time_;
+            ///Bytes per object.
+            ushort objectBytes_;
+            ///Last characters of the object type name.
+            char[20] type_ = "                    ";
             ///Last characters of the file name where the allocation happened.
             char[24] file_ = "                        ";
         }
@@ -224,7 +226,12 @@ private:
                     static if(file.length > 24){a.file_[0 .. 24] = file[$ - 24 .. $];}
                     else{a.file_[0 .. file.length] = file[];}
                     a.line_ = line;
-                    a.type_ = typeid(T);
+                    a.objectBytes_ = T.sizeof;
+
+                    enum type = T.stringof;
+                    static if(type.length > 20){a.type_[0 .. 20] = type[$ - 20 .. $];}
+                    else{a.type_[0 .. type.length] = type[];}
+
                     a.objects_ = objects > uint.max ? uint.max : cast(uint)objects;
                     a.time_ = cast(ushort)(getTime() - startTime_);
                 }
@@ -242,9 +249,9 @@ private:
                 {
                     meta ~= "__FILE__: " ~ strip(cast(char[])file_) ~ "\n";
                     meta ~= "__LINE__: " ~ to!string(line_) ~ "\n";
-                    meta ~= "type    : " ~ type_.toString() ~ "\n";
+                    meta ~= "type    : " ~ strip(cast(char[])type_) ~ "\n";
                     meta ~= "objects : " ~ to!string(objects_) ~ "\n";
-                    meta ~= "bytes   : " ~ to!string(objects_ * type_.tsize) ~ "\n";
+                    meta ~= "bytes   : " ~ to!string(objects_ * objectBytes_) ~ "\n";
                     meta ~= "time    : " ~ to!string(time_) ~ "\n";
                     meta ~= "ptr     : ";
                 }
