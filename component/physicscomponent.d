@@ -9,6 +9,8 @@
 module component.physicscomponent;
 
 
+import std.exception;
+
 import math.vector2;
 import util.yaml;
 
@@ -29,13 +31,22 @@ align(4) struct PhysicsComponent
     ///Load from a YAML node. Throws YAMLException on error.
     this(ref YAMLNode node)
     {
-        position = fromYAML!Vector2f(node["position"], "position");
-        rotation = node.containsKey("rotation") 
-                 ? fromYAML!float   (node["rotation"], "rotation")
-                 : 0.0f;
-        velocity = node.containsKey("velocity") 
-                 ? fromYAML!Vector2f(node["velocity"], "velocity")
+        position = node.containsKey("position") 
+                 ? fromYAML!Vector2f(node["position"], "position")
                  : Vector2f(0.0f, 0.0f);
+        rotation = node.containsKey("rotation") 
+                 ? fromYAML!float(node["rotation"], "rotation")
+                 : 0.0f;
+        const hasVelocity = node.containsKey("velocity");
+        const hasSpeed    = node.containsKey("speed");
+        enforce(!hasSpeed || !hasVelocity,
+                new YAMLException("PhysicsComponent can't specify both speed "
+                                  "and velocity - one is syntactic sugar for "
+                                  "the other."));
+        velocity = hasVelocity ? fromYAML!Vector2f(node["velocity"], "velocity") :
+                   hasSpeed    ? angleToVector(rotation) *
+                                 fromYAML!float(node["speed"], "speed")
+                               : Vector2f(0.0f, 0.0f);
     }
 
     ///Construct manually.
