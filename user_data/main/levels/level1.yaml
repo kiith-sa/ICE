@@ -1,4 +1,4 @@
-wave wave1:
+wave turtleDown:
   spawn:
     - unit: ships/turtle.yaml
       physics: 
@@ -14,7 +14,7 @@ wave wave1:
           rotation: 0
       dumbScript: dumbscripts/enemy1.yaml
 
-wave wave2:
+wave turtleRight:
   spawn:
     - unit: ships/turtle.yaml
       physics: 
@@ -23,7 +23,7 @@ wave wave2:
       dumbScript: dumbscripts/toright.yaml
 
 
-wave wave3:
+wave turtleLeft:
   spawn:
     - unit: ships/turtle.yaml
       physics: 
@@ -33,7 +33,7 @@ wave wave3:
     - unit: ships/turtle.yaml
 
 
-wave wave4:
+wave jetDown:
   spawn:
     - unit: ships/jet.yaml
       physics: 
@@ -48,7 +48,7 @@ wave wave4:
           position: [350, 32]
           rotation: 0
 
-wave wave5:
+wave jetRight:
   spawn:
     - unit: ships/jet.yaml
       physics: 
@@ -66,7 +66,7 @@ wave wave5:
           rotation: 0
       dumbScript: dumbscripts/toright.yaml
 
-wave wave6:
+wave jetLeft:
   spawn:
     - unit: ships/jet.yaml
       physics: 
@@ -84,7 +84,7 @@ wave wave6:
           rotation: 0
       dumbScript: dumbscripts/toleft.yaml
 
-wave wave7:
+wave tritonSides:
   spawn:
     - unit: ships/triton.yaml
       physics: 
@@ -97,13 +97,20 @@ wave wave7:
           rotation: 0
       dumbScript: dumbscripts/enemy1.yaml
 
-wave wave8:
+wave tritonMiddle:
   spawn:
     - unit: ships/triton.yaml
       physics: 
           position: [400, -30]
           rotation: 0
       dumbScript: dumbscripts/enemy1.yaml
+
+wave arrowMiddle:
+  spawn:
+    - unit: ships/arrow.yaml
+      physics: 
+          position: [350, -30]
+          rotation: 0
 
 level:
   !!pairs
@@ -113,9 +120,7 @@ level:
       font: default 
       fontSize: 512
       color: rgbaFF000001
-      time: 1.0
-
-      
+      time: 1.0      
 
   - effect lines:
       minWidth: 0.225
@@ -136,94 +141,102 @@ level:
       detailLevel: 5
       color: rgbaD8D8FF18
 
-  - text: Enemy appears in 3 
+#  - text: Enemy appears in 3 
+#  - wait: 1
+#  - text: Enemy appears in 2
+#  - wait: 1
+#  - text: Enemy appears in 1
+#  - wait: 1
+
+
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleLeft
   - wait: 1
-  - text: Enemy appears in 2
-  - wait: 1
-  - text: Enemy appears in 1
-  - wait: 1
-  - wave: wave8
+  - wave: turtleRight
+  - wait: 0.2
+  - wave: turtleRight
+  - wait: 0.2
+  - wave: turtleRight
   - wait: 2
-  - wave: wave3
+  - wave: turtleLeft
   - wait: 0.2
-  - wave: wave3
+  - wave: turtleLeft
   - wait: 0.2
-  - wave: wave3
-  - wait: 1
-  - wave: wave2
-  - wait: 0.2
-  - wave: wave2
-  - wait: 0.2
-  - wave: wave2
-  - wait: 2
-  - wave: wave3
-  - wait: 0.2
-  - wave: wave3
-  - wait: 0.2
-  - wave: wave3
+  - wave: turtleLeft
   - wait: 1.8
-  - wave: wave1
+  - wave: turtleDown
   - wait: 3.0
-  - wave: wave8
+  - wave: tritonMiddle
   - wait: 0.5
-  - wave: wave7
+  - wave: tritonSides
   - wait: 3.0
-  - wave: wave8
+  - wave: tritonMiddle
   - wait: 0.5
-  - wave: wave7
+  - wave: tritonSides
   - wait: 3.0
-  - wave: wave3
+  - wave: turtleLeft
   - wait: 0.2
-  - wave: wave2
+  - wave: turtleRight
   - wait: 0.2
-  - wave: wave3
+  - wave: turtleLeft
   - wait: 0.2
-  - wave: wave2
+  - wave: turtleRight
   - wait: 0.2
-  - wave: wave3
+  - wave: turtleLeft
   - wait: 0.2
-  - wave: wave2
+  - wave: turtleRight
   - wait: 0.2
-  - wave: wave3
+  - wave: turtleLeft
   - wait: 1.0
-  - wave: wave4
+  - wave: jetDown
   - wait: 3.5
-  - wave: wave1
+  - wave: turtleDown
   - wait: 3.0
-  - wave: wave8
+  - wave: tritonMiddle
   - wait: 2.5
-  - wave: wave3
+  - wave: turtleLeft
   - wait: 0.2
-  - wave: wave2
+  - wave: turtleRight
   - wait: 0.2
-  - wave: wave4
+  - wave: jetDown
   - wait: 3.5
-  - wave: wave5
+  - wave: jetRight
   - wait: 5
-  - wave: wave6
+  - wave: jetLeft
   - wait: 3.5
-  - wave: wave5
+  - wave: jetRight
   - wait: 0.3
-  - wave: wave6
+  - wave: jetLeft
   - wait: 3.5
-  - wave: wave7
+  - wave: tritonSides
   - wait: 3.0
-  - wave: wave8
+  - wave: tritonMiddle
   - wait: 3.0
-  - wave: wave8
+  - wave: tritonMiddle
   - wait: 3.0
-  - text: Well done soldier!   #in HUD
+  - text: Well done soldier!
   - wait: 1.5
   - text: You survived!
   - wait: 2.0
   - text: No wait!
   - wait: 0.5
   - text: There comes another! Prepare!
-  - wait: 0.5
-  - wave: wave2
+  - wait: 0.7
+  - wave: turtleRight
   - wait: 0.2
-  - wave: wave3
+  - wave: turtleLeft
   - wait: 1.0
-  - wave: wave8
-  - wait: 3.5
+  - wave: tritonMiddle
+  - wait: 3
+  - wave: arrowMiddle
+  - wait: 1
+  - wave: arrowMiddle
+  - wait: 1
+  - wave: arrowMiddle
+  - wait: 1
+  - wave: arrowMiddle
+  - wait: 6
 

@@ -4,8 +4,8 @@ engine :
   acceleration   : 500  #-1 is instant
 volume:
   aabbox:
-    min: [-2, -12]
-    max: [1,  20]
+    min: [-3, 0]
+    max: [3,  18]
 visual:   visual/rocket.yaml
 warhead:
-  damage: 50
+  damage: 30

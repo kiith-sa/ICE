@@ -4,8 +4,8 @@ engine:
 #acceleration   : 300  #-1 default 
 volume:
   aabbox: 
-    min: [-20, -4]
-    max: [20, 12]
+    min: [-35, 0]
+    max: [35, 15]
 weapon:
   1: weapons/rocketlauncher.yaml
 collidable:

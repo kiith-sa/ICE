@@ -1,25 +1,102 @@
 type: lines
 vertices:
   !!pairs
-  - color:  rgbFF0000
-  - vertex: [-32.0, 0.0]
-  - color:  rgbFFFF00
-  - vertex: [0.0, -32.0]
 
-  - vertex: [0.0, -32.0]
-  - color:  rgbFF0000
-  - vertex: [32.0, 0.0]
+# cockpit:
+  - color:  rgb0F0FF4
+  - vertex: [-9, 2]
+  - vertex: [9, 2]
+  - color:  rgba0F0FF4AA
+  - vertex: [-8, 3]
+  - vertex: [8, 3]
+  - color:  rgba0F0FF488
+  - vertex: [-7, 4]
+  - vertex: [7, 4]
+  - color:  rgba0F0FF466
+  - vertex: [-6, 5]
+  - vertex: [6, 5]
+  - color:  rgba0F0FF4AA
+  - vertex: [-8, 1]
+  - vertex: [8, 1]
+  - color:  rgba0F0FF488
+  - vertex: [-7, 0]
+  - vertex: [7, 0]
+  - color:  rgba0F0FF466
+  - vertex: [-6, -1]
+  - vertex: [6, -1]
 
-  - vertex: [32.0, 0.0]
-  - color:  rgbFFFF00
-  - vertex: [0.0, -20.0]
+# body:
+  - width: 2
+  - color:  rgbAAAAAA
+  - vertex: [-35, 15.0]
+  - color:  rgb777777
+  - vertex: [-20, 15.0]
+  - color:  rgbAAAAAA
+  - vertex: [35, 15.0]
+  - color:  rgb777777
+  - vertex: [20, 15.0]
 
-  - vertex: [0.0, -20.0]
-  - color:  rgbFF0000
-  - vertex: [-32.0, 0.0]
+  - color:  rgbAAAAAA
+  - vertex: [-35, 15.0]
+  - vertex: [-20, -10]
+  - vertex: [-20, -10]
+  - vertex: [-17, -10]
+  - vertex: [-17, -10]
+  - vertex: [-15, -8]
+  - vertex: [-15, -8]
+  - vertex: [0, -8]
 
-  - vertex: [-32.0, 0.0]
-  - vertex: [-32.0, -15.0]
+  - vertex: [35, 15.0]
+  - vertex: [20, -10]
+  - vertex: [20, -10]
+  - vertex: [17, -10]
+  - vertex: [17, -10]
+  - vertex: [15, -8]
+  - vertex: [15, -8]
+  - vertex: [0, -8]
 
-  - vertex: [32.0, 0.0]
-  - vertex: [32.0, -15.0]
+  - vertex: [-15, 15]
+  - vertex: [15, 15]
+
+
+  #engines
+  - vertex: [20, 14.0]
+  - color:  rgbaFF555599
+  - vertex: [20, 25.0]
+  - vertex: [20, 25.0]
+  - vertex: [15, 25.0]
+  - vertex: [15, 25.0]
+  - color:  rgb777777
+  - vertex: [15, 14.0]
+  - vertex: [-20, 14.0]
+  - color:  rgbaFF555599
+  - vertex: [-20, 25.0]
+  - vertex: [-20, 25.0]
+  - vertex: [-15, 25.0]
+  - vertex: [-15, 25.0]
+  - color:  rgb777777
+  - vertex: [-15, 14.0]
+
+  #main canon
+  - color:  rgb888888
+  - vertex: [-3, -9]
+  - color:  rgb371137
+  - vertex: [-3, -19]
+  - vertex: [-4, -19]
+  - vertex: [4, -19]
+  - vertex: [3, -19]
+  - color:  rgb888888
+  - vertex: [3, -9]
+
+  #secondary canons
+  - vertex: [-10, -9]
+  - vertex: [-10, -13]
+  - vertex: [10, -9]
+  - vertex: [10, -13]
+
+  - vertex: [30, 6]
+  - vertex: [30, -12]
+  - vertex: [-30, 6]
+  - vertex: [-30, -12]
+
+

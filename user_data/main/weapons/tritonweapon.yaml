@@ -1,0 +1,16 @@
+burstPeriod: 0.75
+ammo: 2
+reloadTime: 0.5
+burst:
+  - projectile: projectiles/harpoonleft.yaml 
+    delay: 0.00
+    position: [-10.0, 8.0]
+    direction: -0.5
+  - projectile: projectiles/harpoon.yaml 
+    delay: 0.0
+    position: [0.0, 0.0] 
+    direction: 0.0
+  - projectile: projectiles/harpoonright.yaml 
+    delay: 0.0
+    position: [10.0, 8.0] 
+    direction: 0.5

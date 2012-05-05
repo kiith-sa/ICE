@@ -1,0 +1,16 @@
+visual: visual/triton.yaml
+engine:
+  maxSpeed: 250
+  acceleration   : 500  #-1 default 
+volume:
+  aabbox: 
+    min: [-30, 0]
+    max: [30, 30]
+weapon:
+  0: weapons/tritonweapon.yaml
+collidable:
+health: 75
+warhead:
+  damage: 75
+  killsEntity: false
+dumbScript: dumbscripts/enemy1.yaml

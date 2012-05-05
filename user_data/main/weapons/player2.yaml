@@ -1,0 +1,9 @@
+burstPeriod: 0.12
+ammo: 10
+reloadTime: 2.0
+burst:
+ - projectile: projectiles/ball.yaml 
+   delay: 0.04
+   position: [8.0, 0.0]
+   direction: 3.14
+   speed: 25.0

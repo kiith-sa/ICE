@@ -2,38 +2,35 @@ type: lines
 vertices:
   !!pairs
 
+  - color: rgb888888
+  - vertex: [-3.0, 0.0]
+  - vertex: [3.0, 0.0]
+  - vertex: [-3.0, 0.0]
+  - color: rgbFFFFFF
+  - vertex: [-3.0, 15.0]
+  - color: rgb888888
+  - vertex: [3.0, 0.0]
+  - color: rgbFFFFFF
+  - vertex: [3.0, 15.0]
+  - vertex: [-3.0, 15.0]
+  - vertex: [3.0, 15.0]
+
   - color:  rgbFC0F0C
-  - width: 5
-  - vertex: [-5.0, 0.0]
-  - vertex: [5.0, 0.0]
-  - vertex: [5.0, 0.0]
-  - vertex: [-1.0, -10.0]
-  - vertex: [1.0, -10.0]
-  - vertex: [-5.0, 0.0]
+  - vertex: [-4, -1.0]
+  - vertex: [4, -1.0]
 
-  - color:  rgb333333
-  - width: 13
-  - vertex: [0.0, 0.5]
-  - color:  rgb999999
-  - vertex: [0.0, 20.5]
+  - vertex: [-4, 0]
+  - color:  rgbaFC0F0CAA
+  - vertex: [0, -5]
+  - vertex: [0, -5]
+  - color:  rgbFC0F0C
+  - vertex: [4, 0]
 
-  - color:  rgbDDDDDD
-  - width: 2
-  - vertex: [-7, 20.0]
-  - vertex: [-7, 24.0]
-  - vertex: [-6.0, 24.0]
-  - vertex: [-3.0, 26.0]
-  - vertex: [-3.0, 26.0]
-  - vertex: [-1.0, 28.0]
-  - vertex: [-1.0, 28.0]
-  - vertex: [3.0, 26.0]
-  - vertex: [3.0, 26.0]
-  - vertex: [6.0, 24.0]
-  - vertex: [6.0, 24.0]
-  - vertex: [6.0, 20.0]
-
-  - width: 6
-  - vertex: [-6.0, 23.5]
-  - vertex: [5.5, 23.5]
-
+  - color: rgbFFFFFF
+  - vertex: [-3.0, 16.0]
+  - vertex: [3.0, 16.0]
+  - vertex: [-2.0, 17.0]
+  - vertex: [2.0, 17.0]
+  - vertex: [-2.0, 18.0]
+  - vertex: [2.0, 18.0]
 

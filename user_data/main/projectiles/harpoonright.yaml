@@ -1,0 +1,11 @@
+deathTimeout: 1.5
+engine : 
+  maxSpeed       : 300
+  acceleration   : 300  #-1 is instant
+volume:
+  aabbox:
+    min: [0, 0]
+    max: [10,  10]
+visual:   visual/harpoonright.yaml
+warhead:
+  damage: 15

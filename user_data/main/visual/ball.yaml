@@ -1,0 +1,62 @@
+type: lines
+vertices:
+  !!pairs
+
+  - color:  rgba990022FF
+  - vertex: [0, -8]
+  - color:  rgbaFF0022AA 
+  - vertex: [-4, -4]
+  - vertex: [-4, -4]
+  - color:  rgba990022FF
+  - vertex: [-8, 0]
+
+  - vertex: [0, -8]
+  - color:  rgbaFF0022AA 
+  - vertex: [4, -4]
+  - vertex: [4, -4]
+  - color:  rgba990022FF
+  - vertex: [8, 0]
+
+  - vertex: [-8, 0]
+  - color:  rgbaFF0022AA 
+  - vertex: [-4, 4]
+  - vertex: [-4, 4]
+  - color:  rgba990022FF
+  - vertex: [0, 8]
+
+  - vertex: [8, 0]
+  - color:  rgbaFF0022AA 
+  - vertex: [4, 4]
+  - vertex: [4, 4]
+  - color:  rgba990022FF
+  - vertex: [0, 8]
+
+  - color:  rgba110022AA
+  - vertex: [0, 8]
+  - color:  rgba990022FF
+  - vertex: [6, 6] 
+  - vertex: [6, 6]
+  - color:  rgba110022AA
+  - vertex: [8, 0]
+
+  - vertex: [0, -8]
+  - color:  rgba990022FF
+  - vertex: [6, -6] 
+  - vertex: [6, -6]
+  - color:  rgba110022AA
+  - vertex: [8, 0]
+
+  - vertex: [0, -8]
+  - color:  rgba990022FF
+  - vertex: [-6, -6] 
+  - vertex: [-6, -6]
+  - color:  rgba110022AA
+  - vertex: [-8, 0]
+
+  - vertex: [-8, 0]
+  - color:  rgba990022FF
+  - vertex: [-6, 6] 
+  - vertex: [-6, 6]
+  - color:  rgba110022AA
+  - vertex: [0, 8]
+

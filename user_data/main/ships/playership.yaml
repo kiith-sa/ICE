@@ -9,8 +9,10 @@ volume:
 weapon:
   0: weapons/player.yaml
   1: weapons/player2.yaml
+  2: weapons/player3.yaml
 collidable:
 health: 500
 warhead:
   damage: 10
   killsEntity: false
+
