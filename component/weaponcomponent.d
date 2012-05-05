@@ -34,40 +34,24 @@ struct WeaponComponent
 
         ///Time remaining before we're reloaded. Zero or negative means we're not reloading.
         double reloadTimeRemaining = 0.0f;
+    
         ///Time since last burst. If greater than the weapon's burstPeriod, we can fire.
         double timeSinceLastBurst  = double.infinity;
+   
         ///Ammo used up since last reload.
-        uint  ammoConsumed         = 0;
-
-        ///Number of shots fired so far in the current burst. uint.max means not in burst.
-        uint shotsSoFarThisBurst  = uint.max;
+        uint ammoConsumed         = 0;
 
         ///Weapon slot taken by the weapon (there are 256 slots).
-        ubyte  weaponSlot;
+        ubyte weaponSlot;
 
+        ///Have the weapon's projectile spawns been added to the SpawnerComponent of the Entity?
+        bool spawnsAdded = false;
+
+        ///Construct a Weapon in specified slot defined in specified file.
         this(const ubyte weaponSlot, string weaponFileName) pure nothrow
         {
             this.weaponSlot = weaponSlot;
             dataIndex = LazyArrayIndex(weaponFileName);
-        }
-
-        ///Are we currently in the middle of a burst?
-        @property bool burstInProgress() const pure nothrow 
-        {
-            return shotsSoFarThisBurst != uint.max;
-        }
-
-        ///Start a burst (called when we're not reloading and done with the previous burst).
-        void startBurst() pure nothrow
-        {
-            shotsSoFarThisBurst = 0;
-            timeSinceLastBurst  = 0.0;
-        }
-
-        ///End a burst (called when shotsSoFarThisBurst == shots in weapon burst).
-        void finishBurst() pure nothrow
-        {
-            shotsSoFarThisBurst = uint.max;
         }
     }
 
