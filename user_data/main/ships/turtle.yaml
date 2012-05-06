@@ -1,0 +1,16 @@
+visual: visual/turtle.yaml
+engine:
+  maxSpeed: 500
+  acceleration   : 5000  #-1 default 
+volume:
+  aabbox: 
+    min: [0, 0]
+    max: [6, 6]
+weapon:
+  0: weapons/default.yaml
+collidable:
+health: 50
+warhead:
+  damage: 50
+  killsEntity: true
+dumbScript: dumbscripts/enemy1.yaml

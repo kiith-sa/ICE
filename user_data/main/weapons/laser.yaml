@@ -1,0 +1,9 @@
+burstPeriod: 1
+ammo: 2
+reloadTime: 1.0
+burst:
+ - projectile: projectiles/laser.yaml 
+   delay: 0.5
+   position: [0, 45]
+   direction: 0.00
+   speed: 0.0

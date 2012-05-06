@@ -1,0 +1,9 @@
+burstPeriod: 1
+ammo: 1
+reloadTime: 15
+burst:
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.5
+   position: [0, 45]
+   direction: 0.00
+   speed: 0.0

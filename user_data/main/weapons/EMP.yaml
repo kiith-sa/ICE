@@ -1,0 +1,319 @@
+burstPeriod: 1
+ammo: 1
+reloadTime: 30
+burst:
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 6.20
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 6.10
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 6.00
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 5.9
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 5.8
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 5.7
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 5.6
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 5.5
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 5.4
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 5.3
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 5.2
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 5.1
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 5.00
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 4.9
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 4.8
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 4.7
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 4.6
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 4.5
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 4.4
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 4.3
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 4.2
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 4.1
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 4.00
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 3.9
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 3.8
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 3.7
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 3.6
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 3.5
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 3.4
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 3.3
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 3.2
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 3.1
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 3.00
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 2.9
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 2.8
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 2.7
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 2.6
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 2.5
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 2.4
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 2.3
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 2.2
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 2.1
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 2.00
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 1.9
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 1.8
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 1.7
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 1.6
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 1.5
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 1.4
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 1.3
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 1.2
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 1.1
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 1.00
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 0.9
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 0.8
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 0.7
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 0.6
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 0.5
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 0.4
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 0.3
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 0.2
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 0.1
+   speed: 100
+ - projectile: projectiles/EMP.yaml 
+   delay: 0.1
+   position: [0.0, 0.0]
+   direction: 0.0
+   speed: 100

@@ -1,0 +1,57 @@
+type: lines
+vertices:
+  !!pairs
+
+  - color:  rgb331100
+  - vertex: [-35, 0]
+  - color:  rgb663344
+  - vertex: [0, 0]
+  - vertex: [0, 0]
+  - color:  rgb331100
+  - vertex: [35, 0]
+
+  - vertex: [35, 0]
+  - vertex: [30, 10]
+  - vertex: [30, 10]
+  - vertex: [25, 15]
+
+  - vertex: [25, 15]
+  - vertex: [20, 15]
+  - vertex: [20, 15]
+  - vertex: [20, 23]
+  - vertex: [20, 23]
+  - vertex: [16, 23]
+  - vertex: [16, 23]
+  - vertex: [16, 15]
+
+  - vertex: [16, 15]
+  - vertex: [13, 12]
+
+  - vertex: [-35, 0]
+  - vertex: [-30, 10]
+  - vertex: [-30, 10]
+  - vertex: [-25, 15]
+
+  - vertex: [-25, 15]
+  - vertex: [-20, 15]
+  - vertex: [-20, 15]
+  - vertex: [-20, 23]
+  - vertex: [-20, 23]
+  - vertex: [-16, 23]
+  - vertex: [-16, 23]
+  - vertex: [-16, 15]
+
+  - vertex: [-16, 15]
+  - vertex: [-13, 12]
+  - vertex: [-13, 12]
+  - vertex: [13, 12]
+
+  - color: rgba0044BB99
+  - vertex: [-9, 4]
+  - vertex: [9, 4]
+  - vertex: [-8, 5]
+  - vertex: [8, 5]
+  - vertex: [-7, 6]
+  - vertex: [7, 6]
+  - vertex: [-6, 7]
+  - vertex: [6, 7]

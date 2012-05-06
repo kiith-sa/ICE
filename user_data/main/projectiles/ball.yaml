@@ -1,0 +1,11 @@
+deathTimeout: 1.3
+engine : 
+  maxSpeed       : 1000
+  acceleration   : 1000  #-1 is instant
+volume:
+  aabbox:
+    min: [-8, 0]
+    max: [8,  8]
+visual:   visual/ball.yaml
+warhead:
+  damage: 50

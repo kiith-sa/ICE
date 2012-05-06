@@ -1,0 +1,11 @@
+deathTimeout: 5
+engine : 
+  maxSpeed       : 500
+  acceleration   : 500  #-1 is instant
+volume:
+  aabbox:
+    min: [-3, 0]
+    max: [3,  18]
+visual:   visual/rocket.yaml
+warhead:
+  damage: 30

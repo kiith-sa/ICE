@@ -1,31 +1,269 @@
 wave wave1:
   spawn:
     - unit: ships/enemy1.yaml
-      physics: 
-          position: [360, 32]
+      physics:
+          position: [250, 167]
           rotation: 0
+      dumbScript: dumbscripts/justKillPlayer.yaml
     - unit: ships/enemy1.yaml
-      physics: 
-          position: [440, 64]
+      physics:
+          position: [440, 124]
           rotation: 0
       dumbScript: dumbscripts/enemy1.yaml
-
 wave wave2:
   spawn:
     - unit: ships/enemy1.yaml
-      physics: 
-          position: [360, 32]
+      physics:
+          position: [230, 112]
           rotation: 0
+      dumbScript: dumbscripts/mostlyMoving.yaml
     - unit: ships/enemy1.yaml
-      physics: 
-          position: [440, 64]
+      physics:
+          position: [480, 135]
+          rotation: 0
+      dumbScript: dumbscripts/wtf-sewing.yaml
+    - unit: ships/enemy1.yaml
+      physics:
+          position: [444, 134]
+          rotation: 0
+      dumbScript: dumbscripts/dontGetHit.yaml
+wave wave3:
+  spawn:
+    - unit: ships/enemy1.yaml
+      physics:
+          position: [660, 126]
+          rotation: 0
+      dumbScript: dumbscripts/movingAndFiring.yaml
+    - unit: ships/enemy1.yaml
+      physics:
+          position: [367, 113]
           rotation: 0
       dumbScript: dumbscripts/enemy1.yaml
+    - unit: ships/enemy1.yaml
+      physics:
+          position: [629, 214]
+          rotation: 0
+      dumbScript: dumbscripts/justKillPlayer.yaml
+    - unit: ships/enemy1.yaml
+      physics:
+          position: [440, 104]
+          rotation: 0
+      dumbScript: dumbscripts/wtf-sewing.yaml
+wave wave4:
+  spawn:
+    - unit: ships/enemy1.yaml
+      physics:
+          position: [304, 141]
+          rotation: 0
+      dumbScript: dumbscripts/dontGetHit.yaml
+    - unit: ships/enemy1.yaml
+      physics:
+          position: [584, 156]
+          rotation: 0
+      dumbScript: dumbscripts/mostlyMoving.yaml
+    - unit: ships/enemy2.yaml
+      physics:
+          position: [475, 106]
+          rotation: 0
+      dumbScript: dumbscripts/justKillPlayer.yaml
+wave wave5:
+  spawn:
+    - unit: ships/enemy2.yaml
+      physics:
+          position: [238, 126]
+          rotation: 0
+      dumbScript: dumbscripts/movingAndFiring.yaml
+    - unit: ships/enemy1.yaml
+      physics:
+          position: [467, 173]
+          rotation: 0
+      dumbScript: dumbscripts/enemy1.yaml
+    - unit: ships/enemy2.yaml
+      physics:
+          position: [554, 164]
+          rotation: 0
+      dumbScript: dumbscripts/justKillPlayer.yaml
+wave wave6:
+  spawn:
+    - unit: ships/enemy2.yaml
+      physics:
+          position: [318, 116]
+          rotation: 0
+      dumbScript: dumbscripts/movingAndFiring.yaml
+    - unit: ships/enemy2.yaml
+      physics:
+          position: [167, 133]
+          rotation: 0
+      dumbScript: dumbscripts/movingAndFiring.yaml
+    - unit: ships/enemy2.yaml
+      physics:
+          position: [684, 124]
+          rotation: 0
+      dumbScript: dumbscripts/justKillPlayer.yaml
+wave wave7:
+  spawn:
+    - unit: ships/enemy2.yaml
+      physics:
+          position: [365, 216]
+          rotation: 0
+      dumbScript: dumbscripts/enemy1.yaml
+    - unit: ships/enemy2.yaml
+      physics:
+          position: [167, 103]
+          rotation: 0
+      dumbScript: dumbscripts/wtf-sewing.yaml
+    - unit: ships/enemy2.yaml
+      physics:
+          position: [467, 324]
+          rotation: 0
+      dumbScript: dumbscripts/mostlyMoving.yaml
+    - unit: ships/enemy2.yaml
+      physics:
+          position: [190, 214]
+          rotation: 0
+      dumbScript: dumbscripts/justKillPlayer.yaml
+wave wave8:
+  spawn:
+    - unit: ships/enemy2.yaml
+      physics:
+          position: [218, 156]
+          rotation: 0
+      dumbScript: dumbscripts/dontGetHit.yaml
+    - unit: ships/enemy3.yaml
+      physics:
+          position: [367, 123]
+          rotation: 0
+      dumbScript: dumbscripts/movingAndFiring.yaml
+    - unit: ships/enemy2.yaml
+      physics:
+          position: [444, 245]
+          rotation: 0
+      dumbScript: dumbscripts/justKillPlayer.yaml
+wave wave9:
+  spawn:
+    - unit: ships/enemy2.yaml
+      physics:
+          position: [418, 106]
+          rotation: 0
+      dumbScript: dumbscripts/mostlyMoving.yaml
+    - unit: ships/enemy3.yaml
+      physics:
+          position: [267, 273]
+          rotation: 0
+      dumbScript: dumbscripts/wtf-sewing.yaml
+    - unit: ships/enemy3.yaml
+      physics:
+          position: [564, 210]
+          rotation: 0
+      dumbScript: dumbscripts/justKillPlayer.yaml
+wave wave10:
+  spawn:
+    - unit: ships/enemy3.yaml
+      physics:
+          position: [318, 160]
+          rotation: 0
+      dumbScript: dumbscripts/enemy1.yaml
+    - unit: ships/enemy3.yaml
+      physics:
+          position: [667, 173]
+          rotation: 0
+      dumbScript: dumbscripts/dontGetHit.yaml
+    - unit: ships/enemy3.yaml
+      physics:
+          position: [464, 102]
+          rotation: 0
+      dumbScript: dumbscripts/movingAndFiring.yaml
+wave wave11:
+  spawn:
+    - unit: ships/enemy3.yaml
+      physics:
+          position: [188, 120]
+          rotation: 0
+      dumbScript: dumbscripts/mostlyMoving.yaml
+    - unit: ships/enemy3.yaml
+      physics:
+          position: [367, 153]
+          rotation: 0
+      dumbScript: dumbscripts/justKillPlayer.yaml
+    - unit: ships/enemy3.yaml
+      physics:
+          position: [284, 132]
+          rotation: 0
+      dumbScript: dumbscripts/movingAndFiring.yaml
+    - unit: ships/enemy3.yaml
+      physics:
+          position: [294, 192]
+          rotation: 0
+      dumbScript: dumbscripts/mostlyMoving.yaml
+wave wave12:
+  spawn:
+    - unit: ships/enemy3.yaml
+      physics:
+          position: [238, 138]
+          rotation: 0
+      dumbScript: dumbscripts/wtf-sewing.yaml
+    - unit: ships/enemy3.yaml
+      physics:
+          position: [617, 136]
+          rotation: 0
+      dumbScript: dumbscripts/dontGetHit.yaml
+    - unit: ships/enemy3.yaml
+      physics:
+          position: [464, 102]
+          rotation: 0
+      dumbScript: dumbscripts/movingAndFiring.yaml
+    - unit: ships/enemy3.yaml
+      physics:
+          position: [304, 192]
+          rotation: 0
+      dumbScript: dumbscripts/movingAndFiring.yaml
+    - unit: ships/enemy3.yaml
+      physics:
+          position: [582, 194]
+          rotation: 0
+      dumbScript: dumbscripts/justKillPlayer.yaml
+wave wave13:
+  spawn:
+    - unit: ships/enemy3.yaml
+      physics:
+          position: [318, 116]
+          rotation: 0
+      dumbScript: dumbscripts/justKillPlayer.yaml
+    - unit: ships/enemy3.yaml
+      physics:
+          position: [516, 157]
+          rotation: 0
+      dumbScript: dumbscripts/mostlyMoving.yaml
+    - unit: ships/enemy3.yaml
+      physics:
+          position: [464, 134]
+          rotation: 0
+      dumbScript: dumbscripts/justKillPlayer.yaml
+    - unit: ships/enemy2.yaml
+      physics:
+          position: [143, 160]
+          rotation: 0
+      dumbScript: dumbscripts/dontGetHit.yaml
+    - unit: ships/enemy2.yaml
+      physics:
+          position: [627, 173]
+          rotation: 0
+      dumbScript: dumbscripts/wtf-sewing.yaml
+    - unit: ships/enemy1.yaml
+      physics:
+          position: [118, 101]
+          rotation: 0
+      dumbScript: dumbscripts/enemy1.yaml
+    - unit: ships/enemy1.yaml
+      physics:
+          position: [697, 129]
+          rotation: 0
+      dumbScript: dumbscripts/movingAndFiring.yaml
 level:
   !!pairs
   - effect text:
       text: 42
-      font: default 
+      font: default
       fontSize: 512
       color: rgbaFF000001
       time: 1.0
@@ -108,12 +346,42 @@ level:
 
   - wait: 2.0
   - wave: wave1
-  - wait: 2.0
-  - wave: wave1
-  - wait: 2.0
+  - wait: 5.0
   - wave: wave2
-  - wait: 5.0
-  - text: Lorem Ipsum  #in HUD
-  - wait: 5.0
+  - wait: 7.0
+  - text: prepare for next wave
+  - wait: 0.5
+  - wave: wave3
+  - wait: 6.0
+  - wave: wave4
+  - wait: 10.0
+  - text: rested?
+  - wait: 1.0
+  - wave: wave5
+  - wait: 6.0
+  - wave: wave6
+  - wait: 8.0
+  - wave: wave7
+  - wait: 7.0
+  - text: getting harder...
+  - wait: 2.0
+  - wave: wave8
+  - wait: 9.0
+  - wave: wave9
+  - wait: 10.0
+  - wave: wave10
+  - wait: 9.0
+  - text: closer to your death...
+  - wait: 2.0
+  - wave: wave11
+  - wait: 9.0
+  - wave: wave12
+  - wait: 9.0
+  - text: finally its over, you are going to die now....
+  - wait: 3.0
+  - wave: wave13
+  - wait: 11.0
+  - text: Lorem Ipsum #in HUD
+  - wait: 2.0
   - text: Level done!
-
+  - wait: 2.0

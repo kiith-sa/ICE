@@ -1,0 +1,11 @@
+deathTimeout: 1.5
+engine:
+  maxSpeed       : 1500
+  acceleration   : 1800  
+volume:
+  aabbox:
+    min: [-12, -12]
+    max: [12, 12]
+visual: visual/enemy3bullet.yaml
+warhead:
+  damage: 40

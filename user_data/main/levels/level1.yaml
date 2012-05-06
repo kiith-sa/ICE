@@ -1,0 +1,259 @@
+wave turtleDown:
+  spawn:
+    - unit: ships/turtle.yaml
+      physics: 
+          position: [520, 32]
+          rotation: 0
+    - unit: ships/turtle.yaml
+      physics: 
+          position: [280, 32]
+          rotation: 0
+    - unit: ships/turtle.yaml
+      physics: 
+          position: [400, 64]
+          rotation: 0
+      dumbScript: dumbscripts/enemy1.yaml
+
+wave turtleRight:
+  spawn:
+    - unit: ships/turtle.yaml
+      physics: 
+          position: [100, 30]
+          rotation: 0
+      dumbScript: dumbscripts/toright.yaml
+
+
+wave turtleLeft:
+  spawn:
+    - unit: ships/turtle.yaml
+      physics: 
+          position: [700, 90]
+          rotation: 0
+      dumbScript: dumbscripts/toleft.yaml
+    - unit: ships/turtle.yaml
+
+
+wave jetDown:
+  spawn:
+    - unit: ships/jet.yaml
+      physics: 
+          position: [450, 68]
+          rotation: 0
+    - unit: ships/jet.yaml
+      physics: 
+          position: [550, 32]
+          rotation: 0
+    - unit: ships/jet.yaml
+      physics: 
+          position: [350, 32]
+          rotation: 0
+
+wave jetRight:
+  spawn:
+    - unit: ships/jet.yaml
+      physics: 
+          position: [100, -90]
+          rotation: 0
+      dumbScript: dumbscripts/toright.yaml
+    - unit: ships/jet.yaml
+      physics: 
+          position: [100, 0]
+          rotation: 0
+      dumbScript: dumbscripts/toright.yaml
+    - unit: ships/jet.yaml
+      physics: 
+          position: [100, -180]
+          rotation: 0
+      dumbScript: dumbscripts/toright.yaml
+
+wave jetLeft:
+  spawn:
+    - unit: ships/jet.yaml
+      physics: 
+          position: [700, -90]
+          rotation: 0
+      dumbScript: dumbscripts/toleft.yaml
+    - unit: ships/jet.yaml
+      physics: 
+          position: [700, 0]
+          rotation: 0
+      dumbScript: dumbscripts/toleft.yaml
+    - unit: ships/jet.yaml
+      physics: 
+          position: [700, -180]
+          rotation: 0
+      dumbScript: dumbscripts/toleft.yaml
+
+wave tritonSides:
+  spawn:
+    - unit: ships/triton.yaml
+      physics: 
+          position: [600, -90]
+          rotation: 0
+      dumbScript: dumbscripts/enemy1.yaml
+    - unit: ships/triton.yaml
+      physics: 
+          position: [200, -90]
+          rotation: 0
+      dumbScript: dumbscripts/enemy1.yaml
+
+wave tritonMiddle:
+  spawn:
+    - unit: ships/triton.yaml
+      physics: 
+          position: [400, -30]
+          rotation: 0
+      dumbScript: dumbscripts/enemy1.yaml
+
+wave arrowMiddle:
+  spawn:
+    - unit: ships/arrow.yaml
+      physics: 
+          position: [350, -30]
+          rotation: 0
+
+level:
+  !!pairs
+
+  - effect text:
+      text: 42
+      font: default 
+      fontSize: 512
+      color: rgbaFF000001
+      time: 1.0      
+
+  - effect lines:
+      minWidth: 0.225
+      maxWidth: 0.9
+      minLength: 3.0
+      maxLength: 12.0
+      verticalScrollingSpeed: 225.0
+      linesPerPixel: 0.0015
+      detailLevel: 6
+      color: rgbaD0D0FF24
+  - effect lines:
+      minWidth: 0.15
+      maxWidth: 0.6
+      minLength: 2.0
+      maxLength: 8.0
+      verticalScrollingSpeed: 150.0
+      linesPerPixel: 0.002
+      detailLevel: 5
+      color: rgbaD8D8FF18
+
+#  - text: Enemy appears in 3 
+#  - wait: 1
+#  - text: Enemy appears in 2
+#  - wait: 1
+#  - text: Enemy appears in 1
+#  - wait: 1
+
+
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleLeft
+  - wait: 1
+  - wave: turtleRight
+  - wait: 0.2
+  - wave: turtleRight
+  - wait: 0.2
+  - wave: turtleRight
+  - wait: 2
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleLeft
+  - wait: 1.8
+  - wave: turtleDown
+  - wait: 3.0
+  - wave: tritonMiddle
+  - wait: 0.5
+  - wave: tritonSides
+  - wait: 3.0
+  - wave: tritonMiddle
+  - wait: 0.5
+  - wave: tritonSides
+  - wait: 3.0
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleRight
+  - wait: 0.2
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleRight
+  - wait: 0.2
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleRight
+  - wait: 0.2
+  - wave: turtleLeft
+  - wait: 1.0
+  - wave: jetDown
+  - wait: 3.5
+  - wave: turtleDown
+  - wait: 3.0
+  - wave: tritonMiddle
+  - wait: 2.5
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleRight
+  - wait: 0.2
+  - wave: jetDown
+  - wait: 3.5
+  - wave: jetRight
+  - wait: 5
+  - wave: jetLeft
+  - wait: 3.5
+  - wave: jetRight
+  - wait: 0.3
+  - wave: jetLeft
+  - wait: 3.5
+  - wave: tritonSides
+  - wait: 3.0
+  - wave: tritonMiddle
+  - wait: 3.0
+  - wave: tritonMiddle
+  - wait: 3.0
+  - text: Well done soldier!
+  - wait: 1.5
+  - text: You survived!
+  - wait: 2.0
+  - text: No wait!
+  - wait: 0.5
+  - text: There comes another! Prepare!
+  - wait: 0.7
+  - wave: turtleRight
+  - wait: 0.2
+  - wave: turtleLeft
+  - wait: 1.0  
+  - wave: tritonMiddle
+  - wait: 3
+  - wave: arrowMiddle
+  - wait: 1
+  - wave: arrowMiddle
+  - wait: 1
+  - wave: arrowMiddle
+  - wait: 1
+  - wave: arrowMiddle
+  - wait: 3
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleRight
+  - wait: 0.2
+  - wave: turtleRight
+  - wait: 2
+  - wave: arrowMiddle
+  - wait: 1
+  - wave: arrowMiddle
+  - wait: 3
+  - wave: tritonSides
+  - wait: 5
+  - text: Now it´s realy end!
+  - wait: 6
+
+

@@ -1,0 +1,18 @@
+visual: visual/player.yaml
+engine:
+  maxSpeed: 300
+  acceleration   : 2100  #-1 default 
+volume:
+  aabbox: 
+    min: [-32, -32]
+    max: [32,  32]
+weapon:
+  0: weapons/player.yaml
+  1: weapons/player2.yaml
+  2: weapons/EMP.yaml
+collidable:
+health: 750
+warhead:
+  damage: 10
+  killsEntity: false
+

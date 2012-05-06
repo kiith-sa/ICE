@@ -1,0 +1,36 @@
+type: lines
+vertices:
+  !!pairs
+
+  - color: rgb888888
+  - vertex: [-3.0, 0.0]
+  - vertex: [3.0, 0.0]
+  - vertex: [-3.0, 0.0]
+  - color: rgbFFFFFF
+  - vertex: [-3.0, 15.0]
+  - color: rgb888888
+  - vertex: [3.0, 0.0]
+  - color: rgbFFFFFF
+  - vertex: [3.0, 15.0]
+  - vertex: [-3.0, 15.0]
+  - vertex: [3.0, 15.0]
+
+  - color:  rgbFC0F0C
+  - vertex: [-4, -1.0]
+  - vertex: [4, -1.0]
+
+  - vertex: [-4, 0]
+  - color:  rgbaFC0F0CAA
+  - vertex: [0, -5]
+  - vertex: [0, -5]
+  - color:  rgbFC0F0C
+  - vertex: [4, 0]
+
+  - color: rgbFFFFFF
+  - vertex: [-3.0, 16.0]
+  - vertex: [3.0, 16.0]
+  - vertex: [-2.0, 17.0]
+  - vertex: [2.0, 17.0]
+  - vertex: [-2.0, 18.0]
+  - vertex: [2.0, 18.0]
+

@@ -1,0 +1,17 @@
+visual: visual/jet.yaml
+engine:
+  maxSpeed: 500
+#acceleration   : 3000  #-1 default 
+volume:
+  aabbox: 
+    min: [-7, -4]
+    max: [7,  12]
+weapon:
+  0: weapons/enemy1w1.yaml
+  1: weapons/rocketlauncher.yaml
+collidable:
+health: 200
+warhead:
+  damage: 30
+  killsEntity: false
+dumbScript: dumbscripts/jet1.yaml

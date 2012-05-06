@@ -10,3 +10,36 @@ vertices:
   - vertex: [0.0, -32.0]
   - color:  rgba8080FF80
   - vertex: [32.0, 0.0]
+
+  - width: 6
+  - color:  rgbEA0000
+  - vertex: [-32.0, 0.0]
+  - color:  rgbFFFFFF
+  - vertex: [0.0, -20.0]
+
+  - vertex: [0.0, -20.0]
+  - color:  rgbEA0000
+  - vertex: [32.0, 0.0]
+
+  - width: 1
+  - color:  rgbEA0000
+  - vertex: [32.0, 0.0]
+  - color: rgbFFFFFF
+  - vertex: [42.0, -10.0]
+
+  - vertex: [42.0, -10.0]
+  - color:  rgbEA0000
+  - vertex: [52.0, 0.0]
+
+  - color:  rgbEA0000
+  - vertex: [-32.0, 0.0]
+  - color: rgbFFFFFF
+  - vertex: [-42.0, -10.0]
+
+  - vertex: [-42.0, -10.0]
+  - color:  rgbEA0000
+  - vertex: [-52.0, 0.0]
+
+  - width: 2
+  - color:  rgbEA0000
+
