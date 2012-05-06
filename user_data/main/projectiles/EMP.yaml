@@ -1,11 +1,11 @@
-deathTimeout: 3
+deathTimeout: 5
 engine : 
-  maxSpeed       : 300
-  acceleration   : 300  #-1 is instant
+  maxSpeed       : 600
+  acceleration   : 600  #-1 is instant
 volume:
   aabbox:
     min: [-8, 0]
     max: [8,  1]
 visual:   visual/EMP.yaml
 warhead:
-  damage: 15
+  damage: 150

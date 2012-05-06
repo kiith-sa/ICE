@@ -4,8 +4,8 @@ engine :
   acceleration   : 300  #-1 is instant
 volume:
   aabbox:
-    min: [0, -50]
-    max: [0,  50]
+    min: [0, -30]
+    max: [0,  100]
 visual:   visual/laser.yaml
 warhead:
   damage: 35

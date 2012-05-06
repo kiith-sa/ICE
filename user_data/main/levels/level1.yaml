@@ -228,7 +228,7 @@ level:
   - wave: turtleRight
   - wait: 0.2
   - wave: turtleLeft
-  - wait: 1.0
+  - wait: 1.0  
   - wave: tritonMiddle
   - wait: 3
   - wave: arrowMiddle
@@ -238,5 +238,22 @@ level:
   - wave: arrowMiddle
   - wait: 1
   - wave: arrowMiddle
+  - wait: 3
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleRight
+  - wait: 0.2
+  - wave: turtleRight
+  - wait: 2
+  - wave: arrowMiddle
+  - wait: 1
+  - wave: arrowMiddle
+  - wait: 3
+  - wave: tritonSides
+  - wait: 5
+  - text: Now it´s realy end!
   - wait: 6
+
 
