@@ -107,9 +107,6 @@ struct SpawnerComponent
         ///Are any components of the spawnee overridden by componentOverrides?
         bool hasComponentOverrides;
 
-        ///Should PhysicsComponent (e.g. position) of the spawnee be relative to the spawner?
-        bool relativePhysics;
-
         ///Is the spawner spawnee's owner?
         bool spawnerIsOwner;
 
@@ -131,9 +128,6 @@ struct SpawnerComponent
             spawnee = LazyArrayIndex(yaml["entity"].as!string);
             condition = SpawnCondition(yaml["condition"]);
 
-            relativePhysics = yaml.containsKey("relativePhysics")
-                            ? yaml["relativePhysics"].as!bool 
-                            : true;
             spawnerIsOwner = yaml.containsKey("spawnerIsOwner")
                            ? yaml["spawnerIsOwner"].as!bool 
                            : true;
@@ -162,9 +156,6 @@ struct SpawnerComponent
             with(result)
             {
                 spawnee = LazyArrayIndex(loadProjectileEntity(yaml));
-                relativePhysics = yaml.containsKey("relativePhysics")
-                                ? yaml["relativePhysics"].as!bool 
-                                : true;
                 spawnerIsOwner = yaml.containsKey("spawnerIsOwner")
                                ? yaml["spawnerIsOwner"].as!bool 
                                : true;

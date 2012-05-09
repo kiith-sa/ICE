@@ -9,6 +9,8 @@ burst:
        position: [-2.0, 16.0]
        rotation: 0.01
        speed:    50.0
+       spawnAbsolute:
+         - velocity
  - entity: projectiles/defaultbullet.yaml 
    delay: 0.01
    components:
@@ -16,6 +18,8 @@ burst:
        position: [2.0, 16.0]
        rotation: -0.01
        speed:    50.0
+       spawnAbsolute:
+         - velocity
  - entity: projectiles/defaultbullet.yaml 
    delay: 0.02
    components:
@@ -23,6 +27,8 @@ burst:
        position: [-4.0, 12.0]
        rotation: 0.02
        speed:    50.0
+       spawnAbsolute:
+         - velocity
  - entity: projectiles/defaultbullet.yaml 
    delay: 0.02
    components:
@@ -30,6 +36,8 @@ burst:
        position: [4.0, 12.0]
        rotation: -0.02
        speed:    50.0
+       spawnAbsolute:
+         - velocity
  - entity: projectiles/defaultbullet.yaml 
    delay: 0.03
    components:
@@ -37,6 +45,8 @@ burst:
        position: [-6.0, 8.0]
        rotation: 0.04
        speed:    50.0
+       spawnAbsolute:
+         - velocity
  - entity: projectiles/defaultbullet.yaml 
    delay: 0.03
    components:
@@ -44,3 +54,5 @@ burst:
        position: [6.0, 8.0]
        rotation: -0.04
        speed:    50.0
+       spawnAbsolute:
+         - velocity

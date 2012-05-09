@@ -195,16 +195,14 @@ class SpawnerSystem : System
                 writeln("Ignoring (overriding nothing) ...");
             }
 
-            //Set spawnee's physics to its physics added to the spawner's
-            //if it's relative to the spawner's physics.
-            if(spawn.relativePhysics)
+            //Position/rotate/etc the spawnee relative to the spawner
+            //(unless the spawnee's physics component says it 
+            //should be positioned absolutely).
+            auto ePhysics = spawner.physics;
+            auto sPhysics = &(timedSpawn.spawn.physics);
+            if(ePhysics !is null && !sPhysics.isNull)
             {
-                auto ePhysics = spawner.physics;
-                auto sPhysics = &(timedSpawn.spawn.physics);
-                if(ePhysics !is null && !sPhysics.isNull)
-                {
-                    sPhysics.setRelativeTo(*ePhysics);
-                }
+                sPhysics.setRelativeTo(*ePhysics);
             }
 
             if(spawn.spawnerIsOwner)

@@ -16,7 +16,7 @@ import util.yaml;
 
 
 ///Component providing physics support to an entity.
-align(4) struct PhysicsComponent
+struct PhysicsComponent
 {
     ///Position in world space.
     Vector2f position;
@@ -27,6 +27,24 @@ align(4) struct PhysicsComponent
 
     ///Velocity in world space.
     Vector2f velocity;
+
+    /**
+     * If true, position will be set in absolute coordinates after spawning
+     * (instead of relative to the spawner).
+     */
+    bool spawnAbsolutePosition = false;
+
+    /**
+     * If true, rotation will be set in absolute angle after spawning
+     * (instead of relative to the spawner).
+     */
+    bool spawnAbsoluteRotation = false;
+
+    /**
+     * If true, velocity will be set in absolute coordinates after spawning
+     * (instead of relative to the spawner).
+     */
+    bool spawnAbsoluteVelocity = false;
 
     ///Load from a YAML node. Throws YAMLException on error.
     this(ref YAMLNode node)
@@ -47,6 +65,18 @@ align(4) struct PhysicsComponent
                    hasSpeed    ? angleToVector(rotation) *
                                  fromYAML!float(node["speed"], "speed")
                                : Vector2f(0.0f, 0.0f);
+
+        if(node.containsKey("spawnAbsolute")) 
+        {
+            foreach(string parameter; node["spawnAbsolute"]) switch(parameter)
+            {
+                case "position": spawnAbsolutePosition = true; break;
+                case "rotation": spawnAbsoluteRotation = true; break;
+                case "velocity": spawnAbsoluteVelocity = true; break;
+                default:
+                    throw new YAMLException("Unknown spawnAbsolute parameter: " ~ parameter);
+            }
+        }
     }
 
     ///Construct manually.
@@ -65,12 +95,16 @@ align(4) struct PhysicsComponent
      *
      * I.e. this component was at (1, 0) relative to rhs, and now it is (3, 0)
      * - in global coordinates.
+     *
+     * Note that if spawnAbsolutePosition is true, position will be set in 
+     * absolute coordinates. Similarly for spawnAbsoluteRotation and 
+     * spawnAbsoluteVelocity.
      */
     void setRelativeTo(ref PhysicsComponent rhs)
     {
-        rotation += rhs.rotation;
-        position = rhs.position + position.rotated(rhs.rotation);
-        velocity = rhs.velocity + velocity.rotated(rhs.rotation);
+        if(!spawnAbsoluteRotation){rotation += rhs.rotation;}
+        if(!spawnAbsolutePosition){position = rhs.position + position.rotated(rhs.rotation);}
+        if(!spawnAbsoluteVelocity){velocity = rhs.velocity + velocity.rotated(rhs.rotation);}
     }
 }
 
