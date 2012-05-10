@@ -14,6 +14,7 @@ import std.math : fmod;
 import std.random;
 
 import color;
+import containers.vector;
 import math.math;
 import math.rect;
 import math.vector2;
@@ -357,15 +358,27 @@ class GraphicsEffectManager
         ///Draw graphics effects with specified video driver and game time subsystem.
         void draw(VideoDriver video, const GameTime gameTime)
         {
+            //Must keep track of expired effects to destroy them.
+            Vector!GraphicsEffect expired;
+
             foreach(effect; effects_)
             {
                 effect.draw(video, gameTime);
 
-                if(effect.done){effect.expire();}
+                if(effect.done)
+                {
+                    effect.expire();
+                    expired ~= effect;
+                }
             }
 
             //Remove expired effects.
             effects_ = effects_.remove!(e => e.done)();
+
+            foreach(effect; expired)
+            {
+                clear(effect);
+            }
         }
 
         ///Add a new graphics effect.

@@ -249,7 +249,7 @@ class DumbLevel : Level
 
             public:
                 /**
-                 * Construct a WaveDefinition fro YAML.
+                 * Construct a WaveDefinition from YAML.
                  *
                  * Params:  level = Level that uses this definition.
                  *                  Used to load unit prototypes.
