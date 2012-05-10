@@ -52,12 +52,12 @@ class GameTime
          * Passed delegate should update any game subsystems or other state that
          * needs to be updated in synchronization with game ticks.
          *
-         * The delegate should return 0 normally, and 1 if the game updates 
+         * The delegate should return false normally, and true if the game updates 
          * must be interrupted (e.g. at the end of game).
          *
          * Params:  updateDeleg = Delegate used to update game state.
          */
-        void doGameUpdates(int delegate() updateDeleg)
+        void doGameUpdates(bool delegate() updateDeleg)
         {
             const real time = getTime();
             //First call to doGameUpdates(), results in no updates.
@@ -72,8 +72,8 @@ class GameTime
 
             accumulatedTime_ += frameLength;
 
-            //If non-zero, updateDeleg() has decided it's time to end the game.
-            int interrupt = false;
+            //If true, updateDeleg() has decided it's time to end the game.
+            bool interrupt = false;
             while(!interrupt && accumulatedTime_ >= timeStep_)
             {
                 interrupt = updateDeleg();

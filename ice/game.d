@@ -15,6 +15,7 @@ import std.exception;
 import std.random;
 import std.string;
 import std.traits;
+import std.typecons;
 
 import dgamevfs._;
 
@@ -69,6 +70,27 @@ class GameGUI
         ///HUD.
         HUD hud_;
 
+        ///Messages shown when the player dies.
+        static deathMessages_ = ["You have been murderized",
+                                 "Fail",
+                                 "LOL U MAD?",
+                                 "All your base are belong to us",
+                                 "The bifurcator is exceptionally green",
+                                 "Cake is a lie",
+                                 "Swim, swim, hungry",
+                                 "Snake? Snake?! SNAAAAAKE!!!!",
+                                 "42",
+                                 "You were killed",
+                                 "Longcat is looooooooooooooooooooooooooooooong",
+                                 "You are dead"];
+
+        ///Messages shown when the player successfully clears the level.
+        static successMessages_ = ["Level cleared",
+                                   "You survived",
+                                   "Nice~",
+                                   "Still alive",
+                                   "You aren't quite dead yet",
+                                   "42"];
     public:
         ///Show the HUD.
         void showHUD(){hud_.show();}
@@ -82,11 +104,13 @@ class GameGUI
         /**
          * Show the game over screen, with statistics, etc.
          *
-         * Params:  statistics = Player statistics.
+         * Params:  success    = Did the player succeesfully finish the level?
+         *          statistics = Player statistics.
          *          totalTime  = Total time taken by the game, in game time
          *                       seconds (i.e. not measuring pauses).
          */
-        void showGameOverScreen(const StatisticsComponent statistics,
+        void showGameOverScreen(const Flag!"success" success,
+                                const StatisticsComponent statistics,
                                 const real totalTime) 
         {
             with(new GUIElementFactory)
@@ -108,7 +132,7 @@ class GameGUI
                 font     = "orbitron-bold.ttf";
                 fontSize = 20;
                 alignX   = AlignX.Center;
-                text     = randomDeathMessage();
+                text     = randomSample(success ? successMessages_ : deathMessages_, 1).front;
                 gameOver_.addChild(produce());
 
                 //Time elapsed.
@@ -178,18 +202,6 @@ class GameGUI
                 gameOver_ = null;
             }
         }
-
-        ///Get a random death message.
-        static string randomDeathMessage()
-        {
-            static messages = ["You have been murderized",
-                               "Fail",
-                               "LOL U MAD?",
-                               "You were killed",
-                               "You are dead"];
-
-            return messages[uniform(0, messages.length)];
-        }
 }
 
 ///Thrown when the game fails to start.
@@ -248,6 +260,8 @@ class Game
         {
             ///Gameplay phase.
             Playing,
+            ///Phase during the game over effect, before the score screen shows up.
+            PreOver,
             ///Game over - we're not playing but we still aren't out of the game (e.g. score screen).
             Over
         }
@@ -336,21 +350,30 @@ class Game
         {
             if(!continue_){return false;}
 
+            gui_.update(gameTime_);
+
             //Does as many game logic updates as needed (even zero)
             //to keep constant game update tick.
             gameTime_.doGameUpdates
             ({
                 player1_.update();
-                gui_.update(gameTime_);
+
+                if(gamePhase_ == gamePhase_.Over) {return false;}
 
                 entitySystem_.update();
 
                 if(gamePhase_ == GamePhase.Playing)
                 {
-                    if(!level_.update(/*gui_*/))
+                    if(!level_.update())
                     {
-                        continue_ = false;
-                        return 1;
+                        auto player = entitySystem_.entityWithID(playerShipID_);
+                        assert(player !is null, 
+                               "Player ship doesn't exist even though the level was "
+                               "successfully completed");
+
+                        gameOver(*player, Yes.success);
+
+                        return true;
                     }
                 }
 
@@ -369,7 +392,7 @@ class Game
                 spawnerSystem_.update();
                 onDeathSystem_.update();
 
-                return 0;
+                return false;
             });
 
             //Game might have been ended after a level update,
@@ -623,6 +646,22 @@ class Game
         ///Called when the player ship has died.
         void playerDied(ref Entity playerShip)
         {
+            //Level is done already.
+            if(gamePhase_ != GamePhase.Playing) {return;}
+
+            gameOver(playerShip, No.success);
+        }
+
+
+        /**
+         * Called when the player dies or succeeds in clearing the level.
+         *
+         * playerShip = Player ship entity to get statistics from.
+         * success    = Has the player succesfully cleared the level or died?
+         */
+        void gameOver(ref Entity playerShip, Flag!"success" success)
+        {
+            gamePhase_ = GamePhase.PreOver;
             //Game over enlarging text effect.
             GraphicsEffect effect = new TextEffect(gameTime_.gameTime,
                (const real startTime,
@@ -632,7 +671,7 @@ class Game
                    const double timeRatio = (gameTime.gameTime - startTime) / 1.0;
                    if(timeRatio > 1.0){return true;}
 
-                   auto gameOver = "GAME OVER";
+                   auto gameOver = success ? "LEVEL DONE" : "GAME OVER";
 
                    const chars = round!uint(timeRatio * 5.0 * (gameOver.length));
                    params.text = gameOver[0 .. min(gameOver.length, chars)];
@@ -661,7 +700,9 @@ class Game
             { 
                 entitySystem_.destroy();
                 gamePhase_ = GamePhase.Over;
-                gui_.showGameOverScreen(statistics, gameTime_.gameTime - startTime_);
+                gui_.showGameOverScreen(success,
+                                        statistics, 
+                                        gameTime_.gameTime - startTime_);
             });
             effectManager_.addEffect(effect);
 
@@ -695,6 +736,7 @@ class Game
                 return false;
             });
             effectManager_.addEffect(effect);
+
         }
 }
 
