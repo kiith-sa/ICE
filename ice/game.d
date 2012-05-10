@@ -67,6 +67,8 @@ class GameGUI
         GUIElement parent_;
         ///Game over screen (with stats, etc). Null if not shown.
         GUIElement gameOver_;
+        ///"Really quit?" message after pressing Escape.
+        GUIStaticText reallyQuit_;
         ///HUD.
         HUD hud_;
 
@@ -91,6 +93,7 @@ class GameGUI
                                    "Still alive",
                                    "You aren't quite dead yet",
                                    "42"];
+    
     public:
         ///Show the HUD.
         void showHUD(){hud_.show();}
@@ -171,6 +174,52 @@ class GameGUI
             parent_.addChild(gameOver_);
         }
 
+        ///Show the "Really quit?" message.
+        void showReallyQuit()
+        in
+        {
+            assert(!reallyQuitVisible, 
+                   "Trying to show the \"Really quit?\" message "
+                   "but it's already shown");
+        }
+        body
+        {
+            with(new GUIStaticTextFactory)
+            {
+                x        = "p_width / 2 - 192";
+                y        = "p_height / 2 - 32";
+                width    = "384";
+                height   = "64";
+                font     = "orbitron-bold.ttf";
+                fontSize = 32;
+                alignX   = AlignX.Center;
+                alignY   = AlignY.Center;
+                text     = "Really quit? (Y/N)";
+                reallyQuit_ = produce();
+            }
+            parent_.addChild(reallyQuit_);
+        }
+
+        ///Hide the "Really quit?" message.
+        void hideReallyQuit()
+        in
+        {
+            assert(reallyQuitVisible, 
+                   "Trying to hide the \"Really quit?\" message "
+                   "but it's not shown");
+        }
+        body
+        {
+            reallyQuit_.die();
+            reallyQuit_ = null;
+        }
+
+        ///Is the "Really quit?" message shown?
+        @property bool reallyQuitVisible() const pure nothrow 
+        {
+            return reallyQuit_ !is null;
+        }
+
     private:
         /**
          * Construct a GameGUI with specified parameters.
@@ -184,14 +233,6 @@ class GameGUI
             hud_.hide();
         }
 
-        /**
-         * Update the game GUI, using game time subsystem to measure time.
-         */
-        void update(const GameTime gameTime)
-        {
-            hud_.update(gameTime);
-        }
-
         ///Destroy the game GUI.
         ~this()
         {
@@ -201,6 +242,18 @@ class GameGUI
                 gameOver_.die();
                 gameOver_ = null;
             }
+            if(reallyQuitVisible)
+            {
+                hideReallyQuit();
+            }
+        }
+
+        /**
+         * Update the game GUI, using game time subsystem to measure time.
+         */
+        void update(const GameTime gameTime)
+        {
+            hud_.update(gameTime);
         }
 }
 
@@ -587,7 +640,17 @@ class Game
             if(state == KeyState.Pressed) switch(key)
             {
                 case Key.Escape:
-                    continue_ = false;
+                    //If the game is over, just quit.
+                    if(gamePhase_ != GamePhase.Playing)
+                    {
+                        continue_ = false;
+                        break;
+                    }
+
+                    //Show the "Really quit?" message, unless already shown.
+                    if(gui_.reallyQuitVisible){break;}
+                    gameTime_.timeSpeed = 0.0;
+                    gui_.showReallyQuit();
                     break;
                 case Key.Return:
                     if(gamePhase_ == GamePhase.Over)
@@ -595,9 +658,24 @@ class Game
                         continue_ = false;
                     }
                     break;
-                case Key.K_P: //Pause.
+                case Key.K_P: 
+                    //Pause.
                     const paused = equals(gameTime_.timeSpeed, cast(real)0.0);
                     gameTime_.timeSpeed = paused ? 1.0 : 0.0;
+                    break;
+                case Key.K_Y:
+                    if(gui_.reallyQuitVisible) 
+                    {
+                        continue_ = false;
+                        gui_.hideReallyQuit();
+                    }
+                    break;
+                case Key.K_N:
+                    if(gui_.reallyQuitVisible) 
+                    {
+                        gameTime_.timeSpeed = 1.0;
+                        gui_.hideReallyQuit();
+                    }
                     break;
                 default:
                     break;
