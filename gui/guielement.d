@@ -298,13 +298,25 @@ class GUIElement
          */
         final void drawChildren(VideoDriver driver)
         {
-            foreach(ref child; children_){child.draw(driver);}
+            foreach(ref child; children_)
+            {
+                assert(!child.dead_, 
+                       "GUI element with dead child while drawing - it should "
+                       "have been cleaned up during the previous collectDead()");
+                child.draw(driver);
+            }
         }
 
         ///Update children of this element.
         final void updateChildren()
         {
-            foreach(ref child; children_){child.update();}
+            foreach(ref child; children_)
+            {
+                assert(!child.dead_, 
+                       "GUI element with dead child while updating - it should "
+                       "have been cleaned up during the previous collectDead()");
+                child.update();
+            }
         }
 
         ///Remove dead GUI elements.

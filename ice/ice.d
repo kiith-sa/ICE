@@ -299,14 +299,20 @@ class Ice
                 //Count this frame
                 fpsCounter_.event();
 
-                guiRoot_.update();
-
                 videoDriver_.startFrame();
                 if(game_ !is null)
                 {
                     //update game state
                     if(!game_.run()){destroyGame();}
                 }
+
+                //Must be updated after game.
+                //That is because destroyGame might be called, resulting
+                //in destruction of Game-specific GUI monitors, 
+                //which need to be cleaned up (in update()) - otherwise 
+                //draw() would try to draw destroyed GUI monitors.
+                guiRoot_.update();
+
                 guiRoot_.draw(videoDriver_);
                 videoDriver_.endFrame();
             
