@@ -240,11 +240,11 @@ final class MonitorView : GUIElement
             //generate the menu
             with(new GUIMenuHorizontalFactory)
             {
-                x              = "p_left";
-                y              = "p_top";
-                itemWidth     = "44";
-                itemHeight    = "14";
-                itemSpacing   = "4";
+                x            = "p_left";
+                y            = "p_top";
+                itemWidth    = "44";
+                itemHeight   = "14";
+                itemSpacing  = "4";
                 itemFontSize = fontSize;
 
                 //hide will set null monitor
@@ -285,7 +285,6 @@ final class MonitorView : GUIElement
 
             addChild(menu_);
         }
-
 
         ///Set specified monitored object.
         void setMonitored(const string monitored)

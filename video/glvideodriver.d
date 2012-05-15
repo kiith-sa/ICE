@@ -605,14 +605,14 @@ abstract class GLVideoDriver : VideoDriver
             SubMonitor function(GLVideoDriver)[string] ctors_;
             ctors_["FPS"]        = &newGraphMonitor!(GLVideoDriver, Statistics, "fps");
             ctors_["Draws"]      = &newGraphMonitor!(GLVideoDriver, Statistics, 
-                                                       "lines", "textures", "texts", "rectangles");
+                                                     "lines", "textures", "texts", "rectangles");
 
             ctors_["Primitives"] = &newGraphMonitor!(GLVideoDriver, Statistics, 
                                                        "vertices", "indices", "characters"),
             ctors_["Cache"]      = &newGraphMonitor!(GLVideoDriver, Statistics, 
-                                                       "vgroups");
+                                                     "vgroups");
             ctors_["Changes"]    = &newGraphMonitor!(GLVideoDriver, Statistics, 
-                                                       "shader", "page");
+                                                     "shader", "page");
             ctors_["Pages"]      = function SubMonitor(GLVideoDriver v)
                                                       {return new PageMonitor(v);};
             return new MonitorData!GLVideoDriver(this, ctors_);

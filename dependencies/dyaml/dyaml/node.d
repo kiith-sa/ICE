@@ -200,6 +200,8 @@ struct Node
         //Node collection style. Used to remember style this node was loaded with.
         CollectionStyle collectionStyle = CollectionStyle.Invalid;
 
+        static assert(Node.sizeof <= 48, "Unexpected YAML node size");
+
     public:
         /**
          * Construct a Node from a value.
