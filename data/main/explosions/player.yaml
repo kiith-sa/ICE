@@ -1,0 +1,222 @@
+weapon:
+  0: weapons/playerdeath.yaml
+dumbScript: dumbscripts/fire_0.yaml
+spawner:
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 0.0
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 0.2
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 0.4
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 0.6
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 0.8
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 1.0
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 1.2
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 1.4
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 1.6
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 1.8
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 2.0
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 2.2
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 2.4
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 2.6
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 2.8
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 3.0
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 3.2
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 3.4
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 3.6
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 3.8
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 4.0
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 4.2
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 4.4
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 4.6
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 4.8
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 5.0
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 5.2
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 5.4
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 5.6
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 5.8
+        speed: 200.0
+  - entity: explosions/fragment1.yaml 
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 6.0
+        speed: 200.0
+deathTimeout: 0.15

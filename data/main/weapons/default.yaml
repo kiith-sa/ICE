@@ -56,3 +56,4 @@ burst:
        speed:    50.0
        spawnAbsolute:
          - velocity
+

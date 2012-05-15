@@ -1,0 +1,90 @@
+burstPeriod: 0.09
+burst:
+ - entity: explosions/linefragment1.yaml 
+   delay: 0.01
+   components:
+     physics:
+       position: [0.0, 0.0]
+       rotation: 0.02
+       speed:    50.0
+ - entity: explosions/linefragment1.yaml 
+   delay: 0.01
+   components:
+     physics:
+       position: [0.0, 0.0]
+       rotation: -0.02
+       speed:    50.0
+ - entity: explosions/linefragment1.yaml 
+   delay: 0.02
+   components:
+     physics:
+       position: [1.0, 0.0]
+       rotation: 0.04
+       speed:    50.0
+ - entity: explosions/linefragment1.yaml 
+   delay: 0.02
+   components:
+     physics:
+       position: [-1.0, 0.0]
+       rotation: -0.04
+       speed:    50.0
+ - entity: explosions/linefragment1.yaml 
+   delay: 0.03
+   components:
+     physics:
+       position: [2.0, 0.0]
+       rotation: 0.08
+       speed:    50.0
+ - entity: explosions/linefragment1.yaml 
+   delay: 0.03
+   components:
+     physics:
+       position: [-2.0, 0.0]
+       rotation: -0.08
+       speed:    50.0
+
+
+ - entity: explosions/linefragment1.yaml 
+   delay: 0.01
+   components:
+     physics:
+       position: [0.0, 0.0]
+       rotation: 3.16
+       speed:    50.0
+ - entity: explosions/linefragment1.yaml 
+   delay: 0.01
+   components:
+     physics:
+       position: [0.0, 0.0]
+       rotation: 3.12
+       speed:    50.0
+ - entity: explosions/linefragment1.yaml 
+   delay: 0.02
+   components:
+     physics:
+       position: [1.0, 0.0]
+       rotation: 3.18
+       speed:    50.0
+ - entity: explosions/linefragment1.yaml 
+   delay: 0.02
+   components:
+     physics:
+       position: [-1.0, 0.0]
+       rotation: 3.10
+       speed:    50.0
+ - entity: explosions/linefragment1.yaml 
+   delay: 0.03
+   components:
+     physics:
+       position: [2.0, 0.0]
+       rotation: 3.22
+       speed:    50.0
+ - entity: explosions/linefragment1.yaml 
+   delay: 0.03
+   components:
+     physics:
+       position: [-2.0, 0.0]
+       rotation: 3.06
+       speed:    50.0
+
+

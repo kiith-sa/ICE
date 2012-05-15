@@ -1,0 +1,5 @@
+!!pairs
+- for 1000000.0:
+    move-direction: 0.0
+  
+

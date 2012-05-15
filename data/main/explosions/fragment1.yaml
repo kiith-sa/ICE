@@ -1,0 +1,46 @@
+visual: visual/fragment1.yaml
+spawner:
+  - entity: explosions/fragmentbase.yaml 
+    condition: death 
+    components:
+      visual: visual/fragment1.yaml
+      physics: 
+        position: [0, 0]
+        rotation: 0.55
+        speed: 100.0
+        spawnAbsolute: [velocity]
+      deathTimeout: 10.0
+  - entity: explosions/fragmentbase.yaml 
+    condition: death 
+    components:
+      visual: visual/fragment1.yaml
+      physics: 
+        position: [0, 0]
+        rotation: -0.55
+        speed: 100.0
+        spawnAbsolute: [velocity]
+      deathTimeout: 10.0
+  - entity: explosions/fragmentbase.yaml 
+    condition: death 
+    components:
+      visual: visual/fragment1.yaml
+      physics: 
+        position: [0, 0]
+        rotation: 3.24
+        speed: 100.0
+        spawnAbsolute: [velocity]
+      deathTimeout: 10.0
+  - entity: explosions/fragmentbase.yaml 
+    condition: death 
+    components:
+      visual: visual/fragment1.yaml
+      physics: 
+        position: [0, 0]
+        rotation: 3.04
+        speed: 100.0
+        spawnAbsolute: [velocity]
+      deathTimeout: 10.0
+engine:
+  maxSpeed: 5000
+  acceleration: 2
+deathTimeout: 0.2

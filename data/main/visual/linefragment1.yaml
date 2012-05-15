@@ -1,0 +1,8 @@
+type: lines
+vertices:
+  !!pairs
+  - width: 0.5
+  - color:  rgbaFFFFFFF0
+  - vertex: [-2.0, 6.0]
+  - color:  rgbaFFFFFFF0
+  - vertex: [-2.0, -12.0]

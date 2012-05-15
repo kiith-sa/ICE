@@ -21,6 +21,24 @@ wave wave2:
           position: [440, 64]
           rotation: 0
       dumbScript: dumbscripts/enemy1.yaml
+
+wave wave3:
+  spawn:
+    - unit: ships/enemy1.yaml
+      physics: 
+          position: [360, 32]
+          rotation: 0
+      weapon:
+          0: weapons/activeshield.yaml
+      dumbScript: dumbscripts/enemy1.yaml
+    - unit: ships/enemy1.yaml
+      physics: 
+          position: [440, 64]
+          rotation: 0
+      weapon:
+          0: weapons/activeshield.yaml
+      dumbScript: dumbscripts/enemy1.yaml
+
 level:
   !!pairs
   - effect text:
@@ -91,6 +109,12 @@ level:
   - wait: 2.0
   - wave: wave1
   - wait: 2.0
+  - wave: wave2
+  - wait: 4.0
+  - wave: wave2
+  - wait: 3.0
+  - wave: wave3
+  - wait: 3.0
   - wave: wave2
   - wait: 5.0
   - text: Lorem Ipsum  #in HUD
