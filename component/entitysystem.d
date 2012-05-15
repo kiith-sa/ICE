@@ -19,6 +19,11 @@ import std.typecons;
 
 import containers.segmentedvector;
 import math.vector2;
+import monitor.graphmonitor;
+import monitor.monitordata;
+import monitor.monitorable;
+import monitor.submonitor;
+import util.signal;
 import util.stringctfe;
 import util.traits;
 import util.yaml;
@@ -154,10 +159,13 @@ string ctfeComponentTypeEnum()
         assert(b > 2, "Too many component types for a 64bit enum");
     }
 
+    //JUST_SPAWNED is 1 for the first update after spawning the entity.
     //FLIP_VALIDITY determines whether we should flip the INVALID_ENTITY bit
     //on next update (killing/creating an entity).
     //INVALID_ENTITY specifies whether an entity is valid(alive) or not(dead).
     result ~= 
+          "    JUST_SPAWNED  =\n"
+          "        0b0010000000000000000000000000000000000000000000000000000000000000,\n"
           "    FLIP_VALIDITY  =\n"
           "        0b0100000000000000000000000000000000000000000000000000000000000000,\n"
           "    INVALID_ENTITY =\n"
@@ -282,6 +290,17 @@ struct Entity
             return cast(bool)(components_ & ComponentType.FLIP_VALIDITY);
         }
 
+        ///Has this entity been spawned at the beginning of the current update?
+        @property bool spawned() const pure nothrow 
+        in
+        {
+            assert(valid, "Determining if an invalid entity has been spawned this update");
+        }
+        body
+        {
+            return cast(bool)(components_ & ComponentType.JUST_SPAWNED);
+        }
+
         ///Getters to access components of this entity.
         static ctfeComponentGetters()
         {
@@ -308,7 +327,9 @@ struct Entity
         this(const ulong id, EntitySystem entitySystem) pure nothrow
         {
             //Will only be valid on next EntitySystem update.
-            components_   = ComponentType.INVALID_ENTITY | ComponentType.FLIP_VALIDITY;
+            components_   = ComponentType.INVALID_ENTITY | 
+                            ComponentType.FLIP_VALIDITY |
+                            ComponentType.JUST_SPAWNED;
             id_.id_       = id;
             entitySystem_ = entitySystem;
         }
@@ -325,6 +346,18 @@ struct Entity
         {
             valid = !valid;
             components_ = components_ & (~ComponentType.FLIP_VALIDITY);
+        }
+
+        ///Flip the JUST_SPAWNED bit (one update after spawning).
+        void flipSpawned()
+        in
+        {
+            assert(valid,
+                   "flipSpawned() can only be called on valid entities.");
+        }
+        body
+        {
+            components_ = components_ & (~ComponentType.JUST_SPAWNED);
         }
 
         ///Set entity validity (making it dead/alive).
@@ -550,9 +583,20 @@ pragma(msg, "EntityPrototype size is " ~ to!string(EntityPrototype.sizeof));
  * It is safe for duration of one update, so that pointers can be stored for
  * various in-update operations.
  */
-class EntitySystem
+class EntitySystem : Monitorable
 {
     private:
+        ///Statistics used for monitoring/debugging.
+        struct Statistics
+        {
+            ///Total number of allocated entities at the moment.
+            uint entities;
+            ///Total number of living entities at the moment.
+            uint alive;
+            ///Total number of dead entities at the moment.
+            uint dead;
+        }
+
         ///Game entities.
         SegmentedVector!Entity entities_;
 
@@ -573,6 +617,12 @@ class EntitySystem
 
         ///Maps entity IDs to entity pointers.
         Entity*[EntityID] idToEntity_;
+
+        ///Monitoring statistics.
+        Statistics statistics_;
+
+        ///Used to send statistics data to EntitySystem monitor/s.
+        mixin Signal!Statistics sendStatistics;
 
     public:
         ///Destroy all entities and components, returning to initial state.
@@ -661,6 +711,7 @@ class EntitySystem
 
                         //idToEntity_.remove(entity.id);
                         idToEntity_[entity.id] = null;
+                        --statistics_.alive;
                     }
                     else
                     {
@@ -668,10 +719,28 @@ class EntitySystem
                                null is *(entity.id in idToEntity_),
                                "Adding entity ID that already exists");
                         idToEntity_[entity.id] = &entity;
+                        ++statistics_.alive;
                     }
                     entity.flipValidity();
                 }
+                //We're not flipping validity and we're valid 
+                //- we're alive at least for one update.
+                else if(entity.valid)
+                {
+                    //We've just been spawned at the previous update.
+                    if(entity.spawned)
+                    {
+                        entity.flipSpawned();
+                    }
+                }
             }
+
+            //Update statistics and send them to the monitor.
+            statistics_.entities = cast(uint)entities_.length;
+            //Alive is incremented/decremented as entities are added/removed.
+            statistics_.dead = statistics_.entities - statistics_.alive;
+
+            sendStatistics.emit(statistics_);
         }
 
         /**
@@ -693,6 +762,15 @@ class EntitySystem
         body
         {
             mixin(ctfeIterateEntitiesWithComponentsOfTypes(tupleToStrings!Types()));
+        }
+
+        ///Provide an interface for the Monitor subsystem to monitor the EntitySystem.
+        MonitorDataInterface monitorData()
+        {
+            SubMonitor function(EntitySystem)[string] ctors_;
+            ctors_["Entities"] = &newGraphMonitor!(EntitySystem, Statistics, 
+                                                   "entities", "alive", "dead");
+            return new MonitorData!EntitySystem(this, ctors_);
         }
 
     private:
