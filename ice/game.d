@@ -79,7 +79,7 @@ class GameGUI
                                  "All your base are belong to us",
                                  "The bifurcator is exceptionally green",
                                  "Cake is a lie",
-                                 "Swim, swim, hungry",
+                                 "Swim, swim, hungry!",
                                  "Snake? Snake?! SNAAAAAKE!!!!",
                                  "42",
                                  "You were killed",
@@ -865,12 +865,14 @@ class GameContainer
                 monitor_ = null;
             }
             game_ = new Game(platform, gui_, videoDriver, gameDir);
+            monitor_.addMonitorable(game_.entitySystem_, "Entities");
             return game_;
         }
 
         ///Destroy the contained Game.
         void destroy()
         {
+            monitor_.removeMonitorable("Entities");
             clear(game_);
             clear(gui_);
             game_    = null;
