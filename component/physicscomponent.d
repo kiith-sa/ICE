@@ -102,9 +102,14 @@ struct PhysicsComponent
      */
     void setRelativeTo(ref PhysicsComponent rhs)
     {
-        if(!spawnAbsoluteRotation){rotation += rhs.rotation;}
-        if(!spawnAbsolutePosition){position = rhs.position + position.rotated(rhs.rotation);}
-        if(!spawnAbsoluteVelocity){velocity = rhs.velocity + velocity.rotated(rhs.rotation);}
+        if(!spawnAbsoluteRotation)
+        {
+            rotation += rhs.rotation;
+            velocity = velocity.rotated(rhs.rotation);
+            position = position.rotated(rhs.rotation);
+        }
+        if(!spawnAbsolutePosition){position = rhs.position + position;}
+        if(!spawnAbsoluteVelocity){velocity = rhs.velocity + velocity;}
     }
 }
 
