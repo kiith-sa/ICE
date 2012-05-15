@@ -37,27 +37,36 @@ struct SpawnerComponent
         ///Condition type.
         enum Type : ubyte
         {
-            /**
-             * Uninitialized condition. 
-             *
-             * When a Spawn is initialized at a weapon, its condition is 
-             * uninitialized, and only gets initialized when it's added 
-             * to the entity.
-             */
-            Uninitialized,
             ///Spawn when (or after) an entity dies.
             Death,
+            ///Spawn when (or after) an entity is spawned.
+            Spawn,
             ///Spawn when (or after) a weapon burst is fired.
-            WeaponBurst
+            WeaponBurst,
+            ///Spawn in periodic intervals.
+            Periodic
         }
 
         ///Type of condition.
-        Type type = Type.Uninitialized;
+        Type type = Type.Spawn;
 
         union 
         {
             ///If type is WeaponBurst, this specifies which weapon has to be fired.
             ubyte weaponIndex;
+
+            struct
+            {
+                ///If type is Periodic, this is the period in seconds.
+                float period;
+                /**
+                 * If type is Periodic, this is the time since last spawn in seconds.
+                 *
+                 * It is initialized by infinity so the first spawn always 
+                 * gets triggered right after the spawner is created.
+                 */
+                float timeSinceLastSpawn = float.infinity;
+            }
         }
 
         ///Load a SpawnCondition from YAML.
@@ -65,22 +74,41 @@ struct SpawnerComponent
         {
             auto str = yaml.as!string;
             if(str == "death"){type = Type.Death;}
+            if(str == "spawn"){type = Type.Spawn;}
             else if(str.startsWith("weaponBurst"))
             {
                 type = Type.WeaponBurst;
                 auto parts = str.split();
-                string errmsg()
+                string weaponError()
                 {
                     return "Invalid weaponBurst spawn condition: \"" ~ str ~ "\""
                            "weaponBurst spawn condition must be in format "
                            "\"weaponBurst x\" where x specifies the weapon.";
                 }
 
-                enforce(parts.length == 2, new YAMLException(errmsg()));
-                try{weaponIndex = to!ubyte(parts[2]);}
+                enforce(parts.length == 2, new YAMLException(weaponError()));
+                try{weaponIndex = to!ubyte(parts[1]);}
                 catch(ConvException e)
                 {
-                    throw new YAMLException(errmsg());
+                    throw new YAMLException(weaponError());
+                }
+            }
+            else if(str.startsWith("periodic"))
+            {
+                type = Type.Periodic;
+                auto parts = str.split();
+                string periodError()
+                {
+                    return "Invalid periodic spawn condition: \"" ~ str ~ "\""
+                           "periodic spawn condition must be in format "
+                           "\"periodic t\" where x specifies the period in seconds.";
+                }
+
+                enforce(parts.length == 2, new YAMLException(periodError()));
+                try{period = to!float(parts[1]);}
+                catch(ConvException e)
+                {
+                    throw new YAMLException(periodError());
                 }
             }
         }
@@ -126,7 +154,12 @@ struct SpawnerComponent
         this(ref YAMLNode yaml)
         {
             spawnee = LazyArrayIndex(yaml["entity"].as!string);
-            condition = SpawnCondition(yaml["condition"]);
+
+            //By default, spawn condition is "spawn" .
+            if(yaml.containsKey("condition"))
+            {
+                condition = SpawnCondition(yaml["condition"]);
+            }
 
             spawnerIsOwner = yaml.containsKey("spawnerIsOwner")
                            ? yaml["spawnerIsOwner"].as!bool 
@@ -139,119 +172,6 @@ struct SpawnerComponent
                 hasComponentOverrides = true;
                 componentOverrides = yaml["components"];
             }
-        }
-
-        /**
-         * Specialized function to load a projectile spawn from YAML.
-         *
-         * The major differences are that spawn condition is not loaded 
-         * (WeaponBurst depending on which weapon is used will be the 
-         * spawn condition), and that accelerateForward is set to true.
-         *
-         * Params:  yaml = YAML node to load fromYAML
-         */
-        static Spawn loadProjectileSpawn(ref YAMLNode yaml)
-        {
-            Spawn result;
-            with(result)
-            {
-                spawnee = LazyArrayIndex(loadProjectileEntity(yaml));
-                spawnerIsOwner = yaml.containsKey("spawnerIsOwner")
-                               ? yaml["spawnerIsOwner"].as!bool 
-                               : true;
-                delay = yaml.containsKey("delay")
-                      ? fromYAML!(float, "a >= 0.0f")(yaml["delay"], "loadProjectileSpawn")
-                      : 0.0f;
-
-                if(yaml.containsKey("components"))
-                {
-                    hasComponentOverrides = true;
-                    componentOverrides = yaml["components"];
-                }
-
-                loadProjectileLegacy(result, yaml);
-                accelerateForward = true;
-            }
-
-            return result;
-
-        }
-
-        ///Backwards compatibility - load old projectile spawning YAML tags.
-        static void loadProjectileLegacy(ref Spawn spawn, ref YAMLNode yaml)
-        {
-            const hasPosition  = yaml.containsKey("position");
-            const hasDirection = yaml.containsKey("direction");
-            const hasSpeed     = yaml.containsKey("speed");
-
-            if(!hasPosition && !hasDirection && !hasSpeed){return;}
-
-            if(spawn.hasComponentOverrides && 
-               spawn.componentOverrides.containsKey("physics"))
-            {
-                return;
-            }
-
-            if(!spawn.hasComponentOverrides)
-            {
-                spawn.hasComponentOverrides = 1;
-                //rotation/0.0f is a placeholder so we can call YAMLNode ctor.
-                spawn.componentOverrides = YAMLNode([YAMLNode("physics")],
-                                                    [YAMLNode(["rotation"], [0.0f])]);
-            }
-            else 
-            {
-                //rotation/0.0f is a placeholder so we can call YAMLNode ctor.
-                spawn.componentOverrides["physics"] = YAMLNode(["rotation"], [0.0f]);
-            }
-
-            writeln("WARNING: position, direction and speed tags in weapon "  ~ 
-                    "bursts are deprecated and will be removed.\nCode using " ~
-                    "them must be rewritten by overriding components.\n\n\n"  ~
-                    "Example:\n"                                              ~
-                    "\nold:\n"                                                ~
-                    " - projectile: projectiles/shieldbullet.yaml\n"          ~
-                    "   delay: 0.0\n"                                         ~
-                    "   position: [0.0, 35.0]\n"                              ~
-                    "   direction: 0.8\n"                                     ~
-                    "   speed: 50.0\n"                                        ~
-                    "\nnew:\n"                                                ~
-                    " - projectile: projectiles/shieldbullet.yaml\n"          ~
-                    "   delay: 0.0\n"                                         ~
-                    "   components:\n"                                        ~
-                    "     physics:\n"                                         ~
-                    "       position: [0.0, 35.0]\n"                          ~
-                    "       rotation: 0.8\n"                                  ~
-                    "       speed:    50.0\n");
-            stdout.flush();
-
-            auto physics = &(spawn.componentOverrides["physics"]);
-
-            if(hasPosition)
-            {
-                (*physics)["position"] = yaml["position"];
-            }
-
-            if(hasDirection)
-            {
-                (*physics)["rotation"] = yaml["direction"];
-            }
-
-            if(hasSpeed)
-            {
-                const rotation = hasDirection ? (*physics)["rotation"].as!float : 0.0f;
-                const velocity = angleToVector(rotation) * yaml["speed"].as!float;
-                (*physics)["velocity"] = YAMLNode([velocity.x, velocity.y]);
-            }
-        }
-
-        ///Backward compatibility - use "projectile" as synonym for "entity".
-        static string loadProjectileEntity(ref YAMLNode yaml)
-        {
-            if(yaml.containsKey("entity")){return yaml["entity"].as!string;}
-            writeln("WARNING: Weapon projectile name should now be specified "
-                    "under the \"entity\" key, not \"projectile\"");
-            return yaml["projectile"].as!string;
         }
     }
     

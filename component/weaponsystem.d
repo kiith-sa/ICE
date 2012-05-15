@@ -79,7 +79,7 @@ class WeaponSystem : System
                 uint i = 0;
                 foreach(ref YAMLNode shot; burst)
                 {
-                    spawns[i] = Spawn.loadProjectileSpawn(shot);
+                    spawns[i] = loadProjectileSpawn(shot);
                     ++i;
                 }
             }
@@ -281,4 +281,108 @@ class WeaponSystem : System
             }
             return true;
         }
+}
+
+/**
+ * Specialized function to load a projectile spawn from YAML.
+ *
+ * The major difference is that accelerateForward is set to true.
+ *
+ * There is also code to support legacy projectile syntax. This will be removed.
+ *
+ * Params:  yaml = YAML node to load fromYAML
+ */
+Spawn loadProjectileSpawn(ref YAMLNode yaml)
+{
+    auto result = Spawn(yaml);
+    with(result)
+    {
+        loadProjectileLegacy(result, yaml);
+        accelerateForward = true;
+    }
+
+    return result;
+}
+
+private:
+
+alias SpawnerComponent.Spawn Spawn;
+
+import std.stdio;
+
+///Backwards compatibility - load old projectile spawning YAML tags. Will be removed.
+void loadProjectileLegacy(ref Spawn spawn, ref YAMLNode yaml)
+{
+    const hasPosition  = yaml.containsKey("position");
+    const hasDirection = yaml.containsKey("direction");
+    const hasSpeed     = yaml.containsKey("speed");
+
+    if(!hasPosition && !hasDirection && !hasSpeed){return;}
+
+    if(spawn.hasComponentOverrides && 
+       spawn.componentOverrides.containsKey("physics"))
+    {
+        return;
+    }
+
+    if(!spawn.hasComponentOverrides)
+    {
+        spawn.hasComponentOverrides = 1;
+        //rotation/0.0f is a placeholder so we can call YAMLNode ctor.
+        spawn.componentOverrides = YAMLNode([YAMLNode("physics")],
+                                            [YAMLNode(["rotation"], [0.0f])]);
+    }
+    else 
+    {
+        //rotation/0.0f is a placeholder so we can call YAMLNode ctor.
+        spawn.componentOverrides["physics"] = YAMLNode(["rotation"], [0.0f]);
+    }
+
+    writeln("WARNING: position, direction and speed tags in weapon "  ~ 
+            "bursts are deprecated and will be removed.\nCode using " ~
+            "them must be rewritten by overriding components.\n\n\n"  ~
+            "Example:\n"                                              ~
+            "\nold:\n"                                                ~
+            " - projectile: projectiles/shieldbullet.yaml\n"          ~
+            "   delay: 0.0\n"                                         ~
+            "   position: [0.0, 35.0]\n"                              ~
+            "   direction: 0.8\n"                                     ~
+            "   speed: 50.0\n"                                        ~
+            "\nnew:\n"                                                ~
+            " - projectile: projectiles/shieldbullet.yaml\n"          ~
+            "   delay: 0.0\n"                                         ~
+            "   components:\n"                                        ~
+            "     physics:\n"                                         ~
+            "       position: [0.0, 35.0]\n"                          ~
+            "       rotation: 0.8\n"                                  ~
+            "       speed:    50.0\n");
+    stdout.flush();
+
+    auto physics = &(spawn.componentOverrides["physics"]);
+
+    if(hasPosition)
+    {
+        (*physics)["position"] = yaml["position"];
+    }
+
+    if(hasDirection)
+    {
+        (*physics)["rotation"] = yaml["direction"];
+    }
+
+    if(hasSpeed)
+    {
+        const rotation = hasDirection ? (*physics)["rotation"].as!float : 0.0f;
+        const velocity = angleToVector(rotation) * yaml["speed"].as!float;
+        (*physics)["velocity"] = YAMLNode([velocity.x, velocity.y]);
+    }
+}
+
+///Backward compatibility - use "projectile" as synonym for "entity".
+string loadProjectileEntity(ref YAMLNode yaml)
+{
+    if(yaml.containsKey("entity")){return yaml["entity"].as!string;}
+    writeln("WARNING: Weapon projectile name should now be specified "
+            "under the \"entity\" key, not \"projectile\"");
+    return yaml["projectile"].as!string;
 }

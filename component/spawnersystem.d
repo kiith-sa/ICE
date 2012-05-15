@@ -14,6 +14,7 @@ import std.typecons;
 import dgamevfs.exceptions;
 import dgamevfs.vfs;
 
+import component.controllercomponent;
 import component.entitysystem;
 import component.ownercomponent;
 import component.spawnercomponent;
@@ -148,9 +149,10 @@ class SpawnerSystem : System
         {
             with(Condition.Type) final switch(condition.type) 
             {
-                case Uninitialized: assert(false, "Uninitialized spawn condition");
                 case Death:         return spawner.killed;
+                case Spawn:         return spawner.spawned;
                 case WeaponBurst:   return burstConditionMet(spawner, condition);
+                case Periodic:      return periodicConditionMet(spawner, condition);
             }
         }
 
@@ -161,6 +163,21 @@ class SpawnerSystem : System
             auto weapons = spawner.weapon;
             return weapons is null ? false  
                                    : weapons.burstStarted[condition.weaponIndex];
+        }
+
+        ///Has a periodic spawn condition been met?
+        bool periodicConditionMet(ref Entity spawner, 
+                                  ref Condition condition) const pure nothrow
+        {
+            condition.timeSinceLastSpawn += gameTime_.timeStep;
+
+            if(condition.timeSinceLastSpawn >= condition.period)
+            {
+                condition.timeSinceLastSpawn = 0.0f;
+                return true;
+            }
+
+            return false;
         }
 
         ///Prepare a spawn, adding it to spawnStorage_ but not spawning (it might have a delay).
@@ -220,6 +237,12 @@ class SpawnerSystem : System
                timedSpawn.spawn.spawner.isNull)
             {
                 timedSpawn.spawn.spawner = SpawnerComponent();
+            }
+            //DumbScriptComponent requires (extends) ControllerComponent.
+            if(!timedSpawn.spawn.dumbScript.isNull && 
+               timedSpawn.spawn.controller.isNull)
+            {
+                timedSpawn.spawn.controller = ControllerComponent();
             }
         }
 
