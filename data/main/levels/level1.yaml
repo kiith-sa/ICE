@@ -1,43 +1,43 @@
 wave wave1:
-  spawn:
-    - unit: ships/enemy1.yaml
-      physics: 
+  spawner:
+    - entity: ships/enemy1.yaml 
+      components:
+        physics:
           position: [360, 32]
-          rotation: 0
-    - unit: ships/enemy1.yaml
-      physics: 
+    - entity: ships/enemy1.yaml 
+      components:
+        physics:
           position: [440, 64]
-          rotation: 0
       dumbScript: dumbscripts/enemy1.yaml
 
 wave wave2:
-  spawn:
-    - unit: ships/enemy1.yaml
-      physics: 
+  spawner:
+    - entity: ships/enemy1.yaml 
+      components:
+        physics:
           position: [360, 32]
-          rotation: 0
-    - unit: ships/enemy1.yaml
-      physics: 
+    - entity: ships/enemy1.yaml 
+      components:
+        physics:
           position: [440, 64]
-          rotation: 0
       dumbScript: dumbscripts/enemy1.yaml
 
 wave wave3:
-  spawn:
-    - unit: ships/enemy1.yaml
-      physics: 
+  spawner:
+    - entity: ships/enemy1.yaml
+      components:
+        physics: 
           position: [360, 32]
-          rotation: 0
-      weapon:
+        weapon:
           0: weapons/activeshield.yaml
-      dumbScript: dumbscripts/enemy1.yaml
-    - unit: ships/enemy1.yaml
-      physics: 
+        dumbScript: dumbscripts/enemy1.yaml
+    - entity: ships/enemy1.yaml
+      components:
+        physics: 
           position: [440, 64]
-          rotation: 0
-      weapon:
+        weapon:
           0: weapons/activeshield.yaml
-      dumbScript: dumbscripts/enemy1.yaml
+        dumbScript: dumbscripts/enemy1.yaml
 
 level:
   !!pairs
@@ -105,11 +105,16 @@ level:
       color: rgba2008A001
 
   - wait: 2.0
-  - wave: wave1
+  - wave: [wave1, [50, 150]]
   - wait: 2.0
   - wave: wave1
   - wait: 2.0
-  - wave: wave2
+  - wave: 
+      wave: wave2
+      components:
+        physics:
+          position: [10, 30]
+          rotation: 0.8
   - wait: 4.0
   - wave: wave2
   - wait: 3.0
