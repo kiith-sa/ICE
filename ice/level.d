@@ -22,10 +22,12 @@ import dgamevfs._;
 import color;
 import component.entitysystem;
 import component.controllercomponent;
+import component.physicscomponent;
 import component.spawnercomponent;
 import containers.fixedarray;
+import containers.lazyarray;
 import containers.vector;
-import math.rect;
+import math.rect;                      
 import math.vector2;
 import memory.memory;
 import time.gametime;
@@ -95,16 +97,16 @@ abstract class Level
  * Example:
  * --------------------
  * wave wave1:
- *   spawn:
- *     - unit: ships/enemy1.yaml
- *       physics: 
- *           position: [360, 32]
- *           rotation: 0
- *     - unit: ships/playership.yaml
- *       physics: 
- *           position: [440, 64]
- *           rotation: 0
- *       dumbScript: dumbscripts/enemy1.yaml
+ *   spawner:
+ *     - entity: ships/enemy1.yaml 
+ *       components:
+ *         physics: 
+ *             position: [360, 32]
+ *     - entity: ships/playership.yaml
+ *       components:
+ *         physics: 
+ *             position: [440, 64]
+ *         dumbScript: dumbscripts/enemy1.yaml
  * 
  * level:
  *   !!pairs
@@ -124,12 +126,18 @@ abstract class Level
  * There can be any number of wave definitions, but there must not be two 
  * wave definitions with identical name.
  *
- * Currently, the wave definition has one section, $(B spawn), which is a 
- * sequence of units (entities) to be spawned. Each unit is a mapping with one
- * required key, $(B unit), which specifies filename of the unit to spawn. The 
- * unit might contain more keys, which define components to override components 
- * loaded from the unit definition. This allows, for example, for a particular 
- * spawned unit to use a different script or weapon.
+ * Waves contain units to be spawned when the wave command is used in the 
+ * level. In ICE, waves are actually entities and are defined as entities.
+ *
+ * Thus, the units to spawn are specified in a spawner component, just like 
+ * with an entity. Other components can be specified as well if needed, but 
+ * that's not common.
+ *
+ * In this case, we spawn 2 units. We specify physics components for both 
+ * (this is needed for the units to show up), and for one unit, we also 
+ * specify the dumbScript component. Components specified here override 
+ * the components specified in units' YAML files, so we can for instance change 
+ * what weapons a unit is spawned with.
  *
  * Level script:
  *
@@ -149,14 +157,30 @@ abstract class Level
  *
  * wave:
  *
- * Example:
+ * Examples:
  * --------------------
- * - wave: wave1 #Launch wave "wave1"
+ * #Launch wave "wave1"
+ * - wave: wave1 
+ * #Launch wave "wave1" at offset [50, 100]
+ * - wave: [wave1, [50, 100]] 
+ * #Launch wave "wave1" at offset [100, 300], rotating it by 0.8 radians
+ * - wave: 
+ *     wave: wave2
+ *     components:
+ *       physics:
+ *         position: [100, 300]
+ *         rotation: 0.8
  * --------------------
  *
  * Launch wave defined in wave definition with specified name. The wave must be
  * defined.
  *
+ * There are three ways to launch a wave, shown above. The first example simply
+ * spawns the wave. The second example spawns the wave with an offset added to 
+ * positions of spawned units.
+ * Finally the third example spawns the wave, overriding its physics component,
+ * utilizing the fact that the wave is really an entity. This can be used to 
+ * create more complex scenarios.
  *
  * text:
  *
@@ -237,79 +261,109 @@ abstract class Level
 class DumbLevel : Level 
 {
     private:
-        ///Defines what entities should be spawned in a wave.
+        /**
+         * Defines what entities should be spawned in a wave.
+         *
+         * Wave is actually just an entity that spawns other entities.
+         * 
+         * Of course, the wave entities must be spawned as well, which is done 
+         * by the level.
+         */
         struct WaveDefinition
         {
             @disable this(this);
             @disable void opAssign(WaveDefinition);
 
-            private:
-                ///Prototypes of entities to spawn in this wave.
-                FixedArray!(EntityPrototype*) spawns_;
-
             public:
+                /**
+                 * Base prototype of the entity that spawns the wave.
+                 *
+                 * Components of this prototype might yet be overridden
+                 * when the wave is spawned.
+                 */
+                EntityPrototype* spawnerPrototype;
+
                 /**
                  * Construct a WaveDefinition from YAML.
                  *
-                 * Params:  level = Level that uses this definition.
-                 *                  Used to load unit prototypes.
-                 *
                  * Throws:  YAMLException if the WaveDefinition failed to load.
                  */
-                this(DumbLevel level, ref YAMLNode yaml)
+                this(ref YAMLNode yaml)
                 {
-                    auto spawns = yaml["spawn"];
-                    spawns_ = FixedArray!(EntityPrototype*)(spawns.length);
-                    uint spawnIdx = 0;
+                    spawnerPrototype = alloc!EntityPrototype("levelSpawnerDummy", yaml);
+
+                    if(yaml.containsKey("spawn"))
+                    {
+                        loadLegacy(yaml["spawn"]);
+                    }
+                }
+
+                ///Destroy a WaveDefinition.
+                ~this()
+                {
+                    free(spawnerPrototype);
+                }
+
+                ///Backward compatibility - load legacy wave definition format. Will be removed.
+                void loadLegacy(ref YAMLNode spawns)
+                {
+                    writeln("WARNING: The \"spawn\" tag in wave definitions is " ~
+                            "deprecated and will be removed.\nWaves are now "    ~
+                            "defined as entities and the units spawned in a "    ~
+                            "wave must be specified in its spawner component.\n" ~
+                            "Example:\n"                                         ~
+                            "\nold:\n"                                           ~
+                            " spawn:\n"                                          ~
+                            "   - unit: ships/enemy1.yaml\n"                     ~
+                            "     physics: \n"                                   ~
+                            "         position: [360, 32]\n"                     ~
+                            "         rot\n"                                     ~
+                            "     dumbScript: dumbscripts/enemy1.yaml\n"         ~
+                            "\nnew:\n"                                           ~
+                            " spawner:\n"                                        ~
+                            "   - entity: ships/enemy1.yaml\n"                   ~
+                            "     components:\n"                                 ~
+                            "       physics:\n"                                  ~
+                            "         position: [440, 64]\n"                     ~
+                            "     dumbScript: dumbscripts/enemy1.yaml\n");
+
+                    //If spawnerPrototype has no spawnerComponent, add it
+                    if(spawnerPrototype.spawner.isNull)
+                    {
+                        spawnerPrototype.spawner = SpawnerComponent();
+                    }
 
                     foreach(ref YAMLNode spawn; spawns)
                     {
-                        auto name = spawn["unit"].as!string;
-                        EntityPrototype* prototype = level.unitPrototype(name);
+                        alias SpawnerComponent.Spawn Spawn;
 
-                        auto newSpawn = alloc!EntityPrototype;
-                        scope(failure){free(newSpawn);}
-                        newSpawn.clone(*prototype);
-                        newSpawn.controller = ControllerComponent();
-                        newSpawn.overrideComponents(spawn);
+                        //Manually build Spawn struct, and add it.
+                        Spawn unitSpawn;
 
-                        //WeaponComponent requires (extends) SpawnerComponent.
-                        if(!newSpawn.weapon.isNull && newSpawn.spawner.isNull)
+                        with(unitSpawn)
                         {
-                            newSpawn.spawner = SpawnerComponent();
+                            condition.type = SpawnerComponent.SpawnCondition.Type.Spawn;
+
+                            componentOverrides = spawn;
+                            hasComponentOverrides = true;
+
+                            spawnee = LazyArrayIndex(spawn["unit"].as!string);
+
+                            accelerateForward = false;
+                            spawnerIsOwner = false;
                         }
 
-                        spawns_[spawnIdx] = newSpawn;
-
-                        ++spawnIdx;
-                    }
-                }
-
-                ///Destroy the WaveDefinition, freeing all memory it uses.
-                ~this()
-                {
-                    //If ctor failed in the middle, some spawns might still be null.
-                    foreach(ref spawn; spawns_) if(spawn !is null)
-                    {
-                        free(spawn);
-                    }
-                }
-
-                ///Launch the wave, spawning its entities.
-                void launch(EntitySystem entitySystem)
-                {
-                    foreach(ref spawn; spawns_)
-                    {
-                        entitySystem.newEntity(*spawn);
+                        spawnerPrototype.spawner.addSpawn(unitSpawn);
                     }
                 }
         }
 
+
         ///Wave level script instruction.
         struct Wave 
         {
-            ///Name of the wave to launch.
-            string waveName;
+            ///YAML node defining the wave to spawn.
+            YAMLNode waveNode;
         }
 
         ///Wait level script instruction.
@@ -579,17 +633,12 @@ class DumbLevel : Level
 
         ///Dynamically allocated wave definition with a name.
         alias Tuple!(WaveDefinition*, "wave", string, "name") NamedWaveDefinition;
-        ///Dynamically allocated unit (entity) prototype with a name.
-        alias Tuple!(EntityPrototype*, "prototype", string, "name") NamedUnit;
 
         ///Loaded wave definitions.
         Vector!NamedWaveDefinition waveDefinitions_;
 
         ///Instructions of the level script.
         Vector!Instruction levelScript_;
-
-        ///Loaded unit prototypes.
-        Vector!NamedUnit unitPrototypes_;
 
         ///Has the level been successfully loaded?
         bool levelLoaded_ = false;
@@ -634,10 +683,6 @@ class DumbLevel : Level
         ///Destroy the level, deleting any loaded units and wave definitions.
         ~this()
         {
-            foreach(ref unit; unitPrototypes_)
-            {
-                free(unit.prototype);
-            }
             foreach(ref definition; waveDefinitions_)
             {
                 free(definition.wave);
@@ -677,7 +722,59 @@ class DumbLevel : Level
         ///Execute a Wave instruction. Returns true on interrupt, false otherwise.
         bool executeWave(ref Wave instruction) 
         {
-            spawnWave(instruction.waveName);
+            auto node = instruction.waveNode;
+
+            //Get prototype of spawner of wave with specified name, or throw.
+            ref EntityPrototype waveSpawnerPrototype(string name)
+            {
+                const idx = waveDefinitions_[].countUntil!((a,b) => a.name == b)(name);
+                alias LevelInitializationFailureException E;
+                enforce(idx >= 0, 
+                        new E("Trying to spawn undefined wave: \"" ~ name ~ "\""));
+                return *(waveDefinitions_[idx].wave.spawnerPrototype);
+            }
+
+            string name = "<invalid_or_missing_name>";
+            try
+            {
+                EntityPrototype wavePrototype;
+                if(node.isScalar)
+                {
+                    name = node.as!string;
+                    wavePrototype.clone(waveSpawnerPrototype(name));
+                }
+                else if(node.isSequence)
+                {
+                    name = node[0].as!string;
+                    const position = fromYAML!Vector2f(node[1]);
+                    wavePrototype.clone(waveSpawnerPrototype(name));
+                    if(wavePrototype.physics.isNull)
+                    {
+                        wavePrototype.physics = PhysicsComponent();
+                    }
+                    wavePrototype.physics.position = position;
+                }
+                else if(node.isMapping)
+                {
+                    name = node["wave"].as!string;
+                    wavePrototype.clone(waveSpawnerPrototype(name));
+                    wavePrototype.overrideComponents(node["components"]);
+                }
+                else assert(false, "Unknown YAML node type");
+
+                subsystems_.entitySystem.newEntity(wavePrototype);
+            }
+            catch(YAMLException e)
+            {
+                writeln("Invalid wave \"" ~ name ~ "\" in a level script. "
+                        "Ignoring, not spawning. Details: " ~ e.msg);
+            }
+            catch(LevelInitializationFailureException e)
+            {
+                writeln("Invalid wave \"" ~ name ~ "\" in a level script. "
+                        "Ignoring, not spawning. Details: " ~ e.msg);
+            }
+
             nextInstruction();
             return false;
         }
@@ -726,18 +823,15 @@ class DumbLevel : Level
             return false;
         }
 
-        ///Validate level script (called after loading the script).
+        /**
+         * Validate level script (called after loading the script).
+         *
+         * Throws: LevelInitializationFailureException on failure.
+         */
         void validateScript() 
         {
             alias LevelInitializationFailureException E;
-            //Ensure every used wave is defined.
-            foreach(ref i; levelScript_) if(i.type == Instruction.Type.Wave)
-            {
-                auto wave = i.as!Wave.waveName;
-                enforce(waveDefinitions_[].canFind!((a, b) => a.name == b)(wave),
-                        new E("Undefined wave \"" ~ wave ~ "\" in level \"" 
-                              ~ name_ ~ "\""));
-            }
+            //Nothing here at the moment.
         }
 
         ///Is the level script finished?
@@ -751,46 +845,6 @@ class DumbLevel : Level
         {
             ++instruction_;
             instructionTime_ = 0.0f;
-        }
-
-        ///Spawn wave with specified name.
-        void spawnWave(string name)
-        {
-            const waveIdx = waveDefinitions_[].countUntil!((a,b) => a.name == b)(name);
-            assert(waveIdx >= 0, 
-                   "Trying to spawn undefined wave (this should have been " ~ 
-                   "detected at level load): \"" ~ name ~ "\"");
-            waveDefinitions_[waveIdx].wave.launch(subsystems_.entitySystem);
-        }
-
-        ///Get a pointer to prototype of unit with given file name, loading it if needed.
-        EntityPrototype* unitPrototype(string name)
-        {
-            const unitIdx = unitPrototypes_[].countUntil!((a,b) => a.name == b)(name);
-            if(unitIdx < 0)
-            {
-                loadUnit(name);
-                return unitPrototypes_.back.prototype;
-            }
-            return unitPrototypes_[unitIdx].prototype;
-        }
-
-        ///Load unit with specified file name.
-        void loadUnit(string name)
-        {
-            void fail(string msg)
-            {
-                writeln("Failed to load unit ", name, ": ", msg);
-                writeln("Falling back to placeholder unit...");
-                assert(false, "TODO - Placeholder unit not yet implemented");
-            }
-            try
-            {
-                auto yaml = loadYAML(subsystems_.gameDir.file(name));
-                unitPrototypes_ ~= NamedUnit(alloc!EntityPrototype(name, yaml), name);
-            }
-            catch(YAMLException e){fail(e.msg);}
-            catch(VFSException e) {fail(e.msg);}
         }
 
         /**
@@ -814,7 +868,7 @@ class DumbLevel : Level
             try
             {
                 //Add the wave definition.
-                waveDefinitions_ ~= NamedWaveDefinition(alloc!WaveDefinition(this, yaml), name);
+                waveDefinitions_ ~= NamedWaveDefinition(alloc!WaveDefinition(yaml), name);
             }
             catch(YAMLException e)
             {
@@ -843,7 +897,7 @@ class DumbLevel : Level
                 case "wait":
                     levelScript_ ~= I(Wait(fromYAML!(float, "a >= 0.0")(params, "wait")));
                     break;
-                case "wave":   levelScript_ ~= I(Wave(params.as!string)); break;
+                case "wave":   levelScript_ ~= I(Wave(params)); break;
                 case "text":   levelScript_ ~= I(Text(params.as!string)); break;
                 case "effect": levelScript_ ~= I(Effect(this, name, params)); break; 
                 default:

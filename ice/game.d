@@ -77,7 +77,7 @@ class GameGUI
                                  "Fail",
                                  "LOL U MAD?",
                                  "All your base are belong to us",
-                                 "The bifurcator is exceptionally green",
+                                 "The trifurcator is exceptionally green",
                                  "Cake is a lie",
                                  "Swim, swim, hungry!",
                                  "Snake? Snake?! SNAAAAAKE!!!!",
