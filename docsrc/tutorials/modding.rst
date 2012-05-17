@@ -170,24 +170,32 @@ Example weapon::
    ammo: 2
    reloadTime: 0.2
    burst:
-     - projectile: projectiles/defaultbullet.yaml 
+     - entity: projectiles/defaultbullet.yaml 
        delay: 0.02
-       position: [8.0, 8.0]
-       direction: -0.1
-     - projectile: projectiles/defaultbullet.yaml 
+       components:
+         physics:
+           position: [8.0, 8.0]
+           rotation: -0.1
+     - entity: projectiles/defaultbullet.yaml 
        delay: 0.0
-       position: [0.0, -8.0] 
-       direction: 0.0
-       speed: 50.0
-     - projectile: projectiles/defaultbullet.yaml 
+       components:
+         physics:
+           position: [0.0, -8.0] 
+           rotation: 0.0
+           speed: 50.0
+     - entity: projectiles/defaultbullet.yaml 
        delay: 0.0
-       position: [0.0, -8.0] 
-       direction: 0.0
-       speed: 50.0
-     - projectile: projectiles/defaultbullet.yaml 
+       components:
+         physics:
+           position: [0.0, -8.0] 
+           rotation: 0.0
+           speed: 50.0
+     - entity: projectiles/defaultbullet.yaml 
        delay: 0.02
-       position: [-8.0, 8.0] 
-       direction: 0.1
+       components:
+         physics:
+           position: [-8.0, 8.0] 
+           rotation: 0.1
 
 This weapon can fire 2 bursts, each taking 0.06 seconds, before reloading for 
 0.2 seconds. Each burst consists of 4 projectiles shot at different positions
@@ -201,8 +209,14 @@ If speed is not specified, the projectiles are fired at their maximum speed.
 
 Note that each projectile in the burst specifies its own projectile file. One
 burst can consist of projectiles of multiple types. Each projectile is an 
-entity, just like a ship (in the engine, there is no difference between 
-projectiles and ships).
+entity, just like a ship. 
+
+In the engine, there is no difference between projectiles and ships.
+In fact, when we're firing the projectiles, we're setting their positions 
+by overriding their physics component. Any component can be overridden by 
+specifying it in *components*. You can use this, for example, to change 
+projectiles' visual appeareance or give them specific behaviors by 
+dumbScripts (described below).
 
 ---------------------
 Creating a projectile
@@ -268,16 +282,18 @@ spawn a wave.
 Example::
 
    wave wave1:
-     spawn:
-       - unit: ships/enemy1.yaml
-         physics: 
+     spawner:
+       - entity: ships/enemy1.yaml 
+         components:
+           physics:
              position: [360, 32]
-             rotation: 0
-       - unit: ships/playership.yaml
-         physics: 
+       - entity: ships/enemy1.yaml 
+         delay: 0.1
+         components:
+           physics:
              position: [440, 64]
              rotation: 0
-         dumbScript: dumbscripts/enemy1.yaml
+           dumbScript: dumbscripts/enemy1.yaml
    
    level:
      !!pairs
@@ -292,6 +308,15 @@ Example::
          color: rgbaC8C8FF30
      - wait: 2.0
      - wave: wave1
+     - wait: 2.0
+     - wave: [wave1, [50, 150]]
+     - wait: 2.0
+     - wave: 
+         wave: wave1
+         components:
+           physics:
+             position: [10, 30]
+             rotation: 0.8
      - wait: 5.0
      - text: Lorem Ipsum  #at top or bottom of screen 
      - wait: 5.0
@@ -308,16 +333,18 @@ name of the wave. Wave names **must not contain spaces** .
 There can be any number of wave definitions, but two waves must not have 
 identical names.
 
-Currently, the wave definition has one section, *spawn*, which is a 
-sequence of units (entities) to be spawned. 
+A wave is actually just an entity, and a wave definition defines that entity.
+The wave is generally used to spawn units by setting the *spawner* component.
+Spawner is a sequence of entities(units) to be spawned.
 
-Each unit is a mapping with one required key, *unit*, which specifies filename
-of the unit to spawn. The unit might contain more keys, which define components
-to override components loaded from the unit definition. 
+Each entity is a mapping with one required key, *entity*, which specifies filename
+of the entity to spawn. Optional *delay* specifies delay to spawn after the wave, 
+in seconds. 
 
-In this example, the first unit has its physics component overridden, spawning 
-it at a particular position, and the second also overrides the *dumbScript*
-component (explained below), specifying behavior of the spawned unit.
+Any components of the entity can be overridden by *components*, and,
+at the very least, the physics component should be set here to position the 
+entity. The second entity overrides the *dumbScript* component 
+(explained below), specifying behavior of the spawned unit.
 
 ^^^^^^^^^^^^
 Level script
@@ -328,7 +355,16 @@ pairs of instructions and their parameters.
 
 This level is very simple. First, we start a "lines" effect that draws a
 scrolling starfield background composed of randomly generated lines.
-After 2 seconds, we spawn a single wave and later we display some text.
+After 2 seconds, we spawn a wave. We wait another 2 seconds, and we spawn 
+the same wave using a different format, changing positions of its entities 
+by ``[50, 150]``. 
+
+After that we wait another 2 seconds, and spawn the same wave again, 
+demonstrating the third wave instruction format. In this format, we can make 
+full use of the fact that a wave is actually an entity, and override any of its 
+components.
+
+Finally, we display some text.
 Once the script is done, the level ends (the player wins the level).
 The player loses if their ship gets destroyed before the level is over.
 

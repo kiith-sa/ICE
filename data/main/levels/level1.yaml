@@ -5,10 +5,11 @@ wave wave1:
         physics:
           position: [360, 32]
     - entity: ships/enemy1.yaml 
+      delay: 0.1
       components:
         physics:
           position: [440, 64]
-      dumbScript: dumbscripts/enemy1.yaml
+        dumbScript: dumbscripts/enemy1.yaml
 
 wave wave2:
   spawner:
@@ -20,7 +21,7 @@ wave wave2:
       components:
         physics:
           position: [440, 64]
-      dumbScript: dumbscripts/enemy1.yaml
+        dumbScript: dumbscripts/enemy1.yaml
 
 wave wave3:
   spawner:

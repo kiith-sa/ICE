@@ -37,6 +37,8 @@
 <li><a href="component.exceptions.html">component.exceptions</a></li>
 <li><a href="component.healthcomponent.html">component.healthcomponent</a></li>
 <li><a href="component.healthsystem.html">component.healthsystem</a></li>
+<li><a href="component.movementconstraintcomponent.html">component.movementconstraintcomponent</a></li>
+<li><a href="component.movementconstraintsystem.html">component.movementconstraintsystem</a></li>
 <li><a href="component.ondeathcomponent.html">component.ondeathcomponent</a></li>
 <li><a href="component.ondeathsystem.html">component.ondeathsystem</a></li>
 <li><a href="component.ownercomponent.html">component.ownercomponent</a></li>
@@ -44,6 +46,8 @@
 <li><a href="component.physicssystem.html">component.physicssystem</a></li>
 <li><a href="component.playercomponent.html">component.playercomponent</a></li>
 <li><a href="component.spatialsystem.html">component.spatialsystem</a></li>
+<li><a href="component.spawnercomponent.html">component.spawnercomponent</a></li>
+<li><a href="component.spawnersystem.html">component.spawnersystem</a></li>
 <li><a href="component.statisticscomponent.html">component.statisticscomponent</a></li>
 <li><a href="component.system.html">component.system</a></li>
 <li><a href="component.timeoutsystem.html">component.timeoutsystem</a></li>
@@ -96,22 +100,9 @@
 <li><a href="monitor.monitordata.html">monitor.monitordata</a></li>
 <li><a href="monitor.monitormanager.html">monitor.monitormanager</a></li>
 <li><a href="monitor.submonitor.html">monitor.submonitor</a></li>
-<li><a href="physics.contact.html">physics.contact</a></li>
-<li><a href="physics.contactdetect.html">physics.contactdetect</a></li>
-<li><a href="physics.physicsbody.html">physics.physicsbody</a></li>
-<li><a href="physics.physicsengine.html">physics.physicsengine</a></li>
-<li><a href="physics.physicsmonitor.html">physics.physicsmonitor</a></li>
 <li><a href="platform.key.html">platform.key</a></li>
 <li><a href="platform.platform.html">platform.platform</a></li>
 <li><a href="platform.sdlplatform.html">platform.sdlplatform</a></li>
-<li><a href="scene.actor.html">scene.actor</a></li>
-<li><a href="scene.scenemanager.html">scene.scenemanager</a></li>
-<li><a href="spatial.gridmonitor.html">spatial.gridmonitor</a></li>
-<li><a href="spatial.gridspatialmanager.html">spatial.gridspatialmanager</a></li>
-<li><a href="spatial.spatialmanager.html">spatial.spatialmanager</a></li>
-<li><a href="spatial.volume.html">spatial.volume</a></li>
-<li><a href="spatial.volumeaabbox.html">spatial.volumeaabbox</a></li>
-<li><a href="spatial.volumecircle.html">spatial.volumecircle</a></li>
 <li><a href="time.eventcounter.html">time.eventcounter</a></li>
 <li><a href="time.gametime.html">time.gametime</a></li>
 <li><a href="time.time.html">time.time</a></li>
@@ -210,16 +201,16 @@
 </p>
 <p><b>Example:</b><br>
 <pre class="d_code"> wave wave1:
-   spawn:
-     - unit: ships/enemy1.yaml
-       physics:
-           position: [360, 32]
-           rotation: 0
-     - unit: ships/playership.yaml
-       physics:
-           position: [440, 64]
-           rotation: 0
-       dumbScript: dumbscripts/enemy1.yaml
+   spawner:
+     - entity: ships/enemy1.yaml
+       components:
+         physics:
+             position: [360, 32]
+     - entity: ships/playership.yaml
+       components:
+         physics:
+             position: [440, 64]
+         dumbScript: dumbscripts/enemy1.yaml
 
  level:
    !!pairs
@@ -242,12 +233,20 @@
  wave definitions with identical name.
 <br>
 
- Currently, the wave definition has one section, <b>spawn</b>, which is a
- sequence of units (entities) to be spawned. Each unit is a mapping with one
- required key, <b>unit</b>, which specifies filename of the unit to spawn. The
- unit might contain more keys, which define components to override components
- loaded from the unit definition. This allows, for example, for a particular
- spawned unit to use a different script or weapon.
+ Waves contain units to be spawned when the wave command is used in the
+ level. In ICE, waves are actually entities and are defined as entities.
+<br>
+
+ Thus, the units to spawn are specified in a spawner component, just like
+ with an entity. Other components can be specified as well if needed, but
+ that's not common.
+<br>
+
+ In this case, we spawn 2 units. We specify physics components for both
+ (this is needed for the units to show up), and for one unit, we also
+ specify the dumbScript component. Components specified here override
+ the components specified in units' YAML files, so we can for instance change
+ what weapons a unit is spawned with.
 <br>
 
  Level script:
@@ -272,16 +271,31 @@
 </p>
 <p><b>wave:</b><br>
 </p>
-<p><b>Example:</b><br>
-<pre class="d_code"> - wave: wave1 #Launch wave <span class="d_string">"wave1"</span>
+<b>Examples:</b><div class="pbr"><pre class="d_code"> #Launch wave <span class="d_string">"wave1"</span>
+ - wave: wave1
+ #Launch wave <span class="d_string">"wave1"</span> at offset [50, 100]
+ - wave: [wave1, [50, 100]]
+ #Launch wave <span class="d_string">"wave1"</span> at offset [100, 300], rotating it by 0.8 radians
+ - wave:
+     wave: wave2
+     components:
+       physics:
+         position: [100, 300]
+         rotation: 0.8
 </pre>
 
  Launch wave defined in wave definition with specified name. The wave must be
  defined.
 <br>
 
+ There are three ways to launch a wave, shown above. The first example simply
+ spawns the wave. The second example spawns the wave with an offset added to
+ positions of spawned units.
+ Finally the third example spawns the wave, overriding its physics component,
+ utilizing the fact that the wave is really an entity. This can be used to
+ create more complex scenarios.
 
-</p>
+</div>
 <p><b>text:</b><br>
 </p>
 <p><b>Example:</b><br>

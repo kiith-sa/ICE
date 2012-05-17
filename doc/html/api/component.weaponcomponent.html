@@ -37,6 +37,8 @@
 <li><a href="component.exceptions.html">component.exceptions</a></li>
 <li><a href="component.healthcomponent.html">component.healthcomponent</a></li>
 <li><a href="component.healthsystem.html">component.healthsystem</a></li>
+<li><a href="component.movementconstraintcomponent.html">component.movementconstraintcomponent</a></li>
+<li><a href="component.movementconstraintsystem.html">component.movementconstraintsystem</a></li>
 <li><a href="component.ondeathcomponent.html">component.ondeathcomponent</a></li>
 <li><a href="component.ondeathsystem.html">component.ondeathsystem</a></li>
 <li><a href="component.ownercomponent.html">component.ownercomponent</a></li>
@@ -44,6 +46,8 @@
 <li><a href="component.physicssystem.html">component.physicssystem</a></li>
 <li><a href="component.playercomponent.html">component.playercomponent</a></li>
 <li><a href="component.spatialsystem.html">component.spatialsystem</a></li>
+<li><a href="component.spawnercomponent.html">component.spawnercomponent</a></li>
+<li><a href="component.spawnersystem.html">component.spawnersystem</a></li>
 <li><a href="component.statisticscomponent.html">component.statisticscomponent</a></li>
 <li><a href="component.system.html">component.system</a></li>
 <li><a href="component.timeoutsystem.html">component.timeoutsystem</a></li>
@@ -96,22 +100,9 @@
 <li><a href="monitor.monitordata.html">monitor.monitordata</a></li>
 <li><a href="monitor.monitormanager.html">monitor.monitormanager</a></li>
 <li><a href="monitor.submonitor.html">monitor.submonitor</a></li>
-<li><a href="physics.contact.html">physics.contact</a></li>
-<li><a href="physics.contactdetect.html">physics.contactdetect</a></li>
-<li><a href="physics.physicsbody.html">physics.physicsbody</a></li>
-<li><a href="physics.physicsengine.html">physics.physicsengine</a></li>
-<li><a href="physics.physicsmonitor.html">physics.physicsmonitor</a></li>
 <li><a href="platform.key.html">platform.key</a></li>
 <li><a href="platform.platform.html">platform.platform</a></li>
 <li><a href="platform.sdlplatform.html">platform.sdlplatform</a></li>
-<li><a href="scene.actor.html">scene.actor</a></li>
-<li><a href="scene.scenemanager.html">scene.scenemanager</a></li>
-<li><a href="spatial.gridmonitor.html">spatial.gridmonitor</a></li>
-<li><a href="spatial.gridspatialmanager.html">spatial.gridspatialmanager</a></li>
-<li><a href="spatial.spatialmanager.html">spatial.spatialmanager</a></li>
-<li><a href="spatial.volume.html">spatial.volume</a></li>
-<li><a href="spatial.volumeaabbox.html">spatial.volumeaabbox</a></li>
-<li><a href="spatial.volumecircle.html">spatial.volumecircle</a></li>
 <li><a href="time.eventcounter.html">time.eventcounter</a></li>
 <li><a href="time.gametime.html">time.gametime</a></li>
 <li><a href="time.time.html">time.time</a></li>
@@ -183,32 +174,32 @@
 <dd><p>Ammo used up since last reload.</p>
 
 </dd>
-<dt class="d_decl">uint <a name="shotsSoFarThisBurst"></a><span class="ddoc_psymbol">shotsSoFarThisBurst</span>;
-</dt>
-<dd><p>Number of shots fired so far in the current burst. uint.max means not in burst.</p>
-
-</dd>
 <dt class="d_decl">ubyte <a name="weaponSlot"></a><span class="ddoc_psymbol">weaponSlot</span>;
 </dt>
 <dd><p>Weapon slot taken by the weapon (there are 256 slots).</p>
 
 </dd>
-<dt class="d_decl">const pure nothrow @property bool <a name="burstInProgress"></a><span class="ddoc_psymbol">burstInProgress</span>();
+<dt class="d_decl">bool <a name="spawnsAdded"></a><span class="ddoc_psymbol">spawnsAdded</span>;
 </dt>
-<dd><p>Are we currently in the middle of a burst?</p>
+<dd><p>Have the weapon's projectile spawns been added to the SpawnerComponent of the Entity?</p>
 
 </dd>
-<dt class="d_decl">pure nothrow void <a name="startBurst"></a><span class="ddoc_psymbol">startBurst</span>();
+<dt class="d_decl">pure nothrow  this(const(ubyte) <b>weaponSlot</b>, string <b>weaponFileName</b>);
 </dt>
-<dd><p>Start a burst (called when we're not reloading and done with the previous burst).</p>
-
-</dd>
-<dt class="d_decl">pure nothrow void <a name="finishBurst"></a><span class="ddoc_psymbol">finishBurst</span>();
-</dt>
-<dd><p>End a burst (called when shotsSoFarThisBurst == shots in weapon burst).</p>
+<dd><p>Construct a Weapon in specified slot defined in specified file.</p>
 
 </dd>
 </dl>
+</dd>
+<dt class="d_decl">FixedArray!(Weapon) <a name="weapons"></a><span class="ddoc_psymbol">weapons</span>;
+</dt>
+<dd><p>Weapons owned by the entity.</p>
+
+</dd>
+<dt class="d_decl">Bits!(256) <a name="burstStarted"></a><span class="ddoc_psymbol">burstStarted</span>;
+</dt>
+<dd><p>Weapons whose bursts started this frame.</p>
+
 </dd>
 <dt class="d_decl">this(ref Node <b>yaml</b>);
 </dt>

@@ -37,6 +37,8 @@
 <li><a href="component.exceptions.html">component.exceptions</a></li>
 <li><a href="component.healthcomponent.html">component.healthcomponent</a></li>
 <li><a href="component.healthsystem.html">component.healthsystem</a></li>
+<li><a href="component.movementconstraintcomponent.html">component.movementconstraintcomponent</a></li>
+<li><a href="component.movementconstraintsystem.html">component.movementconstraintsystem</a></li>
 <li><a href="component.ondeathcomponent.html">component.ondeathcomponent</a></li>
 <li><a href="component.ondeathsystem.html">component.ondeathsystem</a></li>
 <li><a href="component.ownercomponent.html">component.ownercomponent</a></li>
@@ -44,6 +46,8 @@
 <li><a href="component.physicssystem.html">component.physicssystem</a></li>
 <li><a href="component.playercomponent.html">component.playercomponent</a></li>
 <li><a href="component.spatialsystem.html">component.spatialsystem</a></li>
+<li><a href="component.spawnercomponent.html">component.spawnercomponent</a></li>
+<li><a href="component.spawnersystem.html">component.spawnersystem</a></li>
 <li><a href="component.statisticscomponent.html">component.statisticscomponent</a></li>
 <li><a href="component.system.html">component.system</a></li>
 <li><a href="component.timeoutsystem.html">component.timeoutsystem</a></li>
@@ -96,22 +100,9 @@
 <li><a href="monitor.monitordata.html">monitor.monitordata</a></li>
 <li><a href="monitor.monitormanager.html">monitor.monitormanager</a></li>
 <li><a href="monitor.submonitor.html">monitor.submonitor</a></li>
-<li><a href="physics.contact.html">physics.contact</a></li>
-<li><a href="physics.contactdetect.html">physics.contactdetect</a></li>
-<li><a href="physics.physicsbody.html">physics.physicsbody</a></li>
-<li><a href="physics.physicsengine.html">physics.physicsengine</a></li>
-<li><a href="physics.physicsmonitor.html">physics.physicsmonitor</a></li>
 <li><a href="platform.key.html">platform.key</a></li>
 <li><a href="platform.platform.html">platform.platform</a></li>
 <li><a href="platform.sdlplatform.html">platform.sdlplatform</a></li>
-<li><a href="scene.actor.html">scene.actor</a></li>
-<li><a href="scene.scenemanager.html">scene.scenemanager</a></li>
-<li><a href="spatial.gridmonitor.html">spatial.gridmonitor</a></li>
-<li><a href="spatial.gridspatialmanager.html">spatial.gridspatialmanager</a></li>
-<li><a href="spatial.spatialmanager.html">spatial.spatialmanager</a></li>
-<li><a href="spatial.volume.html">spatial.volume</a></li>
-<li><a href="spatial.volumeaabbox.html">spatial.volumeaabbox</a></li>
-<li><a href="spatial.volumecircle.html">spatial.volumecircle</a></li>
 <li><a href="time.eventcounter.html">time.eventcounter</a></li>
 <li><a href="time.gametime.html">time.gametime</a></li>
 <li><a href="time.time.html">time.time</a></li>
@@ -214,6 +205,11 @@
 <dt class="d_decl">pure void <a name="rotate"></a><span class="ddoc_psymbol">rotate</span>(F)(const F <b>angle</b>);
 </dt>
 <dd><p>Rotate by specified angle, in radians.</p>
+
+</dd>
+<dt class="d_decl">const pure nothrow Vector2!(T) <a name="rotated"></a><span class="ddoc_psymbol">rotated</span>(F)(const F <b>angle</b>);
+</dt>
+<dd><p>Return this vector <a name="rotated"></a><span class="ddoc_psymbol">rotated</span> by specified angle, in radians.</p>
 
 </dd>
 <dt class="d_decl">const pure nothrow T <a name="lengthSquared"></a><span class="ddoc_psymbol">lengthSquared</span>();
