@@ -392,13 +392,19 @@ unittest
     scope(exit){eSystem.destroy();}
 
     const velocity = Vector2f(5.0f, 0.0f);
+
     alias PhysicsComponent P;
     alias VolumeComponent V;
+
+    EntityPrototype prototype;
     auto pos1 = P(Vector2f(-1.0f, 0.0f), 0.0f, velocity);
-    auto pos2 = P(Vector2f(511.0f, 512.0f), 0.0f, velocity);
+    prototype.physics = pos1;
     auto rect = V(Rectf(-32.0f, -32.0f, 32.5f, 31.0f));
-    auto id1 = eSystem.entityConstruct(pos1, rect);
-    auto id2 = eSystem.entityConstruct(pos2, rect);
+    prototype.volume = rect;
+    auto id1 = eSystem.newEntity(prototype);
+    auto pos2 = P(Vector2f(511.0f, 512.0f), 0.0f, velocity);
+    prototype.physics = pos2;
+    auto id2 = eSystem.newEntity(prototype);
     auto spatial = new SpatialSystem(eSystem, Vector2f(0.0f, 0.0f), 32.0f, 32);
     scope(exit){.clear(spatial);}
 

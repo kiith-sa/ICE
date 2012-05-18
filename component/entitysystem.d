@@ -1,4 +1,3 @@
-
 //          Copyright Ferdinand Majerech 2012.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -18,6 +17,7 @@ import std.traits;
 import std.typecons;
 
 import containers.segmentedvector;
+import containers.vector;
 import math.vector2;
 import monitor.graphmonitor;
 import monitor.monitordata;
@@ -79,6 +79,10 @@ tuple
     "MovementConstraintComponent",
     "SpawnerComponent"
 );
+
+///Last 8 bits are reserved for special uses.
+static assert(componentTypes.length < 56,
+              "At most 56 component types supported");
 
 ///Enforce at compile time that all component type names are valid.
 static assert(
@@ -156,7 +160,6 @@ string ctfeComponentTypeEnum()
         result ~= "   " ~ c.name ~ " =\n" ~ 
                   "   0b" ~ "0".replicate(b - 1) ~ "1" ~ "0".replicate(64 - b) ~ ",\n";
         --b;
-        assert(b > 2, "Too many component types for a 64bit enum");
     }
 
     //JUST_SPAWNED is 1 for the first update after spawning the entity.
@@ -186,6 +189,11 @@ string ctfeComponentTypeEnum()
  */
 mixin(ctfeComponentTypeEnum());
 
+///Get a ComponentType corresponding to a component type name.
+ComponentType componentType(string type)() pure nothrow
+{
+    mixin("return ComponentType." ~ type.name ~ ";");
+}
 
 public:
 
@@ -334,6 +342,23 @@ struct Entity
             entitySystem_ = entitySystem;
         }
 
+        /**
+         * Recycle an Entity with a new ID owned by specified EntitySystem.
+         *
+         * Recycling means overwriting a dead entity with a new entity with 
+         * the same components used.
+         */
+        void recycle(const ulong id, EntitySystem entitySystem) pure nothrow
+        {
+            //Will only be valid on next EntitySystem update.
+            components_ = componentMask |
+                          ComponentType.INVALID_ENTITY | 
+                          ComponentType.FLIP_VALIDITY |
+                          ComponentType.JUST_SPAWNED;
+            id_.id_       = id;
+            entitySystem_ = entitySystem;
+        }
+
         ///Flip entity validity (making it dead/alive) and disable the FLIP_VALIDITY bit.
         void flipValidity()
         in
@@ -358,6 +383,19 @@ struct Entity
         body
         {
             components_ = components_ & (~ComponentType.JUST_SPAWNED);
+        }
+        
+        ///Get a reference to the index of specified component. Used during entity construction.
+        @property ref uint componentIdx(C)() pure nothrow 
+        {
+            mixin("return " ~ C.stringof.nameCamelCased ~ "Idx_;\n");
+        }
+
+        ///Get a mask specifying which components the entity has (ignoring special bits).
+        @property ulong componentMask() const pure nothrow
+        {
+            return components_ & 
+                   0b0000000011111111111111111111111111111111111111111111111111111111;
         }
 
         ///Set entity validity (making it dead/alive).
@@ -539,6 +577,18 @@ struct EntityPrototype
             }
             writeln("WARNING: unknown component type: \"", name, "\". Ignoring.");
         }
+
+        ///Get a bit mask specifying which components this prototype has.
+        @property ulong componentMask() const 
+        {
+            ulong mask = 0;
+            foreach(type; componentTypes) if(hasComponent!type)
+            {
+                mask |= componentType!type();
+            }
+
+            return mask;
+        }
 }
 pragma(msg, "EntityPrototype size is " ~ to!string(EntityPrototype.sizeof));
 
@@ -600,6 +650,9 @@ class EntitySystem : Monitorable
         ///Game entities.
         SegmentedVector!Entity entities_;
 
+        ///Indices of entities that are dead.
+        Vector!uint freeEntityIndices_;
+
         ///Are we currently constructing a new entity (used for contracts)?
         bool constructing_ = false;
 
@@ -645,25 +698,9 @@ class EntitySystem : Monitorable
         }
 
         ///Construct an entity with components from specified prototype.
-        final EntityID newEntity(ref EntityPrototype proto)
+        final EntityID newEntity(ref EntityPrototype prototype)
         {
-            entityConstructStart();
-            foreach(type; componentTypes) if(proto.hasComponent!type)
-            {
-                entityConstructAddComponent(proto.component!type.get);
-            }
-            return entityConstructFinish();
-        }
-
-        ///Construct an entity by explicitly passing components.
-        final EntityID entityConstruct(Types ...)(auto ref Types args) 
-        {
-            entityConstructStart();
-            foreach(ref arg; args)
-            {
-                entityConstructAddComponent(arg);
-            }
-            return entityConstructFinish();
+            return constructEntity(prototype);
         }
 
         /**
@@ -693,6 +730,7 @@ class EntitySystem : Monitorable
          */
         final void update()
         {
+            uint entityIndex = 0;
             foreach(ref entity; entities_) 
             {
                 if(entity.components_ & ComponentType.FLIP_VALIDITY)
@@ -712,6 +750,8 @@ class EntitySystem : Monitorable
                         //idToEntity_.remove(entity.id);
                         idToEntity_[entity.id] = null;
                         --statistics_.alive;
+
+                        freeEntityIndices_ ~= entityIndex;
                     }
                     else
                     {
@@ -733,6 +773,8 @@ class EntitySystem : Monitorable
                         entity.flipSpawned();
                     }
                 }
+
+                ++entityIndex;
             }
 
             //Update statistics and send them to the monitor.
@@ -774,51 +816,99 @@ class EntitySystem : Monitorable
         }
 
     private:
+        /**
+         * Construct an Entity.
+         *
+         * Params:  system    = EntitySystem that will own the constructed entity.
+         *          prototype = Prototype of the entity to construct.
+         *
+         * Returns: ID of the newly constructed entity.
+         */
+        EntityID constructEntity(ref EntityPrototype prototype)
+        {
+            //Recycle an entity if possible, add a new one otherwise.
+            auto entityIndex = findRecyclableEntity(prototype.componentMask);
+            bool recycling = false;
+            if(entityIndex < 0)
+            {
+                //Add a new entity
+                entities_ ~= Entity(nextEntityID_++, this);
+                entityIndex = cast(int)entities_.length - 1;
+            }
+            else 
+            {
+                //Recycle an existing entity (with the same components enabled).
+                entities_[entityIndex].recycle(nextEntityID_++, this);
+                recycling = true;
+            }
+
+            auto entity = &(entities_[entityIndex]);
+
+            //Add components to the entity.
+            foreach(type; componentTypes) if(prototype.hasComponent!type)
+            {
+                constructEntityAddComponent(entity, recycling, prototype.component!type.get);
+            }
+
+            assert(prototype.componentMask == entity.componentMask, "Component mask of "
+                   "a newly constructed entity doesn't match the prototype");
+            assert(!entity.valid, "Newly constructed entity should not be valid yet");
+
+            return entity.id;
+        }
+
+        /**
+         * Add a component to currently constructed entity.
+         *
+         * Params:  entity    = Entity we're constructing at the moment.
+         *          recycling = Are we recycling an already existing(dead) entity?
+         *          component = Component to add to the entity.
+         */
+        void constructEntityAddComponent(C)(Entity* entity, const bool recycling, 
+                                            ref C component)
+        {
+            static assert(knownComponentType!C, 
+                          "Unknown component type: " ~ C.stringof);
+
+            entity.components_ |= componentType!(C.stringof);
+            SegmentedVector!C* components = &componentArray!C();
+
+            //If we're recycling, reuse an existing component.
+            //Otherwise must add new one.
+            if(!recycling)
+            {
+                //Set component index (and add new component, not init yet)
+                const length = cast(uint)(*components).length;
+                entity.componentIdx!C = length;
+                components.length = length + 1;
+            }
+
+            (*components)[entity.componentIdx!C] = component;
+        }
+
+        ///Find a recyclable (dead) entity with specified component mask and return its index.
+        int findRecyclableEntity(const ulong componentMask) 
+        {
+            uint idxIdx = 0;
+            foreach(uint entityIdx; freeEntityIndices_)
+            {     
+                if(entities_[entityIdx].componentMask == componentMask)
+                {
+                    //The index is not free anymore, so remove it
+                    freeEntityIndices_[idxIdx] = freeEntityIndices_.back;
+                    freeEntityIndices_.length  = freeEntityIndices_.length - 1;
+                    return entityIdx;
+                }
+                ++idxIdx;
+            }
+            return -1;
+        }
+
         ///Get the component array of specified type.
         ref inout(SegmentedVector!T) componentArray(T)() inout pure
             if(knownComponentType!T)
         {
             mixin("return " ~ T.stringof.arrayName ~ ";");
-        }
-
-        ///Start constructing a new entity.
-        final void entityConstructStart() 
-        in
-        {
-            assert(!constructing_, 
-                   "Starting construction of an entity while we're already "
-                   "constructing something");
-        }
-        body
-        {
-            constructing_ = true;
-            entities_ ~= Entity(nextEntityID_++, this);
-        }
-
-        ///Add a component to an entity that is currently being constructed.
-        final void entityConstructAddComponent(T)(ref T component)
-        {
-            static assert(knownComponentType!T, "Unknown component type: " ~ T.stringof);
-            enum type   = T.stringof;
-            enum array  = T.stringof.arrayName;
-            enum entity = "entities_.back";
-            mixin(entity ~ ".components_ |= " ~ ctfeTypeEnum(type) ~ ";\n");
-            mixin(entity ~ "." ~ type.nameCamelCased ~ "Idx_ = cast(uint)" ~ array ~ ".length;\n");
-            mixin(array ~ " ~= component;\n"); 
-        }
-
-        ///Finish constructing a new entity and return its ID.
-        final EntityID entityConstructFinish() pure nothrow
-        in
-        {
-            assert(constructing_, 
-                   "Finishing construction of an entity but we're not "
-                   "constructing anything");
-        }
-        body
-        {
-            constructing_ = false;
-            return entities_.back.id_;
         }
 
         ///Return string represenation of ComponentType enum value matching specified type.
@@ -916,15 +1006,17 @@ unittest
 
     void constructPos()
     {
-        auto id = system.entityConstruct(PhysicsComponent(Vector2f(1.0f, 2.0f),
-                                                          0.0f, Vector2f(0.0f, 0.0f)));
+        EntityPrototype prototype;
+        prototype.physics = PhysicsComponent(Vector2f(1.0f, 2.0f), 0.0f, Vector2f(0.0f, 0.0f));
+        auto id = system.newEntity(prototype);
     }
 
     void constructPosVis()
     {
-        system.entityConstruct(PhysicsComponent(Vector2f(1.0f, 0.0f),
-                                                0.0f, Vector2f(0.0f, 0.0f)),
-                               VisualComponent());
+        EntityPrototype prototype;
+        prototype.physics = PhysicsComponent(Vector2f(1.0f, 0.0f), 0.0f, Vector2f(0.0f, 0.0f));
+        prototype.visual = VisualComponent();
+        auto id = system.newEntity(prototype);
     }
 
     constructPos();
