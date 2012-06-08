@@ -1,0 +1,84 @@
+burstPeriod: 0.02
+burst:
+ - entity: projectiles/plasmaBullet.yaml 
+   delay: 0.04
+   components:
+     physics:
+       position: [0, 20.0]
+       rotation: -0.12
+       speed: 256.0
+       spawnAbsolute:
+         - velocity
+ - entity: projectiles/plasmaBullet.yaml 
+   delay: 0.01
+   components:
+     physics:
+       position: [0, 20.0]
+       rotation: -0.01
+       speed: 256.0
+       spawnAbsolute:
+         - velocity
+ - entity: projectiles/plasmaBullet.yaml 
+   delay: 0.01
+   components:
+     physics:
+       position: [0, 20.0] 
+       rotation: 0.01
+       speed: 256.0
+       spawnAbsolute:
+         - velocity
+ - entity: projectiles/plasmaBullet.yaml 
+   delay: 0.02
+   components:
+     physics:
+       position: [0, 20.0] 
+       rotation: 0.04
+       speed: 256.0
+       spawnAbsolute:
+         - velocity
+ - entity: projectiles/plasmaBullet.yaml 
+   delay: 0.02
+   components:
+     physics:
+       position: [0, 20.0] 
+       rotation: -0.04
+       speed: 256.0
+       spawnAbsolute:
+         - velocity
+ - entity: projectiles/plasmaBullet.yaml 
+   delay: 0.03
+   components:
+     physics:
+       position: [0, 20.0] 
+       rotation: 0.08
+       speed: 256.0
+       spawnAbsolute:
+         - velocity
+ - entity: projectiles/plasmaBullet.yaml 
+   delay: 0.03
+   components:
+     physics:
+       position: [0, 20.0] 
+       rotation: -0.08
+       speed: 256.0
+       spawnAbsolute:
+         - velocity
+ - entity: projectiles/plasmaBullet.yaml 
+   delay: 0.04
+   components:
+     physics:
+       position: [0, 20.0] 
+       rotation: 0.12
+       speed: 256.0
+       spawnAbsolute:
+         - velocity
+ - entity: projectiles/plasmaBullet.yaml 
+   delay: 0.0
+   components:
+     physics:
+       position: [0.0, 20.0] 
+       rotation: 0.0
+       speed: 256.0
+       spawnAbsolute:
+         - velocity
+

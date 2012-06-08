@@ -1,0 +1,35 @@
+type: lines
+vertices:
+  !!pairs
+
+  #Inner halo
+  - width: 1024
+  - color:  rgbaFFFFFF00
+  - vertex: [-3.0, 482.0]
+
+  - color:  rgbaFFD06060
+  - vertex: [0, 482.0]
+  - vertex: [0, 482.0]
+
+  - color:  rgbaFFFFFF00
+  - vertex: [3.0, 482.0]
+
+
+  #Outer halo
+  - width: 1056
+  - color:  rgbaFFFFFF00
+  - vertex: [-8.0, 482.0]
+
+  - color:  rgba0000FF20
+  - vertex: [0, 482.0]
+  - vertex: [0, 482.0]
+
+  - color:  rgbaFFFFFF00
+  - vertex: [8.0, 482.0]
+
+  #Central beam
+  - width: 0.5
+  - color:  rgbaFFFFFFFF
+  - vertex: [0.0, -32.0]
+  - color:  rgbaFFFFFF00
+  - vertex: [0.0, 800]

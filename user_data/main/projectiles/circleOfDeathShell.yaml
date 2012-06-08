@@ -1,0 +1,11 @@
+deathTimeout: 1
+engine: 
+  maxSpeed    : 4000
+  acceleration: 2000
+volume:
+  aabbox:
+    min: [-5, -5]
+    max: [5,  5]
+visual:   visual/blueDiamond.yaml
+warhead:
+  damage: 80

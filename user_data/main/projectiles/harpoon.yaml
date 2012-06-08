@@ -1,0 +1,11 @@
+deathTimeout: 3.5
+engine : 
+  maxSpeed       : 300
+  acceleration   : -1  
+volume:
+  aabbox:
+    min: [-13, 0]
+    max: [8,  20]
+visual:   visual/harpoon.yaml
+warhead:
+  damage: 25

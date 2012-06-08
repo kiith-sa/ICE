@@ -1,0 +1,276 @@
+wave turtleDown:
+  spawner:
+    - entity: ships/turtle.yaml 
+      components:
+        physics: 
+            position: [520, 32]
+    - entity: ships/turtle.yaml
+      components:
+        physics: 
+            position: [280, 32]
+    - entity: ships/turtle.yaml
+      components:
+        physics: 
+            position: [400, 64]
+
+wave turtleRight:
+  spawner:
+    - entity: ships/turtle.yaml
+      components:
+        physics: 
+            position: [100, 30]
+        dumbScript: dumbscripts/toright.yaml
+
+
+wave turtleLeft:
+  spawner:
+    - entity: ships/turtle.yaml
+      components:
+        physics: 
+            position: [700, 90]
+        dumbScript: dumbscripts/toleft.yaml
+
+wave jetDown:
+  spawner:
+    - entity: ships/jet.yaml
+      components:
+        physics: 
+          position: [450, 68]
+    - entity: ships/jet.yaml
+      components:
+        physics: 
+          position: [550, 32]
+    - entity: ships/jet.yaml
+      components:
+        physics: 
+          position: [350, 32]
+
+wave jetRight:
+  spawner:
+    - entity: ships/jet.yaml
+      components:
+        physics: 
+            position: [100, -90]
+        dumbScript: dumbscripts/toright.yaml
+    - entity: ships/jet.yaml
+      components:
+        physics: 
+            position: [100, 0]
+        dumbScript: dumbscripts/toright.yaml
+    - entity: ships/jet.yaml
+      components:
+        physics: 
+            position: [100, -180]
+        dumbScript: dumbscripts/toright.yaml
+
+wave jetLeft:
+  spawner:
+    - entity: ships/jet.yaml
+      components:
+        physics: 
+            position: [700, -90]
+        dumbScript: dumbscripts/toleft.yaml
+    - entity: ships/jet.yaml
+      components:
+        physics: 
+            position: [700, 0]
+        dumbScript: dumbscripts/toleft.yaml
+    - entity: ships/jet.yaml
+      components:
+        physics: 
+            position: [700, -180]
+        dumbScript: dumbscripts/toleft.yaml
+
+wave tritonSides:
+  spawner:
+    - entity: ships/triton.yaml
+      components:
+        physics: 
+            position: [600, -90]
+    - entity: ships/triton.yaml
+      components:
+        physics: 
+            position: [200, -90]
+
+wave tritonMiddle:
+  spawner:
+    - entity: ships/triton.yaml
+      components:
+        physics: 
+            position: [400, -30]
+
+wave arrowMiddle:
+  spawner:
+    - entity: ships/arrow.yaml
+      components:
+        physics: 
+            position: [256, -30]
+
+level:
+  !!pairs
+
+  - effect text:
+      text: 42
+      font: default 
+      fontSize: 512
+      color: rgbaFF000001
+      time: 1.0      
+
+  - effect lines:
+      minWidth: 0.6
+      maxWidth: 1.0
+      minLength: 12.0
+      maxLength: 24.0
+      verticalScrollingSpeed: 1200.0
+      linesPerPixel: 0.000002
+      detailLevel: 7
+      color: rgbaF8F8EC98 
+  - effect lines:
+      minWidth: 0.3
+      maxWidth: 1.0
+      minLength: 4.0
+      maxLength: 16.0
+      verticalScrollingSpeed: 300.0
+      linesPerPixel: 0.001
+      detailLevel: 6
+      color: rgbaC8C8FF30
+
+  - effect lines:
+      minWidth: 0.225
+      maxWidth: 0.9
+      minLength: 3.0
+      maxLength: 12.0
+      verticalScrollingSpeed: 225.0
+      linesPerPixel: 0.0015
+      detailLevel: 5
+      color: rgbaD0D0FF24
+  - effect lines:
+      minWidth: 0.15
+      maxWidth: 0.6
+      minLength: 2.0
+      maxLength: 8.0
+      verticalScrollingSpeed: 150.0
+      linesPerPixel: 0.002
+      detailLevel: 4
+      color: rgbaD8D8FF18
+
+  - effect lines:
+      minWidth: 0.1
+      maxWidth: 0.4
+      minLength: 1.0
+      maxLength: 4.0
+      verticalScrollingSpeed: 90.0
+      linesPerPixel: 0.003
+      detailLevel: 3
+      color: rgbaFFFFFF0B
+  - effect lines:
+      minWidth: 30.0
+      maxWidth: 40.0
+      minLength: 1000.0
+      maxLength: 2000.0
+      verticalScrollingSpeed: 200.0
+      linesPerPixel: 0.0001
+      detailLevel: 5
+      color: rgba2008A001
+
+  - wave: tritonMiddle
+  - wave: tritonSides
+  - wait: 2.2
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleLeft
+  - wait: 1
+  - wave: turtleRight
+  - wait: 0.2
+  - wave: turtleRight
+  - wait: 0.2
+  - wave: turtleRight
+  - wait: 2
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleLeft
+  - wait: 1.8
+  - wave: turtleDown
+  - wait: 3.0
+  - wave: tritonMiddle
+  - wait: 0.5
+  - wave: tritonSides
+  - wait: 3.0
+  - wave: tritonMiddle
+  - wait: 0.5
+  - wave: tritonSides
+  - wait: 3.0
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleRight
+  - wait: 0.2
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleRight
+  - wait: 0.2
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleRight
+  - wait: 0.2
+  - wave: turtleLeft
+  - wait: 1.0
+  - wave: jetDown
+  - wait: 3.5
+  - wave: turtleDown
+  - wait: 3.0
+  - wave: tritonMiddle
+  - wait: 2.5
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleRight
+  - wait: 0.2
+  - wave: jetDown
+  - wait: 3.5
+  - wave: jetRight
+  - wait: 5
+  - wave: jetLeft
+  - wait: 3.5
+  - wave: jetRight
+  - wait: 0.3
+  - wave: jetLeft
+  - wait: 3.5
+  - wave: tritonSides
+  - wait: 3.0
+  - wave: tritonMiddle
+  - wait: 3.0
+  - wave: tritonMiddle
+  - wait: 8.0
+  - wave: turtleRight
+  - wait: 0.2
+  - wave: turtleLeft
+  - wait: 1.0  
+  - wave: tritonMiddle
+  - wait: 3
+  - wave: [arrowMiddle, [0.0, 0.0]]
+  - wait: 1
+  - wave: [arrowMiddle, [0.0, 0.0]]
+  - wait: 1
+  - wave: [arrowMiddle, [24.0, 0.0]]
+  - wait: 1
+  - wave: [arrowMiddle, [-24.0, 0.0]]
+  - wait: 3
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleRight
+  - wait: 0.2
+  - wave: turtleRight
+  - wait: 2
+  - wave: [arrowMiddle, [0.0, 0.0]]
+  - wait: 1
+  - wave: [arrowMiddle, [0.0, 0.0]]
+  - wait: 3
+  - wave: tritonSides
+  - wait: 5
+
+

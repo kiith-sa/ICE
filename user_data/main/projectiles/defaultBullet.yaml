@@ -1,0 +1,11 @@
+deathTimeout: 1.1
+engine : 
+  maxSpeed:     2000
+  acceleration: 1000 
+volume:
+  aabbox:
+    min: [-2, -5]
+    max: [2,  5]
+visual:   visual/defaultBullet.yaml
+warhead:
+  damage: 3

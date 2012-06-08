@@ -1,0 +1,5 @@
+!!pairs
+- for 4.75:
+    move-direction: -1.05
+    fire: [0]
+- die:

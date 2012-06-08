@@ -1,0 +1,74 @@
+!!pairs 
+- for 0.6:
+    move-direction: 0.0
+    move-speed: 0.15
+
+#Move SE for 0.5s, firing for 0.2s in the middle
+- for 0.150:
+    move-speed: 1
+    move-direction: 1.1
+- for 0.2:
+    move-speed: 1
+    move-direction: 1.1
+    fire: [1]
+- for 0.150:
+    move-speed: 1
+    move-direction: 1.1
+
+#Fire laser
+- for 0.5:
+    fire: [0]
+
+#Move SW for 0.5s, firing for 0.2s in the middle
+- for 0.150:
+    move-speed: 1
+    move-direction: -1.1
+- for 0.2:
+    move-speed: 1
+    move-direction: -1.1
+    fire: [1]
+- for 0.150:
+    move-speed: 1
+    move-direction: -1.1
+
+#Fire laser
+- for 0.5:
+    fire: [0]
+
+#Move SE for 0.5s, firing for 0.2s in the middle
+- for 0.150:
+    move-speed: 1
+    move-direction: 1.1
+- for 0.2:
+    move-speed: 1
+    move-direction: 1.1
+    fire: [1]
+- for 0.150:
+    move-speed: 1
+    move-direction: 1.1
+
+#Fire laser
+- for 0.5:
+    fire: [0]
+
+#Move SW for 0.5s, firing for 0.2s in the middle
+- for 0.150:
+    move-speed: 1
+    move-direction: -1.1
+- for 0.2:
+    move-speed: 1
+    move-direction: -1.1
+    fire: [1]
+- for 0.150:
+    move-speed: 1
+    move-direction: -1.1
+
+#Fire laser
+- for 0.5:
+    fire: [0] 
+
+#Leave screen
+- for 1.4:
+    move-direction: 0.0
+
+- die:

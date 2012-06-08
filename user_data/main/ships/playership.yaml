@@ -1,0 +1,19 @@
+visual: visual/player.yaml
+engine:
+  maxSpeed: 320
+  acceleration: 3200
+volume:
+  aabbox: 
+    min: [-32, -16]
+    max: [32,  16]
+weapon:
+  0: weapons/player.yaml
+  1: weapons/clusterBombBack.yaml
+  2: weapons/circleOfDeath.yaml
+collidable:
+health: 750
+warhead:
+  damage: 500
+  killsEntity: false
+movementConstraint:
+  aabbox: [64, 64, 736, 568]

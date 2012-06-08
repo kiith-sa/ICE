@@ -1,0 +1,8 @@
+burstPeriod: 1
+burst:
+ - entity: projectiles/laser.yaml 
+   components:
+     physics:
+       position: [0, 45]
+       spawnAbsolute:
+         - velocity 

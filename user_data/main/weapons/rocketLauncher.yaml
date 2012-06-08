@@ -1,0 +1,18 @@
+burstPeriod: 0.08
+ammo: 3
+reloadTime: 1.0
+burst:
+ - entity: projectiles/rocket.yaml 
+   components:
+     physics:
+       position: [-18, 15.0]
+       speed: 25.0
+       spawnAbsolute:
+         - velocity
+ - entity: projectiles/rocket.yaml 
+   components:
+     physics:
+       position: [18, 15.0]
+       speed: 25.0
+       spawnAbsolute:
+         - velocity

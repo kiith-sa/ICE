@@ -1,0 +1,9 @@
+!!pairs
+- for 0.4:
+    move-direction: 0.0
+- for 0.25:
+    move-speed: 0.1
+    fire: [0]
+- for 4.5:
+    move-direction: 0.0
+- die:

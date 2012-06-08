@@ -1,0 +1,10 @@
+deathTimeout: 0.5
+volume:
+  aabbox:
+    min: [-1, -30]
+    max: [1,  1024]
+visual:   visual/laser.yaml
+warhead:
+  damage: 5 
+  #Laser doesn't cease to exist after it hits something
+  killsEntity: false

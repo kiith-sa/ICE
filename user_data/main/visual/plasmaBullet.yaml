@@ -1,0 +1,32 @@
+type: lines
+vertices:
+  !!pairs
+
+  - width: 4.0
+  - color:  rgba10000000
+  - vertex: [0.0, -12.0]
+  - color:  rgbaFFFFFF10
+  - vertex: [0.0, 0.0]
+  - vertex: [0.0, 0.0]
+  - color:  rgba10000000
+  - vertex: [0.0, 12.0]
+  #Halo
+  - width: 1.5
+  - color:  rgba10000000
+  - vertex: [0.0, -10.0]
+  - color:  rgbaE0FF90B0
+  - vertex: [0.0, 0.0]
+  - vertex: [0.0, 0.0]
+  - color:  rgba10000000
+  - vertex: [0.0, 10.0]
+
+  #Center
+  - width: 0.5
+  - color:  rgbaFFFFFF00
+  - vertex: [0.0, -2.5]
+  - color:  rgbaFFFFFFE0
+  - vertex: [0.0, 0.0]
+  - vertex: [0.0, 0.0]
+  - color:  rgbaFFFFFF00
+  - vertex: [0.0, 2.5]
+
