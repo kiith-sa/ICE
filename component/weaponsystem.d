@@ -10,6 +10,7 @@ module component.weaponsystem;
 
 
 import std.algorithm;
+import std.typecons;
 
 import dgamevfs._;
 
@@ -268,7 +269,7 @@ class WeaponSystem : System
             {
                 assert(gameDir_ !is null, 
                        "Trying to load a weapon but game directory has not been set");
-                auto  yaml = loadYAML(gameDir_.file(name));
+                auto yaml = loadYAML(gameDir_.file(name));
                 output.initialize(name, yaml);
             }
             catch(YAMLException e)
@@ -294,7 +295,7 @@ class WeaponSystem : System
  */
 Spawn loadProjectileSpawn(ref YAMLNode yaml)
 {
-    auto result = Spawn(yaml);
+    auto result = Spawn(yaml, No.entityRequired);
     with(result)
     {
         loadProjectileLegacy(result, yaml);
@@ -313,11 +314,38 @@ import std.stdio;
 ///Backwards compatibility - load old projectile spawning YAML tags. Will be removed.
 void loadProjectileLegacy(ref Spawn spawn, ref YAMLNode yaml)
 {
-    const hasPosition  = yaml.containsKey("position");
-    const hasDirection = yaml.containsKey("direction");
-    const hasSpeed     = yaml.containsKey("speed");
+    enum warning = 
+        "WARNING: projectile, position, direction and speed tags in "    ~ 
+        "weapon bursts are deprecated and will be removed.\nCode using " ~
+        "them must be rewritten by overriding components.\n\n\n"         ~
+        "Example:\n"                                                     ~
+        "\nold:\n"                                                       ~
+        " - projectile: projectiles/shieldbullet.yaml\n"                 ~
+        "   delay: 0.0\n"                                                ~
+        "   position: [0.0, 35.0]\n"                                     ~
+        "   direction: 0.8\n"                                            ~
+        "   speed: 50.0\n"                                               ~
+        "\nnew:\n"                                                       ~
+        " - entity: projectiles/shieldbullet.yaml\n"                     ~
+        "   delay: 0.0\n"                                                ~
+        "   components:\n"                                               ~
+        "     physics:\n"                                                ~
+        "       position: [0.0, 35.0]\n"                                 ~
+        "       rotation: 0.8\n"                                         ~
+        "       speed:    50.0\n";
 
-    if(!hasPosition && !hasDirection && !hasSpeed){return;}
+    const hasPosition   = yaml.containsKey("position");
+    const hasDirection  = yaml.containsKey("direction");
+    const hasSpeed      = yaml.containsKey("speed");
+    const hasProjectile = yaml.containsKey("projectile");
+
+    if(!hasPosition && !hasDirection && !hasSpeed && !hasProjectile){return;}
+
+    if(hasProjectile)
+    {
+        spawn.spawnee = LazyArrayIndex(yaml["projectile"].as!string);
+        writeln(warning);
+    }
 
     if(spawn.hasComponentOverrides && 
        spawn.componentOverrides.containsKey("physics"))
@@ -338,25 +366,7 @@ void loadProjectileLegacy(ref Spawn spawn, ref YAMLNode yaml)
         spawn.componentOverrides["physics"] = YAMLNode(["rotation"], [0.0f]);
     }
 
-    writeln("WARNING: position, direction and speed tags in weapon "  ~ 
-            "bursts are deprecated and will be removed.\nCode using " ~
-            "them must be rewritten by overriding components.\n\n\n"  ~
-            "Example:\n"                                              ~
-            "\nold:\n"                                                ~
-            " - projectile: projectiles/shieldbullet.yaml\n"          ~
-            "   delay: 0.0\n"                                         ~
-            "   position: [0.0, 35.0]\n"                              ~
-            "   direction: 0.8\n"                                     ~
-            "   speed: 50.0\n"                                        ~
-            "\nnew:\n"                                                ~
-            " - projectile: projectiles/shieldbullet.yaml\n"          ~
-            "   delay: 0.0\n"                                         ~
-            "   components:\n"                                        ~
-            "     physics:\n"                                         ~
-            "       position: [0.0, 35.0]\n"                          ~
-            "       rotation: 0.8\n"                                  ~
-            "       speed:    50.0\n");
-    stdout.flush();
+    writeln(warning);
 
     auto physics = &(spawn.componentOverrides["physics"]);
 

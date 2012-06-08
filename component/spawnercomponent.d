@@ -13,6 +13,7 @@ import std.conv;
 import std.exception;
 import std.stdio;
 import std.string;
+import std.typecons;
 
 import containers.lazyarray;
 import containers.vector;
@@ -149,11 +150,21 @@ struct SpawnerComponent
         /**
          * Load a Spawn from YAML.
          *
-         * Params:  yaml = YAML node to load fromYAML
+         * Params:  yaml           = YAML node to load from 
+         *          entityRequired = Is the spawned entity required to be specified?
+         *                           Used fopr backwards compatibility with old 
+         *                           weapon format. Will be removed.
          */
-        this(ref YAMLNode yaml)
+        this(ref YAMLNode yaml, Flag!"entityRequired" entityRequired = Yes.entityRequired)
         {
-            spawnee = LazyArrayIndex(yaml["entity"].as!string);
+            if(entityRequired)
+            {
+                spawnee = LazyArrayIndex(yaml["entity"].as!string);
+            }
+            else if(yaml.containsKey("entity"))
+            {
+                spawnee = LazyArrayIndex(yaml["entity"].as!string);
+            }
 
             //By default, spawn condition is "spawn" .
             if(yaml.containsKey("condition"))
