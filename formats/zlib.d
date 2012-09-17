@@ -19,7 +19,13 @@ import containers.vector;
 
 
 ///Exception thrown at errors related to compression (such as zlib).
-class CompressionException : Exception{this(string msg){super(msg);}}
+class CompressionException : Exception
+{
+    this(string msg, string file = __FILE__, size_t line = __LINE__) @trusted nothrow 
+    {
+        super(msg, file, line);
+    }
+}
 
 ///Zlib compression strategy.
 enum CompressionStrategy : ubyte

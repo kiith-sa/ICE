@@ -632,7 +632,13 @@ bool lexical_bool(string str)
 }
 
 ///Exception thrown at CLI errors.
-class CLIException : Exception{this(string msg){super(msg);}}
+class CLIException : Exception
+{
+    this(string msg, string file = __FILE__, size_t line = __LINE__) @trusted nothrow 
+    {
+        super(msg, file, line);
+    }
+}
 
 
 /**

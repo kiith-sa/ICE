@@ -21,7 +21,13 @@ import color;
 
 
 ///Exception thrown at errors related to image files.
-class ImageFileException : Exception{this(string msg){super(msg);}} 
+class ImageFileException : Exception
+{
+    this(string msg, string file = __FILE__, size_t line = __LINE__) @trusted nothrow 
+    {
+        super(msg, file, line);
+    }
+}
 
 ///Image file formats, e.g. PNG, GIF, etc.
 enum ImageFileFormat

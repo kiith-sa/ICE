@@ -22,7 +22,13 @@ alias std.algorithm.find find;
 
 
 ///Exception thrown at math parsing errors.
-class MathParserException : Exception{this(string msg){super(msg);}} 
+class MathParserException : Exception
+{
+    this(string msg, string file = __FILE__, size_t line = __LINE__) @trusted nothrow 
+    {
+        super(msg, file, line);
+    }
+}
 
 /**
  * Parse a string as a math expression.

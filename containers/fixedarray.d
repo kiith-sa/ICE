@@ -69,7 +69,7 @@ align(4) struct FixedArray(T)
         }
 
         ///Compute a hash.
-        hash_t toHash() const
+        hash_t toHash() const nothrow @safe
         {
             static type = typeid(T);
             return type.getHash(&data_[0 .. $]);

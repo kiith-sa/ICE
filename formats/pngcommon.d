@@ -45,7 +45,13 @@ enum PNGFilter : ubyte
 }
 
 ///Exception thrown at PNG decoding or encoding errors.
-class PNGException : Exception{this(string msg){super(msg);}}
+class PNGException : Exception
+{
+    this(string msg, string file = __FILE__, size_t line = __LINE__) @trusted nothrow 
+    {
+        super(msg, file, line);
+    }
+}
 
 /**
  * Color types supported by the png format.

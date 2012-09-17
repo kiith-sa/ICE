@@ -14,7 +14,13 @@ import math.vector2;
 
 
 ///Exception thrown at texture related errors.
-class TextureException : Exception{this(string msg){super(msg);}} 
+class TextureException : Exception
+{
+    this(string msg, string file = __FILE__, size_t line = __LINE__) @trusted nothrow 
+    {
+        super(msg, file, line);
+    }
+}
 
 ///Opague and immutable texture handle struct used by code outside video subsystem.
 align(4) struct Texture
