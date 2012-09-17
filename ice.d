@@ -36,6 +36,8 @@ import memory.memory;
 ///Program entry point.
 void main(string[] args)
 {
+    memory.memory.suspendMemoryDebugRecording = false;
+    writeln("Started main()...");
     //will add -h/--help and generate usage info by itself
     auto cli = new CLI();
     cli.description = "ICE 0.1.0\n"
@@ -71,9 +73,12 @@ void main(string[] args)
         gameDir.mount(rootStack);
         gameDir.mount(userStack);
 
+        writeln("Initialized VFS...");
         memory.memory.gameDir = gameDir;
         auto ice = new Ice(gameDir);
+        writeln("Initialized ICE...");
         scope(exit){clear(ice);}
+        writeln("Goint to run ICE...");
         ice.run();
     }
     catch(GameStartupException e)

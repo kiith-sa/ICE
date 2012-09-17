@@ -73,6 +73,9 @@ public:
     ///Unittest for alloc() and free calling dtor.
     unittest
     {
+        writeln("memory.memory struct alloc()/free() unittest");
+        scope(success){writeln("test passed");}
+        scope(failure){writeln("test FAILED");}
         static struct Test
         {
             static bool dead = false;
@@ -143,9 +146,12 @@ public:
      */
     void free(T)(T[] array){deallocate(array);}
 
-    ///Unittest for alloc(), realloc() and free().
+    ///Unittest for allocArray(), realloc() and free().
     unittest
     {
+        writeln("memory.memory allocArray()/realloc()/free() unittest");
+        scope(success){writeln("test passed");}
+        scope(failure){writeln("test FAILED");}
         uint[] test = allocArray!uint(5);
         assert(test.length == 5 && test[3] == 0);
         test[3] = 5;
@@ -158,6 +164,14 @@ public:
 
     ///VFSDir to output memory log to.
     VFSDir gameDir;
+
+    ///Debug info is only recorded after main() is entered.
+    ///
+    ///There seems to be a bug with dynamic array appending
+    ///before main() (e.g. in unittests).
+    /// 
+    ///TODO revisit this when a new DMD (currently 2.060) is released
+    bool suspendMemoryDebugRecording = true;
 
 package:
     ///Get currently allocated memory in bytes.
@@ -389,10 +403,13 @@ private:
     {
         debug
         {
+        if(!suspendMemoryDebugRecording)
+        {
         //must be in a separate function due to a compiler bug
         bool match(ref Allocation a){return a.ptr == cast(void*)array.ptr;}
         assert(canFind!match(allocations_),
                "Trying to free a pointer that isn't allocated (or has been freed)");
+        }
         }
     }
     body
@@ -451,11 +468,14 @@ private:
     {
         debug
         {
+        if(!suspendMemoryDebugRecording)
+        {
         //must be in a separate function due to a compiler bug
         bool match(ref Allocation a){return a.ptr == cast(void*)ptr;}
         assert(canFind!match(allocations_),
                "Trying to free a pointer that isn't allocated (or has been freed): " ~
                to!string(ptr));
+        }
         }
     }
     body
@@ -484,10 +504,13 @@ private:
         //must be in a separate function due to a compiler bug
         debug
         {
+        if(!suspendMemoryDebugRecording)
+        {
         bool match(ref Allocation a){return a.ptr == cast(void*)array.ptr;}
         assert(canFind!match(allocations_),
                "Trying to free a pointer that isn't allocated (or has been freed): " ~
                to!string(array.ptr));
+        }
         }
     }
     body
@@ -569,7 +592,9 @@ private:
      */
     void debugAllocate(T, string file, uint line)(const T* ptr, const size_t objects)
     {
-        allocations_ ~= Allocation.construct!(T, file, line)(ptr, objects);
+        if(suspendMemoryDebugRecording){return;}
+        auto allocation = Allocation.construct!(T, file, line)(ptr, objects);
+        allocations_ ~= allocation;
 
         const bytes = objects * T.sizeof;
         totalAllocated_ += bytes;
@@ -589,6 +614,7 @@ private:
                          (const T* newPtr, const size_t newObjects,
                           const T* oldPtr, const size_t oldObjects)
     {
+        if(suspendMemoryDebugRecording){return;}
         //find and replace allocation info corresponding to reallocated data
         bool found = false;
         foreach(ref allocation; allocations_) if(allocation.ptr == oldPtr)
@@ -616,6 +642,7 @@ private:
      */
     void debugFree(T)(const T* ptr, const size_t objects)
     {
+        if(suspendMemoryDebugRecording){return;}
         //remove allocation info
         bool found = false;
         foreach(ref allocation; allocations_) if(allocation.ptr == ptr)
