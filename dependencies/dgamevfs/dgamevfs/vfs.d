@@ -132,7 +132,7 @@ abstract class VFSDir
          *
          * Params:  path = Path of the subdirectory to get.
          *
-         * Throws:  $(D VFSNotFoundException) if the directory does not exist
+         * Throws:  $(D VFSNotFoundException) if this VFSDir does not exist
          *          or the subdirectory is in a nonexistent subdirectory.
          *          
          *          $(D VFSInvalidPathException) if the _path is invalid.

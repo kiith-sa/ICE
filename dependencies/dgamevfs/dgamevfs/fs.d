@@ -313,8 +313,6 @@ class FSFile : VFSFile
                     ioError("Trying to seek before the beginning of file: " ~ path));
             enforce(position <= length,
                     ioError("Trying to seek beyond the end of file: " ~ path));
-            enforce(offset <= int.max, 
-                    ioError("Seeking beyond 2 GiB not supported. File: " ~ path));
 
             static if(size_t.sizeof == 4)
             {
