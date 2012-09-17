@@ -397,7 +397,7 @@ void compile(string[] options, string[] paths)
         //and rename them with the "package.module" naming convention.
         if(co.generate_doc) foreach(src; sources)
         {    
-            if(src.getExt != "d"){continue;}
+            if(src.extension != ".d"){continue;}
 
             string html = src[0 .. $ - 2] ~ ".html";
             string dest = html.replace("/", ".").replace("\\", ".");
