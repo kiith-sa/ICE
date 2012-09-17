@@ -61,7 +61,8 @@ final class Resolver
          *
          * Params:  defaultImplicitResolvers = Use default YAML implicit resolvers?
          */
-        this(bool defaultImplicitResolvers = true)
+        this(Flag!"useDefaultImplicitResolvers" defaultImplicitResolvers = Yes.useDefaultImplicitResolvers) 
+            @safe
         {
             defaultScalarTag_   = Tag("tag:yaml.org,2002:str");
             defaultSequenceTag_ = Tag("tag:yaml.org,2002:seq");
@@ -70,7 +71,7 @@ final class Resolver
         }
 
         ///Destroy the Resolver.
-        ~this()
+        pure @safe nothrow ~this()
         {
             clear(yamlImplicitResolvers_);
             yamlImplicitResolvers_ = null;
@@ -115,7 +116,8 @@ final class Resolver
          * }
          * --------------------
          */
-        void addImplicitResolver(string tag, Regex!char regexp, string first)
+        void addImplicitResolver(string tag, Regex!char regexp, string first) 
+            pure @safe 
         {
             foreach(const dchar c; first)
             {
@@ -141,7 +143,8 @@ final class Resolver
          *
          * Returns: Resolved tag.
          */
-        Tag resolve(NodeID kind, Tag tag, string value, bool implicit)
+        Tag resolve(const NodeID kind, const Tag tag, const string value, 
+                    const bool implicit) @safe 
         {
             if(!tag.isNull() && tag.get() != "!"){return tag;}
 
@@ -210,17 +213,17 @@ final class Resolver
         }
 
         ///Return default scalar tag.
-        @property Tag defaultScalarTag()   const {return defaultScalarTag_;}
+        @property Tag defaultScalarTag()   const pure @safe nothrow {return defaultScalarTag_;}
 
         ///Return default sequence tag.
-        @property Tag defaultSequenceTag() const {return defaultSequenceTag_;}
+        @property Tag defaultSequenceTag() const pure @safe nothrow {return defaultSequenceTag_;}
 
         ///Return default mapping tag.
-        @property Tag defaultMappingTag()  const {return defaultMappingTag_;}
+        @property Tag defaultMappingTag()  const pure @safe nothrow {return defaultMappingTag_;}
 
     private:
         ///Add default implicit resolvers.
-        void addImplicitResolvers()
+        void addImplicitResolvers() @safe
         {
             addImplicitResolver("tag:yaml.org,2002:bool",
                                 regex(r"^(?:yes|Yes|YES|no|No|NO|true|True|TRUE"
