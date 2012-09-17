@@ -241,8 +241,53 @@ da_glXGetProcAddress glXGetProcAddress;
 
 package
 {
-    void loadPlatformGL(void delegate(void**, string, bool doThrow = true) bindFunc)
+    //Commented out code is because delegates can no longer have default arguments.
+    /*void loadPlatformGL(void delegate(void**, string, bool doThrow = true) bindFunc)*/
+    void loadPlatformGL(void delegate(void**, string, bool doThrow) bindFunc)
     {
+        auto bindFuncWrapper = delegate(void** a, string b) {bindFunc(a, b, true);};
+        bindFuncWrapper(cast(void**)&glXChooseVisual, "glXChooseVisual");
+        bindFuncWrapper(cast(void**)&glXCopyContext, "glXCopyContext");
+        bindFuncWrapper(cast(void**)&glXCreateContext, "glXCreateContext");
+        bindFuncWrapper(cast(void**)&glXCreateGLXPixmap, "glXCreateGLXPixmap");
+        bindFuncWrapper(cast(void**)&glXDestroyContext, "glXDestroyContext");
+        bindFuncWrapper(cast(void**)&glXDestroyGLXPixmap, "glXDestroyGLXPixmap");
+        bindFuncWrapper(cast(void**)&glXGetConfig, "glXGetConfig");
+        bindFuncWrapper(cast(void**)&glXGetCurrentContext, "glXGetCurrentContext");
+        bindFuncWrapper(cast(void**)&glXGetCurrentDrawable, "glXGetCurrentDrawable");
+        bindFuncWrapper(cast(void**)&glXIsDirect, "glXIsDirect");
+        bindFuncWrapper(cast(void**)&glXMakeCurrent, "glXMakeCurrent");
+        bindFuncWrapper(cast(void**)&glXQueryExtension, "glXQueryExtension");
+        bindFuncWrapper(cast(void**)&glXQueryVersion, "glXQueryVersion");
+        bindFuncWrapper(cast(void**)&glXSwapBuffers, "glXSwapBuffers");
+        bindFuncWrapper(cast(void**)&glXUseXFont, "glXUseXFont");
+        bindFuncWrapper(cast(void**)&glXWaitGL, "glXWaitGL");
+        bindFuncWrapper(cast(void**)&glXWaitX, "glXWaitX");
+        bindFuncWrapper(cast(void**)&glXGetClientString, "glXGetClientString");
+        bindFuncWrapper(cast(void**)&glXQueryServerString, "glXQueryServerString");
+        bindFuncWrapper(cast(void**)&glXQueryExtensionsString, "glXQueryExtensionsString");
+               
+        bindFuncWrapper(cast(void**)&glXGetFBConfigs, "glXGetFBConfigs");
+        bindFuncWrapper(cast(void**)&glXChooseFBConfig, "glXChooseFBConfig");
+        bindFuncWrapper(cast(void**)&glXGetFBConfigAttrib, "glXGetFBConfigAttrib");
+        bindFuncWrapper(cast(void**)&glXGetVisualFromFBConfig, "glXGetVisualFromFBConfig");
+        bindFuncWrapper(cast(void**)&glXCreateWindow, "glXCreateWindow");
+        bindFuncWrapper(cast(void**)&glXDestroyWindow, "glXDestroyWindow");
+        bindFuncWrapper(cast(void**)&glXCreatePixmap, "glXCreatePixmap");
+        bindFuncWrapper(cast(void**)&glXDestroyPixmap, "glXDestroyPixmap");
+        bindFuncWrapper(cast(void**)&glXCreatePbuffer, "glXCreatePbuffer");
+        bindFuncWrapper(cast(void**)&glXDestroyPbuffer, "glXDestroyPbuffer");
+        bindFuncWrapper(cast(void**)&glXQueryDrawable, "glXQueryDrawable");
+        bindFuncWrapper(cast(void**)&glXCreateNewContext, "glXCreateNewContext");
+        bindFuncWrapper(cast(void**)&glXMakeContextCurrent, "glXMakeContextCurrent");
+        bindFuncWrapper(cast(void**)&glXGetCurrentReadDrawable, "glXGetCurrentReadDrawable");
+        bindFuncWrapper(cast(void**)&glXGetCurrentDisplay, "glXGetCurrentDisplay");
+        bindFuncWrapper(cast(void**)&glXQueryContext, "glXQueryContext");
+        bindFuncWrapper(cast(void**)&glXSelectEvent, "glXSelectEvent");
+        bindFuncWrapper(cast(void**)&glXGetSelectedEvent, "glXGetSelectedEvent");
+               
+        bindFuncWrapper(cast(void**)&glXGetProcAddress, "glXGetProcAddressARB");
+        /*
         bindFunc(cast(void**)&glXChooseVisual, "glXChooseVisual");
         bindFunc(cast(void**)&glXCopyContext, "glXCopyContext");
         bindFunc(cast(void**)&glXCreateContext, "glXCreateContext");
@@ -284,6 +329,7 @@ package
         bindFunc(cast(void**)&glXGetSelectedEvent, "glXGetSelectedEvent");
 
         bindFunc(cast(void**)&glXGetProcAddress, "glXGetProcAddressARB");
+        */
     }
 
     void* loadGLSymbol(string symName)
