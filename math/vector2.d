@@ -14,6 +14,7 @@ import std.random;
 import std.traits;
 
 import math.math;
+import util.unittests;
 
 
 ///2D vector or point.
@@ -110,12 +111,13 @@ struct Vector2(T)
         x = cast(T)sin(cast(double)angle);
         this *= length;
     }
-    unittest
+    private static void unittestAngle()
     {
         auto v = Vector2f(1.0f, 0.0f);
         v.angle = 1.0f;
         assert(equals(v.angle, 1.0f));
     }
+    mixin registerTest!(unittestAngle, "Vector2.angle");
 
     ///Rotate by specified angle, in radians.
     void rotate(F)(const F angle) pure
@@ -203,10 +205,11 @@ struct Vector2(T)
     {
         return Vector2!T(cast(T)x, cast(T)y);
     }
-    unittest
+    private static void unittestVector2To()
     {
         assert(Vector2f(1.1f, 1.1f).to!int == Vector2i(1,1));
     }
+    mixin registerTest!(unittestVector2To, "Vector2.to");
 }
 
 /**

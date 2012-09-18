@@ -146,10 +146,13 @@ struct Rect(T)
     {
         return Rect!T(min.to!T, max.to!T);
     }
-    unittest
+    import util.unittests;
+    private static void unittestRectTo()
     {
         assert(Rectf(1.1f, 1.1f, 2.1f, 2.1f).to!int == Recti(1, 1, 2, 2));
     }
+    mixin registerTest!(unittestRectTo, "Rect.to");
+     
 }
 
 ///Rect of floats.

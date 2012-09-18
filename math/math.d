@@ -13,6 +13,8 @@ import std.algorithm;
 import std.math;
 import std.traits;
 
+import util.unittests;
+
 
 ///Get epsilon value for a numeric type.
 template epsilon(T)
@@ -36,7 +38,7 @@ bool equals(T)(const T a, const T b, const T tolerance = epsilon!T) pure
 {
     return (a + tolerance >= b) && (a - tolerance <= b); 
 }
-unittest
+void unittestEquals()
 {
     assert(equals(7.0f / 5.0f, 1.4f));
     assert(!equals(7.0f / 5.0f, 1.4002f));
@@ -46,6 +48,7 @@ unittest
     assert(!equals(7.0 / 5.0, 1.40001));
     assert(equals(7.0, 5.0, 2.0));
 }
+mixin registerTest!(unittestEquals, "math.math.equals");
 
 /**
  * Clamps a value to specified range.
@@ -61,12 +64,13 @@ T clamp(T)(const T v, const T minimum, const T maximum) pure
 in{assert(minimum <= maximum, "Clamp range minimum greater than maximum");}
 body{return min(maximum, max(minimum, v));}
 ///Unittest for clamp() .
-unittest
+void unittestClamp()
 {
     assert(clamp(1.1, -1.0, 2.0) == 1.1);
     assert(clamp(1.1, 2.0, 3.0) == 2.0);
     assert(clamp(1.1, -1.0, 1.0) == 1.0);
 }
+mixin registerTest!(unittestClamp, "math.math.clamp");
 
 /**
  * Round a number to the nearest integer of type U.
@@ -108,7 +112,7 @@ U floor(U, T)(T f)
     }
 }
 ///Unittest for floor.
-unittest
+void unittestFloor()
 {
     assert(floor!ubyte(255.001f) == 255);
     assert(floor!ubyte(8.001f) == 8);
@@ -118,6 +122,7 @@ unittest
     assert(floor!int(7.99999) == 7);
     assert(floor!int(-0.00001) == -1);
 }
+mixin registerTest!(unittestFloor, "math.math.floor");
 
 ///Array of first 32 powers of 2.
 uint[] powersOfTwo = generatePot();
@@ -130,13 +135,14 @@ private uint[] generatePot()
     return pot;
 }
 ///Unittest for generatePot().
-unittest
+void unittestGeneratePot()
 {
     assert(powersOfTwo[0] == 1);
     assert(powersOfTwo[1] == 2);
     assert(powersOfTwo[8] == 256);
     assert(powersOfTwo[14] == 16384);
 }
+mixin registerTest!(unittestGeneratePot, "math.math.generatePot");
 
 /**
  * Get the smallest power of two greater or equal to given number.
@@ -156,13 +162,14 @@ body
     assert(false);
 }
 ///Unittest for potCeil.
-unittest
+void unittestPotCeil()
 {
     assert(potCeil(65535) == 65536);
     assert(potCeil(8) == 8);
     assert(potCeil(9) == 16);
     assert(potCeil(12486) == 16384);
 }
+mixin registerTest!(unittestPotCeil, "math.math.potCeil");
 
 /**
  * Determine if the given number is a power of two.
@@ -199,7 +206,7 @@ T alignToUpperMultipleOf(T)(const T mult, const T num) pure nothrow
     assert(mult != 0, "Can't align to a multiple of 0");
     return ((num + mult - 1) / mult) * mult;
 }
-unittest
+void unittestAlignToUpperMultipleOf()
 {
     assert(alignToUpperMultipleOf(4u, 11u)  == 12);
     assert(alignToUpperMultipleOf(4u, 12u)  == 12);
@@ -207,3 +214,5 @@ unittest
     assert(alignToUpperMultipleOf(5u, 261u) == 265);
     assert(alignToUpperMultipleOf(1u, 261u) == 261);
 }
+mixin registerTest!(unittestAlignToUpperMultipleOf, "math.math.alignToUpperMultipleOf");
+
