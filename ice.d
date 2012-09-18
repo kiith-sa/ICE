@@ -30,6 +30,7 @@ import dgamevfs._;
 import formats.cli;
 import ice.exceptions;
 import ice.ice;
+import util.unittests;
 import memory.memory;
 
 
@@ -37,6 +38,9 @@ import memory.memory;
 void main(string[] args)
 {
     memory.memory.suspendMemoryDebugRecording = false;
+
+    runUnitTests();
+    
     writeln("Started main()...");
     //will add -h/--help and generate usage info by itself
     auto cli = new CLI();
@@ -78,7 +82,7 @@ void main(string[] args)
         auto ice = new Ice(gameDir);
         writeln("Initialized ICE...");
         scope(exit){clear(ice);}
-        writeln("Goint to run ICE...");
+        writeln("Going to run ICE...");
         ice.run();
     }
     catch(GameStartupException e)
