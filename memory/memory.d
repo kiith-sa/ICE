@@ -23,6 +23,7 @@ import std.traits;
 import dgamevfs._;
 
 debug{import time.time;}
+import util.unittests;
 
 
 public:
@@ -69,9 +70,8 @@ public:
     {
         deallocate(ptr);
     }
-
     ///Unittest for alloc() and free calling dtor.
-    unittest
+    void unittestSingle()
     {
         writeln("memory.memory struct alloc()/free() unittest");
         scope(success){writeln("test passed");}
@@ -102,7 +102,7 @@ public:
         free(test2);
         assert(Test.dead == true);
     }
-
+    mixin registerTest!(unittestSingle, "Single object allocation");
     /**
      * Allocate an array of specified type. 
      *
@@ -145,9 +145,8 @@ public:
      * Params: array = Array to free.
      */
     void free(T)(T[] array){deallocate(array);}
-
     ///Unittest for allocArray(), realloc() and free().
-    unittest
+    void unittestArray()
     {
         writeln("memory.memory allocArray()/realloc()/free() unittest");
         scope(success){writeln("test passed");}
@@ -161,6 +160,7 @@ public:
         assert(test.length == 8 && test[3] == 5 && test[7] == 0);
         free(test);
     }
+    mixin registerTest!(unittestArray, "Array allocation");
 
     ///VFSDir to output memory log to.
     VFSDir gameDir;

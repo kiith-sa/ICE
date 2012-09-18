@@ -20,7 +20,7 @@ import std.typecons;
 import math.math;
 import memory.memory;
 import util.typeinfo;
-
+import util.unittests;
 
 /**
  * Memory pool for efficient object allocation.
@@ -223,7 +223,7 @@ class MemoryPool
             return false;
         }
 }
-unittest
+void unittestMemoryPool()
 {
     class C{}
     class D : C {}
@@ -382,6 +382,8 @@ unittest
     assert(testGetObject());
     assert(testIteration());
 }
+mixin registerTest!(unittestMemoryPool, "MemoryPool general");
+
 
 /**
  * Handle to an object allocated by a memory pool.
@@ -854,7 +856,7 @@ class E : D, I
     bool opEquals(uint uu){return u == uu;}
 }
 
-unittest
+void unittestObjectPool()
 {
     import std.stdio;
     bool testDestroy(T)()
@@ -1105,4 +1107,6 @@ unittest
         assert(!pool.isAllocated(0));
     }
 }
+mixin registerTest!(unittestObjectPool, "ObjectPool general");
+
 
