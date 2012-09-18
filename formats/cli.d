@@ -561,8 +561,8 @@ class CLI
 private:
 //used in unittest
 int testGlobal;
-
-unittest
+import util.unittests;
+void unittestCLI()
 {
     auto cli = new CLI();
     bool flag = false;
@@ -613,6 +613,7 @@ unittest
     cli.parse(["programName", "--deleg", "4", "5", "6"]);
     assert(arrayStr == ["4", "5", "6"]);
 }
+mixin registerTest!(unittestCLI, "CLI general");
 
 ///Convert a string to a bool lexically.
 bool lexical_bool(string str)

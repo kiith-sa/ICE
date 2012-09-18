@@ -57,8 +57,9 @@ T parseMath(T)(const string expression, T[string] substitutions = null)
                                               : substitute(expression, substitutions);
     return parsePostfix!T(toPostfix(substituted));
 }
+import util.unittests;
 ///Unittest for parseMath
-unittest
+void unittestParseMath()
 {
     int[string] substitutions;
     substitutions["width"] = 320;
@@ -66,8 +67,10 @@ unittest
     string str = "width + 12 0 * 2 + 2 * height";
     assert(parseMath(str, substitutions) == 1040);
     str = "3 + 4 * 8 / 1 - 5";
-    assert(parseMath!(int)(str) == 30);
+    assert(parseMath!int(str) == 30);
 }
+mixin registerTest!(unittestParseMath, "formats.mathparser.parseMath");
+
 
 
 private:
