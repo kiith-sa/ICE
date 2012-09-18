@@ -405,7 +405,7 @@ struct Entity
             components_ = rhs ? (components_ & (~ComponentType.INVALID_ENTITY))
                               : (components_ | ComponentType.INVALID_ENTITY);
         }
-        static void unittestValid()
+        private static void unittestValid()
         {
             auto entity = Entity(0, null);
             assert(!entity.valid);

@@ -363,7 +363,7 @@ class SpatialSystem : System
             const translated = aabbox + (position - origin_);
             return CellsAABBox(this, translated);
         }
-        static void unittestCells()
+        private static void unittestCells()
         {
             import std.typecons;
             auto system = new SpatialSystem(null, Vector2f(0.0f, 0.0f), 32.0f, 32);
