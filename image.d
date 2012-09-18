@@ -21,7 +21,7 @@ import memory.memory;
 struct Image
 {
     //commented out due to a compiler bug
-    //invariant(){assert(data_ !is null, "Image with NULL data");}
+    invariant(){assert(data_ !is null, "Image with NULL data");}
 
     private:
         ///Image data. Manually allocated.

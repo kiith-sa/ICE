@@ -482,6 +482,11 @@ struct EntityPrototype
                 }
                 else
                 {
+                    component!c = rhs.component!c;
+                    /*
+                    Workaround for a past compiler bug,
+                    left here in case of a regression:
+
                     //This should be the following code:
                     //
                     //component!c = rhs.component!c;
@@ -495,6 +500,7 @@ struct EntityPrototype
                     rhs.component!c = proxy;
                     //Copy proxy to this. Postblit is called on this.
                     component!c = proxy;
+                    */
                 }
             }
         }
