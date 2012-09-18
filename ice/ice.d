@@ -245,20 +245,25 @@ class Ice
         {
             gameDir_ = gameDir;
 
-            writeln("Initializing Ice");
-            scope(failure){writeln("Ice initialization failed");}
+            writeln("Initializing ICE...");
+            scope(failure){writeln("ICE initialization failed");}
 
             singletonCtor();
             scope(failure){singletonDtor();}
 
             initConfig();
+            writeln("Initialized Config");
             initPlatform();
+            writeln("Initialized Platform");
             scope(failure){destroyPlatform();}
             initVideo();
+            writeln("Initialized Video");
             scope(failure){destroyVideo();}
             initMonitor();
+            writeln("Initialized Monitor");
             scope(failure){destroyMonitor();}
             initGUI();
+            writeln("Initialized GUI");
             scope(failure){destroyGUI();}
 
             //Update FPS every second.
@@ -326,10 +331,11 @@ class Ice
     private:
         ///Load ICE configuration from YAML.
         void initConfig()
-        {    
+        {
             try
             {
-                config_ = loadYAML(gameDir_.file("config.yaml"));
+                auto configFile = gameDir_.file("config.yaml");
+                config_ = loadYAML(configFile);
             }
             catch(YAMLException e)
             {
