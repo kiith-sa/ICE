@@ -15,6 +15,7 @@ import std.string;
 import std.traits;
 
 import math.math;
+import util.unittests;
 
 
 ///Represents color formats used by images and screen.
@@ -109,7 +110,7 @@ struct Color
         return round!ubyte(average);
     }
     ///Unittest for average().
-    unittest
+    private static void unittestAverage()
     {
         Color color = Color(253, 254, 255, 255);
         assert(color.average == 254);
@@ -136,7 +137,7 @@ struct Color
         return round!ubyte(0.3 * r + 0.59 * g + 0.11 * b);
     }
     ///Unittest for luminance().
-    unittest
+    private static void unittestLuminance()
     {
         Color color = Color(253, 254, 255, 255);
         assert(color.luminance == 254);
@@ -151,7 +152,7 @@ struct Color
                      cast(ubyte)min(255, a + c.a));
     }
     ///Unittest for opBinary!"+"
-    unittest
+    private static void unittestPlus()
     {
         Color color1 = Color(253, 254, 255, 255);
         Color color2 = Color(128, 0, 87, 42);
@@ -170,7 +171,7 @@ struct Color
                      round!ubyte(clamp(a * m, 0.0f, 255.0f)));
     }
     ///Unittest for opBinary!"*"
-    unittest
+    private static void unittestMultiply()
     {
         Color color1 = Color(128, 128, 128, 128);
         Color color2 = Color(255, 255, 255, 255);
@@ -184,7 +185,7 @@ struct Color
         this = this + c;
     }
     ///Unittest for opOpAssign!"+"
-    unittest
+    private static void unittestPlusAssign()
     {
         Color color1 = Color(253, 254, 255, 255);
         Color color2 = Color(128, 0, 87, 42);
@@ -202,8 +203,8 @@ struct Color
     {
         this = this * m;
     }
-    ///Unittest for opOpAssign!"+"
-    unittest
+    ///Unittest for opOpAssign!"*"
+    private static void unittestMultiplyAssign()
     {
         Color color1 = Color(128, 128, 128, 128);
         Color color2 = Color(255, 255, 255, 255);
@@ -293,6 +294,12 @@ struct Color
         return cast(ubyte)min(cast(real)color * factor, 255.0L);
     }
 }
+mixin registerTest!(Color.unittestAverage, "Color.average");
+mixin registerTest!(Color.unittestLuminance, "Color.luminance");
+mixin registerTest!(Color.unittestPlus, "Color.+");
+mixin registerTest!(Color.unittestMultiply, "Color.multiply");
+mixin registerTest!(Color.unittestPlusAssign, "Color.+=");
+mixin registerTest!(Color.unittestMultiplyAssign, "Color.*=");
 
 ///RGB color from a hexadecimal string (CSS style), e.g. FFFFFF for white.
 template rgb(string c) if(c.length == 6)
@@ -318,15 +325,14 @@ template rgba(string c) if(c.length == 4)
 {
     enum auto rgba = rgba!(c[0] ~ "0" ~ c[1] ~ "0" ~ c[2] ~ "0" ~ c[3] ~ "0");
 }
-
-unittest
+void unittestRgba()
 {
     assert(rgba!"f0F0F0F0" == rgba!"FFFF"  &&
            rgb!"FFF"       == rgb!"F0F0F0" &&
            rgb!"FFF"       == rgba!"F0F0F0FF" &&
            rgb!"FFF"       == Color(240, 240, 240, 255));
 }
-
+mixin registerTest!(unittestRgba, "color.rgba");
 ///Get value of a 2-character hexadecimal sequence corresponding to single color channel.
 ubyte hexColor(string hex) pure
 {
