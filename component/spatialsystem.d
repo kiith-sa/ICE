@@ -17,6 +17,7 @@ import containers.vector;
 import math.math;
 import math.rect;
 import math.vector2;
+import util.unittests;
 
 import component.entitysystem;
 import component.physicscomponent;
@@ -362,7 +363,7 @@ class SpatialSystem : System
             const translated = aabbox + (position - origin_);
             return CellsAABBox(this, translated);
         }
-        unittest
+        static void unittestCells()
         {
             import std.typecons;
             auto system = new SpatialSystem(null, Vector2f(0.0f, 0.0f), 32.0f, 32);
@@ -385,8 +386,10 @@ class SpatialSystem : System
             }
             assert(cells == [tuple(-1, -1), tuple(30, 31), tuple(31, 31)]);
         }
+        mixin registerTest!(unittestCells, "SpatialSystem.cells");
 }
-unittest
+
+void unittestSpatial()
 {
     auto eSystem = new EntitySystem;
     scope(exit){eSystem.destroy();}
@@ -455,3 +458,4 @@ unittest
     }
     assert(ids == [id2]);
 }
+mixin registerTest!(unittestSpatial, "SpatialSystem general");

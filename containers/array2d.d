@@ -38,7 +38,7 @@ import memory.memory;
  * uint a = array[1, 1]; 
  * --------------------
  */
-align(4) struct Array2D(T)
+struct Array2D(T)
 {
     @disable this(this);
     private:
@@ -123,8 +123,9 @@ align(4) struct Array2D(T)
         ///Get height of the array.
         @property uint height() const pure {return y_;}
 }
+import util.unittests;
 ///Unittest for Array2D.
-unittest
+void unittestArray2D()
 {
     auto array = Array2D!uint(4,4);
 
@@ -140,3 +141,4 @@ unittest
     foreach(elem; array){elems++;}
     assert(elems == 16);
 }
+mixin registerTest!(unittestArray2D, "Array2D general");

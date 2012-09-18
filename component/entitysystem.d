@@ -26,6 +26,7 @@ import monitor.submonitor;
 import util.signal;
 import util.stringctfe;
 import util.traits;
+import util.unittests;
 import util.yaml;
 
 import component.collidablecomponent;
@@ -404,7 +405,7 @@ struct Entity
             components_ = rhs ? (components_ & (~ComponentType.INVALID_ENTITY))
                               : (components_ | ComponentType.INVALID_ENTITY);
         }
-        unittest
+        static void unittestValid()
         {
             auto entity = Entity(0, null);
             assert(!entity.valid);
@@ -413,6 +414,7 @@ struct Entity
             entity.valid = false;
             assert(!entity.valid);
         }
+        mixin registerTest!(unittestValid, "Entity.valid");
 }
 pragma(msg, "Entity size is " ~ to!string(Entity.sizeof));
 
@@ -999,7 +1001,7 @@ class EntitySystem : Monitorable
             return  result;
         }
 }
-unittest
+void unittestEntitySystem()
 {
     EntitySystem system = new EntitySystem();
     scope(exit){system.destroy();}
@@ -1049,3 +1051,4 @@ unittest
     }
     assert(pos == 6);
 }
+mixin registerTest!(unittestEntitySystem, "EntitySystem general");

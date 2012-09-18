@@ -18,7 +18,7 @@ import memory.memory;
 
 
 ///Simple fixed-size array with manually managed memory, with interface similar to D array.
-align(4) struct FixedArray(T)
+struct FixedArray(T)
 {
     private:
         ///Manually allocated data storage.
@@ -192,8 +192,9 @@ align(4) struct FixedArray(T)
         ///Is the array empty?
         @property bool empty() const pure nothrow {return data_.length == 0;}
 }
+import util.unittests;
 ///Unittest for FixedArray.
-unittest
+void unittestFixedArray()
 {
     {
         FixedArray!float scopeNull;
@@ -231,4 +232,4 @@ unittest
         i++;
     }
 }
-
+mixin registerTest!(unittestFixedArray, "FixedArray general");

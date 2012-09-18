@@ -27,7 +27,7 @@ import memory.memory;
  *
  * Only bare requirements are implemented. Can be improved if needed.
  */
-align(4) struct Vector(T)
+struct Vector(T)
 {
     private:
         ///Manually allocated data storage. More storage than used can be allocated.
@@ -307,8 +307,9 @@ align(4) struct Vector(T)
         ///Get currently allocated capacity.
         @property size_t allocated() const pure nothrow {return data_.length;}
 }
+import util.unittests;
 ///Unittest for Vector.
-unittest
+void unittestVector()
 {
     auto vector = Vector!uint();
     vector ~= 1;
@@ -343,3 +344,4 @@ unittest
     vector2 = array;
     assert(vector2[] == array);
 }
+mixin registerTest!(unittestVector, "Vector general");

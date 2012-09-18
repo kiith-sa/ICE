@@ -29,7 +29,7 @@ import containers.vector;
  * To simplify its implementation, SegmentedVector is not copyable at the moment.
  * This could be changed if needed, however.
  */
-align(4) struct SegmentedVector(T, long segmentSize = 1024)
+struct SegmentedVector(T, long segmentSize = 1024)
     if(segmentSize > 0)
 {
     private:
@@ -214,8 +214,9 @@ align(4) struct SegmentedVector(T, long segmentSize = 1024)
             }
         }
 }
+import util.unittests;
 ///Unittest for SegmentedVector.
-unittest
+void unittestSegmentedVector()
 {
     SegmentedVector!(uint, 3) vector;
     vector ~= 1;
@@ -239,3 +240,5 @@ unittest
     vector.length = 2;
     assert(vector.length == 2);
 }
+mixin registerTest!(unittestSegmentedVector, "SegmentedVector general");
+
