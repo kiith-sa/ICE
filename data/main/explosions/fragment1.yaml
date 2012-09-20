@@ -1,6 +1,6 @@
 visual: visual/fragment1.yaml
 spawner:
-  - entity: explosions/fragmentbase.yaml 
+  - entity: explosions/spiralfragment.yaml 
     condition: death 
     components:
       visual: visual/fragment1.yaml
@@ -10,7 +10,7 @@ spawner:
         speed: 100.0
         spawnAbsolute: [velocity]
       deathTimeout: 10.0
-  - entity: explosions/fragmentbase.yaml 
+  - entity: explosions/spiralfragment.yaml 
     condition: death 
     components:
       visual: visual/fragment1.yaml
@@ -20,7 +20,7 @@ spawner:
         speed: 100.0
         spawnAbsolute: [velocity]
       deathTimeout: 10.0
-  - entity: explosions/fragmentbase.yaml 
+  - entity: explosions/spiralfragment.yaml 
     condition: death 
     components:
       visual: visual/fragment1.yaml
@@ -30,7 +30,7 @@ spawner:
         speed: 100.0
         spawnAbsolute: [velocity]
       deathTimeout: 10.0
-  - entity: explosions/fragmentbase.yaml 
+  - entity: explosions/spiralfragment.yaml 
     condition: death 
     components:
       visual: visual/fragment1.yaml

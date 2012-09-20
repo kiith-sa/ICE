@@ -13,3 +13,39 @@ warhead:
   damage: 120
   killsEntity: false
 dumbScript: dumbscripts/jets1.yaml
+
+spawner:
+  - entity: explosions/deathbase.yaml 
+    condition: death
+    components:
+      visual: visual/jet.yaml
+      physics: 
+        position: [0, 0]
+  - entity: explosions/jetsmall.yaml
+    condition: death 
+    components:
+      physics: 
+        position: [32, 0]
+        rotation: -1.57
+        speed: 16
+  - entity: explosions/jetsmall.yaml
+    condition: death 
+    components:
+      physics: 
+        position: [-32, 0]
+        rotation: 1.57
+        speed: -16
+  - entity: explosions/jetsmall.yaml
+    condition: death 
+    components:
+      physics: 
+        position: [24, 8]
+        rotation: -1.57
+        speed: 32
+  - entity: explosions/jetsmall.yaml
+    condition: death 
+    components:
+      physics: 
+        position: [-24, 8]
+        rotation: 1.57
+        speed: -32

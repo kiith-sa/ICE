@@ -1,0 +1,6 @@
+visual: visual/dust1.yaml
+deathTimeout: 0.9
+physics:
+  position: [0.0, 0.0]
+  rotation: 0.0
+  speed:    50.0
