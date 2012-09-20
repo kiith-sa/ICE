@@ -51,7 +51,7 @@ struct Vector(T)
         }
 
         ///Compute a hash.
-        hash_t toHash() const nothrow @safe
+        hash_t toHash() const @trusted
         {
             static type = typeid(T);
             return type.getHash(&data_[0 .. used_]);
