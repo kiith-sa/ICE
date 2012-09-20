@@ -56,7 +56,7 @@ final class Composer
          *          resolver    = Resolver to resolve tags (data types).
          *          constructor = Constructor to construct nodes.
          */
-        this(Parser parser, Resolver resolver, Constructor constructor) @safe nothrow pure
+        this(Parser parser, Resolver resolver, Constructor constructor)
         {
             parser_ = parser;
             resolver_ = resolver;
@@ -64,7 +64,7 @@ final class Composer
         }
 
         ///Destroy the composer.
-        pure @safe nothrow ~this()
+        ~this()
         {
             parser_ = null;
             resolver_ = null;
@@ -78,7 +78,7 @@ final class Composer
          *
          * Must be called before loading as it handles the stream start event.
          */
-        bool checkNode() @safe
+        bool checkNode()
         {
             //Drop the STREAM-START event.
             if(parser_.checkEvent(EventID.StreamStart))
@@ -91,7 +91,7 @@ final class Composer
         }
 
         ///Get a YAML document as a node (the root of the document).
-        Node getNode() @safe
+        Node getNode()
         {
             //Get the root node of the next document.
             assert(!parser_.checkEvent(EventID.StreamEnd), 
@@ -102,7 +102,7 @@ final class Composer
         }
 
         ///Get single YAML document, throwing if there is more than one document.
-        Node getSingleNode() @trusted
+        Node getSingleNode()
         {
             assert(!parser_.checkEvent(EventID.StreamEnd), 
                    "Trying to get a node from Composer when there is no node to "
@@ -124,7 +124,7 @@ final class Composer
 
     private:
         ///Compose a YAML document and return its root node.
-        Node composeDocument() @trusted
+        Node composeDocument()
         {
             //Drop the DOCUMENT-START event.
             parser_.getEvent();
@@ -140,7 +140,7 @@ final class Composer
         }
 
         ///Compose a node.
-        Node composeNode() @system
+        Node composeNode()
         {
             if(parser_.checkEvent(EventID.Alias))
             {
@@ -198,7 +198,7 @@ final class Composer
         }
 
         ///Compose a scalar node.
-        Node composeScalarNode() @system
+        Node composeScalarNode()
         {
             immutable event = parser_.getEvent();
             const tag = resolver_.resolve(NodeID.Scalar, event.tag, event.value, 
@@ -211,7 +211,7 @@ final class Composer
         }
 
         ///Compose a sequence node.
-        Node composeSequenceNode() @system
+        Node composeSequenceNode()
         {
             immutable startEvent = parser_.getEvent();
             const tag = resolver_.resolve(NodeID.Sequence, startEvent.tag, null, 
@@ -240,7 +240,7 @@ final class Composer
          *          
          * Returns: Flattened mapping as pairs.
          */
-        Node.Pair[] flatten(ref Node root, in Mark startMark, in Mark endMark) @system
+        Node.Pair[] flatten(ref Node root, in Mark startMark, in Mark endMark)
         {
             Node.Pair[] result;
 
@@ -250,7 +250,7 @@ final class Composer
                 throw new ConstructorException("While constructing a mapping, "
                                                "expected a mapping or a list of "
                                                "mappings for merging, but found: " 
-                                               ~ node.type.toString() ~
+                                               ~ node.type.toString ~
                                                " NOTE: line/column shows topmost parent "
                                                "to which the content is being merged",
                                                startMark, endMark);
@@ -284,7 +284,7 @@ final class Composer
         }
 
         ///Compose a mapping node.
-        Node composeMappingNode() @system
+        Node composeMappingNode()
         {
             immutable startEvent = parser_.getEvent();
             const tag = resolver_.resolve(NodeID.Mapping, startEvent.tag, null, 

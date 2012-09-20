@@ -11,7 +11,6 @@ import std.datetime;
 import std.exception;
 import std.path;
 import std.string;
-import std.typecons;
 
 import dyaml.tag;
 import dyaml.testcommon;
@@ -403,7 +402,7 @@ void testConstructor(bool verbose, string dataFilename, string codeDummy)
     size_t i = 0;
     foreach(node; loader)
     {
-        if(!node.equals!(No.useTag)(exp[i]))
+        if(!node.equals!false(exp[i]))
         {
             if(verbose)
             {

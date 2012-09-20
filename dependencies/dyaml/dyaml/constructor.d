@@ -22,7 +22,6 @@ import std.exception;
 import std.stdio; 
 import std.regex;
 import std.string;
-import std.typecons;
 import std.utf;
 
 import dyaml.node;
@@ -46,7 +45,6 @@ package class ConstructorException : YAMLException
      *          end   = End position of the error context.
      */
     this(string msg, Mark start, Mark end, string file = __FILE__, int line = __LINE__)
-        @safe nothrow
     {
         super(msg ~ "\nstart: " ~ start.toString() ~ "\nend: " ~ end.toString(),
               file, line);
@@ -89,8 +87,7 @@ final class Constructor
          *
          * Params:  defaultConstructors = Use constructors for default YAML tags?
          */
-        this(const Flag!"useDefaultConstructors" defaultConstructors = Yes.useDefaultConstructors)
-            @safe nothrow
+        this(in bool defaultConstructors = true)
         {
             if(!defaultConstructors){return;}
 
@@ -114,7 +111,7 @@ final class Constructor
         }
 
         ///Destroy the constructor.
-        pure @safe nothrow ~this()
+        ~this()
         {
             clear(fromScalar_);
             fromScalar_ = null;
@@ -192,8 +189,7 @@ final class Constructor
          * }
          * --------------------
          */
-        void addConstructorScalar(T)(const string tag, T function(ref Node) ctor)
-            @safe nothrow
+        void addConstructorScalar(T)(in string tag, T function(ref Node) ctor)
         {
             const t = Tag(tag);
             auto deleg = addConstructor!T(t, ctor);
@@ -244,8 +240,7 @@ final class Constructor
          * }
          * --------------------
          */
-        void addConstructorSequence(T)(const string tag, T function(ref Node) ctor)
-            @safe nothrow
+        void addConstructorSequence(T)(in string tag, T function(ref Node) ctor)
         {
             const t = Tag(tag);
             auto deleg = addConstructor!T(t, ctor);
@@ -296,8 +291,7 @@ final class Constructor
          * }
          * --------------------
          */
-        void addConstructorMapping(T)(const string tag, T function(ref Node) ctor)
-            @safe nothrow
+        void addConstructorMapping(T)(in string tag, T function(ref Node) ctor)
         {
             const t = Tag(tag);
             auto deleg = addConstructor!T(t, ctor);
@@ -316,8 +310,7 @@ final class Constructor
          *
          * Returns: Constructed node.
          */ 
-        Node node(T, U)(const Mark start, const Mark end, const Tag tag, 
-                        T value, U style) @trusted
+        Node node(T, U)(in Mark start, in Mark end, in Tag tag, T value, U style) 
             if((is(T : string) || is(T == Node[]) || is(T == Node.Pair[])) &&
                (is(U : CollectionStyle) || is(U : ScalarStyle)))
         {
@@ -357,15 +350,13 @@ final class Constructor
          * Params:  tag  = Tag for the function to handle.
          *          ctor = Constructor function.
          */
-        auto addConstructor(T)(const Tag tag, T function(ref Node) ctor) 
-            @trusted nothrow
+        auto addConstructor(T)(in Tag tag, T function(ref Node) ctor)
         {
             assert((tag in fromScalar_) is null && 
                    (tag in fromSequence_) is null &&
                    (tag in fromMapping_) is null,
                    "Constructor function for tag " ~ tag.get ~ " is already "
                    "specified. Can't specify another one.");
-
 
             return (ref Node n)
             {
@@ -375,7 +366,7 @@ final class Constructor
         }
 
         //Get the array of constructor functions for scalar, sequence or mapping.
-        auto delegates(T)() pure @safe nothrow
+        auto delegates(T)() 
         {
             static if(is(T : string))          {return &fromScalar_;}
             else static if(is(T : Node[]))     {return &fromSequence_;}
@@ -559,7 +550,7 @@ ubyte[] constructBinary(ref Node node)
             throw new Exception("Unable to decode base64 value: " ~ e.msg);
         }
     }
-    catch(UTFException e)
+    catch(UtfException e)
     {
         throw new Exception("Unable to decode base64 value: " ~ e.msg);
     }
@@ -861,7 +852,7 @@ struct MyStruct
 {
     int x, y, z;
 
-    const int opCmp(ref const MyStruct s) const pure @safe nothrow
+    const int opCmp(ref const MyStruct s)
     {
         if(x != s.x){return x - s.x;}
         if(y != s.y){return y - s.y;}

@@ -56,7 +56,7 @@ struct Queue(T)
         @disable int opCmp(ref Queue);
 
         ///Destroy the queue, deallocating all its elements.
-        @safe nothrow ~this()
+        ~this()
         {
             while(!empty){pop();}
             cursor_ = last_ = first_ = null;
@@ -64,13 +64,13 @@ struct Queue(T)
         }
 
         ///Start iterating over the queue.
-        void startIteration() pure @safe nothrow
+        void startIteration()
         {
             cursor_ = first_;
         }
 
         ///Get next element in the queue.
-        ref const(T) next() pure @safe nothrow
+        ref const(T) next() 
         in
         {
             assert(!empty);
@@ -84,13 +84,13 @@ struct Queue(T)
         }
 
         ///Are we done iterating?
-        bool iterationOver() const pure @safe nothrow
+        bool iterationOver() const
         {
             return cursor_ is null;
         }
 
         ///Push new item to the queue.
-        void push(T item) @trusted nothrow
+        void push(T item)
         {
             Node* newLast = allocate!Node(item, cast(Node*)null);
             if(last_ !is null){last_.next_ = newLast;}
@@ -100,7 +100,7 @@ struct Queue(T)
         }
 
         ///Insert a new item putting it to specified index in the linked list.
-        void insert(T item, in size_t idx) @trusted nothrow
+        void insert(T item, in size_t idx)
         in
         {
             assert(idx <= length_);
@@ -134,7 +134,7 @@ struct Queue(T)
         }
 
         ///Return the next element in the queue and remove it.
-        T pop() @trusted nothrow
+        T pop()
         in
         {
             assert(!empty, "Trying to pop an element from an empty queue");
@@ -155,7 +155,7 @@ struct Queue(T)
         }
 
         ///Return the next element in the queue.
-        ref inout(T) peek() inout pure @safe nothrow
+        ref inout(T) peek() inout
         in
         {
             assert(!empty, "Trying to peek at an element in an empty queue");
@@ -166,13 +166,13 @@ struct Queue(T)
         }
 
         ///Is the queue empty?
-        @property bool empty() const pure @safe nothrow
+        @property bool empty() const
         {
             return first_ is null;
         }
 
         ///Return number of elements in the queue.
-        @property size_t length() const pure @safe nothrow
+        @property size_t length() const
         {
             return length_;
         }
@@ -182,7 +182,7 @@ struct Queue(T)
 private:
 
 ///Allocate a struct, passing arguments to its constructor or default initializer.
-T* allocate(T, Args...)(Args args) @system nothrow
+T* allocate(T, Args...)(Args args)
 {
     T* ptr = cast(T*)malloc(T.sizeof);
     *ptr = T(args);
@@ -192,7 +192,7 @@ T* allocate(T, Args...)(Args args) @system nothrow
 }
 
 ///Deallocate struct pointed at by specified pointer.
-void free(T)(T* ptr) @system nothrow
+void free(T)(T* ptr)
 {
     //GC doesn't need to care about any references in this struct anymore.
     static if(hasIndirections!T){GC.removeRange(cast(void*)ptr);}

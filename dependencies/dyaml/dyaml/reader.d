@@ -31,7 +31,6 @@ package:
 class ReaderException : YAMLException
 {
     this(string msg, string file = __FILE__, int line = __LINE__)
-        @safe nothrow
     {
         super("Error reading stream: " ~ msg, file, line);
     }
@@ -66,7 +65,7 @@ final class Reader
          *
          * Throws:  ReaderException if the stream is invalid.
          */
-        this(Stream stream) @trusted
+        this(Stream stream)
         in
         {
             assert(stream.readable && stream.seekable, 
@@ -78,7 +77,7 @@ final class Reader
             decoder_ = UTFFastDecoder(stream_);
         }
 
-        @trusted nothrow ~this() 
+        ~this()
         {
             //Delete the buffer, if allocated.
             if(bufferAllocated_ is null){return;}
@@ -97,7 +96,7 @@ final class Reader
          * Throws:  ReaderException if trying to read past the end of the stream
          *          or if invalid data is read.
          */
-        dchar peek(size_t index = 0) @trusted
+        dchar peek(size_t index = 0)
         {
             if(buffer_.length < bufferOffset_ + index + 1)
             {
@@ -122,7 +121,7 @@ final class Reader
          *
          * Returns: Characters starting at current position or an empty slice if out of bounds.
          */
-        const(dstring) prefix(size_t length) @safe
+        const(dstring) prefix(size_t length)
         {
             return slice(0, length);
         }
@@ -138,7 +137,7 @@ final class Reader
          *
          * Returns: Slice into the internal buffer or an empty slice if out of bounds.
          */
-        const(dstring) slice(size_t start, size_t end) @trusted
+        const(dstring) slice(size_t start, size_t end)
         {
             if(buffer_.length <= bufferOffset_ + end)
             {
@@ -160,7 +159,7 @@ final class Reader
          * Throws:  ReaderException if trying to read past the end of the stream
          *          or if invalid data is read.
          */
-        dchar get() @safe
+        dchar get()
         {
             const result = peek();
             forward();
@@ -177,11 +176,11 @@ final class Reader
          * Throws:  ReaderException if trying to read past the end of the stream
          *          or if invalid data is read.
          */
-        dstring get(size_t length) @safe
+        dstring get(size_t length)
         {
-            auto result = prefix(length).idup;
+            auto result = prefix(length).dup;
             forward(length);
-            return result;
+            return cast(dstring)result;
         }
 
         /**
@@ -192,7 +191,7 @@ final class Reader
          * Throws:  ReaderException if trying to read past the end of the stream
          *          or if invalid data is read.
          */
-        void forward(size_t length = 1) @trusted
+        void forward(size_t length = 1)
         {
             if(buffer_.length <= bufferOffset_ + length + 1)
             {
@@ -218,19 +217,19 @@ final class Reader
         }
 
         ///Get a string describing current stream position, used for error messages.
-        @property final Mark mark() const pure @safe nothrow {return Mark(line_, column_);}
+        @property final Mark mark() const {return Mark(line_, column_);}
 
         ///Get current line number.
-        @property final uint line() const pure @safe nothrow {return line_;}
+        @property final uint line() const {return line_;}
 
         ///Get current column number.
-        @property final uint column() const pure @safe nothrow {return column_;}
+        @property final uint column() const {return column_;}
 
         ///Get index of the current character in the stream.
-        @property final size_t charIndex() const pure @safe nothrow {return charIndex_;}
+        @property final size_t charIndex() const {return charIndex_;}
 
         ///Get encoding of the input stream.
-        @property final Encoding encoding() const pure @safe nothrow {return decoder_.encoding;}
+        @property final Encoding encoding() const {return decoder_.encoding;}
 
     private:
         /**
@@ -244,7 +243,7 @@ final class Reader
          * Throws:  ReaderException if trying to read past the end of the stream
          *          or if invalid data is read.
          */
-        void updateBuffer(in size_t length) @system
+        void updateBuffer(in size_t length)
         {
             //Get rid of unneeded data in the buffer.
             if(bufferOffset_ > 0)
@@ -285,7 +284,7 @@ final class Reader
          *          if nonprintable characters are detected, or
          *          if there is an error reading from the stream.
          */
-        void loadChars(size_t chars) @system
+        void loadChars(size_t chars)
         {
             const oldLength = buffer_.length;
             const oldPosition = stream_.position;
@@ -313,10 +312,10 @@ final class Reader
         }
 
         //Handle an exception thrown in loadChars method of any Reader.
-        void handleLoadCharsException(Exception e, ulong oldPosition) @system
+        void handleLoadCharsException(Exception e, ulong oldPosition)
         {
             try{throw e;}
-            catch(UTFException e)
+            catch(UtfException e)
             {
                 const position = stream_.position;
                 throw new ReaderException(format("Unicode decoding error between bytes ",
@@ -329,7 +328,7 @@ final class Reader
         }
 
         //Code shared by loadEntireFile methods.
-        void loadEntireFile_() @system
+        void loadEntireFile_()
         {
             const maxChars = decoder_.maxChars;
             bufferReserve(maxChars + 1);
@@ -343,7 +342,7 @@ final class Reader
         }
 
         //Ensure there is space for at least capacity characters in bufferAllocated_.
-        void bufferReserve(in size_t capacity) @system nothrow
+        void bufferReserve(in size_t capacity)
         {
             if(bufferAllocated_ !is null && bufferAllocated_.length >= capacity){return;}
 
@@ -409,8 +408,8 @@ struct UTFBlockDecoder(size_t bufferSize_) if (bufferSize_ % 2 == 0)
         dchar[] buffer_;
 
     public:
-        ///Construct a UTFBlockDecoder decoding a stream.
-        this(EndianStream stream) @system 
+        ///Construct a UTFFastDecoder decoding a stream.
+        this(EndianStream stream)
         {
             stream_ = stream;
             available_ = stream_.available;
@@ -466,19 +465,19 @@ struct UTFBlockDecoder(size_t bufferSize_) if (bufferSize_ % 2 == 0)
         }
 
         ///Get maximum number of characters that might be in the stream.
-        @property size_t maxChars() const pure @safe nothrow {return maxChars_;}
+        @property size_t maxChars() const {return maxChars_;}
 
         ///Get encoding we're decoding from.
-        @property Encoding encoding() const pure @safe nothrow {return encoding_;}
+        @property Encoding encoding() const {return encoding_;}
 
         ///Are we done decoding?
-        @property bool done() const pure @safe nothrow
+        @property bool done() const
         {   
             return rawUsed_ == 0 && buffer_.length == 0 && available_ == 0;
         }
 
         ///Get next character.
-        dchar getDChar() @system
+        dchar getDChar()
         {
             if(buffer_.length)
             {
@@ -493,7 +492,7 @@ struct UTFBlockDecoder(size_t bufferSize_) if (bufferSize_ % 2 == 0)
         }
 
         ///Get as many characters as possible, but at most maxChars. Slice returned will be invalidated in further calls.
-        const(dchar[]) getDChars(size_t maxChars = size_t.max) @system
+        const(dchar[]) getDChars(size_t maxChars = size_t.max)
         {
             if(buffer_.length)
             {
@@ -510,7 +509,7 @@ struct UTFBlockDecoder(size_t bufferSize_) if (bufferSize_ % 2 == 0)
 
     private:
         //Read and decode characters from file and store them in the buffer.
-        void updateBuffer() @system
+        void updateBuffer()
         {
             assert(buffer_.length == 0);
             final switch(encoding_)
@@ -523,6 +522,7 @@ struct UTFBlockDecoder(size_t bufferSize_) if (bufferSize_ % 2 == 0)
                     available_ -= bytes;
                     decodeRawBuffer(rawBuffer8_, rawLength);
                     break;
+
                 case Encoding.UTF_16:
                     const words = min((bufferSize_ / 2) - rawUsed_, available_ / 2);
                     //Current length of valid data in rawBuffer16_.
@@ -534,6 +534,7 @@ struct UTFBlockDecoder(size_t bufferSize_) if (bufferSize_ % 2 == 0)
                     }
                     decodeRawBuffer(rawBuffer16_, rawLength);
                     break;
+
                 case Encoding.UTF_32:
                     const chars = min(bufferSize_ / 4, available_ / 4);
                     foreach(c; 0 .. chars)
@@ -547,7 +548,7 @@ struct UTFBlockDecoder(size_t bufferSize_) if (bufferSize_ % 2 == 0)
         }
 
         //Decode contents of a UTF-8 or UTF-16 raw buffer.
-        void decodeRawBuffer(C)(C[] buffer, const size_t length) pure @system
+        void decodeRawBuffer(C)(C[] buffer, const size_t length)
         {
             //End of part of rawBuffer8_ that contains 
             //complete characters and can be decoded.
@@ -565,8 +566,7 @@ struct UTFBlockDecoder(size_t bufferSize_) if (bufferSize_ % 2 == 0)
         }
 
         //Determine the end of last UTF-8 or UTF-16 sequence in a raw buffer.
-        size_t endOfLastUTFSequence(C)(const C[] buffer, const size_t max) 
-            pure @system nothrow
+        size_t endOfLastUTFSequence(C)(const C[] buffer, const size_t max)
         {
             static if(is(C == char))
             {
@@ -598,7 +598,7 @@ struct UTFBlockDecoder(size_t bufferSize_) if (bufferSize_ % 2 == 0)
         }
 
         //Decode a UTF-8 or UTF-16 buffer (with no incomplete sequences at the end).
-        void decodeUTF(C)(const C[] source) pure @system
+        void decodeUTF(C)(const C[] source)
         {
             size_t bufpos = 0;
             const srclength = source.length;
@@ -626,7 +626,7 @@ struct UTFBlockDecoder(size_t bufferSize_) if (bufferSize_ % 2 == 0)
  *
  * Returns: True if all the characters are printable, false otherwise.
  */
-bool printable(const ref dchar[] chars) pure @safe nothrow
+bool printable(const ref dchar[] chars) pure
 {
     foreach(c; chars)
     {

@@ -241,8 +241,6 @@ void main(string[] args)
     try{build(targets);}
     catch(CompileException e){writeln("Could not compile: " ~ e.msg);}
     catch(ProcessException e){writeln("Compilation failed: " ~ e.msg);}
-
-    writeln("DONE");
 }
 
 ///Print help information.
@@ -484,7 +482,7 @@ struct CompileOptions
          * Params:  options = Compiler command line options.
          *          sources = Source files to compile.
          */
-        this(string[] options, const string[] sources)
+        this(string[] options, in string[] sources)
         {   
             foreach(i, opt; options)
             {
@@ -512,11 +510,11 @@ struct CompileOptions
             }
             version (Windows)
             {    
-                auto dot = find(out_file, '.');
-                auto backslash = retro(find(retro(out_file), '/'));
-                if(dot <= backslash)
+                //TODO needs testing
+                //{    if (find(this.out_file, ".") <= rfind(this.out_file, "/"))
+                if(out_file.find('.') <= out_file.retro().find('/').retro())
                 {
-                    out_file ~= bin_ext;
+                   out_file ~= bin_ext;
                 }
             }
         }
@@ -530,7 +528,7 @@ struct CompileOptions
          *
          * Returns: Translated options.
          */
-        string[] get_options(const string compiler)
+        string[] get_options(in string compiler)
         {    
             string[] result = options_.dup;
 
@@ -593,7 +591,7 @@ struct CompileOptions
 ///Thrown at errors in execution of other processes (e.g. compiler commands).
 class CompileException : Exception 
 {
-    this(const string message, const string file, in size_t line){super(message, file, line);}
+    this(in string message, in string file, in size_t line){super(message, file, line);}
 };
 
 /**
@@ -602,7 +600,7 @@ class CompileException : Exception
  * Params:  compiler  = Compiler to execute.
  *          arguments = Compiler arguments.
  */
-void execute_compiler(const string compiler, string[] arguments)
+void execute_compiler(in string compiler, string[] arguments)
 {    
     try
     {
@@ -621,7 +619,7 @@ void execute_compiler(const string compiler, string[] arguments)
 }
 
 ///Thrown at errors in execution of other processes (e.g. compiler commands).
-class ProcessException : Exception {this(const string message){super(message);}};
+class ProcessException : Exception {this(in string message){super(message);}};
 
 /**
  * Execute a command-line program and print its output.
@@ -640,7 +638,7 @@ void execute(string command, string[] args)
 
     string full = command ~ " " ~ args.join(" ");
     writeln("CDC:  " ~ full);
-    if(int status = system(full ~ "\0") != 0)
+    if(int status = system(full) != 0)
     {
         throw new ProcessException("Process " ~ command ~ " exited with status " ~ 
                                    to!string(status));
@@ -657,7 +655,7 @@ void execute(string command, string[] args)
  *
  * Bugs:    LDC fails to return any results. 
  */
-string[] scan(const string directory, string extensions ...)
+string[] scan(in string directory, string extensions ...)
 {    
     string[] result;
     foreach(string name; dirEntries(directory, SpanMode.depth))

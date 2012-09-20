@@ -9,7 +9,6 @@ module dyaml.testrepresenter;
 
 import std.path;
 import std.exception;
-import std.typecons;
 
 import dyaml.testcommon;
 import dyaml.testconstructor;
@@ -70,7 +69,7 @@ void testRepresenterTypes(bool verbose, string codeFilename)
         assert(expectedNodes.length == readNodes.length);
         foreach(n; 0 .. expectedNodes.length)
         {
-            assert(expectedNodes[n].equals!(No.useTag)(readNodes[n]));
+            assert(expectedNodes[n].equals!false(readNodes[n]));
         }
     }
 }

@@ -100,20 +100,14 @@ struct Emitter
         ///Level of nesting in flow context. If 0, we're in block context.
         uint flowLevel_ = 0;
 
-        /// Describes context (where we are in the document).
-        enum Context
-        {
-            /// Root node of a document.
-            Root,
-            /// Sequence.
-            Sequence,
-            /// Mapping.
-            MappingNoSimpleKey,
-            /// Mapping, in a simple key.
-            MappingSimpleKey
-        }
-        /// Current context.
-        Context context_;
+        ///Are we in the root node of a document?
+        bool rootContext_;
+        ///Are we in a sequence?
+        bool sequenceContext_;
+        ///Are we in a mapping?
+        bool mappingContext_;
+        ///Are we in a simple key?
+        bool simpleKeyContext_;
 
         ///Characteristics of the last emitted character:
 
@@ -165,8 +159,8 @@ struct Emitter
          *          indent    = Indentation width.
          *          lineBreak = Line break character/s.
          */
-        this(Stream stream, const bool canonical, const int indent, const int width, 
-             const LineBreak lineBreak) @trusted nothrow
+        this(Stream stream, in bool canonical, in int indent, in int width, 
+             in LineBreak lineBreak)
         in{assert(stream.writeable, "Can't emit YAML to a non-writable stream");}
         body
         {
@@ -184,7 +178,7 @@ struct Emitter
         }
 
         ///Destroy the emitter.
-        @trusted ~this()
+        ~this()
         {
             stream_ = null;
             clear(states_);
@@ -199,7 +193,7 @@ struct Emitter
         }
 
         ///Emit an event. Throws EmitterException on error.
-        void emit(Event event) @trusted
+        void emit(Event event)
         {
             events_.push(event);
             while(!needMoreEvents())
@@ -212,7 +206,7 @@ struct Emitter
 
     private:
         ///Pop and return the newest state in states_.
-        void delegate() popState() @trusted 
+        void delegate() popState()
         {
             enforce(states_.length > 0, 
                     new YAMLException("Emitter: Need to pop a state but there are no states left"));
@@ -222,7 +216,7 @@ struct Emitter
         }
 
         ///Pop and return the newest indent in indents_.
-        int popIndent() @trusted
+        int popIndent()
         {
             enforce(indents_.length > 0, 
                     new YAMLException("Emitter: Need to pop an indent level but there"
@@ -233,7 +227,7 @@ struct Emitter
         }
 
         ///Write a string to the file/stream.
-        void writeString(const string str) @system
+        void writeString(in string str)
         {
             try final switch(encoding_)
             {
@@ -256,11 +250,11 @@ struct Emitter
         }
 
         ///In some cases, we wait for a few next events before emitting.
-        bool needMoreEvents() @trusted nothrow
+        bool needMoreEvents()
         {
             if(events_.length == 0){return true;}
 
-            const event = events_.peek();
+            immutable event = cast(immutable Event)events_.peek();
             if(event.id == EventID.DocumentStart){return needEvents(1);}
             if(event.id == EventID.SequenceStart){return needEvents(2);}
             if(event.id == EventID.MappingStart) {return needEvents(3);}
@@ -269,7 +263,7 @@ struct Emitter
         }
 
         ///Determines if we need specified number of more events.
-        bool needEvents(in uint count) @system nothrow
+        bool needEvents(in uint count) 
         {
             int level = 0;
 
@@ -280,7 +274,7 @@ struct Emitter
             events_.next();
             while(!events_.iterationOver())
             {
-                const event = events_.next();
+                immutable event = cast(immutable Event)events_.next();
                 static starts = [EventID.DocumentStart, EventID.SequenceStart, EventID.MappingStart];
                 static ends   = [EventID.DocumentEnd, EventID.SequenceEnd, EventID.MappingEnd];
                 if(starts.canFind(event.id))   {++level;}
@@ -297,7 +291,7 @@ struct Emitter
         }
 
         ///Increase indentation level.
-        void increaseIndent(const Flag!"flow" flow = No.flow, const bool indentless = false) @trusted
+        void increaseIndent(in bool flow = false, in bool indentless = false)
         {
             indents_ ~= indent_;
             if(indent_ == -1)
@@ -311,7 +305,7 @@ struct Emitter
         }
 
         ///Determines if the type of current event is as specified. Throws if no event.
-        bool eventTypeIs(in EventID id) const pure @trusted
+        bool eventTypeIs(in EventID id) const
         {
             enforce(!event_.isNull,
                     new Error("Expected an event, but no event is available."));
@@ -325,18 +319,18 @@ struct Emitter
         //Stream handlers.
 
         ///Handle start of a file/stream.
-        void expectStreamStart() @trusted
+        void expectStreamStart()
         {
             enforce(eventTypeIs(EventID.StreamStart),
                     new Error("Expected StreamStart, but got " ~ event_.idString));
 
             encoding_ = event_.encoding;
             writeStreamStart();
-            state_ = &expectDocumentStart!(Yes.first);
+            state_ = &expectDocumentStart!true;
         }
 
         ///Expect nothing, throwing if we still have something.
-        void expectNothing() const @trusted
+        void expectNothing() const
         {
             throw new Error("Expected nothing, but got " ~ event_.idString);
         }
@@ -344,7 +338,7 @@ struct Emitter
         //Document handlers.
 
         ///Handle start of a document.
-        void expectDocumentStart(Flag!"first" first)() @trusted
+        void expectDocumentStart(bool first)()
         {
             enforce(eventTypeIs(EventID.DocumentStart) || eventTypeIs(EventID.StreamEnd),
                     new Error("Expected DocumentStart or StreamEnd, but got " 
@@ -356,7 +350,7 @@ struct Emitter
                 auto tagDirectives = event_.tagDirectives;
                 if(openEnded_ && (YAMLVersion !is null || tagDirectives !is null))
                 {
-                    writeIndicator("...", Yes.needWhitespace);
+                    writeIndicator("...", true);
                     writeIndent();
                 }
                 
@@ -393,16 +387,16 @@ struct Emitter
                 if(!implicit)
                 {
                     writeIndent();
-                    writeIndicator("---", Yes.needWhitespace);
+                    writeIndicator("---", true);
                     if(canonical_){writeIndent();}
                 }
-                state_ = &expectRootNode;
+                state_ = &expectDocumentRoot;
             }
             else if(event_.id == EventID.StreamEnd)
             {
                 if(openEnded_)
                 {
-                    writeIndicator("...", Yes.needWhitespace);
+                    writeIndicator("...", true);
                     writeIndent();
                 }
                 writeStreamEnd();
@@ -411,7 +405,7 @@ struct Emitter
         }
 
         ///Handle end of a document.
-        void expectDocumentEnd() @trusted
+        void expectDocumentEnd()
         {
             enforce(eventTypeIs(EventID.DocumentEnd),
                     new Error("Expected DocumentEnd, but got " ~ event_.idString));
@@ -419,38 +413,28 @@ struct Emitter
             writeIndent();
             if(event_.explicitDocument)
             {
-                writeIndicator("...", Yes.needWhitespace);
+                writeIndicator("...", true);
                 writeIndent();
             }
             stream_.flush();
-            state_ = &expectDocumentStart!(No.first);
+            state_ = &expectDocumentStart!false;
         }
 
         ///Handle the root node of a document.
-        void expectRootNode() @trusted
+        void expectDocumentRoot()
         {
             states_ ~= &expectDocumentEnd;
-            expectNode(Context.Root);
+            expectNode(true);
         }
 
-        ///Handle a mapping node.
-        //
-        //Params: simpleKey = Are we in a simple key?
-        void expectMappingNode(const bool simpleKey = false)
+        ///Handle a new node. Parameters determine context.
+        void expectNode(in bool root = false, in bool sequence = false, 
+                        in bool mapping = false, in bool simpleKey = false)
         {
-            expectNode(simpleKey ? Context.MappingSimpleKey : Context.MappingNoSimpleKey);
-        }
-
-        ///Handle a sequence node.
-        void expectSequenceNode()
-        {
-            expectNode(Context.Sequence);
-        }
-
-        ///Handle a new node. Context specifies where in the document we are.
-        void expectNode(const Context context) @trusted
-        {
-            context_ = context;
+            rootContext_      = root;
+            sequenceContext_  = sequence;
+            mappingContext_   = mapping;
+            simpleKeyContext_ = simpleKey;
 
             const flowCollection = event_.collectionStyle == CollectionStyle.Flow;
 
@@ -491,8 +475,9 @@ struct Emitter
                                      "MappingStart, but got: " ~ event_.idString);
             }
         }
+
         ///Handle an alias.
-        void expectAlias() @trusted
+        void expectAlias()
         {
             enforce(!event_.anchor.isNull(), new Error("Anchor is not specified for alias"));
             processAnchor("*");
@@ -500,9 +485,9 @@ struct Emitter
         }
 
         ///Handle a scalar.
-        void expectScalar() @trusted
+        void expectScalar()
         {
-            increaseIndent(Yes.flow);
+            increaseIndent(true);
             processScalar();
             indent_ = popIndent();
             state_ = popState();
@@ -511,16 +496,16 @@ struct Emitter
         //Flow sequence handlers.
 
         ///Handle a flow sequence.
-        void expectFlowSequence() @trusted
+        void expectFlowSequence()
         {
-            writeIndicator("[", Yes.needWhitespace, Yes.whitespace);
+            writeIndicator("[", true, true);
             ++flowLevel_;
-            increaseIndent(Yes.flow);
-            state_ = &expectFlowSequenceItem!(Yes.first);
+            increaseIndent(true);
+            state_ = &expectFlowSequenceItem!true;
         }
 
         ///Handle a flow sequence item.
-        void expectFlowSequenceItem(Flag!"first" first)() @trusted
+        void expectFlowSequenceItem(bool first)()
         {
             if(event_.id == EventID.SequenceEnd)
             {
@@ -528,32 +513,32 @@ struct Emitter
                 --flowLevel_;
                 static if(!first) if(canonical_)
                 {
-                    writeIndicator(",", No.needWhitespace);
+                    writeIndicator(",", false);
                     writeIndent();
                 }
-                writeIndicator("]", No.needWhitespace);
+                writeIndicator("]", false);
                 state_ = popState();
                 return;
             }
-            static if(!first){writeIndicator(",", No.needWhitespace);}
+            static if(!first){writeIndicator(",", false);}
             if(canonical_ || column_ > bestWidth_){writeIndent();}
-            states_ ~= &expectFlowSequenceItem!(No.first);
-            expectSequenceNode();
+            states_ ~= &expectFlowSequenceItem!false;
+            expectNode(false, true);
         }
 
         //Flow mapping handlers.
 
         ///Handle a flow mapping.
-        void expectFlowMapping() @trusted
+        void expectFlowMapping()
         {
-            writeIndicator("{", Yes.needWhitespace, Yes.whitespace);
+            writeIndicator("{", true, true);
             ++flowLevel_;
-            increaseIndent(Yes.flow);
-            state_ = &expectFlowMappingKey!(Yes.first);
+            increaseIndent(true);
+            state_ = &expectFlowMappingKey!true;
         }
 
         ///Handle a key in a flow mapping.
-        void expectFlowMappingKey(Flag!"first" first)() @trusted
+        void expectFlowMappingKey(bool first)()
         {
             if(event_.id == EventID.MappingEnd)
             {
@@ -561,58 +546,57 @@ struct Emitter
                 --flowLevel_;
                 static if (!first) if(canonical_)
                 {
-                    writeIndicator(",", No.needWhitespace);
+                    writeIndicator(",", false);
                     writeIndent();
                 }
-                writeIndicator("}", No.needWhitespace);
+                writeIndicator("}", false);
                 state_ = popState();
                 return;
             }
 
-            static if(!first){writeIndicator(",", No.needWhitespace);}
+            static if(!first){writeIndicator(",", false);}
             if(canonical_ || column_ > bestWidth_){writeIndent();}
             if(!canonical_ && checkSimpleKey())
             {
                 states_ ~= &expectFlowMappingSimpleValue;
-                expectMappingNode(true);
+                expectNode(false, false, true, true);
                 return;
             }
 
-            writeIndicator("?", Yes.needWhitespace);
+            writeIndicator("?", true);
             states_ ~= &expectFlowMappingValue;
-            expectMappingNode();
+            expectNode(false, false, true);
         }
 
         ///Handle a simple value in a flow mapping.
-        void expectFlowMappingSimpleValue() @trusted
+        void expectFlowMappingSimpleValue()
         {
-            writeIndicator(":", No.needWhitespace);
-            states_ ~= &expectFlowMappingKey!(No.first);
-            expectMappingNode();
+            writeIndicator(":", false);
+            states_ ~= &expectFlowMappingKey!false;
+            expectNode(false, false, true);
         }
 
         ///Handle a complex value in a flow mapping.
-        void expectFlowMappingValue() @trusted
+        void expectFlowMappingValue()
         {
             if(canonical_ || column_ > bestWidth_){writeIndent();}
-            writeIndicator(":", Yes.needWhitespace);
-            states_ ~= &expectFlowMappingKey!(No.first);
-            expectMappingNode();
+            writeIndicator(":", true);
+            states_ ~= &expectFlowMappingKey!false;
+            expectNode(false, false, true);
         }
 
         //Block sequence handlers.
 
         ///Handle a block sequence.
-        void expectBlockSequence() @safe
+        void expectBlockSequence()
         {
-            const indentless = (context_ == Context.MappingNoSimpleKey ||
-                                context_ == Context.MappingSimpleKey) && !indentation_;
-            increaseIndent(No.flow, indentless);
-            state_ = &expectBlockSequenceItem!(Yes.first);
+            const indentless = mappingContext_ && !indentation_;
+            increaseIndent(false, indentless);
+            state_ = &expectBlockSequenceItem!true;
         }
 
         ///Handle a block sequence item.
-        void expectBlockSequenceItem(Flag!"first" first)() @trusted
+        void expectBlockSequenceItem(bool first)()
         {
             static if(!first) if(event_.id == EventID.SequenceEnd)
             {
@@ -622,22 +606,22 @@ struct Emitter
             }
 
             writeIndent();
-            writeIndicator("-", Yes.needWhitespace, No.whitespace, Yes.indentation);
-            states_ ~= &expectBlockSequenceItem!(No.first);
-            expectSequenceNode();
+            writeIndicator("-", true, false, true);
+            states_ ~= &expectBlockSequenceItem!false;
+            expectNode(false, true);
         }
 
         //Block mapping handlers.
 
         ///Handle a block mapping.
-        void expectBlockMapping() @safe
+        void expectBlockMapping()
         {
-            increaseIndent(No.flow);
-            state_ = &expectBlockMappingKey!(Yes.first);
+            increaseIndent(false);
+            state_ = &expectBlockMappingKey!true;
         }
 
         ///Handle a key in a block mapping.
-        void expectBlockMappingKey(Flag!"first" first)() @trusted
+        void expectBlockMappingKey(bool first)()
         {
             static if(!first) if(event_.id == EventID.MappingEnd)
             {
@@ -650,64 +634,64 @@ struct Emitter
             if(checkSimpleKey())
             {
                 states_ ~= &expectBlockMappingSimpleValue;
-                expectMappingNode(true);
+                expectNode(false, false, true, true);
                 return;
             }
 
-            writeIndicator("?", Yes.needWhitespace, No.whitespace, Yes.indentation);
+            writeIndicator("?", true, false, true);
             states_ ~= &expectBlockMappingValue;
-            expectMappingNode();
+            expectNode(false, false, true);
         }
 
         ///Handle a simple value in a block mapping.
-        void expectBlockMappingSimpleValue() @trusted
+        void expectBlockMappingSimpleValue()
         {
-            writeIndicator(":", No.needWhitespace);
-            states_ ~= &expectBlockMappingKey!(No.first);
-            expectMappingNode();
+            writeIndicator(":", false);
+            states_ ~= &expectBlockMappingKey!false;
+            expectNode(false, false, true);
         }
 
         ///Handle a complex value in a block mapping.
-        void expectBlockMappingValue() @trusted
+        void expectBlockMappingValue()
         {
             writeIndent();
-            writeIndicator(":", Yes.needWhitespace, No.whitespace, Yes.indentation);
-            states_ ~= &expectBlockMappingKey!(No.first);
-            expectMappingNode();
+            writeIndicator(":", true, false, true);
+            states_ ~= &expectBlockMappingKey!false;
+            expectNode(false, false, true);
         }
 
         //Checkers.
 
         ///Check if an empty sequence is next.
-        bool checkEmptySequence() const @trusted pure nothrow
+        bool checkEmptySequence() const
         {
             return event_.id == EventID.SequenceStart && events_.length > 0 
                    && events_.peek().id == EventID.SequenceEnd;
         }
 
         ///Check if an empty mapping is next.
-        bool checkEmptyMapping() const @trusted pure nothrow
+        bool checkEmptyMapping() const
         {
             return event_.id == EventID.MappingStart && events_.length > 0 
                    && events_.peek().id == EventID.MappingEnd;
         }
 
         ///Check if an empty document is next.
-        bool checkEmptyDocument() const @trusted pure nothrow
+        bool checkEmptyDocument() const
         {
             if(event_.id != EventID.DocumentStart || events_.length == 0)
             {
                 return false;
             }
 
-            const event = events_.peek();
+            immutable event = cast(immutable Event)events_.peek();
             const emptyScalar = event.id == EventID.Scalar && event.anchor.isNull() &&
                                 event.tag.isNull() && event.implicit && event.value == "";
             return emptyScalar;
         }
 
         ///Check if a simple key is next.
-        bool checkSimpleKey() @trusted 
+        bool checkSimpleKey()
         {
             uint length = 0;
             const id = event_.id;
@@ -746,7 +730,7 @@ struct Emitter
         }
 
         ///Process and write a scalar.
-        void processScalar() @trusted
+        void processScalar()
         {
             if(analysis_.flags.isNull){analysis_ = analyzeScalar(event_.value);}
             if(style_ == ScalarStyle.Invalid)
@@ -754,14 +738,13 @@ struct Emitter
                 style_ = chooseScalarStyle();
             }
 
-            //if(analysis_.flags.multiline && (context_ != Context.MappingSimpleKey) && 
+            //if(analysis_.flags.multiline && !simpleKeyContext_ && 
             //   ([ScalarStyle.Invalid, ScalarStyle.Plain, ScalarStyle.SingleQuoted, ScalarStyle.DoubleQuoted)
             //    .canFind(style_))
             //{
             //    writeIndent();
             //}
-            auto writer = ScalarWriter(this, analysis_.scalar,
-                                       context_ != Context.MappingSimpleKey);
+            auto writer = ScalarWriter(this, analysis_.scalar, !simpleKeyContext_);
             with(writer) final switch(style_)
             {
                 case ScalarStyle.Invalid:      assert(false);
@@ -776,7 +759,7 @@ struct Emitter
         }
 
         ///Process and write an anchor/alias.
-        void processAnchor(const string indicator) @trusted
+        void processAnchor(in string indicator)
         {
             if(event_.anchor.isNull())
             {
@@ -789,14 +772,14 @@ struct Emitter
             }
             if(preparedAnchor_ !is null && preparedAnchor_ != "")
             {
-                writeIndicator(indicator, Yes.needWhitespace);
+                writeIndicator(indicator, true);
                 writeString(preparedAnchor_);
             }
             preparedAnchor_ = null;
         }
 
         ///Process and write a tag.
-        void processTag() @trusted
+        void processTag()
         {
             Tag tag = event_.tag;
 
@@ -825,13 +808,13 @@ struct Emitter
             if(preparedTag_ is null){preparedTag_ = prepareTag(tag);}
             if(preparedTag_ !is null && preparedTag_ != "")
             {
-                writeIndicator(preparedTag_, Yes.needWhitespace);
+                writeIndicator(preparedTag_, true);
             }
             preparedTag_ = null;
         }
 
         ///Determine style to write the current scalar in.
-        ScalarStyle chooseScalarStyle() @trusted
+        ScalarStyle chooseScalarStyle()
         {
             if(analysis_.flags.isNull){analysis_ = analyzeScalar(event_.value);}
 
@@ -844,7 +827,7 @@ struct Emitter
             const allowPlain     = flowLevel_ > 0 ? analysis_.flags.allowFlowPlain 
                                                   : analysis_.flags.allowBlockPlain;
             //simple empty or multiline scalars can't be written in plain style
-            const simpleNonPlain = (context_ == Context.MappingSimpleKey) && 
+            const simpleNonPlain = simpleKeyContext_ && 
                                    (analysis_.flags.empty || analysis_.flags.multiline);
 
             if(doubleQuoted || canonical_)
@@ -857,7 +840,7 @@ struct Emitter
                 return ScalarStyle.Plain;
             }
 
-            if(block && flowLevel_ == 0 && context_ != Context.MappingSimpleKey && 
+            if(block && flowLevel_ == 0 && !simpleKeyContext_ && 
                analysis_.flags.allowBlock)
             {
                 return style;
@@ -865,7 +848,7 @@ struct Emitter
 
             if((invalidOrPlain || singleQuoted) && 
                analysis_.flags.allowSingleQuoted && 
-               !(context_ == Context.MappingSimpleKey && analysis_.flags.multiline))
+               !(simpleKeyContext_ && analysis_.flags.multiline))
             {
                 return ScalarStyle.SingleQuoted;
             }
@@ -874,7 +857,7 @@ struct Emitter
         }
 
         ///Prepare YAML version string for output.
-        static string prepareVersion(const string YAMLVersion) @trusted
+        static string prepareVersion(in string YAMLVersion)
         {
             enforce(YAMLVersion.split(".")[0] == "1",
                     new Error("Unsupported YAML version: " ~ YAMLVersion));
@@ -882,7 +865,7 @@ struct Emitter
         }
 
         ///Encode an Unicode character for tag directive and write it to writer.
-        static void encodeChar(Writer)(ref Writer writer, in dchar c) @trusted
+        static void encodeChar(Writer)(ref Writer writer, in dchar c)
         {
             char[4] data;
             const bytes = encode(data, c);
@@ -894,7 +877,7 @@ struct Emitter
         }
 
         ///Prepare tag directive handle for output.
-        static string prepareTagHandle(const string handle) @trusted
+        static string prepareTagHandle(in string handle)
         {
             enforce(handle !is null && handle != "",
                     new Error("Tag handle must not be empty"));
@@ -909,7 +892,7 @@ struct Emitter
         }
 
         ///Prepare tag directive prefix for output.
-        static string prepareTagPrefix(const string prefix) @trusted
+        static string prepareTagPrefix(in string prefix)
         {
             enforce(prefix !is null && prefix != "",
                     new Error("Tag prefix must not be empty"));
@@ -940,7 +923,7 @@ struct Emitter
         }
 
         ///Prepare tag for output.
-        string prepareTag(in Tag tag) @trusted
+        string prepareTag(in Tag tag)
         {
             enforce(!tag.isNull(), new Error("Tag must not be empty"));
 
@@ -987,7 +970,7 @@ struct Emitter
         }
 
         ///Prepare anchor for output.
-        static string prepareAnchor(const Anchor anchor) @trusted
+        static string prepareAnchor(in Anchor anchor)
         {
             enforce(!anchor.isNull() && anchor.get != "",
                     new Error("Anchor must not be empty"));
@@ -1001,7 +984,7 @@ struct Emitter
         }
 
         ///Analyze specifed scalar and return the analysis result.
-        static ScalarAnalysis analyzeScalar(string scalar) @safe
+        static ScalarAnalysis analyzeScalar(string scalar)
         {
             ScalarAnalysis analysis;
             analysis.flags.isNull = false;
@@ -1168,7 +1151,7 @@ struct Emitter
         //Writers.
 
         ///Start the YAML stream (write the unicode byte order mark).
-        void writeStreamStart() @system
+        void writeStreamStart()
         {
             immutable(ubyte)[] bom;
             //Write BOM (always, even for UTF-8)
@@ -1193,18 +1176,16 @@ struct Emitter
         }
 
         ///End the YAML stream.
-        void writeStreamEnd() @system {stream_.flush();}
+        void writeStreamEnd(){stream_.flush();}
 
         ///Write an indicator (e.g. ":", "[", ">", etc.).
-        void writeIndicator(const string indicator, 
-                            const Flag!"needWhitespace" needWhitespace, 
-                            const Flag!"whitespace" whitespace = No.whitespace,
-                            const Flag!"indentation" indentation = No.indentation) @system
+        void writeIndicator(in string indicator, in bool needWhitespace, 
+                            in bool whitespace = false, in bool indentation = false)
         {
             const bool prefixSpace = !whitespace_ && needWhitespace;
-            whitespace_  = whitespace;
+            whitespace_ = whitespace;
             indentation_ = indentation_ && indentation;
-            openEnded_   = false;
+            openEnded_ = false;
             column_ += indicator.length;
             if(prefixSpace)
             {
@@ -1215,7 +1196,7 @@ struct Emitter
         }
 
         ///Write indentation.
-        void writeIndent() @system
+        void writeIndent()
         {
             const indent = indent_ == -1 ? 0 : indent_;
 
@@ -1241,7 +1222,7 @@ struct Emitter
         }
 
         ///Start new line.
-        void writeLineBreak(const string data = null) @system
+        void writeLineBreak(in string data = null)
         {
             whitespace_ = indentation_ = true;
             ++line_;
@@ -1250,7 +1231,7 @@ struct Emitter
         }
 
         ///Write a YAML version directive.
-        void writeVersionDirective(const string versionText) @system
+        void writeVersionDirective(in string versionText)
         {
             writeString("%YAML ");
             writeString(versionText);
@@ -1258,7 +1239,7 @@ struct Emitter
         }
 
         ///Write a tag directive.
-        void writeTagDirective(const string handle, const string prefix) @system
+        void writeTagDirective(in string handle, in string prefix)
         {
             writeString("%TAG ");
             writeString(handle);
@@ -1309,7 +1290,7 @@ struct ScalarWriter
 
     public:
         ///Construct a ScalarWriter using emitter to output text.
-        this(ref Emitter emitter, string text, const bool split = true) @trusted nothrow
+        this(ref Emitter emitter, string text, in bool split = true)
         {
             emitter_ = &emitter;
             text_ = text;
@@ -1317,15 +1298,15 @@ struct ScalarWriter
         }
 
         ///Destroy the ScalarWriter.
-        @trusted nothrow ~this()
+        ~this()
         {
             text_ = null;
         }
 
         ///Write text as single quoted scalar.
-        void writeSingleQuoted() @system
+        void writeSingleQuoted()
         {
-            emitter_.writeIndicator("\'", Yes.needWhitespace);
+            emitter_.writeIndicator("\'", true);
             spaces_ = breaks_ = false;
             resetTextPosition();
 
@@ -1369,14 +1350,14 @@ struct ScalarWriter
                 updateBreaks(c, Flag!"UpdateSpaces".yes);
             }while(endByte_ < text_.length);
 
-            emitter_.writeIndicator("\'", No.needWhitespace);
+            emitter_.writeIndicator("\'", false);
         }
 
         ///Write text as double quoted scalar.
-        void writeDoubleQuoted() @system
+        void writeDoubleQuoted()
         {
             resetTextPosition();
-            emitter_.writeIndicator("\"", Yes.needWhitespace);
+            emitter_.writeIndicator("\"", true);
             do
             {   
                 const dchar c = nextChar();
@@ -1431,11 +1412,11 @@ struct ScalarWriter
                     }
                 }
             }while(endByte_ < text_.length);
-            emitter_.writeIndicator("\"", No.needWhitespace);
+            emitter_.writeIndicator("\"", false);
         }
 
         ///Write text as folded block scalar.
-        void writeFolded() @system
+        void writeFolded()
         {
             initBlock('>');
             bool leadingSpace = true;
@@ -1481,7 +1462,7 @@ struct ScalarWriter
         }
 
         ///Write text as literal block scalar.
-        void writeLiteral() @system
+        void writeLiteral()
         {
             initBlock('|');
             breaks_ = true;
@@ -1508,9 +1489,9 @@ struct ScalarWriter
         }
 
         ///Write text as plain scalar.
-        void writePlain() @system
+        void writePlain()
         {
-            if(emitter_.context_ == Emitter.Context.Root){emitter_.openEnded_ = true;}
+            if(emitter_.rootContext_){emitter_.openEnded_ = true;}
             if(text_ == ""){return;}
             if(!emitter_.whitespace_)
             {
@@ -1555,7 +1536,7 @@ struct ScalarWriter
 
     private:
         ///Get next character and move end of the text range to it.
-        dchar nextChar() pure @safe
+        dchar nextChar() 
         {
             ++endChar_;
             endByte_ = nextEndByte_;
@@ -1571,26 +1552,26 @@ struct ScalarWriter
         }
 
         ///Get character at start of the text range.
-        dchar charAtStart() const pure @safe
+        dchar charAtStart() const
         {
             size_t idx = startByte_;
             return decode(text_, idx);
         }
 
         ///Is the current line too wide?
-        bool tooWide() const pure @safe nothrow
+        bool tooWide() const
         {
             return startChar_ + 1 == endChar_ && 
                    emitter_.column_ > emitter_.bestWidth_;
         }
 
         ///Determine hints (indicators) for block scalar.
-        size_t determineBlockHints(ref char[] hints, uint bestIndent) const pure @trusted 
+        size_t determineBlockHints(ref char[] hints, uint bestIndent) const
         {
             size_t hintsIdx = 0;
             if(text_.length == 0){return hintsIdx;}
 
-            dchar lastChar(const string str, ref size_t end) 
+            dchar lastChar(in string str, ref size_t end) 
             {
                 size_t idx = end = end - strideBack(str, end);
                 return decode(text_, idx);
@@ -1616,12 +1597,12 @@ struct ScalarWriter
         }
 
         ///Initialize for block scalar writing with specified indicator.
-        void initBlock(const char indicator) @system
+        void initBlock(in char indicator)
         {
             char[4] hints;
             hints[0] = indicator;
             const hintsLength = 1 + determineBlockHints(hints[1 .. $], emitter_.bestIndent_);
-            emitter_.writeIndicator(cast(string)hints[0 .. hintsLength], Yes.needWhitespace);
+            emitter_.writeIndicator(cast(string)hints[0 .. hintsLength], true);
             if(hints.length > 0 && hints[$ - 1] == '+')
             {
                 emitter_.openEnded_ = true;
@@ -1630,7 +1611,7 @@ struct ScalarWriter
         }
 
         ///Write out the current text range.
-        void writeCurrentRange(const Flag!"UpdateColumn" updateColumn) @system
+        void writeCurrentRange(in Flag!"UpdateColumn" updateColumn)
         {
             emitter_.writeString(text_[startByte_ .. endByte_]);
             if(updateColumn){emitter_.column_ += endChar_ - startChar_;}
@@ -1638,7 +1619,7 @@ struct ScalarWriter
         }
 
         ///Write line breaks in the text range.
-        void writeLineBreaks() @system
+        void writeLineBreaks()
         {
             foreach(const dchar br; text_[startByte_ .. endByte_])
             {
@@ -1654,13 +1635,13 @@ struct ScalarWriter
         }
 
         ///Write line break if start of the text range is a newline.
-        void writeStartLineBreak() @system
+        void writeStartLineBreak()
         {
             if(charAtStart == '\n'){emitter_.writeLineBreak();}
         }
 
         ///Write indentation, optionally resetting whitespace/indentation flags.
-        void writeIndent(const Flag!"ResetSpace" resetSpace) @system
+        void writeIndent(in Flag!"ResetSpace" resetSpace)
         {
             emitter_.writeIndent();
             if(resetSpace)
@@ -1670,14 +1651,14 @@ struct ScalarWriter
         }
 
         ///Move start of text range to its end.
-        void updateRangeStart() pure @safe nothrow
+        void updateRangeStart()
         {
             startByte_ = endByte_;
             startChar_ = endChar_;
         }
 
         ///Update the line breaks_ flag, optionally updating the spaces_ flag.
-        void updateBreaks(in dchar c, const Flag!"UpdateSpaces" updateSpaces) pure @trusted
+        void updateBreaks(in dchar c, in Flag!"UpdateSpaces" updateSpaces)
         {
             if(c == dcharNone){return;}
             breaks_ = newlineSearch_.canFind(c);
@@ -1685,7 +1666,7 @@ struct ScalarWriter
         }
 
         ///Move to the beginning of text.
-        void resetTextPosition() pure @safe nothrow
+        void resetTextPosition()
         {
             startByte_ = endByte_ = nextEndByte_ = 0;
             startChar_ = endChar_ = -1;

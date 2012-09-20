@@ -115,7 +115,7 @@ struct Loader
          *
          * Throws:  YAMLException if the file could not be opened or read.
          */
-        this(string filename) pure @safe
+        this(string filename)
         {
             name_ = filename;
             try{this(new File(filename));}
@@ -133,7 +133,7 @@ struct Loader
          *
          * Throws:  YAMLException if stream could not be read.
          */
-        this(Stream stream) pure @safe
+        this(Stream stream)
         {
             try
             {
@@ -151,7 +151,7 @@ struct Loader
         }
 
         ///Destroy the Loader.
-        @trusted ~this()
+        ~this()
         {
             clear(reader_);
             clear(scanner_);
@@ -159,19 +159,19 @@ struct Loader
         }
 
         ///Set stream _name. Used in debugging messages.
-        @property void name(string name) pure @safe nothrow
+        @property void name(string name)
         {
             name_ = name;
         }
 
         ///Specify custom Resolver to use.
-        @property void resolver(Resolver resolver) pure @safe nothrow
+        @property void resolver(Resolver resolver)
         {
             resolver_ = resolver;
         }
 
         ///Specify custom Constructor to use.
-        @property void constructor(Constructor constructor) pure @safe nothrow
+        @property void constructor(Constructor constructor)
         {
             constructor_ = constructor;
         }
@@ -188,7 +188,7 @@ struct Loader
          * Throws:  YAMLException if there wasn't exactly one document
          *          or on a YAML parsing error.
          */
-        Node load() @safe
+        Node load()
         in
         {
             assert(!done_, "Loader: Trying to load YAML twice");
@@ -223,7 +223,7 @@ struct Loader
          *
          * Throws:  YAMLException on a parsing error.
          */
-        Node[] loadAll() @safe
+        Node[] loadAll()
         {
             Node[] nodes;
             foreach(ref node; this){nodes ~= node;}
@@ -239,7 +239,7 @@ struct Loader
          *
          * Throws: YAMLException on a parsing error.
          */
-        int opApply(int delegate(ref Node) dg) @trusted
+        int opApply(int delegate(ref Node) dg)
         in
         {
             assert(!done_, "Loader: Trying to load YAML twice");
@@ -270,7 +270,7 @@ struct Loader
 
     package:
         //Scan and return all tokens. Used for debugging.
-        Token[] scan() @safe
+        Token[] scan()
         {
             try
             {
@@ -286,7 +286,7 @@ struct Loader
         }
 
         //Parse and return all events. Used for debugging.
-        immutable(Event)[] parse() @safe
+        immutable(Event)[] parse()
         {
             try
             {

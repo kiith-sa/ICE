@@ -136,9 +136,9 @@ struct Dumper
         ///Tag directives to use.
         TagDirective[] tags_ = null;
         ///Always write document start?
-        Flag!"explicitStart" explicitStart_ = No.explicitStart;
+        bool explicitStart_ = false;
         ///Always write document end?
-        Flag!"explicitEnd" explicitEnd_ = No.explicitEnd;
+        bool explicitEnd_ = false;
 
         ///Name of the output file or stream, used in error messages.
         string name_ = "<unknown>";
@@ -155,7 +155,7 @@ struct Dumper
          *
          * Throws: YAMLException if the file can not be dumped to (e.g. cannot be opened).
          */
-        this(string filename) @safe
+        this(string filename)
         {
             name_ = filename;
             try{this(new File(filename, FileMode.OutNew));}
@@ -167,47 +167,47 @@ struct Dumper
         }
 
         ///Construct a Dumper writing to a _stream. This is useful to e.g. write to memory.
-        this(Stream stream) pure @safe nothrow
+        this(Stream stream)
         {
-            resolver_    = new Resolver();
+            resolver_ = new Resolver();
             representer_ = new Representer();
             stream_ = stream;
         }
 
         ///Destroy the Dumper.
-        pure @safe nothrow ~this()
+        ~this()
         {
             YAMLVersion_ = null;
         }
 
         ///Set stream _name. Used in debugging messages.
-        @property void name(string name) pure @safe nothrow
+        @property void name(string name)
         {
             name_ = name;
         }
 
         ///Specify custom Resolver to use.
-        @property void resolver(Resolver resolver) @trusted
+        @property void resolver(Resolver resolver)
         {
             clear(resolver_);
             resolver_ = resolver;
         }
 
         ///Specify custom Representer to use.
-        @property void representer(Representer representer) @trusted
+        @property void representer(Representer representer)
         {
             clear(representer_);
             representer_ = representer;
         }
 
         ///Write scalars in _canonical form?
-        @property void canonical(bool canonical) pure @safe nothrow
+        @property void canonical(bool canonical)
         {
             canonical_ = canonical;
         }
 
         ///Set indentation width. 2 by default. Must not be zero.
-        @property void indent(uint indent) pure @safe nothrow
+        @property void indent(uint indent)
         in
         {   
             assert(indent != 0, "Can't use zero YAML indent width");
@@ -218,37 +218,37 @@ struct Dumper
         }
 
         ///Set preferred text _width.
-        @property void textWidth(uint width) pure @safe nothrow
+        @property void textWidth(uint width)
         {
             textWidth_ = width;
         }
 
         ///Set line break to use. Unix by default.
-        @property void lineBreak(LineBreak lineBreak) pure @safe nothrow
+        @property void lineBreak(LineBreak lineBreak)
         {
             lineBreak_ = lineBreak;
         }
 
         ///Set character _encoding to use. UTF-8 by default.
-        @property void encoding(Encoding encoding) pure @safe nothrow
+        @property void encoding(Encoding encoding)
         {
             encoding_ = encoding;
         }    
 
         ///Always explicitly write document start?
-        @property void explicitStart(bool explicit) pure @safe nothrow
+        @property void explicitStart(bool explicit)
         {
-            explicitStart_ = explicit ? Yes.explicitStart : No.explicitStart;
+            explicitStart_ = explicit;
         }
 
         ///Always explicitly write document end?
-        @property void explicitEnd(bool explicit) pure @safe nothrow
+        @property void explicitEnd(bool explicit)
         {
-            explicitEnd_ = explicit ? Yes.explicitEnd : No.explicitEnd;
+            explicitEnd_ = explicit;
         }
 
         ///Specify YAML version string. "1.1" by default.
-        @property void YAMLVersion(string YAMLVersion) pure @safe nothrow
+        @property void YAMLVersion(string YAMLVersion)
         {
             YAMLVersion_ = YAMLVersion;
         }
@@ -283,7 +283,7 @@ struct Dumper
          * dumper.dump(Node("foo"));
          * --------------------
          */
-        @property void tagDirectives(string[string] tags) pure @trusted
+        @property void tagDirectives(string[string] tags)
         {
             TagDirective[] t;
             foreach(handle, prefix; tags)
@@ -309,7 +309,7 @@ struct Dumper
          * Throws:  YAMLException on error (e.g. invalid nodes, 
          *          unable to write to file/stream).
          */
-        void dump(Node[] documents ...) @trusted
+        void dump(Node[] documents ...)
         {
             try
             {
@@ -336,7 +336,7 @@ struct Dumper
          *
          * Throws:  YAMLException if unable to emit.
          */
-        void emit(Event[] events) @system
+        void emit(Event[] events)
         {
             try
             {

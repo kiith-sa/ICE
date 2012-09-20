@@ -39,9 +39,9 @@ struct Serializer
         Resolver resolver_;
 
         ///Do all document starts have to be specified explicitly?
-        Flag!"explicitStart" explicitStart_;
+        bool explicitStart_;
         ///Do all document ends have to be specified explicitly?
-        Flag!"explicitEnd" explicitEnd_;
+        bool explicitEnd_;
         ///YAML version string.
         string YAMLVersion_;
 
@@ -69,22 +69,21 @@ struct Serializer
          *          tagDirectives = Tag directives to emit. 
          */
         this(ref Emitter emitter, Resolver resolver, Encoding encoding,
-             const Flag!"explicitStart" explicitStart, 
-             const Flag!"explicitEnd" explicitEnd, string YAMLVersion, 
-             TagDirective[] tagDirectives) @trusted
+             in bool explicitStart, in bool explicitEnd, string YAMLVersion, 
+             TagDirective[] tagDirectives)
         {
-            emitter_       = &emitter;
-            resolver_      = resolver;
+            emitter_ = &emitter;
+            resolver_ = resolver;
             explicitStart_ = explicitStart;
-            explicitEnd_   = explicitEnd;
-            YAMLVersion_   = YAMLVersion;
+            explicitEnd_ = explicitEnd;
+            YAMLVersion_ = YAMLVersion;
             tagDirectives_ = tagDirectives;
 
             emitter_.emit(streamStartEvent(Mark(), Mark(), encoding));
         }
 
         ///Destroy the Serializer.
-        @safe ~this()
+        ~this()
         {
             emitter_.emit(streamEndEvent(Mark(), Mark()));
             clear(YAMLVersion_);
@@ -96,7 +95,7 @@ struct Serializer
         }
 
         ///Serialize a node, emitting it in the process.
-        void serialize(ref Node node) @safe
+        void serialize(ref Node node)
         {
             emitter_.emit(documentStartEvent(Mark(), Mark(), explicitStart_, 
                                              YAMLVersion_, tagDirectives_));
@@ -121,7 +120,7 @@ struct Serializer
          *
          * Returns: True if the node is anchorable, false otherwise.
          */
-        static bool anchorable(ref Node node) @safe 
+        static bool anchorable(ref Node node) 
         {
             if(node.isScalar)
             {
@@ -133,7 +132,7 @@ struct Serializer
         }
 
         ///Add an anchor to the node if it's anchorable and not anchored yet.
-        void anchorNode(ref Node node) @safe
+        void anchorNode(ref Node node)
         {
             if(!anchorable(node)){return;}
 
@@ -159,7 +158,7 @@ struct Serializer
         }
 
         ///Generate and return a new anchor.
-        Anchor generateAnchor() @trusted
+        Anchor generateAnchor()
         {
             ++lastAnchorID_;
             auto appender = appender!string;
@@ -168,7 +167,7 @@ struct Serializer
         }
 
         ///Serialize a node and all its subnodes.
-        void serializeNode(ref Node node) @trusted
+        void serializeNode(ref Node node)
         {
             //If the node has an anchor, emit an anchor (as aliasEvent) on the 
             //first occurrence, save it in serializedNodes_, and emit an alias 
