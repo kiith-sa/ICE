@@ -7,7 +7,7 @@
 
 ///Extremely simple unittest framework working similarly to D's builtin tests.
 ///
-///This was added to avoidd some DMD bugs with memory allocation 
+///This was added to avoid some DMD bugs with memory allocation 
 ///before main() that made builtin unittests useless.
 module util.unittests;
 
