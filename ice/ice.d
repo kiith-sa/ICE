@@ -43,9 +43,9 @@ import image;
  * Class holding all GUI used by ICE (main menu, etc.).
  *
  * Signal:
- *     public mixin Signal!() gameStart
+ *     public mixin Signal!() levelMenuOpen
  *
- *     Emitted when the player clicks the button to start the game.
+ *     Emitted when the player clicks the button to open level menu.
  *
  * Signal:
  *     public mixin Signal!() creditsStart
@@ -76,6 +76,8 @@ class IceGUI
         MonitorView monitor_;
         ///Container of the main menu.
         GUIElement menuContainer_;
+        ///Container of the level menu.
+        GUIElement levelMenuContainer_;
         ///Main menu.
         GUIMenu menu_;
         ///Credits screen (null unless shown).
@@ -84,8 +86,8 @@ class IceGUI
         Platform platform_;
 
     public:
-        ///Emitted when the player clicks the button to start the game.
-        mixin Signal!() gameStart;
+        ///Emitted when the player clicks the button to open the level menu.
+        mixin Signal!() levelMenuOpen;
         ///Emitted when the credits screen is opened.
         mixin Signal!() creditsStart;
         ///Emitted when the credits screen is closed.
@@ -135,7 +137,7 @@ class IceGUI
                 itemWidth   = "144";
                 itemHeight  = "24";
                 itemSpacing = "8";
-                addItem("Player vs AI", &gameStart.emit);
+                addItem("Player vs AI", &levelMenuOpen.emit);
                 addItem("Credits", &creditsShow);
                 addItem("Quit", &quit.emit);
                 addItem("(DEBUG) Reset video", &resetVideo.emit);
@@ -151,9 +153,15 @@ class IceGUI
 
             if(credits_ !is null){clear(credits_);}
 
+            if(levelMenuContainer_ !is null)
+            {
+                levelMenuContainer_.die();
+                levelMenuContainer_ = null;
+            }
+
             menuContainer_.die();
 
-            gameStart.disconnectAll();
+            levelMenuOpen.disconnectAll();
             creditsStart.disconnectAll();
             creditsEnd.disconnectAll();
             quit.disconnectAll();
@@ -175,6 +183,49 @@ class IceGUI
 
         ///Hide main menu.
         void menuHide(){menuContainer_.hide();};
+
+        ///Show level selection menu.
+        ///
+        ///Params:  levels   = YAML to load level filenames from.
+        ///         initGame = Function that takes level filename and starts a game.
+        void levelMenuShow(ref YAMLNode levels, void delegate(const string) initGame)
+        {
+            if(levelMenuContainer_ !is null)
+            {
+                levelMenuContainer_.die();
+                levelMenuContainer_ = null;
+            }
+
+            with(new GUIElementFactory)
+            {
+                x      = "p_right - 176";
+                y      = "16";
+                width  = "160";
+                height = "p_bottom - 32";
+                levelMenuContainer_ = produce();
+            }
+            parent_.addChild(levelMenuContainer_);
+
+            with(new GUIMenuVerticalFactory)
+            {
+                x           = "p_left";
+                y           = "p_top + 136";
+                itemWidth   = "144";
+                itemHeight  = "24";
+                itemSpacing = "8";
+                foreach(string level; levels)
+                {
+                    addItem(level, {initGame(level);});
+                }
+                levelMenuContainer_.addChild(produce());
+            }
+        }
+
+        ///Hide the level menu.
+        void levelMenuHide()
+        {
+            levelMenuContainer_.hide();
+        }
 
     private:
         ///Show credits screen (and hide main menu).
@@ -397,7 +448,7 @@ class Ice
             gui_ = new IceGUI(guiRoot_.root, monitor_, platform_);
             gui_.creditsStart.connect(&creditsStart);
             gui_.creditsEnd.connect(&creditsEnd);
-            gui_.gameStart.connect(&initGame);
+            gui_.levelMenuOpen.connect(&showLevelMenu);
             gui_.quit.connect(&exit);
             gui_.resetVideo.connect(&resetVideoMode);
 
@@ -439,19 +490,29 @@ class Ice
             platform_ = null;
         }
 
-        ///Start game.
-        void initGame()
+        ///Show the menu to select levels in the game.
+        void showLevelMenu()
         {
             gui_.menuHide();
+            auto levelsFile = gameDir_.file("levels.yaml");
+            YAMLNode levels = loadYAML(levelsFile);
+            gui_.levelMenuShow(levels, &initGame);
+        }
+
+        ///Start game.
+        void initGame(const string levelName)
+        {
             platform_.key.disconnect(&keyHandler);
 
+            gui_.levelMenuHide();
             try
             {
                 game_ = gameContainer_.produce(platform_, 
                                                monitor_, 
                                                guiRoot_.root,
                                                videoDriver_,
-                                               gameDir_);
+                                               gameDir_,
+                                               levelName);
             }
             catch(GameStartException e)
             {
@@ -498,7 +559,6 @@ class Ice
             if(state == KeyState.Pressed) switch(key)
             {
                 case Key.Escape: exit(); break;
-                case Key.Return: initGame(); break;
                 default: break;
             }
         }

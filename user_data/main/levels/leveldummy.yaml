@@ -1,0 +1,10 @@
+level:
+  !!pairs
+
+  - effect text:
+      text: IT WORKS
+      font: default 
+      fontSize: 42
+      color: rgbaFFFFFFFF
+      time: 1.0      
+  - wait: 2.0

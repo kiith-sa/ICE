@@ -484,12 +484,14 @@ class Game
         /**
          * Construct a Game.
          *
-         * Params:  platform = Platform used for input.
-         *          gui      = Game GUI.
-         *          video    = Video driver used to draw the game.
-         *          gameDir  = Game data directory.
+         * Params:  platform  = Platform used for input.
+         *          gui       = Game GUI.
+         *          video     = Video driver used to draw the game.
+         *          gameDir   = Game data directory.
+         *          levelName = File name of the level to load.
          */
-        this(Platform platform, GameGUI gui, VideoDriver video, VFSDir gameDir)
+        this(Platform platform, GameGUI gui, VideoDriver video, VFSDir gameDir,
+             const string levelName)
         {
             gui_             = gui;
             platform_        = platform;
@@ -501,7 +503,7 @@ class Game
 
             scope(failure){destroySystems();}
 
-            initGameState();
+            initGameState(levelName);
         }
 
         ///Destroy the Game.
@@ -522,14 +524,15 @@ class Game
          * At the end of this method, we've either succeeded and level 
          * and player are initialized, or we've failed and they are not 
          * (they are cleaned up if they are already initialized but initGameState fails)
+         *
+         * Params:  levelName = Name of the level to load.
          * 
          * Throws:  GameStartException on failure.
          */
-        void initGameState()
+        void initGameState(const string levelName)
         {
             scope(failure){clear(player1_);}
             player1_  = new HumanPlayer(platform_, "Human");
-            auto levelName = "levels/level1.yaml";
 
             scope(failure){clear(level_);}
 
@@ -838,6 +841,7 @@ class GameContainer
          *          guiParent   = Parent for all GUI elements used by the game.
          *          videoDriver = Video driver to draw graphics with.
          *          gameDir     = Game data directory.
+         *          levelName   = Name of the level to load.
          *
          * Returns: Produced Game.
          *
@@ -847,7 +851,8 @@ class GameContainer
                      MonitorManager monitor, 
                      GUIElement guiParent,
                      VideoDriver videoDriver,
-                     VFSDir gameDir)
+                     VFSDir gameDir,
+                     const string levelName)
         in
         {
             assert(game_ is null,
@@ -864,7 +869,7 @@ class GameContainer
                 gui_     = null;
                 monitor_ = null;
             }
-            game_ = new Game(platform, gui_, videoDriver, gameDir);
+            game_ = new Game(platform, gui_, videoDriver, gameDir, levelName);
             monitor_.addMonitorable(game_.entitySystem_, "Entities");
             return game_;
         }
