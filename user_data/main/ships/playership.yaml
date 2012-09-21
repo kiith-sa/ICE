@@ -10,10 +10,25 @@ weapon:
   0: weapons/player.yaml
   1: weapons/clusterBombBack.yaml
   2: weapons/circleOfDeath.yaml
+ # XXX TODO
+  # 1: weapons/activeshield.yaml
 collidable:
-health: 750
+health: 800
 warhead:
   damage: 500
   killsEntity: false
+#keeps the player from leaving the window
 movementConstraint:
   aabbox: [64, 64, 736, 568]
+spawner:
+  - entity: explosions/player.yaml
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+  - entity: explosions/deathbase.yaml 
+    condition: death 
+    visual: visual/player.yaml
+    components:
+      physics: 
+        position: [0, 0]

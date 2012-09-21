@@ -1,9 +1,9 @@
-visual: visual/fragment1.yaml
+visual: visual/playerfragment.yaml
 spawner:
   - entity: explosions/spiralfragment.yaml 
     condition: death 
     components:
-      visual: visual/fragment1.yaml
+      visual: visual/playerfragment.yaml
       physics: 
         position: [0, 0]
         rotation: 0.55
@@ -13,7 +13,7 @@ spawner:
   - entity: explosions/spiralfragment.yaml 
     condition: death 
     components:
-      visual: visual/fragment1.yaml
+      visual: visual/playerfragment.yaml
       physics: 
         position: [0, 0]
         rotation: -0.55
@@ -23,7 +23,7 @@ spawner:
   - entity: explosions/spiralfragment.yaml 
     condition: death 
     components:
-      visual: visual/fragment1.yaml
+      visual: visual/playerfragment.yaml
       physics: 
         position: [0, 0]
         rotation: 3.24
@@ -33,7 +33,7 @@ spawner:
   - entity: explosions/spiralfragment.yaml 
     condition: death 
     components:
-      visual: visual/fragment1.yaml
+      visual: visual/playerfragment.yaml
       physics: 
         position: [0, 0]
         rotation: 3.04

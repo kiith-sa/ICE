@@ -1,10 +1,10 @@
-visual: visual/linefragment1.yaml
+visual: visual/playerlinefragment.yaml
 engine : 
   maxSpeed       : 2000
   acceleration   : 1000  #-1 is instant
 deathTimeout: 0.1
 spawner:
-  - entity: explosions/linefragment1.yaml 
+  - entity: explosions/playerlinefragment.yaml 
     condition: death 
     components:
       physics: 
@@ -14,7 +14,7 @@ spawner:
       spawner: [] 
       deathTimeout: 10.0
       dumbScript: dumbscripts/forward.yaml
-  - entity: explosions/linefragment1.yaml 
+  - entity: explosions/playerlinefragment.yaml 
     condition: death 
     components:
       physics: 
