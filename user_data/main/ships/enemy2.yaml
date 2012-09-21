@@ -1,0 +1,17 @@
+visual: visual/enemy2.yaml
+engine:
+  maxSpeed: 450
+  acceleration   : 250  
+volume:
+  aabbox:
+    min: [-6, -6]
+    max: [6, 6]
+weapon:
+  0: weapons/enemy2w1.yaml
+  1: weapons/enemy1w1.yaml
+collidable:
+health: 30
+warhead:
+  damage: 45
+  killsEntity: false
+

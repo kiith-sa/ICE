@@ -1,0 +1,11 @@
+type: lines
+vertices:
+  !!pairs
+  - color:  rgba10000000
+  - vertex: [0.0, -3.0]
+  - color:  rgbFCADE3
+  - vertex: [-14.0, -3.0]
+
+  - vertex: [-14.0,  3.0]
+  - color:  rgba10000000
+  - vertex: [0.0,  3.0]

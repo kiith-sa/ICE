@@ -1,0 +1,380 @@
+wave wave1:
+  spawner:
+    - entity: ships/enemy1.yaml
+      components:
+        physics: 
+            position: [250, 167]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+    - entity: ships/enemy1.yaml
+      components:
+        physics: 
+            position: [440, 124]
+        dumbScript: dumbscripts/enemy1.yaml
+wave wave2:
+  spawner:
+    - entity: ships/enemy1.yaml
+      components:
+        physics: 
+            position: [230, 112]
+        dumbScript: dumbscripts/mostlyMoving.yaml
+    - entity: ships/enemy1.yaml
+      components:
+        physics: 
+            position: [480, 135]
+        dumbScript: dumbscripts/wtf-sewing.yaml
+    - entity: ships/enemy1.yaml
+      components:
+        physics: 
+            position: [444, 134]
+        dumbScript: dumbscripts/dontGetHit.yaml
+wave wave3:
+  spawner:
+    - entity: ships/enemy1.yaml
+      components:
+        physics: 
+            position: [660, 126]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+    - entity: ships/enemy1.yaml
+      components:
+        physics: 
+            position: [367, 113]
+        dumbScript: dumbscripts/enemy1.yaml
+    - entity: ships/enemy1.yaml
+      components:
+        physics: 
+            position: [629, 214]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+    - entity: ships/enemy1.yaml
+      components:
+        physics: 
+            position: [440, 104]
+        dumbScript: dumbscripts/wtf-sewing.yaml
+wave wave4:
+  spawner:
+    - entity: ships/enemy1.yaml
+      components:
+        physics: 
+            position: [304, 141]
+        dumbScript: dumbscripts/dontGetHit.yaml
+    - entity: ships/enemy1.yaml
+      components:
+        physics: 
+            position: [584, 156]
+        dumbScript: dumbscripts/mostlyMoving.yaml
+    - entity: ships/enemy2.yaml
+      components:
+        physics: 
+            position: [475, 106]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+wave wave5:
+  spawner:
+    - entity: ships/enemy2.yaml
+      components:
+        physics: 
+            position: [238, 126]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+    - entity: ships/enemy1.yaml
+      components:
+        physics: 
+            position: [467, 173]
+        dumbScript: dumbscripts/enemy1.yaml
+    - entity: ships/enemy2.yaml
+      components:
+        physics: 
+            position: [554, 164]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+wave wave6:
+  spawner:
+    - entity: ships/enemy2.yaml
+      components:
+        physics: 
+            position: [318, 116]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+    - entity: ships/enemy2.yaml
+      components:
+        physics: 
+            position: [167, 133]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+    - entity: ships/enemy2.yaml
+      components:
+        physics: 
+            position: [684, 124]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+wave wave7:
+  spawner:
+    - entity: ships/enemy2.yaml
+      components:
+        physics: 
+            position: [365, 216]
+        dumbScript: dumbscripts/enemy1.yaml
+    - entity: ships/enemy2.yaml
+      components:
+        physics: 
+            position: [167, 103]
+        dumbScript: dumbscripts/wtf-sewing.yaml
+    - entity: ships/enemy2.yaml
+      components:
+        physics: 
+            position: [467, 324]
+        dumbScript: dumbscripts/mostlyMoving.yaml
+    - entity: ships/enemy2.yaml
+      components:
+        physics: 
+            position: [190, 214]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+wave wave8:
+  spawner:
+    - entity: ships/enemy2.yaml
+      components:
+        physics: 
+            position: [218, 156]
+        dumbScript: dumbscripts/dontGetHit.yaml
+    - entity: ships/enemy3.yaml
+      components:
+        physics: 
+            position: [367, 123]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+    - entity: ships/enemy2.yaml
+      components:
+        physics: 
+            position: [444, 245]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+wave wave9:
+  spawner:
+    - entity: ships/enemy2.yaml
+      components:
+        physics: 
+            position: [418, 106]
+        dumbScript: dumbscripts/mostlyMoving.yaml
+    - entity: ships/enemy3.yaml
+      components:
+        physics: 
+            position: [267, 273]
+        dumbScript: dumbscripts/wtf-sewing.yaml
+    - entity: ships/enemy3.yaml
+      components:
+        physics: 
+            position: [564, 210]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+wave wave10:
+  spawner:
+    - entity: ships/enemy3.yaml
+      components:
+        physics: 
+            position: [318, 160]
+        dumbScript: dumbscripts/enemy1.yaml
+    - entity: ships/enemy3.yaml
+      components:
+        physics: 
+            position: [667, 173]
+        dumbScript: dumbscripts/dontGetHit.yaml
+    - entity: ships/enemy3.yaml
+      components:
+        physics: 
+            position: [464, 102]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+wave wave11:
+  spawner:
+    - entity: ships/enemy3.yaml
+      components:
+        physics: 
+            position: [188, 120]
+        dumbScript: dumbscripts/mostlyMoving.yaml
+    - entity: ships/enemy3.yaml
+      components:
+        physics: 
+            position: [367, 153]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+    - entity: ships/enemy3.yaml
+      components:
+        physics: 
+            position: [284, 132]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+    - entity: ships/enemy3.yaml
+      components:
+        physics: 
+            position: [294, 192]
+        dumbScript: dumbscripts/mostlyMoving.yaml
+wave wave12:
+  spawner:
+    - entity: ships/enemy3.yaml
+      components:
+        physics: 
+            position: [238, 138]
+        dumbScript: dumbscripts/wtf-sewing.yaml
+    - entity: ships/enemy3.yaml
+      components:
+        physics: 
+            position: [617, 136]
+        dumbScript: dumbscripts/dontGetHit.yaml
+    - entity: ships/enemy3.yaml
+      components:
+        physics: 
+            position: [464, 102]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+    - entity: ships/enemy3.yaml
+      components:
+        physics: 
+            position: [304, 192]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+    - entity: ships/enemy3.yaml
+      components:
+        physics: 
+            position: [582, 194]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+wave wave13:
+  spawner:
+    - entity: ships/enemy3.yaml
+      components:
+        physics: 
+            position: [318, 116]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+    - entity: ships/enemy3.yaml
+      components:
+        physics: 
+            position: [516, 157]
+        dumbScript: dumbscripts/mostlyMoving.yaml
+    - entity: ships/enemy3.yaml
+      components:
+        physics: 
+            position: [464, 134]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+    - entity: ships/enemy2.yaml
+      components:
+        physics: 
+            position: [143, 160]
+        dumbScript: dumbscripts/dontGetHit.yaml
+    - entity: ships/enemy2.yaml
+      components:
+        physics: 
+            position: [627, 173]
+        dumbScript: dumbscripts/wtf-sewing.yaml
+    - entity: ships/enemy1.yaml
+      components:
+        physics: 
+            position: [118, 101]
+        dumbScript: dumbscripts/enemy1.yaml
+    - entity: ships/enemy1.yaml
+      components:
+        physics: 
+            position: [697, 129]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+level:
+  !!pairs
+  - effect text:
+      text: 42
+      font: default 
+      fontSize: 512
+      color: rgbaFF000001
+      time: 1.0
+
+      
+  - effect lines:
+      minWidth: 0.6
+      maxWidth: 1.0
+      minLength: 16.0
+      maxLength: 32.0
+      verticalScrollingSpeed: 1500.0
+      linesPerPixel: 0.000003
+      detailLevel: 8
+      color: rgbaF8F8ECA0
+  - effect lines:
+      minWidth: 0.3
+      maxWidth: 1.0
+      minLength: 4.0
+      maxLength: 16.0
+      verticalScrollingSpeed: 300.0
+      linesPerPixel: 0.001
+      detailLevel: 7
+      color: rgbaC8C8FF30
+  - effect lines:
+      minWidth: 0.225
+      maxWidth: 0.9
+      minLength: 3.0
+      maxLength: 12.0
+      verticalScrollingSpeed: 225.0
+      linesPerPixel: 0.0015
+      detailLevel: 6
+      color: rgbaD0D0FF24
+  - effect lines:
+      minWidth: 0.15
+      maxWidth: 0.6
+      minLength: 2.0
+      maxLength: 8.0
+      verticalScrollingSpeed: 150.0
+      linesPerPixel: 0.002
+      detailLevel: 5
+      color: rgbaD8D8FF18
+  - effect lines:
+      minWidth: 0.1
+      maxWidth: 0.4
+      minLength: 1.0
+      maxLength: 4.0
+      verticalScrollingSpeed: 90.0
+      linesPerPixel: 0.003
+      detailLevel: 4
+      color: rgbaFFFFFF0B
+  - effect lines:
+      minWidth: 20.0
+      maxWidth: 30.0
+      minLength: 1000.0
+      maxLength: 2000.0
+      verticalScrollingSpeed: 300.0
+      linesPerPixel: 0.0001
+      detailLevel: 6
+      color: rgba2008A001
+  - effect lines:
+      lineDirection: 0.7853
+      minWidth: 50.0
+      maxWidth: 80.0
+      minLength: 1000.0
+      maxLength: 2000.0
+      verticalScrollingSpeed: 80.0
+      linesPerPixel: 0.000005
+      detailLevel: 8
+      color: rgba98989801
+  - effect lines:
+      lineDirection: -0.7853
+      minWidth: 50.0
+      maxWidth: 80.0
+      minLength: 1000.0
+      maxLength: 2000.0
+      verticalScrollingSpeed: 80.0
+      linesPerPixel: 0.000005
+      detailLevel: 8
+      color: rgba98989801
+
+  - wait: 2.0
+  - wave: wave1
+  - wait: 5.0
+  - wave: wave2
+  - wait: 7.0
+  - wait: 0.5
+  - wave: wave3
+  - wait: 6.0
+  - wave: wave4
+  - wait: 10.0
+  - wait: 1.0
+  - wave: wave5
+  - wait: 6.0
+  - wave: wave6
+  - wait: 8.0
+  - wave: wave7
+  - wait: 7.0
+  - wait: 2.0
+  - wave: wave8
+  - wait: 9.0
+  - wave: wave9
+  - wait: 10.0
+  - wave: wave10
+  - wait: 9.0
+  - wait: 2.0
+  - wave: wave11
+  - wait: 9.0
+  - wave: wave12
+  - wait: 9.0
+  - wait: 3.0
+  - wave: wave13
+  - wait: 11.0
+  - wait: 2.0
+  - wait: 2.0
