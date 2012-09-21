@@ -10,8 +10,7 @@ weapon:
   0: weapons/player.yaml
   1: weapons/clusterBombBack.yaml
   2: weapons/circleOfDeath.yaml
- # XXX TODO
-  # 1: weapons/activeshield.yaml
+  3: weapons/activeshield.yaml
 collidable:
 health: 800
 warhead:
