@@ -26,3 +26,9 @@ spawner:
       spawner: [] 
       deathTimeout: 10.0
       dumbScript: dumbscripts/forward.yaml
+volume:
+  aabbox:
+    min: [-1, -12]
+    max: [1,  6]
+warhead:
+  damage: 2
