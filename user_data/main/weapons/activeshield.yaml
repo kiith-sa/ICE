@@ -3,68 +3,104 @@ ammo: 128
 reloadTime: 4.0
 burst:
  - entity: projectiles/shieldbullet.yaml 
-   delay: 0.0
    components:
-     physics:
-       position: [0.0, 19.0]
-       rotation: -1.2
-       speed:    50.0
+     physics: 
+       PRS: [[0.0, 19.0], -1.2, 50.0]
  - entity: projectiles/shieldbullet.yaml 
-   delay: 0.0
    components:
-     physics:
-       position: [0.0, 19.0]
-       rotation: 1.2
-       speed:    50.0
+     physics: 
+       PRS: [[0.0, 19.0], 1.2, 50.0]
  - entity: projectiles/shieldbullet.yaml 
-   delay: 0.0
    components:
-     physics:
-       position: [0.0, 19.0]
-       rotation: -0.1
-       speed:    50.0
+     physics: 
+       PRS: [[0.0, 19.0], -0.1, 50.0]
  - entity: projectiles/shieldbullet.yaml 
-   delay: 0.0
    components:
-     physics:
-       position: [0.0, 19.0]
-       rotation: 0.1
-       speed:    50.0
+     physics: 
+       PRS: [[0.0, 19.0], 0.1, 50.0]
  - entity: projectiles/shieldbullet.yaml 
-   delay: 0.0
    components:
-     physics:
-       position: [0.0, 19.0]
-       rotation: 0.4
-       speed:    50.0
+     physics: 
+       PRS: [[0.0, 19.0], 0.4, 50.0]
  - entity: projectiles/shieldbullet.yaml 
-   delay: 0.0
    components:
-     physics:
-       position: [0.0, 19.0]
-       rotation: -0.4
-       speed:    50.0
+     physics: 
+       PRS: [[0.0, 19.0], -0.4, 50.0]
  - entity: projectiles/shieldbullet.yaml 
-   delay: 0.0
    components:
-     physics:
-       position: [0.0, 19.0]
-       rotation: 0.8
-       speed:    50.0
+     physics: 
+       PRS: [[0.0, 19.0], 0.8, 50.0]
  - entity: projectiles/shieldbullet.yaml 
-   delay: 0.0
    components:
-     physics:
-       position: [0.0, 19.0]
-       rotation: -0.8
-       speed:    50.0
+     physics: 
+       PRS: [[0.0, 19.0], -0.8, 50.0]
  - entity: projectiles/shieldbullet.yaml 
-   delay: 0.0
    components:
-     physics:
-       position: [0.0, 19.0]
-       rotation: 0.0
-       speed:    50.0
+     physics: 
+       PRS: [[0.0, 19.0], 0.0, 50.0]
+
+
+
+
+
+
+
+
+
+ # - entity: projectiles/shieldbullet.yaml 
+ #   components:
+ #     physics:
+ #       position: [0.0, 19.0]
+ #       rotation: -1.2
+ #       speed:    50.0
+ # - entity: projectiles/shieldbullet.yaml 
+ #   components:
+ #     physics:
+ #       position: [0.0, 19.0]
+ #       rotation: 1.2
+ #       speed:    50.0
+ # - entity: projectiles/shieldbullet.yaml 
+ #   components:
+ #     physics:
+ #       position: [0.0, 19.0]
+ #       rotation: -0.1
+ #       speed:    50.0
+ # - entity: projectiles/shieldbullet.yaml 
+ #   components:
+ #     physics:
+ #       position: [0.0, 19.0]
+ #       rotation: 0.1
+ #       speed:    50.0
+ # - entity: projectiles/shieldbullet.yaml 
+ #   components:
+ #     physics:
+ #       position: [0.0, 19.0]
+ #       rotation: 0.4
+ #       speed:    50.0
+ # - entity: projectiles/shieldbullet.yaml 
+ #   components:
+ #     physics:
+ #       position: [0.0, 19.0]
+ #       rotation: -0.4
+ #       speed:    50.0
+ # - entity: projectiles/shieldbullet.yaml 
+ #   components:
+ #     physics:
+ #       position: [0.0, 19.0]
+ #       rotation: 0.8
+ #       speed:    50.0
+ # - entity: projectiles/shieldbullet.yaml 
+ #   components:
+ #     physics:
+ #       position: [0.0, 19.0]
+ #       rotation: -0.8
+ #       speed:    50.0
+ # - entity: projectiles/shieldbullet.yaml 
+ #   components:
+ #     physics:
+ #       position: [0.0, 19.0]
+ #       rotation: 0.0
+ #       speed:    50.0
 
 
 

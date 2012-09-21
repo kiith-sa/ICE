@@ -14,7 +14,6 @@ vertices:
   - color:  rgbaFFFFFF00
   - vertex: [3.0, 482.0]
 
-
   #Outer halo
   - width: 1056
   - color:  rgbaFFFFFF00

@@ -6,7 +6,6 @@ burst:
    components:
      physics:
        position: [0.0, 0.0]
-       rotation: 0.00
        speed: 50.0
        spawnAbsolute:
          - velocity

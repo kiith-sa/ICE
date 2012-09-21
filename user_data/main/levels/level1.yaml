@@ -272,5 +272,3 @@ level:
   - wait: 3
   - wave: tritonSides
   - wait: 5
-
-

@@ -5,504 +5,315 @@ burst:
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 6.20
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 6.20, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 6.10
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 6.10, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 6.00
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 6.00, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 5.9
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 5.9, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 5.8
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 5.8, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 5.7
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 5.7, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 5.6
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 5.6, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 5.5
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 5.5, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 5.4
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 5.4, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 5.3
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 5.3, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 5.2
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 5.2, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 5.1
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 5.1, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 5.00
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 5.00, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 4.9
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 4.9, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 4.8
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 4.8, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 4.7
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 4.7, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 4.6
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 4.6, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 4.5
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 4.5, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 4.4
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 4.4, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 4.3
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 4.3, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 4.2
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 4.2, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 4.1
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 4.1, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 4.00
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 4.00, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 3.9
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 3.9, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 3.8
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 3.8, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 3.7
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 3.7, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 3.6
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 3.6, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 3.5
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 3.5, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 3.4
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 3.4, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 3.3
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 3.3, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 3.2
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 3.2, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 3.1
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 3.1, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 3.00
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 3.00, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 2.9
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 2.9, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 2.8
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 2.8, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 2.7
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 2.7, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 2.6
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 2.6, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 2.5
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 2.5, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 2.4
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 2.4, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 2.3
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 2.3, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 2.2
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 2.2, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 2.1
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 2.1, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 2.00
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 2.00, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 1.9
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 1.9, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 1.8
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 1.8, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 1.7
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 1.7, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 1.6
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 1.6, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 1.5
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 1.5, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 1.4
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 1.4, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 1.3
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 1.3, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 1.2
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 1.2, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 1.1
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 1.1, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 1.00
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 1.00, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 0.9
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 0.9, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 0.8
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 0.8, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 0.7
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 0.7, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 0.6
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 0.6, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 0.5
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 0.5, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 0.4
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 0.4, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 0.3
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 0.3, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 0.2
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 0.2, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 0.1
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 0.1, 100]
+       spawnAbsolute: [velocity]
  - entity: projectiles/circleOfDeathShell.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       rotation: 0.0
-       speed: 100
-       spawnAbsolute:
-         - velocity
+       PRS: [[0.0, 0.0], 0.0, 100]
+       spawnAbsolute: [velocity]

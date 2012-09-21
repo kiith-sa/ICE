@@ -13,13 +13,11 @@ burst:
     components:
       physics:
         position: [0.0, -8.0]
-        rotation: 0.0
   - entity: projectiles/defaultbullet.yaml 
     delay: 0.0
     components:
       physics:
         position: [0.0, -8.0]
-        rotation: 0.0
   - entity: projectiles/defaultbullet.yaml 
     delay: 0.02
     components:

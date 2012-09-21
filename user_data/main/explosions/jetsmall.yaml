@@ -3,155 +3,111 @@ spawner:
    condition: periodic 0.155
    components:
      physics:
-       rotation: -0.5
-       position: [0.0, 0.0]
-       speed: 100.0
+       PRS: [[0.0, 0.0], -0.5, 100.0]
  - entity: explosions/jetfragment.yaml 
    condition: periodic 0.155
    components:
      physics:
-       rotation: -0.4
-       position: [0.0, 0.0]
-       speed: 100.0
+       PRS: [[0.0, 0.0], -0.4, 100.0]
  - entity: explosions/jetfragment.yaml 
    condition: periodic 0.155
    components:
      physics:
-       rotation: -0.3
-       position: [0.0, 0.0]
-       speed: 100.0
+       PRS: [[0.0, 0.0], -0.3, 100.0]
  - entity: explosions/jetfragment.yaml 
    condition: periodic 0.155
    components:
      physics:
-       rotation: -0.2
-       position: [0.0, 0.0]
-       speed: 100.0
+       PRS: [[0.0, 0.0], -0.2, 100.0]
  - entity: explosions/jetfragment.yaml 
    condition: periodic 0.155
    components:
      physics:
-       rotation: -0.1
-       position: [0.0, 0.0]
-       speed: 100.0
+       PRS: [[0.0, 0.0], -0.1, 100.0]
  - entity: explosions/jetfragment.yaml 
    condition: periodic 0.155
    components:
      physics:
-       rotation: 0.0
-       position: [0.0, 0.0]
-       speed: 100.0
+       PRS: [[0.0, 0.0], 0.0, 100.0]
  - entity: explosions/jetfragment.yaml 
    condition: periodic 0.155
    components:
      physics:
-       rotation: 0.1
-       position: [0.0, 0.0]
-       speed: 100.0
+       PRS: [[0.0, 0.0], 0.1, 100.0]
  - entity: explosions/jetfragment.yaml 
    condition: periodic 0.155
    components:
      physics:
-       rotation: 0.2
-       position: [0.0, 0.0]
-       speed: 100.0
+       PRS: [[0.0, 0.0], 0.2, 100.0]
  - entity: explosions/jetfragment.yaml 
    condition: periodic 0.155
    components:
      physics:
-       rotation: 0.3
-       position: [0.0, 0.0]
-       speed: 100.0
+       PRS: [[0.0, 0.0], 0.3, 100.0]
  - entity: explosions/jetfragment.yaml 
    condition: periodic 0.155
    components:
      physics:
-       rotation: 0.4
-       position: [0.0, 0.0]
-       speed: 100.0
+       PRS: [[0.0, 0.0], 0.4, 100.0]
  - entity: explosions/jetfragment.yaml 
    condition: periodic 0.155
    components:
      physics:
-       rotation: 0.5
-       position: [0.0, 0.0]
-       speed: 100.0
+       PRS: [[0.0, 0.0], 0.5, 100.0]
  - entity: explosions/jetfragment.yaml 
    condition: periodic 0.155
    components:
      physics:
-       rotation: 3.64
-       position: [0.0, 0.0]
-       speed: 100.0
+       PRS: [[0.0, 0.0], 3.64, 100.0]
  - entity: explosions/jetfragment.yaml 
    condition: periodic 0.155
    components:
      physics:
-       rotation: 3.54
-       position: [0.0, 0.0]
-       speed: 100.0
+       PRS: [[0.0, 0.0], 3.54, 100.0]
  - entity: explosions/jetfragment.yaml 
    condition: periodic 0.155
    components:
      physics:
-       rotation: 3.44
-       position: [0.0, 0.0]
-       speed: 100.0
+       PRS: [[0.0, 0.0], 3.44, 100.0]
  - entity: explosions/jetfragment.yaml 
    condition: periodic 0.155
    components:
      physics:
-       rotation: 3.34
-       position: [0.0, 0.0]
-       speed: 100.0
+       PRS: [[0.0, 0.0], 3.34, 100.0]
  - entity: explosions/jetfragment.yaml 
    condition: periodic 0.155
    components:
      physics:
-       rotation: 3.24
-       position: [0.0, 0.0]
-       speed: 100.0
+       PRS: [[0.0, 0.0], 3.24, 100.0]
  - entity: explosions/jetfragment.yaml 
    condition: periodic 0.155
    components:
      physics:
-       rotation: 3.14
-       position: [0.0, 0.0]
-       speed: 100.0
+       PRS: [[0.0, 0.0], 3.14, 100.0]
  - entity: explosions/jetfragment.yaml 
    condition: periodic 0.155
    components:
      physics:
-       rotation: 3.04
-       position: [0.0, 0.0]
-       speed: 100.0
+       PRS: [[0.0, 0.0], 3.04, 100.0]
  - entity: explosions/jetfragment.yaml 
    condition: periodic 0.155
    components:
      physics:
-       rotation: 2.94
-       position: [0.0, 0.0]
-       speed: 100.0
+       PRS: [[0.0, 0.0], 2.94, 100.0]
  - entity: explosions/jetfragment.yaml 
    condition: periodic 0.155
    components:
      physics:
-       rotation: 2.84
-       position: [0.0, 0.0]
-       speed: 100.0
+       PRS: [[0.0, 0.0], 2.84, 100.0]
  - entity: explosions/jetfragment.yaml 
    condition: periodic 0.155
    components:
      physics:
-       rotation: 2.74
-       position: [0.0, 0.0]
-       speed: 100.0
+       PRS: [[0.0, 0.0], 2.74, 100.0]
  - entity: explosions/jetfragment.yaml 
    condition: periodic 0.155
    components:
      physics:
-       rotation: 2.64
-       position: [0.0, 0.0]
-       speed: 100.0
+       PRS: [[0.0, 0.0], 2.64, 100.0]
 
 deathTimeout: 0.5

@@ -7,12 +7,10 @@ burst:
      physics:
        position: [-18, 15.0]
        speed: 25.0
-       spawnAbsolute:
-         - velocity
+       spawnAbsolute: [velocity]
  - entity: projectiles/rocket.yaml 
    components:
      physics:
        position: [18, 15.0]
        speed: 25.0
-       spawnAbsolute:
-         - velocity
+       spawnAbsolute: [velocity]

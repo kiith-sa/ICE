@@ -7,21 +7,18 @@ burst:
       physics: 
         rotation: -0.776
         position: [-16.0, 12.0]
-        spawnAbsolute:
-          - velocity
+        spawnAbsolute: [velocity]
       visual: visual/harpoonLeft.yaml 
   - entity: projectiles/harpoon.yaml 
     components: 
       physics:
         position: [0.0, 32.0] 
-        spawnAbsolute:
-          - velocity
+        spawnAbsolute: [velocity]
       visual: visual/harpoonCenter.yaml
   - entity: projectiles/harpoon.yaml 
     components: 
       physics:
         rotation: 0.776
         position: [16.0, 12.0] 
-        spawnAbsolute:
-          - velocity
+        spawnAbsolute: [velocity]
       visual: visual/harpoonRight.yaml

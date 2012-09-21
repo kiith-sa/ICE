@@ -4,6 +4,8 @@ engine :
   acceleration   : 1000  #-1 is instant
 deathTimeout: 0.1
 spawner:
+  #Split in two on death, but the new fragments won's split 
+  #(we override their spawner)
   - entity: explosions/playerlinefragment.yaml 
     condition: death 
     components:
