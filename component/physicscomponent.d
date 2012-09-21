@@ -49,22 +49,42 @@ struct PhysicsComponent
     ///Load from a YAML node. Throws YAMLException on error.
     this(ref YAMLNode node)
     {
-        position = node.containsKey("position") 
-                 ? fromYAML!Vector2f(node["position"], "position")
-                 : Vector2f(0.0f, 0.0f);
-        rotation = node.containsKey("rotation") 
-                 ? fromYAML!float(node["rotation"], "rotation")
-                 : 0.0f;
-        const hasVelocity = node.containsKey("velocity");
-        const hasSpeed    = node.containsKey("speed");
-        enforce(!hasSpeed || !hasVelocity,
-                new YAMLException("PhysicsComponent can't specify both speed "
-                                  "and velocity - one is syntactic sugar for "
-                                  "the other."));
-        velocity = hasVelocity ? fromYAML!Vector2f(node["velocity"], "velocity") :
-                   hasSpeed    ? angleToVector(rotation) *
-                                 fromYAML!float(node["speed"], "speed")
-                               : Vector2f(0.0f, 0.0f);
+        if(node.containsKey("PRS"))
+        {
+            enforce(!node.containsKey("position") && !node.containsKey("rotation") &&
+                    !node.containsKey("speed")    && !node.containsKey("velocity"),
+                    new YAMLException("Conflict: Both PRS (pos-rot-speed) and one or more of " ~
+                                      "position, rotation, speed or velocity specified " ~
+                                      "in a PhysicsComponent."));
+            auto prs = node["PRS"];
+            enforce(prs.isSequence, 
+                    "A PRS (pos-rot-speed) value in a PhysicsComponent is not a sequence");
+            position = fromYAML!Vector2f(prs[0], "PRS position");
+            rotation = fromYAML!float   (prs[1], "PRS rotation");
+            velocity = fromYAML!float   (prs[2], "PRS speed") *
+                       angleToVector(rotation);
+        }
+        else
+        {
+            position = node.containsKey("position") 
+                     ? fromYAML!Vector2f(node["position"], "position")
+                     : Vector2f(0.0f, 0.0f);
+            rotation = node.containsKey("rotation") 
+                     ? fromYAML!float(node["rotation"], "rotation")
+                     : 0.0f;
+            // Absolute velocity.
+            const hasVelocity = node.containsKey("velocity");
+            // Speed (in direction of rotation)
+            const hasSpeed    = node.containsKey("speed");
+            enforce(!hasSpeed || !hasVelocity,
+                    new YAMLException("PhysicsComponent can't specify both speed "
+                                      "and velocity - one is syntactic sugar for "
+                                      "the other."));
+            velocity = hasVelocity ? fromYAML!Vector2f(node["velocity"], "velocity") :
+                       hasSpeed    ? angleToVector(rotation) *
+                                     fromYAML!float(node["speed"], "speed")
+                                   : Vector2f(0.0f, 0.0f);
+        }
 
         if(node.containsKey("spawnAbsolute")) 
         {
