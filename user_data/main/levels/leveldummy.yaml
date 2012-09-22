@@ -1,10 +1,43 @@
-wave arrowMiddle:
+wave wave4:
   spawner:
-    - entity: ships/arrow.yaml
+    - entity: ships/enemy2.yaml
       components:
         physics: 
-            position: [256, -30]
+            position: [304, 141]
+        dumbScript: dumbscripts/dontGetHit.yaml
+    - entity: ships/enemy2.yaml
+      components:
+        physics: 
+            position: [584, 156]
+        dumbScript: dumbscripts/mostlyMoving.yaml
+    - entity: ships/enemy2.yaml
+      components:
+        physics: 
+            position: [475, 106]
+        dumbScript: dumbscripts/justKillPlayer.yaml
 
+wave wave11:
+  spawner:
+    - entity: ships/enemy3.yaml
+      components:
+        physics: 
+            position: [188, 120]
+        dumbScript: dumbscripts/mostlyMoving.yaml
+    - entity: ships/enemy3.yaml
+      components:
+        physics: 
+            position: [367, 153]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+    - entity: ships/enemy3.yaml
+      components:
+        physics: 
+            position: [284, 132]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+    - entity: ships/enemy3.yaml
+      components:
+        physics: 
+            position: [294, 192]
+        dumbScript: dumbscripts/mostlyMoving.yaml
 level:
   !!pairs
 
@@ -14,5 +47,5 @@ level:
       fontSize: 42
       color: rgbaFFFFFFFF
       time: 1.0      
-  - wave: arrowMiddle
+  - wave: wave4
   - wait: 5.0

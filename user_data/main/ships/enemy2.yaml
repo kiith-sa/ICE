@@ -4,14 +4,13 @@ engine:
   acceleration   : 250  
 volume:
   aabbox:
-    min: [-6, -6]
-    max: [6, 6]
+    min: [-8, -14]
+    max: [8, 8]
 weapon:
   0: weapons/enemy2w1.yaml
-  1: weapons/enemy1w1.yaml
+  1: weapons/enemy2w2.yaml
 collidable:
 health: 30
 warhead:
   damage: 45
   killsEntity: false
-

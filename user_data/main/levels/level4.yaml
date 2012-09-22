@@ -1,62 +1,62 @@
 wave wave1:
   spawner:
-    - entity: ships/enemy1.yaml
+    - entity: ships/turtle.yaml
       components:
         physics: 
             position: [250, 167]
         dumbScript: dumbscripts/justKillPlayer.yaml
-    - entity: ships/enemy1.yaml
+    - entity: ships/turtle.yaml
       components:
         physics: 
             position: [440, 124]
         dumbScript: dumbscripts/enemy1.yaml
 wave wave2:
   spawner:
-    - entity: ships/enemy1.yaml
+    - entity: ships/turtle.yaml
       components:
         physics: 
             position: [230, 112]
         dumbScript: dumbscripts/mostlyMoving.yaml
-    - entity: ships/enemy1.yaml
+    - entity: ships/turtle.yaml
       components:
         physics: 
             position: [480, 135]
         dumbScript: dumbscripts/wtf-sewing.yaml
-    - entity: ships/enemy1.yaml
+    - entity: ships/turtle.yaml
       components:
         physics: 
             position: [444, 134]
         dumbScript: dumbscripts/dontGetHit.yaml
 wave wave3:
   spawner:
-    - entity: ships/enemy1.yaml
+    - entity: ships/turtle.yaml
       components:
         physics: 
             position: [660, 126]
         dumbScript: dumbscripts/movingAndFiring.yaml
-    - entity: ships/enemy1.yaml
+    - entity: ships/turtle.yaml
       components:
         physics: 
             position: [367, 113]
         dumbScript: dumbscripts/enemy1.yaml
-    - entity: ships/enemy1.yaml
+    - entity: ships/turtle.yaml
       components:
         physics: 
             position: [629, 214]
         dumbScript: dumbscripts/justKillPlayer.yaml
-    - entity: ships/enemy1.yaml
+    - entity: ships/turtle.yaml
       components:
         physics: 
             position: [440, 104]
         dumbScript: dumbscripts/wtf-sewing.yaml
 wave wave4:
   spawner:
-    - entity: ships/enemy1.yaml
+    - entity: ships/turtle.yaml
       components:
         physics: 
             position: [304, 141]
         dumbScript: dumbscripts/dontGetHit.yaml
-    - entity: ships/enemy1.yaml
+    - entity: ships/turtle.yaml
       components:
         physics: 
             position: [584, 156]
@@ -73,7 +73,7 @@ wave wave5:
         physics: 
             position: [238, 126]
         dumbScript: dumbscripts/movingAndFiring.yaml
-    - entity: ships/enemy1.yaml
+    - entity: ships/turtle.yaml
       components:
         physics: 
             position: [467, 173]
@@ -249,12 +249,12 @@ wave wave13:
         physics: 
             position: [627, 173]
         dumbScript: dumbscripts/wtf-sewing.yaml
-    - entity: ships/enemy1.yaml
+    - entity: ships/turtle.yaml
       components:
         physics: 
             position: [118, 101]
         dumbScript: dumbscripts/enemy1.yaml
-    - entity: ships/enemy1.yaml
+    - entity: ships/turtle.yaml
       components:
         physics: 
             position: [697, 129]
