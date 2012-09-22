@@ -1,0 +1,99 @@
+spawner:
+ - entity: explosions/spiralfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 0.0, 40.0]
+ - entity: explosions/spiralfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 1.57, 40.0]
+ - entity: explosions/spiralfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 0.785, 40.0]
+ - entity: explosions/spiralfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 2.355, 40.0]
+ - entity: explosions/spiralfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.02
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 0.392, 40.0]
+ - entity: explosions/spiralfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.02
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 1.177, 40.0]
+ - entity: explosions/spiralfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.02
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 1.962, 40.0]
+ - entity: explosions/spiralfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.02
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 2.747, 40.0]
+ - entity: explosions/spiralfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 0.196, 40.0]
+ - entity: explosions/spiralfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 0.588, 40.0]
+ - entity: explosions/spiralfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 0.981, 40.0]
+ - entity: explosions/spiralfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 1.373, 40.0]
+ - entity: explosions/spiralfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 1.766, 40.0]
+ - entity: explosions/spiralfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 2.158, 40.0]
+  - entity: explosions/spiralfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 2.551, 40.0]
+ - entity: explosions/spiralfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 2.942, 40.0]  
+       
+deathTimeout: 0.8
