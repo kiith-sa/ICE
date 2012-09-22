@@ -83,7 +83,7 @@ spawner:
    components:
      physics:
        PRS: [[0.0, 0.0], 2.158, 40.0]
-  - entity: explosions/spiralfragment.yaml 
+ - entity: explosions/spiralfragment.yaml 
    condition: periodic 0.13
    delay: 0.04
    components:
