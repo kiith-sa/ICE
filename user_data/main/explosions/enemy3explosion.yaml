@@ -94,6 +94,6 @@ spawner:
    delay: 0.04
    components:
      physics:
-       PRS: [[0.0, 0.0], 2.942, 40.0]  
-       
+       PRS: [[0.0, 0.0], 2.942, 40.0]
+
 deathTimeout: 0.8
