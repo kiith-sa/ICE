@@ -1,0 +1,52 @@
+visual: visual/stoper.yaml
+engine:
+  maxSpeed: 240
+  acceleration: 1700
+volume:
+  aabbox: 
+    min: [-20, 0]
+    max: [20, 20]
+weapon:
+  0: weapons/stoperWeapon.yaml
+collidable:
+health: 55
+warhead:
+  damage: 50
+  killsEntity: false
+dumbScript: dumbscripts/zigzag.yaml
+
+spawner:
+  - entity: explosions/deathbase.yaml 
+    condition: death
+    components:
+      visual: visual/stoper.yaml
+      physics: 
+        position: [0, 0]
+  - entity: explosions/spiralsmall.yaml
+    condition: death 
+    components:
+      physics: 
+        position: [16, 0]
+        rotation: 0.0
+        speed: 16
+  - entity: explosions/spiralsmall.yaml
+    condition: death 
+    components:
+      physics: 
+        position: [-16, 0]
+        rotation: 3.14
+        speed: -16
+  - entity: explosions/spiralsmall.yaml
+    condition: death 
+    components:
+      physics: 
+        position: [2, 24]
+        rotation: 0.0
+        speed: 32
+  - entity: explosions/spiralsmall.yaml
+    condition: death 
+    components:
+      physics: 
+        position: [-2, 24]
+        rotation: 3.14
+        speed: -32
