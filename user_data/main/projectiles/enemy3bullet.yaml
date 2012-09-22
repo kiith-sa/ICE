@@ -1,4 +1,4 @@
-deathTimeout: 1.5
+deathTimeout: 4.0
 engine:
   maxSpeed       : 1500
   acceleration   : 1800  
