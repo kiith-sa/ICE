@@ -4,8 +4,8 @@ engine:
   acceleration   : 1800  
 volume:
   aabbox:
-    min: [-12, -12]
-    max: [12, 12]
+    min: [-10, -10]
+    max: [10, 10]
 visual: visual/enemy3bullet.yaml
 warhead:
   damage: 40
