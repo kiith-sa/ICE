@@ -1,0 +1,77 @@
+type: lines
+vertices:
+  !!pairs
+#Inner part
+  - width:  0.7
+  - color:  rgbaFFFFFFF0
+  - vertex: [-7.0, 0.0]
+  - color:  rgba00FC18C8
+  - vertex: [0.0, -7.0]
+
+  - vertex: [0.0, -7.0]
+  - color:  rgbaFFFFFFF0
+  - vertex: [7.0, 0.0]
+
+  - vertex: [7.0, 0.0]
+  - color:  rgba00FC18C8
+  - vertex: [0.0, 7.0]
+
+  - vertex: [0.0, 7.0]
+  - color:  rgbaFFFFFFF0
+  - vertex: [-7.0, 0.0]
+
+  - color:  rgba00FC18C8
+  - vertex: [-3.5, 3.5]
+  - vertex: [3.5, -3.5]
+
+  - vertex: [3.5, 3.5]
+  - vertex: [-3.5, -3.5]
+
+#Inner part halo
+  - width:  4.0
+  - color:  rgbaFFFFFF48
+  - vertex: [-7.0, 0.0]
+  - vertex: [0.0, -7.0]
+
+  - vertex: [0.0, -7.0]
+  - vertex: [7.0, 0.0]
+
+  - vertex: [7.0, 0.0]
+  - vertex: [0.0, 7.0]
+
+  - vertex: [0.0, 7.0]
+  - vertex: [-7.0, 0.0]
+
+  - vertex: [-3.5, 3.5]
+  - vertex: [3.5, -3.5]
+
+  - vertex: [3.5, 3.5]
+  - vertex: [-3.5, -3.5]
+
+#Outer part
+  - width:  0.7
+  - color:  rgbaFFFFD0B0
+  - vertex: [5.0, 10.0]
+  - vertex: [10.0, -16.0]
+
+  - vertex: [-5.0, 10.0]
+  - vertex: [-10.0, -16.0]
+
+  - vertex: [-10.0, -16.0]
+  - vertex: [0.0, -7.0]
+  - vertex: [0.0, -7.0]
+  - vertex: [10.0, -16.0]
+
+#Outer part halo
+  - width:  3.0
+  - color:  rgbaFFFFD038
+  - vertex: [5.0, 10.0]
+  - vertex: [10.0, -16.0]
+
+  - vertex: [-5.0, 10.0]
+  - vertex: [-10.0, -16.0]
+
+  - vertex: [-10.0, -16.0]
+  - vertex: [0.0, -7.0]
+  - vertex: [0.0, -7.0]
+  - vertex: [10.0, -16.0]

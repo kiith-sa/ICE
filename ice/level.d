@@ -325,7 +325,7 @@ class DumbLevel : Level
                             "     components:\n"                                 ~
                             "       physics:\n"                                  ~
                             "         position: [440, 64]\n"                     ~
-                            "     dumbScript: dumbscripts/enemy1.yaml\n");
+                            "       dumbScript: dumbscripts/enemy1.yaml\n");
 
                     //If spawnerPrototype has no spawnerComponent, add it
                     if(spawnerPrototype.spawner.isNull)

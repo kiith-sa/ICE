@@ -14,3 +14,29 @@ warhead:
   damage: 80
   killsEntity: false
 dumbScript: dumbscripts/arrows.yaml
+spawner:
+  - entity: explosions/deathbase.yaml 
+    condition: death
+    components:
+      visual: visual/arrow.yaml
+      physics: 
+        position: [0, 0]
+      weapon:
+        0: weapons/playerdeath.yaml
+      dumbScript: dumbscripts/fire_0.yaml
+  - entity: explosions/spiralsmall.yaml
+    condition: death 
+    components:
+      deathTimeout: 1.2
+      physics: 
+        position: [16, 0]
+        rotation: 0.0
+        speed: 16
+  - entity: explosions/spiralsmall.yaml
+    condition: death 
+    components:
+      deathTimeout: 1.2
+      physics: 
+        position: [-16, 0]
+        rotation: 3.14
+        speed: -16

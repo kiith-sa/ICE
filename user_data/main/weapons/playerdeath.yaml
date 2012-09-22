@@ -5,31 +5,40 @@ burst:
    components:
      physics:
        PRS: [[0.0, 0.0], 0.02, 50.0]
+       spawnAbsolute: [velocity]
+       spawnAbsolute: [velocity]
  - entity: explosions/playerlinefragment.yaml 
    delay: 0.01
    components:
      physics:
        PRS: [[0.0, 0.0], -0.02, 50.0]
+       spawnAbsolute: [velocity]
+       spawnAbsolute: [velocity]
  - entity: explosions/playerlinefragment.yaml 
    delay: 0.02
    components:
      physics:
        PRS: [[1.0, 0.0], 0.04, 50.0]
+       spawnAbsolute: [velocity]
+       spawnAbsolute: [velocity]
  - entity: explosions/playerlinefragment.yaml 
    delay: 0.02
    components:
      physics:
        PRS: [[-1.0, 0.0], -0.04, 50.0]
+       spawnAbsolute: [velocity]
  - entity: explosions/playerlinefragment.yaml 
    delay: 0.03
    components:
      physics:
        PRS: [[2.0, 0.0], 0.08, 50.0]
+       spawnAbsolute: [velocity]
  - entity: explosions/playerlinefragment.yaml 
    delay: 0.03
    components:
      physics:
        PRS: [[-2.0, 0.0], -0.08, 50.0]
+       spawnAbsolute: [velocity]
 
 
  - entity: explosions/playerlinefragment.yaml 
@@ -37,28 +46,34 @@ burst:
    components:
      physics:
        PRS: [[0.0, 0.0], 3.16, 50.0]
+       spawnAbsolute: [velocity]
  - entity: explosions/playerlinefragment.yaml 
    delay: 0.01
    components:
      physics:
        PRS: [[0.0, 0.0], 3.12, 50.0]
+       spawnAbsolute: [velocity]
  - entity: explosions/playerlinefragment.yaml 
    delay: 0.02
    components:
      physics:
        PRS: [[1.0, 0.0], 3.18, 50.0]
+       spawnAbsolute: [velocity]
  - entity: explosions/playerlinefragment.yaml 
    delay: 0.02
    components:
      physics:
        PRS: [[-1.0, 0.0], 3.10, 50.0]
+       spawnAbsolute: [velocity]
  - entity: explosions/playerlinefragment.yaml 
    delay: 0.03
    components:
      physics:
        PRS: [[2.0, 0.0], 3.22, 50.0]
+       spawnAbsolute: [velocity]
  - entity: explosions/playerlinefragment.yaml 
    delay: 0.03
    components:
      physics:
        PRS: [[-2.0, 0.0], 3.06, 50.0]
+       spawnAbsolute: [velocity]

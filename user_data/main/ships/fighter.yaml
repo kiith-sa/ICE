@@ -1,4 +1,4 @@
-visual: visual/enemy1.yaml
+visual: visual/fighter.yaml
 engine:
   maxSpeed: 300
 volume:
@@ -6,8 +6,7 @@ volume:
     min: [-7, -4]
     max: [7,  12]
 weapon:
-  0: weapons/enemy1w1.yaml
-  1: weapons/default.yaml
+  0: weapons/enemy2w2.yaml
 collidable:
 health: 100
 warhead:
@@ -18,7 +17,7 @@ spawner:
   - entity: explosions/deathbase.yaml 
     condition: death
     components:
-      visual: visual/enemy1.yaml
+      visual: visual/fighter.yaml
       physics: 
         position: [0, 0]
   - entity: explosions/spiralsmall.yaml
