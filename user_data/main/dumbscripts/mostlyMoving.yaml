@@ -7,7 +7,7 @@
     move-direction: -0.75
     move-speed: 0.5
     fire: [0, 1]
-- for 1.5:
+- for 0.5:
     move-direction: 0.45
     fire: [0]
 - for 0.3:
@@ -17,18 +17,18 @@
 - for 0.2:
     move-direction: 0.87
 - for 0.45:
-    move-speed: 0.01
+    move-speed: 0.5
     fire: [1]
 - for 0.5:
     move-direction: -0.3
-- for 0.7:
+- for 0.8:
     move-direction: 0.2
-- for 0.25:
+- for 0.75:
     fire: [0]
-- for 1.0:
+- for 0.5:
     move-direction: -0.4
     fire: [1]
-- for 1.0:
+- for 0.75:
     move-direction: 0.5
     fire: [0]
 - die:
