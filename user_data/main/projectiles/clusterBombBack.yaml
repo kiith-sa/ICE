@@ -12,321 +12,230 @@ spawner:
     condition: death 
     components: 
       physics: 
-        rotation: 2.02 
+        rotation: 116deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 2.07 
+        rotation: 120deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 2.12 
+        rotation: 124deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 2.17                  
+        rotation: 128deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 2.22 
+        rotation: 132deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 2.27 
+        rotation: 136deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 2.32 
+        rotation: 140deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 2.37 
+        rotation: 144deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 2.42                  
+        rotation: 148deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 2.47 
+        rotation: 152deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 2.52 
+        rotation: 156deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 2.57 
+        rotation: 160deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 2.62 
+        rotation: 164deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 2.67 
+        rotation: 168deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 2.72 
+        rotation: 172deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 2.77 
+        rotation: 176deg
         speed: 768  
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 2.82 
+        rotation: 180deg
         speed: 768  
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 2.87 
+        rotation: 184deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 2.92 
+        rotation: 188deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 2.97 
+        rotation: 192deg
         speed: 768  
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 3.02 
+        rotation: 196deg
         speed: 768  
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 3.07 
+        rotation: 200deg
         speed: 768  
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 3.12 
+        rotation: 204deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 3.17 
+        rotation: 208deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 3.22 
+        rotation: 212deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 3.27 
+        rotation: 216deg
         speed: 768  
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 3.32                  
+        rotation: 220deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 3.37 
+        rotation: 224deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 3.42 
+        rotation: 228deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 3.47 
+        rotation: 232deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 3.52 
+        rotation: 236deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death  
     components: 
       physics: 
-        rotation: 3.57 
+        rotation: 240deg
         speed: 768 
         spawnAbsolute: [velocity]
   - entity: projectiles/clusterBombFragment.yaml 
     condition: death 
     components: 
       physics: 
-        rotation: 3.62 
-        speed: 768 
-        spawnAbsolute: [velocity]
-  - entity: projectiles/clusterBombFragment.yaml 
-    condition: death 
-    components: 
-      physics: 
-        rotation: 3.67 
-        speed: 768 
-        spawnAbsolute: [velocity]
-  - entity: projectiles/clusterBombFragment.yaml 
-    condition: death 
-    components: 
-      physics: 
-        rotation: 3.72 
-        speed: 768 
-        spawnAbsolute: [velocity]
-  - entity: projectiles/clusterBombFragment.yaml 
-    condition: death 
-    components: 
-      physics: 
-        rotation: 3.77 
-        speed: 768 
-        spawnAbsolute: [velocity]
-  - entity: projectiles/clusterBombFragment.yaml 
-    condition: death 
-    components: 
-      physics: 
-        rotation: 3.82 
-        speed: 768 
-        spawnAbsolute: [velocity]
-  - entity: projectiles/clusterBombFragment.yaml 
-    condition: death 
-    components: 
-      physics: 
-        rotation: 3.87 
-        speed: 768  
-        spawnAbsolute: [velocity]
-  - entity: projectiles/clusterBombFragment.yaml 
-    condition: death 
-    components: 
-      physics: 
-        rotation: 3.92 
-        speed: 768 
-        spawnAbsolute: [velocity]
-  - entity: projectiles/clusterBombFragment.yaml 
-    condition: death 
-    components: 
-      physics: 
-        rotation: 3.97 
-        speed: 768 
-        spawnAbsolute: [velocity]
-  - entity: projectiles/clusterBombFragment.yaml 
-    condition: death 
-    components: 
-      physics: 
-        rotation: 4.02                  
-        speed: 768  
-        spawnAbsolute: [velocity]
-  - entity: projectiles/clusterBombFragment.yaml 
-    condition: death 
-    components: 
-      physics: 
-        rotation: 4.07                  
-        speed: 768 
-        spawnAbsolute: [velocity]
-  - entity: projectiles/clusterBombFragment.yaml 
-    condition: death 
-    components: 
-      physics: 
-        rotation: 4.12 
-        speed: 768 
-        spawnAbsolute: [velocity]
-  - entity: projectiles/clusterBombFragment.yaml 
-    condition: death 
-    components: 
-      physics: 
-        rotation: 4.17                  
-        speed: 768 
-        spawnAbsolute: [velocity]
-  - entity: projectiles/clusterBombFragment.yaml 
-    condition: death 
-    components: 
-      physics: 
-        rotation: 4.22 
-        speed: 768 
-        spawnAbsolute: [velocity]
-  - entity: projectiles/clusterBombFragment.yaml 
-    condition: death 
-    components: 
-      physics: 
-        rotation: 4.27 
+        rotation: 244deg
         speed: 768 
         spawnAbsolute: [velocity]
