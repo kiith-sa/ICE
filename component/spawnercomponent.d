@@ -152,7 +152,7 @@ struct SpawnerComponent
          *
          * Params:  yaml           = YAML node to load from 
          *          entityRequired = Is the spawned entity required to be specified?
-         *                           Used fopr backwards compatibility with old 
+         *                           Used for backwards compatibility with old 
          *                           weapon format. Will be removed.
          */
         this(ref YAMLNode yaml, Flag!"entityRequired" entityRequired = Yes.entityRequired)
