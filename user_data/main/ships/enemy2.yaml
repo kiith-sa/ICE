@@ -14,3 +14,17 @@ health: 30
 warhead:
   damage: 45
   killsEntity: false
+  
+spawner:
+  - entity: explosions/deathbase.yaml 
+    condition: death
+    components:
+      visual: visual/enemy2.yaml
+      physics: 
+        position: [0, 0]
+  - entity: explosions/enemy2explosion.yaml
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 0.0
