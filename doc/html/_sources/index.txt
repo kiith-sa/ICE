@@ -1,6 +1,8 @@
-=============================
-Welcome to ICE documentation!
-=============================
+.. _index:
+
+=======================
+ICE documentation index
+=======================
 
 `API Documentation <api/index.html>`_
 
@@ -28,6 +30,7 @@ Modding reference:
    :maxdepth: 2
 
    modding_reference/component_visual
+   modding_reference/component_physics 
 ..   modding_reference/component_weapon
 ..   modding_reference/component_dumbscript
 ..   modding_reference/level

@@ -4,8 +4,8 @@
 Visual component
 ================
 
-A visual component (struct VisualComponent in D code) determines how an entity
-is displayed. Without a visual component, an entity is invisible.
+A visual component determines how an entity is displayed. Without a visual
+component, an entity is invisible.
 
 When defining or overriding components of an entity, a visual component is
 specified by filename specifying visual component file. Visual data is quite
@@ -19,7 +19,9 @@ All graphics data is in this file. Currently, a visual component can only be
 drawn as a series of lines with varying widths (per-line) and colors
 (per-vertex).
 
+---------------
 Top-level tags:
+---------------
 
 ======== =====================================================================
 type     Type of graphics data. Currently, only ``lines`` is supported.
@@ -30,15 +32,18 @@ vertices Vertices specifying lines. Lines are drawn between pairs of vertices:
          Value of this tag must be of the ``pairs`` type.
 ======== =====================================================================
 
+---------------------
 Tags in ``vertices``:
+---------------------
 
 ====== ========================================================================
 vertex Vertex of a line. *Sequence of 2 floats*.
 width  Width of following *lines*. Applied per line (vertex pair), not per 
        vertex. *Float scalar*. There is no width limit but widths lower than 1 
-       might not get draw precisely due to aliasing.
+       might not get draw precisely due to aliasing. Default: ``1``.
 color  Color of following *vertices*. Colors are interpolated between vertices,
-       so a line can e.g. fade from black to white. *RGB or RGBA color*.
+       so a line can e.g. fade from black to white. *RGB or RGBA color*. 
+       Default: ``rgbaFFFFFFFF`` (fully opague white).
 ====== ========================================================================
 
 Example visual component file::
