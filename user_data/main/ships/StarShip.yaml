@@ -1,4 +1,4 @@
-visual: visual/enemy3.yaml
+visual: visual/StarShip.yaml
 engine:
   maxSpeed: 400
   acceleration   : 250  
@@ -7,7 +7,7 @@ volume:
     min: [-12, -12]
     max: [12, 12]
 weapon:
-  0: weapons/enemy3w1.yaml
+  0: weapons/StarShipw1.yaml
   1: weapons/enemy2w1.yaml
 collidable:
 health: 40
@@ -19,10 +19,10 @@ spawner:
   - entity: explosions/deathbase.yaml 
     condition: death
     components:
-      visual: visual/enemy3.yaml
+      visual: visual/StarShip.yaml
       physics: 
         position: [0, 0]
-  - entity: explosions/enemy3explosion.yaml
+  - entity: explosions/StarShipexplosion.yaml
     condition: death 
     components:
       physics: 
