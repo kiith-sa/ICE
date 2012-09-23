@@ -11,6 +11,11 @@ be as moddable as possible. All entities in the game are loaded from human
 readable YAML files. Graphics and "scripts" are also loaded from YAML, although 
 different formats might be supported in future.
 
+.. XXX rename to getting started with modding
+.. XXX update below tutorial (visual already done)
+.. XXX links to reference pages
+
+
 
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 About the directory structure
@@ -98,18 +103,17 @@ and any weapons it may use. Those are explained below.
 Creating graphics (visual component)
 ------------------------------------
 
-Currently the only graphics format supported by ICE is a simple YAML based 
-vector format that only supports straight lines, with variable colors and line 
-widths.
+Currently the only graphics format supported by ICE is a simple YAML based
+vector format that stores straight lines with variable colors and line widths.
 
 Graphics are specified by *visual components*, defined in YAML files in the
 ``visual`` subdirectory of a mod directory.
 
-To create your own visual component, you can create a file with the contents of 
+To create your own visual component, you can create a file with the contents of
 the following example in the ``visual`` directory.
 
-Alternatively, you can try copying and modifying any visual component that 
-already exists there.
+You could also try copying and modifying any visual component that already
+exists there.
 
 Example visual component::
 
@@ -131,14 +135,14 @@ Example visual component::
      - color:  rgba40400000
      - vertex: [0.0,  13.0]
    
-This visual component is an array of *lines*, which is currently the only 
-supported visual component *type*.
+This visual component is a group of *lines*, currently the only supported
+visual component *type*.
 
-Lines are specified by *vertices*, a sequence of pairs that can either specify
-line *width*, vertex *color* and *vertex* itself.
+Lines are specified by the *vertices* tag, that allows setting line *width*,
+vertex *color* and *vertex* itself.
 
 Lines are formed by the 1st and 2nd vertex, the 3rd and 4rd, and so on.
-The number of vertices must be divisible by 2.
+The number of vertices must be even.
 
 A *color* or *width* entry affects all vertices drawn after it, until the next 
 *color* or *width* entry. Default color is white and default width is 1.
@@ -147,6 +151,9 @@ Note that *width* affects only whole lines, while *color* can change colors of
 each vertex (which blend in the line, so you can e.g. have a line that blends
 from a red end to a blue end).
 
+**See also:** 
+
+:ref:`modding_reference/component_visual`
 
 -----------------
 Creating a weapon
