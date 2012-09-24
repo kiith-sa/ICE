@@ -1,3 +1,5 @@
+.. _modding_reference/component_physics:
+
 =================
 Physics component
 =================
@@ -14,15 +16,15 @@ Example::
      speed: 50
      spawnAbsolute: [velocity]
 
-Entity with this physics component will be located at ``[0, 45]`` relative to 
-its spawn point, rotated ``90deg`` (that is, directed to right), and moving 
-forward at 50 units per second. The velocity/speed will be the same regardless 
+Entities with this physics component will be located at ``[0, 45]`` relative to
+their spawn point, rotated ``90deg`` (that is, directed to right), and moving
+forward at 50 units per second. The velocity/speed will be the same regardless
 of velocity of the spawner entity.
 
 
------
-Tags:
------
+----
+Tags
+----
 
 ============= ==================================================================
 position      2D position of the entity. The left-top corner of the screen is 

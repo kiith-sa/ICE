@@ -1,0 +1,162 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>DumbScript component &mdash; ICE 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ICE 0.1 documentation" href="../index.html" />
+    <link rel="prev" title="Physics component" href="component_physics.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="component_physics.html" title="Physics component"
+             accesskey="P">previous</a></li>
+        <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="dumbscript-component">
+<span id="modding-reference-component-dumbscript"></span><h1>DumbScript component<a class="headerlink" href="#dumbscript-component" title="Permalink to this headline">¶</a></h1>
+<p>A dumbscript defines behavior of an entity, such as moving and firing. Unless
+an entity is player controlled, without a dumbscript, it will not use its
+engine or weapons (if any).</p>
+<p>A dumbscript component is specified by filename of a separate dumbscript file.</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>dumbscript: dumbscripts/script.yaml</pre>
+</div>
+<p>The script itself is in this file. A dumbscript is a YAML sequence of
+instructions. It is just a simple series of tasks to carry out, there is no
+flow control.</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>!!pairs
+- for 0.2:
+    fire: [0, 1]
+- for 0.3:
+    move-direction: 0.3
+    move-speed: 0.3
+- for 0.3:
+    move-direction: -0.2
+    move-speed: 0.45
+    fire: [1]
+- die:</pre>
+</div>
+<p>An entity with this script will first fire weapons in slots <tt class="docutils literal"><span class="pre">0</span></tt> and <tt class="docutils literal"><span class="pre">1</span></tt> for
+0.2 seconds, then move in direction of 0.3 radians (degrees can be used as
+well) at 0.3 times its full speed for 0.3 seconds. Then, it will move in
+direction of -0.2 radians with 0.45 of its full speed, firing weapon <tt class="docutils literal"><span class="pre">1</span></tt>.
+After that, the entity will die.</p>
+<div class="section" id="instructions">
+<h2>Instructions<a class="headerlink" href="#instructions" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="6%" />
+<col width="94%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>for X</td>
+<td>Carry out an action for the duration of X seconds. The action is
+determined by parameters specified as key:value pairs. These are
+described in the table below. This can be used to e.g. move or fire for a
+certain duration, and even to move <em>and</em> fire simultaneously.</td>
+</tr>
+<tr class="row-even"><td>die</td>
+<td>When this instruction is reached, the entity dies. This is important for
+example for enemy ships that must cease to exist after leaving the screen
+to free CPU and memory resources.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="parameters-of-the-for-instruction">
+<h2>Parameters of the <tt class="docutils literal"><span class="pre">for</span></tt> instruction<a class="headerlink" href="#parameters-of-the-for-instruction" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="82%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>move-direction</td>
+<td>Move in the direction specified in radians. Degrees can be
+specified using the <tt class="docutils literal"><span class="pre">deg</span></tt> suffix. Movement direction follows
+the same rules as rotation of a
+<a class="reference internal" href="component_physics.html#modding-reference-component-physics"><em>Physics component</em></a>. <em>Float scalar</em>.
+Default: no direction (i.e. don&#8217;t move)</td>
+</tr>
+<tr class="row-even"><td>move-speed</td>
+<td>Movement speed as a multiple of the entity&#8217;s max speed determined
+by its engine component. <em>Float scalar</em>. Default: <tt class="docutils literal"><span class="pre">1.0</span></tt>.</td>
+</tr>
+<tr class="row-odd"><td>fire</td>
+<td>Fire weapons in specified slots. If there is no weapon in any
+specified slot, it is ignored. <em>Sequence of integers</em>.
+Default: <tt class="docutils literal"><span class="pre">[]</span></tt>.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">DumbScript component</a><ul>
+<li><a class="reference internal" href="#instructions">Instructions</a></li>
+<li><a class="reference internal" href="#parameters-of-the-for-instruction">Parameters of the <tt class="docutils literal"><span class="pre">for</span></tt> instruction</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="component_physics.html" title="Physics component"
+             >previous</a></li>
+        <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010-2012, Dávid Horváth, Ferdinand Majerech, Libor Mališ..
+      Last updated on Sep 25, 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

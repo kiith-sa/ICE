@@ -430,3 +430,7 @@ following code to it::
 Similarly, it can be set in a wave definition in a level.  You can even use
 DumbScripts in projectiles. For example, you could use a DumbScript to create
 a projectile that moves in a complex fashion and even fires its own weapon.
+
+**See also:** 
+
+:ref:`modding_reference/component_dumbscript`
