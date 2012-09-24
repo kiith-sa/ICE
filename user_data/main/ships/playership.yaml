@@ -18,7 +18,7 @@ warhead:
   killsEntity: false
 #keeps the player from leaving the window
 movementConstraint:
-  aabbox: [64, 64, 736, 568]
+  aabbox: [64, 64, 736, 536]
 spawner:
   - entity: explosions/player.yaml
     condition: death 

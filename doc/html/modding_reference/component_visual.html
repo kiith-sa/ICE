@@ -1,0 +1,177 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Visual component &mdash; ICE 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ICE 0.1 documentation" href="../index.html" />
+    <link rel="next" title="Physics component" href="component_physics.html" />
+    <link rel="prev" title="Modding ICE" href="../tutorials/modding.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="component_physics.html" title="Physics component"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="../tutorials/modding.html" title="Modding ICE"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="visual-component">
+<span id="modding-reference-component-visual"></span><h1>Visual component<a class="headerlink" href="#visual-component" title="Permalink to this headline">¶</a></h1>
+<p>A visual component determines how an entity is displayed. Without a visual
+component, an entity is invisible.</p>
+<p>When defining or overriding components of an entity, a visual component is
+specified by filename specifying visual component file. Visual data is quite
+complex so it would be unwieldy to specify it directly.</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>visual: visual/visualfile.yaml</pre>
+</div>
+<p>All graphics data is in this file. Currently, a visual component can only be
+drawn as a series of lines with varying widths (per-line) and colors
+(per-vertex).</p>
+<div class="section" id="top-level-tags">
+<h2>Top-level tags:<a class="headerlink" href="#top-level-tags" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>type</td>
+<td>Type of graphics data. Currently, only <tt class="docutils literal"><span class="pre">lines</span></tt> is supported.</td>
+</tr>
+<tr class="row-even"><td>vertices</td>
+<td>Vertices specifying lines. Lines are drawn between pairs of vertices:
+first and second is one line, third and fourth is another, and so on.
+There <strong>must</strong> be an even number of vertices.
+Vertex color and line width can be chaged between vertices.
+Value of this tag must be of the <tt class="docutils literal"><span class="pre">pairs</span></tt> type.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="tags-in-vertices">
+<h2>Tags in <tt class="docutils literal"><span class="pre">vertices</span></tt>:<a class="headerlink" href="#tags-in-vertices" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="8%" />
+<col width="92%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>vertex</td>
+<td>Vertex of a line. <em>Sequence of 2 floats</em>.</td>
+</tr>
+<tr class="row-even"><td>width</td>
+<td>Width of following <em>lines</em>. Applied per line (vertex pair), not per
+vertex. <em>Float scalar</em>. There is no width limit but widths lower than 1
+might not get draw precisely due to aliasing. Default: <tt class="docutils literal"><span class="pre">1</span></tt>.</td>
+</tr>
+<tr class="row-odd"><td>color</td>
+<td>Color of following <em>vertices</em>. Colors are interpolated between vertices,
+so a line can e.g. fade from black to white. <em>RGB or RGBA color</em>.
+Default: <tt class="docutils literal"><span class="pre">rgbaFFFFFFFF</span></tt> (fully opague white).</td>
+</tr>
+</tbody>
+</table>
+<p>Example visual component file:</p>
+<div class="highlight-python"><pre>type: lines
+vertices:
+  !!pairs
+
+  #Main
+  - width: 0.5
+  - color:  rgbaFFFFFF40
+  - vertex: [-32.0, 16.0]
+  - color:  rgbaFFFFFF90
+  - vertex: [0.0, -16.0]
+  - vertex: [0.0, -16.0]
+  - color:  rgbaFFFFFF40
+  - vertex: [32.0, 16.0]
+
+  #Halo
+  - width: 1.8
+  - color:  rgba8080FF50
+  - vertex: [-32.0, 16.0]
+  - color:  rgbaB0B0FF60
+  - vertex: [0.0, -16.0]
+
+  - vertex: [0.0, -16.0]
+  - color:  rgba8080FF50
+  - vertex: [32.0, 16.0]</pre>
+</div>
+<p>This draws a simple arrow shape. The main shape is made of 2 lines fading from
+a very transparent white to more opague white and back.</p>
+<p>Two more lines form a wider, more transparent &#8220;halo&#8221; aroud the shape.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Visual component</a><ul>
+<li><a class="reference internal" href="#top-level-tags">Top-level tags:</a></li>
+<li><a class="reference internal" href="#tags-in-vertices">Tags in <tt class="docutils literal"><span class="pre">vertices</span></tt>:</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="component_physics.html" title="Physics component"
+             >next</a></li>
+        <li class="right" >
+          <a href="../tutorials/modding.html" title="Modding ICE"
+             >previous</a> |</li>
+        <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010-2012, Dávid Horváth, Ferdinand Majerech, Libor Mališ..
+      Last updated on Sep 24, 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

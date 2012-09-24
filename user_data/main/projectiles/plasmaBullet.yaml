@@ -4,8 +4,8 @@ engine :
   acceleration   : 1200  #-1 is instant
 volume:
   aabbox:
-    min: [-1, -10]
-    max: [1,  8]
+    min: [-1, -11]
+    max: [1,  11]
 visual:   visual/plasmaBullet.yaml
 warhead:
   damage: 4
