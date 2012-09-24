@@ -1,0 +1,10 @@
+burstPeriod: 0.5
+ammo: 1
+reloadTime: 1.0
+burst:
+  - entity: projectiles/wave.yaml 
+    components: 
+      physics:
+        position: [0.0, 28.0] 
+        spawnAbsolute: [velocity]
+      visual: visual/wave.yaml

@@ -1,0 +1,11 @@
+deathTimeout: 3.5
+engine : 
+  maxSpeed       : 320
+  acceleration   : -1  
+volume:
+  aabbox:
+    min: [-2, 0]
+    max: [2,  4]
+visual:   visual/pea.yaml
+warhead:
+  damage: 15
