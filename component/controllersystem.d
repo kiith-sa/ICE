@@ -117,6 +117,9 @@ class ControllerSystem : System
                     ///Duration of movement in seconds.
                     float duration;
                     ///Direction vector of movement.
+                    /// 
+                    ///Calculated from movement-direction and movement-speed
+                    ///parameters of a ForTime instruction.
                     Vector2f direction;
                     ///Which weapons to fire, if any?
                     Bits!256 fire;
@@ -252,7 +255,6 @@ class ControllerSystem : System
                             case Instruction.Type.Uninitialized:
                                 assert(false, "Uninitialized dumb script instruction");
                             case Instruction.Type.ForTime:
-
                                 //Set the ControllerComponent's movement direction.
                                 //based on any movement instructions in the script.
                                 //Note that if more movement instructions happen in
