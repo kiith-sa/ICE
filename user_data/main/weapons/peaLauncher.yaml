@@ -1,0 +1,19 @@
+burstPeriod: 0.5
+ammo: 4
+reloadTime: 0.5
+burst:
+  - entity: projectiles/pea.yaml 
+    components: 
+      physics:
+        position: [0.0, 33.0] 
+        spawnAbsolute: [velocity]
+  - entity: projectiles/pea.yaml 
+    components: 
+      physics:
+        position: [-18.0, 27.0] 
+        spawnAbsolute: [velocity]
+  - entity: projectiles/pea.yaml 
+    components: 
+      physics:
+        position: [18.0, 27.0] 
+        spawnAbsolute: [velocity]
