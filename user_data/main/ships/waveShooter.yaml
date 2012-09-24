@@ -1,0 +1,38 @@
+visual: visual/waveShooter.yaml
+engine:
+  maxSpeed: 260
+  acceleration: 2400
+volume:
+  aabbox: 
+    min: [-30, 0]
+    max: [30, 28]
+weapon:
+  0: weapons/waveLauncher.yaml
+collidable:
+health: 65
+warhead:
+  damage: 70
+  killsEntity: false
+dumbScript: dumbscripts/arrows.yaml
+
+spawner:
+  - entity: explosions/deathbase.yaml 
+    condition: death
+    components:
+      visual: visual/waveShooter.yaml
+      physics: 
+        position: [0, 0]
+  - entity: explosions/spiralsmall.yaml
+    condition: death 
+    components:
+      physics: 
+        position: [2, 24]
+        rotation: 0.0
+        speed: 32
+  - entity: explosions/spiralsmall.yaml
+    condition: death 
+    components:
+      physics: 
+        position: [-2, 24]
+        rotation: 3.14
+        speed: -32

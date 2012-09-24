@@ -1,0 +1,111 @@
+type: lines
+vertices:
+  !!pairs
+
+  #Main
+  - color:  rgba50FF9060
+  - vertex: [0.0, 0.0]
+  - vertex: [-30.0, 15.0]
+
+  - vertex: [-30.0, 15.0]
+  - color:  rgba50FF90C0
+  - vertex: [-25.0, 25.0]
+
+  - vertex: [-25.0, 25.0]
+  - color:  rgba50FF9060
+  - vertex: [25.0, 25.0]
+
+  - vertex: [25.0, 25.0]
+  - color:  rgba50FF90C0
+  - vertex: [30.0, 15.0]
+
+  - vertex: [30.0, 15.0]
+  - color:  rgba50FF9060
+  - vertex: [0.0, 0.0]
+
+  - vertex: [-22.0, 25.0]
+  - color:  rgba50FF90C0
+  - vertex: [-16.0, 28.0]
+  
+  - vertex: [-16.0, 28.0]
+  - color:  rgba50FF90C0
+  - vertex: [16.0, 28.0]
+  
+  - vertex: [16.0, 28.0]
+  - color:  rgba50FF90C0
+  - vertex: [22.0, 25.0]
+
+
+  #Halo
+  - width: 4.0
+  - color:  rgbaFFFFFF18
+  - vertex: [0.0, 0.0]
+  - vertex: [-30.0, 15.0]
+
+  - vertex: [-30.0, 15.0]
+  - vertex: [-25.0, 25.0]
+
+  - vertex: [-25.0, 25.0]
+  - vertex: [25.0, 25.0]
+
+  - vertex: [25.0, 25.0]
+  - vertex: [30.0, 15.0]
+
+  - vertex: [30.0, 15.0]
+  - vertex: [0.0, 0.0]
+
+  - vertex: [-22.0, 25.0]
+  - vertex: [-16.0, 28.0]
+  
+  - vertex: [-16.0, 28.0]
+  - vertex: [16.0, 28.0]
+  
+  - vertex: [16.0, 28.0]
+  - vertex: [22.0, 25.0]
+  
+  #Inner part
+  - width:  0.7
+  - color:  rgbaFFFFFFF0
+  - vertex: [-7.0, 14.0]
+  - color:  rgba00FC18C8
+  - vertex: [0.0, 7.0]
+
+  - vertex: [0.0, 7.0]
+  - color:  rgbaFFFFFFF0
+  - vertex: [7.0, 14.0]
+
+  - vertex: [7.0, 14.0]
+  - color:  rgba00FC18C8
+  - vertex: [0.0, 21.0]
+
+  - vertex: [0.0, 21.0]
+  - color:  rgbaFFFFFFF0
+  - vertex: [-7.0, 14.0]
+
+  - color:  rgba00FC18C8
+  - vertex: [-3.5, 17.5]
+  - vertex: [3.5, 10.5]
+
+  - vertex: [3.5, 17.5]
+  - vertex: [-3.5, 10.5]
+
+#Inner part halo
+  - width:  4.0
+  - color:  rgbaFFFFFF48
+  - vertex: [-7.0, 14.0]
+  - vertex: [0.0, 7]
+
+  - vertex: [0.0, 7]
+  - vertex: [7.0, 14.0]
+
+  - vertex: [7.0, 14.0]
+  - vertex: [0.0, 21]
+
+  - vertex: [0.0, 21]
+  - vertex: [-7, 14.0]
+
+  - vertex: [-3.5, 17.5]
+  - vertex: [3.5, 10.5]
+
+  - vertex: [3.5, 17.5]
+  - vertex: [-3.5, 10.5]
