@@ -1,0 +1,10 @@
+burstPeriod: 0.25
+ammo: 2
+reloadTime: 0.7
+burst:
+  - entity: projectiles/harpoon.yaml 
+    components: 
+      physics:
+        position: [0.0, 32.0] 
+        spawnAbsolute: [velocity]
+      visual: visual/harpoonCenter.yaml
