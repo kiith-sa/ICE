@@ -47,8 +47,9 @@ import memory.pool;
 import monitor.monitormanager;
 import platform.platform;
 import time.gametime;
-import util.yaml;
+import util.frameprofiler;
 import util.signal;
+import util.yaml;
 import video.videodriver;
 
 import ice.graphicseffect;
@@ -405,49 +406,52 @@ class Game
 
             gui_.update(gameTime_);
 
-            //Does as many game logic updates as needed (even zero)
-            //to keep constant game update tick.
-            gameTime_.doGameUpdates
-            ({
-                player1_.update();
+            {
+                auto zone = Zone("Game subsystem updates");
+                //Does as many game logic updates as needed (even zero)
+                //to keep constant game update tick.
+                gameTime_.doGameUpdates
+                ({
+                    player1_.update();
 
-                if(gamePhase_ == gamePhase_.Over) {return false;}
+                    if(gamePhase_ == gamePhase_.Over) {return false;}
 
-                entitySystem_.update();
+                    entitySystem_.update();
 
-                if(gamePhase_ == GamePhase.Playing)
-                {
-                    if(!level_.update())
+                    if(gamePhase_ == GamePhase.Playing)
                     {
-                        auto player = entitySystem_.entityWithID(playerShipID_);
-                        assert(player !is null, 
-                               "Player ship doesn't exist even though the level was "
-                               "successfully completed");
+                        if(!level_.update())
+                        {
+                            auto player = entitySystem_.entityWithID(playerShipID_);
+                            assert(player !is null, 
+                                   "Player ship doesn't exist even though the level was "
+                                   "successfully completed");
 
-                        gameOver(*player, Yes.success);
+                            gameOver(*player, Yes.success);
 
-                        return true;
+                            return true;
+                        }
                     }
-                }
 
-                controllerSystem_.update();
-                engineSystem_.update();
-                weaponSystem_.update();
-                physicsSystem_.update();
-                movementConstraintSystem_.update();
-                spatialSystem_.update();
-                collisionSystem_.update();
-                warheadSystem_.update();
-                collisionResponseSystem_.update();
-                healthSystem_.update();
-                timeoutSystem_.update();
+                    controllerSystem_.update();
+                    engineSystem_.update();
+                    weaponSystem_.update();
+                    physicsSystem_.update();
+                    movementConstraintSystem_.update();
+                    spatialSystem_.update();
+                    collisionSystem_.update();
+                    warheadSystem_.update();
+                    collisionResponseSystem_.update();
+                    healthSystem_.update();
+                    timeoutSystem_.update();
 
-                spawnerSystem_.update();
-                onDeathSystem_.update();
+                    spawnerSystem_.update();
+                    onDeathSystem_.update();
 
-                return false;
-            });
+                    return false;
+                });
 
+            }
             //Game might have been ended after a level update,
             //which left the component subsystems w/o update,
             //so don't draw either.
