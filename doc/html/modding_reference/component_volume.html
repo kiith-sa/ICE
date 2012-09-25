@@ -1,0 +1,136 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Volume component &mdash; ICE 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ICE 0.1 documentation" href="../index.html" />
+    <link rel="prev" title="Visual component" href="component_visual.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="component_visual.html" title="Visual component"
+             accesskey="P">previous</a></li>
+        <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="volume-component">
+<span id="modding-reference-component-volume"></span><h1>Volume component<a class="headerlink" href="#volume-component" title="Permalink to this headline">¶</a></h1>
+<p>A volume component defines physical volume taken up by an entity.  This used
+for collision detection. If volumes of two entities intersect, and at least one
+of them is collidable (e.g. projectile(not collidable) and ship(collidable) or
+ship and ship (both collidable)), collision response (such as a warhead) goes
+into effect.</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>volume:
+  aabbox:
+    min: [-20, -30]
+    max: [20, 7]</pre>
+</div>
+<p>An entity with this volume component is, for purposes of collision detection, a
+rectangle with X extents of -20 to 20 and Y extents of -30 to 7 relative to
+position of the entity.</p>
+<div class="section" id="tags">
+<h2>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="8%" />
+<col width="92%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>aabbox</td>
+<td>Defines an axis-aligned bounding box volume. This is the only volume type
+supported at the moment. <em>Key-value mapping</em> This must always be
+specified.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="tags-in-aabbox">
+<h2>Tags in <tt class="docutils literal"><span class="pre">aabbox</span></tt><a class="headerlink" href="#tags-in-aabbox" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="4%" />
+<col width="96%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>min</td>
+<td>Minimum extents of the AABBox relative to position of the entity. Both
+coordinates&#8217; values must be lower than their values in max.
+<em>Sequence of 2 floats</em>. This must be specified; there is no default.</td>
+</tr>
+<tr class="row-even"><td>max</td>
+<td>Maximum extents of the AABBox relative to position of the entity. Both
+coordinates&#8217; values must be higher than their values in min.
+<em>Sequence of 2 floats</em>. This must be specified; there is no default.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Volume component</a><ul>
+<li><a class="reference internal" href="#tags">Tags</a></li>
+<li><a class="reference internal" href="#tags-in-aabbox">Tags in <tt class="docutils literal"><span class="pre">aabbox</span></tt></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="component_visual.html" title="Visual component"
+             >previous</a></li>
+        <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010-2012, Dávid Horváth, Ferdinand Majerech, Libor Mališ..
+      Last updated on Sep 26, 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
