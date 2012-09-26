@@ -1,19 +1,20 @@
 visual: visual/stoper.yaml
 engine:
-  maxSpeed: 240
-  acceleration: 1700
+  maxSpeed: 200
+  acceleration: 3000
 volume:
   aabbox: 
-    min: [-20, 0]
-    max: [20, 20]
+    min: [-35, 0]
+    max: [35, 25]
 weapon:
-  0: weapons/stoperWeapon.yaml
+  0: weapons/turtleLauncher.yaml
+  1: weapons/stoperWeapon.yaml
 collidable:
-health: 55
+health: 400
 warhead:
-  damage: 50
+  damage: 65
   killsEntity: false
-dumbScript: dumbscripts/zigzag.yaml
+dumbScript: dumbscripts/zigzag2.yaml
 
 spawner:
   - entity: explosions/deathbase.yaml 
