@@ -29,6 +29,7 @@ Modding reference:
 .. toctree::
    :maxdepth: 2
 
+   modding_reference/component_collidable
    modding_reference/component_dumbscript
    modding_reference/component_physics 
    modding_reference/component_visual

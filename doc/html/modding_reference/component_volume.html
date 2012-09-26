@@ -48,9 +48,9 @@
 <span id="modding-reference-component-volume"></span><h1>Volume component<a class="headerlink" href="#volume-component" title="Permalink to this headline">¶</a></h1>
 <p>A volume component defines physical volume taken up by an entity.  This used
 for collision detection. If volumes of two entities intersect, and at least one
-of them is collidable (e.g. projectile(not collidable) and ship(collidable) or
-ship and ship (both collidable)), collision response (such as a warhead) goes
-into effect.</p>
+of them has a <a class="reference internal" href="component_collidable.html#modding-reference-component-collidable"><em>Collidable component</em></a> (e.g.
+projectile(not collidable) and ship(collidable) or ship and ship (both
+collidable)), collision response (such as a warhead) goes into effect.</p>
 <p>Example:</p>
 <div class="highlight-python"><pre>volume:
   aabbox:
