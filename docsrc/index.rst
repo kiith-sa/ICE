@@ -33,6 +33,7 @@ Modding reference:
    modding_reference/component_controller
    modding_reference/component_deathtimeout
    modding_reference/component_dumbscript
+   modding_reference/component_engine
    modding_reference/component_physics 
    modding_reference/component_visual
    modding_reference/component_volume
