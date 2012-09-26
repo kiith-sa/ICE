@@ -109,11 +109,13 @@
 <li><a href="time.timer.html">time.timer</a></li>
 <li><a href="util.bits.html">util.bits</a></li>
 <li><a href="util.factory.html">util.factory</a></li>
+<li><a href="util.frameprofiler.html">util.frameprofiler</a></li>
 <li><a href="util.iterable.html">util.iterable</a></li>
 <li><a href="util.signal.html">util.signal</a></li>
 <li><a href="util.stringctfe.html">util.stringctfe</a></li>
 <li><a href="util.traits.html">util.traits</a></li>
 <li><a href="util.typeinfo.html">util.typeinfo</a></li>
+<li><a href="util.unittests.html">util.unittests</a></li>
 <li><a href="util.weaksingleton.html">util.weaksingleton</a></li>
 <li><a href="util.yaml.html">util.yaml</a></li>
 <li><a href="video.binarytexturepacker.html">video.binarytexturepacker</a></li>
@@ -287,7 +289,7 @@
 </dt>
 <dd><p>Container managing dependencies and construction of Game.</p>
 
-<dl><dt class="d_decl">Game <a name="produce"></a><span class="ddoc_psymbol">produce</span>(Platform <b>platform</b>, MonitorManager <b>monitor</b>, GUIElement <b>guiParent</b>, VideoDriver <b>videoDriver</b>, VFSDir <b>gameDir</b>);
+<dl><dt class="d_decl">Game <a name="produce"></a><span class="ddoc_psymbol">produce</span>(Platform <b>platform</b>, MonitorManager <b>monitor</b>, GUIElement <b>guiParent</b>, VideoDriver <b>videoDriver</b>, VFSDir <b>gameDir</b>, const string <b>levelName</b>);
 </dt>
 <dd><p>Produce a Game and return a reference to it.
 </p>
@@ -301,6 +303,8 @@
 <td valign=top>Video driver to draw graphics with.</td></tr>
 <tr><td valign=top>VFSDir <b>gameDir</b></td>
 <td valign=top>Game data directory.</td></tr>
+<tr><td valign=top>string <b>levelName</b></td>
+<td valign=top>Name of the level to load.</td></tr>
 </table></div>
 <b>Returns:</b><div class="pbr">Produced Game.
 

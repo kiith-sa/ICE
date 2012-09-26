@@ -109,11 +109,13 @@
 <li><a href="time.timer.html">time.timer</a></li>
 <li><a href="util.bits.html">util.bits</a></li>
 <li><a href="util.factory.html">util.factory</a></li>
+<li><a href="util.frameprofiler.html">util.frameprofiler</a></li>
 <li><a href="util.iterable.html">util.iterable</a></li>
 <li><a href="util.signal.html">util.signal</a></li>
 <li><a href="util.stringctfe.html">util.stringctfe</a></li>
 <li><a href="util.traits.html">util.traits</a></li>
 <li><a href="util.typeinfo.html">util.typeinfo</a></li>
+<li><a href="util.unittests.html">util.unittests</a></li>
 <li><a href="util.weaksingleton.html">util.weaksingleton</a></li>
 <li><a href="util.yaml.html">util.yaml</a></li>
 <li><a href="video.binarytexturepacker.html">video.binarytexturepacker</a></li>
@@ -145,6 +147,11 @@
 
 <dl><dt class="d_decl">template <a name="knownComponentType"></a><span class="ddoc_psymbol">knownComponentType</span>(T)</dt>
 <dd><p>Is T a known component type?</p>
+
+</dd>
+<dt class="d_decl">pure nothrow ComponentType <a name="componentType"></a><span class="ddoc_psymbol">componentType</span>(string type)();
+</dt>
+<dd><p>Get a ComponentType corresponding to a component type name.</p>
 
 </dd>
 <dt class="d_decl">struct <a name="EntityID"></a><span class="ddoc_psymbol">EntityID</span>;
@@ -211,6 +218,11 @@
 <dt class="d_decl">static auto <a name="ctfeComponentGetters"></a><span class="ddoc_psymbol">ctfeComponentGetters</span>();
 </dt>
 <dd><p>Getters to access components of this entity.</p>
+
+</dd>
+<dt class="d_decl">pure nothrow uint <a name="componentIdx"></a><span class="ddoc_psymbol">componentIdx</span>(C)();
+</dt>
+<dd><p>Get a reference to the index of specified component. Used during entity construction.</p>
 
 </dd>
 </dl>
@@ -326,14 +338,9 @@
 <dd><p>Destroy all entities and components, returning to initial state.</p>
 
 </dd>
-<dt class="d_decl">final EntityID <a name="newEntity"></a><span class="ddoc_psymbol">newEntity</span>(ref EntityPrototype <b>proto</b>);
+<dt class="d_decl">final EntityID <a name="newEntity"></a><span class="ddoc_psymbol">newEntity</span>(ref EntityPrototype <b>prototype</b>);
 </dt>
-<dd><p>Construct an entity with components from specified prototype.</p>
-
-</dd>
-<dt class="d_decl">EntityID <a name="entityConstruct"></a><span class="ddoc_psymbol">entityConstruct</span>(Types...)(auto ref Types <b>args</b>);
-</dt>
-<dd><p>Construct an entity by explicitly passing components.</p>
+<dd><p>Construct an entity with components from specified <b>prototype</b>.</p>
 
 </dd>
 <dt class="d_decl">final Entity* <a name="entityWithID"></a><span class="ddoc_psymbol">entityWithID</span>(ref const EntityID <b>id</b>);
@@ -369,14 +376,22 @@
 <dd><p>Provide an interface for the Monitor subsystem to monitor the EntitySystem.</p>
 
 </dd>
+<dt class="d_decl">void <a name="constructEntityAddComponent"></a><span class="ddoc_psymbol">constructEntityAddComponent</span>(C)(Entity* <b>entity</b>, const bool <b>recycling</b>, ref C <b>component</b>);
+</dt>
+<dd><p>Add a component to currently constructed entity.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>entity</td>
+<td valign=top>Entity we're constructing at the moment.</td></tr>
+<tr><td valign=top>recycling</td>
+<td valign=top>Are we recycling an already existing(dead) entity?</td></tr>
+<tr><td valign=top>component</td>
+<td valign=top>Component to add to the entity.</td></tr>
+</table></div>
+
+</dd>
 <dt class="d_decl">inout pure inout(SegmentedVector!(T)) <a name="componentArray"></a><span class="ddoc_psymbol">componentArray</span>(T)();
 </dt>
 <dd><p>Get the component array of specified type.</p>
-
-</dd>
-<dt class="d_decl">void <a name="entityConstructAddComponent"></a><span class="ddoc_psymbol">entityConstructAddComponent</span>(T)(ref T <b>component</b>);
-</dt>
-<dd><p>Add a component to an entity that is currently being constructed.</p>
 
 </dd>
 </dl>

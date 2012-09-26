@@ -6,9 +6,9 @@ Volume component
 
 A volume component defines physical volume taken up by an entity.  This used
 for collision detection. If volumes of two entities intersect, and at least one
-of them is collidable (e.g. projectile(not collidable) and ship(collidable) or
-ship and ship (both collidable)), collision response (such as a warhead) goes
-into effect.
+of them has a :ref:`modding_reference/component_collidable` (e.g.
+projectile(not collidable) and ship(collidable) or ship and ship (both
+collidable)), collision response (such as a warhead) goes into effect.
 
 Example::
 

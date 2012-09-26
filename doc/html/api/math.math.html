@@ -109,11 +109,13 @@
 <li><a href="time.timer.html">time.timer</a></li>
 <li><a href="util.bits.html">util.bits</a></li>
 <li><a href="util.factory.html">util.factory</a></li>
+<li><a href="util.frameprofiler.html">util.frameprofiler</a></li>
 <li><a href="util.iterable.html">util.iterable</a></li>
 <li><a href="util.signal.html">util.signal</a></li>
 <li><a href="util.stringctfe.html">util.stringctfe</a></li>
 <li><a href="util.traits.html">util.traits</a></li>
 <li><a href="util.typeinfo.html">util.typeinfo</a></li>
+<li><a href="util.unittests.html">util.unittests</a></li>
 <li><a href="util.weaksingleton.html">util.weaksingleton</a></li>
 <li><a href="util.yaml.html">util.yaml</a></li>
 <li><a href="video.binarytexturepacker.html">video.binarytexturepacker</a></li>
@@ -175,6 +177,11 @@
 <b>Returns:</b><div class="pbr">Clamped value.</div>
 
 </dd>
+<dt class="d_decl">void <a name="unittestClamp"></a><span class="ddoc_psymbol">unittestClamp</span>();
+</dt>
+<dd><p>Unittest for clamp() .</p>
+
+</dd>
 <dt class="d_decl">U <a name="round"></a><span class="ddoc_psymbol">round</span>(U, T)(const T <b>f</b>);
 </dt>
 <dd><p>Round a number to the nearest integer of type U.
@@ -195,9 +202,19 @@
 <b>Returns:</b><div class="pbr">Floor of given value as U.</div>
 
 </dd>
+<dt class="d_decl">void <a name="unittestFloor"></a><span class="ddoc_psymbol">unittestFloor</span>();
+</dt>
+<dd><p>Unittest for floor.</p>
+
+</dd>
 <dt class="d_decl">uint[] <a name="powersOfTwo"></a><span class="ddoc_psymbol">powersOfTwo</span>;
 </dt>
 <dd><p>Array of first 32 powers of 2.</p>
+
+</dd>
+<dt class="d_decl">void <a name="unittestGeneratePot"></a><span class="ddoc_psymbol">unittestGeneratePot</span>();
+</dt>
+<dd><p>Unittest for generatePot().</p>
 
 </dd>
 <dt class="d_decl">uint <a name="potCeil"></a><span class="ddoc_psymbol">potCeil</span>(const uint <b>num</b>);
@@ -208,6 +225,11 @@
 <td valign=top>Number to get ceiling power of two to.</td></tr>
 </table></div>
 <b>Returns:</b><div class="pbr">Smallest power of two greater or equal to given number.</div>
+
+</dd>
+<dt class="d_decl">void <a name="unittestPotCeil"></a><span class="ddoc_psymbol">unittestPotCeil</span>();
+</dt>
+<dd><p>Unittest for potCeil.</p>
 
 </dd>
 <dt class="d_decl">bool <a name="isPot"></a><span class="ddoc_psymbol">isPot</span>(const uint <b>num</b>);
