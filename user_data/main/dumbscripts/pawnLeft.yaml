@@ -1,0 +1,9 @@
+!!pairs
+- for 0.5:
+    move-direction: 0
+- for 2:
+    move-direction: -1.45
+    fire: [0]
+- for 1:
+    move-direction: -1.45
+- die:
