@@ -4,3 +4,7 @@ video:
   depth:      32
   drawMode:   VRAMBuffers
   fullscreen: false
+frameProfiler:
+  enabled:   true
+  frameSkip: 0
+  memoryMiB: 64

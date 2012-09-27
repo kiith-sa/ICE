@@ -109,11 +109,13 @@
 <li><a href="time.timer.html">time.timer</a></li>
 <li><a href="util.bits.html">util.bits</a></li>
 <li><a href="util.factory.html">util.factory</a></li>
+<li><a href="util.frameprofiler.html">util.frameprofiler</a></li>
 <li><a href="util.iterable.html">util.iterable</a></li>
 <li><a href="util.signal.html">util.signal</a></li>
 <li><a href="util.stringctfe.html">util.stringctfe</a></li>
 <li><a href="util.traits.html">util.traits</a></li>
 <li><a href="util.typeinfo.html">util.typeinfo</a></li>
+<li><a href="util.unittests.html">util.unittests</a></li>
 <li><a href="util.weaksingleton.html">util.weaksingleton</a></li>
 <li><a href="util.yaml.html">util.yaml</a></li>
 <li><a href="video.binarytexturepacker.html">video.binarytexturepacker</a></li>
@@ -252,12 +254,16 @@
 <p>(Used by projectiles)</p>
 
 </dd>
-<dt class="d_decl">this(ref Node <b>yaml</b>);
+<dt class="d_decl">this(ref Node <b>yaml</b>, Flag <b>entityRequired</b> = cast(Flag)true);
 </dt>
 <dd><p>Load a Spawn from YAML.
 </p>
 <b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>Node <b>yaml</b></td>
-<td valign=top>YAML node to load fromYAML</td></tr>
+<td valign=top>YAML node to load from</td></tr>
+<tr><td valign=top>Flag <b>entityRequired</b></td>
+<td valign=top>Is the spawned entity required to be specified?
+                           Used for backwards compatibility with old
+                           weapon format. Will be removed.</td></tr>
 </table></div>
 
 </dd>

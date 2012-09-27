@@ -109,11 +109,13 @@
 <li><a href="time.timer.html">time.timer</a></li>
 <li><a href="util.bits.html">util.bits</a></li>
 <li><a href="util.factory.html">util.factory</a></li>
+<li><a href="util.frameprofiler.html">util.frameprofiler</a></li>
 <li><a href="util.iterable.html">util.iterable</a></li>
 <li><a href="util.signal.html">util.signal</a></li>
 <li><a href="util.stringctfe.html">util.stringctfe</a></li>
 <li><a href="util.traits.html">util.traits</a></li>
 <li><a href="util.typeinfo.html">util.typeinfo</a></li>
+<li><a href="util.unittests.html">util.unittests</a></li>
 <li><a href="util.weaksingleton.html">util.weaksingleton</a></li>
 <li><a href="util.yaml.html">util.yaml</a></li>
 <li><a href="video.binarytexturepacker.html">video.binarytexturepacker</a></li>
@@ -183,6 +185,11 @@ Some types, such as unions, can't be initialized since their default
 <dd><p>Free an object (struct) allocated by alloc(). Will clear the object.</p>
 
 </dd>
+<dt class="d_decl">void <a name="unittestSingle"></a><span class="ddoc_psymbol">unittestSingle</span>();
+</dt>
+<dd><p>Unittest for alloc() and free calling dtor.</p>
+
+</dd>
 <dt class="d_decl">T[] <a name="allocArray"></a><span class="ddoc_psymbol">allocArray</span>(T, string file = __FILE__, uint line = __LINE__)(const size_t <b>elems</b>);
 </dt>
 <dd><p>Allocate an array of specified type.
@@ -229,9 +236,24 @@ Some types, such as unions, can't be initialized since their default
 </table></div>
 
 </dd>
+<dt class="d_decl">void <a name="unittestArray"></a><span class="ddoc_psymbol">unittestArray</span>();
+</dt>
+<dd><p>Unittest for allocArray(), realloc() and free().</p>
+
+</dd>
 <dt class="d_decl">VFSDir <a name="gameDir"></a><span class="ddoc_psymbol">gameDir</span>;
 </dt>
 <dd><p>VFSDir to output memory log to.</p>
+
+</dd>
+<dt class="d_decl">bool <a name="suspendMemoryDebugRecording"></a><span class="ddoc_psymbol">suspendMemoryDebugRecording</span>;
+</dt>
+<dd><p>Debug info is only recorded after main() is entered.
+</p>
+<p>There seems to be a bug with dynamic array appending
+before main() (e.g. in unittests).
+ 
+TODO revisit this when a new DMD (currently 2.060) is released</p>
 
 </dd>
 <dt class="d_decl">package ulong <a name="currentlyAllocated"></a><span class="ddoc_psymbol">currentlyAllocated</span>();

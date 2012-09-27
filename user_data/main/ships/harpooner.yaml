@@ -1,0 +1,52 @@
+visual: visual/harpooner.yaml
+engine:
+  maxSpeed: 250
+  acceleration: 2500
+volume:
+  aabbox: 
+    min: [-25, 0]
+    max: [25, 30]
+weapon:
+  0: weapons/harpoonLauncher.yaml
+collidable:
+health: 70
+warhead:
+  damage: 70
+  killsEntity: false
+dumbScript: dumbscripts/arrows.yaml
+
+spawner:
+  - entity: explosions/deathbase.yaml 
+    condition: death
+    components:
+      visual: visual/harpooner.yaml
+      physics: 
+        position: [0, 0]
+  - entity: explosions/spiralsmall.yaml
+    condition: death 
+    components:
+      physics: 
+        position: [16, 0]
+        rotation: 0.0
+        speed: 16
+  - entity: explosions/spiralsmall.yaml
+    condition: death 
+    components:
+      physics: 
+        position: [-16, 0]
+        rotation: 3.14
+        speed: -16
+  - entity: explosions/spiralsmall.yaml
+    condition: death 
+    components:
+      physics: 
+        position: [2, 24]
+        rotation: 0.0
+        speed: 32
+  - entity: explosions/spiralsmall.yaml
+    condition: death 
+    components:
+      physics: 
+        position: [-2, 24]
+        rotation: 3.14
+        speed: -32

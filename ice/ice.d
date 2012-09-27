@@ -28,11 +28,13 @@ import video.videodrivercontainer;
 import platform.platform;
 import platform.sdlplatform;
 import monitor.monitormanager;
+import memory.memory;
 import memory.memorymonitorable;
 import formats.image;
 import time.eventcounter;
 import math.vector2;
 import math.rect;
+import util.frameprofiler;
 import util.signal;
 import util.weaksingleton;
 import color;
@@ -137,7 +139,7 @@ class IceGUI
                 itemWidth   = "144";
                 itemHeight  = "24";
                 itemSpacing = "8";
-                addItem("Player vs AI", &levelMenuOpen.emit);
+                addItem("Levels", &levelMenuOpen.emit);
                 addItem("Credits", &creditsShow);
                 addItem("Quit", &quit.emit);
                 addItem("(DEBUG) Reset video", &resetVideo.emit);
@@ -284,6 +286,11 @@ class Ice
         ///Used for memory monitoring.
         MemoryMonitorable memory_;
 
+        ///Data storage for the frame profiler, when enabled.
+        ubyte[] frameProfilerData_;
+        ///Is the frame profiler enabled?
+        bool frameProfilerEnabled_;
+
     public:
         /**
          * Initialize ICE.
@@ -320,6 +327,9 @@ class Ice
             //Update FPS every second.
             fpsCounter_ = EventCounter(1.0);
             fpsCounter_.update.connect(&fpsUpdate);
+
+            initFrameProfiler();
+            scope(failure){destroyFrameProfiler();}
         }
 
         ///Destroy Ice and all subsystems.
@@ -329,6 +339,7 @@ class Ice
          
             clear(fpsCounter_);
 
+            destroyFrameProfiler();
             if(game_ !is null){destroyGame();}
             destroyGUI();
             destroyMonitor();
@@ -340,7 +351,7 @@ class Ice
 
         ///Main ICE event loop.
         void run()
-        {                           
+        {
             ulong iterations = 0;
             scope(failure)
             {
@@ -352,29 +363,51 @@ class Ice
 
             while(platform_.run() && continue_)
             {
-                //Count this frame
-                fpsCounter_.event();
+                if(game_ !is null) {frameProfilerResume();}
 
-                videoDriver_.startFrame();
-                if(game_ !is null)
                 {
-                    //update game state
-                    if(!game_.run()){destroyGame();}
+                    auto frame = Frame("ICE frame");
+                    //Count this frame
+                    fpsCounter_.event();
+
+                    {
+                        auto zone = Zone("VideoDriver startFrame");
+                        videoDriver_.startFrame();
+                    }
+                    if(game_ !is null)
+                    {
+                        auto zone = Zone("Game run");
+                        //update game state
+                        if(!game_.run()){destroyGame();}
+                    }
+
+                    {
+                        auto zone = Zone("GUI update");
+                        //Must be updated after game.
+                        //That is because destroyGame might be called, resulting
+                        //in destruction of Game-specific GUI monitors, 
+                        //which need to be cleaned up (in update()) - otherwise 
+                        //draw() would try to draw destroyed GUI monitors.
+                        guiRoot_.update();
+                    }
+
+                    {
+                        auto zone = Zone("GUI draw");
+                        guiRoot_.draw(videoDriver_);
+                    }
+                    {
+                        auto zone = Zone("VideoDriver endFrame");
+                        videoDriver_.endFrame();
+                    }
+                
+                    {
+                        auto zone = Zone("Memory update");
+                        memory_.update();
+                    }
+                
+                    ++iterations;
                 }
-
-                //Must be updated after game.
-                //That is because destroyGame might be called, resulting
-                //in destruction of Game-specific GUI monitors, 
-                //which need to be cleaned up (in update()) - otherwise 
-                //draw() would try to draw destroyed GUI monitors.
-                guiRoot_.update();
-
-                guiRoot_.draw(videoDriver_);
-                videoDriver_.endFrame();
-            
-                memory_.update();
-            
-                ++iterations;
+                if(game_ !is null) {frameProfilerPause();}
             }
             writeln("FPS statistics:\n", fpsCounter_.statistics, "\n");
         }
@@ -460,6 +493,34 @@ class Ice
         {
             clear(gui_);
             clear(guiRoot_);
+        }
+
+        ///Allocate memory for the frame profiler and initialize it (if enabled).
+        void initFrameProfiler()
+        {
+            auto profilerConfig   = config_["frameProfiler"];
+            frameProfilerEnabled_ = profilerConfig["enabled"].as!bool;
+            if(frameProfilerEnabled_)
+            {
+                frameProfilerData_ = 
+                    allocArray!ubyte(profilerConfig["memoryMiB"].as!uint * 1024 * 1024);
+                frameProfilerInit(frameProfilerData_, profilerConfig["frameSkip"].as!uint);
+                frameProfilerPause();
+            }
+        }
+
+        ///Dump frame profiler and deallocate its memory.
+        void destroyFrameProfiler()
+        {
+            // If we failed during initialization, frameProfilerData_ might
+            // not yet be initialized.
+            if(frameProfilerEnabled_ && null !is frameProfilerData_)
+            {
+                VFSFile profilerDump = gameDir_.file("logs/frameProfilerDump.yaml");
+                auto stream = VFSStream(profilerDump.output);
+                frameProfilerDump((string line){stream.writeLine(line);});
+                free(frameProfilerData_);
+            }
         }
 
         ///Destroy Monitor subsystem.

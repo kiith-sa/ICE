@@ -1,0 +1,10 @@
+burstPeriod: 0.30
+ammo: 3
+reloadTime: 0.5
+burst:
+  - entity: projectiles/stoperWeapon.yaml
+    components: 
+      physics: 
+        position: [0.0, 17.5]
+        spawnAbsolute: [velocity]
+      visual: visual/stoperWeapon.yaml

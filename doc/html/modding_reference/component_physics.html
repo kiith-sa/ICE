@@ -1,0 +1,178 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Physics component &mdash; ICE 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ICE 0.1 documentation" href="../index.html" />
+    <link rel="next" title="Visual component" href="component_visual.html" />
+    <link rel="prev" title="Engine component" href="component_engine.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="component_visual.html" title="Visual component"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="component_engine.html" title="Engine component"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="physics-component">
+<span id="modding-reference-component-physics"></span><h1>Physics component<a class="headerlink" href="#physics-component" title="Permalink to this headline">¶</a></h1>
+<p>A physics component manages physics state of an entity, such as its position,
+rotation and velocity. Any entity that is located at some position must have
+a physics component.</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>physics:
+  position: [0, 45]
+  rotation: 90deg
+  speed: 50
+  spawnAbsolute: [velocity]</pre>
+</div>
+<p>Entities with this physics component will be located at <tt class="docutils literal"><span class="pre">[0,</span> <span class="pre">45]</span></tt> relative to
+their spawn point, rotated <tt class="docutils literal"><span class="pre">90deg</span></tt> (that is, directed to right), and moving
+forward at 50 units per second. The velocity/speed will be the same regardless
+of velocity of the spawner entity.</p>
+<div class="section" id="tags">
+<h2>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="16%" />
+<col width="84%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>position</td>
+<td>2D position of the entity. The left-top corner of the screen is
+position <tt class="docutils literal"><span class="pre">[0,</span> <span class="pre">0]</span></tt>. The right-bottom corner is <tt class="docutils literal"><span class="pre">[800,</span> <span class="pre">600]</span></tt>.
+This is always the same regardless of window resolution. By
+default, this is relative to whichever entity spawns this entity.
+<tt class="docutils literal"><span class="pre">spawnAbsolute</span></tt> can be used to change that. <em>Sequence of 2
+floats</em>. Default: <tt class="docutils literal"><span class="pre">[0,</span> <span class="pre">0]</span></tt>.</td>
+</tr>
+<tr class="row-even"><td>rotation</td>
+<td>Rotation of the entity. Specified in radians by default. Suffix
+<tt class="docutils literal"><span class="pre">deg</span></tt> can be used to specify rotation in degrees. For example:
+<tt class="docutils literal"><span class="pre">rotation:</span> <span class="pre">45.5deg</span></tt>. Rotation of 0 points down; 90deg or about
+1.57 (half PI) points right, 180/3.14 up, 270/4.71 left. By
+default, rotation is relative to rotation of whichever entity
+spawns this entity. <tt class="docutils literal"><span class="pre">spawnAbsolute</span></tt> can be used to change that.
+<em>Float scalar</em>. Default: <tt class="docutils literal"><span class="pre">0</span></tt>.</td>
+</tr>
+<tr class="row-odd"><td>velocity</td>
+<td>2D Velocity of the entity when it is spawned. This is completely
+independent of rotation - e.g. a velocity of <tt class="docutils literal"><span class="pre">[1,</span> <span class="pre">0]</span></tt> moves the
+entity right regardless of whether it&#8217;s rotated to the right or
+left. Velocity is measured in units per second. For eample, an
+entity with velocity of <tt class="docutils literal"><span class="pre">[200,</span> <span class="pre">300]</span></tt> will move 200 units right
+and 300 units down each second. By default, velocity is relative
+to velocity of whichever entity spawns this entity.
+<tt class="docutils literal"><span class="pre">spawnAbsolute</span></tt> can be used to change that. <em>Sequence of 2
+floats</em>. Default: <tt class="docutils literal"><span class="pre">[0,</span> <span class="pre">0]</span></tt>.</td>
+</tr>
+<tr class="row-even"><td>speed</td>
+<td>A convenience way of specifying velocity in direction the entity
+is rotated to. For example, a speed of <tt class="docutils literal"><span class="pre">200</span></tt> translates to
+movement of 200 units per second to the front. This is an
+alternative way of specifying velocity; <strong>specifying both velocity
+and speed is an error</strong>. <em>Float scalar</em>.</td>
+</tr>
+<tr class="row-odd"><td>PRS</td>
+<td>A shorthand specifying position, rotation and speed. For example,
+<tt class="docutils literal"><span class="pre">PRS:</span> <span class="pre">[[50,</span> <span class="pre">100],</span> <span class="pre">90deg,</span> <span class="pre">100]</span></tt> is the same as specifying
+position <tt class="docutils literal"><span class="pre">[50,</span> <span class="pre">100]</span></tt>, rotation <tt class="docutils literal"><span class="pre">90deg</span></tt> and speed <tt class="docutils literal"><span class="pre">100</span></tt>. This
+is useful e.g. when spawning many entities at once. <strong>When PRS is
+specified, specifying either one of position, rotation, velocity
+or speed is an error</strong>. <em>Sequence of position, rotation and
+speed, with the same types as used with respective tags</em>.</td>
+</tr>
+<tr class="row-even"><td>spawnAbsolute</td>
+<td>Normally, when an entity spawns another entity (e.g. firing a
+projectile or exploding), position, rotation and velocity of the
+newly spawned entity are added up to the spawner&#8217;s position,
+rotation and velocity. That is, they are relative. This ensures
+that a rotated ship shoots projetiles in the rotated projectiles,
+and, for that matter, that projectiles are spawned near the ship
+instead of some fixed position. Sometimes, this is not desirable
+and we want an entity to be spawned with fixed position, rotation
+or velocity. <tt class="docutils literal"><span class="pre">spawnAbsolute</span></tt> is a sequence that can contain one
+or more of the following named values: <tt class="docutils literal"><span class="pre">position</span></tt>, <tt class="docutils literal"><span class="pre">rotation</span></tt>,
+<tt class="docutils literal"><span class="pre">velocity</span></tt>. These specify that the particular physics attribute
+is absolute when spawning. For example:
+<tt class="docutils literal"><span class="pre">spawnAbsolute:</span> <span class="pre">[rotation,</span> <span class="pre">velocity]</span></tt> specifies that the entity
+will be spawned with fixed rotation and velocity regardless of its
+spawner. In this example, the position is still relative.
+<em>Sequence of named values</em>. Default: <tt class="docutils literal"><span class="pre">[]</span></tt>.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Physics component</a><ul>
+<li><a class="reference internal" href="#tags">Tags</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="component_visual.html" title="Visual component"
+             >next</a></li>
+        <li class="right" >
+          <a href="component_engine.html" title="Engine component"
+             >previous</a> |</li>
+        <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010-2012, Dávid Horváth, Ferdinand Majerech, Libor Mališ..
+      Last updated on Sep 26, 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

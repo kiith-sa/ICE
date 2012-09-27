@@ -14,7 +14,7 @@ spawner:
         rotation: 0.16
         speed: 100
       spawner: [] 
-      deathTimeout: 10.0
+      deathTimeout: 0.7
       dumbScript: dumbscripts/forward.yaml
   - entity: explosions/playerlinefragment.yaml 
     condition: death 
@@ -24,7 +24,7 @@ spawner:
         rotation: -0.16
         speed: 100
       spawner: [] 
-      deathTimeout: 10.0
+      deathTimeout: 0.7
       dumbScript: dumbscripts/forward.yaml
 volume:
   aabbox:

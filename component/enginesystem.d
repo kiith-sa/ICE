@@ -77,7 +77,10 @@ class EngineSystem : System
                 //It's a hacky solution and definitely not realistic, but simple
                 //and good enough for now.
                 *velocity += direction * acceleration;
-                if(velocity.length > engine.maxSpeed){velocity.length = engine.maxSpeed;}
+                if(velocity.length > engine.maxSpeed)
+                {
+                    velocity.length = engine.maxSpeed;
+                }
             }
         }
 }

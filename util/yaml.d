@@ -10,6 +10,7 @@ module util.yaml;
 
 
 import std.algorithm;
+import std.conv;
 import std.exception;
 import std.functional;
 import std.math;
@@ -42,10 +43,13 @@ YAMLNode loadYAML(VFSFile file)
     auto stream = VFSStream(file.input, file.bytes);
     auto constructor = new Constructor;
     constructor.addConstructorScalar("!color", &constructColorFromYAMLScalar);
+    constructor.addConstructorScalar("!rotDeg", &constructDegreesRotation);
 
     auto resolver = new Resolver;
     resolver.addImplicitResolver("!color", std.regex.regex(colorYAMLRegex),
                                  colorYAMLStartChars);
+    resolver.addImplicitResolver("!rotDeg", std.regex.regex(rotationDegreesRegex),
+                                 rotationDegreesStartChars);
     auto loader = Loader(stream);
     loader.constructor = constructor;
     loader.resolver    = resolver;
@@ -123,6 +127,22 @@ T fromYAML(T, string cond = "")(ref YAMLNode yaml, string context = "")
 private:
 
 /**
+ * Constructs a rotation value from degrees.
+ *
+ * This actually translates a value in degrees suffixed by "deg"
+ * into a float value in radians.
+ */
+float constructDegreesRotation(ref YAMLNode node)
+{
+    string value = node.as!string();
+
+    enforce(value.endsWith("deg") && value.length > 3,
+            new Exception("Invalid degree rotation: " ~ value));
+
+    return (PI / 180.0f) * to!float(value[0 .. $ - 3]);
+}
+
+/**
  * Constructs a color from a scalar YAML value.
  *
  * Colors can be either in format rgbRRGGBB or rgbaRRGGBBAA where RR, GG, BB 
@@ -180,7 +200,11 @@ unittest
     assertThrown!Exception(constructColorFromYAMLScalar(ne9));
 }
 
-///Regular expresiion used to determine that a YAML scalar is a color.
-immutable colorYAMLRegex      = "(?:rgb|rgba)(?:[0-9A-F]{6}|[0-9A-F]{8})";
+///Regular expression used to determine that a YAML scalar is a color.
+immutable colorYAMLRegex            = "(?:rgb|rgba)(?:[0-9A-F]{6}|[0-9A-F]{8})";
 ///Possible starting characters of a color YAML scalar.
-immutable colorYAMLStartChars = "r";
+immutable colorYAMLStartChars       = "r";
+//Regular expression used to determine that a YAML scalar is a rotation value in degrees.
+immutable rotationDegreesRegex      = r"^-?\d+(\.\d+)?deg$";
+///Possible starting characters of a degrees rotation YAML scalar.
+immutable rotationDegreesStartChars = "-0123456789.";

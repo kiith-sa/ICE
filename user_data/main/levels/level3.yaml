@@ -18,7 +18,7 @@ wave turtleRight:
     - entity: ships/turtle.yaml
       components:
         physics: 
-            position: [100, 30]
+            position: [-50, -30]
         dumbScript: dumbscripts/toright.yaml
 
 
@@ -27,7 +27,7 @@ wave turtleLeft:
     - entity: ships/turtle.yaml
       components:
         physics: 
-            position: [700, 90]
+            position: [850, 30]
         dumbScript: dumbscripts/toleft.yaml
 
 wave jetDown:
@@ -35,32 +35,32 @@ wave jetDown:
     - entity: ships/jet.yaml
       components:
         physics: 
-          position: [450, 68]
+          position: [450, -32]
     - entity: ships/jet.yaml
       components:
         physics: 
-          position: [550, 32]
+          position: [550, 0]
     - entity: ships/jet.yaml
       components:
         physics: 
-          position: [350, 32]
+          position: [350, 0]
 
 wave jetRight:
   spawner:
     - entity: ships/jet.yaml
       components:
         physics: 
-            position: [100, -90]
+            position: [100, -120]
         dumbScript: dumbscripts/toright.yaml
     - entity: ships/jet.yaml
       components:
         physics: 
-            position: [100, 0]
+            position: [100, -30]
         dumbScript: dumbscripts/toright.yaml
     - entity: ships/jet.yaml
       components:
         physics: 
-            position: [100, -180]
+            position: [100, -210]
         dumbScript: dumbscripts/toright.yaml
 
 wave jetLeft:
@@ -68,17 +68,17 @@ wave jetLeft:
     - entity: ships/jet.yaml
       components:
         physics: 
-            position: [700, -90]
+            position: [700, -128]
         dumbScript: dumbscripts/toleft.yaml
     - entity: ships/jet.yaml
       components:
         physics: 
-            position: [700, 0]
+            position: [700, -30]
         dumbScript: dumbscripts/toleft.yaml
     - entity: ships/jet.yaml
       components:
         physics: 
-            position: [700, -180]
+            position: [700, -210]
         dumbScript: dumbscripts/toleft.yaml
 
 wave tritonSides:
@@ -218,6 +218,10 @@ level:
   - wait: 0.2
   - wave: turtleLeft
   - wait: 1.0
+  - wave: [turtleLeft,  [-100.0, 128.0]]
+  - wait: 0.2
+  - wave: [turtleRight, [100.0,  128.0]]
+  - wait: 0.6
   - wave: jetDown
   - wait: 3.5
   - wave: turtleDown
@@ -228,6 +232,10 @@ level:
   - wait: 0.2
   - wave: turtleRight
   - wait: 0.2
+  - wave: [turtleLeft,  [-100.0, 128.0]]
+  - wait: 0.2
+  - wave: [turtleRight, [100.0,  128.0]]
+  - wait: 0.6
   - wave: jetDown
   - wait: 3.5
   - wave: jetRight
@@ -240,6 +248,9 @@ level:
   - wait: 3.5
   - wave: tritonSides
   - wait: 3.0
+  - wave: [turtleRight, [100.0,  64.0]]
+  - wave: [turtleLeft,  [-100.0, 64.0]]
+  - wait: 0.5
   - wave: tritonMiddle
   - wait: 3.0
   - wave: tritonMiddle

@@ -255,19 +255,23 @@ private:
                 return a;
             }
 
-            ///Get information string about the allocation.
-            @property string info()
+            ///Get information string about the allocation (encoded in YAML).
+            string info(const ubyte indentWidth)
             {
+                static char[256] spaces;
+                spaces[] = ' ';
+                string indent = cast(string)spaces[0 .. indentWidth];
                 string meta = "";
                 debug
                 {
-                    meta ~= "__FILE__: " ~ strip(cast(char[])file_) ~ "\n";
-                    meta ~= "__LINE__: " ~ to!string(line_) ~ "\n";
-                    meta ~= "type    : " ~ strip(cast(char[])type_) ~ "\n";
-                    meta ~= "objects : " ~ to!string(objects_) ~ "\n";
-                    meta ~= "bytes   : " ~ to!string(objects_ * objectBytes_) ~ "\n";
-                    meta ~= "time    : " ~ to!string(time_) ~ "\n";
-                    meta ~= "ptr     : ";
+                    meta ~= indent ~ "- __FILE__: " ~ strip(cast(char[])file_) ~ "\n";
+
+                    meta ~= indent ~ "  __LINE__: " ~ to!string(line_) ~ "\n";
+                    meta ~= indent ~ "  type    : " ~ strip(cast(char[])type_) ~ "\n";
+                    meta ~= indent ~ "  objects : " ~ to!string(objects_) ~ "\n";
+                    meta ~= indent ~ "  bytes   : " ~ to!string(objects_ * objectBytes_) ~ "\n";
+                    meta ~= indent ~ "  time    : " ~ to!string(time_) ~ "\n";
+                    meta ~= indent ~ "  ptr     : ";
                 }
                 return meta ~ to!string(ptr);
             }
@@ -536,21 +540,21 @@ private:
     ///Return a string containing statistics about allocated memory.
     string statistics()
     {
-        string stats = "Memory allocator statistics:";
-        stats ~= "\nTotal allocated (bytes): " ~ to!string(totalAllocated_);
-        stats ~= "\nTotal freed (bytes): " ~ to!string(totalFreed_);
+        string stats = "#Memory allocator statistics:";
+        stats ~= "\nTotal allocated bytes: " ~ to!string(totalAllocated_);
+        stats ~= "\nTotal freed bytes: " ~ to!string(totalFreed_);
 
         const nonFreed = allocations_.length;
-        stats ~= nonFreed ? "\nLEAK: " ~ to!string(nonFreed) ~ " pointers were not freed."
-                           : "\nAll pointers have been freed, no memory leaks detected.";
+        stats ~= nonFreed ? "\n#LEAK: " ~ to!string(nonFreed) ~ " pointers were not freed."
+                          : "\n#All pointers have been freed, no memory leaks detected.";
         stats ~= "\n\n\n";
 
         if(nonFreed)
         {
-            stats ~= "Non-freed allocations (LEAKS):";
+            stats ~= "LEAKS:";
             foreach(ref allocation; allocations_)
             {
-                stats ~= "\n\n" ~ allocation.info;
+                stats ~= "\n\n" ~ allocation.info(2);
             }
             stats ~= "\n\n\n";
         }
@@ -559,7 +563,7 @@ private:
             stats ~= "Freed allocations:";
             foreach(ref allocation; pastAllocations_)
             {
-                stats ~= "\n\n" ~ allocation.info;
+                stats ~= "\n\n" ~ allocation.info(2);
             }
         }
 
@@ -575,7 +579,7 @@ private:
 
         auto logs = gameDir.dir("main::logs");
         logs.create();
-        logs.file("memory.log").output.write(cast(void[]) stats);
+        logs.file("memoryLog.yaml").output.write(cast(void[]) stats);
 
         if(allocations_.length > 0)
         {

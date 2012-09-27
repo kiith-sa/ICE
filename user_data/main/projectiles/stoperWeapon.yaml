@@ -1,0 +1,11 @@
+deathTimeout: 3.5
+engine : 
+  maxSpeed       : 350
+  acceleration   : -1  
+volume:
+  aabbox:
+    min: [-4, -15]
+    max: [4,  15]
+visual:   visual/stoperWeapon.yaml
+warhead:
+  damage: 30

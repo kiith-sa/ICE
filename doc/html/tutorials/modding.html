@@ -26,6 +26,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="ICE 0.1 documentation" href="../index.html" />
+    <link rel="next" title="Collidable component" href="../modding_reference/component_collidable.html" />
     <link rel="prev" title="Installing from source on Windows" href="install_source_windows.html" /> 
   </head>
   <body>
@@ -33,8 +34,11 @@
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
+          <a href="../modding_reference/component_collidable.html" title="Collidable component"
+             accesskey="N">next</a></li>
+        <li class="right" >
           <a href="install_source_windows.html" title="Installing from source on Windows"
-             accesskey="P">previous</a></li>
+             accesskey="P">previous</a> |</li>
         <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>  
@@ -54,12 +58,10 @@ readable YAML files. Graphics and &#8220;scripts&#8221; are also loaded from YAM
 different formats might be supported in future.</p>
 <div class="section" id="about-the-directory-structure">
 <h3>About the directory structure<a class="headerlink" href="#about-the-directory-structure" title="Permalink to this headline">¶</a></h3>
-<p>ICE has a modular directory system to allow for pluggable mods in future,
-howevever, this feature is not used at the moment.</p>
-<p>For now, there is only one &#8220;mod&#8221; - ICE itself. This mod can be found in the
-<tt class="docutils literal"><span class="pre">data/main</span></tt> directory. These are main game data - they are not supposed to be
-changed after installation. Any file in <tt class="docutils literal"><span class="pre">data/main</span></tt> can be overridden by a
-file in <tt class="docutils literal"><span class="pre">user_data/main</span></tt> with the same filename.</p>
+<p>ICE has a modular directory system to allow for pluggable mods in future.</p>
+<p>Right now, there is only one &#8220;mod&#8221; - ICE itself. This mod can be found in the
+<tt class="docutils literal"><span class="pre">data/main</span></tt> and <tt class="docutils literal"><span class="pre">user_data/main</span></tt> directories.  Any file in <tt class="docutils literal"><span class="pre">data/main</span></tt>
+can be overridden by a file in <tt class="docutils literal"><span class="pre">user_data/main</span></tt> with the same filename.</p>
 <p>Note that <tt class="docutils literal"><span class="pre">user_data/main</span></tt> translates to <tt class="docutils literal"><span class="pre">~/.ice/main</span></tt> after installation on
 Linux and similar systems.</p>
 </div>
@@ -67,69 +69,69 @@ Linux and similar systems.</p>
 <div class="section" id="creating-a-ship">
 <h2>Creating a ship<a class="headerlink" href="#creating-a-ship" title="Permalink to this headline">¶</a></h2>
 <p>Ships are stored in the <tt class="docutils literal"><span class="pre">ships</span></tt> subdirectory of a mod directory. For the main
-game, that is <tt class="docutils literal"><span class="pre">data/main/ships</span></tt>. Note that this is a convention - ships could
-be stored elsewhere if needed.</p>
-<p>In terms of ICE, a ship is an <em>entity</em> - a collection of <em>components</em> that
-specify properties to the ship. For example, a ship might have a <em>visual</em>
-component - which describes how it is drawn on screen.</p>
-<p>To create your own ship, you can create a file with the contents of the
-following example in the <tt class="docutils literal"><span class="pre">ships</span></tt> directory.</p>
+game, that is <tt class="docutils literal"><span class="pre">user_data/main/ships</span></tt>. This is a convention - ships could be
+stored elsewhere if needed.</p>
+<p>Ships are <em>entities</em> - collections of <em>components</em> that specify properties of
+the ship. For example, a ship might have a <em>visual</em> component - which describes
+how it is drawn.</p>
+<p>To create your own ships, add a new file with contents of the following example
+in the <tt class="docutils literal"><span class="pre">ships</span></tt> directory.</p>
 <p>Alternatively, you can try copying and modifying any ship that already exists
 there.</p>
 <p>Example ship:</p>
 <div class="highlight-python"><pre>visual: visual/player.yaml
 engine:
   maxSpeed: 300
-  acceleration: 2100  #-1 is instant
+  acceleration: 2100
 volume:
   aabbox:
     min: [-32, -32]
     max: [32,  0]
 weapon:
-  0: weapons/default.yaml
+  0: weapons/player.yaml
 collidable:
 health: 500
 warhead:
-  damage: 10
+  damage: 500
   killsEntity: false</pre>
 </div>
-<p>Each entry in the ship code describes a component and the properties of that
-component. This ship has the following components:</p>
+<p>Each item describes a component and its properties. This ship has the following
+components:</p>
 <ul class="simple">
-<li>A <em>visual</em> component, pointing to the graphics file for the ship.</li>
+<li>A <em>visual</em> component, pointing to the graphics file of the ship.</li>
 <li>An <em>engine</em> component that can move the ship at most 300 units per second and
 accelerate at 2100 units per second per second.</li>
 <li>A <em>volume</em> used for collision detection (for example with projectiles).
 This volume is an <em>aabbox</em> - axis-aligned-bounding-box, or a rectangle that does
 not rotate.</li>
 <li>A <em>weapon</em> component with one weapon at slot <em>0</em>. There are multiple (256)
-weapon slots to allow a ship to have more than one weapon.</li>
-<li>A <em>collidable</em> component that s just that - it allows the ship to receive
-collisions. Most projectiles, for example, have a volume but are not
-collidable - they can&#8217;t collide with each other, only with the <em>collidable</em>
-ships.</li>
+slots to allow a ship to have more than one weapon.</li>
+<li>A <em>collidable</em> component that allows the ship to receive collisions. Most
+projectiles, for example, have a volume but are not collidable - they can&#8217;t
+collide with each other, only with the <em>collidable</em> ships.</li>
 <li>A <em>health</em> component with 500 maximum health. Entities with a health component
 die when they run out of health.</li>
-<li>A <em>warhead</em> component that causes 10 damage and doesn&#8217;t kill the ship itself.
+<li>A <em>warhead</em> component that causes 500 damage and doesn&#8217;t kill the ship itself.
 Warheads are fired at collision with another entity. This means our ship
-causes damage to other ships it collides with and doesn&#8217;t immediately get
+causes damage to other ships it collides with but doesn&#8217;t immediately get
 destroyed. Most projectiles, for example, are destroyed as soon as they
 collide with something.</li>
 </ul>
+<p>There are other components a ship can have. You can see the modding reference
+pages (linked from <a class="reference internal" href="../index.html#index"><em>ICE documentation index</em></a>) more detailed information.</p>
 <p>Importantly, a ship needs other resources - In this example, a visual component
 and any weapons it may use. Those are explained below.</p>
 </div>
 <div class="section" id="creating-graphics-visual-component">
 <h2>Creating graphics (visual component)<a class="headerlink" href="#creating-graphics-visual-component" title="Permalink to this headline">¶</a></h2>
 <p>Currently the only graphics format supported by ICE is a simple YAML based
-vector format that only supports straight lines, with variable colors and line
-widths.</p>
+vector format that stores straight lines with variable colors and line widths.</p>
 <p>Graphics are specified by <em>visual components</em>, defined in YAML files in the
 <tt class="docutils literal"><span class="pre">visual</span></tt> subdirectory of a mod directory.</p>
 <p>To create your own visual component, you can create a file with the contents of
 the following example in the <tt class="docutils literal"><span class="pre">visual</span></tt> directory.</p>
-<p>Alternatively, you can try copying and modifying any visual component that
-already exists there.</p>
+<p>You could also try copying and modifying any visual component that already
+exists there.</p>
 <p>Example visual component:</p>
 <div class="highlight-python"><pre>type: lines
 vertices:
@@ -149,17 +151,19 @@ vertices:
   - color:  rgba40400000
   - vertex: [0.0,  13.0]</pre>
 </div>
-<p>This visual component is an array of <em>lines</em>, which is currently the only
-supported visual component <em>type</em>.</p>
-<p>Lines are specified by <em>vertices</em>, a sequence of pairs that can either specify
-line <em>width</em>, vertex <em>color</em> and <em>vertex</em> itself.</p>
+<p>This visual component is a group of <em>lines</em>, currently the only supported
+visual component <em>type</em>.</p>
+<p>Lines are specified by the <em>vertices</em> tag, that allows setting line <em>width</em>,
+vertex <em>color</em> and <em>vertex</em> itself.</p>
 <p>Lines are formed by the 1st and 2nd vertex, the 3rd and 4rd, and so on.
-The number of vertices must be divisible by 2.</p>
+The number of vertices must be even.</p>
 <p>A <em>color</em> or <em>width</em> entry affects all vertices drawn after it, until the next
 <em>color</em> or <em>width</em> entry. Default color is white and default width is 1.</p>
 <p>Note that <em>width</em> affects only whole lines, while <em>color</em> can change colors of
 each vertex (which blend in the line, so you can e.g. have a line that blends
 from a red end to a blue end).</p>
+<p><strong>See also:</strong></p>
+<p><a class="reference internal" href="../modding_reference/component_visual.html#modding-reference-component-visual"><em>Visual component</em></a></p>
 </div>
 <div class="section" id="creating-a-weapon">
 <h2>Creating a weapon<a class="headerlink" href="#creating-a-weapon" title="Permalink to this headline">¶</a></h2>
@@ -170,73 +174,77 @@ finite or infinite). When a weapon runs out of ammo, it can&#8217;t fire for a
 specified <em>reload</em> period.</p>
 <p>To create a new weapon, you can create a file with the contents of the
 following example in the <tt class="docutils literal"><span class="pre">weapons</span></tt> directory.</p>
-<p>Alternatively, you can try copying and modifying any weapon that already exists
-there.</p>
+<p>Alternatively, you can copy and modify any weapon that already exists there.</p>
 <p>Example weapon:</p>
 <div class="highlight-python"><pre>burstPeriod: 0.06
-ammo: 2
+ammo: 3
 reloadTime: 0.2
 burst:
-  - entity: projectiles/defaultbullet.yaml
-    delay: 0.02
-    components:
-      physics:
-        position: [8.0, 8.0]
-        rotation: -0.1
-  - entity: projectiles/defaultbullet.yaml
-    delay: 0.0
-    components:
-      physics:
-        position: [0.0, -8.0]
-        rotation: 0.0
-        speed: 50.0
-  - entity: projectiles/defaultbullet.yaml
-    delay: 0.0
-    components:
-      physics:
-        position: [0.0, -8.0]
-        rotation: 0.0
-        speed: 50.0
-  - entity: projectiles/defaultbullet.yaml
-    delay: 0.02
-    components:
-      physics:
-        position: [-8.0, 8.0]
-        rotation: 0.1</pre>
+ - entity: projectiles/defaultBullet.yaml
+   delay: 0.0
+   components:
+     physics:
+       position: [-1.0, 16.0]
+       rotation: 0.5deg
+       speed:    50.0
+       spawnAbsolute: [velocity]
+ - entity: projectiles/defaultBullet.yaml
+   delay: 0.0
+   components:
+     physics:
+       position: [1.0, 16.0]
+       rotation: -0.5deg
+       speed:    50.0
+       spawnAbsolute: [velocity]
+ - entity: projectiles/defaultBullet.yaml
+   delay: 0.02
+   components:
+     physics:
+       position: [-2.0, 12.0]
+       rotation: 1deg
+       speed:    50.0
+       spawnAbsolute: [velocity]
+ - entity: projectiles/defaultBullet.yaml
+   delay: 0.02
+   components:
+     physics:
+       position: [2.0, 12.0]
+       rotation: -1deg
+       speed:    50.0
+       spawnAbsolute: [velocity]</pre>
 </div>
-<p>This weapon can fire 2 bursts, each taking 0.06 seconds, before reloading for
-0.2 seconds. Each burst consists of 4 projectiles shot at different positions
-(relative to the ship) in different directions (in radians, relative to the
-ship).</p>
-<p>Two of the projectiles are fired immediately, the other two 0.02 seconds
-later. The projectiles fired immediately are fired at speed 50 and use their
-engine component (defined in the projectile) to accelerate to full speed.
-If speed is not specified, the projectiles are fired at their maximum speed.</p>
-<p>Note that each projectile in the burst specifies its own projectile file. One
-burst can consist of projectiles of multiple types. Each projectile is an
-entity, just like a ship.</p>
-<p>In the engine, there is no difference between projectiles and ships.
-In fact, when we&#8217;re firing the projectiles, we&#8217;re setting their positions
-by overriding their physics component. Any component can be overridden by
-specifying it in <em>components</em>. You can use this, for example, to change
-projectiles&#8217; visual appeareance or give them specific behaviors by
-dumbScripts (described below).</p>
+<p>This weapon fires 3 bursts, each taking 0.06 seconds, before reloading for 0.2
+seconds. Each burst consists of 4 projectiles shot at different positions
+(relative to the ship) in different directions (specified in degrees here using
+the <em>deg</em> suffix). Velocity of the fired (spawned) projectile is absolute,
+determined by ship&#8217;s rotation and firing speed, unaffected by the ship&#8217;s
+own movement.</p>
+<p>Two projectiles are fired immediately, the other two 0.02 seconds later. The
+projectiles are fired at speed 50 and use their engine component (defined in
+the projectile) to accelerate to full speed.</p>
+<p>Each projectile in the burst specifies its own entity file. One burst can
+consist of projectiles of multiple types. Each projectile is an entity, just
+like a ship. In fact a weapon could fire ships.</p>
+<p>In the engine, there is no difference between projectiles and ships.  When
+we&#8217;re firing the projectiles, we&#8217;re setting their positions by overriding their
+physics components. Any component can be overridden by specifying it in
+<em>components</em>. You can use this, for example, to change projectiles&#8217; visual
+appeareance or give them specific behaviors by dumbScripts (described below).</p>
 </div>
 <div class="section" id="creating-a-projectile">
 <h2>Creating a projectile<a class="headerlink" href="#creating-a-projectile" title="Permalink to this headline">¶</a></h2>
 <p>Projectiles are found in the <tt class="docutils literal"><span class="pre">projectiles</span></tt> subdirectory of the mod directory.</p>
-<p>Internally, there is no difference between a projectile and a ship - both are
-component based entities. Any component that can be used in a ship can be used
-in a projectile, and vice versa.</p>
-<p>To create a new projectile, you can create a file with the contents of the
+<p>Both projectiles and ships are component based entities. Any component that can
+be used in a ship can be used in a projectile, and vice versa.</p>
+<p>To create a new projectile, create a file with the contents of the
 following example in the <tt class="docutils literal"><span class="pre">projectiles</span></tt> directory.</p>
-<p>Alternatively, you can try copying and modifying any projectile that already
-exists there.</p>
+<p>Alternatively, you could copy and modify any projectile that already exists
+there.</p>
 <p>Example projectile:</p>
 <div class="highlight-python"><pre>deathTimeout: 1.1
 engine :
   maxSpeed       : 2000
-  acceleration   : 1000  #-1 is instant
+  acceleration   : 1000
 volume:
   aabbox:
     min: [-2, -12]
@@ -245,7 +253,8 @@ visual:   visual/defaultbullet.yaml
 warhead:
   damage: 10</pre>
 </div>
-<p>Most components of this projectile are the same as components used in a ship.</p>
+<p>Most components of this projectile are the same as ones used in the ship
+example.</p>
 <p>The main differences are:</p>
 <ul class="simple">
 <li><em>deathTimeout</em> component, which destroys the projectile 1.1 seconds after it&#8217;s
@@ -256,16 +265,17 @@ with other projectiles - only with collidable ships.</li>
 <li>The warhead has no <tt class="docutils literal"><span class="pre">killsEntity:</span> <span class="pre">false</span></tt>, so the projectile is &#8220;killed&#8221;
 after it hits its target.</li>
 </ul>
-<p>Also, the projectile has no health or weapon. However, it could have health or
-weapon, or any other component a ship can have. (For example, a collidable
+<p>This projectile has no health or weapons. However, it could have health or
+weapons, or any other component a ship can have. (For example, a collidable
 projectile with limited health could be a missile that can be shot down).</p>
 </div>
 <div class="section" id="creating-a-level">
 <h2>Creating a level<a class="headerlink" href="#creating-a-level" title="Permalink to this headline">¶</a></h2>
 <p>Levels are described in YAML files found in the <tt class="docutils literal"><span class="pre">levels</span></tt> subdirectory of a mod
 directory.</p>
-<p>Currently, there&#8217;s only 1 level file, which the game is hardcoded to load:
-<tt class="docutils literal"><span class="pre">level1.yaml</span></tt>. This should be used for level development for now.</p>
+<p>Currently, levels are standalone - there are no campaigns. Each level file name
+must be named in the <tt class="docutils literal"><span class="pre">levels.yaml</span></tt> file, which specifies levels to use in an
+in-game level browser.</p>
 <p>A level is composed of definitions of &#8220;waves&#8221; (groups of enemies
 spawned simultaneously) and of a level script, which specifies when to
 spawn a wave.</p>
@@ -316,51 +326,50 @@ level:
 <h3>Wave definition<a class="headerlink" href="#wave-definition" title="Permalink to this headline">¶</a></h3>
 <p>A wave definition starts with a mapping key named <tt class="docutils literal"><span class="pre">wave</span> <span class="pre">xxx</span></tt> where xxx is the
 name of the wave. Wave names <strong>must not contain spaces</strong> .</p>
-<p>There can be any number of wave definitions, but two waves must not have
+<p>There can be any number of wave definitions, but no two waves can have
 identical names.</p>
-<p>A wave is actually just an entity, and a wave definition defines that entity.
-The wave is generally used to spawn units by setting the <em>spawner</em> component.
-Spawner is a sequence of entities(units) to be spawned.</p>
+<p>A wave is an entity, and a wave definition defines that entity. Waves are
+generally used to spawn units by setting the <em>spawner</em> component.  Spawner is
+a sequence of entities(units) to be spawned.</p>
 <p>Each entity is a mapping with one required key, <em>entity</em>, which specifies filename
 of the entity to spawn. Optional <em>delay</em> specifies delay to spawn after the wave,
 in seconds.</p>
-<p>Any components of the entity can be overridden by <em>components</em>, and,
-at the very least, the physics component should be set here to position the
-entity. The second entity overrides the <em>dumbScript</em> component
-(explained below), specifying behavior of the spawned unit.</p>
+<p>Components of the entity can be overridden by <em>components</em>. At least the
+physics component should be set here to position the entity. The second entity
+overrides the <em>dumbScript</em> component (explained below), specifying behavior of
+the spawned unit.</p>
 </div>
 <div class="section" id="level-script">
 <h3>Level script<a class="headerlink" href="#level-script" title="Permalink to this headline">¶</a></h3>
-<p>The level script starts with a mapping key named <tt class="docutils literal"><span class="pre">level</span></tt>, and is composed of
-pairs of instructions and their parameters.</p>
-<p>This level is very simple. First, we start a &#8220;lines&#8221; effect that draws a
-scrolling starfield background composed of randomly generated lines.
-After 2 seconds, we spawn a wave. We wait another 2 seconds, and we spawn
-the same wave using a different format, changing positions of its entities
-by <tt class="docutils literal"><span class="pre">[50,</span> <span class="pre">150]</span></tt>.</p>
-<p>After that we wait another 2 seconds, and spawn the same wave again,
-demonstrating the third wave instruction format. In this format, we can make
-full use of the fact that a wave is actually an entity, and override any of its
-components.</p>
-<p>Finally, we display some text.
-Once the script is done, the level ends (the player wins the level).
-The player loses if their ship gets destroyed before the level is over.</p>
+<p>A level script starts with a mapping key named <tt class="docutils literal"><span class="pre">level</span></tt>, and is composed of
+instructions and their parameters.</p>
+<p>This level is very simple. First, we start a &#8220;lines&#8221; effect that draws
+a scrolling starfield background composed of randomly generated lines.  After
+2 seconds, we spawn a wave. We wait 2 more seconds, and spawn the same wave
+using a different format, changing positions of its entities by <tt class="docutils literal"><span class="pre">[50,</span> <span class="pre">150]</span></tt>.</p>
+<p>Then we wait another 2 seconds and spawn the same wave again, demonstrating the
+third wave instruction format. Here we make full use of the fact that a wave is
+actually an entity, and can override any of its components.</p>
+<p>Finally, we display some text.  Once the script is done, the level ends (the
+player wins the level).  The player loses if their ship gets destroyed before
+the level is over.</p>
 </div>
 </div>
 <div class="section" id="creating-a-dumbscript">
 <h2>Creating a DumbScript<a class="headerlink" href="#creating-a-dumbscript" title="Permalink to this headline">¶</a></h2>
-<p>Normally when you spawn a unit, it just sits there and doesn&#8217;t do anything.</p>
-<p>Behavior of an entity can be controlled by a <em>dumbScript</em> component, which
-can be set in the entity YAML file or in a wave definition in a level.</p>
-<p>DumbScript is a simple YAML based script that specifies actions the unit
+<p>Normally when an entity is spawned, it just sits there and doesn&#8217;t do anything.</p>
+<p>Entity behavior can be controlled by a <em>dumbScript</em> component, which can be set
+in the entity YAML file or anywhere the entity is spawned (e.g. a wave
+definition in a level).</p>
+<p>DumbScript is a simple YAML based &#8220;script&#8221; that specifies actions the unit
 should take. It&#8217;s called DumbScript because there is no flow control - it just
 dumbly executes instructions one after another. In future, there might be
 smarter scripts based on a real programming language, e.g. Lua.</p>
 <p>DumbScripts are located in the <tt class="docutils literal"><span class="pre">dumbScripts</span></tt> subdirectory of a mod directory.</p>
 <p>To create a new dumb script, you can create a file with the contents of the
 following example in the <tt class="docutils literal"><span class="pre">dumbScripts</span></tt> directory.</p>
-<p>Alternatively, you can try copying and modifying any projectile that already
-exists there.</p>
+<p>Alternatively, you could copy and modify any dumb script that already exists
+there.</p>
 <p>Example DumbScript:</p>
 <div class="highlight-python"><pre>!!pairs
 - for 0.25:
@@ -391,10 +400,11 @@ In the end, it moves straight (0 radians) for 5 seconds, and kills the entity.</
 following code to it:</p>
 <div class="highlight-python"><pre>dumbScript: dumbScripts/script.yaml</pre>
 </div>
-<p>Similarly, it can be set in a wave definition in a level.
-You can even use DumbScripts in projectiles. For example, you could use a
-DumbScript to create a projectile that fires more projectiles (or one that
-splits into multiple smaller projectiles).</p>
+<p>Similarly, it can be set in a wave definition in a level.  You can even use
+DumbScripts in projectiles. For example, you could use a DumbScript to create
+a projectile that moves in a complex fashion and even fires its own weapon.</p>
+<p><strong>See also:</strong></p>
+<p><a class="reference internal" href="../modding_reference/component_dumbscript.html#modding-reference-component-dumbscript"><em>DumbScript component</em></a></p>
 </div>
 </div>
 
@@ -433,14 +443,17 @@ splits into multiple smaller projectiles).</p>
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
+          <a href="../modding_reference/component_collidable.html" title="Collidable component"
+             >next</a></li>
+        <li class="right" >
           <a href="install_source_windows.html" title="Installing from source on Windows"
-             >previous</a></li>
+             >previous</a> |</li>
         <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2010-2012, Dávid Horváth, Ferdinand Majerech, Libor Mališ..
-      Last updated on May 17, 2012.
+      Last updated on Sep 26, 2012.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

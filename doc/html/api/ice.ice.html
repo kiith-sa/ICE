@@ -109,11 +109,13 @@
 <li><a href="time.timer.html">time.timer</a></li>
 <li><a href="util.bits.html">util.bits</a></li>
 <li><a href="util.factory.html">util.factory</a></li>
+<li><a href="util.frameprofiler.html">util.frameprofiler</a></li>
 <li><a href="util.iterable.html">util.iterable</a></li>
 <li><a href="util.signal.html">util.signal</a></li>
 <li><a href="util.stringctfe.html">util.stringctfe</a></li>
 <li><a href="util.traits.html">util.traits</a></li>
 <li><a href="util.typeinfo.html">util.typeinfo</a></li>
+<li><a href="util.unittests.html">util.unittests</a></li>
 <li><a href="util.weaksingleton.html">util.weaksingleton</a></li>
 <li><a href="util.yaml.html">util.yaml</a></li>
 <li><a href="video.binarytexturepacker.html">video.binarytexturepacker</a></li>
@@ -148,10 +150,10 @@
 <dd><p>Class holding all GUI used by ICE (main menu, etc.).
 </p>
 <p><b>Signal:</b><br>
-public mixin Signal!() gameStart
+public mixin Signal!() levelMenuOpen
 <br>
 
-     Emitted when the player clicks the button to start the game.
+     Emitted when the player clicks the button to open level menu.
 
 </p>
 <p><b>Signal:</b><br>
@@ -212,6 +214,22 @@ public mixin Signal!() resetVideo
 <dt class="d_decl">void <a name="menuHide"></a><span class="ddoc_psymbol">menuHide</span>();
 </dt>
 <dd><p>Hide main menu.</p>
+
+</dd>
+<dt class="d_decl">void <a name="levelMenuShow"></a><span class="ddoc_psymbol">levelMenuShow</span>(ref YAMLNode <b>levels</b>, void delegate(const(immutable(char)[])) <b>initGame</b>);
+</dt>
+<dd><p>Show level selection menu.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>YAMLNode <b>levels</b></td>
+<td valign=top>YAML to load level filenames from.</td></tr>
+<tr><td valign=top>void delegate(const(immutable(char)[])) <b>initGame</b></td>
+<td valign=top>Function that takes level filename and starts a game.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">void <a name="levelMenuHide"></a><span class="ddoc_psymbol">levelMenuHide</span>();
+</dt>
+<dd><p>Hide the level menu.</p>
 
 </dd>
 </dl>
