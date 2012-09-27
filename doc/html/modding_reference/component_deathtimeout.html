@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Collidable component &mdash; ICE 0.1 documentation</title>
+    <title>DeathTimeout component &mdash; ICE 0.1 documentation</title>
     
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,18 +26,18 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="ICE 0.1 documentation" href="../index.html" />
-    <link rel="next" title="Controller component" href="component_controller.html" />
-    <link rel="prev" title="Modding ICE" href="../tutorials/modding.html" /> 
+    <link rel="next" title="DumbScript component" href="component_dumbscript.html" />
+    <link rel="prev" title="Controller component" href="component_controller.html" /> 
   </head>
   <body>
     <div class="related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="component_controller.html" title="Controller component"
+          <a href="component_dumbscript.html" title="DumbScript component"
              accesskey="N">next</a></li>
         <li class="right" >
-          <a href="../tutorials/modding.html" title="Modding ICE"
+          <a href="component_controller.html" title="Controller component"
              accesskey="P">previous</a> |</li>
         <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
       </ul>
@@ -48,22 +48,18 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="collidable-component">
-<span id="modding-reference-component-collidable"></span><h1>Collidable component<a class="headerlink" href="#collidable-component" title="Permalink to this headline">¶</a></h1>
-<p>A collidable component tells the engine that the entity should be used in
-collision detection. This is used e.g. in ships, but not in projectiles (unless
-they should collide with other projectiles).  For example, if volumes of
-a collidable ship and non-collidable projectile intersect, collision is
-detected - the projectile hits the ship. Same for two collidable ships. But if
-volumes of two non-collidable projectiles intersect, there is no collision; the
-projectiles just continue moving as before.</p>
+  <div class="section" id="deathtimeout-component">
+<span id="modding-reference-component-deathtimeout"></span><h1>DeathTimeout component<a class="headerlink" href="#deathtimeout-component" title="Permalink to this headline">¶</a></h1>
+<p>A deathtimeout component specifies the maximum time an entity might live - when
+this time (started when the entity is spawned) passes, the entity is destroyed.
+This is mainly used for projectiles which need to cease to exist after leaving
+the screen to free CPU/memory resources. It is also useful for entities that
+spawn other entities at their destruction, e.g cluster bombs.</p>
 <p>Example:</p>
-<div class="highlight-python"><pre>collidable:</pre>
+<div class="highlight-python"><pre>deathTimeout: 0.3</pre>
 </div>
-<p>Currently, this component has no parameters, but some collision detection
-parameters might be added in future.
-A <a class="reference internal" href="component_volume.html#modding-reference-component-volume"><em>Volume component</em></a> is needed to actually have a volume
-to detect collision with.</p>
+<p>An entity with this deathtimeout component will die 0.3 seconds after spawning
+(unless killed earlier).</p>
 </div>
 
 
@@ -80,10 +76,10 @@ to detect collision with.</p>
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="component_controller.html" title="Controller component"
+          <a href="component_dumbscript.html" title="DumbScript component"
              >next</a></li>
         <li class="right" >
-          <a href="../tutorials/modding.html" title="Modding ICE"
+          <a href="component_controller.html" title="Controller component"
              >previous</a> |</li>
         <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
       </ul>

@@ -1,0 +1,128 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Engine component &mdash; ICE 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ICE 0.1 documentation" href="../index.html" />
+    <link rel="next" title="Physics component" href="component_physics.html" />
+    <link rel="prev" title="DumbScript component" href="component_dumbscript.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="component_physics.html" title="Physics component"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="component_dumbscript.html" title="DumbScript component"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="engine-component">
+<span id="modding-reference-component-engine"></span><h1>Engine component<a class="headerlink" href="#engine-component" title="Permalink to this headline">¶</a></h1>
+<p>Engine component allows an entity to change its movement(velocity) over time.
+It behaves like an &#8220;engine&#8221; accelerating the entity in certain direction when
+enabled. Whether the engine is enabled and the direction to apply acceleration
+in is determined by <a class="reference internal" href="component_controller.html#modding-reference-component-controller"><em>Controller component</em></a> which in turn
+is controlled either by a <a class="reference internal" href="component_dumbscript.html#modding-reference-component-dumbscript"><em>DumbScript component</em></a> or by
+a player.</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>engine:
+  maxSpeed: 450
+  acceleration 250</pre>
+</div>
+<p>An entity with this engine component will accelerate by 250 units/second every
+second until it reaches a speed of 450 units/second.</p>
+<div class="section" id="tags">
+<h2>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="85%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>maxSpeed</td>
+<td>Maximum speed the entity can move in units per second. When the
+engine is active, acceleration is applied until this speed is
+reached. If speed of the entity is any higher than this, it will be
+lowered to this value. Must be greater or equal to 0.0. <em>Scalar
+float</em>. This is required; there is no default value.</td>
+</tr>
+<tr class="row-even"><td>acceleration</td>
+<td>Acceleration applied when the engine is enabled in units per second
+per second. Negative values represent instant acceleration; i.e.
+the entity is instantly accelerated to full speed in the engine&#8217;s
+direction.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Engine component</a><ul>
+<li><a class="reference internal" href="#tags">Tags</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="component_physics.html" title="Physics component"
+             >next</a></li>
+        <li class="right" >
+          <a href="component_dumbscript.html" title="DumbScript component"
+             >previous</a> |</li>
+        <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010-2012, Dávid Horváth, Ferdinand Majerech, Libor Mališ..
+      Last updated on Sep 26, 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

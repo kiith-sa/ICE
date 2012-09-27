@@ -14,6 +14,25 @@ import util.bits;
 import util.yaml;
 
 
+/*
+ *
+ * Possible improvement:
+ *
+ * Don't implicitly add a ControllerComponent with a DumbScriptComponent or 
+ * the player ship. Let it be specified manually, like this:
+ *
+ * controller: controlled-by: player 1 #2, etc could also be used
+ *
+ * dumbscript: dumbscripts/script.yaml
+ * controller: controlled-by: dumbscript 1 #2, etc could also be used
+ *
+ * This will especially be useful when many components might affect a 
+ * ControllerComponent. We can explicitly specify which one controls
+ * the entity, and eventually maybe even change it. E.g. a (dumb?)script 
+ * instruction might give control to player and player action to 
+ * (dumb?)script, implementing stuff like special moves, macros, "autopilot".
+ */
+
 /**
  * Component that makes an entity controllable, as if through user input.
  *

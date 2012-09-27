@@ -239,7 +239,7 @@ class SpawnerSystem : System
                 timedSpawn.spawn.spawner = SpawnerComponent();
             }
             //DumbScriptComponent requires (extends) ControllerComponent.
-            if(!timedSpawn.spawn.dumbScript.isNull && 
+            if(!timedSpawn.spawn.dumbScript.isNull &&
                timedSpawn.spawn.controller.isNull)
             {
                 timedSpawn.spawn.controller = ControllerComponent();
