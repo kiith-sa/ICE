@@ -61,14 +61,14 @@ wave wave4:
         physics: 
             position: [584, 156]
         dumbScript: dumbscripts/mostlyMoving.yaml
-    - entity: ships/enemy2.yaml
+    - entity: ships/plasmaFighter.yaml
       components:
         physics: 
             position: [475, 106]
         dumbScript: dumbscripts/justKillPlayer.yaml
 wave wave5:
   spawner:
-    - entity: ships/enemy2.yaml
+    - entity: ships/plasmaFighter.yaml
       components:
         physics: 
             position: [238, 126]
@@ -78,53 +78,53 @@ wave wave5:
         physics: 
             position: [467, 173]
         dumbScript: dumbscripts/enemy1.yaml
-    - entity: ships/enemy2.yaml
+    - entity: ships/plasmaFighter.yaml
       components:
         physics: 
             position: [554, 164]
         dumbScript: dumbscripts/justKillPlayer.yaml
 wave wave6:
   spawner:
-    - entity: ships/enemy2.yaml
+    - entity: ships/plasmaFighter.yaml
       components:
         physics: 
             position: [318, 116]
         dumbScript: dumbscripts/movingAndFiring.yaml
-    - entity: ships/enemy2.yaml
+    - entity: ships/plasmaFighter.yaml
       components:
         physics: 
             position: [167, 133]
         dumbScript: dumbscripts/movingAndFiring.yaml
-    - entity: ships/enemy2.yaml
+    - entity: ships/plasmaFighter.yaml
       components:
         physics: 
             position: [684, 124]
         dumbScript: dumbscripts/justKillPlayer.yaml
 wave wave7:
   spawner:
-    - entity: ships/enemy2.yaml
+    - entity: ships/plasmaFighter.yaml
       components:
         physics: 
             position: [365, 216]
         dumbScript: dumbscripts/enemy1.yaml
-    - entity: ships/enemy2.yaml
+    - entity: ships/plasmaFighter.yaml
       components:
         physics: 
             position: [167, 103]
         dumbScript: dumbscripts/wtf-sewing.yaml
-    - entity: ships/enemy2.yaml
+    - entity: ships/plasmaFighter.yaml
       components:
         physics: 
             position: [467, 324]
         dumbScript: dumbscripts/mostlyMoving.yaml
-    - entity: ships/enemy2.yaml
+    - entity: ships/plasmaFighter.yaml
       components:
         physics: 
             position: [190, 214]
         dumbScript: dumbscripts/justKillPlayer.yaml
 wave wave8:
   spawner:
-    - entity: ships/enemy2.yaml
+    - entity: ships/plasmaFighter.yaml
       components:
         physics: 
             position: [218, 156]
@@ -134,14 +134,14 @@ wave wave8:
         physics: 
             position: [367, 123]
         dumbScript: dumbscripts/movingAndFiring.yaml
-    - entity: ships/enemy2.yaml
+    - entity: ships/plasmaFighter.yaml
       components:
         physics: 
             position: [444, 245]
         dumbScript: dumbscripts/justKillPlayer.yaml
 wave wave9:
   spawner:
-    - entity: ships/enemy2.yaml
+    - entity: ships/plasmaFighter.yaml
       components:
         physics: 
             position: [418, 106]
@@ -239,12 +239,12 @@ wave wave13:
         physics: 
             position: [464, 134]
         dumbScript: dumbscripts/justKillPlayer.yaml
-    - entity: ships/enemy2.yaml
+    - entity: ships/plasmaFighter.yaml
       components:
         physics: 
             position: [143, 160]
         dumbScript: dumbscripts/dontGetHit.yaml
-    - entity: ships/enemy2.yaml
+    - entity: ships/plasmaFighter.yaml
       components:
         physics: 
             position: [627, 173]

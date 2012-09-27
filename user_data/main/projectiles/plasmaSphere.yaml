@@ -6,6 +6,6 @@ volume:
   aabbox:
     min: [-4, -2]
     max: [4, 2]
-visual: visual/enemy2bullet.yaml
+visual: visual/plasmaSphere.yaml
 warhead:
   damage: 45

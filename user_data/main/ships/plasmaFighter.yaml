@@ -1,4 +1,4 @@
-visual: visual/enemy2.yaml
+visual: visual/plasmaFighter.yaml
 engine:
   maxSpeed: 450
   acceleration   : 250  
@@ -7,8 +7,8 @@ volume:
     min: [-8, -14]
     max: [8, 8]
 weapon:
-  0: weapons/enemy2w1.yaml
-  1: weapons/enemy2w2.yaml
+  0: weapons/plasmaWeapon.yaml
+  1: weapons/plasmaSphereWeapon.yaml
 collidable:
 health: 30
 warhead:
@@ -19,10 +19,10 @@ spawner:
   - entity: explosions/deathbase.yaml 
     condition: death
     components:
-      visual: visual/enemy2.yaml
+      visual: visual/plasmaFighter.yaml
       physics: 
         position: [0, 0]
-  - entity: explosions/enemy2explosion.yaml
+  - entity: explosions/plasmaFighterexplosion.yaml
     condition: death 
     components:
       physics: 

@@ -8,7 +8,7 @@ volume:
     max: [12, 12]
 weapon:
   0: weapons/StarShipw1.yaml
-  1: weapons/enemy2w1.yaml
+  1: weapons/plasmaSphereWeapon.yaml
 collidable:
 health: 40
 warhead:
