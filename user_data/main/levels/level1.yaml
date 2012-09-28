@@ -3,21 +3,23 @@ wave stoperLeft:
     - entity: ships/stoper.yaml 
       components:
         physics: 
-            position: [150, -40]
+            position: [200, -40]
+        dumbScript: dumbscripts/zigzag3.yaml
 
 wave stoperRight:
   spawner:
     - entity: ships/stoper.yaml 
       components:
         physics: 
-            position: [650, -40]
+            position: [600, -40]
+        dumbScript: dumbscripts/zigzag4.yaml
 
 wave turtleRight:
   spawner:
     - entity: ships/turtle.yaml
       components:
         physics: 
-            position: [100, 30]
+            position: [0, 30]
         dumbScript: dumbscripts/toright.yaml
 
 
@@ -26,7 +28,7 @@ wave turtleLeft:
     - entity: ships/turtle.yaml
       components:
         physics: 
-            position: [700, 90]
+            position: [800, 90]
         dumbScript: dumbscripts/toleft.yaml
 
 wave harpoonerDown:
@@ -34,15 +36,15 @@ wave harpoonerDown:
     - entity: ships/harpooner.yaml
       components:
         physics: 
-          position: [400, 20]
+          position: [350, 20]
     - entity: ships/harpooner.yaml
       components:
         physics: 
-          position: [550, 0]
+          position: [500, 0]
     - entity: ships/harpooner.yaml
       components:
         physics: 
-          position: [250, 0]
+          position: [200, 0]
 
 wave harpoonerUpperSides:
   spawner:
@@ -62,18 +64,18 @@ wave tritonSides:
     - entity: ships/triton.yaml
       components:
         physics: 
-            position: [550, -90]
+            position: [600, -90]
     - entity: ships/triton.yaml
       components:
         physics: 
-            position: [150, -90]
+            position: [200, -90]
 
 wave tritonMiddle:
   spawner:
     - entity: ships/triton.yaml
       components:
         physics: 
-            position: [350, -60]
+            position: [400, -60]
 
 wave waveShooterMiddle:
   spawner:
@@ -105,7 +107,7 @@ wave peaShooterLeft:
     - entity: ships/peaShooter.yaml
       components:
         physics:
-            position: [700,30]
+            position: [800,30]
         dumbScript: dumbscripts/toleft.yaml
 
 wave peaShooterRight:
@@ -113,7 +115,7 @@ wave peaShooterRight:
     - entity: ships/peaShooter.yaml
       components:
         physics:
-            position: [100,60]
+            position: [0,60]
         dumbScript: dumbscripts/toright.yaml
 
 wave peaShooterUpperSides:
@@ -199,6 +201,7 @@ level:
   - wave: harpoonerUpperSides
   - wait: 1.0
   - wave: waveShooterMiddle
+  - wave: waveShooterSides
   - wait: 4.0
   - wave: tritonSides
   - wave: tritonMiddle
@@ -206,9 +209,9 @@ level:
   - wave: turtleRight
   - wait: 1.0
   - wave: turtleLeft
-  - wait: 1.5
+  - wait: 1.0
   - wave: waveShooterSides
-  - wait: 3.0
+  - wait: 2.0
   - wave: peaShooterMiddle
   - wait: 3.0
   - wave: turtleRight
@@ -226,4 +229,94 @@ level:
   - wave: peaShooterLeft
   - wait: 1.5
   - wave: peaShooterUpperSides
+  - wait: 3.0
+  - wave: tritonSides
+  - wait: 2.5
+  - wave: waveShooterMiddle
+  - wait: 3.0
+  - wave: turtleRight
+  - wait: 1.0
+  - wave: turtleLeft
+  - wait: 2.0
+  - wave: harpoonerDown
+  - wait: 4.0
+  - wave: tritonSides
+  - wait: 3.0
+  - wave: peaShooterRight
+  - wait: 0.7
+  - wave: peaShooterLeft
+  - wait: 1.5
+  - wave: waveShooterMiddle
+  - wave: waveShooterSides
+  - wait: 4.0
+  - wave: harpoonerUpperSides
+  - wait: 3.0
+  - wave: waveShooterMiddle
+  - wave: waveShooterSides
+  - wait: 3.5
+  - wave: harpoonerDown
+  - wait: 3.5
+  - wave: waveShooterSides
+  - wait: 4.5
+  - wave: peaShooterRight
+  - wait: 0.7
+  - wave: peaShooterLeft
+  - wait: 1.5
+  - wave: harpoonerDown
+  - wait: 3.5
+  - wave: peaShooterUpperSides
+  - wait: 3.5
+  - wave: tritonMiddle
+  - wait: 1.5
+  - wave: peaShooterRight
+  - wait: 0.7
+  - wave: peaShooterLeft
+  - wait: 2.0
+  - wave: harpoonerUpperSides
+  - wait: 3.5
+  - wave: tritonSides
+  - wait: 1.5
+  - wave: peaShooterMiddle
+  - wait: 1.0
+  - wave: waveShooterSides
+  - wait: 4.0
+  - wave: peaShooterUpperSides
+  - wait: 3.0
+  - wave: tritonSides
+  - wave: tritonMiddle
+  - wait: 2.5
+  - wave: turtleRight
+  - wait: 1.0
+  - wave: turtleLeft
+  - wait: 1.5
+  - wave: harpoonerDown
+  - wait: 3.0
+  - wave: tritonSides
+  - wait: 3.0
+  - wave: peaShooterRight
+  - wait: 0.7
+  - wave: peaShooterLeft
+  - wait: 2.0
+  - wave: waveShooterMiddle
+  - wave: waveShooterSides
+  - wait: 4.0
+  - wave: harpoonerUpperSides
+  - wait: 2.0
+  - wave: peaShooterMiddle
+  - wait: 2.5
+  - wave: waveShooterSides
+  - wait: 3.0
+  - wave: harpoonerDown
+  - wait: 4.0
+  - wave: peaShooterRight
+  - wait: 0.7
+  - wave: peaShooterLeft
+  - wait: 0.8
+  - wave: peaShooterRight
+  - wait: 0.7
+  - wave: peaShooterLeft
+  - wait: 5.0
+  - wave: stoperLeft
+  - wait: 10.0
+  - wave: stoperRight
   - wait: 10.0
