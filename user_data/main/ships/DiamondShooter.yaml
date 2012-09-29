@@ -1,0 +1,31 @@
+visual: visual/DiamondShooter.yaml
+engine:
+  maxSpeed: 350
+  acceleration: 500  
+volume:
+  aabbox: 
+    min: [12, 12]
+    max: [-12, -12]
+weapon:
+  0: weapons/DiamondWeapon.yaml
+  1: weapons/DiamondWeapon.yaml
+collidable:
+health: 30
+warhead:
+  damage: 80
+  killsEntity: true
+dumbScript: dumbscripts/wtf-sewing.yaml
+
+spawner:
+  - entity: explosions/deathbase.yaml 
+    condition: death
+    components:
+      visual: visual/DiamondShooter.yaml
+      physics: 
+        position: [0, 0]
+  - entity: explosions/jetsmall.yaml
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 0.0

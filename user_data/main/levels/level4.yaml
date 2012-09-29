@@ -1,273 +1,260 @@
-wave wave1:
+wave turtleJKP:
   spawner:
     - entity: ships/turtle.yaml
       components:
         physics: 
-            position: [250, 167]
+            position: [250, -30]
         dumbScript: dumbscripts/justKillPlayer.yaml
     - entity: ships/turtle.yaml
       components:
         physics: 
-            position: [440, 124]
-        dumbScript: dumbscripts/enemy1.yaml
-wave wave2:
+            position: [550, -30]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+
+wave plasmaFighterJKP:
   spawner:
-    - entity: ships/turtle.yaml
+    - entity: ships/plasmaFighter.yaml
       components:
         physics: 
-            position: [230, 112]
-        dumbScript: dumbscripts/mostlyMoving.yaml
-    - entity: ships/turtle.yaml
+            position: [130, -45]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+    - entity: ships/plasmaFighter.yaml
       components:
         physics: 
-            position: [480, 135]
+            position: [680, -60]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+    - entity: ships/plasmaFighter.yaml
+      components:
+        physics: 
+            position: [384, -17]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+
+wave DiamondShooterSidesJKP:
+  spawner:
+    - entity: ships/DiamondShooter.yaml
+      components:
+        physics: 
+            position: [682, -47]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+    - entity: ships/DiamondShooter.yaml
+      components:
+        physics: 
+            position: [87, -52]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+
+wave StarShip2times:
+  spawner:
+    - entity: ships/StarShip.yaml
+      components:
+        physics: 
+            position: [104, -50]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+    - entity: ships/StarShip.yaml
+      components:
+        physics: 
+            position: [584, -93]
         dumbScript: dumbscripts/wtf-sewing.yaml
-    - entity: ships/turtle.yaml
-      components:
-        physics: 
-            position: [444, 134]
-        dumbScript: dumbscripts/dontGetHit.yaml
-wave wave3:
+
+wave turtleAttacks:
   spawner:
     - entity: ships/turtle.yaml
       components:
         physics: 
-            position: [660, 126]
+            position: [238, -10]
         dumbScript: dumbscripts/movingAndFiring.yaml
     - entity: ships/turtle.yaml
       components:
         physics: 
-            position: [367, 113]
-        dumbScript: dumbscripts/enemy1.yaml
+            position: [467, -70]
+        dumbScript: dumbscripts/dontGetHit.yaml
     - entity: ships/turtle.yaml
       components:
         physics: 
-            position: [629, 214]
+            position: [654, -100]
         dumbScript: dumbscripts/justKillPlayer.yaml
+
+wave plasmaFighterAttacks:
+  spawner:
+    - entity: ships/plasmaFighter.yaml
+      components:
+        physics: 
+            position: [38, -28]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+    - entity: ships/plasmaFighter.yaml
+      components:
+        physics: 
+            position: [667, -53]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+    - entity: ships/plasmaFighter.yaml
+      components:
+        physics: 
+            position: [284, -29]
+        dumbScript: dumbscripts/dontGetHit.yaml
+    - entity: ships/plasmaFighter.yaml
+      components:
+        physics: 
+            position: [484, -124]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+
+wave mixmax:
+  spawner:
+    - entity: ships/plasmaFighter.yaml
+      components:
+        physics: 
+            position: [305, -38]
+        dumbScript: dumbscripts/dontGetHit.yaml
     - entity: ships/turtle.yaml
       components:
         physics: 
-            position: [440, 104]
+            position: [676, -89]
         dumbScript: dumbscripts/wtf-sewing.yaml
-wave wave4:
-  spawner:
-    - entity: ships/turtle.yaml
+    - entity: ships/DiamondShooter.yaml
       components:
         physics: 
-            position: [304, 141]
-        dumbScript: dumbscripts/dontGetHit.yaml
-    - entity: ships/turtle.yaml
+            position: [467, -57]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+    - entity: ships/StarShip.yaml
       components:
         physics: 
-            position: [584, 156]
+            position: [190, -13]
         dumbScript: dumbscripts/mostlyMoving.yaml
-    - entity: ships/enemy2.yaml
-      components:
-        physics: 
-            position: [475, 106]
-        dumbScript: dumbscripts/justKillPlayer.yaml
-wave wave5:
+
+wave onlyKillP:
   spawner:
-    - entity: ships/enemy2.yaml
+    - entity: ships/plasmaFighter.yaml
       components:
         physics: 
-            position: [238, 126]
-        dumbScript: dumbscripts/movingAndFiring.yaml
-    - entity: ships/turtle.yaml
-      components:
-        physics: 
-            position: [467, 173]
-        dumbScript: dumbscripts/enemy1.yaml
-    - entity: ships/enemy2.yaml
-      components:
-        physics: 
-            position: [554, 164]
-        dumbScript: dumbscripts/justKillPlayer.yaml
-wave wave6:
-  spawner:
-    - entity: ships/enemy2.yaml
-      components:
-        physics: 
-            position: [318, 116]
-        dumbScript: dumbscripts/movingAndFiring.yaml
-    - entity: ships/enemy2.yaml
-      components:
-        physics: 
-            position: [167, 133]
-        dumbScript: dumbscripts/movingAndFiring.yaml
-    - entity: ships/enemy2.yaml
-      components:
-        physics: 
-            position: [684, 124]
-        dumbScript: dumbscripts/justKillPlayer.yaml
-wave wave7:
-  spawner:
-    - entity: ships/enemy2.yaml
-      components:
-        physics: 
-            position: [365, 216]
-        dumbScript: dumbscripts/enemy1.yaml
-    - entity: ships/enemy2.yaml
-      components:
-        physics: 
-            position: [167, 103]
+            position: [558, -25]
         dumbScript: dumbscripts/wtf-sewing.yaml
-    - entity: ships/enemy2.yaml
+    - entity: ships/DiamondShooter.yaml
       components:
         physics: 
-            position: [467, 324]
-        dumbScript: dumbscripts/mostlyMoving.yaml
-    - entity: ships/enemy2.yaml
-      components:
-        physics: 
-            position: [190, 214]
-        dumbScript: dumbscripts/justKillPlayer.yaml
-wave wave8:
-  spawner:
-    - entity: ships/enemy2.yaml
-      components:
-        physics: 
-            position: [218, 156]
-        dumbScript: dumbscripts/dontGetHit.yaml
-    - entity: ships/enemy3.yaml
-      components:
-        physics: 
-            position: [367, 123]
+            position: [337, -15]
         dumbScript: dumbscripts/movingAndFiring.yaml
-    - entity: ships/enemy2.yaml
+    - entity: ships/plasmaFighter.yaml
       components:
         physics: 
-            position: [444, 245]
+            position: [64, -36]
         dumbScript: dumbscripts/justKillPlayer.yaml
-wave wave9:
+
+wave mixMaF:
   spawner:
-    - entity: ships/enemy2.yaml
+    - entity: ships/plasmaFighter.yaml
       components:
         physics: 
-            position: [418, 106]
-        dumbScript: dumbscripts/mostlyMoving.yaml
-    - entity: ships/enemy3.yaml
-      components:
-        physics: 
-            position: [267, 273]
-        dumbScript: dumbscripts/wtf-sewing.yaml
-    - entity: ships/enemy3.yaml
-      components:
-        physics: 
-            position: [564, 210]
-        dumbScript: dumbscripts/justKillPlayer.yaml
-wave wave10:
-  spawner:
-    - entity: ships/enemy3.yaml
-      components:
-        physics: 
-            position: [318, 160]
-        dumbScript: dumbscripts/enemy1.yaml
-    - entity: ships/enemy3.yaml
-      components:
-        physics: 
-            position: [667, 173]
-        dumbScript: dumbscripts/dontGetHit.yaml
-    - entity: ships/enemy3.yaml
-      components:
-        physics: 
-            position: [464, 102]
+            position: [418, -106]
         dumbScript: dumbscripts/movingAndFiring.yaml
-wave wave11:
-  spawner:
-    - entity: ships/enemy3.yaml
-      components:
-        physics: 
-            position: [188, 120]
-        dumbScript: dumbscripts/mostlyMoving.yaml
-    - entity: ships/enemy3.yaml
-      components:
-        physics: 
-            position: [367, 153]
-        dumbScript: dumbscripts/justKillPlayer.yaml
-    - entity: ships/enemy3.yaml
-      components:
-        physics: 
-            position: [284, 132]
-        dumbScript: dumbscripts/movingAndFiring.yaml
-    - entity: ships/enemy3.yaml
-      components:
-        physics: 
-            position: [294, 192]
-        dumbScript: dumbscripts/mostlyMoving.yaml
-wave wave12:
-  spawner:
-    - entity: ships/enemy3.yaml
-      components:
-        physics: 
-            position: [238, 138]
-        dumbScript: dumbscripts/wtf-sewing.yaml
-    - entity: ships/enemy3.yaml
-      components:
-        physics: 
-            position: [617, 136]
-        dumbScript: dumbscripts/dontGetHit.yaml
-    - entity: ships/enemy3.yaml
-      components:
-        physics: 
-            position: [464, 102]
-        dumbScript: dumbscripts/movingAndFiring.yaml
-    - entity: ships/enemy3.yaml
-      components:
-        physics: 
-            position: [304, 192]
-        dumbScript: dumbscripts/movingAndFiring.yaml
-    - entity: ships/enemy3.yaml
-      components:
-        physics: 
-            position: [582, 194]
-        dumbScript: dumbscripts/justKillPlayer.yaml
-wave wave13:
-  spawner:
-    - entity: ships/enemy3.yaml
-      components:
-        physics: 
-            position: [318, 116]
-        dumbScript: dumbscripts/justKillPlayer.yaml
-    - entity: ships/enemy3.yaml
-      components:
-        physics: 
-            position: [516, 157]
-        dumbScript: dumbscripts/mostlyMoving.yaml
-    - entity: ships/enemy3.yaml
-      components:
-        physics: 
-            position: [464, 134]
-        dumbScript: dumbscripts/justKillPlayer.yaml
-    - entity: ships/enemy2.yaml
-      components:
-        physics: 
-            position: [143, 160]
-        dumbScript: dumbscripts/dontGetHit.yaml
-    - entity: ships/enemy2.yaml
-      components:
-        physics: 
-            position: [627, 173]
-        dumbScript: dumbscripts/wtf-sewing.yaml
     - entity: ships/turtle.yaml
       components:
         physics: 
-            position: [118, 101]
-        dumbScript: dumbscripts/enemy1.yaml
+            position: [267, -23]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+    - entity: ships/StarShip.yaml
+      components:
+        physics: 
+            position: [564, -100]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+
+wave StarShipCrazyness:
+  spawner:
+    - entity: ships/StarShip.yaml
+      components:
+        physics: 
+            position: [318, -89]
+        dumbScript: dumbscripts/mostlyMoving.yaml
+    - entity: ships/StarShip.yaml
+      components:
+        physics: 
+            position: [667, -203]
+        dumbScript: dumbscripts/dontGetHit.yaml
+    - entity: ships/StarShip.yaml
+      components:
+        physics: 
+            position: [64, -15]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+
+wave turtleMaF:
+  spawner:
     - entity: ships/turtle.yaml
       components:
         physics: 
-            position: [697, 129]
+            position: [408, -20]
         dumbScript: dumbscripts/movingAndFiring.yaml
+
+wave StarShipMaF:
+    - entity: ships/StarShip.yaml
+      components:
+        physics: 
+            position: [367, -53]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+
+wave plasmaFighterMaF:
+    - entity: ships/plasmaFighter.yaml
+      components:
+        physics: 
+            position: [434, -32]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+
+wave Star2plasma:
+  spawner:
+    - entity: ships/StarShip.yaml
+      components:
+        physics: 
+            position: [708, -78]
+        dumbScript: dumbscripts/wtf-sewing.yaml
+    - entity: ships/plasmaFighter.yaml
+      components:
+        physics: 
+            position: [461, -16]
+        dumbScript: dumbscripts/dontGetHit.yaml
+    - entity: ships/StarShip.yaml
+      components:
+        physics: 
+            position: [46, -48]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+
+wave outOfHit:
+  spawner:
+    - entity: ships/DiamondShooter.yaml
+      components:
+        physics: 
+            position: [318, -16]
+        dumbScript: dumbscripts/dontGetHit.yaml
+    - entity: ships/turtle.yaml
+      components:
+        physics: 
+            position: [516, -57]
+        dumbScript: dumbscripts/mostlyMoving.yaml
+    - entity: ships/DiamondShooter.yaml
+      components:
+        physics: 
+            position: [464, -34]
+        dumbScript: dumbscripts/wtf-sewing.yaml
+    - entity: ships/plasmaFighter.yaml
+      components:
+        physics: 
+            position: [143, -30]
+        dumbScript: dumbscripts/dontGetHit.yaml
+    - entity: ships/turtle.yaml
+      components:
+        physics: 
+            position: [727, -43]
+        dumbScript: dumbscripts/mostlyMoving.yaml
+    - entity: ships/plasmaFighter.yaml
+      components:
+        physics: 
+            position: [118, -101]
+        dumbScript: dumbscripts/wtf-sewing.yaml
+        
 level:
   !!pairs
+
   - effect text:
       text: 42
       font: default 
       fontSize: 512
       color: rgbaFF000001
       time: 1.0
-
       
   - effect lines:
       minWidth: 0.6
@@ -287,6 +274,7 @@ level:
       linesPerPixel: 0.001
       detailLevel: 7
       color: rgbaC8C8FF30
+
   - effect lines:
       minWidth: 0.225
       maxWidth: 0.9
@@ -305,6 +293,7 @@ level:
       linesPerPixel: 0.002
       detailLevel: 5
       color: rgbaD8D8FF18
+
   - effect lines:
       minWidth: 0.1
       maxWidth: 0.4
@@ -323,6 +312,7 @@ level:
       linesPerPixel: 0.0001
       detailLevel: 6
       color: rgba2008A001
+
   - effect lines:
       lineDirection: 0.7853
       minWidth: 50.0
@@ -344,37 +334,105 @@ level:
       detailLevel: 8
       color: rgba98989801
 
-  - wait: 2.0
-  - wave: wave1
-  - wait: 5.0
-  - wave: wave2
-  - wait: 7.0
   - wait: 0.5
-  - wave: wave3
+  - wave: outOfHit
+  - wait: 4.0
+  - wave: turtleAttacks
+  - wait: 0.2
+  - wave: turtleJKP
+  - wait: 3.8
+  - wave: DiamondShooterSidesJKP
+  - wait: 0.3
+  - wave: plasmaFighterJKP
+  - wait: 3.7
+  - wave: plasmaFighterAttacks
+  - wait: 0.4
+  - wave: turtleMaF
+  - wait: 3.6
+  - wave: turtleMaF
+  - wait: 0.2
+  - wave: StarShipMaF
+  - wait: 0.2
+  - wave: DiamondShooterSidesJKP
+  - wait: 0.2
+  - wave: plasmaFighterMaF
+  - wait: 3.4
+  - wave: Star2plasma
+  - wait: 4.0
+  - wave: DiamondShooterSidesJKP
+  - wait: 0.3
+  - wave: outOfHit
+  - wait: 3.7
+  - wave: StarShipCrazyness
   - wait: 6.0
-  - wave: wave4
-  - wait: 10.0
+  - wave: StarShip2times
   - wait: 1.0
-  - wave: wave5
-  - wait: 6.0
-  - wave: wave6
-  - wait: 8.0
-  - wave: wave7
-  - wait: 7.0
-  - wait: 2.0
-  - wave: wave8
-  - wait: 9.0
-  - wave: wave9
-  - wait: 10.0
-  - wave: wave10
-  - wait: 9.0
-  - wait: 2.0
-  - wave: wave11
-  - wait: 9.0
-  - wave: wave12
-  - wait: 9.0
+  - wave: plasmaFighterJKP
   - wait: 3.0
-  - wave: wave13
-  - wait: 11.0
+  - wave: plasmaFighterAttacks
+  - wait: 0.5
+  - wave: turtleJKP
+  - wait: 0.5
+  - wave: DiamondShooterSidesJKP
+  - wait: 3.0
+  - wave: mixMaF
+  - wait: 0.5
+  - wave: onlyKillP
+  - wait: 3.5
+  - wave: mixmax
+  - wait: 0.2
+  - wave: turtleAttacks
+  - wait: 3.8
+  - wave: Star2plasma
+  - wait: 4.0
+  - wave: outOfHit
+  - wait: 1.5
+  - wave: mixMaF
+  - wait: 2.5
+  - wave: plasmaFighterJKP
+  - wait: 1.0
+  - wave: turtleJKP
+  - wait: 3.0
+  - wave: plasmaFighterAttacks
+  - wait: 0.2
+  - wave: turtleAttacks
+  - wait: 0.2
+  - wave: DiamondShooterSidesJKP
+  - wait: 3.6
+  - wave: onlyKillP
+  - wait: 1.0
+  - wave: mixMaF
+  - wait: 3.0
+  - wave: StarShip2times
+  - wait: 1.0
+  - wave: mixmax
+  - wait: 3.0
+  - wave: Star2plasma
   - wait: 2.0
+  - wave: plasmaFighterMaF
   - wait: 2.0
+  - wave: StarShip2times
+  - wait: 2.0
+  - wave: onlyKillP
+  - wait: 8.0
+  - wave: mixmax
+  - wait: 0.5
+  - wave: plasmaFighterMaF
+  - wait: 0.5
+  - wave: turtleMaF
+  - wait: 0.5
+  - wave: DiamondShooterSidesJKP
+  - wait: 2.5
+  - wave: StarShipCrazyness
+  - wait: 4.0
+  - wave: StarShipCrazyness
+  - wait: 4.0
+  - wave: DiamondShooterSidesJKP
+  - wait: 0.7
+  - wave: plasmaFighterMaF
+  - wait: 0.7
+  - wave: turtleMaF
+  - wait: 5.6
+  - wave: StarShipCrazyness
+  - wait: 6.0
+  - wait: 7.0

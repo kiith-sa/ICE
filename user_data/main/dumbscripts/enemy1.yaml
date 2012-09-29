@@ -1,7 +1,7 @@
 !!pairs
 - for 0.25:
     move-direction: 0.5
-- for 0.5:
+- for 0.25:
     move-direction: -0.5
 - for 0.5:
     fire: [0, 1]
@@ -13,6 +13,6 @@
     move-direction: -0.5
     move-speed: 0.5
     fire: [0]
-- for 5.0:
+- for 4.0:
     move-direction: 0
 - die:

@@ -2,37 +2,37 @@ burstPeriod: 0.4
 ammo: 10
 reloadTime: 0.7
 burst:
-  - entity: projectiles/enemy2bullet.yaml
+  - entity: projectiles/plasmaSphere.yaml
     delay: 0.007
     components:
       physics:
         position: [9.0, 9.0]
         rotation: 0.785398163
-  - entity: projectiles/enemy2bullet.yaml
+  - entity: projectiles/plasmaSphere.yaml
     delay: 0.003
     components:
       physics:
         position: [0.0, 9.0]
         rotation: 0.392699081
-  - entity: projectiles/enemy2bullet.yaml
+  - entity: projectiles/plasmaSphere.yaml
     delay: 0.0
     components:
       physics:
         position: [0.0, 9.0]
         rotation: 0.0
-  - entity: projectiles/enemy2bullet.yaml
+  - entity: projectiles/plasmaSphere.yaml
     delay: 0.0
     components:
       physics:
         position: [0.0, 9.0]
         rotation: 0.0
-  - entity: projectiles/enemy2bullet.yaml
+  - entity: projectiles/plasmaSphere.yaml
     delay: 0.003
     components:
       physics:
         position: [0.0, 9.0]
         rotation: -0.392699081
-  - entity: projectiles/enemy2bullet.yaml
+  - entity: projectiles/plasmaSphere.yaml
     delay: 0.007
     components:
       physics:

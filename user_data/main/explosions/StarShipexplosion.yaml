@@ -1,0 +1,201 @@
+spawner:
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 0.0, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 1.57, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 0.785, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 2.355, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.02
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 0.392, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.02
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 1.177, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.02
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 1.962, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.02
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 2.747, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 0.196, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 0.588, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 0.981, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 1.373, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 1.766, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 2.158, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 2.551, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 2.942, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 6.28, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 3.14, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 4.71, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 3.925, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 5.495, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.02
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 3.532, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.02
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 4.317, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.02
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 5.102, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.02
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 5.887, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 3.336, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 3.728, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 4.121, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 4.513, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 4.906, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 5.298, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 5.691, 40.0]
+ - entity: explosions/StarShipfragment.yaml 
+   condition: periodic 0.13
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 6.082, 40.0]
+       
+deathTimeout: 0.8

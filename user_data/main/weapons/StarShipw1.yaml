@@ -2,49 +2,49 @@ burstPeriod: 0.35
 ammo: 15
 reloadTime: 1.15
 burst:
- - entity: projectiles/enemy3bullet.yaml 
+ - entity: projectiles/StarShipbullet.yaml 
    delay: 0.0
    components:
      physics:
       position: [-8.0, 0.0]
       rotation: 0.0
- - entity: projectiles/enemy3bullet.yaml 
+ - entity: projectiles/StarShipbullet.yaml 
    delay: 0.0
    components:
      physics:
       position: [8.0, 0.0]
       rotation: 3.141592654
- - entity: projectiles/enemy3bullet.yaml 
+ - entity: projectiles/StarShipbullet.yaml 
    delay: 0.0
    components:
      physics:
       position: [0.0, 8.0]
       rotation: 1.570796327
- - entity: projectiles/enemy3bullet.yaml 
+ - entity: projectiles/StarShipbullet.yaml 
    delay: 0.0
    components:
      physics:
       position: [0.0, -8.0]
       rotation: -1.570796327
- - entity: projectiles/enemy3bullet.yaml 
+ - entity: projectiles/StarShipbullet.yaml 
    delay: 0.2
    components:
      physics:
       position: [-4.0, 4.0]
       rotation: -2.35619449
- - entity: projectiles/enemy3bullet.yaml 
+ - entity: projectiles/StarShipbullet.yaml 
    delay: 0.2
    components:
      physics:
       position: [4.0, 4.0]
       rotation: 2.35619449
- - entity: projectiles/enemy3bullet.yaml 
+ - entity: projectiles/StarShipbullet.yaml 
    delay: 0.2
    components:
      physics:
       position: [4.0, -4.0]
       rotation: 0.785398163
- - entity: projectiles/enemy3bullet.yaml 
+ - entity: projectiles/StarShipbullet.yaml 
    delay: 0.2
    components:
      physics:
