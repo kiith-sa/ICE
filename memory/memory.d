@@ -205,9 +205,9 @@ private:
             ///Bytes per object.
             ushort objectBytes_;
             ///Last characters of the object type name.
-            char[26] type_ = "                          ";
+            char[28] type_ = "                            ";
             ///Last characters of the file name where the allocation happened.
-            char[26] file_ = "                          ";
+            char[24] file_ = "                        ";
        
             ///Time when the program started.
             static real startTime_;
@@ -234,13 +234,13 @@ private:
             {
                 Allocation a;
 
-                static if(file.length > 26){a.file_[0 .. 26] = file[$ - 26 .. $];}
+                static if(file.length > 24){a.file_[0 .. 24] = file[$ - 24 .. $];}
                 else{a.file_[0 .. file.length] = file[];}
                 a.line_ = line;
                 a.objectBytes_ = T.sizeof;
 
                 enum type = T.stringof;
-                static if(type.length > 26){a.type_[0 .. 26] = type[$ - 26 .. $];}
+                static if(type.length > 28){a.type_[0 .. 28] = type[$ - 28 .. $];}
                 else{a.type_[0 .. type.length] = type[];}
 
                 a.objects_ = objects > uint.max ? uint.max : cast(uint)objects;
@@ -259,15 +259,15 @@ private:
                 string indent = cast(string)spaces[0 .. indentWidth];
                 string meta = "";
 
-                meta ~= indent ~ "- __FILE__: " ~ strip(cast(char[])file_) ~ "\n";
+                meta ~= indent ~ "- __FILE__: '" ~ strip(cast(char[])file_)           ~ "'\n";
 
-                meta ~= indent ~ "  __LINE__: " ~ to!string(line_) ~ "\n";
-                meta ~= indent ~ "  type    : " ~ strip(cast(char[])type_) ~ "\n";
-                meta ~= indent ~ "  objects : " ~ to!string(objects_) ~ "\n";
-                meta ~= indent ~ "  bytes   : " ~ to!string(objects_ * objectBytes_) ~ "\n";
-                meta ~= indent ~ "  time    : " ~ to!string(time_ * 0.0001) ~ "\n";
+                meta ~= indent ~ "  __LINE__: "  ~ to!string(line_)                   ~ "\n";
+                meta ~= indent ~ "  type    : '" ~ strip(cast(char[])type_)           ~ "'\n";
+                meta ~= indent ~ "  objects : "  ~ to!string(objects_)                ~ "\n";
+                meta ~= indent ~ "  bytes   : "  ~ to!string(objects_ * objectBytes_) ~ "\n";
+                meta ~= indent ~ "  time    : "  ~ to!string(time_ * 0.0001)          ~ "\n";
                 meta ~= indent ~ "  ptr     : ";
-                
+
                 return meta ~ to!string(ptr);
             }
 
