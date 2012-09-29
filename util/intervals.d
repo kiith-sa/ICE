@@ -115,7 +115,7 @@ struct IntervalsLinear(T, char L = '<', char R = ')')
             start += step;
         }
 
-        /// Get the current interval in the range.
+        /// Get the current interval from the range.
         @property Interval!(T, L, R) front() const
         {
             assert(start <= end, "ClosedIntervalsLinear front() called when empty");
@@ -172,7 +172,7 @@ struct IntervalsPowerOfTwo(T, char L = '<', char R = ')')
             start = (start == 0) ? 1 : start * 2;
         }
 
-        /// Get the current interval in the range.
+        /// Get the current interval from the range.
         @property Interval!(T, L, R) front() const
         {
             assert(start <= end, "ClosedIntervalsLinear front() called when empty");
