@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Engine component &mdash; ICE 0.1 documentation</title>
+    <title>MovementConstraint component &mdash; ICE 0.1 documentation</title>
     
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,18 +26,18 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="ICE 0.1 documentation" href="../index.html" />
-    <link rel="next" title="Health component" href="component_health.html" />
-    <link rel="prev" title="DumbScript component" href="component_dumbscript.html" /> 
+    <link rel="next" title="OnDeath component" href="component_ondeath.html" />
+    <link rel="prev" title="Health component" href="component_health.html" /> 
   </head>
   <body>
     <div class="related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="component_health.html" title="Health component"
+          <a href="component_ondeath.html" title="OnDeath component"
              accesskey="N">next</a></li>
         <li class="right" >
-          <a href="component_dumbscript.html" title="DumbScript component"
+          <a href="component_health.html" title="Health component"
              accesskey="P">previous</a> |</li>
         <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
       </ul>
@@ -48,41 +48,43 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="engine-component">
-<span id="modding-reference-component-engine"></span><h1>Engine component<a class="headerlink" href="#engine-component" title="Permalink to this headline">¶</a></h1>
-<p>Engine component allows an entity to change its movement(velocity) over time.
-It behaves like an &#8220;engine&#8221; accelerating the entity in certain direction when
-enabled. Whether the engine is enabled and the direction to apply acceleration
-in is determined by <a class="reference internal" href="component_controller.html#modding-reference-component-controller"><em>Controller component</em></a> which in turn
-is controlled either by a <a class="reference internal" href="component_dumbscript.html#modding-reference-component-dumbscript"><em>DumbScript component</em></a> or by
-a player.</p>
+  <div class="section" id="movementconstraint-component">
+<span id="modding-reference-component-movementconstraint"></span><h1>MovementConstraint component<a class="headerlink" href="#movementconstraint-component" title="Permalink to this headline">¶</a></h1>
+<p>A MovementConstraint component limits movement of an entity to an area. An
+example of this is the player ship which is limited to obly move within the
+screen. The area can also be specified relatively; for example, projectiles
+might be constrained to a particular area around the entity that fired them.</p>
 <p>Example:</p>
-<div class="highlight-python"><pre>engine:
-  maxSpeed: 450
-  acceleration 250</pre>
+<div class="highlight-python"><pre>movementConstraint:
+  aabbox: [-1024, -80, 1024, 800]
+  constrainedToOwner: true</pre>
 </div>
-<p>An entity with this engine component will accelerate by 250 units/second every
-second until it reaches a speed of 450 units/second.</p>
+<p>An entity with this movement constraint component will only be able to move in
+rectangle area with min coordinates of <tt class="docutils literal"><span class="pre">[-1024,</span> <span class="pre">-80]</span></tt> and max coordinates of
+<tt class="docutils literal"><span class="pre">[1024,</span> <span class="pre">800]</span></tt> relative to the <em>owner</em> entity. Owner is most often whichever
+entity spawned this entity.</p>
 <div class="section" id="tags">
 <h2>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
 <colgroup>
-<col width="15%" />
-<col width="85%" />
+<col width="23%" />
+<col width="77%" />
 </colgroup>
 <tbody valign="top">
-<tr class="row-odd"><td>maxSpeed</td>
-<td>Maximum speed the entity can move in units per second. When the
-engine is active, acceleration is applied until this speed is
-reached. If speed of the entity is any higher than this, it will be
-lowered to this value. Must be greater or equal to 0.0. <em>Scalar
-float</em>. This is required; there is no default value.</td>
+<tr class="row-odd"><td>aabbox</td>
+<td>Constrain movement to an axis aligned bounding box
+(aka rectangle) area. By default, this is an absolute area
+in screen coordinates. <em>constrainedToOwner</em> can be used to
+change that. <em>Sequence of 4 floats</em>. Must be specified;
+there is no default.</td>
 </tr>
-<tr class="row-even"><td>acceleration</td>
-<td>Acceleration applied when the engine is enabled in units per second
-per second. Negative values represent instant acceleration; i.e.
-the entity is instantly accelerated to full speed in the engine&#8217;s
-direction.</td>
+<tr class="row-even"><td>constrainedToOwner</td>
+<td>If this is true, the constraint area is relative to owner&#8217;s
+position. Usually, owner is the entity that spawned this
+entity. After the owner dies, the constraint is relative to
+its last position. If the entity has no owner, the constraint
+is absolute (relative to <tt class="docutils literal"><span class="pre">[0,</span> <span class="pre">0]</span></tt>). <em>Bool</em>.
+Default: <tt class="docutils literal"><span class="pre">false</span></tt>.</td>
 </tr>
 </tbody>
 </table>
@@ -97,7 +99,7 @@ direction.</td>
         <div class="sphinxsidebarwrapper">
   <h3><a href="../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Engine component</a><ul>
+<li><a class="reference internal" href="#">MovementConstraint component</a><ul>
 <li><a class="reference internal" href="#tags">Tags</a></li>
 </ul>
 </li>
@@ -111,10 +113,10 @@ direction.</td>
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="component_health.html" title="Health component"
+          <a href="component_ondeath.html" title="OnDeath component"
              >next</a></li>
         <li class="right" >
-          <a href="component_dumbscript.html" title="DumbScript component"
+          <a href="component_health.html" title="Health component"
              >previous</a> |</li>
         <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
       </ul>

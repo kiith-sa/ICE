@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Controller component &mdash; ICE 0.1 documentation</title>
+    <title>Player component &mdash; ICE 0.1 documentation</title>
     
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,18 +26,18 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="ICE 0.1 documentation" href="../index.html" />
-    <link rel="next" title="DeathTimeout component" href="component_deathtimeout.html" />
-    <link rel="prev" title="Collidable component" href="component_collidable.html" /> 
+    <link rel="next" title="Physics component" href="component_physics.html" />
+    <link rel="prev" title="Owner component" href="component_owner.html" /> 
   </head>
   <body>
     <div class="related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="component_deathtimeout.html" title="DeathTimeout component"
+          <a href="component_physics.html" title="Physics component"
              accesskey="N">next</a></li>
         <li class="right" >
-          <a href="component_collidable.html" title="Collidable component"
+          <a href="component_owner.html" title="Owner component"
              accesskey="P">previous</a> |</li>
         <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
       </ul>
@@ -48,18 +48,13 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="controller-component">
-<span id="modding-reference-component-controller"></span><h1>Controller component<a class="headerlink" href="#controller-component" title="Permalink to this headline">¶</a></h1>
-<p>A controller component simulates &#8220;buttons&#8221; by which an entity can be
-controlled.  It is used by the player ship and dumbscripts. A controller
-component is automatically added to an entity if it has a dumbscript component.
-It can be specified explicitly, but currently, without a dumbscript, it won&#8217;t
-do anything anyway. This might change in future if there are more ways to
-control an entity.</p>
-<p>Example:</p>
-<div class="highlight-python"><pre>controller:</pre>
-</div>
-<p>Currently, controller component has no parameters.</p>
+  <div class="section" id="player-component">
+<span id="modding-reference-component-player"></span><h1>Player component<a class="headerlink" href="#player-component" title="Permalink to this headline">¶</a></h1>
+<p>Currently, Player component can&#8217;t be used from YAML, only by internal game
+logic. This might change in future. It specifies the player (if any) which
+controls the Controller component of the entity. Currently this is only used
+for the player ship.  Trying to use Player component in YAML is currently an
+error.</p>
 </div>
 
 
@@ -76,10 +71,10 @@ control an entity.</p>
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="component_deathtimeout.html" title="DeathTimeout component"
+          <a href="component_physics.html" title="Physics component"
              >next</a></li>
         <li class="right" >
-          <a href="component_collidable.html" title="Collidable component"
+          <a href="component_owner.html" title="Owner component"
              >previous</a> |</li>
         <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
       </ul>
