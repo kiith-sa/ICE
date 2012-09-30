@@ -519,7 +519,7 @@ struct EntityPrototype
                 }
             }
         }
-                     
+
         ///Return a string represenation of the prototype.
         string toString() const
         {
