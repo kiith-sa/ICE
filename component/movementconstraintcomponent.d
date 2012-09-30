@@ -68,10 +68,6 @@ struct MovementConstraintComponent
             constrainedToOwner = yaml.containsKey("constrainedToOwner")
                                ? yaml["constrainedToOwner"].as!bool
                                : false;
-            position = yaml.containsKey("constraintPosition")
-                     ? fromYAML!Vector2f(yaml["constraintPosition"], 
-                                         "MovementConstraintComponent constructor")
-                     : Vector2f(0.0f, 0.0f);
             type_ = Type.AABBox;
             aabbox_ = fromYAML!Rectf(yaml["aabbox"], 
                                      "MovementConstraintComponent constructor");

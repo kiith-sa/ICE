@@ -27,8 +27,8 @@ struct OnDeathComponent
         /**
          * Load from a YAML node. 
          *
-         * Right now YAML can only specify existence of a ControllerComponent,
-         * not load anything from it.
+         * Currently, this is an error. OnDeathComponent can only be used 
+         * directly from code, not from YAML.
          */
         this(ref YAMLNode yaml)
         {

@@ -165,15 +165,15 @@ void main(string[] args)
     //No debugging symbols to avoid an OPTLINK bug on Windows.
     version(Windows)
     {
-        auto dbg          = ["-unittest", "-debug", "-ofice-debug"];
-        auto no_contracts = ["-release", "-ofice-no-contracts"];
-        auto release      = ["-O", "-inline", "-release", "-ofice-release"];
+        auto dbg          = ["-unittest", "-debug"];
+        auto no_contracts = ["-release"];
+        auto release      = ["-O", "-inline", "-release"];
     }
     else
     {
-        auto dbg          = ["-unittest", "-gc", "-debug", "-ofice-debug"];
-        auto no_contracts = ["-release", "-gc", "-ofice-no-contracts"];
-        auto release      = ["-O", "-inline", "-release", "-gc", "-ofice-release"];
+        auto dbg          = ["-unittest", "-gc", "-debug"];
+        auto no_contracts = ["-release", "-gc"];
+        auto release      = ["-O", "-inline", "-release", "-gc"];
     }
     auto dependencies = ["dependencies/derelict/DerelictSDL",
                          "dependencies/derelict/DerelictGL",
@@ -193,6 +193,9 @@ void main(string[] args)
     }
 
     auto files = dependencies ~ sources;
+    auto memProfFiles = ["dependencies/dyaml/dyaml", 
+                         "util/intervals.d",
+                         "memprof/"];
 
     void build(string[] targets ...)
     {
@@ -202,13 +205,16 @@ void main(string[] args)
             switch(target)
             {
                 case "debug":
-                    compile_(dbg, files);
+                    compile_(dbg ~ "-ofmemprof-debug", memProfFiles);
+                    compile_(dbg ~ "-ofice-debug", files);
                     break;
                 case "no-contracts":
-                    compile_(no_contracts, files);
+                    compile_(dbg ~ "-ofmemprof-no-contracts", memProfFiles);
+                    compile_(no_contracts ~ "-ofice-no-contracts", files);
                     break;
                 case "release":
-                    compile_(release, files);
+                    compile_(dbg ~ "-ofmemprof-release", memProfFiles);
+                    compile_(release ~ "-ofice-release", files);
                     break;
                 case "all":
                     compile_(dbg, files);
@@ -241,10 +247,10 @@ void help()
         "By default, cdc uses the compiler it was built with to compile the project.\n"
         "\n"
         "Any options starting with '-' not parsed by the script will be\n"
-        "passed to the compiler used.\n"
+        "passed to the compiler.\n"
         "\n"
         "Optionally, build target can be specified, 'debug' is default.\n"
-        "Available build targets:\n"
+        "Available build targets:\n"                     
         "    debug           Debug information, unittests, contracts built in.\n"
         "                    No optimizations. Target binary name: 'ice-debug'\n"
         "    no-contracts    Debug information, no unittests, contracts, optimizations.\n"
@@ -320,11 +326,11 @@ void compile(string[] options, string[] paths)
 
     //Create modules.ddoc and add it to array of ddocs
     if(co.generate_doc)
-    {    
+    {
         string modules = "MODULES = \n";
         sources.sort;
         foreach(src; sources)
-        {    
+        {
             //get filename 
             src = split(src, "\\.")[0];
             src = src.replace("/", ".").replace("\\", ".");
@@ -391,7 +397,7 @@ void compile(string[] options, string[] paths)
     }
     //Compilers other than gdc 
     else
-    {    
+    {
         execute_compiler(compiler, arguments);        
         //Move all html files in doc_path to the doc output folder 
         //and rename them with the "package.module" naming convention.
