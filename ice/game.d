@@ -221,6 +221,21 @@ class GameGUI
             return reallyQuit_ !is null;
         }
 
+        ///Update player health display in the HUD. Must be at least 0 and at most 1.
+        void updatePlayerHealth(float health)
+        {
+            hud_.updatePlayerHealth(health);
+        }
+
+        ///Draw any parts of the GUI that need to be drawn manually, not by the GUI subsystem.
+        ///
+        ///This is a hack to be used until we have a decent GUI subsystem.
+        void draw(VideoDriver driver)
+        {
+            hud_.draw(driver);
+        }
+
+
     private:
         /**
          * Construct a GameGUI with specified parameters.
@@ -420,14 +435,24 @@ class Game
 
                     if(gamePhase_ == GamePhase.Playing)
                     {
+                        auto playerShip = entitySystem_.entityWithID(playerShipID_);
+
+                        if(playerShip !is null)
+                        {
+                            const health = playerShip.health;
+                            if(health !is null)
+                            {
+                                gui_.updatePlayerHealth(cast(float)health.health / 
+                                                        cast(float)health.maxHealth);
+                            }
+                        }
+
                         if(!level_.update())
                         {
-                            auto player = entitySystem_.entityWithID(playerShipID_);
-                            assert(player !is null, 
+                            assert(playerShip !is null, 
                                    "Player ship doesn't exist even though the level was "
                                    "successfully completed");
-
-                            gameOver(*player, Yes.success);
+                            gameOver(*playerShip, Yes.success);
 
                             return true;
                         }
@@ -458,6 +483,7 @@ class Game
             if(!continue_){return false;}
 
             visualSystem_.update();
+            gui_.draw(videoDriver_);
 
             effectManager_.draw(videoDriver_, gameTime_);
 
@@ -734,6 +760,7 @@ class Game
             //Level is done already.
             if(gamePhase_ != GamePhase.Playing) {return;}
 
+            gui_.updatePlayerHealth(0.0f);
             gameOver(playerShip, No.success);
         }
 
@@ -821,7 +848,6 @@ class Game
                 return false;
             });
             effectManager_.addEffect(effect);
-
         }
 }
 

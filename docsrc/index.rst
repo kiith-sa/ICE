@@ -42,7 +42,7 @@ Modding reference:
    modding_reference/component_physics 
    modding_reference/component_visual
    modding_reference/component_volume
-..   modding_reference/component_spawner
+   modding_reference/component_spawner
 ..   modding_reference/component_weapon
 ..   modding_reference/level
 ..   modding_reference/entity

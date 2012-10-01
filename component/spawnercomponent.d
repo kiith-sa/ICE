@@ -106,7 +106,12 @@ struct SpawnerComponent
                 }
 
                 enforce(parts.length == 2, new YAMLException(periodError()));
-                try{period = to!float(parts[1]);}
+                try
+                {
+                    period = to!float(parts[1]);
+                    enforce(period > 0.0f, 
+                            new YAMLException("Negative or zero spawning period"));
+                }
                 catch(ConvException e)
                 {
                     throw new YAMLException(periodError());
@@ -150,21 +155,11 @@ struct SpawnerComponent
         /**
          * Load a Spawn from YAML.
          *
-         * Params:  yaml           = YAML node to load from 
-         *          entityRequired = Is the spawned entity required to be specified?
-         *                           Used for backwards compatibility with old 
-         *                           weapon format. Will be removed.
+         * Params:  yaml = YAML node to load from 
          */
-        this(ref YAMLNode yaml, Flag!"entityRequired" entityRequired = Yes.entityRequired)
+        this(ref YAMLNode yaml)
         {
-            if(entityRequired)
-            {
-                spawnee = LazyArrayIndex(yaml["entity"].as!string);
-            }
-            else if(yaml.containsKey("entity"))
-            {
-                spawnee = LazyArrayIndex(yaml["entity"].as!string);
-            }
+            spawnee = LazyArrayIndex(yaml["entity"].as!string);
 
             //By default, spawn condition is "spawn" .
             if(yaml.containsKey("condition"))
