@@ -2,13 +2,13 @@ burstPeriod: 0.3
 ammo: 2
 reloadTime: 1.25
 burst: 
- - entity: projectiles/Diamondbullet.yaml 
+ - entity: projectiles/diamondBullet.yaml 
    delay: 0.0
    components:
      physics:
       position: [8.0, 8.0]
       rotation: 0.53
- - entity: projectiles/Diamondbullet.yaml 
+ - entity: projectiles/diamondBullet.yaml 
    delay: 0.0
    components:
      physics:

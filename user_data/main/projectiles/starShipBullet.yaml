@@ -6,6 +6,6 @@ volume:
   aabbox:
     min: [-10, -10]
     max: [10, 10]
-visual: visual/StarShipbullet.yaml
+visual: visual/starShipBullet.yaml
 warhead:
   damage: 40

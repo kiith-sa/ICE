@@ -1,4 +1,4 @@
-visual: visual/StarShip.yaml
+visual: visual/starShip.yaml
 engine:
   maxSpeed: 400
   acceleration   : 250  
@@ -7,7 +7,7 @@ volume:
     min: [-12, -12]
     max: [12, 12]
 weapon:
-  0: weapons/StarShipw1.yaml
+  0: weapons/starShipW1.yaml
   1: weapons/plasmaSphereWeapon.yaml
 collidable:
 health: 40
@@ -19,10 +19,10 @@ spawner:
   - entity: explosions/deathbase.yaml 
     condition: death
     components:
-      visual: visual/StarShip.yaml
+      visual: visual/starShip.yaml
       physics: 
         position: [0, 0]
-  - entity: explosions/StarShipexplosion.yaml
+  - entity: explosions/starShipExplosion.yaml
     condition: death 
     components:
       physics: 

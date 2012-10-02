@@ -1,4 +1,4 @@
-visual: visual/DiamondShooter.yaml
+visual: visual/diamondShooter.yaml
 engine:
   maxSpeed: 350
   acceleration: 500  
@@ -7,8 +7,8 @@ volume:
     min: [12, 12]
     max: [-12, -12]
 weapon:
-  0: weapons/DiamondWeapon.yaml
-  1: weapons/DiamondWeapon.yaml
+  0: weapons/diamondWeapon.yaml
+  1: weapons/diamondWeapon.yaml
 collidable:
 health: 30
 warhead:
@@ -20,7 +20,7 @@ spawner:
   - entity: explosions/deathbase.yaml 
     condition: death
     components:
-      visual: visual/DiamondShooter.yaml
+      visual: visual/diamondShooter.yaml
       physics: 
         position: [0, 0]
   - entity: explosions/jetsmall.yaml
