@@ -22,7 +22,7 @@ import std.traits;
 
 import dgamevfs._;
 
-debug{import time.time;}
+import time.time;
 import util.unittests;
 
 
@@ -188,30 +188,29 @@ private:
     /**
      * Struct holding information about a memory allocation.
      *
-     * In release mode, this is simply a pointer to the allocated memory.
-     * In debug mode, it holds detailed information about the allocation
-     * and takes 48 bytes on 64-bit, 40 bytes on 32-bit.
+     * Holds detailed information about the allocation
+     * and takes 80 bytes on 64-bit, 76 bytes on 32-bit.
      */
     struct Allocation
     {
+        static assert(Allocation.sizeof <= 80, 
+                      "Unexpected size of the Allocation struct");
         private:
-        debug
-        {
-            ///Time when the program started.
-            static real startTime_;
             ///Number of objects allocated.
             uint objects_;
             ///Line number where the allocation happened.
             ushort line_;
-            ///Time, in seconds since start, when the allocation happened.
-            ushort time_;
+            ///Time, in hectomicroseconds since start, when the allocation happened.
+            uint time_;
             ///Bytes per object.
             ushort objectBytes_;
             ///Last characters of the object type name.
-            char[20] type_ = "                    ";
+            char[28] type_ = "                            ";
             ///Last characters of the file name where the allocation happened.
             char[24] file_ = "                        ";
-        }
+       
+            ///Time when the program started.
+            static real startTime_;
 
         public:
             ///Pointer to the allocated memory.
@@ -235,20 +234,17 @@ private:
             {
                 Allocation a;
 
-                debug
-                {
-                    static if(file.length > 24){a.file_[0 .. 24] = file[$ - 24 .. $];}
-                    else{a.file_[0 .. file.length] = file[];}
-                    a.line_ = line;
-                    a.objectBytes_ = T.sizeof;
+                static if(file.length > 24){a.file_[0 .. 24] = file[$ - 24 .. $];}
+                else{a.file_[0 .. file.length] = file[];}
+                a.line_ = line;
+                a.objectBytes_ = T.sizeof;
 
-                    enum type = T.stringof;
-                    static if(type.length > 20){a.type_[0 .. 20] = type[$ - 20 .. $];}
-                    else{a.type_[0 .. type.length] = type[];}
+                enum type = T.stringof;
+                static if(type.length > 28){a.type_[0 .. 28] = type[$ - 28 .. $];}
+                else{a.type_[0 .. type.length] = type[];}
 
-                    a.objects_ = objects > uint.max ? uint.max : cast(uint)objects;
-                    a.time_ = cast(ushort)(getTime() - startTime_);
-                }
+                a.objects_ = objects > uint.max ? uint.max : cast(uint)objects;
+                a.time_ = cast(ushort)(10000.0 * (getTime() - startTime_));
 
                 a.ptr = cast(void*)ptr;
 
@@ -262,33 +258,26 @@ private:
                 spaces[] = ' ';
                 string indent = cast(string)spaces[0 .. indentWidth];
                 string meta = "";
-                debug
-                {
-                    meta ~= indent ~ "- __FILE__: " ~ strip(cast(char[])file_) ~ "\n";
 
-                    meta ~= indent ~ "  __LINE__: " ~ to!string(line_) ~ "\n";
-                    meta ~= indent ~ "  type    : " ~ strip(cast(char[])type_) ~ "\n";
-                    meta ~= indent ~ "  objects : " ~ to!string(objects_) ~ "\n";
-                    meta ~= indent ~ "  bytes   : " ~ to!string(objects_ * objectBytes_) ~ "\n";
-                    meta ~= indent ~ "  time    : " ~ to!string(time_) ~ "\n";
-                    meta ~= indent ~ "  ptr     : ";
-                }
+                meta ~= indent ~ "- __FILE__: '" ~ strip(cast(char[])file_)           ~ "'\n";
+
+                meta ~= indent ~ "  __LINE__: "  ~ to!string(line_)                   ~ "\n";
+                meta ~= indent ~ "  type    : '" ~ strip(cast(char[])type_)           ~ "'\n";
+                meta ~= indent ~ "  objects : "  ~ to!string(objects_)                ~ "\n";
+                meta ~= indent ~ "  bytes   : "  ~ to!string(objects_ * objectBytes_) ~ "\n";
+                meta ~= indent ~ "  time    : "  ~ to!string(time_ * 0.0001)          ~ "\n";
+                meta ~= indent ~ "  ptr     : ";
+
                 return meta ~ to!string(ptr);
             }
 
         private:
-        debug
-        {
             ///Static constructor - set start time.
             static this(){startTime_ = getTime();}
-        }
     }
 
-    debug
-    {
-        ///Information about allocations that have been freed.
-        Allocation[] pastAllocations_;
-    }
+    ///Information about allocations that have been freed.
+    Allocation[] pastAllocations_;
 
     //set (RB tree) might work better if there are performance problems
     ///Information about current allocations.
@@ -542,29 +531,24 @@ private:
     {
         string stats = "#Memory allocator statistics:";
         stats ~= "\nTotal allocated bytes: " ~ to!string(totalAllocated_);
-        stats ~= "\nTotal freed bytes: " ~ to!string(totalFreed_);
+        stats ~= "\nTotal freed bytes    : " ~ to!string(totalFreed_);
+        stats ~= "\nMemory debug bytes   : " ~ 
+                 to!string(Allocation.sizeof *
+                           (allocations_.length + pastAllocations_.length));
 
         const nonFreed = allocations_.length;
         stats ~= nonFreed ? "\n#LEAK: " ~ to!string(nonFreed) ~ " pointers were not freed."
                           : "\n#All pointers have been freed, no memory leaks detected.";
         stats ~= "\n\n\n";
 
-        if(nonFreed)
+        stats ~= "Allocations:";
+        foreach(ref allocation; allocations_)
         {
-            stats ~= "LEAKS:";
-            foreach(ref allocation; allocations_)
-            {
-                stats ~= "\n\n" ~ allocation.info(2);
-            }
-            stats ~= "\n\n\n";
+            stats ~= "\n\n" ~ allocation.info(2) ~ "\n    freed   : false";
         }
-        debug
+        foreach(ref allocation; pastAllocations_)
         {
-            stats ~= "Freed allocations:";
-            foreach(ref allocation; pastAllocations_)
-            {
-                stats ~= "\n\n" ~ allocation.info(2);
-            }
+            stats ~= "\n\n" ~ allocation.info(2) ~ "\n    freed   : true";
         }
 
         return stats;
@@ -623,7 +607,7 @@ private:
         bool found = false;
         foreach(ref allocation; allocations_) if(allocation.ptr == oldPtr)
         {
-            debug{pastAllocations_ ~= allocation;}
+            pastAllocations_ ~= allocation;
             //replace allocation info
             allocation = Allocation.construct!(T, file, line)(newPtr, newObjects);
             found = true;
@@ -651,7 +635,7 @@ private:
         bool found = false;
         foreach(ref allocation; allocations_) if(allocation.ptr == ptr)
         {
-            debug{pastAllocations_ ~= allocation;}
+            pastAllocations_ ~= allocation;
             //remove by rewriting by the last allocation
             allocation = allocations_[$ - 1];
             found = true;

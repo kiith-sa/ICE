@@ -1,0 +1,189 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Spawner component &mdash; ICE 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ICE 0.1 documentation" href="../index.html" />
+    <link rel="prev" title="Volume component" href="component_volume.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="component_volume.html" title="Volume component"
+             accesskey="P">previous</a></li>
+        <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="spawner-component">
+<span id="modding-reference-component-spawner"></span><h1>Spawner component<a class="headerlink" href="#spawner-component" title="Permalink to this headline">¶</a></h1>
+<p>A spawner component allows an entity to spawn (create) new entities when
+certain conditions are met. This is a very powerful mechanism that can be used
+to create various effects. One example is spawning explosion effects when
+a ship dies.  However, as any entity can be spawned, this can also be used to
+duplicate a projectile, create projectiles like cluster bombs that split into
+smaller projectiles, making a ship spawn other ships and so on. Under the hood,
+weapons also use a spawner component to fire projectiles.</p>
+<p>One important feature of a spawner component is that it can override components
+of spawned entities. This allows for instance to give spawned entities
+different scripts, modify their health, and so on. Usually at least the physics
+component is overridden to set position and velocity of a spawned entity.</p>
+<p>Components can only be overridden whole. E.g. if you override a physics
+component, and specify only position, it won&#8217;t override position only and keep
+other attributes at previous values; it will override the physics component
+with a new component with specified position and other attributes with their
+default values.</p>
+<p>The spawner component is a sequence of entities to spawn. For each entity you
+can specify file to load the entify from, condition to spawn at, components
+to override and so on.</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>spawner:
+  - entity: explosions/player.yaml
+    condition: death
+    components:
+      physics:
+        position: [0, 0]
+  - entity: explosions/deathbase.yaml
+    condition: death
+    components:
+      visual: visual/player.yaml
+      physics:
+        position: [0, 0]</pre>
+</div>
+<p>An entity with this spawner component will spawn two entities when it dies.
+Both will be spawned exactly at the spawner&#8217;s position. The first one is
+an explosion; the other is a dummy entity that will continue displaying
+the same visual as the spawner for a while.</p>
+<div class="section" id="tags-in-an-entity-entry">
+<h2>Tags in an entity entry<a class="headerlink" href="#tags-in-an-entity-entry" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="82%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>entity</td>
+<td>File name of the entity to spawn. <em>String</em>. This must be
+specified; there is no default.</td>
+</tr>
+<tr class="row-even"><td>condition</td>
+<td>When tje condition specified here is met, the entity is spawned.
+A condition might have further parameters, such as a period for
+periodic. Supported conditions are described in a table below.
+This must be specified; there is no default.</td>
+</tr>
+<tr class="row-odd"><td>components</td>
+<td>Components specified here will override components from
+specified entity. Components are specified in the same way as
+in an entity file. Even components that are not present in the
+specified entity can be used. Usually, at least the physics
+component should be overridden to specify position, velocity
+and/or rotation.</td>
+</tr>
+<tr class="row-even"><td>spawnerIsOwner</td>
+<td>When true, the spawner entity will own the spawned entity. This
+can be useful for movement constraints and weapons.
+<em>Bool</em>. Default: <tt class="docutils literal"><span class="pre">true</span></tt>.</td>
+</tr>
+<tr class="row-odd"><td>delay</td>
+<td>Delay between the condition is met and the entity is spawned in
+seconds. Must be greater or equal to zero. <em>Float</em>.
+Default: <tt class="docutils literal"><span class="pre">0.0</span></tt>.</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="conditions">
+<h2>Conditions<a class="headerlink" href="#conditions" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="83%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>death</td>
+<td>Spawn when the spawner dies. Useful for explosions, splitting
+ships, and so on.</td>
+</tr>
+<tr class="row-even"><td>spawn</td>
+<td>Spawn together with the spawner.</td>
+</tr>
+<tr class="row-odd"><td>weaponBurst A</td>
+<td>Spawn when burst of weapon in slot A starts. If there is no
+weapon in the slot, nothing happens. A is <em>integer</em> and must be
+at least <tt class="docutils literal"><span class="pre">0</span></tt> and at most <tt class="docutils literal"><span class="pre">255</span></tt>.</td>
+</tr>
+<tr class="row-even"><td>periodic A</td>
+<td>Spawn periodically, as long as the spawner exists. A is a <em>float</em>
+parameter specifying the period in seconds. The period must be
+greater than zero.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Spawner component</a><ul>
+<li><a class="reference internal" href="#tags-in-an-entity-entry">Tags in an entity entry</a></li>
+<li><a class="reference internal" href="#conditions">Conditions</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="component_volume.html" title="Volume component"
+             >previous</a></li>
+        <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010-2012, Dávid Horváth, Ferdinand Majerech, Libor Mališ..
+      Last updated on Sep 30, 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

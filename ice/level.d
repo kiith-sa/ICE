@@ -286,11 +286,14 @@ class DumbLevel : Level
                 /**
                  * Construct a WaveDefinition from YAML.
                  *
+                 * Params:  name = Name of the wave definition (for debugging).
+                 *          yaml = YAML node to load the definition from.
+                 *
                  * Throws:  YAMLException if the WaveDefinition failed to load.
                  */
-                this(ref YAMLNode yaml)
+                this(string name, ref YAMLNode yaml)
                 {
-                    spawnerPrototype = alloc!EntityPrototype("levelSpawnerDummy", yaml);
+                    spawnerPrototype = alloc!EntityPrototype("wave: " ~ name, yaml);
 
                     if(yaml.containsKey("spawn"))
                     {
@@ -301,6 +304,8 @@ class DumbLevel : Level
                 ///Destroy a WaveDefinition.
                 ~this()
                 {
+                    // Allocation might have failed.
+                    if(null is spawnerPrototype){return;}
                     free(spawnerPrototype);
                 }
 
@@ -868,7 +873,8 @@ class DumbLevel : Level
             try
             {
                 //Add the wave definition.
-                waveDefinitions_ ~= NamedWaveDefinition(alloc!WaveDefinition(yaml), name);
+                waveDefinitions_ ~=
+                    NamedWaveDefinition(alloc!WaveDefinition(name, yaml), name);
             }
             catch(YAMLException e)
             {
