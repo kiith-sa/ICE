@@ -31,12 +31,12 @@ wave plasmaFighterJKP:
 
 wave DiamondShooterSidesJKP:
   spawner:
-    - entity: ships/DiamondShooter.yaml
+    - entity: ships/diamondShooter.yaml
       components:
         physics: 
             position: [682, -47]
         dumbScript: dumbscripts/justKillPlayer.yaml
-    - entity: ships/DiamondShooter.yaml
+    - entity: ships/diamondShooter.yaml
       components:
         physics: 
             position: [87, -52]
@@ -44,12 +44,12 @@ wave DiamondShooterSidesJKP:
 
 wave StarShip2times:
   spawner:
-    - entity: ships/StarShip.yaml
+    - entity: ships/starShip.yaml
       components:
         physics: 
             position: [104, -50]
         dumbScript: dumbscripts/movingAndFiring.yaml
-    - entity: ships/StarShip.yaml
+    - entity: ships/starShip.yaml
       components:
         physics: 
             position: [584, -93]
@@ -108,12 +108,12 @@ wave mixmax:
         physics: 
             position: [676, -89]
         dumbScript: dumbscripts/wtf-sewing.yaml
-    - entity: ships/DiamondShooter.yaml
+    - entity: ships/diamondShooter.yaml
       components:
         physics: 
             position: [467, -57]
         dumbScript: dumbscripts/justKillPlayer.yaml
-    - entity: ships/StarShip.yaml
+    - entity: ships/starShip.yaml
       components:
         physics: 
             position: [190, -13]
@@ -126,7 +126,7 @@ wave onlyKillP:
         physics: 
             position: [558, -25]
         dumbScript: dumbscripts/wtf-sewing.yaml
-    - entity: ships/DiamondShooter.yaml
+    - entity: ships/diamondShooter.yaml
       components:
         physics: 
             position: [337, -15]
@@ -149,7 +149,7 @@ wave mixMaF:
         physics: 
             position: [267, -23]
         dumbScript: dumbscripts/movingAndFiring.yaml
-    - entity: ships/StarShip.yaml
+    - entity: ships/starShip.yaml
       components:
         physics: 
             position: [564, -100]
@@ -157,17 +157,17 @@ wave mixMaF:
 
 wave StarShipCrazyness:
   spawner:
-    - entity: ships/StarShip.yaml
+    - entity: ships/starShip.yaml
       components:
         physics: 
             position: [318, -89]
         dumbScript: dumbscripts/mostlyMoving.yaml
-    - entity: ships/StarShip.yaml
+    - entity: ships/starShip.yaml
       components:
         physics: 
             position: [667, -203]
         dumbScript: dumbscripts/dontGetHit.yaml
-    - entity: ships/StarShip.yaml
+    - entity: ships/starShip.yaml
       components:
         physics: 
             position: [64, -15]
@@ -181,14 +181,16 @@ wave turtleMaF:
             position: [408, -20]
         dumbScript: dumbscripts/movingAndFiring.yaml
 
-wave StarShipMaF:
-    - entity: ships/StarShip.yaml
+wave starShipMaF:
+  spawner:
+    - entity: ships/starShip.yaml
       components:
         physics: 
             position: [367, -53]
         dumbScript: dumbscripts/movingAndFiring.yaml
 
 wave plasmaFighterMaF:
+  spawner:
     - entity: ships/plasmaFighter.yaml
       components:
         physics: 
@@ -197,7 +199,7 @@ wave plasmaFighterMaF:
 
 wave Star2plasma:
   spawner:
-    - entity: ships/StarShip.yaml
+    - entity: ships/starShip.yaml
       components:
         physics: 
             position: [708, -78]
@@ -207,7 +209,7 @@ wave Star2plasma:
         physics: 
             position: [461, -16]
         dumbScript: dumbscripts/dontGetHit.yaml
-    - entity: ships/StarShip.yaml
+    - entity: ships/starShip.yaml
       components:
         physics: 
             position: [46, -48]
@@ -215,7 +217,7 @@ wave Star2plasma:
 
 wave outOfHit:
   spawner:
-    - entity: ships/DiamondShooter.yaml
+    - entity: ships/diamondShooter.yaml
       components:
         physics: 
             position: [318, -16]
@@ -225,7 +227,7 @@ wave outOfHit:
         physics: 
             position: [516, -57]
         dumbScript: dumbscripts/mostlyMoving.yaml
-    - entity: ships/DiamondShooter.yaml
+    - entity: ships/diamondShooter.yaml
       components:
         physics: 
             position: [464, -34]
@@ -351,7 +353,7 @@ level:
   - wait: 3.6
   - wave: turtleMaF
   - wait: 0.2
-  - wave: StarShipMaF
+  - wave: starShipMaF
   - wait: 0.2
   - wave: DiamondShooterSidesJKP
   - wait: 0.2
