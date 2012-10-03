@@ -6,7 +6,7 @@ burst:
     components: 
       physics: 
         rotation: 1.500
-        position: [35.1, 12.5]
+        position: [45.0, 12.5]
         spawnAbsolute: [velocity]
   - entity: ships/turtleRight.yaml 
     components: 
