@@ -8,4 +8,4 @@ volume:
     max: [1,  11]
 visual:   visual/plasmaBullet.yaml
 warhead:
-  damage: 4
+  damage: 3

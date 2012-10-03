@@ -27,7 +27,7 @@
     move-direction: 0.5
     move-speed: 0.5
     fire: [1]
-- for 0.25:
+- for 1.25:
     move-direction: -0.5
     fire: [0]
 - die:
