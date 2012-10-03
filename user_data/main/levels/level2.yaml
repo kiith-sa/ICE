@@ -52,6 +52,19 @@ wave harpooners:
             position: [100, -10]
         dumbScript: dumbscripts/movingAndFiring.yaml
 
+wave peaIntroduction:
+  spawner:
+    - entity: ships/peaShooter.yaml 
+      components:
+        physics: 
+            position: [300, -30]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+    - entity: ships/peaShooter.yaml 
+      components:
+        physics: 
+            position: [500, -30]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+
 wave peaDeath:
   spawner:
     - entity: ships/peaShooter.yaml 
@@ -82,7 +95,7 @@ wave peaDeath:
 
 wave cavalary:
   spawner:
-    - entity: ships/peashooter.yaml 
+    - entity: ships/peaShooter.yaml 
       components:
         physics: 
             position: [400, -50]
@@ -92,11 +105,45 @@ wave cavalary:
         physics: 
             position: [550, -70]
         dumbScript: dumbscripts/movingAndFiring.yaml
-    - entity: ships/peashooter.yaml 
+    - entity: ships/peaShooter.yaml 
       components:
         physics: 
             position: [700, -50]
         dumbScript: dumbscripts/movingAndFiring.yaml
+
+wave cavalary2:
+  spawner:
+    - entity: ships/harpooner.yaml 
+      components:
+        physics: 
+            position: [250, -50]
+        dumbScript: dumbscripts/pawnLeft.yaml
+    - entity: ships/harpooner.yaml 
+      components:
+        physics: 
+            position: [550, -50]
+        dumbScript: dumbscripts/pawnRight.yaml
+
+wave waveShooter:
+  spawner:
+    - entity: ships/waveShooter.yaml 
+      components:
+        physics: 
+            position: [400, -70]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+
+wave support1:
+  spawner:
+    - entity: ships/harpooner.yaml 
+      components:
+        physics: 
+            position: [400, -125]
+        dumbScript: dumbscripts/support.yaml
+    - entity: ships/waveShooter.yaml 
+      components:
+        physics: 
+            position: [400, -30]
+        dumbScript: dumbscripts/jets1.yaml
 
 wave boss:
   spawner:
@@ -177,6 +224,24 @@ level:
   - wait: 1
   - wave: harpooners
   - wait: 3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 1
+  - wave: peaIntroduction
+  - wait: 3
+  - wave: [peaIntroduction, [-200.0,  -60]]
+  - wait: 3
+  - wave: peaIntroduction
+  - wait: 3
+  - wave: [peaIntroduction, [200.0,  -60]]
+  - wait: 3
   - wave: turtlePawn2
   - wait: 0.3
   - wave: turtlePawn2
@@ -201,20 +266,63 @@ level:
   - wait: 2
   - wave: cavalary
   - wait: 5
+
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 3
+  - wave: support1
+  - wait: 2.5
+  - wave: [cavalary, [-100.0,  -40]]
+  - wait: 2
+  - wave: [support1, [300.0,  -40]]
+  - wait: 2.5
+  - wave: [cavalary, [-100.0,  -40]]
+  - wait: 2
+  - wave: support1
+  - wait: 2.5
+  - wave: [cavalary, [-300.0,  -40]]
+  - wait: 2
+  - wave: [support1, [-300.0,  -40]]
+  - wait: 2.5
+  - wave: support1
+  - wait: 3
+  - wave: waveShooter
+  - wave: cavalary2
+  - wait: 1
+  - wave: cavalary2
+  - wait: 0.5
+  - wave: waveShooter
+  - wait: 2.5
+  - wave: waveShooter
+  - wave: cavalary2
+  - wait: 1
+  - wave: cavalary2
+  - wait: 3
+  - wave: peaIntroduction
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wave: support1
+  - wait: 3
+  - wave: support1
+  - wait: 3
+  - wave: [support1, [-100.0,  -40]]
+  - wait: 3
+  - wave: [support1, [-300.0,  -40]]
+  - wait: 5
   - wave: [boss, [100.0,  0]]
   - wait: 6
   - wave: [boss, [-100.0,  0]]
   - wait: 6
   - wave: boss
-  - wait: 5
-  - wave: turtlePawn
-  - wait: 0.3
-  - wave: turtlePawn
-  - wait: 0.3
-  - wave: turtlePawn
-  - wait: 0.3
-  - wave: turtlePawn
-  - wait: 0.3
-  - wave: turtlePawn
-  - wait: 8
-
+  - wait: 7
