@@ -78,6 +78,22 @@ wave waveShooterSides:
         physics: 
             position: [150, -90]
 
+wave waveShooterLeft:
+  spawner:
+    - entity: ships/waveShooter.yaml
+      components:
+        physics:
+            position: [800,30]
+        dumbScript: dumbscripts/toleft.yaml
+
+wave waveShooterRight:
+  spawner:
+    - entity: ships/waveShooter.yaml
+      components:
+        physics:
+            position: [0,60]
+        dumbScript: dumbscripts/toright.yaml
+
 wave peaShooterMiddle:
   spawner:
     - entity: ships/peaShooter.yaml
@@ -182,7 +198,7 @@ level:
       color: rgba2008A001
 
   - wave: harpoonerUpperSides
-  - wait: 1.0
+  - wait: 1.5
   - wave: waveShooterMiddle
   - wave: waveShooterSides
   - wait: 4.0
@@ -212,10 +228,10 @@ level:
   - wait: 4.0
   - wave: tritonMiddle
   - wait: 3.0
-  - wave: peaShooterRight
+  - wave: waveShooterRight
   - wait: 0.7
-  - wave: peaShooterLeft
-  - wait: 1.5
+  - wave: waveShooterLeft
+  - wait: 2.0
   - wave: waveShooterMiddle
   - wave: waveShooterSides
   - wait: 4.0
@@ -231,16 +247,16 @@ level:
   - wave: peaShooterRight
   - wait: 0.7
   - wave: peaShooterLeft
-  - wait: 1.5
+  - wait: 2.0
   - wave: harpoonerDown
   - wait: 3.5
   - wave: peaShooterUpperSides
   - wait: 3.5
   - wave: tritonMiddle
-  - wait: 1.5
-  - wave: peaShooterRight
+  - wait: 2.0
+  - wave: waveShooterRight
   - wait: 0.7
-  - wave: peaShooterLeft
+  - wave: waveShooterLeft
   - wait: 2.0
   - wave: harpoonerUpperSides
   - wait: 3.5
