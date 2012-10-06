@@ -9,9 +9,9 @@ volume:
 weapon:
   0: weapons/lightPlasma.yaml
 collidable:
-health: 50
+health: 15
 warhead:
-  damage: 50
+  damage: 10
   killsEntity: true
 dumbScript: dumbscripts/zigzag.yaml
 

@@ -68,7 +68,7 @@
     fire: [0] 
 
 #Leave screen
-- for 1.4:
+- for 1.9:
     move-direction: 0.0
 
 - die:
