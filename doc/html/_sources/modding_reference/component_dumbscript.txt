@@ -6,7 +6,9 @@ DumbScript component
 
 A dumbscript defines behavior of an entity, such as moving and firing. Unless
 an entity is player controlled, without a dumbscript, it will not use its
-engine or weapons (if any).
+engine or weapons (if any). A dumbscript controls
+a :ref:`modding_reference/component_controller`, which is added to an entity by
+default with the dumbscript component.
 
 A dumbscript component is specified by filename of a separate dumbscript file.
 
