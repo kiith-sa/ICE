@@ -11,7 +11,7 @@ Tutorials:
 ----------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    tutorials/install_source_linux
    tutorials/install_source_windows
@@ -27,7 +27,7 @@ Modding reference:
 ------------------
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    modding_reference/component_collidable
    modding_reference/component_controller
@@ -40,10 +40,12 @@ Modding reference:
    modding_reference/component_owner
    modding_reference/component_player
    modding_reference/component_physics 
+   modding_reference/component_spawner
+   modding_reference/component_statistics
    modding_reference/component_visual
    modding_reference/component_volume
-   modding_reference/component_spawner
-..   modding_reference/component_weapon
+   modding_reference/component_warhead
+   modding_reference/component_weapon
 ..   modding_reference/level
 ..   modding_reference/entity
 .. TODO other component types
