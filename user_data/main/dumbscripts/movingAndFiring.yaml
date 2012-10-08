@@ -4,11 +4,10 @@
 - for 0.25:
     move-direction: -0.3
 - for 0.25:
-    fire: [0, 1]
+    move-direction: -0.01
 - for 0.25:
     move-direction: 0.2
     move-speed: 0.5
-    fire: [0]
 - for 0.35:
     move-direction: -0.4
     move-speed: 0.7

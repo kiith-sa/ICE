@@ -4,7 +4,7 @@
 - for 0.4:
     move-direction: -0.3
 - for 0.4:
-    fire: [0, 1]
+    move-direction: 0.01
 - for 0.5:
     move-direction: 0.5
     move-speed: 0.7
