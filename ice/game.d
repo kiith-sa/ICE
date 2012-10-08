@@ -84,6 +84,13 @@ class GameGUI
                                  "42",
                                  "You were killed",
                                  "Longcat is looooooooooooooooooooooooooooooong",
+                                 "Delirious Biznasty",
+                                 ":o) hOnK",
+                                 "There's a cake in the toilet.",
+                                 "DIE FISH HITLER DIE!"
+                                     "                                                                                "
+                                     "I WONT LET YOU KILL MY PEOPLE!",
+                                 "I'm glasses.",
                                  "You are dead"];
 
         ///Messages shown when the player successfully clears the level.
@@ -92,6 +99,9 @@ class GameGUI
                                    "Nice~",
                                    "Still alive",
                                    "You aren't quite dead yet",
+                                   "MoThErFuCkInG MiRaClEs",
+                                   "PCHOOOOOOOO!",
+                                   "where doing it man WHERE MAKING THIS HAPEN",
                                    "42"];
     
     public:
