@@ -165,16 +165,17 @@ void main(string[] args)
     //No debugging symbols to avoid an OPTLINK bug on Windows.
     version(Windows)
     {
-        auto dbg          = ["-unittest", "-debug"];
+        auto memprofDbg   = ["-debug"];
         auto no_contracts = ["-release"];
         auto release      = ["-O", "-inline", "-release"];
     }
     else
     {
-        auto dbg          = ["-unittest", "-gc", "-debug"];
+        auto memprofDbg   = ["-gc", "-debug"];
         auto no_contracts = ["-release", "-gc"];
         auto release      = ["-O", "-inline", "-release", "-gc"];
     }
+    auto dbg = memprofDbg ~ "-unittest";
     auto dependencies = ["dependencies/derelict/DerelictSDL",
                          "dependencies/derelict/DerelictGL",
                          "dependencies/derelict/DerelictFT",
@@ -205,15 +206,15 @@ void main(string[] args)
             switch(target)
             {
                 case "debug":
-                    compile_(dbg ~ "-ofmemprof-debug", memProfFiles);
+                    compile_(memprofDbg ~ "-ofmemprof-debug", memProfFiles);
                     compile_(dbg ~ "-ofice-debug", files);
                     break;
                 case "no-contracts":
-                    compile_(dbg ~ "-ofmemprof-no-contracts", memProfFiles);
+                    compile_(memprofDbg ~ "-ofmemprof-no-contracts", memProfFiles);
                     compile_(no_contracts ~ "-ofice-no-contracts", files);
                     break;
                 case "release":
-                    compile_(dbg ~ "-ofmemprof-release", memProfFiles);
+                    compile_(memprofDbg ~ "-ofmemprof-release", memProfFiles);
                     compile_(release ~ "-ofice-release", files);
                     break;
                 case "all":
