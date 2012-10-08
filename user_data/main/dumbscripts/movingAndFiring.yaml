@@ -11,7 +11,6 @@
 - for 0.35:
     move-direction: -0.4
     move-speed: 0.7
-    fire: [1]
 - for 0.7:
     move-direction: 0.3
     fire: [0]

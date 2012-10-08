@@ -1,12 +1,13 @@
 !!pairs
 - for 0.5:
-    fire: [0, 1]
+    move-direction: -0.01
 - for 0.3:
     move-direction: 0.3
     move-speed: 0.5
 - for 0.3:
     move-direction: -0.2
     move-speed: 0.5
+    fire: [0, 1]
 - for 0.9:
     fire: [1]
 - for 0.5:
