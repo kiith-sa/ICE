@@ -73,7 +73,7 @@ class GUIButton : GUIElement
          *          fontSize = Font size of the button text.
          *          states    = Color data for each button state.
          */
-        this(in GUIElementParams params, in string text, 
+        this(in GUIElementParams params, const string text, 
              in uint fontSize, in State[ButtonState.max + 1] states)
         {
             super(params);

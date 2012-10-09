@@ -66,7 +66,7 @@ class GUIElement
         {
             dead_ = true;
             foreach(child; children_){child.die();}
-        }                 
+        }
 
         ///Destructor. Used to assert that the element was correctly destroyed using die().
         ~this()
