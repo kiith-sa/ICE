@@ -1,0 +1,30 @@
+visual: visual/starShip.yaml
+engine:
+  maxSpeed: 400
+  acceleration   : 250  
+volume:
+  aabbox:
+    min: [-12, -12]
+    max: [12, 12]
+weapon:
+  0: weapons/starShipW1.yaml
+  1: weapons/plasmaSphereWeapon.yaml
+collidable:
+health: 40
+warhead:
+  damage: 40
+  killsEntity: false
+
+spawner:
+  - entity: explosions/deathbase.yaml 
+    condition: death
+    components:
+      visual: visual/starShip.yaml
+      physics: 
+        position: [0, 0]
+  - entity: explosions/starShipExplosion.yaml
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 0.0

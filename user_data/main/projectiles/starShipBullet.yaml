@@ -1,4 +1,4 @@
-deathTimeout: 1.5
+deathTimeout: 4.0
 engine:
   maxSpeed       : 1500
   acceleration   : 1800  
@@ -6,6 +6,6 @@ volume:
   aabbox:
     min: [-10, -10]
     max: [10, 10]
-visual: visual/enemy3bullet.yaml
+visual: visual/starShipBullet.yaml
 warhead:
   damage: 40
