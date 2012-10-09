@@ -1,6 +1,9 @@
 /ice-debug.obj
-/ice-debug.exe
+*.exe
+*.dll
 /memprof-debug
+/memprof-no-contracts
+/memprof-release
 /cdc.obj
 /cdc.exe
 *.sw*
