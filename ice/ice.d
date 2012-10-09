@@ -135,8 +135,8 @@ class IceGUI
 
             with(new GUIMenuVerticalFactory)
             {
-                x            = "p_left";
-                y            = "p_top + 136";
+                x           = "p_left";
+                y           = "p_top + 136";
                 itemWidth   = "144";
                 itemHeight  = "24";
                 itemSpacing = "8";
@@ -517,7 +517,9 @@ class Ice
             // not yet be initialized.
             if(frameProfilerEnabled_ && null !is frameProfilerData_)
             {
-                VFSFile profilerDump = gameDir_.file("logs/frameProfilerDump.yaml");
+                auto logDir = gameDir_.dir("logs");
+                if(!logDir.exists) {logDir.create();}
+                VFSFile profilerDump = logDir.file("frameProfilerDump.yaml");
                 auto stream = VFSStream(profilerDump.output);
                 frameProfilerDump((string line){stream.writeLine(line);});
                 free(frameProfilerData_);
