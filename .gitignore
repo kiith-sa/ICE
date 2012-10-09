@@ -5,7 +5,6 @@
 /memprof-no-contracts
 /memprof-release
 /cdc.obj
-/cdc.exe
 *.sw*
 *.sv*
 *~

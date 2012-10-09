@@ -1,0 +1,328 @@
+wave turtlePawn:
+  spawner:
+    - entity: ships/turtle.yaml 
+      components:
+        physics: 
+            position: [380, 0]
+        dumbScript: dumbscripts/pawnLeft.yaml
+    - entity: ships/turtle.yaml
+      components:
+        physics: 
+            position: [420, 0]
+        dumbScript: dumbscripts/pawnRight.yaml
+
+wave turtlePawn2:
+  spawner:
+    - entity: ships/turtle.yaml 
+      components:
+        physics: 
+            position: [100, 40]
+        dumbScript: dumbscripts/pawnRight.yaml
+    - entity: ships/turtle.yaml
+      components:
+        physics: 
+            position: [700, -40]
+        dumbScript: dumbscripts/pawnLeft.yaml
+
+wave harpooners:
+  spawner:
+    - entity: ships/harpooner.yaml 
+      components:
+        physics: 
+            position: [400, -50]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+    - entity: ships/turtle.yaml 
+      components:
+        physics: 
+            position: [550, -100]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+    - entity: ships/harpooner.yaml 
+      components:
+        physics: 
+            position: [700, -10]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+    - entity: ships/turtle.yaml 
+      components:
+        physics: 
+            position: [250, -100]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+    - entity: ships/harpooner.yaml 
+      components:
+        physics: 
+            position: [100, -10]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+
+wave peaIntroduction:
+  spawner:
+    - entity: ships/peaShooter.yaml 
+      components:
+        physics: 
+            position: [300, -30]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+    - entity: ships/peaShooter.yaml 
+      components:
+        physics: 
+            position: [500, -30]
+        dumbScript: dumbscripts/justKillPlayer.yaml
+
+wave peaDeath:
+  spawner:
+    - entity: ships/peaShooter.yaml 
+      components:
+        physics: 
+            position: [100, -10]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+    - entity: ships/peaShooter.yaml 
+      components:
+        physics: 
+            position: [250, -10]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+    - entity: ships/peaShooter.yaml 
+      components:
+        physics: 
+            position: [400, -10]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+    - entity: ships/peaShooter.yaml 
+      components:
+        physics: 
+            position: [550, -10]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+    - entity: ships/peaShooter.yaml 
+      components:
+        physics: 
+            position: [700, -10]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+
+wave cavalary:
+  spawner:
+    - entity: ships/peaShooter.yaml 
+      components:
+        physics: 
+            position: [400, -50]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+    - entity: ships/harpooner.yaml 
+      components:
+        physics: 
+            position: [550, -70]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+    - entity: ships/peaShooter.yaml 
+      components:
+        physics: 
+            position: [700, -50]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+
+wave cavalary2:
+  spawner:
+    - entity: ships/harpooner.yaml 
+      components:
+        physics: 
+            position: [250, -50]
+        dumbScript: dumbscripts/pawnLeft.yaml
+    - entity: ships/harpooner.yaml 
+      components:
+        physics: 
+            position: [550, -50]
+        dumbScript: dumbscripts/pawnRight.yaml
+
+wave waveShooter:
+  spawner:
+    - entity: ships/waveShooter.yaml 
+      components:
+        physics: 
+            position: [400, -70]
+        dumbScript: dumbscripts/movingAndFiring.yaml
+
+wave support1:
+  spawner:
+    - entity: ships/harpooner.yaml 
+      components:
+        physics: 
+            position: [400, -125]
+        dumbScript: dumbscripts/support.yaml
+    - entity: ships/waveShooter.yaml 
+      components:
+        physics: 
+            position: [400, -30]
+        dumbScript: dumbscripts/jets1.yaml
+
+wave boss:
+  spawner:
+    - entity: ships/stoper.yaml 
+      components:
+        physics: 
+            position: [400, -50]
+        dumbScript: dumbscripts/arrows.yaml
+
+
+level:
+  !!pairs
+
+  - effect text:
+      text: 42
+      font: default 
+      fontSize: 512
+      color: rgbaFF000001
+      time: 1.0      
+
+  - effect lines:
+      minWidth: 0.225
+      maxWidth: 0.9
+      minLength: 3.0
+      maxLength: 12.0
+      verticalScrollingSpeed: 225.0
+      linesPerPixel: 0.0015
+      detailLevel: 6
+      color: rgbaD0D0FF24
+  - effect lines:
+      minWidth: 0.15
+      maxWidth: 0.6
+      minLength: 2.0
+      maxLength: 8.0
+      verticalScrollingSpeed: 150.0
+      linesPerPixel: 0.002
+      detailLevel: 5
+      color: rgbaD8D8FF18
+
+####################################
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn2
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn2
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn2
+  - wait: 3
+  - wave: [turtlePawn, [100.0,  0]]
+  - wait: 0.3
+  - wave: [turtlePawn, [200.0,  -20]]
+  - wait: 0.3
+  - wave: [turtlePawn, [300.0,  -40]]
+  - wait: 0.3
+  - wave: [turtlePawn, [400.0,  -60]]
+  - wait: 3
+  - wave: [turtlePawn, [-100.0,  0]]
+  - wait: 0.3
+  - wave: [turtlePawn, [-200.0,  -20]]
+  - wait: 0.3
+  - wave: [turtlePawn, [-300.0,  -40]]
+  - wait: 0.3
+  - wave: [turtlePawn, [-400.0,  -60]]
+  - wait: 1
+  - wave: harpooners
+  - wait: 3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 1
+  - wave: peaIntroduction
+  - wait: 3
+  - wave: [peaIntroduction, [-200.0,  -60]]
+  - wait: 3
+  - wave: peaIntroduction
+  - wait: 3
+  - wave: [peaIntroduction, [200.0,  -60]]
+  - wait: 3
+  - wave: turtlePawn2
+  - wait: 0.3
+  - wave: turtlePawn2
+  - wait: 0.3
+  - wave: turtlePawn2
+  - wait: 0.3
+  - wave: turtlePawn2
+  - wait: 0.3
+  - wave: turtlePawn2
+  - wait: 1
+  - wave: harpooners
+  - wait: 3
+  - wave: peaDeath
+  - wait: 3
+  - wave: peaDeath
+  - wait: 3
+  - wave: peaDeath
+  - wait: 3
+  - wave: [cavalary, [-300.0,  -40]]
+  - wait: 2
+  - wave: [cavalary, [-100.0,  -40]]
+  - wait: 2
+  - wave: cavalary
+  - wait: 5
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 3
+  - wave: support1
+  - wait: 2.5
+  - wave: [cavalary, [-100.0,  -40]]
+  - wait: 2
+  - wave: [support1, [300.0,  -40]]
+  - wait: 2.5
+  - wave: [cavalary, [-100.0,  -40]]
+  - wait: 2
+  - wave: support1
+  - wait: 2.5
+  - wave: [cavalary, [-300.0,  -40]]
+  - wait: 2
+  - wave: [support1, [-300.0,  -40]]
+  - wait: 2.5
+  - wave: support1
+  - wait: 3
+  - wave: waveShooter
+  - wave: cavalary2
+  - wait: 1
+  - wave: cavalary2
+  - wait: 0.5
+  - wave: waveShooter
+  - wait: 2.5
+  - wave: waveShooter
+  - wave: cavalary2
+  - wait: 1
+  - wave: cavalary2
+  - wait: 3
+  - wave: peaIntroduction
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 3
+  - wave: support1
+  - wait: 3
+  - wave: [support1, [-100.0,  -40]]
+  - wave: [support1, [100.0,  -40]]
+  - wait: 3
+  - wave: [support1, [-300.0,  -40]]
+  - wave: [support1, [300.0,  -40]]
+  - wait: 5
+  - wave: [boss, [100.0,  0]]
+  - wait: 5
+  - wave: [boss, [-100.0,  0]]
+  - wait: 5
+  - wave: boss
+  - wait: 7
