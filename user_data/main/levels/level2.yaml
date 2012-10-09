@@ -266,7 +266,6 @@ level:
   - wait: 2
   - wave: cavalary
   - wait: 5
-
   - wave: turtlePawn
   - wait: 0.3
   - wave: turtlePawn
@@ -312,17 +311,18 @@ level:
   - wave: turtlePawn
   - wait: 0.3
   - wave: turtlePawn
-  - wave: support1
   - wait: 3
   - wave: support1
   - wait: 3
   - wave: [support1, [-100.0,  -40]]
+  - wave: [support1, [100.0,  -40]]
   - wait: 3
   - wave: [support1, [-300.0,  -40]]
+  - wave: [support1, [300.0,  -40]]
   - wait: 5
   - wave: [boss, [100.0,  0]]
-  - wait: 6
+  - wait: 5
   - wave: [boss, [-100.0,  0]]
-  - wait: 6
+  - wait: 5
   - wave: boss
   - wait: 7
