@@ -1,0 +1,173 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Weapon component &mdash; ICE 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ICE 0.1 documentation" href="../index.html" />
+    <link rel="prev" title="Warhead component" href="component_warhead.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="component_warhead.html" title="Warhead component"
+             accesskey="P">previous</a></li>
+        <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="weapon-component">
+<h1>Weapon component<a class="headerlink" href="#weapon-component" title="Permalink to this headline">¶</a></h1>
+<p>Weapon component allows an entity to have weapons which can be used by scripts
+or the player. An entity has 256 weapon <em>slots</em>, any of which can contain a
+weapon. Weapons are referenced through these slots by scripts or internal
+player logic.  Weapons themselves are specified in separate files, not directly
+in the component.  To spawn entities (projectiles), weapons use the
+<a class="reference internal" href="component_spawner.html#modding-reference-component-spawner"><em>Spawner component</em></a>, which is added together with a
+weapon component if not already present in an entity.</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>weapon:
+  0: weapons/player.yaml
+  1: weapons/clusterBombBack.yaml
+  2: weapons/circleOfDeath.yaml
+  3: weapons/activeshield.yaml</pre>
+</div>
+<p>An entity with this weapon component has 4 weapons (in slots 1-4).
+Each of these is in its own YAML file.</p>
+<div class="section" id="tags">
+<h2>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="17%" />
+<col width="83%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><tt class="docutils literal"><span class="pre">0</span></tt>-<tt class="docutils literal"><span class="pre">255</span></tt></td>
+<td>Weapon slot. Specifies file name of the weapon to use in this
+slot. <em>String</em>. Default: none.</td>
+</tr>
+</tbody>
+</table>
+<p>Weapons are in separate files to allow different entities to share weapons.  A
+weapon file specifies things like how long it takes to fire, how many shots
+(<strong>bursts</strong>) can be fired before reloading and how long reloading takes.  It
+also specifies all entities (projectiles) to spawn in one burst. Any entities
+can be spawned. For example, even ships or missiles with nontrivial behavior
+(through dumbscripts).</p>
+<p>Example weapon file:</p>
+<div class="highlight-python"><pre>burstPeriod: 0.17
+ammo: 3
+reloadTime: 1.0
+burst:
+  - entity: projectiles/rocket.yaml
+    components:
+      physics:
+        position: [-18, 15.0]
+        speed: 25.0
+        spawnAbsolute: [velocity]
+  - entity: projectiles/rocket.yaml
+    components:
+      physics:
+        position: [18, 15.0]
+        speed: 25.0
+        spawnAbsolute: [velocity]</pre>
+</div>
+<p>This weapon fires a burst every 0.17 seconds. It can fire 3 bursts before
+reloading, which takes 1 second. Each burst spawns 2 &#8220;rocket&#8221; projectiles.
+Position and speed of these is specified during spawning (see
+<a class="reference internal" href="component_spawner.html#modding-reference-component-spawner"><em>Spawner component</em></a>).</p>
+</div>
+<div class="section" id="tags-in-a-weapon-file">
+<h2>Tags in a weapon file<a class="headerlink" href="#tags-in-a-weapon-file" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="14%" />
+<col width="86%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>burstPeriod</td>
+<td>Period between bursts in seconds. Must be greater than 0. <em>Float</em>.
+This must be specified; there is no default.</td>
+</tr>
+<tr class="row-even"><td>ammo</td>
+<td>Number of bursts that can be fired before the weapon needs to
+reload. 0 means infinite ammo. <em>Integer</em>. Default: <tt class="docutils literal"><span class="pre">0</span></tt>.</td>
+</tr>
+<tr class="row-odd"><td>reloadTime</td>
+<td>Time it takes to reload the weapon. <em>Float</em>. Default: <tt class="docutils literal"><span class="pre">0</span></tt>.</td>
+</tr>
+<tr class="row-even"><td>burst</td>
+<td>Entities to spawn at weapon bursts.
+This works exactly like <a class="reference internal" href="component_spawner.html#modding-reference-component-spawner"><em>Spawner component</em></a>
+entries, but without spawning conditions (burst of this weapon
+is the internally used spawning condition). <em>Sequence of entity
+entries</em>. Must be specified; there is no default.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Weapon component</a><ul>
+<li><a class="reference internal" href="#tags">Tags</a></li>
+<li><a class="reference internal" href="#tags-in-a-weapon-file">Tags in a weapon file</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="component_warhead.html" title="Warhead component"
+             >previous</a></li>
+        <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010-2012, Dávid Horváth, Ferdinand Majerech, Libor Mališ..
+      Last updated on Oct 07, 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

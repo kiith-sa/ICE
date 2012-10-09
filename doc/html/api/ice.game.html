@@ -94,7 +94,7 @@
 <li><a href="math.vector2.html">math.vector2</a></li>
 <li><a href="memory.memory.html">memory.memory</a></li>
 <li><a href="memory.memorymonitorable.html">memory.memorymonitorable</a></li>
-<li><a href="memory.pool.html">memory.pool</a></li>
+<li><a href="memprof.memprof.html">memprof.memprof</a></li>
 <li><a href="monitor.graphmonitor.html">monitor.graphmonitor</a></li>
 <li><a href="monitor.monitorable.html">monitor.monitorable</a></li>
 <li><a href="monitor.monitordata.html">monitor.monitordata</a></li>
@@ -110,6 +110,7 @@
 <li><a href="util.bits.html">util.bits</a></li>
 <li><a href="util.factory.html">util.factory</a></li>
 <li><a href="util.frameprofiler.html">util.frameprofiler</a></li>
+<li><a href="util.intervals.html">util.intervals</a></li>
 <li><a href="util.iterable.html">util.iterable</a></li>
 <li><a href="util.signal.html">util.signal</a></li>
 <li><a href="util.stringctfe.html">util.stringctfe</a></li>
@@ -186,6 +187,18 @@
 <dt class="d_decl">const pure nothrow @property bool <a name="reallyQuitVisible"></a><span class="ddoc_psymbol">reallyQuitVisible</span>();
 </dt>
 <dd><p>Is the "Really quit?" message shown?</p>
+
+</dd>
+<dt class="d_decl">void <a name="updatePlayerHealth"></a><span class="ddoc_psymbol">updatePlayerHealth</span>(float <b>health</b>);
+</dt>
+<dd><p>Update player <b>health</b> display in the HUD. Must be at least 0 and at most 1.</p>
+
+</dd>
+<dt class="d_decl">void <a name="draw"></a><span class="ddoc_psymbol">draw</span>(VideoDriver <b>driver</b>);
+</dt>
+<dd><p>Draw any parts of the GUI that need to be drawn manually, not by the GUI subsystem.
+</p>
+<p>This is a hack to be used until we have a decent GUI subsystem.</p>
 
 </dd>
 </dl>

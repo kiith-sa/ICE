@@ -94,7 +94,7 @@
 <li><a href="math.vector2.html">math.vector2</a></li>
 <li><a href="memory.memory.html">memory.memory</a></li>
 <li><a href="memory.memorymonitorable.html">memory.memorymonitorable</a></li>
-<li><a href="memory.pool.html">memory.pool</a></li>
+<li><a href="memprof.memprof.html">memprof.memprof</a></li>
 <li><a href="monitor.graphmonitor.html">monitor.graphmonitor</a></li>
 <li><a href="monitor.monitorable.html">monitor.monitorable</a></li>
 <li><a href="monitor.monitordata.html">monitor.monitordata</a></li>
@@ -110,6 +110,7 @@
 <li><a href="util.bits.html">util.bits</a></li>
 <li><a href="util.factory.html">util.factory</a></li>
 <li><a href="util.frameprofiler.html">util.frameprofiler</a></li>
+<li><a href="util.intervals.html">util.intervals</a></li>
 <li><a href="util.iterable.html">util.iterable</a></li>
 <li><a href="util.signal.html">util.signal</a></li>
 <li><a href="util.stringctfe.html">util.stringctfe</a></li>
@@ -158,8 +159,8 @@
 </dt>
 <dd><p>Load from a YAML node.
 </p>
-<p>Right now YAML can only specify existence of a ControllerComponent,
- not load anything from it.</p>
+<p>Currently, this is an error. OnDeathComponent can only be used
+ directly from code, not from YAML.</p>
 
 </dd>
 <dt class="d_decl">this(void delegate(ref Entity) <b>onDeath</b>);
