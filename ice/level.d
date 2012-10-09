@@ -27,7 +27,7 @@ import component.spawnercomponent;
 import containers.fixedarray;
 import containers.lazyarray;
 import containers.vector;
-import math.rect;                      
+import math.rect;
 import math.vector2;
 import memory.memory;
 import time.gametime;

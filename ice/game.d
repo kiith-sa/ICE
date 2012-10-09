@@ -591,7 +591,6 @@ class Game
             try
             {
                 playerShipID_ = constructPlayerShip("playership", 
-                                                    Vector2f(400.0f, 536.0f),
                                                     loadYAML(gameDir_.file("ships/playership.yaml")));
             }
             catch(YAMLException e)
@@ -731,9 +730,7 @@ class Game
          *          position  = Starting position of the ship.
          *          yaml      = YAML node to load the ship from.
          */
-        EntityID constructPlayerShip(string name, 
-                                     Vector2f position, 
-                                     YAMLNode yaml)
+        EntityID constructPlayerShip(string name, YAMLNode yaml)
         {
             import component.controllercomponent;
             import component.ondeathcomponent;
@@ -745,9 +742,6 @@ class Game
             auto prototype = EntityPrototype(name, yaml);
             with(prototype)
             {
-                physics    = PhysicsComponent(position, Vector2f(0.0f, -1.0f).angle,
-                                              Vector2f(0.0f, 0.0f));
-
                 if(!prototype.weapon.isNull && prototype.spawner.isNull)
                 {
                     spawner = SpawnerComponent();

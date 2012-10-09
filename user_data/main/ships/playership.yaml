@@ -19,6 +19,9 @@ warhead:
 #keeps the player from leaving the window
 movementConstraint:
   aabbox: [64, 64, 736, 536]
+physics:
+  position: [400, 536]
+  rotation: 180deg
 spawner:
   - entity: explosions/player.yaml
     condition: death 
