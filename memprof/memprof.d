@@ -12,6 +12,7 @@ import std.algorithm;
 import std.array;
 import std.conv;
 import std.exception;
+import std.math;
 import std.regex;
 import std.stdio;
 import std.stream;
@@ -27,10 +28,6 @@ import util.intervals;
 
 /**
  * TODO:
- *
- * We currently "aggregate" alloc counts, using distribution.
- * TODO: Also aggregate bytes, object counts, average alloc, alloc median.
- * Do this: ./memprof-debug distribution --aggregate=bytes
  * Also: If distribution has no conditions, aggregate total 
  * (e.g. total allocs, etc)
  *
@@ -179,6 +176,30 @@ public:
     }
 
     /**
+     * Aggregate allocations into a value (e.g. total bytes).
+     *
+     * Will sum the value returned for each allocation by evaluate(),
+     * and optionally average it.
+     *
+     * Params:  allocations = Allocations to aggregate.
+     *          evaluate    = Evaluates an allocations and returns a partial
+     *                        value to aggregate (e.g. size of an allocation in bytes).
+     *          average     = If true, an average is returned. Otherwise, a sum is returned.
+     *
+     * Returns: A YAML scalar storing the aggregated value.
+     */
+    static YAMLNode aggregate(T)(ref YAMLNode allocations, 
+                                 T delegate(ref YAMLNode) evaluate,
+                                 Flag!"average" average = No.average)
+    {
+        const result =
+            map!((ref a) => evaluate(a))(allocations.as!(YAMLNode[]))
+            .reduce!"a + b"() 
+            * (average ? 1.0 / allocations.length : 1.0);
+        return fmod(result, 1.0) == 0.0 ? YAMLNode(cast(long)result) : YAMLNode(result);
+    }
+
+    /**
      * Filter a sequence of YAML allocations to only those which satisfy predicate.
      *
      * Params:  allocations = YAML sequence of allocations to process.
@@ -311,15 +332,26 @@ void help()
         "                             can override that to specify custom log file.",
         "  --stdin                    Load memory log from stdin instead of a file.",
         "",
+        "",
         "Commands:",
+        // TODO:
+        // If distribution has no conditions, aggregate total 
+        // (e.g. total allocs, etc)
+        // "./memprof-debug aggregate --bytes" should translate into 
+        // "./memprof-debug distribution --aggregate=bytes"
         "  distribution               Categorize allocations according to specified",
-        "                             criteria and get allocation counts for each",
-        "                             category. Criteria can be combined (e.g. ",
+        "                             criteria and measure a value (by default, ",
+        "                             allocation count) for each category.",
+        "                             Categorizing criteria can be combined (e.g. ",
         "                             --file --line). Some criteria (time, bytes, etc.)",
         "                             are categorized in intervals.",
         "                             Intervals are always closed(inclusive) from the",
         "                             left, and open(exclusive) from the right.",
         "    Local options:",
+        "      --measure=<property>   Which allocation property to measure. By",
+        "                             default, this is \"allocs\". It can also be ",
+        "                             \"bytes\", \"bytesAverage\", \"objects\" or.",
+        "                             \"objectsAverage\".",
         "      --line                 Show allocation counts per line (regardless ",
         "                             of file)",
         "      --file                 Show allocation counts per line",
@@ -340,6 +372,7 @@ void help()
         "                             intervals of specified size (128 by default). ",
         "                             E.g. 0-127, 384-511 etc. .",
         "                             Must not be combined with --bytes",
+        "",
         "  filter                     Filter the memory log to only those allocations",
         "                             that meet specified conditions.", 
         "    Local options:",
@@ -367,7 +400,18 @@ void help()
         "      --objects=<objs>       Filter to allocations that allocate specified ",
         "                             number of objects. objs is a comma-separated ",
         "                             sequence of object count ranges in format A-B.",
-        "                             For example: memprof filter --objects=2-4,6-8"
+        "                             For example: memprof filter --objects=2-4,6-8",
+        "",
+        //TODO
+        "  top                        Get the top allocations by specified property", 
+        "                             (by default, allocation size in bytes).",
+        "                             Will get the top 16 allocations by default.",
+        "    Local options:",
+        "      --sortby=<property>    Which property to sort by. Can be \"bytes\" or",
+        "                             \"objects\"",
+        "      --elements=<number>    How many top allocations to return. Can be",
+        "                             given as a number or a percentage."
+
         ];
     foreach(line; help) {writeln(line);}
 }
@@ -404,6 +448,9 @@ private:
     Filter[] filterConditions_;
     // Distribution functions for the distribution command.
     Distribution[] distributionFunctions_;
+    // Function that calculates an aggregate value from a category 
+    // when the distribution command is used.
+    YAMLNode delegate(ref YAMLNode allocations) aggregationFunction_;
 
 public:
     /// Construct a MemProfCLI with specified command-line arguments and parse them.
@@ -445,12 +492,15 @@ private:
     void localDistribution(string arg)
     {
         processOption(arg, (opt, args){
+        // Get a distribution function that creates a category for intervals
+        // of values of a property.
         auto intervalDistribution(T)(string property, const T defaultCategorySize)
         {
             const categorySize = args.empty ? defaultCategorySize : to!T(args[0]);
             return (ref YAMLNode allocs) =>
                    MemProf.allocationDistribution!T(allocs, property, categorySize);
         }
+        // Get a distribution function that creates a category for each value of a property.
         auto listDistribution(T)(string property)
         {
             return (ref YAMLNode allocs) =>
@@ -458,8 +508,44 @@ private:
         }
         void addDistribution(Distribution fun){distributionFunctions_ ~= fun;}
 
+        // Get an aggregation function that aggregates specified allocation property.
+        auto aggregateProperty(T)(string property, Flag!"average" average = No.average)
+        {
+            return (ref YAMLNode allocs) => 
+                   MemProf.aggregate!T
+                       (allocs, (ref YAMLNode a) => a[property].as!T, average);
+        }
+
+        // Get aggregation function with specified name
+        // (aggregates all allocations in a distribution category to compute a value)
+        auto aggregationFunction(string name)
+        {
+            switch(name)
+            {
+                case "allocs":
+                    // Must be in this syntax to avoid return type mismatch
+                    // (lambda syntax results in a function, not delegate)
+                    return delegate (ref YAMLNode allocs)
+                        {return MemProf.aggregate!ulong
+                            (allocs, (ref YAMLNode a) => cast(ulong)1);};
+                case "bytes":          return aggregateProperty!ulong("bytes");
+                case "bytesAverage":   return aggregateProperty!ulong("bytes", Yes.average);
+                case "objects":        return aggregateProperty!ulong("objects");
+                case "objectsAverage": return aggregateProperty!ulong("objects", Yes.average);
+                default:
+                    throw new MemProfCLIException
+                        ("Unknown distribution --measure argument: " ~ name);
+            }
+        }
+
+        // Parse the actual command line options.
         switch(opt)
         {
+            case "measure":
+                enforce(!args.empty, 
+                        new MemProfCLIException("--" ~ opt ~ " needs an argument"));
+                aggregationFunction_ = aggregationFunction(args[0]);
+                break;
             case "line":        addDistribution(listDistribution!uint("__LINE__"));     break;
             case "file":        addDistribution(listDistribution!string("__FILE__"));   break;
             case "type":        addDistribution(listDistribution!string("type"));       break;
@@ -533,6 +619,9 @@ private:
         {
             case "distribution":
                 processArg_ = &localDistribution;
+                aggregationFunction_ = 
+                    (ref YAMLNode allocs) =>
+                        MemProf.aggregate!ulong(allocs, (ref YAMLNode a) => cast(ulong)1);
                 action_ = (ref YAMLNode allocations)
                 {
                     enforce(!distributionFunctions_.empty,
@@ -554,14 +643,16 @@ private:
                             {
                                 return tuple(namedCategory[0] ~ " " ~ cat[0], cat[1]);
                             }
-                            newCategories ~= f(namedCategory[1]).map!name().array;
+                            newCategories ~= f(namedCategory[1]).map!name.array;
                         }
                         categories = newCategories;
                     }
 
                     string[] names  = categories.map!((ref c) => c[0])().array;
-                    ulong[] lengths = categories.map!((ref c) => c[1].length)().array;
-                    return YAMLNode(names, lengths);
+                    YAMLNode[] values =
+                        categories.map!((ref c) => aggregationFunction_(c[1])).array;
+
+                    return YAMLNode(names, values);
                 };
                 return;
             case "filter":
