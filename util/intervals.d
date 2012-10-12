@@ -44,7 +44,7 @@ const struct Interval(T, char L, char R)
     {
         const bool aboveMin = (L == '(' ? value > min : value >= min);
         const bool belowMax = (R == ')' ? value < max : value <= max);
-        return value >= min && value <= max;
+        return aboveMin && belowMax;
     }
 }
 
