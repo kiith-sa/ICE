@@ -559,7 +559,7 @@ private:
                 });
                 break;
             default:
-                throw new MemProfCLIException("Unrecognized distribution option: --" ~ arg);
+                throw new MemProfCLIException("Unrecognized distribution option: --" ~ opt);
         }
         });
     }
@@ -582,18 +582,15 @@ private:
             };
         }
 
-        // Returns a function that checks if specified numeric property is on one of
+        // Returns a function that checks if specified numeric property is in any one of
         // ranges specified by the option argument.
         auto inRanges(T)(string property)
         {
             auto ranges = parseRanges!T(args[0]);
             return (ref YAMLNode alloc){
                 const value = alloc[property].as!T;
-                foreach(range; ranges) if(value >= range[0] && value <= range[1])
-                {
-                    return true;
-                }
-                return false;
+                bool containsValue(Tuple!(T, T) r){return value >= r[0] && value <= r[1];}
+                return ranges.canFind!containsValue();
             };
         }
 
@@ -606,16 +603,15 @@ private:
             case "bytes":   filterConditions_ ~= inRanges!uint("bytes");    break;
             case "objects": filterConditions_ ~= inRanges!uint("objects");  break;
             default:
-                throw new MemProfCLIException("Unrecognized filter option: --" ~ arg);
+                throw new MemProfCLIException("Unrecognized filter option: --" ~ opt);
         }
         });
     }
 
-    /// Parse a global option or command.
-    void globalOrCommand(string arg)
+    /// Parse a command. Sets up command state and switches to its option parser function.
+    void command(string arg)
     {
-        // Command
-        if(!arg.startsWith("--")) switch (arg)
+        switch (arg)
         {
             case "distribution":
                 processArg_ = &localDistribution;
@@ -654,7 +650,7 @@ private:
 
                     return YAMLNode(names, values);
                 };
-                return;
+                break;
             case "filter":
                 processArg_ = &localFilter;
                 action_ = (ref YAMLNode allocations)
@@ -665,18 +661,27 @@ private:
                     return YAMLNode(MemProf.filterAllocations(allocations, 
                     (ref YAMLNode alloc)
                     {
-                        foreach(c; filterConditions_) if(!c(alloc))
-                        {
-                            return false;
-                        }
-                        return true;
+                        bool filterOut(Filter c){return !c(alloc);}
+                        return !filterConditions_.canFind!filterOut();
                     }));
                 };
-                return;
+                break;
             default: 
                 throw new MemProfCLIException("Unknown command: " ~ arg);
         }
+    }
 
+    /// Parse a global option or command.
+    void globalOrCommand(string arg)
+    {
+        // Command
+        if(!arg.startsWith("--")) 
+        {
+            command(arg);
+            return;
+        }
+
+        // Global option
         processOption(arg, (opt, args){
         switch(opt)
         {
