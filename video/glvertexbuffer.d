@@ -134,7 +134,8 @@ package struct GLVertexBuffer(Vertex)
         {
             if(verticesAllocated_.length < len)
             {
-                verticesAllocated_ = realloc(verticesAllocated_, len);
+                verticesAllocated_ = 
+                    realloc(verticesAllocated_, verticesAllocated_.length * 2);
             }
             vertices_ = verticesAllocated_[0 .. len];
         }
@@ -144,7 +145,8 @@ package struct GLVertexBuffer(Vertex)
         {
             if(indicesAllocated_.length < len)
             {
-                indicesAllocated_ = realloc(indicesAllocated_, len);
+                indicesAllocated_ = 
+                    realloc(indicesAllocated_, indicesAllocated_.length * 2);
             }
             indices_ = indicesAllocated_[0 .. len];
         }
