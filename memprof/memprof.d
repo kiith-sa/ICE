@@ -10,6 +10,7 @@ module memprof;
 
 import std.algorithm;
 import std.array;
+import std.container;
 import std.conv;
 import std.exception;
 import std.math;
@@ -34,6 +35,9 @@ import util.intervals;
  * Since "distribution" is not necessarily descriptive in this sense,
  * "./memprof-debug aggregate --bytes" should translate into 
  * "./memprof-debug distribution --aggregate=bytes"
+ *
+ * TODO:
+ * YAML formatting
  *
  * TODO List command (using listValues).
  *
@@ -141,7 +145,7 @@ public:
                                   (ref n) => i.contains(n[property].as!T));
             if(allocs.empty) {continue;}
 
-            auto name = property ~ "_" ~ to!string(i.min) ~ " - " ~ to!string(i.max);
+            auto name = property ~ "==" ~ to!string(i.min) ~ " - " ~ to!string(i.max);
             result ~= tuple(name, YAMLNode(allocs));
         }
         return result;
@@ -164,15 +168,14 @@ public:
     static NamedNode[] allocationDistribution(T)
         (ref YAMLNode allocations, string property)
     {
-        NamedNode[] result;
-        foreach(value; listValues!T(allocations, property))
+        NamedNode category(ref T value)
         {
             auto allocs = 
                 filterAllocations(allocations, (ref n) => value == n[property].as!T);
-            auto name = property ~ "_" ~ to!string(value);
-            result ~= tuple(name, YAMLNode(allocs));
+            auto name = property ~ "==" ~ to!string(value);
+            return tuple(name, YAMLNode(allocs));
         }
-        return result;
+        return listValues!T(allocations, property).map!category.array;
     }
 
     /**
@@ -193,10 +196,11 @@ public:
                                  Flag!"average" average = No.average)
     {
         const result =
-            map!((ref a) => evaluate(a))(allocations.as!(YAMLNode[]))
-            .reduce!"a + b"() 
+            reduce!"a + b"(cast(T)0, 
+            map!((ref a) => evaluate(a))(allocations.as!(YAMLNode[])))
             * (average ? 1.0 / allocations.length : 1.0);
-        return fmod(result, 1.0) == 0.0 ? YAMLNode(cast(long)result) : YAMLNode(result);
+        return fmod(result, 1.0) == 0.0 ? YAMLNode(cast(long)result) 
+                                        : YAMLNode(result);
     }
 
     /**
@@ -212,12 +216,8 @@ public:
     static YAMLNode[] filterAllocations
         (ref YAMLNode allocations, Filter predicate)
     {
-        YAMLNode[] nodes;
-        foreach(ref YAMLNode a; allocations) if(predicate(a))
-        {
-            nodes ~= a;
-        }
-        return nodes;
+        bool predWrap(ref YAMLNode alloc){return predicate(alloc);}
+        return filter!predWrap(allocations.as!(YAMLNode[])).array;
     }
 
     /**
@@ -233,12 +233,10 @@ public:
     static T[] listValues(T)(ref YAMLNode allocations, string property)
     {
         ubyte[T] set;
-
         foreach(ref YAMLNode alloc; allocations)
         {
             set[alloc[property].as!T] = 1;
         }
-
         return set.keys;
     }
 
@@ -256,12 +254,8 @@ private:
     static @property T max(T)
         (ref YAMLNode allocations, T delegate(ref YAMLNode) evaluate)
     {
-        auto result = cast(T)0;
-        foreach(YAMLNode alloc; allocations)
-        {
-            result = std.algorithm.max(result, evaluate(alloc));
-        }
-        return result;
+        return reduce!((T r, ref YAMLNode a) => std.algorithm.max(r, evaluate(a)))
+                      (T.min, allocations.as!(YAMLNode[]));
     }
 }
 
@@ -281,14 +275,18 @@ Tuple!(T, T)[] parseRanges(T)(string raw)
     static if(is(T == uint))
     {
         Tuple!(uint, uint)[] ranges = 
-            raw.split(",").map!((r) => r.canFind("-") ? r.split("-") : [r, r])()
-               .map!((p) => tuple(to!uint(p[0]), to!uint(p[1])))().array();
+            raw.split(",")
+               .map!((r) => r.canFind("-") ? r.split("-") : [r, r])()
+               .map!((p) => tuple(to!uint(p[0]), to!uint(p[1])))()
+               .array();
     }
     else static if(is(T == double))
     {
         Tuple!(double, double)[] ranges = 
-            raw.split(",").map!((r) => r.canFind("-") ? r.split("-") : [r, r])()
-               .map!((p) => tuple(to!double(p[0]), to!double(p[1])))().array();
+            raw.split(",")
+               .map!((r) => r.canFind("-") ? r.split("-") : [r, r])()
+               .map!((p) => tuple(to!double(p[0]), to!double(p[1])))()
+               .array();
     }
     else static assert(false, "Unsupported parseRanges type");
 
@@ -343,10 +341,13 @@ void help()
         "                             criteria and measure a value (by default, ",
         "                             allocation count) for each category.",
         "                             Categorizing criteria can be combined (e.g. ",
-        "                             --file --line). Some criteria (time, bytes, etc.)",
+        "                             --file --line). Some (time, bytes, etc.)",
         "                             are categorized in intervals.",
         "                             Intervals are always closed(inclusive) from the",
         "                             left, and open(exclusive) from the right.",
+        "                             If there are no criteria specified, one global",
+        "                             category is created. This is useful to e.g. ",
+        "                             get the total number of allocations.",
         "    Local options:",
         "      --measure=<property>   Which allocation property to measure. By",
         "                             default, this is \"allocs\". It can also be ",
@@ -620,11 +621,10 @@ private:
                         MemProf.aggregate!ulong(allocs, (ref YAMLNode a) => cast(ulong)1);
                 action_ = (ref YAMLNode allocations)
                 {
-                    enforce(!distributionFunctions_.empty,
-                            new MemProfCLIException
-                                ("No options specified for the \'distribution\' command"));
+                    // Zero distribution functions is perfectly legal -
+                    // it results in one global category.
 
-                    NamedNode[] categories = [tuple("", allocations)];
+                    NamedNode[] categories = [tuple("all", allocations)];
                     // Apply each distribution function 
                     // (getting a cross product of distributions)
                     foreach(f; distributionFunctions_)
@@ -637,7 +637,7 @@ private:
                             // names.
                             auto name(ref NamedNode cat)
                             {
-                                return tuple(namedCategory[0] ~ " " ~ cat[0], cat[1]);
+                                return tuple(namedCategory[0] ~ "." ~ cat[0], cat[1]);
                             }
                             newCategories ~= f(namedCategory[1]).map!name.array;
                         }
