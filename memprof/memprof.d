@@ -29,14 +29,6 @@ import util.intervals;
 
 /**
  * TODO:
- * Also: If distribution has no conditions, aggregate total 
- * (e.g. total allocs, etc)
- *
- * Since "distribution" is not necessarily descriptive in this sense,
- * "./memprof-debug aggregate --bytes" should translate into 
- * "./memprof-debug distribution --aggregate=bytes"
- *
- * TODO:
  * YAML formatting
  *
  * TODO List command (using listValues).
@@ -145,7 +137,7 @@ public:
                                   (ref n) => i.contains(n[property].as!T));
             if(allocs.empty) {continue;}
 
-            auto name = property ~ "==" ~ to!string(i.min) ~ " - " ~ to!string(i.max);
+            auto name = property ~ "==" ~ to!string(i.min) ~ "-" ~ to!string(i.max);
             result ~= tuple(name, YAMLNode(allocs));
         }
         return result;
@@ -332,11 +324,29 @@ void help()
         "",
         "",
         "Commands:",
-        // TODO:
-        // If distribution has no conditions, aggregate total 
-        // (e.g. total allocs, etc)
-        // "./memprof-debug aggregate --bytes" should translate into 
-        // "./memprof-debug distribution --aggregate=bytes"
+        "  total                      Get a total of specified allocation property",
+        "                             from all allocations. Exactly one option",
+        "                             (property) must be specified.",
+        "    Local options:",
+        "      --allocs               Get the total number of allocations.",
+        "      --bytes                Get the total number of bytes allocated.",
+        "                             This is a sum of all allocations, which",
+        "                             is likely going to be much greater than",
+        "                             memory usage at any given time.",
+        "                             It gives a good idea about how much",
+        "                             memory reallocation and wasteful",
+        "                             allocation/deletion is going on.",
+        "      --objects              Get the total number of objects allocated.",
+        "                             Like --bytes, this is a sum of object counts",
+        "                             of all allocations.",
+        "",
+        "  average                    Get an average of specified allocation property",
+        "                             from all allocations. Exactly one option",
+        "                             (property) must be specified.",
+        "    Local options:",
+        "      --bytes                Get the average allocation size in bytes.",
+        "      --objects              Get the average number of objects per allocations.",
+        "",
         "  distribution               Categorize allocations according to specified",
         "                             criteria and measure a value (by default, ",
         "                             allocation count) for each category.",
@@ -459,7 +469,57 @@ public:
     {
         // We start parsing global options/commands.
         processArg_ = &globalOrCommand;
+        translateAliases(cliArgs);
         foreach(arg; cliArgs[1 .. $]) {processArg_(arg);}
+    }
+
+    /**
+     * Cheap hack to avoid implementing "total" and "average" commands 
+     * with logic duplicated from "distribution".
+     *
+     * We simply translate the command line args.
+     */
+    void translateAliases(ref string[] args)
+    {
+        string[] translateTotal(string[] tArgs)
+        {
+            string[] result = ["distribution"];
+            foreach(arg; tArgs) switch(arg)
+            {
+                case "--bytes":   result ~= "--measure=bytes";   break;
+                case "--objects": result ~= "--measure=objects"; break;
+                case "--allocs":  result ~= "--measure=allocs";  break;
+                default:
+                    throw new MemProfCLIException("Unknown \"total\" argument: " ~ arg);
+            }
+            enforce(result.length == 2,
+                    new MemProfCLIException(
+                        "Too few or too many \"total\" options. Exactly one of "
+                        "--bytes, --objects and --allocs must be specified"));
+            return result;
+        }
+        string[] translateAverage(string[] aArgs)
+        {
+            string[] result = ["distribution"];
+            foreach(arg; aArgs) switch(arg)
+            {
+                case "--bytes":   result ~= "--measure=bytesAverage";   break;
+                case "--objects": result ~= "--measure=objectsAverage"; break;
+                default:
+                    throw new MemProfCLIException("Unknown \"average\" argument: " ~ arg);
+            }
+            enforce(result.length == 2,
+                    new MemProfCLIException(
+                        "Too few or too many \"average\" options. Exactly one of "
+                        "--bytes, and --objects must be specified"));
+            return result;
+        }
+        foreach(i, arg; args) switch(arg)
+        {
+            case "total":   args = args[0 .. i] ~ translateTotal(args[i + 1 .. $]);   break;
+            case "average": args = args[0 .. i] ~ translateAverage(args[i + 1 .. $]); break;
+            default: break;
+        }
     }
 
     /// Execute the action specified by command line arguments.
