@@ -1,8 +1,0 @@
-deathTimeout: 1.0
-volume:
-  aabbox:
-    min: [-2, -5]
-    max: [2,  5]
-visual:   visual/defaultBullet.yaml
-warhead:
-  damage: 25

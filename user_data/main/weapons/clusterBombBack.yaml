@@ -1,7 +1,0 @@
-burstPeriod: 3.0
-burst:
- - entity: projectiles/clusterBombBack.yaml 
-   components:
-     physics:
-       position: [0.0, -16.0]
-       speed: -384.0

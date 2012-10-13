@@ -8,7 +8,6 @@ volume:
     max: [28,  14]
 weapon:
   0: weapons/player.yaml
-  1: weapons/clusterBombBack.yaml
   2: weapons/circleOfDeath.yaml
   3: weapons/activeShield.yaml
 collidable:
