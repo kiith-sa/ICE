@@ -1,16 +1,16 @@
-burstPeriod: 0.17
-ammo: 3
-reloadTime: 1.0
+burstPeriod: 0.06
+ammo: 8
+reloadTime: 0.8
 burst:
-  - entity: ships/turtleLeft.yaml 
+  - entity: ships/turtle.yaml 
     components: 
       physics: 
-        rotation: 1.500
         position: [45.0, 12.5]
         spawnAbsolute: [velocity]
-  - entity: ships/turtleRight.yaml 
+      dumbScript: dumbscripts/turtleLaunchedLeft.yaml
+  - entity: ships/turtle.yaml 
     components: 
       physics:
-        rotation: -1.500
         position: [-45.0, 12.5] 
         spawnAbsolute: [velocity]
+      dumbScript: dumbscripts/turtleLaunchedRight.yaml

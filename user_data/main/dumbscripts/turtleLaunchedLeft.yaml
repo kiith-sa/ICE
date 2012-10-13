@@ -1,0 +1,24 @@
+!!pairs
+- for 0.05:
+    move-direction: 90deg
+- for 0.25:
+    move-direction: 120deg
+    move-speed: 0.5
+    fire: [0]
+- for 0.25:
+    move-direction: 60deg
+    move-speed: 0.5
+- for 0.25:
+    move-direction: 120deg
+    fire: [0]
+- for 0.25:
+    move-direction: 60deg
+- for 0.5:
+    move-direction: 120deg
+    fire: [0]
+- for 0.5:
+    move-direction: 50deg
+- for 3.0:
+    move-direction: 0deg
+- die:
+
