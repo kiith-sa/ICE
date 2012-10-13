@@ -40,6 +40,68 @@ import util.intervals;
  *
  *     One (ASAP) good way to use this would be to filter the 
  *     worst frames, and get allocations for those.
+ *
+ *     This needs "top" command, 
+ *     and then "memprof-filter --frames"
+ *
+ * Commands TODO:
+ *
+ * #. Filter frames:
+ *    Filter frames by start/end time
+ *    (e.g. all frames between 1s and 5s)
+ *    filter by frame duration (all frames about 16 ms)
+ *
+ * #. Top:
+ *    Also getting e.g. 5 or 5% of most expensive frames.
+ *
+ * #, Filter zones:
+ *    Zone name by regex. So we can get e.g. 
+ *    all occurences of zone X in all frames, but no other zones.
+ *
+ * #. Distribution (frames):
+ *    Distribute frames by duration. 
+ *    Aggregate frame count, time, average time.
+ *    total/average aliases, like MemProf.
+ *
+ * #. Accumulate all frames into single "frame: 
+ *    (this is similar to usual profiling). This will be complicated 
+ *    with non-identical frames but should be possible.
+ *    Support various functions - e.g. average, max, min.
+ *    Max allows us to see occassional lags.
+ *    Maybe also some "variance" or something, i.e. how 
+ *    much do the results vary.
+ *
+ * #. (Long term) GUI zone browser.
+ *
+ * #. ASCII graph:
+ *    
+ *    A command would take a sequence of frames, and turn each into a
+ *    graph like this. So we could e.g. get top worst frames, 
+ *    or filter them in some another way, and get their graphs.
+ *
+ *    The graphis would in single text output separated by some 
+ *    pattern (e.g. =================)
+ *
+ *    Root zone is the whole frame, 100%, one big rect 
+ *    at the top.
+ *    Below it, nested zones appear as rectangles starting at their respective times.
+ *    E.g:
+ *    --------------------------------------------------------------------------------
+ *    |                     FRAME- 20 milliseconds                                   |
+ *    --------------------------------------------------------------------------------
+ *      |  VISUAL SYSTEM UPDATE - 6ms |    | OTHER SYSTEMS UPDATES - 10ms |
+ *      -------------------------------    --------------------------------
+ *    We would store the data, then at exit, dump it to a file. A Python (or D) script could
+ *    process it into above ASCII art.
+ *
+ *    This would show every zone instance a separate rectangle.
+ *
+ *    We could also create vertical ASCII art - might be better (scrolling)
+ *
+ *    Especially important would be looking for "worst" frames - which
+ *    are caused e.g. by GC fullcollect.
+ * #. SVG graph: Same as ASCII graph, but SVG.
+ *
  */
 
 /// Readability aliases
