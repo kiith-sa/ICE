@@ -57,9 +57,11 @@ package struct GLVertexBuffer(Vertex)
         /**
          * Construct a GLVertexBuffer.
          *
-         * Params:  mode = Draw mode of the buffer.
+         * Params:  mode        = Draw mode of the buffer.
+         *          preallocate = Number of vertices to preallocate space for.
+         *                        Avoids unnecessary reallocations.
          */
-        this(const GLDrawMode mode)
+        this(const GLDrawMode mode, const size_t preallocate)
         in
         {
             assert(mode == GLDrawMode.VertexArray ||
@@ -67,8 +69,8 @@ package struct GLVertexBuffer(Vertex)
         }
         body
         {
-            verticesAllocated_ = allocArray!Vertex(8);
-            indicesAllocated_  = allocArray!uint(8);
+            verticesAllocated_ = allocArray!Vertex(preallocate);
+            indicesAllocated_  = allocArray!uint(preallocate);
             vertices_          = verticesAllocated_[0 .. 0];
             indices_           = indicesAllocated_[0 .. 0];
             mode_              = mode;
