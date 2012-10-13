@@ -22,15 +22,15 @@ import std.typecons;
 
 import dyaml.dumper;
 import dyaml.exception;
-import dyaml.node;
 import dyaml.loader;
+import dyaml.node;
+import dyaml.representer;
+import dyaml.style;
 
 import util.intervals;
 
 /**
  * TODO:
- * YAML formatting
- *
  * AWESOME: FrameProfiler could output arguments for 
  *     memprof filter --time 
  *     based on zones. So we could get an exact list of allocations happening within 
@@ -568,8 +568,12 @@ public:
             auto result    = allocationsOutput_ ? YAMLNode(["Allocations"], [rawResult])
                                                 : rawResult;
 
-            auto stream  = new MemoryStream();
-            Dumper(stream).dump(result);
+            auto stream        = new MemoryStream();
+            auto dumper        = Dumper(stream);
+            auto representer   = new Representer();
+            representer.defaultCollectionStyle = CollectionStyle.Block;
+            dumper.representer = representer;
+            dumper.dump(result);
             writeln(cast(string)stream.data());
         }
         catch(YAMLException e)      {writeln("YAML error: ", e.msg);}
