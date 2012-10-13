@@ -22,7 +22,7 @@ spawner:
       physics: 
         position: [0, 0]
       weapon:
-        0: weapons/playerdeath.yaml
+        0: weapons/playerDeath.yaml
       dumbScript: dumbscripts/fire_0.yaml
   - entity: explosions/spiralSmall.yaml
     condition: death 

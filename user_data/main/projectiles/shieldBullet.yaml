@@ -6,7 +6,7 @@ volume:
   aabbox:
     min: [-2, -2]
     max: [2,  2]
-visual:   visual/shieldbullet.yaml
+visual:   visual/shieldBullet.yaml
 warhead:
   damage: 6
 movementConstraint:

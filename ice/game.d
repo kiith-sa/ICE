@@ -590,8 +590,8 @@ class Game
             //Initialize player ship.
             try
             {
-                playerShipID_ = constructPlayerShip("playership", 
-                                                    loadYAML(gameDir_.file("ships/playership.yaml")));
+                playerShipID_ = constructPlayerShip("playerShip", 
+                                                    loadYAML(gameDir_.file("ships/playerShip.yaml")));
             }
             catch(YAMLException e)
             {

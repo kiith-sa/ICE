@@ -1,5 +1,5 @@
 weapon:
-  0: weapons/playerdeath.yaml
+  0: weapons/playerDeath.yaml
 dumbScript: dumbscripts/fire_0.yaml
 spawner:
   - entity: explosions/playerFragment.yaml 

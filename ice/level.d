@@ -102,7 +102,7 @@ abstract class Level
  *       components:
  *         physics: 
  *             position: [360, 32]
- *     - entity: ships/playership.yaml
+ *     - entity: ships/playerShip.yaml
  *       components:
  *         physics: 
  *             position: [440, 64]
