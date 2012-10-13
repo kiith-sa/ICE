@@ -3,23 +3,23 @@ vertices:
   !!pairs
 
   #Halo
-  - width: 1.8
+  - width: 1.6
   - color:  rgba8080FF50
-  - vertex: [-32.0, 16.0]
+  - vertex: [-28.0, 14.0]
   - color:  rgbaB0B0FF60
-  - vertex: [0.0, -16.0]
+  - vertex: [0.0, -14.0]
 
-  - vertex: [0.0, -16.0]
+  - vertex: [0.0, -14.0]
   - color:  rgba8080FF50
-  - vertex: [32.0, 16.0]
+  - vertex: [28.0, 14.0]
 
   #Main
-  - width: 0.5
+  - width: 0.4
   - color:  rgbaFFFFFF40
-  - vertex: [-32.0, 16.0]
+  - vertex: [-28.0, 14.0]
   - color:  rgbaFFFFFF90
-  - vertex: [0.0, -16.0]
-  - vertex: [0.0, -16.0]
+  - vertex: [0.0, -14.0]
+  - vertex: [0.0, -14.0]
   - color:  rgbaFFFFFF40
-  - vertex: [32.0, 16.0]
+  - vertex: [28.0, 14.0]
 

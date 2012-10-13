@@ -1,11 +1,11 @@
 visual: visual/player.yaml
 engine:
-  maxSpeed: 320
-  acceleration: 3200
+  maxSpeed: 350
+  acceleration: 3500
 volume:
   aabbox: 
-    min: [-32, -16]
-    max: [32,  16]
+    min: [-28, -14]
+    max: [28,  14]
 weapon:
   0: weapons/player.yaml
   1: weapons/clusterBombBack.yaml
