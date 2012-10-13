@@ -165,17 +165,17 @@ void main(string[] args)
     //No debugging symbols to avoid an OPTLINK bug on Windows.
     version(Windows)
     {
-        auto memprofDbg   = ["-debug"];
+        auto dbgNoUnittest   = ["-debug"];
         auto no_contracts = ["-release"];
         auto release      = ["-O", "-inline", "-release"];
     }
     else
     {
-        auto memprofDbg   = ["-gc", "-debug"];
+        auto dbgNoUnittest   = ["-gc", "-debug"];
         auto no_contracts = ["-release", "-gc"];
         auto release      = ["-O", "-inline", "-release", "-gc"];
     }
-    auto dbg = memprofDbg ~ "-unittest";
+    auto dbg = dbgNoUnittest ~ "-unittest";
     auto dependencies = ["dependencies/derelict/DerelictSDL",
                          "dependencies/derelict/DerelictGL",
                          "dependencies/derelict/DerelictFT",
@@ -197,6 +197,9 @@ void main(string[] args)
     auto memProfFiles = ["dependencies/dyaml/dyaml", 
                          "util/intervals.d",
                          "memprof/"];
+    auto frameProfFiles = ["dependencies/dyaml/dyaml", 
+                           "util/intervals.d",
+                           "frameprof/"];
 
     void build(string[] targets ...)
     {
@@ -205,26 +208,30 @@ void main(string[] args)
             writeln("processing target: ", target);
             switch(target)
             {
+                case "tools":
+                    compile_(dbgNoUnittest ~ "-ofmemprof-debug", memProfFiles);
+                    compile_(dbgNoUnittest ~ "-offrameprof-debug", frameProfFiles);
+                    break;
                 case "debug":
-                    compile_(memprofDbg ~ "-ofmemprof-debug", memProfFiles);
                     compile_(dbg ~ "-ofice-debug", files);
                     break;
                 case "no-contracts":
-                    compile_(memprofDbg ~ "-ofmemprof-no-contracts", memProfFiles);
                     compile_(no_contracts ~ "-ofice-no-contracts", files);
                     break;
                 case "release":
-                    compile_(memprofDbg ~ "-ofmemprof-release", memProfFiles);
                     compile_(release ~ "-ofice-release", files);
                     break;
                 case "all":
-                    compile_(dbg, files);
-                    compile_(no_contracts, files);
-                    compile_(release, files);
+                    compile_(dbgNoUnittest ~ "-ofmemprof-debug", memProfFiles);
+                    compile_(dbgNoUnittest ~ "-offrameprof-debug", frameProfFiles);
+                    compile_(dbg ~ "-ofice-debug", files);
+                    compile_(no_contracts ~ "-ofice-no-contracts", files);
+                    compile_(release ~ "-ofice-release", files);
                     break;
                 default:
                     writeln("unknown target: ", target);
-                    writeln("available targets: 'debug', 'no-contracts', 'release', 'all'");
+                    writeln("available targets: 'debug', 'no-contracts', "
+                            "'release', 'tools', 'all'");
                     break;
             }
         }
@@ -259,6 +266,7 @@ void help()
         "    release         Debug information, no unittests, contracts.\n"
         "                    Optimizations, inlining enabled.\n"
         "                    Target binary name: 'ice-release'\n"
+        "    tools           Build auxiliary tools (MemProf, FrameProf)\n"
         "    all             All of the above.\n"
         "\n"
         "Available options:\n"
