@@ -28,10 +28,6 @@ import dyaml.loader;
 import util.intervals;
 
 /**
- * TODO: 
- * "Allocations:" should not be prepended to outputs of commands
- * that don't return allocations
- *
  * TODO:
  * YAML formatting
  *
@@ -415,9 +411,9 @@ void help()
         "                             sequence of object count ranges in format A-B.",
         "                             For example: memprof filter --objects=2-4,6-8",
         "",
-        "  list                       List all values of specified allocation property."
+        "  list                       List all values of specified allocation property.",
         "                             E.g. get all data types, all allocation sizes, etc.",
-        "                             Only one property can be listed. By default, files"
+        "                             Only one property can be listed. By default, files",
         "                             are listed.",
         "    Local options:",
         "      --line                 List all lines where allocation occured.",
@@ -482,6 +478,8 @@ private:
     void delegate(string) processArg_;
     // Action to execute (determined by command line arguments)
     YAMLNode delegate(ref YAMLNode allocations) action_;
+    // Is the output of the program a sequence of allocations?
+    bool allocationsOutput_ = false;
 
     // Condition functions for the filter command.
     Filter[] filterConditions_;
@@ -565,9 +563,10 @@ public:
         // Execute the command.
         try
         {
-            auto memprof = readFromStdin ? MemProf(stdin) : MemProf(logFileName);
-            auto result  =
-                YAMLNode(["Allocations"], [action_(memprof.memoryLog["Allocations"])]);
+            auto memprof   = readFromStdin ? MemProf(stdin) : MemProf(logFileName);
+            auto rawResult = action_(memprof.memoryLog["Allocations"]);
+            auto result    = allocationsOutput_ ? YAMLNode(["Allocations"], [rawResult])
+                                                : rawResult;
 
             auto stream  = new MemoryStream();
             Dumper(stream).dump(result);
@@ -805,6 +804,7 @@ private:
                 };
                 break;
             case "filter":
+                allocationsOutput_ = true;
                 processArg_ = &localFilter;
                 action_ = (ref YAMLNode allocations)
                 {
@@ -820,6 +820,7 @@ private:
                 };
                 break;
             case "top":
+                allocationsOutput_ = true;
                 processArg_ = &localTop;
                 less_ = (ref YAMLNode a, ref YAMLNode b) =>
                         a["bytes"].as!uint < b["bytes"].as!uint;
