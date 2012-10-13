@@ -1,4 +1,4 @@
-visual: visual/player.yaml
+visual: visual/playerShip.yaml
 engine:
   maxSpeed: 350
   acceleration: 3500
@@ -7,7 +7,7 @@ volume:
     min: [-28, -14]
     max: [28,  14]
 weapon:
-  0: weapons/player.yaml
+  0: weapons/playerDefaultWeapon.yaml
   2: weapons/circleOfDeath.yaml
   3: weapons/activeShield.yaml
 collidable:
@@ -22,7 +22,7 @@ physics:
   position: [400, 536]
   rotation: 180deg
 spawner:
-  - entity: explosions/player.yaml
+  - entity: explosions/playerExplosion.yaml
     condition: death 
     components:
       physics: 
@@ -30,6 +30,6 @@ spawner:
   - entity: explosions/deathBase.yaml 
     condition: death 
     components:
-      visual: visual/player.yaml
+      visual: visual/playerShip.yaml
       physics: 
         position: [0, 0]
