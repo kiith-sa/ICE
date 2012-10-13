@@ -213,6 +213,25 @@ public:
     }
 
     /**
+     * Get the topCount greatest allocations sorted by specified less function.
+     *
+     * Params:  allocations = Allocations to process.
+     *          less        = Comparison function to sort the allocations.
+     *          topCount    = Number of allocations to get.
+     *
+     * Returns: An array of topCount greatest allocations.
+     */
+    static YAMLNode[] topAllocations
+        (ref YAMLNode allocations, bool delegate(ref YAMLNode, ref YAMLNode) less,
+         const ulong topCount)
+    {
+        auto allocs = allocations.as!(YAMLNode[]);
+        bool lessWrapper(ref YAMLNode a, ref YAMLNode b) {return less(a,b);}
+        sort!lessWrapper(allocs);
+        return allocs[std.algorithm.max(0, allocs.length - topCount) .. $];
+    }
+
+    /**
      * Lists all existing values of specified allocation property.
      *
      * E.g. all files, all byte sizes, etc. .
@@ -413,7 +432,6 @@ void help()
         "                             sequence of object count ranges in format A-B.",
         "                             For example: memprof filter --objects=2-4,6-8",
         "",
-        //TODO
         "  top                        Get the top allocations by specified property", 
         "                             (by default, allocation size in bytes).",
         "                             Will get the top 16 allocations by default.",
@@ -422,7 +440,6 @@ void help()
         "                             \"objects\"",
         "      --elements=<number>    How many top allocations to return. Can be",
         "                             given as a number or a percentage."
-
         ];
     foreach(line; help) {writeln(line);}
 }
@@ -462,6 +479,8 @@ private:
     // Function that calculates an aggregate value from a category 
     // when the distribution command is used.
     YAMLNode delegate(ref YAMLNode allocations) aggregationFunction_;
+    // Comparison function (a < b) used by the top command.
+    bool delegate(ref YAMLNode a, ref YAMLNode b) less_;
 
 public:
     /// Construct a MemProfCLI with specified command-line arguments and parse them.
@@ -669,6 +688,45 @@ private:
         });
     }
 
+    /// Parses local options for the "top" command.
+    void localTop(string arg)
+    {
+        processOption(arg, (opt, args){
+        enforce(!args.empty, new MemProfCLIException("--" ~ opt ~ " needs an argument"));
+
+        switch(opt)
+        {
+            case "sortby":
+                auto property = args[0];
+                if(property == "bytes" || property == "objects")
+                {
+                    less_ = (ref YAMLNode a, ref YAMLNode b) =>
+                            a[property].as!uint < b[property].as!uint;
+                }
+                else
+                {
+                    throw new Exception("Unrecognized --sortby argument: " ~ args[0]);
+                }
+                break;
+            case "elements":
+                const percent = args[0].endsWith("%");
+                double value = to!double(args[0][0 .. $ - (percent ? 1 : 0)]);
+                enforce(value >= 0.0 && (!percent || value <= 0.0),
+                        new MemProfCLIException("--elements argument out of range"));
+                action_ = (ref YAMLNode allocations)
+                {
+                    auto elements = percent ? allocations.length * value / 100.0
+                                            : value;
+                    return YAMLNode
+                        (MemProf.topAllocations(allocations, less_, cast(ulong)elements));
+                };
+                break;
+            default:
+                throw new MemProfCLIException("Unrecognized top option: --" ~ opt);
+        }
+        });
+    }
+
     /// Parse a command. Sets up command state and switches to its option parser function.
     void command(string arg)
     {
@@ -725,6 +783,13 @@ private:
                         return !filterConditions_.canFind!filterOut();
                     }));
                 };
+                break;
+            case "top":
+                processArg_ = &localTop;
+                less_ = (ref YAMLNode a, ref YAMLNode b) =>
+                        a["bytes"].as!uint < b["bytes"].as!uint;
+                action_ = (ref YAMLNode allocations) =>
+                          YAMLNode(MemProf.topAllocations(allocations, less_, 16));
                 break;
             default: 
                 throw new MemProfCLIException("Unknown command: " ~ arg);
