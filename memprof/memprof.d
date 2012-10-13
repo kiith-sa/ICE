@@ -29,19 +29,6 @@ import dyaml.style;
 
 import util.intervals;
 
-/**
- * TODO:
- * AWESOME: FrameProfiler could output arguments for 
- *     memprof filter --time 
- *     based on zones. So we could get an exact list of allocations happening within 
- *     a frame. We could even use this to drill down to deeper zones
- *     once we get a general idea to find out precise causes of allocations.
- *     Maybe even in a Perf-style CLI app.
- *
- *     One (ASAP) good way to use this would be to filter the 
- *     worst frames, and get allocations for those.
- */
-
 /// Readability aliases
 alias dyaml.node.Node YAMLNode;
 alias Tuple!(string, YAMLNode) NamedNode;
