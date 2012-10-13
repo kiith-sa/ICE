@@ -244,7 +244,7 @@ private:
                 else{a.type_[0 .. type.length] = type[];}
 
                 a.objects_ = objects > uint.max ? uint.max : cast(uint)objects;
-                a.time_ = cast(ushort)(10000.0 * (getTime() - startTime_));
+                a.time_ = cast(uint)(10000.0 * (getTime() - startTime_));
 
                 a.ptr = cast(void*)ptr;
 
