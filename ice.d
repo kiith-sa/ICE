@@ -46,7 +46,7 @@ void main(string[] args)
     auto cli = new CLI();
     cli.description = "ICE 0.1.0\n"
                       "Top-down scrolling shooter written in D.\n"
-                      "Copyright (C) 2010-2012 Ferdinand Majerech, Libor Malis, David Horvath";
+                      "Copyright (C) 2010-2012 Ferdinand Majerech, Libor Malis, David Horvath, Tomas Nguyen";
     cli.epilog = "Report errors at <kiithsacmp@gmail.com> (in English, Czech or Slovak).";
 
     string root = "./data";
