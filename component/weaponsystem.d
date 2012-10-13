@@ -142,7 +142,7 @@ class WeaponSystem : System
 
                     if(!weaponInstance.spawnsAdded)
                     {
-                        addSpawns(e, *weapon, weaponInstance);
+                        addSpawns(e, *weapon, cast(ubyte)idx, weaponInstance);
                     }
 
                     //Are we firing this weapon?
@@ -179,9 +179,12 @@ class WeaponSystem : System
          *
          * Params:  e              = Entity the weapon instance belongs to.
          *          weapon         = "Class" of the weapon.
+         *          weaponIndex    = Index of the weapon in the WeaponComponent
+         *                           (may be different from weapon slot).
          *          weaponInstance = Instance of the weapon belonging to the entity.
          */
         void addSpawns(ref Entity e, ref WeaponData weapon, 
+                       const ubyte weaponIndex,
                        ref WeaponComponent.Weapon weaponInstance)
         {
             auto spawner = e.spawner;
@@ -197,7 +200,7 @@ class WeaponSystem : System
                 //Spawn condition to spawn when at weapon burst.
                 SpawnCondition condition;
                 condition.type = SpawnCondition.Type.WeaponBurst;
-                condition.weaponIndex = weaponInstance.weaponSlot;
+                condition.weaponIndex = weaponIndex;
                 spawn.condition = condition;
                 spawner.addSpawn(spawn);
             }

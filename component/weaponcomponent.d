@@ -39,7 +39,7 @@ struct WeaponComponent
         double timeSinceLastBurst  = double.infinity;
    
         ///Ammo used up since last reload.
-        uint ammoConsumed         = 0;
+        uint ammoConsumed          = 0;
 
         ///Weapon slot taken by the weapon (there are 256 slots).
         ubyte weaponSlot;
