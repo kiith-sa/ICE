@@ -28,13 +28,12 @@ import dyaml.loader;
 import util.intervals;
 
 /**
+ * TODO: 
+ * "Allocations:" should not be prepended to outputs of commands
+ * that don't return allocations
+ *
  * TODO:
  * YAML formatting
- *
- * TODO List command (using listValues).
- *
- * No --file --line combinations and the like 
- * (nontrivial and not very useful - and we can just pipe through filter anyway)
  *
  * AWESOME: FrameProfiler could output arguments for 
  *     memprof filter --time 
@@ -343,22 +342,6 @@ void help()
         "",
         "",
         "Commands:",
-        "  total                      Get a total of specified allocation property",
-        "                             from all allocations. Exactly one option",
-        "                             (property) must be specified.",
-        "    Local options:",
-        "      --allocs               Get the total number of allocations.",
-        "      --bytes                Get the total number of bytes allocated.",
-        "                             This is a sum of all allocations, which",
-        "                             is likely going to be much greater than",
-        "                             memory usage at any given time.",
-        "                             It gives a good idea about how much",
-        "                             memory reallocation and wasteful",
-        "                             allocation/deletion is going on.",
-        "      --objects              Get the total number of objects allocated.",
-        "                             Like --bytes, this is a sum of object counts",
-        "                             of all allocations.",
-        "",
         "  average                    Get an average of specified allocation property",
         "                             from all allocations. Exactly one option",
         "                             (property) must be specified.",
@@ -432,6 +415,18 @@ void help()
         "                             sequence of object count ranges in format A-B.",
         "                             For example: memprof filter --objects=2-4,6-8",
         "",
+        "  list                       List all values of specified allocation property."
+        "                             E.g. get all data types, all allocation sizes, etc.",
+        "                             Only one property can be listed. By default, files"
+        "                             are listed.",
+        "    Local options:",
+        "      --line                 List all lines where allocation occured.",
+        "      --file                 List all files where allocation occured.",
+        "      --type                 List all data types allocated.",
+        "      --time                 List all allocation times.",
+        "      --bytes                List all allocation sizes in bytes.",
+        "      --objects              List all object counts allocated.",
+        "",
         "  top                        Get the top allocations by specified property", 
         "                             (by default, allocation size in bytes).",
         "                             Will get the top 16 allocations by default.",
@@ -440,6 +435,22 @@ void help()
         "                             \"objects\"",
         "      --elements=<number>    How many top allocations to return. Can be",
         "                             given as a number or a percentage."
+        "",
+        "  total                      Get a total of specified allocation property",
+        "                             from all allocations. Exactly one option",
+        "                             (property) must be specified.",
+        "    Local options:",
+        "      --allocs               Get the total number of allocations.",
+        "      --bytes                Get the total number of bytes allocated.",
+        "                             This is a sum of all allocations, which",
+        "                             is likely going to be much greater than",
+        "                             memory usage at any given time.",
+        "                             It gives a good idea about how much",
+        "                             memory reallocation and wasteful",
+        "                             allocation/deletion is going on.",
+        "      --objects              Get the total number of objects allocated.",
+        "                             Like --bytes, this is a sum of object counts",
+        "                             of all allocations.",
         ];
     foreach(line; help) {writeln(line);}
 }
@@ -727,6 +738,30 @@ private:
         });
     }
 
+    /// Parses local options for the "list" command.
+    void localList(string arg)
+    {
+        auto listAction(T)(string property)
+        {
+            return (ref YAMLNode allocations) =>
+                   YAMLNode(MemProf.listValues!T(allocations, property));
+        }
+
+        processOption(arg, (opt, args){
+        switch(opt)
+        {
+            case "line":    action_ = listAction!uint("__LINE__");   break;
+            case "file":    action_ = listAction!string("__FILE__"); break;
+            case "type":    action_ = listAction!string("type");     break;
+            case "time":    action_ = listAction!double("time");     break;
+            case "bytes":   action_ = listAction!uint("bytes");      break;
+            case "objects": action_ = listAction!uint("objects");    break;
+            default:
+                throw new MemProfCLIException("Unrecognized list option: --" ~ opt);
+        }
+        });
+    }
+
     /// Parse a command. Sets up command state and switches to its option parser function.
     void command(string arg)
     {
@@ -790,6 +825,11 @@ private:
                         a["bytes"].as!uint < b["bytes"].as!uint;
                 action_ = (ref YAMLNode allocations) =>
                           YAMLNode(MemProf.topAllocations(allocations, less_, 16));
+                break;
+            case "list":
+                processArg_ = &localList;
+                action_ = (ref YAMLNode allocations) =>
+                          YAMLNode(MemProf.listValues!string(allocations, "__FILE__"));
                 break;
             default: 
                 throw new MemProfCLIException("Unknown command: " ~ arg);
