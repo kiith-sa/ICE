@@ -1,7 +1,7 @@
 deathTimeout: 1.0
 engine : 
   maxSpeed       : 2000
-  acceleration   : 1200  #-1 is instant
+  acceleration   : 1400  #-1 is instant
 volume:
   aabbox:
     min: [-1, -11]

@@ -5,7 +5,5 @@ burst:
  - entity: projectiles/plasmaBullet.yaml 
    components:
      physics:
-       position: [0.0, 0.0]
-       speed: 50.0
-       spawnAbsolute:
-         - velocity
+       position: [0.0, 6.0]
+       speed: 250.0

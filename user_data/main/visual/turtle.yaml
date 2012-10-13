@@ -2,41 +2,41 @@ type: lines
 vertices:
   !!pairs
   - color:  rgba50FF90C0
-  - vertex: [4.0, 0.0]
-  - vertex: [0.0, 4.0]
+  - vertex: [0.0, 0.0]
+  - vertex: [-4.0, 4.0]
 
-  - vertex: [0.0, 4.0]
-  - vertex: [0.0, 8.0]
+  - vertex: [-4.0, 4.0]
+  - vertex: [-4.0, 8.0]
 
-  - vertex: [0.0, 8.0]
-  - vertex: [4.0, 12.0]
+  - vertex: [-4.0, 8.0]
+  - vertex: [0.0, 12.0]
 
-  - vertex: [4.0, 12.0]
-  - vertex: [8.0, 8.0]
+  - vertex: [0.0, 12.0]
+  - vertex: [4.0, 8.0]
 
-  - vertex: [8.0, 8.0]
-  - vertex: [8.0, 4.0]
+  - vertex: [4.0, 8.0]
+  - vertex: [4.0, 4.0]
 
-  - vertex: [8.0, 4.0]
-  - vertex: [4.0, 0.0]
+  - vertex: [4.0, 4.0]
+  - vertex: [0.0, 0.0]
 
   #Halo
   - width: 4.0
   - color:  rgbaFFFFFF18
-  - vertex: [4.0, 0.0]
-  - vertex: [0.0, 4.0]
+  - vertex: [0.0, 0.0]
+  - vertex: [-4.0, 4.0]
 
-  - vertex: [0.0, 4.0]
-  - vertex: [0.0, 8.0]
+  - vertex: [-4.0, 4.0]
+  - vertex: [-4.0, 8.0]
 
-  - vertex: [0.0, 8.0]
-  - vertex: [4.0, 12.0]
+  - vertex: [-4.0, 8.0]
+  - vertex: [0.0, 12.0]
 
-  - vertex: [4.0, 12.0]
-  - vertex: [8.0, 8.0]
+  - vertex: [0.0, 12.0]
+  - vertex: [4.0, 8.0]
 
-  - vertex: [8.0, 8.0]
-  - vertex: [8.0, 4.0]
+  - vertex: [4.0, 8.0]
+  - vertex: [4.0, 4.0]
 
-  - vertex: [8.0, 4.0]
-  - vertex: [4.0, 0.0]
+  - vertex: [4.0, 4.0]
+  - vertex: [0.0, 0.0]
