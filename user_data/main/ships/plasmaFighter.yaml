@@ -16,13 +16,13 @@ warhead:
   killsEntity: false
   
 spawner:
-  - entity: explosions/deathbase.yaml 
+  - entity: explosions/deathBase.yaml 
     condition: death
     components:
       visual: visual/plasmaFighter.yaml
       physics: 
         position: [0, 0]
-  - entity: explosions/plasmaFighterexplosion.yaml
+  - entity: explosions/plasmaFighterExplosion.yaml
     condition: death 
     components:
       physics: 

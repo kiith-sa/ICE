@@ -1,110 +1,110 @@
 spawner:
- - entity: explosions/jetfragment.yaml 
+ - entity: explosions/jetFragment.yaml 
    condition: periodic 0.155
    components:
      physics:
        PRS: [[0.0, 0.0], -0.5, 100.0]
- - entity: explosions/jetfragment.yaml 
+ - entity: explosions/jetFragment.yaml 
    condition: periodic 0.155
    components:
      physics:
        PRS: [[0.0, 0.0], -0.4, 100.0]
- - entity: explosions/jetfragment.yaml 
+ - entity: explosions/jetFragment.yaml 
    condition: periodic 0.155
    components:
      physics:
        PRS: [[0.0, 0.0], -0.3, 100.0]
- - entity: explosions/jetfragment.yaml 
+ - entity: explosions/jetFragment.yaml 
    condition: periodic 0.155
    components:
      physics:
        PRS: [[0.0, 0.0], -0.2, 100.0]
- - entity: explosions/jetfragment.yaml 
+ - entity: explosions/jetFragment.yaml 
    condition: periodic 0.155
    components:
      physics:
        PRS: [[0.0, 0.0], -0.1, 100.0]
- - entity: explosions/jetfragment.yaml 
+ - entity: explosions/jetFragment.yaml 
    condition: periodic 0.155
    components:
      physics:
        PRS: [[0.0, 0.0], 0.0, 100.0]
- - entity: explosions/jetfragment.yaml 
+ - entity: explosions/jetFragment.yaml 
    condition: periodic 0.155
    components:
      physics:
        PRS: [[0.0, 0.0], 0.1, 100.0]
- - entity: explosions/jetfragment.yaml 
+ - entity: explosions/jetFragment.yaml 
    condition: periodic 0.155
    components:
      physics:
        PRS: [[0.0, 0.0], 0.2, 100.0]
- - entity: explosions/jetfragment.yaml 
+ - entity: explosions/jetFragment.yaml 
    condition: periodic 0.155
    components:
      physics:
        PRS: [[0.0, 0.0], 0.3, 100.0]
- - entity: explosions/jetfragment.yaml 
+ - entity: explosions/jetFragment.yaml 
    condition: periodic 0.155
    components:
      physics:
        PRS: [[0.0, 0.0], 0.4, 100.0]
- - entity: explosions/jetfragment.yaml 
+ - entity: explosions/jetFragment.yaml 
    condition: periodic 0.155
    components:
      physics:
        PRS: [[0.0, 0.0], 0.5, 100.0]
- - entity: explosions/jetfragment.yaml 
+ - entity: explosions/jetFragment.yaml 
    condition: periodic 0.155
    components:
      physics:
        PRS: [[0.0, 0.0], 3.64, 100.0]
- - entity: explosions/jetfragment.yaml 
+ - entity: explosions/jetFragment.yaml 
    condition: periodic 0.155
    components:
      physics:
        PRS: [[0.0, 0.0], 3.54, 100.0]
- - entity: explosions/jetfragment.yaml 
+ - entity: explosions/jetFragment.yaml 
    condition: periodic 0.155
    components:
      physics:
        PRS: [[0.0, 0.0], 3.44, 100.0]
- - entity: explosions/jetfragment.yaml 
+ - entity: explosions/jetFragment.yaml 
    condition: periodic 0.155
    components:
      physics:
        PRS: [[0.0, 0.0], 3.34, 100.0]
- - entity: explosions/jetfragment.yaml 
+ - entity: explosions/jetFragment.yaml 
    condition: periodic 0.155
    components:
      physics:
        PRS: [[0.0, 0.0], 3.24, 100.0]
- - entity: explosions/jetfragment.yaml 
+ - entity: explosions/jetFragment.yaml 
    condition: periodic 0.155
    components:
      physics:
        PRS: [[0.0, 0.0], 3.14, 100.0]
- - entity: explosions/jetfragment.yaml 
+ - entity: explosions/jetFragment.yaml 
    condition: periodic 0.155
    components:
      physics:
        PRS: [[0.0, 0.0], 3.04, 100.0]
- - entity: explosions/jetfragment.yaml 
+ - entity: explosions/jetFragment.yaml 
    condition: periodic 0.155
    components:
      physics:
        PRS: [[0.0, 0.0], 2.94, 100.0]
- - entity: explosions/jetfragment.yaml 
+ - entity: explosions/jetFragment.yaml 
    condition: periodic 0.155
    components:
      physics:
        PRS: [[0.0, 0.0], 2.84, 100.0]
- - entity: explosions/jetfragment.yaml 
+ - entity: explosions/jetFragment.yaml 
    condition: periodic 0.155
    components:
      physics:
        PRS: [[0.0, 0.0], 2.74, 100.0]
- - entity: explosions/jetfragment.yaml 
+ - entity: explosions/jetFragment.yaml 
    condition: periodic 0.155
    components:
      physics:

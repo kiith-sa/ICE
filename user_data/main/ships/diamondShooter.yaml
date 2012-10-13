@@ -16,13 +16,13 @@ warhead:
   killsEntity: false
 
 spawner:
-  - entity: explosions/deathbase.yaml 
+  - entity: explosions/deathBase.yaml 
     condition: death
     components:
       visual: visual/diamondShooter.yaml
       physics: 
         position: [0, 0]
-  - entity: explosions/jetsmall.yaml
+  - entity: explosions/jetSmall.yaml
     condition: death 
     components:
       physics: 

@@ -28,7 +28,7 @@ spawner:
     components:
       physics: 
         position: [0, 0]
-  - entity: explosions/deathbase.yaml 
+  - entity: explosions/deathBase.yaml 
     condition: death 
     components:
       visual: visual/player.yaml

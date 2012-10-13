@@ -2,157 +2,157 @@ weapon:
   0: weapons/playerdeath.yaml
 dumbScript: dumbscripts/fire_0.yaml
 spawner:
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 0.0, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 0.2, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 0.4, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 0.6, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 0.8, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 1.0, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 1.2, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 1.4, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 1.6, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 1.8, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 2.0, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 2.2, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 2.4, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 2.6, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 2.8, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 3.0, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 3.2, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 3.4, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 3.6, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 3.8, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 4.0, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 4.2, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 4.4, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 4.6, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 4.8, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 5.0, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 5.2, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 5.4, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 5.6, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 
         PRS: [[0, 0], 5.8, 200.0]
-  - entity: explosions/playerfragment.yaml 
+  - entity: explosions/playerFragment.yaml 
     condition: death 
     components:
       physics: 

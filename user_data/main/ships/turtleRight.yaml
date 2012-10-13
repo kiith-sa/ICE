@@ -16,13 +16,13 @@ warhead:
 dumbScript: dumbscripts/wtf-sewing.yaml
 
 spawner:
-  - entity: explosions/deathbase.yaml 
+  - entity: explosions/deathBase.yaml 
     condition: death
     components:
       visual: visual/turtle.yaml
       physics: 
         position: [0, 0]
-  - entity: explosions/spiralsmall.yaml
+  - entity: explosions/spiralSmall.yaml
     condition: death 
     components:
       physics: 

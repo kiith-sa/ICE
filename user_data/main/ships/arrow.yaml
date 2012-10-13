@@ -15,7 +15,7 @@ warhead:
   killsEntity: false
 dumbScript: dumbscripts/arrows.yaml
 spawner:
-  - entity: explosions/deathbase.yaml 
+  - entity: explosions/deathBase.yaml 
     condition: death
     components:
       visual: visual/arrow.yaml
@@ -24,7 +24,7 @@ spawner:
       weapon:
         0: weapons/playerdeath.yaml
       dumbScript: dumbscripts/fire_0.yaml
-  - entity: explosions/spiralsmall.yaml
+  - entity: explosions/spiralSmall.yaml
     condition: death 
     components:
       deathTimeout: 1.2
@@ -32,7 +32,7 @@ spawner:
         position: [16, 0]
         rotation: 0.0
         speed: 16
-  - entity: explosions/spiralsmall.yaml
+  - entity: explosions/spiralSmall.yaml
     condition: death 
     components:
       deathTimeout: 1.2

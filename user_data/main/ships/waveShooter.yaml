@@ -16,20 +16,20 @@ warhead:
 dumbScript: dumbscripts/arrows.yaml
 
 spawner:
-  - entity: explosions/deathbase.yaml 
+  - entity: explosions/deathBase.yaml 
     condition: death
     components:
       visual: visual/waveShooter.yaml
       physics: 
         position: [0, 0]
-  - entity: explosions/spiralsmall.yaml
+  - entity: explosions/spiralSmall.yaml
     condition: death 
     components:
       physics: 
         position: [2, 24]
         rotation: 0.0
         speed: 32
-  - entity: explosions/spiralsmall.yaml
+  - entity: explosions/spiralSmall.yaml
     condition: death 
     components:
       physics: 
