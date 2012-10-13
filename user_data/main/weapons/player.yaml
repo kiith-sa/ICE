@@ -1,4 +1,4 @@
-burstPeriod: 0.03
+burstPeriod: 0.035
 ammo: 3
 reloadTime: 0.06
 burst:
@@ -8,7 +8,7 @@ burst:
      physics:
        position: [-1.0, 16.0]
        rotation: 0.5deg
-       speed:    120.0
+       speed:    140.0
        spawnAbsolute: [velocity]
  - entity: projectiles/defaultBullet.yaml 
    delay: 0.005
@@ -16,7 +16,7 @@ burst:
      physics:
        position: [1.0, 16.0]
        rotation: -0.5deg
-       speed:    120.0
+       speed:    140.0
        spawnAbsolute: [velocity]
  - entity: projectiles/defaultBullet.yaml 
    delay: 0.01
@@ -24,7 +24,7 @@ burst:
      physics:
        position: [-2.0, 12.0]
        rotation: 1deg
-       speed:    120.0
+       speed:    140.0
        spawnAbsolute: [velocity]
  - entity: projectiles/defaultBullet.yaml 
    delay: 0.01
@@ -32,7 +32,7 @@ burst:
      physics:
        position: [2.0, 12.0]
        rotation: -1deg
-       speed:    120.0
+       speed:    140.0
        spawnAbsolute: [velocity]
  - entity: projectiles/defaultBullet.yaml 
    delay: 0.015
@@ -40,12 +40,18 @@ burst:
      physics:
        position: [-4.0, 8.0]
        rotation: 2.3deg
-       speed:    120.0
+       speed:    140.0
  - entity: projectiles/defaultBullet.yaml 
    delay: 0.015
    components:
      physics:
        position: [4.0, 8.0]
        rotation: -2.3deg
-       speed:    120.0
-
+       speed:    140.0
+ - entity: projectiles/defaultBullet.yaml 
+   delay: 0.015
+   components:
+     physics:
+       position: [-4.0, 8.0]
+       rotation: 0
+       speed:    140.0
