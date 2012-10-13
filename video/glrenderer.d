@@ -473,7 +473,7 @@ package struct GLRenderer
         ///Initialize vertex buffers with specified draw mode.
         void initBuffers(const GLDrawMode drawMode_)
         {
-            coloredBuffer_  = GLVertexBuffer!GLVertex2DColored(drawMode_);
-            texturedBuffer_ = GLVertexBuffer!GLVertex2DTextured(drawMode_);
+            coloredBuffer_  = GLVertexBuffer!GLVertex2DColored(drawMode_, 256 * 1024);
+            texturedBuffer_ = GLVertexBuffer!GLVertex2DTextured(drawMode_, 256 * 1024);
         }
 }
