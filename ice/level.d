@@ -294,11 +294,6 @@ class DumbLevel : Level
                 this(string name, ref YAMLNode yaml)
                 {
                     spawnerPrototype = alloc!EntityPrototype("wave: " ~ name, yaml);
-
-                    if(yaml.containsKey("spawn"))
-                    {
-                        loadLegacy(yaml["spawn"]);
-                    }
                 }
 
                 ///Destroy a WaveDefinition.
@@ -308,61 +303,7 @@ class DumbLevel : Level
                     if(null is spawnerPrototype){return;}
                     free(spawnerPrototype);
                 }
-
-                ///Backward compatibility - load legacy wave definition format. Will be removed.
-                void loadLegacy(ref YAMLNode spawns)
-                {
-                    writeln("WARNING: The \"spawn\" tag in wave definitions is " ~
-                            "deprecated and will be removed.\nWaves are now "    ~
-                            "defined as entities and the units spawned in a "    ~
-                            "wave must be specified in its spawner component.\n" ~
-                            "Example:\n"                                         ~
-                            "\nold:\n"                                           ~
-                            " spawn:\n"                                          ~
-                            "   - unit: ships/enemy1.yaml\n"                     ~
-                            "     physics: \n"                                   ~
-                            "         position: [360, 32]\n"                     ~
-                            "         rot\n"                                     ~
-                            "     dumbScript: dumbscripts/enemy1.yaml\n"         ~
-                            "\nnew:\n"                                           ~
-                            " spawner:\n"                                        ~
-                            "   - entity: ships/enemy1.yaml\n"                   ~
-                            "     components:\n"                                 ~
-                            "       physics:\n"                                  ~
-                            "         position: [440, 64]\n"                     ~
-                            "       dumbScript: dumbscripts/enemy1.yaml\n");
-
-                    //If spawnerPrototype has no spawnerComponent, add it
-                    if(spawnerPrototype.spawner.isNull)
-                    {
-                        spawnerPrototype.spawner = SpawnerComponent();
-                    }
-
-                    foreach(ref YAMLNode spawn; spawns)
-                    {
-                        alias SpawnerComponent.Spawn Spawn;
-
-                        //Manually build Spawn struct, and add it.
-                        Spawn unitSpawn;
-
-                        with(unitSpawn)
-                        {
-                            condition.type = SpawnerComponent.SpawnCondition.Type.Spawn;
-
-                            componentOverrides = spawn;
-                            hasComponentOverrides = true;
-
-                            spawnee = LazyArrayIndex(spawn["unit"].as!string);
-
-                            accelerateForward = false;
-                            spawnerIsOwner = false;
-                        }
-
-                        spawnerPrototype.spawner.addSpawn(unitSpawn);
-                    }
-                }
         }
-
 
         ///Wave level script instruction.
         struct Wave 
@@ -485,7 +426,7 @@ class DumbLevel : Level
                     const color = yaml.containsKey("color")
                         ? yaml["color"].as!Color
                         : rgb!"FFFFFF";
-                    const time  = yaml.containsKey("")
+                    const time  = yaml.containsKey("time")
                         ? fromYAML!(float, "a >= 0.0")(yaml["time"], ctx)
                         : 0.0f;
 
@@ -903,8 +844,8 @@ class DumbLevel : Level
                 case "wait":
                     levelScript_ ~= I(Wait(fromYAML!(float, "a >= 0.0")(params, "wait")));
                     break;
-                case "wave":   levelScript_ ~= I(Wave(params)); break;
-                case "text":   levelScript_ ~= I(Text(params.as!string)); break;
+                case "wave":   levelScript_ ~= I(Wave(params));               break;
+                case "text":   levelScript_ ~= I(Text(params.as!string));     break;
                 case "effect": levelScript_ ~= I(Effect(this, name, params)); break; 
                 default:
                     throw new E("Unknown level instruction in level \"" ~ 
