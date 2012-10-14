@@ -1,31 +1,8 @@
 visual: visual/playerLineFragment.yaml
 engine : 
   maxSpeed       : 2000
-  acceleration   : 1000  #-1 is instant
-deathTimeout: 0.1
-spawner:
-  #Split in two on death, but the new fragments won's split 
-  #(we override their spawner)
-  - entity: explosions/playerLineFragment.yaml 
-    condition: death 
-    components:
-      physics: 
-        position: [0, 0]
-        rotation: 0.16
-        speed: 100
-      spawner: [] 
-      deathTimeout: 0.7
-      dumbScript: dumbscripts/forward.yaml
-  - entity: explosions/playerLineFragment.yaml 
-    condition: death 
-    components:
-      physics: 
-        position: [0, 0]
-        rotation: -0.16
-        speed: 100
-      spawner: [] 
-      deathTimeout: 0.7
-      dumbScript: dumbscripts/forward.yaml
+  acceleration   : 4000  #-1 is instant
+deathTimeout: 0.5
 volume:
   aabbox:
     min: [-1, -12]

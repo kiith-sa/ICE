@@ -21,7 +21,6 @@ wave turtleRight:
             position: [-50, -30]
         dumbScript: dumbscripts/toright.yaml
 
-
 wave turtleLeft:
   spawner:
     - entity: ships/turtle.yaml

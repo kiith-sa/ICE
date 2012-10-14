@@ -9,6 +9,7 @@
 module component.spawnercomponent;
 
 
+import std.algorithm;
 import std.conv;
 import std.exception;
 import std.stdio;
@@ -180,7 +181,7 @@ struct SpawnerComponent
             }
         }
     }
-    
+
     ///Spawns that might be spawned by this SpawnerComponent.
     Vector!Spawn spawns;
 
