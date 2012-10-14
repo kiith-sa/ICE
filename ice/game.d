@@ -628,8 +628,8 @@ class Game
             engineSystem_             = new EngineSystem    (entitySystem_, gameTime_);
             spatialSystem_            = new SpatialSystem(entitySystem_, 
                                                           Vector2f(400.0f, 300.0f), 
-                                                          32.0f, 
-                                                          32);
+                                                          48.0f, 
+                                                          24);
             collisionSystem_          = new CollisionSystem(entitySystem_, spatialSystem_);
             collisionResponseSystem_  = new CollisionResponseSystem(entitySystem_);
             warheadSystem_            = new WarheadSystem(entitySystem_);

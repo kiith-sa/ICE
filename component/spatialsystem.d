@@ -104,6 +104,10 @@ class SpatialSystem : System
             grid_ = Array2D!Cell(gridSize_, gridSize_);
 
             tempEntities_.reserve(256);
+            foreach(ref cell; grid_)
+            {
+                cell.reserve(64);
+            }
         }
 
         ///Destroy the SpatialSystem, freeing all used memory.
@@ -200,7 +204,7 @@ class SpatialSystem : System
 
                     ///Foreach over neighbors.
                     int opApply(int delegate(ref Entity, ref PhysicsComponent, ref VolumeComponent) dg)
-                    {    
+                    {
                         //Foreach result.
                         int result = 0;
 
@@ -366,25 +370,25 @@ class SpatialSystem : System
         private static void unittestCells()
         {
             import std.typecons;
-            auto system = new SpatialSystem(null, Vector2f(0.0f, 0.0f), 32.0f, 32);
+            auto system = new SpatialSystem(null, Vector2f(0.0f, 0.0f), 128.0f, 8);
             scope(exit){.clear(system);}
 
             Tuple!(int, int)[] cells;
             foreach(x, y, cell; system.cells(Vector2f(-1.0f, 0.0f),
-                                             Rectf(-32.0f, -32.0f, 32.5f, 31.0f)))
+                                             Rectf(-128.0f, -128.0f, 128.5f, 127.0f)))
             {
                 cells ~= tuple(x, y);
             }
-            assert(cells == [tuple(14, 15), tuple(14, 16),
-                             tuple(15, 15), tuple(15, 16),
-                             tuple(16, 15), tuple(16, 16)]);
+            assert(cells == [tuple(2, 3), tuple(2, 4),
+                             tuple(3, 3), tuple(3, 4),
+                             tuple(4, 3), tuple(4, 4)]);
             .clear(cells);
             foreach(x, y, cell; system.cells(Vector2f(511.0f, 512.0f),
-                                             Rectf(-32.0f, -32.0f, 32.5f, 31.0f)))
+                                             Rectf(-128.0f, -128.0f, 128.5f, 127.0f)))
             {
                 cells ~= tuple(x, y);
             }
-            assert(cells == [tuple(-1, -1), tuple(30, 31), tuple(31, 31)]);
+            assert(cells == [tuple(-1, -1), tuple(6, 7), tuple(7, 7)]);
         }
         mixin registerTest!(unittestCells, "SpatialSystem.cells");
 }
@@ -402,13 +406,13 @@ void unittestSpatial()
     EntityPrototype prototype;
     auto pos1 = P(Vector2f(-1.0f, 0.0f), 0.0f, velocity);
     prototype.physics = pos1;
-    auto rect = V(Rectf(-32.0f, -32.0f, 32.5f, 31.0f));
+    auto rect = V(Rectf(-128.0f, -128.0f, 128.5f, 127.0f));
     prototype.volume = rect;
     auto id1 = eSystem.newEntity(prototype);
     auto pos2 = P(Vector2f(511.0f, 512.0f), 0.0f, velocity);
     prototype.physics = pos2;
     auto id2 = eSystem.newEntity(prototype);
-    auto spatial = new SpatialSystem(eSystem, Vector2f(0.0f, 0.0f), 32.0f, 32);
+    auto spatial = new SpatialSystem(eSystem, Vector2f(0.0f, 0.0f), 128.0f, 8);
     scope(exit){.clear(spatial);}
 
     eSystem.update();

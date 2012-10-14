@@ -898,7 +898,7 @@ class EntitySystem : Monitorable
         {
             uint idxIdx = 0;
             foreach(uint entityIdx; freeEntityIndices_)
-            {     
+            {
                 if(entities_[entityIdx].componentMask == componentMask)
                 {
                     //The index is not free anymore, so remove it
