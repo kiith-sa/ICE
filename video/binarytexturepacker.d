@@ -27,14 +27,31 @@ import memory.memory;
 package struct BinaryTexturePacker
 {
     private:
+        ///Allocates and stores nodes.
+        struct NodeStorage
+        {
+            import containers.segmentedvector;
+            ///Node storage. Using a SegmentedVector to avoid pointer invalidion.
+            SegmentedVector!(Node, 64) storage;
+
+            ///Allocate a new node and return a pointer to it.
+            Node* newNode(ref Rectu area)
+            {
+                storage ~= Node(area, this);
+                return &storage[storage.length - 1];
+            }
+        }
+
         ///Node representing a rectangular area of space.
-        static align(4) struct Node
+        struct Node
         {
             public:
                 ///Area belonging to the node.
                 Rectu area;
-            
+
             private:
+                ///Allocates and stores nodes.
+                NodeStorage* storage_;
                 ///First child.
                 Node* childA_;
                 ///Second child.
@@ -46,11 +63,13 @@ package struct BinaryTexturePacker
                 /**
                  * Construct a Node representing specified area.
                  *
-                 * Params:  area = Area of the node.
+                 * Params:  area    = Area of the node.
+                 *          storage = Allocates and stores nodes.
                  */
-                this(const ref Rectu area)
+                this(const ref Rectu area, ref NodeStorage storage)
                 {
-                    this.area = area;
+                    this.area     = area;
+                    this.storage_ = &storage;
                 }
 
                 /**
@@ -86,8 +105,8 @@ package struct BinaryTexturePacker
                         return &this;
                     }
 
-                    childA_ = alloc!Node(area);
-                    childB_ = alloc!Node(area);
+                    childA_ = storage_.newNode(area);
+                    childB_ = storage_.newNode(area);
 
                     //decide which way to split
                     const Vector2u freeSpace = areaSize - size;
@@ -129,7 +148,7 @@ package struct BinaryTexturePacker
                     //can't remove from this node
                     return false;
                 }
-                
+
                 ///Determine if this node and all its subnodes are empty.
                 @property bool empty() const pure
                 {
@@ -138,13 +157,6 @@ package struct BinaryTexturePacker
                     if(childB_ !is null && !childB_.empty()){return false;}
                     return true;
                 }
-
-                ///Destroy this node and its children.
-                ~this()
-                {
-                    if(childA_ !is null){free(childA_);}
-                    if(childB_ !is null){free(childB_);}
-                }
         }
 
         ///Size of the area available to the packer in pixels.
@@ -152,6 +164,9 @@ package struct BinaryTexturePacker
 
         ///Root node of the packer tree.
         Node* root_ = null;
+
+        ///Allocates and stores nodes.
+        NodeStorage* nodeStorage_;
 
     public:
         /**
@@ -162,14 +177,16 @@ package struct BinaryTexturePacker
         this(const Vector2u size)
         {
             size_ = size;
-            root_ = alloc!Node(Rectu(Vector2u(0, 0), size));
+            nodeStorage_ = alloc!NodeStorage;
+            /* root_ = alloc!Node(Rectu(Vector2u(0, 0), size)); */
+            root_ = nodeStorage_.newNode(Rectu(Vector2u(0, 0), size));
         }
 
         ///Destroy this BinaryTexturePacker and its nodes.
         ~this()
         {
-            //if default-initialized but not constructed, don't free anything
-            if(root_ !is null){free(root_);}
+            //NodeStorage destructor will destroy all nodes.
+            free(nodeStorage_);
         }
 
         /**
@@ -238,4 +255,4 @@ package struct BinaryTexturePacker
             output ~= "earea: "  ~ to!string(emptyPercent) ~ "%\n";
             return output;
         }
-}   
+}
