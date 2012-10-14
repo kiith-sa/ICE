@@ -46,6 +46,6 @@ Modding reference:
    modding_reference/component_volume
    modding_reference/component_warhead
    modding_reference/component_weapon
+   modding_reference/level
 .. TODO 
-.. modding_reference/level
 .. modding_reference/entity

@@ -74,7 +74,7 @@ Tags in ``vertices``
 ====== ========================================================================
 vertex Vertex of a line. *Sequence of 2 floats*.
 width  Width of following *lines*. Applied per line (vertex pair), not per 
-       vertex. *Float scalar*. There is no width limit but widths lower than 1 
+       vertex. *Float*. There is no width limit but widths lower than 1 
        might not get draw precisely due to aliasing. Default: ``1``.
 color  Color of following *vertices*. Colors are interpolated between vertices,
        so a line can e.g. fade from black to white. *RGB or RGBA color*. 

@@ -1,0 +1,319 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Level &mdash; ICE 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="ICE 0.1 documentation" href="../index.html" />
+    <link rel="prev" title="Weapon component" href="component_weapon.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="component_weapon.html" title="Weapon component"
+             accesskey="P">previous</a></li>
+        <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="level">
+<span id="modding-reference-level"></span><h1>Level<a class="headerlink" href="#level" title="Permalink to this headline">¶</a></h1>
+<p>ICE levels are YAML files specifying things like what entities are spawned
+when, background effects, and so on. Currently a level consists of any number
+of <em>wave definitions</em> and a <em>level script</em>. A wave definition describes a group
+of entities that are spawned together. The level script determines when these
+waves appear, and other things such as background effects.</p>
+<div class="section" id="wave-definition">
+<h2>Wave definition<a class="headerlink" href="#wave-definition" title="Permalink to this headline">¶</a></h2>
+<p>A wave is really just an entity that uses its
+<a class="reference internal" href="component_spawner.html#modding-reference-component-spawner"><em>Spawner component</em></a> to spawn entities. A wave definition
+starts by a &#8220;header&#8221; in format <tt class="docutils literal"><span class="pre">wave</span> <span class="pre">waveName:</span></tt> where waveName is name of the
+wave. The wave then defines a spawner component, which works exactly the same
+as in an entity. As wave is an entity, other components could be defined
+as well if needed.</p>
+<p>The spawner component can spawn entities with delay and override their
+components.  The most commonly overridden components are the physics component
+to set position of the spawned entity, and dumbscript component to set entity
+behavior.  However, any other components can be overridden as well, e.g.
+weapons, health and so on.  For detauls, see
+<a class="reference internal" href="component_spawner.html#modding-reference-component-spawner"><em>Spawner component</em></a> documentation.</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>wave turtlePawn:
+  spawner:
+    - entity: ships/turtle.yaml
+      components:
+        physics:
+            position: [380, 0]
+        dumbScript: dumbscripts/pawnLeft.yaml
+    - entity: ships/turtle.yaml
+      components:
+        physics:
+            position: [420, 0]
+        dumbScript: dumbscripts/pawnRight.yaml</pre>
+</div>
+<p>This wave is called <tt class="docutils literal"><span class="pre">turtlePawn</span></tt>. It will spawn two <tt class="docutils literal"><span class="pre">ships/turtle.yaml</span></tt>
+entities at positions <tt class="docutils literal"><span class="pre">[380,</span> <span class="pre">0]</span></tt> and <tt class="docutils literal"><span class="pre">[420,</span> <span class="pre">0]</span></tt>. The first entity will use
+the <tt class="docutils literal"><span class="pre">dumbscripts/pawnLeft.yaml</span></tt>, the second <tt class="docutils literal"><span class="pre">dumbscripts/pawnRight.yaml</span></tt>.</p>
+</div>
+<div class="section" id="level-script">
+<h2>Level script<a class="headerlink" href="#level-script" title="Permalink to this headline">¶</a></h2>
+<p>The level script is a YAML sequence of events that will occur during the
+course of the level. Like dumbscript, there is no contol flow; just a
+series of instructions to execute.</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>level:
+  !!pairs
+  - effect text:
+      text: 42
+      font: default
+      fontSize: 512
+      color: rgbaFF000001
+      time: 1.0
+  - effect lines:
+      minWidth: 0.225
+      maxWidth: 0.9
+      minLength: 3.0
+      maxLength: 12.0
+      verticalScrollingSpeed: 225.0
+      linesPerPixel: 0.0015
+      detailLevel: 6
+      color: rgbaD0D0FF24
+  - wait: 1.0
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 0.3
+  - wave: turtlePawn
+  - wait: 5
+  - wave: [turtlePawn, [100.0,  0]]
+  - wait: 0.3
+  - wave: [turtlePawn, [200.0,  -20]]
+  - wait: 0.3
+  - wave: [turtlePawn, [300.0,  -40]]
+  - wait: 3
+  - wave: [turtlePawn, [-100.0,  0]]
+  - wait: 0.3
+  - wave: [turtlePawn, [-200.0,  -20]]
+  - wait: 0.3
+  - wave: [turtlePawn, [-300.0,  -40]]
+  - wait: 4.0</pre>
+</div>
+<p>This level starts with a barely visible <tt class="docutils literal"><span class="pre">text</span></tt> effect showing a large &#8220;42&#8221; in
+the center of the screen for one second. It also uses a <tt class="docutils literal"><span class="pre">lines</span></tt> effect which
+generates small scrolling lines, giving the impression of a starfield.</p>
+<p>1 second after the level starts, a <tt class="docutils literal"><span class="pre">turtlePawn</span></tt> wave (defined above) is
+spawned. More <tt class="docutils literal"><span class="pre">turtlePawn</span></tt> waves are spawned in 0.3 second intervals, with
+a 3 second pause between the first three and the other three.</p>
+<p>This is followed by a 5 second pause. After the pause, more <tt class="docutils literal"><span class="pre">turtlePawn</span></tt>
+waves are spawned, but this time with offsets altering positions of the spawned
+units.  (This actually changes the position of the wave entity, which would be
+<tt class="docutils literal"><span class="pre">[0,</span> <span class="pre">0]</span></tt> otherwise, and as entities are spawned relative to their spawner by
+default, this changes their positions as well).</p>
+</div>
+<div class="section" id="level-script-instructions">
+<h2>Level script instructions<a class="headerlink" href="#level-script-instructions" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>effect X</td>
+<td>Display specified type of effect. The effect itself is a mapping
+describing parameters of the effect. X can be either <tt class="docutils literal"><span class="pre">text</span></tt> (show
+text centered in the screen) or <tt class="docutils literal"><span class="pre">lines</span></tt> (generate random lines on
+the background, useful for e.g. a starfield effect). Effect parameters
+are further described in tables below.</td>
+</tr>
+<tr class="row-even"><td>wave</td>
+<td>Launch a wave, spawning its units. This spawns the wave entity.
+This instruction can be in one of multiple formats. These are described
+further below.</td>
+</tr>
+<tr class="row-odd"><td>wait</td>
+<td>Wait for specified time in seconds. <em>Float</em>.</td>
+</tr>
+<tr class="row-even"><td>text</td>
+<td>Display specified text for 3 seconds. <em>String</em>.
+<strong>This should not be used - it is deprecated and will be replaced.</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="wave-instruction-formats">
+<h2>Wave instruction formats<a class="headerlink" href="#wave-instruction-formats" title="Permalink to this headline">¶</a></h2>
+<p>Launch the <tt class="docutils literal"><span class="pre">waveName</span></tt> wave at <tt class="docutils literal"><span class="pre">[0,</span> <span class="pre">0]</span></tt>:</p>
+<div class="highlight-python"><pre>- wave: waveName</pre>
+</div>
+<p>Launch the <tt class="docutils literal"><span class="pre">waveName</span></tt> wave at <tt class="docutils literal"><span class="pre">[X,</span> <span class="pre">Y]</span></tt>:</p>
+<div class="highlight-python"><pre>- wave: [waveName [X, Y]]</pre>
+</div>
+<p>Launch the <tt class="docutils literal"><span class="pre">waveName</span></tt> wave, overriding wave entity components. This allows e.g.
+to change components of the wave entity - for example giving it a visual
+component or allowing it to move while spawning:</p>
+<div class="highlight-python"><pre>- wave:
+    wave: waveName
+    components:
+      physics:
+        position: [100, 300]</pre>
+</div>
+</div>
+<div class="section" id="text-effect-tags">
+<h2>Text effect tags<a class="headerlink" href="#text-effect-tags" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>text</td>
+<td>Text to display. This must be specified; there is no default. <em>String</em>.</td>
+</tr>
+<tr class="row-even"><td>font</td>
+<td>Font to use (must be in a <tt class="docutils literal"><span class="pre">fonts</span></tt> subdirectory of a mod directory).
+<tt class="docutils literal"><span class="pre">default</span></tt> means the default font. <em>String</em>. Default: <tt class="docutils literal"><span class="pre">default</span></tt>.</td>
+</tr>
+<tr class="row-odd"><td>fontSize</td>
+<td>Size of the font. <em>Int</em>. Default: <tt class="docutils literal"><span class="pre">28</span></tt>.</td>
+</tr>
+<tr class="row-even"><td>color</td>
+<td>Color of the text. <em>RGB or RGBA color</em>. Default: <tt class="docutils literal"><span class="pre">rgbaFFFFFFFF</span></tt>.</td>
+</tr>
+<tr class="row-odd"><td>time</td>
+<td>Time to show the text for in seconds. <tt class="docutils literal"><span class="pre">0</span></tt> means infinite. <em>Float</em>.
+Default: <tt class="docutils literal"><span class="pre">0</span></tt></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="lines-effect-tags">
+<h2>Lines effect tags<a class="headerlink" href="#lines-effect-tags" title="Permalink to this headline">¶</a></h2>
+<table border="1" class="docutils">
+<colgroup>
+<col width="28%" />
+<col width="72%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td>lineDirection</td>
+<td>Direction of generated lines. Allows to generate rotated
+lines (but still moving in vertical direction). <em>Float</em>.
+Default: <tt class="docutils literal"><span class="pre">0.0</span></tt> (<tt class="docutils literal"><span class="pre">0deg</span></tt>).</td>
+</tr>
+<tr class="row-even"><td>minWidth</td>
+<td>Minimum width of a generated line. <em>Float</em>.
+Default: <tt class="docutils literal"><span class="pre">1.0</span></tt></td>
+</tr>
+<tr class="row-odd"><td>maxWidth</td>
+<td>Maximum width of a generated line. <em>Float</em>.
+Default: <tt class="docutils literal"><span class="pre">2.0</span></tt></td>
+</tr>
+<tr class="row-even"><td>minLength</td>
+<td>Minimum length of a generated line. <em>Float</em>.
+Default: <tt class="docutils literal"><span class="pre">1.0</span></tt></td>
+</tr>
+<tr class="row-odd"><td>maxLength</td>
+<td>Maximum length of a generated line. <em>Float</em>.
+Default: <tt class="docutils literal"><span class="pre">10.0</span></tt></td>
+</tr>
+<tr class="row-even"><td>linesPerPixel</td>
+<td>How many lines to generate per pixel by default.
+&#8220;Pixel&#8221; might not correspond to a pixel on screen -
+it is a square 1 unit wide and  1 unit tall where the
+screen is always 800x600 units, regardless of the actual
+resolution. <em>Float</em>. Default: <tt class="docutils literal"><span class="pre">0.001</span></tt>.</td>
+</tr>
+<tr class="row-odd"><td>verticalScrollingSpeed</td>
+<td>Speed of vertical line movement in units per second.
+(there is no horizontal movement). <em>Float</em>.
+Default: <tt class="docutils literal"><span class="pre">250.0</span></tt>.</td>
+</tr>
+<tr class="row-even"><td>detailLevel</td>
+<td>Effect detail level. Lower values will result in smoother
+line movement but higher CPU/memory usage. <tt class="docutils literal"><span class="pre">0</span></tt> is
+&#8220;full&#8221; detail. <em>Int</em>. Default: <tt class="docutils literal"><span class="pre">3</span></tt>.</td>
+</tr>
+<tr class="row-odd"><td>color</td>
+<td>Color of the lines.</td>
+</tr>
+<tr class="row-even"><td>time</td>
+<td>Time to show the effect for in seconds. <tt class="docutils literal"><span class="pre">0</span></tt> means
+infinite. <em>Float</em>. Default: <tt class="docutils literal"><span class="pre">0</span></tt>.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Level</a><ul>
+<li><a class="reference internal" href="#wave-definition">Wave definition</a></li>
+<li><a class="reference internal" href="#level-script">Level script</a></li>
+<li><a class="reference internal" href="#level-script-instructions">Level script instructions</a></li>
+<li><a class="reference internal" href="#wave-instruction-formats">Wave instruction formats</a></li>
+<li><a class="reference internal" href="#text-effect-tags">Text effect tags</a></li>
+<li><a class="reference internal" href="#lines-effect-tags">Lines effect tags</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="component_weapon.html" title="Weapon component"
+             >previous</a></li>
+        <li><a href="../index.html">ICE 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2010-2012, Dávid Horváth, Ferdinand Majerech, Libor Mališ..
+      Last updated on Oct 14, 2012.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
