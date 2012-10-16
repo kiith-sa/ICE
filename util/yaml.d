@@ -19,8 +19,11 @@ import std.traits;
 import dgamevfs._;
 
 import dyaml.constructor;
+import dyaml.dumper;
 import dyaml.loader;
+import dyaml.representer;
 import dyaml.resolver;
+import dyaml.style;
 
 public import dyaml.exception;
 public import dyaml.node : YAMLNode = Node;
@@ -41,20 +44,55 @@ import math.rect;
 YAMLNode loadYAML(VFSFile file)
 {
     auto stream = VFSStream(file.input, file.bytes);
+
+    auto loader = Loader(stream);
+    loader.constructor = iceConstructor();
+    loader.resolver    = iceResolver();
+
+    return loader.load(); 
+}
+
+/**
+ * Save to a YAML file with support for ICE data types.
+ *
+ * Params:  file = File to save to.
+ *          yaml = YAML document to save.
+ */
+void saveYAML(VFSFile file, ref YAMLNode yaml)
+{
+    auto stream        = VFSStream(file.output);
+    auto dumper        = Dumper(stream);
+    dumper.resolver    = iceResolver();
+    dumper.representer = iceRepresenter();
+    dumper.dump(yaml);
+}
+
+/// Return a YAML constructor customized for ICE.
+Constructor iceConstructor()
+{
     auto constructor = new Constructor;
     constructor.addConstructorScalar("!color", &constructColorFromYAMLScalar);
     constructor.addConstructorScalar("!rotDeg", &constructDegreesRotation);
+    return constructor;
+}
 
+/// Return a YAML resolver customized for ICE.
+Resolver iceResolver()
+{
     auto resolver = new Resolver;
     resolver.addImplicitResolver("!color", std.regex.regex(colorYAMLRegex),
                                  colorYAMLStartChars);
     resolver.addImplicitResolver("!rotDeg", std.regex.regex(rotationDegreesRegex),
                                  rotationDegreesStartChars);
-    auto loader = Loader(stream);
-    loader.constructor = constructor;
-    loader.resolver    = resolver;
+    return resolver;
+}
 
-    return loader.load(); 
+/// Return a YAML representer customized for ICE.
+Representer iceRepresenter()
+{
+    auto representer   = new Representer();
+    representer.defaultCollectionStyle = CollectionStyle.Block;
+    return representer;
 }
 
 ///Thrown when a YAML value is out of range or invalid.
