@@ -153,7 +153,7 @@
 <b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>string <b>path</b></td>
 <td valign=top>Path of the subdirectory to get.</td></tr>
 </table></div>
-<b>Throws:</b><div class="pbr"><span class="d_inlinecode">VFSNotFoundException</span> if the directory does not exist
+<b>Throws:</b><div class="pbr"><span class="d_inlinecode">VFSNotFoundException</span> if this VFSDir does not exist
           or the subdirectory is in a nonexistent subdirectory.
 <br>
 
@@ -218,6 +218,21 @@
 <b>Throws:</b><div class="pbr"><span class="d_inlinecode">VFSIOException</span> if the directory could not be created.</div>
 
 </dd>
+<dt class="d_decl">void <a name="remove"></a><span class="ddoc_psymbol">remove</span>();
+</dt>
+<dd><p>Remove the directory if it exists (otherwise do nothing).
+</p>
+<p>Removes recursively, together with any subdirectories and files.
+
+</p>
+<p><b>Warning:</b><br>
+This will make any references to subdirectories or
+          files in this directory invalid.
+
+</p>
+<b>Throws:</b><div class="pbr"><span class="d_inlinecode">VFSIOException</span> if the directory could not be removed.</div>
+
+</dd>
 <dt class="d_decl">protected  this(VFSDir <b>parent</b>, string <b>pathInParent</b>);
 </dt>
 <dd><p>Constructor to initialize state common for <span class="d_inlinecode">VFSDir</span> implementations.
@@ -247,6 +262,16 @@
 <dt class="d_decl">protected void <a name="create_"></a><span class="ddoc_psymbol">create_</span>();
 </dt>
 <dd><p>Implementation of <span class="d_inlinecode">create()</span>. Caller contract guarantees that the directory is writable.</p>
+
+</dd>
+<dt class="d_decl">protected VFSDir <a name="copyWithoutParent"></a><span class="ddoc_psymbol">copyWithoutParent</span>();
+</dt>
+<dd><p>Return a copy of this VFSDir without a parent. Used for mounting.</p>
+
+</dd>
+<dt class="d_decl">protected final VFSDir <a name="getCopyWithoutParent"></a><span class="ddoc_psymbol">getCopyWithoutParent</span>(VFSDir <b>dir</b>);
+</dt>
+<dd><p>Access for derived classes to call copyWithoutParent() of other instances.</p>
 
 </dd>
 </dl>

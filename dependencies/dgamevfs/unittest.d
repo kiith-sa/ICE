@@ -484,6 +484,15 @@ bool testMemoryDir()
         writeln("FAILED MemoryDir general");
         return false;
     }
+
+    //remove
+    memoryDir.dir("subdir").create();
+    memoryDir.remove();
+    if(memoryDir.exists)
+    {
+        writeln("FAILED memoryDir remove");
+        return false;
+    }
     return true;
 }
 
@@ -657,6 +666,15 @@ bool testStackDir()
             writeln("FAILED StackDir general");
             return false;
         }
+
+        //remove
+        stackDir.dir("subdir").create();
+        stackDir.remove();
+        if(stackDir.exists)
+        {
+            writeln("FAILED stackDir remove");
+            return false;
+        }
     }
 
     //Mounting:
@@ -677,7 +695,7 @@ bool testStackDir()
 }
 
 bool testFSDir()
-{                
+{
     auto path = "testFSDir";
     if(exists(path)){rmdirRecurse(path);}
     mkdir(path);
@@ -707,6 +725,16 @@ bool testFSDir()
         writeln("FAILED FSDir general");
         return false;
     }
+
+    //remove
+    fsDir.dir("subdir").create();
+    fsDir.remove();
+    if(fsDir.exists)
+    {
+        writeln("FAILED FSDir remove");
+        return false;
+    }
+
     return true;
 }
 

@@ -133,16 +133,19 @@ We have a directory called <i>data</i> with the following contents:
 </p>
 <p>Files and directories of a directory mounted later will override
  those of a directory mounted earlier.
+<br>
+
+ If <b>dir</b> has a parent in the VFS, a parent-less copy will be created and
+ mounted. (This has no effect whatsoever on the underlying filesystem -
+ it just removes the need for directories to have multiple parents).
 
 </p>
 <b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>VFSDir <b>dir</b></td>
 <td valign=top>Directory to mount.</td></tr>
 </table></div>
 <b>Throws:</b><div class="pbr"><span class="d_inlinecode">VFSMountException</span> if a directory with the same name is
-          already mounted, if <b>dir</b> has a parent (mounted elsewhere or a
-          subdirectory of another <span class="d_inlinecode">VFSDir</span>) or if <b>dir</b> has this
-          directory as its child or a child of any of its
-          subdirectories (circular mounting).</div>
+          already mounted, or if <b>dir</b> has this directory as its child
+          or a child of any of its subdirectories (circular mounting).</div>
 
 </dd>
 </dl>
