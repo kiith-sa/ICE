@@ -192,6 +192,11 @@ class MemoryDir : VFSDir
             return dirsRange(dirs);
         }
 
+        override void remove()
+        {
+            exists_ = No.exists;
+        }
+
     protected:
         override void create_()
         {

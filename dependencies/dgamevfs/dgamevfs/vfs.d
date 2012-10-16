@@ -195,6 +195,18 @@ abstract class VFSDir
             create_();
         }
 
+        /**
+         * Remove the directory if it exists (otherwise do nothing).
+         *
+         * Removes recursively, together with any subdirectories and files.
+         *
+         * Warning: This will make any references to subdirectories or 
+         *          files in this directory invalid.
+         *
+         * Throws:  $(D VFSIOException) if the directory could not be removed.
+         */
+        void remove();
+
     protected:
         /**
          * Constructor to initialize state common for $(D VFSDir) implementations.

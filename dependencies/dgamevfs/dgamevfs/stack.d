@@ -294,6 +294,18 @@ class StackDir : VFSDir
             dir.parent = this;
         }
 
+        override void remove()
+        {
+            const removable = !stack_.canFind!((d) => !d.writable)();
+            enforce(removable,
+                    ioError("Couldn't remove stack directory ", path, " at ",
+                            "least one directory in the stack is not writable"));
+            foreach(dir; stack_)
+            {
+                dir.remove();
+            }
+        }
+
     protected:
         override string composePath(const VFSDir child) const
         {

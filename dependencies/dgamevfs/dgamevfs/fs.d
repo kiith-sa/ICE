@@ -37,7 +37,7 @@ class FSDir : VFSDir
 
         //Is this directory writable?
         Flag!"writable" writable_;
-        
+
     public:
         /**
          * Construct an $(D FSDir).
@@ -159,6 +159,20 @@ class FSDir : VFSDir
             }
 
             return dirsRange(dirs);
+        }
+
+        override void remove()
+        {
+            if(!exists){return;}
+            try
+            {
+                rmdirRecurse(physicalPath_);
+            }
+            catch(FileException e)
+            {
+                throw ioError("Failed to remove filesystem directory ", path,
+                              " with physical path ", physicalPath_);
+            }
         }
 
     protected:
