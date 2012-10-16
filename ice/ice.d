@@ -608,7 +608,7 @@ class Ice
             platform_.key.connect(&keyHandler);
         }
 
-        ///Exit Pong.
+        ///Exit ICE.
         void exit(){continue_ = false;}
 
         /**

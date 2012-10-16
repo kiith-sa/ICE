@@ -71,7 +71,7 @@ abstract class GLVideoDriver : VideoDriver
     
     private:
         //Derelict OpenGL version.
-        GLVersion version_;
+        GLVersion glVersion_;
 
         //Shader used to draw lines and rectangles without textures.
         Shader plainShader_;
@@ -657,7 +657,7 @@ abstract class GLVideoDriver : VideoDriver
             try
             {
                 //Loads the newest available OpenGL version
-                version_ = DerelictGL.loadClassicVersions(GLVersion.GL20);
+                glVersion_ = DerelictGL.loadClassicVersions(GLVersion.GL20);
 
                 DerelictGL.loadExtensions();
             }
