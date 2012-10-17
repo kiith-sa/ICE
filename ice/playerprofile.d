@@ -11,6 +11,7 @@ module ice.playerprofile;
 import std.algorithm;
 import std.array;
 import std.ascii: isAlphaNum;
+import std.exception;
 import std.stdio;
 import std.string;
 import std.typecons;
@@ -79,6 +80,7 @@ class ProfileManager
             {
                 createProfile("Default");
                 currentProfileIndex_ = 0;
+                save();
             }
         }
 
@@ -133,7 +135,8 @@ class ProfileManager
         /// Switch to the previous profile.
         void previousProfile() pure nothrow
         {
-            currentProfileIndex_ = (currentProfileIndex_ - 1) % profiles_.length;
+            currentProfileIndex_ = 
+                (cast(uint)profiles_.length + currentProfileIndex_ - 1) % profiles_.length;
         }
 
         /// Delete specified profile.
@@ -143,7 +146,7 @@ class ProfileManager
         /// Params:  profile = Profile to delete. Must be in the ProfileManager.
         ///
         /// Throws:  ProfileException if the profile directory could not be
-        ///          deleted.
+        ///          deleted or if this was the last profile.
         void deleteProfile(PlayerProfile profile)
         {
             bool matchingProfile(PlayerProfile p){return p is profile;}
@@ -160,7 +163,41 @@ class ProfileManager
                      " (maybe no write permission?)");
             }
 
+            enforce(profiles_.length > 1,
+                    new ProfileException("Can't remove the last remaining profile'"));
+
             profiles_ = remove!matchingProfile(profiles_);
+            currentProfileIndex_ = currentProfileIndex_ % profiles_.length;
+        }
+
+        /// Create a new profile.
+        ///
+        /// Params:  name = Name of the profile. 
+        ///
+        /// Returns: true if the profile was succesfully created, false if the 
+        ///          profile with this name already exists or if the name is 
+        ///          invalid (all characters must be alphanumeric or '_').
+        ///
+        /// Throws:  ProfileException if the profile directory could not be
+        ///          created.
+        bool createProfile(const string name)
+        {
+            // Profile names can only contain alphanumeric chars and '_'
+            bool validChar(dchar c){return !c.isAlphaNum && c != '_';}
+            if(name.canFind!validChar())
+            {
+                return false;
+            }
+
+            // Case insensitive for Windows compatibility
+            bool existing(ref PlayerProfile p){return p.name.toLower() == name.toLower();}
+            if(profiles_.canFind!existing())
+            {
+                // Already existing profile name.
+                return false;
+            }
+            profiles_ ~= new PlayerProfile(name, profilesDir_.dir(name));
+            return true;
         }
 
     private:
@@ -183,39 +220,93 @@ class ProfileManager
                 profiles_ ~= new PlayerProfile(dir.name, dir);
             }
         }
-
-        // Create a new profile.
-        //
-        // Params:  name = Name of the profile. 
-        //
-        // Returns: true if the profile was succesfully created, false if the 
-        //          profile with this name already exists or if the name is 
-        //          invalid (all characters must be alphanumeric or '_').
-        //
-        // Throws:  ProfileException if the profile directory could not be
-        //          created.
-        bool createProfile(const string name)
-        {
-            // Profile names can only contain alphanumeric chars and '_'
-            bool validChar(dchar c){return !c.isAlphaNum && c != '_';}
-            if(name.canFind!validChar())
-            {
-                return false;
-            }
-
-            // Case insensitive for Windows compatibility
-            bool existing(ref PlayerProfile p){return p.name.toLower() == name.toLower();}
-            if(profiles_.canFind!existing())
-            {
-                // Already existing profile name.
-                return false;
-            }
-            profiles_ ~= new PlayerProfile(name, profilesDir_.dir(name));
-            return true;
-        }
 }
+void unittestProfileManager()
+{
+    VFSDir unittestDir = new FSDir("__unittest__", "__unittest__", Yes.writable);
+    unittestDir.create();
+    scope(exit) {unittestDir.remove();}
 
-//TODO Unittest before gui (create/delete a __UNITTEST__ profile)
+    auto manager = new ProfileManager(unittestDir);
+    auto profilesDir = unittestDir.dir("profiles");
+    assert(profilesDir.exists, "Profiles directory was not created");
+    assert(manager.profileCount == 1 && manager.currentProfileIndex_ == 0 && 
+           manager.currentProfile.name == "Default",
+           "Default profile not created correctly");
+    auto defaultDir = profilesDir.dir("Default");
+    auto profilesCfg = profilesDir.file("profiles.yaml");
+    assert(defaultDir.exists, "Default profile directory was not created");
+    assert(profilesCfg.exists, "Profiles configuration file was not created");
+
+    manager.nextProfile();
+    assert(manager.currentProfile.name == "Default", 
+           "Profiles wraparound does not work correctly");
+    manager.nextProfile();
+    assert(manager.currentProfile.name == "Default", 
+           "Profiles wraparound does not work correctly");
+    manager.previousProfile();
+    assert(manager.currentProfile.name == "Default", 
+           "Profiles wraparound does not work correctly");
+    manager.previousProfile();
+    assert(manager.currentProfile.name == "Default", 
+           "Profiles wraparound does not work correctly");
+
+    // Can't delete last remaining profile 
+    bool thrown = false;
+    try {manager.deleteProfile(manager.currentProfile);}
+    catch(ProfileException e){thrown = true;}
+    assert(manager.profileCount == 1 && thrown, 
+           "ProfileManager deleted last remaining profile");
+
+    assert(manager.createProfile("A"), "Failed to create profile A");
+    assert(manager.createProfile("B"), "Failed to create profile B");
+    assert(manager.createProfile("C"), "Failed to create profile C");
+    assert(!manager.createProfile("A"), "Created a duplicate profile");
+    assert(!manager.createProfile("%"), "Created a profile with an invalid name");
+    manager.deleteProfile(manager.currentProfile);
+    assert(manager.profileCount == 3, "Unexpected profile count");
+    assert(manager.currentProfile.name == "A",
+           "Current profile not changed correctly after deletion");
+    assert(profilesDir.dir("A").exists && 
+           profilesDir.dir("B").exists && 
+           profilesDir.dir("C").exists, 
+           "New profile directories weren't created");
+    assert(!defaultDir.exists, "Profile directory not deleted with the profile");
+    manager.nextProfile();
+    assert(manager.currentProfile.name == "B", "nextProfile() works incorrectly");
+    manager.nextProfile();
+    assert(manager.currentProfile.name == "C", "nextProfile() works incorrectly");
+    manager.nextProfile();
+    assert(manager.currentProfile.name == "A", "nextProfile() works incorrectly");
+    manager.previousProfile();
+    assert(manager.currentProfile.name == "C", "previousProfile() works incorrectly");
+    manager.previousProfile();
+    assert(manager.currentProfile.name == "B", "previousProfile() works incorrectly");
+    manager.previousProfile();
+    assert(manager.currentProfile.name == "A", "previousProfile() works incorrectly");
+
+    clear(manager);
+
+    manager = new ProfileManager(unittestDir);
+    assert(manager.profileCount == 3, "Either profile saving or loading went wrong");
+    uint a, b, c;
+    a = b = c = 0;
+    foreach(p; 0 .. manager.profileCount)
+    {
+        manager.nextProfile();
+        switch(manager.currentProfile.name)
+        {
+            case "A": ++a; break;
+            case "B": ++b; break;
+            case "C": ++c; break;
+            default:
+                assert(false, "Unexpected profile: " ~ manager.currentProfile.name);
+        }
+    }
+    assert(a == 1 && b == 1 && c == 1,
+           "Loaded profiles don't match previously created profiles");
+}
+mixin registerTest!(unittestProfileManager, "std.playerprofile.ProfileManager");
 
 /// Player profile, handling things such as campaign progress and ship modifications.
 class PlayerProfile
