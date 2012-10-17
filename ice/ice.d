@@ -248,7 +248,7 @@ class IceGUI
         ///Hide the profile management GUI.
         void profileGUIHide()
         {
-            clear(profileGUI_);
+            profileGUI_.die();
             profileGUI_ = null;
             menuShow();
         }

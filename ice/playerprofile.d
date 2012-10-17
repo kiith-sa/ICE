@@ -91,10 +91,11 @@ class ProfileGUI
             // Profile selector
             with(new GUIElementFactory)
             {
-                x      = "p_left";
-                y      = "p_top + 272";
-                width  = "160";
-                height = "p_bottom - 32";
+                x          = "p_left";
+                y          = "p_top + 272";
+                width      = "160";
+                height     = "p_bottom - 32";
+                drawBorder = false;
                 profileSelector_ = produce();
             }
             // Profile selector previous/next buttons
@@ -103,7 +104,7 @@ class ProfileGUI
                 x      = "p_left + 8";
                 y      = "p_top + 8";
                 width  = "12";
-                height = "12";
+                height = "26";
                 text   = "<";
                 auto prevButton = produce();
                 prevButton.pressed.connect(&previousProfile);
@@ -120,7 +121,7 @@ class ProfileGUI
         }
 
         /// Destroy the profile GUI (should be called on profile GUI exit).
-        ~this()
+        void die()
         {
             container_.die();
         }
@@ -137,7 +138,9 @@ class ProfileGUI
             with(new GUIButtonFactory)
             {
                 x      = "p_left + 24";
+                y      = "p_top + 8";
                 width  = "p_right - p_left - 48";
+                height = "26";
                 text   = profileManager_.currentProfile.name;
                 profileButton_ = produce();
                 profileButton_.pressed.connect(&showProfileDetails);
