@@ -18,9 +18,10 @@ import dgamevfs._;
 
 import util.yaml;
 
+import ice.credits;
 import ice.exceptions;
 import ice.game;
-import ice.credits;
+import ice.playerprofile;
 import gui.guielement;
 import gui.guimenu;
 import video.videodriver;
@@ -49,6 +50,11 @@ import image;
  *     public mixin Signal!() levelMenuOpen
  *
  *     Emitted when the player clicks the button to open level menu.
+ *
+ * Signal:
+ *     public mixin Signal!() profileGUIOpen
+ *
+ *     Emitted when the player clicks the "Player setup" button.
  *
  * Signal:
  *     public mixin Signal!() creditsStart
@@ -87,10 +93,14 @@ class IceGUI
         Credits credits_;
         ///Platform for keyboard I/O.
         Platform platform_;
+        ///Profile management GUI, non-null when shown.
+        ProfileGUI profileGUI_;
 
     public:
         ///Emitted when the player clicks the button to open the level menu.
         mixin Signal!() levelMenuOpen;
+        ///Emitted when the player clicks the "Player setup" button
+        mixin Signal!() profileGUIOpen;
         ///Emitted when the credits screen is opened.
         mixin Signal!() creditsStart;
         ///Emitted when the credits screen is closed.
@@ -141,6 +151,7 @@ class IceGUI
                 itemHeight  = "24";
                 itemSpacing = "8";
                 addItem("Levels", &levelMenuOpen.emit);
+                addItem("Player setup", &profileGUIOpen.emit);
                 addItem("Credits", &creditsShow);
                 addItem("Quit", &quit.emit);
                 addItem("(DEBUG) Reset video", &resetVideo.emit);
@@ -165,6 +176,7 @@ class IceGUI
             menuContainer_.die();
 
             levelMenuOpen.disconnectAll();
+            profileGUIOpen.disconnectAll();
             creditsStart.disconnectAll();
             creditsEnd.disconnectAll();
             quit.disconnectAll();
@@ -224,6 +236,23 @@ class IceGUI
             }
         }
 
+        ///Show the profile management GUI.
+        void profileGUIShow(ProfileManager profileManager, Platform platform)
+        {
+            menuHide();
+            assert(null is profileGUI_, "Profile GUI is already being shown");
+            profileGUI_ = new ProfileGUI(parent_, platform, profileManager);
+            profileGUI_.back.connect({profileGUIHide();});
+        }
+
+        ///Hide the profile management GUI.
+        void profileGUIHide()
+        {
+            clear(profileGUI_);
+            profileGUI_ = null;
+            menuShow();
+        }
+
         ///Hide the level menu.
         void levelMenuHide()
         {
@@ -280,6 +309,8 @@ class Ice
         MonitorManager monitor_;
         ///ICE GUI.
         IceGUI gui_;
+        ///Player profile manager.
+        ProfileManager profileManager_;
 
         ///Main ICE config file (YAML).
         YAMLNode config_;
@@ -324,6 +355,9 @@ class Ice
             initGUI();
             writeln("Initialized GUI");
             scope(failure){destroyGUI();}
+            initPlayerProfiles();
+            writeln("Initialized player profiles");
+            scope(failure){destroyPlayerProfiles();}
 
             //Update FPS every second.
             fpsCounter_ = EventCounter(1.0);
@@ -342,6 +376,7 @@ class Ice
 
             destroyFrameProfiler();
             if(game_ !is null){destroyGame();}
+            destroyPlayerProfiles();
             destroyGUI();
             destroyMonitor();
             destroyVideo();
@@ -483,6 +518,7 @@ class Ice
             gui_.creditsStart.connect(&creditsStart);
             gui_.creditsEnd.connect(&creditsEnd);
             gui_.levelMenuOpen.connect(&showLevelMenu);
+            gui_.profileGUIOpen.connect(&showProfileGUI);
             gui_.quit.connect(&exit);
             gui_.resetVideo.connect(&resetVideoMode);
 
@@ -495,6 +531,7 @@ class Ice
             clear(gui_);
             clear(guiRoot_);
         }
+
 
         ///Allocate memory for the frame profiler and initialize it (if enabled).
         void initFrameProfiler()
@@ -523,6 +560,35 @@ class Ice
                 auto stream = VFSStream(profilerDump.output);
                 frameProfilerDump((string line){stream.writeLine(line);});
                 free(frameProfilerData_);
+            }
+        }
+
+        /// Initialize any code related to player profiles.
+        void initPlayerProfiles()
+        {
+            try
+            {
+                profileManager_ = new ProfileManager(gameDir_);
+            }
+            catch(ProfileException e)
+            {
+                throw new GameStartupException("Failed to initialize profile manager: "
+                                               ~ e.msg);
+            }
+        }
+
+        /// Deinitialize any code related to player profiles.
+        void destroyPlayerProfiles()
+        {
+            try
+            {
+                profileManager_.save();
+                clear(profileManager_);
+                profileManager_ = null;
+            }
+            catch(ProfileException e)
+            {
+                writeln("Failed to save player profiles");
             }
         }
 
@@ -561,6 +627,12 @@ class Ice
             auto levelsFile = gameDir_.file("levels.yaml");
             YAMLNode levels = loadYAML(levelsFile);
             gui_.levelMenuShow(levels, &initGame);
+        }
+
+        ///Show the player profile management GUI.
+        void showProfileGUI()
+        {
+            gui_.profileGUIShow(profileManager_, platform_);
         }
 
         ///Start game.
