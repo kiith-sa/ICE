@@ -11,7 +11,9 @@ module ice.playerprofile;
 import std.algorithm;
 import std.array;
 import std.ascii: isAlphaNum;
+import std.stdio;
 import std.string;
+import std.typecons;
 
 import dgamevfs._;
 
@@ -19,8 +21,9 @@ import gui.guibutton;
 import gui.guielement;
 import gui.guimenu;
 import platform.platform;
-import util.yaml;
 import util.signal;
+import util.unittests;
+import util.yaml;
 
 
 ///Exception thrown at player profile related errors.
@@ -157,7 +160,7 @@ class ProfileManager
                      " (maybe no write permission?)");
             }
 
-            profiles_ = profiles_.remove!matchingProfile();
+            profiles_ = remove!matchingProfile(profiles_);
         }
 
     private:
@@ -306,3 +309,42 @@ private:
         }
     }
 }
+void unittestPlayerProfile()
+{
+    bool testSpawner(PlayerProfile p)
+    {
+        try
+        {
+            return p.playerShipSpawner_["spawner"][0]["entity"].as!string 
+                == "ships/playerShip.yaml";
+        }
+        catch(Exception e)
+        {
+            writeln("PlayerProfile playerShipSpawner test failed: ", e.msg);
+            return false;
+        }
+    }
+
+    VFSDir unittestDir = new FSDir("__unittest__", "__unittest__", Yes.writable);
+    unittestDir.create();
+    scope(exit) {unittestDir.remove();}
+
+    auto profilesDir = unittestDir.dir("profiles");
+    profilesDir.create();
+    auto profileDir = profilesDir.dir("player");
+
+    // New profile
+    auto profile = new PlayerProfile("player", profileDir);
+
+    assert(profileDir.exists, "PlayerProfile didn't create its profile dir");
+    assert(profileDir.file("playerShipSpawner.yaml").exists,
+           "PlayerProfile didn't create its playerShipSpawner file");
+    assert(testSpawner(profile), "New playerShipSpawner has unexpected contents");
+
+    clear(profile);
+
+    // Existing profile
+    profile = new PlayerProfile("player", profileDir);
+    assert(testSpawner(profile), "Loaded playerShipSpawner has unexpected contents");
+}
+mixin registerTest!(unittestPlayerProfile, "std.playerprofile.PlayerProfile");
