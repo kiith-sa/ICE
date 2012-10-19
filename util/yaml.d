@@ -14,6 +14,7 @@ import std.conv;
 import std.exception;
 import std.functional;
 import std.math;
+import std.stream;
 import std.traits;
 
 import dgamevfs._;
@@ -44,11 +45,25 @@ import math.rect;
 YAMLNode loadYAML(VFSFile file)
 {
     auto stream = VFSStream(file.input, file.bytes);
-
     auto loader = Loader(stream);
     loader.constructor = iceConstructor();
     loader.resolver    = iceResolver();
 
+    return loader.load(); 
+}
+
+/**
+ * Load YAML from a string.
+ *
+ * Params:  source = YAML source in string form.
+ *
+ * Throws:  YAMLException on a parsing error.
+ */
+YAMLNode loadYAML(string source)
+{
+    auto loader = Loader(new MemoryStream(source.dup));
+    loader.constructor = iceConstructor();
+    loader.resolver    = iceResolver();
     return loader.load(); 
 }
 
