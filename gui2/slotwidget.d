@@ -26,6 +26,8 @@ private:
 
 public:
     /// Load a SlotWidget from YAML.
+    ///
+    /// Do not call directly.
     this(ref YAMLNode yaml)
     {
         assert(false, "TODO");
