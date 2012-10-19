@@ -355,7 +355,7 @@ class ProfileManager
         bool createProfile(const string name)
         {
             // Profile names can only contain alphanumeric chars and '_'
-            bool validChar(dchar c){return !c.isAlphaNum && c != '_';}
+            bool validChar(dchar c){return !isAlphaNum(c) && c != '_';}
             if(name.canFind!validChar())
             {
                 return false;
