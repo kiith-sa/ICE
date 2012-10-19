@@ -28,7 +28,7 @@ enum ButtonState
     MouseOver,
     ///Mouse is clicking or holding the button.
     Clicked
-}                   
+}
 
 /**
  * Simple clickable button with text.
@@ -54,9 +54,9 @@ class GUIButton : GUIElement
         State[ButtonState.max + 1] states_;
         ///Current button state.
         ButtonState state_ = ButtonState.Normal;
-        
+
         ///Button text.
-        GUIStaticText text_;     
+        GUIStaticText text_;
 
     public:
         ///Emitted when this button is pressed.
@@ -64,7 +64,7 @@ class GUIButton : GUIElement
 
         ~this(){pressed.disconnectAll();}
 
-    protected:    
+    protected:
         /**
          * Construct a button with specified parameters.
          *
