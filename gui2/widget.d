@@ -9,9 +9,15 @@ module gui2.widget;
 
 
 import util.yaml;
+
+
+/// Base class for all widgets.
 abstract class Widget
 {
 public:
+    /// Construct a Widget. Contains setup code shared between widget types.
+    ///
+    /// Params: yaml = YAML definition of the widget.
     this(ref YAMLNode yaml)
     {
         assert(false, "TODO");
