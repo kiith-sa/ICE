@@ -8,7 +8,9 @@
 module gui2.widget;
 
 
+import gui2.exceptions;
 import util.yaml;
+
 
 
 /// Base class for all widgets.
@@ -18,6 +20,8 @@ public:
     /// Construct a Widget. Contains setup code shared between widget types.
     ///
     /// Params: yaml = YAML definition of the widget.
+    ///
+    /// Throws: WidgetInitException on failure.
     this(ref YAMLNode yaml)
     {
         assert(false, "TODO");
