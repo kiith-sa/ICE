@@ -30,8 +30,22 @@ bool validComposedWidgetName(const string name)
     return !canFind!((string n){return !validWidgetName(n);})(name.splitter("."));
 }
 
-/// Parse a (non-optional) widget property from YAML and return its value.
-T parseProperty(T, string name, WidgetT)(ref YAMLNode yaml)
+/// Parse a non-optional widget property at widget initialization.
+T widgetInitProperty(T, string name)(ref YAMLNode yaml)
+{
+    return property!(T, name, WidgetInitException)(yaml);
+}
+
+/// Parse a non-optional layout property at layout initialization.
+T layoutInitProperty(T, string name)(ref YAMLNode yaml)
+{
+    return property!(T, name, LayoutInitException)(yaml);
+}
+
+private:
+
+/// Parse a (non-optional) property from YAML and return its value.
+T property(T, string name, E)(ref YAMLNode yaml)
 {
     try
     {
@@ -39,7 +53,7 @@ T parseProperty(T, string name, WidgetT)(ref YAMLNode yaml)
     }
     catch(YAMLException e)
     {
-        auto msg = "Failed to parse widget property " ~ name ~ ": " ~ e.msg;
-        throw new WidgetInitException(msg);
+        throw new E("Failed to parse property " ~ name ~ ": " ~ e.msg);
     }
 }
+

@@ -29,7 +29,7 @@ public:
     /// Do not call directly.
     this(ref YAMLNode yaml)
     {
-        text_ = parseProperty!(string, "text", typeof(this))(yaml);
+        text_ = widgetInitProperty!(string, "text")(yaml);
         super(yaml);
     }
 
