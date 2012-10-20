@@ -26,3 +26,21 @@ class WidgetInitException : WidgetException
         super(msg, file, line);
     }
 }
+
+/// Exception thrown at layout related errors.
+class LayoutException : Exception 
+{
+    public this(string msg, string file = __FILE__, int line = __LINE__)
+    {
+        super(msg, file, line);
+    }
+}
+
+/// Exception thrown when layout initialization fails.
+class LayoutInitException : LayoutException 
+{
+    public this(string msg, string file = __FILE__, int line = __LINE__)
+    {
+        super(msg, file, line);
+    }
+}
