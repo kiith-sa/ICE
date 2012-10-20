@@ -28,11 +28,27 @@ public:
         Bubbling
     }
 
+    /// Return the parent widget the event sunk from when sinking.
+    @property Widget sunkFrom()
+    {
+        assert(status_ == Status.Sinking,
+               "Trying to get the widget we sunk from when not sinking");
+        return sunkFrom_;
+    }
+
+    /// Is the widget sinking or bubbling?
+    @property Status status() const pure nothrow {return status_;}
+
 package:
-    // Specifies whether the event is sinking or bubbling the widget tree.
+    // Specifies whether the event is sinking down or bubbling up the widget tree.
     //
     // Only Widget can set this as it traverses its subwidgets passing an event.
     Status status_;
+
+    // Widget that handled the event previously during sinking.
+    //
+    // Used to pass the parent widget for various events.
+    Widget sunkFrom_;
 }
 
 /// Used when widgets need to be resized. Passed before ExpandEvent.
@@ -50,7 +66,4 @@ class MinimizeEvent : Event
 /// SeeAlso: MinimizeEvent
 class ExpandEvent : Event
 {
-public:
-    /// Parent widget of the widget handling the event.
-    Widget parent;
 }

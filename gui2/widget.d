@@ -46,7 +46,11 @@ public:
     /// Throws: WidgetInitException on failure.
     this(ref YAMLNode yaml)
     {
-        assert(false, "TODO");
+        assert(false, "TODO attributes (?)");
+        assert(false, "TODO layout");
+        assert(false, "TODO subwidgets");
+        registerHandler!MinimizeEvent(&minimizeHandler);
+        registerHandler!ExpandEvent(&expandHandler);
     }
 
 protected:
@@ -84,12 +88,14 @@ package:
         {
             // After being handled by a child, the event bubbles 
             // back here, so we need to set it to sinking for another child.
-            e.status_ = Event.Status.Sinking;
+            e.status_   = Event.Status.Sinking;
+            e.sunkFrom_ = this;
             done = done || child.handleEvent(e);
         }
 
         // This widget processing the event while bubbling (even if we're DoneSinking)
-        e.status_ = Event.Status.Bubbling;
+        e.sunkFrom_ = null;
+        e.status_   = Event.Status.Bubbling;
         return (callEventHandler(e) || done) ? Yes.DoneSinking : No.DoneSinking;
     }
 
@@ -98,7 +104,7 @@ private:
     //
     // Looks for handlers for the exact class of given event first,
     // if none are found, looks for handlers of its parent class, and so on.
-    final Flag!"DoneSinking" callEventHandler(Event e)
+    Flag!"DoneSinking" callEventHandler(Event e)
     {
         /// Looking for a handler for the most specialized event class first,
         /// then moving up the class hierarchy.
@@ -113,6 +119,26 @@ private:
             }
             // Handlers of more specialized classes override less specialized ones.
             return done ? Yes.DoneSinking : No.DoneSinking;
+        }
+        return No.DoneSinking;
+    }
+
+    // Handle a minimize event (minimize the layout when bubbling up).
+    Flag!"DoneSinking" minimizeHandler(MinimizeEvent event)
+    {
+        if(event.status == Event.Status.Bubbling)
+        {
+            layout_.minimize(children_);
+        }
+        return No.DoneSinking;
+    }
+
+    // Handle an expand event (expand the layout when bubbling up).
+    Flag!"DoneSinking" expandHandler(ExpandEvent event)
+    {
+        if(event.status == Event.Status.Sinking)
+        {
+            layout_.expand(event.sunkFrom);
         }
         return No.DoneSinking;
     }
