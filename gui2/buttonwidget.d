@@ -9,6 +9,7 @@
 module gui2.buttonwidget;
 
 
+import gui2.guisystem;
 import gui2.widget;
 import gui2.widgetutils;
 import util.signal;
@@ -27,10 +28,10 @@ public:
     /// Load a ButtonWidget from YAML.
     ///
     /// Do not call directly.
-    this(ref YAMLNode yaml)
+    this(ref YAMLNode yaml, GUISystem guiSystem)
     {
         text_ = widgetInitProperty!(string, "text")(yaml);
-        super(yaml);
+        super(yaml, guiSystem);
     }
 
     /// Get button text.

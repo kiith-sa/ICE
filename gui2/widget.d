@@ -13,6 +13,7 @@ import std.typecons;
 
 import gui2.event;
 import gui2.exceptions;
+import gui2.guisystem;
 import gui2.layout;
 import util.yaml;
 
@@ -20,11 +21,14 @@ import util.yaml;
 // TODO:
 // - use layouts in widgets (through events),
 // - then style, then loading from YAML and testing
+// - Try to reuse event objects between frames, just chaning data members.
 
 /// Base class for all widgets.
 abstract class Widget
 {
 private:
+    // Reference to the GUI system (for passing global events, etc.).
+    GUISystem guiSystem_;
     // Layout of the widget - determines widget size and position.
     Layout layout_;
 
@@ -41,11 +45,13 @@ private:
 public:
     /// Construct a Widget. Contains setup code shared between widget types.
     ///
-    /// Params: yaml = YAML definition of the widget.
+    /// Params: yaml      = YAML definition of the widget.
+    ///         guiSystem = Reference to the GUI system (for passing global events, etc.).
     ///
     /// Throws: WidgetInitException on failure.
-    this(ref YAMLNode yaml)
+    this(ref YAMLNode yaml, GUISystem guiSystem)
     {
+        guiSystem_ = guiSystem;
         assert(false, "TODO attributes (?)");
         assert(false, "TODO layout");
         assert(false, "TODO subwidgets");

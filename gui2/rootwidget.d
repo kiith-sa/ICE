@@ -9,6 +9,7 @@
 module gui2.rootwidget;
 
 
+import gui2.guisystem;
 import gui2.widget;
 import gui2.widgetutils;
 import util.yaml;
@@ -100,10 +101,10 @@ public:
     /// Load a RootWidget from YAML.
     ///
     /// Never call this directly; use GUISystem.loadWidgetTree instead.
-    this(ref YAMLNode yaml)
+    this(ref YAMLNode yaml, GUISystem guiSystem)
     {
         widgetAccess_.root_ = this;
-        super(yaml);
+        super(yaml, guiSystem);
     }
 
     /// Access a subwidget.

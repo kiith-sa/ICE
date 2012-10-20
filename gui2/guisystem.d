@@ -13,6 +13,7 @@ import gui2.slotwidget;
 import util.yaml;
 
 
+//XXX ROOTSLOT WIDGET SHOULD HAVE FIXED LAYOUT
 /// The main GUI class. Manages widgets, emits events, etc.
 class GUISystem
 {
@@ -23,7 +24,7 @@ public:
     /// Construct the GUISystem.
     this()
     {
-        rootSlot_ = new SlotWidget(YAMLNode());
+        rootSlot_ = new SlotWidget(YAMLNode(), this);
     }
 
     /// Load a widget tree connectable to a SlotWidget from YAML.

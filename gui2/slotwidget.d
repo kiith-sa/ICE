@@ -9,10 +9,10 @@
 module gui2.slotwidget;
 
 
+import gui2.guisystem;
 import gui2.widget;
 import gui2.rootwidget;
 import util.yaml;
-
 
 /// A widget that can contain a RootWidget.
 ///
@@ -28,10 +28,10 @@ public:
     /// Load a SlotWidget from YAML.
     ///
     /// Do not call directly.
-    this(ref YAMLNode yaml)
+    this(ref YAMLNode yaml, GUISystem guiSystem)
     {
         assert(false, "TODO");
-        super(yaml);
+        super(yaml, guiSystem);
     }
 
     /// Connect a RootWidget.
