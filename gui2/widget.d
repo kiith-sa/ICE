@@ -49,6 +49,19 @@ public:
         assert(false, "TODO");
     }
 
+protected:
+    /// Register an event handler delegate.
+    void registerHandler(T)(Flag!"DoneSinking" delegate(T) handler)
+        if(is(T: Event))
+    {
+        eventHandlers_[T.classinfo] ~=
+            cast(Flag!"DoneSinking" delegate(Event))handler;
+    }
+
+package:
+    // Get widget layout - used by other widgets' layouts.
+    @property Layout layout() pure nothrow {return layout_;}
+
     /// Handle an event, possibly propagating it to subwidgets.
     ///
     /// First, this widget handles this event as it's "sinking" down the tree.
@@ -79,10 +92,6 @@ public:
         e.status_ = Event.Status.Bubbling;
         return (callEventHandler(e) || done) ? Yes.DoneSinking : No.DoneSinking;
     }
-
-package:
-    // Get widget layout - used by other widgets' layouts.
-    @property Layout layout() pure nothrow {return layout_;}
 
 private:
     // Call event handlers for the specified event, if any.

@@ -115,7 +115,7 @@ public:
         if(validWidgetName(childName))
     {
         T opDispatch(T = WidgetAccess)() 
-            if(is(T:Widget) || is(T == WidgetAccess))
+            if(is(T: Widget) || is(T == WidgetAccess))
         {
             static if(is(T == WidgetAccess))
             {
