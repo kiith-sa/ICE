@@ -9,6 +9,9 @@
 module gui2.event;
 
 
+import gui2.widget;
+
+
 /// Base class for all events.
 ///
 /// Propagated recursively through the widget tree. Widgets can register handler 
@@ -30,4 +33,24 @@ package:
     //
     // Only Widget can set this as it traverses its subwidgets passing an event.
     Status status_;
+}
+
+/// Used when widgets need to be resized. Passed before ExpandEvent.
+///
+/// An example is when a RootWidget is connected to a SlotWidget - all widgets
+/// in the RootWidget's subtree need to be resized.
+class MinimizeEvent : Event
+{
+}
+
+/// Used when widgets need to be resized. Passed after MinimizeEvent.
+///
+/// Handled when sinking, passing the parent widget for the children to expand into.
+///
+/// SeeAlso: MinimizeEvent
+class ExpandEvent : Event
+{
+public:
+    /// Parent widget of the widget handling the event.
+    Widget parent;
 }
