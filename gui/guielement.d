@@ -172,8 +172,8 @@ class GUIElement
 
             if(drawBorder_)
             {
-                driver.drawRect(bounds_.min.to!float, bounds_.max.to!float, 
-                                     borderColor_);
+                driver.drawRect(bounds_.min.to!float, bounds_.max.to!float,
+                                borderColor_);
             }
 
             drawChildren(driver);
