@@ -8,12 +8,12 @@
 /// The main GUI class.
 module gui2.guisystem;
 
+import gui2.event;
 import gui2.rootwidget;
 import gui2.slotwidget;
 import util.yaml;
 
 
-//XXX ROOTSLOT WIDGET SHOULD HAVE FIXED LAYOUT
 /// The main GUI class. Manages widgets, emits events, etc.
 class GUISystem
 {
@@ -24,6 +24,7 @@ public:
     /// Construct the GUISystem.
     this()
     {
+        //TODO the rootSlot_ widget should have a fixed layout
         rootSlot_ = new SlotWidget(YAMLNode(), this);
     }
 
@@ -37,5 +38,18 @@ public:
     @property SlotWidget rootSlot()
     {
         return rootSlot_;
+    }
+
+package:
+    /// Update layout of all widgets (e.g. after a new RootWidget is connected).
+    void updateLayout()
+    {
+        // Reusing the same instances every time to avoid unnecessary allocation.
+        static MinimizeEvent minimizeEvent;
+        static ExpandEvent expandEvent;
+        if(null is minimizeEvent){minimizeEvent = new MinimizeEvent();}
+        if(null is expandEvent)  {expandEvent   = new ExpandEvent();}
+        rootSlot_.handleEvent(minimizeEvent);
+        rootSlot_.handleEvent(expandEvent);
     }
 }

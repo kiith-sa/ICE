@@ -14,6 +14,7 @@ import gui2.widget;
 import gui2.rootwidget;
 import util.yaml;
 
+
 /// A widget that can contain a RootWidget.
 ///
 /// A SlotWidget is a slot in the widget tree where different 
@@ -39,6 +40,7 @@ public:
     {
         assert(connectedWidget_ is null, "There is already a connected RootWidget");
         connectedWidget_ = child;
+        guiSystem_.updateLayout();
         assert(false, "TODO (add child to subwidgets)");
     }
 
@@ -47,6 +49,7 @@ public:
     {
         assert(connectedWidget_ is child, "The widget to disconnect does not match");
         connectedWidget_ = null;
+        guiSystem_.updateLayout();
         assert(false, "TODO (remove child to subwidgets)");
     }
 }

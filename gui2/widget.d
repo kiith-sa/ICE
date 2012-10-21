@@ -27,8 +27,6 @@ import util.yaml;
 abstract class Widget
 {
 private:
-    // Reference to the GUI system (for passing global events, etc.).
-    GUISystem guiSystem_;
     // Layout of the widget - determines widget size and position.
     Layout layout_;
 
@@ -41,6 +39,10 @@ private:
     // Something more memory efficient/less GC expensive could be used
     // (maybe a single fixed-size array of deleg/classinfo tuples?)
     Flag!"DoneSinking" delegate(Event)[][ClassInfo] eventHandlers_;
+
+protected:
+    // Reference to the GUI system (for passing global events, etc.).
+    GUISystem guiSystem_;
 
 public:
     /// Construct a Widget. Contains setup code shared between widget types.
