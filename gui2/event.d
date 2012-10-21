@@ -10,6 +10,7 @@ module gui2.event;
 
 
 import gui2.widget;
+import video.videodriver;
 
 
 /// Base class for all events.
@@ -55,7 +56,7 @@ package:
 ///
 /// An example is when a RootWidget is connected to a SlotWidget - all widgets
 /// in the RootWidget's subtree need to be resized.
-class MinimizeEvent : Event
+class MinimizeEvent: Event
 {
 }
 
@@ -64,6 +65,13 @@ class MinimizeEvent : Event
 /// Handled when sinking, passing the parent widget for the children to expand into.
 ///
 /// SeeAlso: MinimizeEvent
-class ExpandEvent : Event
+class ExpandEvent: Event
 {
+}
+
+/// Used to draw the widgets.
+class RendereEvent: Event
+{
+    /// VideoDriver to draw with.
+    VideoDriver videoDriver;
 }
