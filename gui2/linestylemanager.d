@@ -80,6 +80,7 @@ public:
 
     override void drawWidgetRectangle(VideoDriver video, ref const Recti area)
     {
+        if(!style_.drawBorder){return;}
         video.drawRect(area.min.to!float, area.max.to!float, style_.borderColor);
     }
 
@@ -89,5 +90,14 @@ public:
         video.font     = style_.font;
         video.fontSize = style_.fontSize;
         video.drawText(position, text, style_.fontColor);
+    }
+
+protected:
+    Vector2i getTextSize(VideoDriver video, const string text)
+    {
+        // This could be cached based on text/font/fontSize combination
+        driver.font     = style_.font_;
+        driver.fontSize = style_.fontSize_;
+        return video.textSize(text);
     }
 }
