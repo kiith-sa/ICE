@@ -24,10 +24,13 @@ class GUISystem
 
 public:
     /// Construct the GUISystem.
-    this()
+    ///
+    /// Params: width  = Window width.
+    ///         height = Window height.
+    this(uint width, uint height)
     {
-        //TODO the rootSlot_ widget should have a fixed layout
-        rootSlot_ = new SlotWidget(YAMLNode(), this);
+        rootSlot_ = new SlotWidget(YAMLNode(["x", "y", "w", "h"],
+                                            [0, 0, width, height]), this);
     }
 
     /// Load a widget tree connectable to a SlotWidget from YAML.

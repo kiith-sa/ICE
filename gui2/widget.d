@@ -21,9 +21,9 @@ import util.yaml;
 import video.videodriver;
 
 // TODO:
-// - container widget 
-// - review all TODOs
-// - loading from YAML and testing
+// - loading from YAML
+// - RootWidget.get
+// - testing (with playerprofile XXX/TODO stuff)
 // - user input
 // - default/active(mouseOver)/clicked button styles (style, style_active, style_clicked)
 
