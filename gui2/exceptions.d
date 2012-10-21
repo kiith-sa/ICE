@@ -44,3 +44,21 @@ class LayoutInitException : LayoutException
         super(msg, file, line);
     }
 }
+
+/// Exception thrown at style related errors.
+class StyleException : Exception 
+{
+    public this(string msg, string file = __FILE__, int line = __LINE__)
+    {
+        super(msg, file, line);
+    }
+}
+
+/// Exception thrown when style initialization fails.
+class StyleInitException : StyleException 
+{
+    public this(string msg, string file = __FILE__, int line = __LINE__)
+    {
+        super(msg, file, line);
+    }
+}
