@@ -16,11 +16,12 @@ import gui2.event;
 import gui2.exceptions;
 import gui2.guisystem;
 import gui2.layout;
+import gui2.stylemanager;
 import util.yaml;
-
+import video.videodriver;
 
 // TODO:
-// - rendering (through an event) (set videodriver viewOffset=(0,0), zoom=1, after drawing reset)
+// - render event emitting (GUISystem)(set videodriver viewOffset=(0,0), zoom=1, after drawing reset)
 // - container widget 
 // - review all TODOs
 // - loading from YAML and testing
@@ -31,12 +32,6 @@ import util.yaml;
 abstract class Widget
 {
 private:
-    // Layout of the widget - determines widget size and position.
-    Layout layout_;
-
-    // Style manager of the widget. Contains styles of this widget and draws it.
-    StyleManager styleManager_;
-
     // Child widgets of this widget.
     Widget[] children_;
 
@@ -50,6 +45,12 @@ private:
 protected:
     // Reference to the GUI system (for passing global events, etc.).
     GUISystem guiSystem_;
+
+    // Layout of the widget - determines widget size and position.
+    Layout layout_;
+
+    // Style manager of the widget. Contains styles of this widget and draws it.
+    StyleManager styleManager_;
 
 public:
     /// Construct a Widget. Contains setup code shared between widget types.
@@ -67,11 +68,12 @@ public:
         assert(false, "TODO subwidgets");
         addEventHandler!MinimizeEvent(&minimizeHandler);
         addEventHandler!ExpandEvent(&expandHandler);
+        addEventHandler!RenderEvent(&renderHandler);
     }
 
 protected:
     /// Register an event handler delegate.
-    void addEventHandler(T)(Flag!"DoneSinking" delegate(T) handler)
+    final void addEventHandler(T)(Flag!"DoneSinking" delegate(T) handler)
         if(is(T: Event))
     {
         eventHandlers_[T.classinfo] ~=
@@ -79,7 +81,7 @@ protected:
     }
 
     /// Add a child widget. Does _not_ update GUI layout. Caller needs to handle that.
-    void addChild(Widget child)
+    final void addChild(Widget child)
     {
         children_ ~= child;
     }
@@ -87,12 +89,18 @@ protected:
     /// Remove a child widget. Does _not_ update GUI layout. Caller needs to handle that.
     ///
     /// The given widget must be a child of this widget.
-    void removeChild(Widget child)
+    final void removeChild(Widget child)
     {
         bool sameWidget(Widget c){return c is child;}
         assert(children_.canFind!sameWidget(), 
                "Trying to remove a widget that is not a child of this widget");
         children_ = children_.remove!sameWidget();
+    }
+
+    /// Render the widget with specified video driver.
+    void render(VideoDriver video)
+    {
+        styleManager_.drawWidgetRectangle(video, layout_.bounds);
     }
 
 package:
@@ -172,6 +180,17 @@ private:
         if(event.status == Event.Status.Sinking)
         {
             layout_.expand(event.sunkFrom);
+        }
+        return No.DoneSinking;
+    }
+
+    // Handle a render event.
+    Flag!"DoneSinking" renderHandler(RenderEvent event)
+    {
+        // First draw the topmost widgets, then its children, etc.
+        if(event.status == Event.Status.Sinking)
+        {
+            render(event.videoDriver);
         }
         return No.DoneSinking;
     }
