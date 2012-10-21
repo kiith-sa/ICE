@@ -10,17 +10,22 @@ module gui2.buttonwidget;
 
 
 import gui2.guisystem;
+import gui2.layout;
+import gui2.stylemanager;
 import gui2.widget;
 import gui2.widgetutils;
 import util.signal;
 import util.yaml;
+import video.videodriver;
 
 
 /// Simple clickable button widget.
 class ButtonWidget: Widget
 {
+private:
     /// Button text.
     string text_;
+
 public:
     /// Emitted when this button is pressed.
     mixin Signal!() pressed;
@@ -32,6 +37,13 @@ public:
     {
         text_ = widgetInitProperty!string(yaml, "text");
         super(yaml, guiSystem);
+    }
+
+    /// Render the widget with specified video driver.
+    override void render(VideoDriver video)
+    {
+        super.render(video);
+        styleManager_.drawTextCentered(video, text_, layout_.bounds);
     }
 
     /// Get button text.
