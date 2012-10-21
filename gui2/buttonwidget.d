@@ -30,7 +30,7 @@ public:
     /// Do not call directly.
     this(ref YAMLNode yaml, GUISystem guiSystem)
     {
-        text_ = widgetInitProperty!(string, "text")(yaml);
+        text_ = widgetInitProperty!string(yaml, "text");
         super(yaml, guiSystem);
     }
 

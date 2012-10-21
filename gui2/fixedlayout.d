@@ -26,11 +26,11 @@ public:
     /// Construct a FixedLayout from YAML.
     this(ref YAMLNode yaml)
     {
-        bounds_.min = Vector2i(layoutInitProperty!(int, "x")(yaml),
-                               layoutInitProperty!(int, "y")(yaml));
-        bounds_.max = bounds_.min + 
-                      Vector2i(layoutInitProperty!(int, "w")(yaml),
-                               layoutInitProperty!(int, "h")(yaml));
+        bounds_.min = Vector2i(layoutInitProperty!int(yaml, "x"),
+                               layoutInitProperty!int(yaml, "y"));
+        bounds_.max = bounds_.min +
+                      Vector2i(layoutInitProperty!int(yaml, "w"),
+                               layoutInitProperty!int(yaml, "h"));
     }
 
     override void minimize(Widget[] children){};

@@ -31,21 +31,27 @@ bool validComposedWidgetName(const string name)
 }
 
 /// Parse a non-optional widget property at widget initialization.
-T widgetInitProperty(T, string name)(ref YAMLNode yaml)
+T widgetInitProperty(T)(ref YAMLNode yaml, string name)
 {
-    return property!(T, name, WidgetInitException)(yaml);
+    return property!(T, WidgetInitException)(yaml, name);
 }
 
 /// Parse a non-optional layout property at layout initialization.
-T layoutInitProperty(T, string name)(ref YAMLNode yaml)
+T layoutInitProperty(T)(ref YAMLNode yaml, string name)
 {
-    return property!(T, name, LayoutInitException)(yaml);
+    return property!(T, LayoutInitException)(yaml, name);
+}
+
+/// Parse an optional style initialization property, with a default if not specified.
+T styleInitPropertyOpt(T)(ref YAMLNode yaml, string name, ref T defValue)
+{
+    return optionalProperty!(T, StyleInitException)(yaml, name, defValue);
 }
 
 private:
 
 /// Parse a (non-optional) property from YAML and return its value.
-T property(T, string name, E)(ref YAMLNode yaml)
+T property(T, E)(ref YAMLNode yaml, string name)
 {
     try
     {
@@ -57,3 +63,19 @@ T property(T, string name, E)(ref YAMLNode yaml)
     }
 }
 
+/// Parse an optional property from YAML.
+///
+/// Params: yaml     = YAML mapping containing the property.
+///         name     = Name of the property.
+///         defValue = Default value of the property.
+T optionalProperty(T, E)(ref YAMLNode yaml, string name, ref T defValue)
+{
+    try 
+    {
+        return yaml.contains(name) ? yaml[name].as!T : defValue;
+    }
+    catch(YAMLException e)
+    {
+        throw new E("Failed to parse optional property " ~ name ~ ": " ~ e.msg);
+    }
+}

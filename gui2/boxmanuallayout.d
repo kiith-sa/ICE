@@ -40,10 +40,10 @@ public:
     /// Construct a BoxManualLayout from YAML.
     this(ref YAMLNode yaml)
     {
-        xExp_ = layoutInitProperty!(string, "x")(yaml);
-        yExp_ = layoutInitProperty!(string, "y")(yaml);
-        wExp_ = layoutInitProperty!(string, "w")(yaml);
-        hExp_ = layoutInitProperty!(string, "h")(yaml);
+        xExp_ = layoutInitProperty!string(yaml, "x");
+        yExp_ = layoutInitProperty!string(yaml, "y");
+        wExp_ = layoutInitProperty!string(yaml, "w");
+        hExp_ = layoutInitProperty!string(yaml, "h");
     }
 
     override void minimize(Widget[] children)
