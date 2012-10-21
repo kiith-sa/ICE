@@ -11,7 +11,9 @@ module gui2.guisystem;
 import gui2.event;
 import gui2.rootwidget;
 import gui2.slotwidget;
+import math.vector2;
 import util.yaml;
+import video.videodriver;
 
 
 /// The main GUI class. Manages widgets, emits events, etc.
@@ -38,6 +40,28 @@ public:
     @property SlotWidget rootSlot()
     {
         return rootSlot_;
+    }
+
+    /// Render the GUI.
+    void render(VideoDriver video)
+    {
+        static RenderEvent renderEvent;
+        if(null is renderEvent){renderEvent = new RenderEvent();}
+
+        // Save view zoom and offset.
+        const zoom   = video.zoom;
+        const offset = video.viewOffset; 
+
+        // Set no zoom and zero offset for GUI drawing.
+        video.zoom       = 1.0;
+        video.viewOffset = Vector2d(0.0, 0.0);
+
+        renderEvent.videoDriver = video;
+        rootSlot_.handleEvent(renderEvent);
+
+        // Restore zoom and offset.
+        video.zoom       = zoom;
+        video.viewOffset = offset;
     }
 
 package:

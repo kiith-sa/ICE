@@ -21,7 +21,6 @@ import util.yaml;
 import video.videodriver;
 
 // TODO:
-// - render event emitting (GUISystem)(set videodriver viewOffset=(0,0), zoom=1, after drawing reset)
 // - container widget 
 // - review all TODOs
 // - loading from YAML and testing
