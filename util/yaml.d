@@ -14,6 +14,7 @@ import std.conv;
 import std.exception;
 import std.functional;
 import std.math;
+import std.regex;
 import std.stream;
 import std.traits;
 

@@ -39,7 +39,6 @@ void main(string[] args)
 {
     memory.memory.suspendMemoryDebugRecording = false;
 
-    runUnitTests();
     
     writeln("Started main()...");
     //will add -h/--help and generate usage info by itself
@@ -80,6 +79,9 @@ void main(string[] args)
         writeln("Initialized VFS...");
         memory.memory.gameDir = gameDir;
         auto ice = new Ice(gameDir);
+        // This is here due to an unknown std.regex 32bit bug.
+        // It should be moved back to the start later.
+        runUnitTests();
         writeln("Initialized ICE...");
         scope(exit){clear(ice);}
         writeln("Going to run ICE...");

@@ -56,10 +56,7 @@ class FSDir : VFSDir
 
         override @property bool writable() const {return writable_;}
 
-        override @property bool exists() const 
-        {
-            return .exists(physicalPath_);
-        }
+        override @property bool exists() const {return .exists(physicalPath_);}
 
         override VFSFile file(string path)
         {
@@ -213,10 +210,11 @@ class FSDir : VFSDir
         this(FSDir parent, string pathInParent, string physicalPath, 
              Flag!"writable" writable)
         {
-            physicalPath_ = (cleanFSPath(physicalPath)).idup;
+            physicalPath = cleanFSPath(physicalPath);
             pathInParent = cleanFSPath(pathInParent);
-            enforce(isValidPath(physicalPath_), 
-                    invalidPath("Invalid physical directory path: ", physicalPath_));
+            enforce(isValidPath(physicalPath), 
+                    invalidPath("Invalid physical directory path: ", physicalPath));
+            physicalPath_ = physicalPath;
             if(exists)
             {
                 enforce(isDir(physicalPath_),
