@@ -20,7 +20,12 @@ import util.yaml;
 
 
 // TODO:
-// - then style, then loading from YAML and testing
+// - rendering (through an event) (set videodriver viewOffset=(0,0), zoom=1, after drawing reset)
+// - container widget 
+// - review all TODOs
+// - loading from YAML and testing
+// - user input
+// - default/active(mouseOver)/clicked button styles (style, style_active, style_clicked)
 
 /// Base class for all widgets.
 abstract class Widget
