@@ -70,7 +70,7 @@ class ExpandEvent: Event
 }
 
 /// Used to draw the widgets.
-class RendereEvent: Event
+class RenderEvent: Event
 {
     /// VideoDriver to draw with.
     VideoDriver videoDriver;

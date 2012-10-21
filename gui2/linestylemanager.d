@@ -93,11 +93,11 @@ public:
     }
 
 protected:
-    Vector2i getTextSize(VideoDriver video, const string text)
+    override Vector2u getTextSize(VideoDriver video, const string text)
     {
         // This could be cached based on text/font/fontSize combination
-        driver.font     = style_.font_;
-        driver.fontSize = style_.fontSize_;
+        video.font     = style_.font;
+        video.fontSize = style_.fontSize;
         return video.textSize(text);
     }
 }

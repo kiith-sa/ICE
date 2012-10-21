@@ -85,14 +85,14 @@ public:
         final switch(alignX)
         {
             case AlignX.Left:   offset.x = area.min.x; break;
-            case AlignX.Center: offset.x = area.min.x + (area.width - size.width) / 2; break;
+            case AlignX.Center: offset.x = area.min.x + (area.width - size.x) / 2; break;
             case AlignX.Right:  offset.x = area.max.x - size.x; break;
         }
         final switch(alignY)
         {
-            case AlignX.Top:    offset.y = area.min.y; break;
-            case AlignX.Center: offset.y = area.min.y + (area.height - size.height) / 2; break;
-            case AlignX.Bottom: offset.y = area.max.y - size.y; break;
+            case AlignY.Top:    offset.y = area.min.y; break;
+            case AlignY.Center: offset.y = area.min.y + (area.height - size.y) / 2; break;
+            case AlignY.Bottom: offset.y = area.max.y - size.y; break;
         }
 
         drawText(video, text, offset);
@@ -111,5 +111,5 @@ public:
 
 protected:
     /// Get the size of specified text when drawn on the screen.
-    Vector2i getTextSize(VideoDriver video, const string text);
+    Vector2u getTextSize(VideoDriver video, const string text);
 }
