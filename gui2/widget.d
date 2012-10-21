@@ -9,6 +9,7 @@
 module gui2.widget;
 
 
+import std.algorithm;
 import std.typecons;
 
 import gui2.event;
@@ -19,9 +20,7 @@ import util.yaml;
 
 
 // TODO:
-// - use layouts in widgets (through events),
 // - then style, then loading from YAML and testing
-// - Try to reuse event objects between frames, just chaning data members.
 
 /// Base class for all widgets.
 abstract class Widget
@@ -57,17 +56,34 @@ public:
         assert(false, "TODO attributes (?)");
         assert(false, "TODO layout");
         assert(false, "TODO subwidgets");
-        registerHandler!MinimizeEvent(&minimizeHandler);
-        registerHandler!ExpandEvent(&expandHandler);
+        addEventHandler!MinimizeEvent(&minimizeHandler);
+        addEventHandler!ExpandEvent(&expandHandler);
     }
 
 protected:
     /// Register an event handler delegate.
-    void registerHandler(T)(Flag!"DoneSinking" delegate(T) handler)
+    void addEventHandler(T)(Flag!"DoneSinking" delegate(T) handler)
         if(is(T: Event))
     {
         eventHandlers_[T.classinfo] ~=
             cast(Flag!"DoneSinking" delegate(Event))handler;
+    }
+
+    /// Add a child widget. Does _not_ update GUI layout. Caller needs to handle that.
+    void addChild(Widget child)
+    {
+        children_ ~= child;
+    }
+
+    /// Remove a child widget. Does _not_ update GUI layout. Caller needs to handle that.
+    ///
+    /// The given widget must be a child of this widget.
+    void removeChild(Widget child)
+    {
+        bool sameWidget(Widget c){return c is child;}
+        assert(children_.canFind!sameWidget(), 
+               "Trying to remove a widget that is not a child of this widget");
+        children_ = children_.remove!sameWidget();
     }
 
 package:

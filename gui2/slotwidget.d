@@ -31,7 +31,6 @@ public:
     /// Do not call directly.
     this(ref YAMLNode yaml, GUISystem guiSystem)
     {
-        assert(false, "TODO");
         super(yaml, guiSystem);
     }
 
@@ -40,8 +39,8 @@ public:
     {
         assert(connectedWidget_ is null, "There is already a connected RootWidget");
         connectedWidget_ = child;
+        addChild(child);
         guiSystem_.updateLayout();
-        assert(false, "TODO (add child to subwidgets)");
     }
 
     /// Disconnect a RootWidget. The RootWidget passed must be the connected RootWidget.
@@ -49,7 +48,7 @@ public:
     {
         assert(connectedWidget_ is child, "The widget to disconnect does not match");
         connectedWidget_ = null;
+        removeChild(child);
         guiSystem_.updateLayout();
-        assert(false, "TODO (remove child to subwidgets)");
     }
 }
