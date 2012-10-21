@@ -34,6 +34,9 @@ private:
     // Layout of the widget - determines widget size and position.
     Layout layout_;
 
+    // Style manager of the widget. Contains styles of this widget and draws it.
+    StyleManager styleManager_;
+
     // Child widgets of this widget.
     Widget[] children_;
 
@@ -60,6 +63,7 @@ public:
         guiSystem_ = guiSystem;
         assert(false, "TODO attributes (?)");
         assert(false, "TODO layout");
+        assert(false, "TODO styles");
         assert(false, "TODO subwidgets");
         addEventHandler!MinimizeEvent(&minimizeHandler);
         addEventHandler!ExpandEvent(&expandHandler);
