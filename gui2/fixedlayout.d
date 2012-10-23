@@ -6,7 +6,7 @@
 
 
 /// Fixed layout that never changes.
-module layout.fixedlayout;
+module gui2.fixedlayout;
 
 
 import gui2.layout;
