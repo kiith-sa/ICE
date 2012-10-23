@@ -101,10 +101,10 @@ public:
     /// Load a RootWidget from YAML.
     ///
     /// Never call this directly; use GUISystem.loadWidgetTree instead.
-    this(ref YAMLNode yaml, GUISystem guiSystem)
+    this(ref YAMLNode yaml)
     {
         widgetAccess_.root_ = this;
-        super(yaml, guiSystem);
+        super(yaml);
     }
 
     /// Access a subwidget.

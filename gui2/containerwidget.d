@@ -20,8 +20,10 @@ import util.yaml;
 class ContainerWidget: Widget
 {
     /// Construct a ContainerWidget from YAML.
-    this(ref YAMLNode yaml, GUISystem guiSystem)
+    ///
+    /// Never call directly.
+    this(ref YAMLNode yaml)
     {
-        super(yaml, guiSystem);
+        super(yaml);
     }
 }

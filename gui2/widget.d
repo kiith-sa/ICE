@@ -21,7 +21,6 @@ import util.yaml;
 import video.videodriver;
 
 // TODO:
-// - loading from YAML
 // - RootWidget.get
 // - testing (with playerprofile XXX/TODO stuff)
 // - user input
@@ -31,6 +30,8 @@ import video.videodriver;
 abstract class Widget
 {
 private:
+    // Has widget.init() been called?
+    bool initialized_ = false;
     // Child widgets of this widget.
     Widget[] children_;
 
@@ -54,17 +55,13 @@ protected:
 public:
     /// Construct a Widget. Contains setup code shared between widget types.
     ///
+    /// Note: a constructed Widget is only fully initialized after a call to init().
+    ///
     /// Params: yaml      = YAML definition of the widget.
-    ///         guiSystem = Reference to the GUI system (for passing global events, etc.).
     ///
     /// Throws: WidgetInitException on failure.
-    this(ref YAMLNode yaml, GUISystem guiSystem)
+    this(ref YAMLNode yaml)
     {
-        guiSystem_ = guiSystem;
-        assert(false, "TODO attributes (?)");
-        assert(false, "TODO layout");
-        assert(false, "TODO styles");
-        assert(false, "TODO subwidgets");
         addEventHandler!MinimizeEvent(&minimizeHandler);
         addEventHandler!ExpandEvent(&expandHandler);
         addEventHandler!RenderEvent(&renderHandler);
@@ -82,6 +79,7 @@ protected:
     /// Add a child widget. Does _not_ update GUI layout. Caller needs to handle that.
     final void addChild(Widget child)
     {
+        assert(initialized_, "Uninitialized widget: adding a child");
         children_ ~= child;
     }
 
@@ -90,6 +88,7 @@ protected:
     /// The given widget must be a child of this widget.
     final void removeChild(Widget child)
     {
+        assert(initialized_, "Uninitialized widget: removing a child");
         bool sameWidget(Widget c){return c is child;}
         assert(children_.canFind!sameWidget(), 
                "Trying to remove a widget that is not a child of this widget");
@@ -104,7 +103,11 @@ protected:
 
 package:
     // Get widget layout - used by other widgets' layouts.
-    @property Layout layout() pure nothrow {return layout_;}
+    @property Layout layout() pure nothrow 
+    {
+        assert(initialized_, "Uninitialized widget: layout getter");
+        return layout_;
+    }
 
     /// Handle an event, possibly propagating it to subwidgets.
     ///
@@ -117,6 +120,7 @@ package:
     /// won't sink into any other subwidgets.
     final Flag!"DoneSinking" handleEvent(Event e)
     {
+        assert(initialized_, "Uninitialized widget: handling an event");
         e.status_ = Event.Status.Sinking;
         // This widget processing the event while sinking
         if(callEventHandler(e)) {return Yes.DoneSinking;}
@@ -137,6 +141,25 @@ package:
         e.sunkFrom_ = null;
         e.status_   = Event.Status.Bubbling;
         return (callEventHandler(e) || done) ? Yes.DoneSinking : No.DoneSinking;
+    }
+
+    /// Initialize the widget with separately constructed members.
+    ///
+    /// Called by YAML loading code after the widget is constructed.
+    /// This must be called for the widget to be usable.
+    ///
+    /// Params: guiSystem    = A reference to the GUI system.
+    ///         children     = Child widgets of this widget.
+    ///         layout       = Layout of the widget.
+    ///         styleManager = StyleManager of the widget.
+    final void init(GUISystem guiSystem, Widget[] children, 
+                    Layout layout, StyleManager styleManager)
+    {
+        guiSystem_    = guiSystem;
+        children_     = children;
+        layout_       = layout;
+        styleManager_ = styleManager;
+        initialized_  = true;
     }
 
 private:

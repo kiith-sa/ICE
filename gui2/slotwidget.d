@@ -29,9 +29,9 @@ public:
     /// Load a SlotWidget from YAML.
     ///
     /// Do not call directly.
-    this(ref YAMLNode yaml, GUISystem guiSystem)
+    this(ref YAMLNode yaml)
     {
-        super(yaml, guiSystem);
+        super(yaml);
     }
 
     /// Connect a RootWidget.

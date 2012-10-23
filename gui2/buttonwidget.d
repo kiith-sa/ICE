@@ -33,10 +33,10 @@ public:
     /// Load a ButtonWidget from YAML.
     ///
     /// Do not call directly.
-    this(ref YAMLNode yaml, GUISystem guiSystem)
+    this(ref YAMLNode yaml)
     {
         text_ = widgetInitProperty!string(yaml, "text");
-        super(yaml, guiSystem);
+        super(yaml);
     }
 
     /// Render the widget with specified video driver.
