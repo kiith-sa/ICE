@@ -8,9 +8,23 @@
 /// The main GUI class.
 module gui2.guisystem;
 
+import std.algorithm;
+import std.array;
+import std.exception;
+import std.typecons;
+
+import gui2.boxmanuallayout;
+import gui2.buttonwidget;
+import gui2.containerwidget;
 import gui2.event;
+import gui2.exceptions;
+import gui2.fixedlayout;
+import gui2.layout;
 import gui2.rootwidget;
 import gui2.slotwidget;
+import gui2.linestylemanager;
+import gui2.stylemanager;
+import gui2.widget;
 import math.vector2;
 import util.yaml;
 import video.videodriver;
@@ -19,8 +33,24 @@ import video.videodriver;
 /// The main GUI class. Manages widgets, emits events, etc.
 class GUISystem
 {
-    /// The root of the widget tree.
+private:
+    // The root of the widget tree.
     SlotWidget rootSlot_;
+
+    // Widget construction functions indexed by widget type name in YAML.
+    //
+    // A widget constructor might throw a WidgetInitException on failure.
+    Widget delegate(ref YAMLNode)[string] widgetCtors_;
+
+    // Layout construction functions indexed by layout type name in YAML.
+    //
+    // A layout constructor might throw a LayoutInitException on failure.
+    Layout delegate(YAMLNode*)[string] layoutCtors_;
+
+    // StyleManager construction functions indexed by style manager type name in YAML.
+    //
+    // A style manager constructor might throw a StyleInitException on failure.
+    StyleManager delegate(ref Tuple!(string, YAMLNode)[])[string] styleCtors_;
 
 public:
     /// Construct the GUISystem.
@@ -29,14 +59,66 @@ public:
     ///         height = Window height.
     this(uint width, uint height)
     {
+        // Builtin widget constructors.
+        addWidgetConstructor("root",      (ref YAMLNode yaml) => new RootWidget(yaml));
+        addWidgetConstructor("slot",      (ref YAMLNode yaml) => new SlotWidget(yaml));
+        addWidgetConstructor("container", (ref YAMLNode yaml) => new ContainerWidget(yaml));
+        addWidgetConstructor("button",    (ref YAMLNode yaml) => new ButtonWidget(yaml));
+
+        // Builtin layout constructors.
+        Layout boxManualCtor(YAMLNode* yaml)
+        {
+            static msg = "Missing layout parameters; boxManual layout manager "
+                         "requires layout parameters to be specified for every widget";
+            enforce(yaml !is null, new LayoutInitException (msg));
+            return new BoxManualLayout(*yaml);
+        }
+        Layout fixedCtor(YAMLNode* yaml)
+        {
+            static msg = "Missing layout parameters; fixed layout manager "
+                         "requires layout parameters to be specified for every widget";
+            enforce(yaml !is null, new LayoutInitException (msg));
+            return new FixedLayout(*yaml);
+        }
+        addLayoutConstructor("boxManual", &boxManualCtor);
+        addLayoutConstructor("fixed", &fixedCtor);
+
+        // Builtin style manager constructors.
+        StyleManager lineStyleManagerCtor(ref Tuple!(string, YAMLNode)[] namedStyles)
+        {
+            bool foundDefault;
+            LineStyleManager.Style[] styles;
+            foreach(ref named; namedStyles)
+            {
+                foundDefault = foundDefault || named[0] == "";
+                styles ~= LineStyleManager.Style(named[1], named[0]);
+            }
+            if(!foundDefault)
+            {
+                styles ~= LineStyleManager.Style.init;
+            }
+
+            return new LineStyleManager(styles);
+        }
+
+        addStyleConstructor("line", &lineStyleManagerCtor);
+
         rootSlot_ = new SlotWidget(YAMLNode(["x", "y", "w", "h"],
-                                            [0, 0, width, height]), this);
+                                            [0, 0, width, height]));
     }
 
     /// Load a widget tree connectable to a SlotWidget from YAML.
     RootWidget loadWidgetTree(YAMLNode source)
     {
-        assert(false, "TODO");
+        try
+        {
+            WidgetLoader loader;
+            return loader.parseRootWidget(source);
+        }
+        catch(YAMLException e)
+        {
+            throw new GUIInitException("Could not load a widget tree: " ~ e.msg);
+        }
     }
 
     /// Get the root SlotWidget.
@@ -67,6 +149,80 @@ public:
         video.viewOffset = offset;
     }
 
+    /// Add a widget constructor function.
+    ///
+    /// This can be used to add support for new widget types. The constructor function
+    /// will usually just call the constructor of the widget.
+    ///
+    /// This can be only called once per widget type name - this means that
+    /// constructor functions for builtin widgets (e.g. "button") can't be 
+    /// replaced.
+    ///
+    /// Params: widgetYAMLName = YAML widgets with this widget type name will
+    ///                          be constructed with given constructor function.
+    ///         widgetCtor     = Constructs a widget of from a YAML node.
+    ///                          It can throw a WidgetInitException.
+    void addWidgetConstructor(string widgetYAMLName, 
+                              Widget delegate(ref YAMLNode) widgetCtor)
+    {
+        assert((widgetYAMLName in widgetCtors_) is null,
+               "There already is a widget constructor for widget name " ~ widgetYAMLName);
+        widgetCtors_[widgetYAMLName] = widgetCtor;
+    }
+
+    /// Add a layout constructor function.
+    ///
+    /// This can be used to add support for new layout types. The constructor function
+    /// will usually just call the constructor of the layout.
+    ///
+    /// This can be only called once per layout type name - this means that
+    /// constructor functions for builtin layouts (e.g. "boxManual") can't be 
+    /// replaced.
+    ///
+    /// A widget might not specify layout parameters; in that case, the YAML node 
+    /// pointer passed to layoutCtor is null. The function might then e.g. 
+    /// default-construct the layout.
+    ///
+    /// Params: layoutYAMLName = YAML layout managers with this "layoutManager"
+    ///                          name will be constructed with given constructor function.
+    ///         layoutCtor     = Constructs a layout of from a YAML node.
+    ///                          It can throw a LauoutInitException.
+    void addLayoutConstructor(string layoutYAMLName, 
+                              Layout delegate(YAMLNode*) layoutCtor)
+    {
+        assert((layoutYAMLName in layoutCtors_) is null,
+               "There already is a layout constructor for layout name " ~ layoutYAMLName);
+        layoutCtors_[layoutYAMLName] = layoutCtor;
+    }
+
+    /// Add a style manager constructor function.
+    ///
+    /// This can be used to add support for new style manager types. 
+    /// The constructor function will usually just call the constructor 
+    /// of the style manager.
+    ///
+    /// This can be only called once per style manager type name - this means that
+    /// constructor functions for builtin style managers (e.g. "line") can't be 
+    /// replaced.
+    ///
+    /// The style manager constructor is passed an array of named YAML nodes,
+    /// each of which represents a style. If there is no default style 
+    /// (unnamed, just "style"), it must be added in the constructor function.
+    /// 
+    /// Params: styleYAMLName = YAML style managers with this "styleManager"
+    ///                         name will be constructed with given constructor function.
+    ///         styleCtor     = Constructs a style manager of from an array of 
+    ///                         name-YAMLNode pairs.
+    ///                         It can throw a StyleInitException.
+    void addStyleConstructor(string styleYAMLName, 
+                             StyleManager delegate(ref Tuple!(string, YAMLNode)[]) styleCtor)
+    {
+        assert((styleYAMLName in styleCtors_) is null,
+               "There already is a style manager constructor for style manager name "
+               ~ styleYAMLName);
+        styleCtors_[styleYAMLName] = styleCtor;
+    }
+
 package:
     /// Update layout of all widgets (e.g. after a new RootWidget is connected).
     void updateLayout()
@@ -78,5 +234,134 @@ package:
         if(null is expandEvent)  {expandEvent   = new ExpandEvent();}
         rootSlot_.handleEvent(minimizeEvent);
         rootSlot_.handleEvent(expandEvent);
+    }
+}
+
+
+private:
+
+/// Encapsulates widget loading code.
+///
+/// This struct is only used by the GUISystem to load a widget tree.
+struct WidgetLoader
+{
+private:
+    /// GUI system that constructed this WidgetLoader.
+    GUISystem guiSystem_;
+
+    //TODO once tested, use vectors
+
+    /// Stack keeping track of the style manager used in the current widget.
+    ///
+    /// Layout managers specified in parent widgets are recursively used 
+    /// in their children. 
+    string[] styleManagerStack_  = ["line"];
+    /// Stack keeping track of the layout type used in the current widget.
+    ///
+    /// Layout types specified in parent widgets are recursively used 
+    /// in their children. 
+    string[] layoutManagerStack_ = ["boxManual"];
+
+package:
+    /// Construct a WidgetLoader loading widgets for specified GUI system.
+    this(GUISystem guiSystem)
+    {
+        guiSystem_ = guiSystem;
+    }
+
+    /// Parse a root widget, and recursively, its widget tree.
+    ///
+    /// Params: source = Root node of the YAML tree to parse.
+    ///
+    /// Throws: GUIInitException on failure.
+    RootWidget parseRootWidget(ref YAMLNode source)
+    {
+        return cast(RootWidget)parseWidget(source, guiSystem_.widgetCtors_["root"]);
+    }
+
+private:
+    /// Parse a widget (and recursively, its subwidgets) from YAML.
+    ///
+    /// Params: source     = Root node of the YAML tree to parse.
+    ///         widgetCtor = Function that construct the widget of correct type
+    ///                      (determined by the caller).
+    ///
+    /// Throws: GUIInitException on failure.
+    Widget parseWidget(ref YAMLNode source, Widget delegate(ref YAMLNode) widgetCtor)
+    {
+        // Parse layout, style manager types.
+        bool popStyle  = false;
+        bool popLayout = false;
+        scope(exit)
+        {
+            if(popStyle) {styleManagerStack_.popBack();}
+            if(popLayout){layoutManagerStack_.popBack();}
+        }
+        if(source.contains("styleManager"))
+        {
+            styleManagerStack_ ~= source["styleManager"].as!string;
+            popStyle = true;
+        }
+        if(source.contains("layoutManager"))
+        {
+            layoutManagerStack_ ~= source["layoutManager"].as!string;
+            popLayout = true;
+        }
+
+        Widget[] children;
+        Tuple!(string, YAMLNode)[] stylesParameters;
+        bool layoutParametersSpecified = false;
+        YAMLNode layoutParameters;
+
+        /// Parse the widget's attributes and subwidgets.
+        foreach(string key, ref YAMLNode value; source)
+        {
+            // A subwidget.
+            if(key.startsWith("widget"))
+            {
+                auto parts = key.split(" ");
+                enforce(parts.length >= 2,
+                        new GUIInitException("Can't parse a widget without widget type"));
+                string type = parts[1];
+                string name = parts.length == 2 ? null : parts[2];
+
+                auto ctor = type in guiSystem_.widgetCtors_;
+                enforce(ctor !is null,
+                        new GUIInitException("Unknown widget type in YAML: " ~ type));
+                children ~= parseWidget(value, *ctor);
+            }
+            // Parameters of a style ("style" is default style, "style xxx" is style xxx)..
+            else if(key.startsWith("style"))
+            {
+                auto parts = key.split(" ");
+                stylesParameters ~= tuple(parts.length >= 2 ? parts[2] : "",
+                                          value);
+            }
+            // Layout parameters.
+            else if(key == "layout")
+            {
+                layoutParameters = value;
+                layoutParametersSpecified = true;
+            }
+        }
+
+        // Construct the layout.
+        auto layoutType = layoutManagerStack_.back;
+        auto layoutCtor = layoutType in guiSystem_.layoutCtors_;
+        enforce(layoutCtor !is null,
+                new GUIInitException("Unknown layout manager in YAML: " ~ layoutType));
+        auto layout = (*layoutCtor)(layoutParametersSpecified ? &layoutParameters : null);
+
+        // Construct the style manager.
+        auto styleType = styleManagerStack_.back;
+        auto styleCtor = styleType in guiSystem_.styleCtors_;
+        enforce(styleCtor !is null,
+                new GUIInitException("Unknown style manager in YAML: " ~ styleType));
+        auto styleManager = (*styleCtor)(stylesParameters);
+
+        // Construct the widget and return it.
+        Widget result = widgetCtor(source);
+        result.init(guiSystem_, children, layout, styleManager);
+        return result;
     }
 }
