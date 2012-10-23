@@ -70,11 +70,15 @@ private:
 
 public:
     /// Construct a LineStyleManager with specified styles.
+    ///
+    /// Styles must contain the default style (with name "").
     this(ref Style[] styles)
     {
         bool defStyle(ref Style s){return s.name == "";}
         auto searchResult = styles.find!defStyle();
-        style_  = searchResult.empty ? Style.init : searchResult.front;
+        assert(!searchResult.empty,
+               "Trying to construct a LineStyleManager without a default style");
+        style_  = searchResult.front;
         styles_ = styles;
     }
 
