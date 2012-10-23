@@ -44,3 +44,21 @@ class StyleInitException : GUIInitException
         super(msg, file, line);
     }
 }
+
+/// Exception thrown when a widget with some address could not be found.
+class WidgetNotFoundException : Exception 
+{
+    public this(string msg, string file = __FILE__, int line = __LINE__)
+    {
+        super(msg, file, line);
+    }
+}
+
+/// Exception thrown when a widget has an unexpected type.
+class WidgetTypeException : Exception 
+{
+    public this(string msg, string file = __FILE__, int line = __LINE__)
+    {
+        super(msg, file, line);
+    }
+}
