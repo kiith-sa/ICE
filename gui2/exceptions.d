@@ -9,8 +9,8 @@
 module gui2.exceptions;
 
 
-/// Exception thrown at widget related errors.
-class WidgetException : Exception 
+/// Exception thrown at GUI initialization errors.
+class GUIInitException : Exception 
 {
     public this(string msg, string file = __FILE__, int line = __LINE__)
     {
@@ -19,16 +19,7 @@ class WidgetException : Exception
 }
 
 /// Exception thrown when widget initialization fails.
-class WidgetInitException : WidgetException 
-{
-    public this(string msg, string file = __FILE__, int line = __LINE__)
-    {
-        super(msg, file, line);
-    }
-}
-
-/// Exception thrown at layout related errors.
-class LayoutException : Exception 
+class WidgetInitException : GUIInitException 
 {
     public this(string msg, string file = __FILE__, int line = __LINE__)
     {
@@ -37,16 +28,7 @@ class LayoutException : Exception
 }
 
 /// Exception thrown when layout initialization fails.
-class LayoutInitException : LayoutException 
-{
-    public this(string msg, string file = __FILE__, int line = __LINE__)
-    {
-        super(msg, file, line);
-    }
-}
-
-/// Exception thrown at style related errors.
-class StyleException : Exception 
+class LayoutInitException : GUIInitException 
 {
     public this(string msg, string file = __FILE__, int line = __LINE__)
     {
@@ -55,7 +37,7 @@ class StyleException : Exception
 }
 
 /// Exception thrown when style initialization fails.
-class StyleInitException : StyleException 
+class StyleInitException : GUIInitException
 {
     public this(string msg, string file = __FILE__, int line = __LINE__)
     {
