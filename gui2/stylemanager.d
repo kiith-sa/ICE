@@ -40,10 +40,6 @@ enum AlignY
 ///
 /// Each StyleManager implementation implements its own drawing logic and
 /// supports different kinds of styles.
-///
-/// Each StyleManager must define a "Style" struct with a constructor taking 
-/// a YAML mapping with style parameters and a string - style name. Keeping
-/// this struct separate will allow styles to be switched.
 abstract class StyleManager
 {
 public:
