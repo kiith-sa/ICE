@@ -30,17 +30,20 @@ import video.videodriver;
 abstract class Widget
 {
 private:
+    // Name of the widget. null if no name. 
+    string name_;
     // Has widget.init() been called?
     bool initialized_ = false;
-    // Child widgets of this widget.
-    Widget[] children_;
-
     // Event handlers for each event type.
     //
     // Note: This is an associated array of arrays - pretty expensive.
     // Something more memory efficient/less GC expensive could be used
     // (maybe a single fixed-size array of deleg/classinfo tuples?)
     Flag!"DoneSinking" delegate(Event)[][ClassInfo] eventHandlers_;
+
+package:
+    // Child widgets of this widget. (Package to be accessible to RootWidget).
+    Widget[] children_;
 
 protected:
     // Reference to the GUI system (for passing global events, etc.).
@@ -101,6 +104,11 @@ protected:
         styleManager_.drawWidgetRectangle(video, layout_.bounds);
     }
 
+    /// Called when the widget is fully initialized (at the end of the init() call).
+    void postInit()
+    {
+    }
+
 package:
     // Get widget layout - used by other widgets' layouts.
     @property Layout layout() pure nothrow 
@@ -148,18 +156,21 @@ package:
     /// Called by YAML loading code after the widget is constructed.
     /// This must be called for the widget to be usable.
     ///
-    /// Params: guiSystem    = A reference to the GUI system.
+    /// Params: name         = Name of the widget. null if no name.
+    ///         guiSystem    = A reference to the GUI system.
     ///         children     = Child widgets of this widget.
     ///         layout       = Layout of the widget.
     ///         styleManager = StyleManager of the widget.
-    final void init(GUISystem guiSystem, Widget[] children, 
+    final void init(string name, GUISystem guiSystem, Widget[] children, 
                     Layout layout, StyleManager styleManager)
     {
+        name_         = name;
         guiSystem_    = guiSystem;
         children_     = children;
         layout_       = layout;
         styleManager_ = styleManager;
         initialized_  = true;
+        postInit();
     }
 
 private:

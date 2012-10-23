@@ -9,6 +9,9 @@
 module gui2.rootwidget;
 
 
+import std.exception;
+
+import gui2.exceptions;
 import gui2.guisystem;
 import gui2.widget;
 import gui2.widgetutils;
@@ -97,6 +100,10 @@ private:
     /// Builtin WidgetAccess to access direct subwidgets.
     WidgetAccess widgetAccess_ = WidgetAccess(cast(RootWidget)null);
 
+    /// Maps widget addresses to widgets in the tree of this RootWidget.
+    ///
+    /// Doesn't include widgets in any RootWidget below this widget.
+    Widget[string] addressToWidget_;
 public:
     /// Load a RootWidget from YAML.
     ///
@@ -110,6 +117,9 @@ public:
     /// Access a subwidget.
     ///
     /// This is copied from WidgetAccess as alias this doesn't work.
+    ///
+    /// Throws: WidgetNotFoundException if the widget could not be found.
+    ///         WidgetTypeException if the widget is not of type T.
     ///
     /// SeeAlso: WidgetAccess.opDispatch
     template opDispatch(string childName)
@@ -129,8 +139,16 @@ public:
         } 
     }
 
+protected:
+    override void postInit()
+    {
+    }
+
 private:
     /// Get a subwidget with specified name in a widget specified by a WidgetAccess.
+    ///
+    /// Throws: WidgetNotFoundException if the widget could not be found.
+    ///         WidgetTypeException if the widget is not of type T.
     T get(T)(ref WidgetAccess access, const string name)
     {
         assert(validComposedWidgetName(name),
@@ -138,7 +156,13 @@ private:
 
         const fullName = access._fullName(name);
 
-        //Might throw if the widget is not found
-        assert(false, "TODO");
+        Widget* result = fullName in addressToWidget_;
+        enforce(result !is null,
+                new WidgetNotFoundException("Widget \"" ~ fullName ~ "\" could not be found"));
+        T typedResult = cast(T)(*result);
+        enforce(typedResult !is null,
+                new WidgetTypeException
+                ("Widget \"" ~ fullName ~ "\" has an unexpected type. Expected " ~ T.stringof));
+        return typedResult;
     }
 }

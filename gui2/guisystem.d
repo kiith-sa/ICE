@@ -276,7 +276,7 @@ package:
     /// Throws: GUIInitException on failure.
     RootWidget parseRootWidget(ref YAMLNode source)
     {
-        return cast(RootWidget)parseWidget(source, guiSystem_.widgetCtors_["root"]);
+        return cast(RootWidget)parseWidget(source, guiSystem_.widgetCtors_["root"], null);
     }
 
 private:
@@ -285,9 +285,12 @@ private:
     /// Params: source     = Root node of the YAML tree to parse.
     ///         widgetCtor = Function that construct the widget of correct type
     ///                      (determined by the caller).
+    ///         name       = Name of the widget. null if no name.
     ///
     /// Throws: GUIInitException on failure.
-    Widget parseWidget(ref YAMLNode source, Widget delegate(ref YAMLNode) widgetCtor)
+    Widget parseWidget(ref YAMLNode source, 
+                       Widget delegate(ref YAMLNode) widgetCtor,
+                       string name)
     {
         // Parse layout, style manager types.
         bool popStyle  = false;
@@ -323,12 +326,12 @@ private:
                 enforce(parts.length >= 2,
                         new GUIInitException("Can't parse a widget without widget type"));
                 string type = parts[1];
-                string name = parts.length == 2 ? null : parts[2];
+                string subWidgetName = parts.length == 2 ? null : parts[2];
 
                 auto ctor = type in guiSystem_.widgetCtors_;
                 enforce(ctor !is null,
                         new GUIInitException("Unknown widget type in YAML: " ~ type));
-                children ~= parseWidget(value, *ctor);
+                children ~= parseWidget(value, *ctor, subWidgetName);
             }
             // Parameters of a style ("style" is default style, "style xxx" is style xxx)..
             else if(key.startsWith("style"))
@@ -361,7 +364,7 @@ private:
 
         // Construct the widget and return it.
         Widget result = widgetCtor(source);
-        result.init(guiSystem_, children, layout, styleManager);
+        result.init(name, guiSystem_, children, layout, styleManager);
         return result;
     }
 }
