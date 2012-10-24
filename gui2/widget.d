@@ -117,15 +117,21 @@ package:
         return layout_;
     }
 
-    /// Handle an event, possibly propagating it to subwidgets.
-    ///
-    /// First, this widget handles this event as it's "sinking" down the tree.
-    /// Then (unless our handler tells us we're done sinking) we sink it 
-    /// further to the children.
-    /// After that, we handle the event as it's "bubbling" up. If either this 
-    /// widget or any child consumes the event, we return with Yes.DoneSinking.
-    /// Then the event will continue to bubble back to the top of the tree, but
-    /// won't sink into any other subwidgets.
+    // Get the name of the widget (if any).
+    final @property string name() const pure nothrow
+    {
+        return name_;
+    }
+
+    // Handle an event, possibly propagating it to subwidgets.
+    //
+    // First, this widget handles this event as it's "sinking" down the tree.
+    // Then (unless our handler tells us we're done sinking) we sink it 
+    // further to the children.
+    // After that, we handle the event as it's "bubbling" up. If either this 
+    // widget or any child consumes the event, we return with Yes.DoneSinking.
+    // Then the event will continue to bubble back to the top of the tree, but
+    // won't sink into any other subwidgets.
     final Flag!"DoneSinking" handleEvent(Event e)
     {
         assert(initialized_, "Uninitialized widget: handling an event");
@@ -151,16 +157,16 @@ package:
         return (callEventHandler(e) || done) ? Yes.DoneSinking : No.DoneSinking;
     }
 
-    /// Initialize the widget with separately constructed members.
-    ///
-    /// Called by YAML loading code after the widget is constructed.
-    /// This must be called for the widget to be usable.
-    ///
-    /// Params: name         = Name of the widget. null if no name.
-    ///         guiSystem    = A reference to the GUI system.
-    ///         children     = Child widgets of this widget.
-    ///         layout       = Layout of the widget.
-    ///         styleManager = StyleManager of the widget.
+    // Initialize the widget with separately constructed members.
+    //
+    // Called by YAML loading code after the widget is constructed.
+    // This must be called for the widget to be usable.
+    //
+    // Params: name         = Name of the widget. null if no name.
+    //         guiSystem    = A reference to the GUI system.
+    //         children     = Child widgets of this widget.
+    //         layout       = Layout of the widget.
+    //         styleManager = StyleManager of the widget.
     final void init(string name, GUISystem guiSystem, Widget[] children, 
                     Layout layout, StyleManager styleManager)
     {

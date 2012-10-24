@@ -142,6 +142,18 @@ public:
 protected:
     override void postInit()
     {
+        // Recursively generate addressToWidget_
+        void widgetAddresses(Widget widget, string parentAddress)
+        {
+            foreach(child; widget.children_)
+            {
+                // Using slicing to limit allocation.
+                auto childName = parentAddress ~ child.name ~ ".";
+                addressToWidget_[childName[0 .. $ - 1]] = child;
+                widgetAddresses(child, childName);
+            }
+        }
+        widgetAddresses(this, "");
     }
 
 private:
