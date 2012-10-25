@@ -21,10 +21,14 @@ import util.yaml;
 import video.videodriver;
 
 // TODO:
-// - RootWidget.get
-// - testing (with playerprofile XXX/TODO stuff)
-// - user input
+// - Fix appeareance 
+// - Load gui from yaml
+// - PlayerProfile XXX/TODO (as much as possible)
 // - default/active(mouseOver)/clicked button styles (style, style_active, style_clicked)
+// - user input
+// - GUI changing size when VideoDriver is reset.
+// - Input text box (for PlayerProfile)
+// - Main menu in the new GUI (not monitors yet).
 
 /// Base class for all widgets.
 abstract class Widget
