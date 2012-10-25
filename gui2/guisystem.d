@@ -10,6 +10,7 @@ module gui2.guisystem;
 
 import std.algorithm;
 import std.array;
+import std.conv;
 import std.exception;
 import std.typecons;
 
@@ -102,9 +103,14 @@ public:
         }
 
         addStyleConstructor("line", &lineStyleManagerCtor);
-
-        rootSlot_ = new SlotWidget(YAMLNode(["x", "y", "w", "h"],
-                                            [0, 0, width, height]));
+        auto dummyMapping    = loadYAML("{}");
+        rootSlot_            = new SlotWidget(dummyMapping);
+        auto styleSource     = loadYAML("{drawBorder: false}");
+        auto slotDummyStyles = [LineStyleManager.Style(styleSource, "")];
+        auto layoutSource    = loadYAML("{x: 0, y: 0, w: " ~ to!string(width) ~ 
+                                        ",h: " ~ to!string(height) ~ "}"); 
+        rootSlot_.init("", this, cast(Widget[])[], new FixedLayout(layoutSource),
+                       new LineStyleManager(slotDummyStyles));
     }
 
     /// Load a widget tree connectable to a SlotWidget from YAML.
@@ -112,7 +118,7 @@ public:
     {
         try
         {
-            WidgetLoader loader;
+            auto loader = WidgetLoader(this);
             return loader.parseRootWidget(source);
         }
         catch(YAMLException e)
@@ -262,6 +268,8 @@ private:
     /// in their children. 
     string[] layoutManagerStack_ = ["boxManual"];
 
+    @disable this();
+    @disable this(this);
 package:
     /// Construct a WidgetLoader loading widgets for specified GUI system.
     this(GUISystem guiSystem)
@@ -334,7 +342,8 @@ private:
                 children ~= parseWidget(value, *ctor, subWidgetName);
             }
             // Parameters of a style ("style" is default style, "style xxx" is style xxx)..
-            else if(key.startsWith("style"))
+            // Need to not try to read "styleManager"
+            else if(key == "style" || key.startsWith("style."))
             {
                 auto parts = key.split(" ");
                 stylesParameters ~= tuple(parts.length >= 2 ? parts[2] : "",
