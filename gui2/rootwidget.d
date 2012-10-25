@@ -147,10 +147,19 @@ protected:
         {
             foreach(child; widget.children_)
             {
-                // Using slicing to limit allocation.
-                auto childName = parentAddress ~ child.name ~ ".";
-                addressToWidget_[childName[0 .. $ - 1]] = child;
-                widgetAddresses(child, childName);
+                // Ignore unnamed widgets.
+                // (widget.UNNAMED.subwidget is widget.subwidget)
+                if(child.name is null)
+                {
+                    widgetAddresses(child, parentAddress);
+                }
+                else
+                {
+                    // Using slicing to limit allocation.
+                    auto childName = parentAddress ~ child.name ~ ".";
+                    addressToWidget_[childName[0 .. $ - 1]] = child;
+                    widgetAddresses(child, childName);
+                }
             }
         }
         widgetAddresses(this, "");
