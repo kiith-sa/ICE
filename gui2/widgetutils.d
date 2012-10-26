@@ -72,7 +72,7 @@ T optionalProperty(T, E)(ref YAMLNode yaml, string name, ref T defValue)
 {
     try 
     {
-        return yaml.contains(name) ? yaml[name].as!T : defValue;
+        return yaml.containsKey(name) ? yaml[name].as!T : defValue;
     }
     catch(YAMLException e)
     {
