@@ -24,6 +24,8 @@ import ice.game;
 import ice.playerprofile;
 import gui.guielement;
 import gui.guimenu;
+import gui2.guisystem;
+import gui2.slotwidget;
 import video.videodriver;
 import video.sdlglvideodriver;
 import video.videodrivercontainer;
@@ -78,6 +80,7 @@ import image;
  */
 class IceGUI
 {
+    ///TODO replace old GUI with the new YAML loadable GUI.
     private:
         ///Parent of all Pong GUI elements.
         GUIElement parent_;
@@ -113,14 +116,17 @@ class IceGUI
         /**
          * Construct IceGUI with specified parameters.
          *
-         * Params:  parent   = GUI element to use as parent for all pong GUI elements.
-         *          monitor  = Monitor subsystem, used to initialize monitor GUI view.
-         *          platform = Platform for keyboard I/O.
+         * Params:  guiSystem      = Reference to the GUI system.
+         *          profileManager = Reference to the player profile manager (for profile GUI).
+         *          parent         = GUI element to use as parent for all pong GUI elements.
+         *          monitor        = Monitor subsystem, used to initialize monitor GUI view.
+         *          platform       = Platform for keyboard I/O.
          */
-        this(GUIElement parent, MonitorManager monitor, Platform platform)
+        this(GUISystem guiSystem, ProfileManager profileManager, GUIElement parent, MonitorManager monitor, Platform platform)
         {
-            parent_   = parent;
-            platform_ = platform;
+            profileGUI_ = new ProfileGUI(profileManager, guiSystem, guiSystem.rootSlot);
+            parent_     = parent;
+            platform_   = platform;
 
             with(new MonitorViewFactory(monitor))
             {
@@ -237,19 +243,16 @@ class IceGUI
         }
 
         ///Show the profile management GUI.
-        void profileGUIShow(ProfileManager profileManager, Platform platform)
+        void profileGUIShow()
         {
             menuHide();
-            assert(null is profileGUI_, "Profile GUI is already being shown");
-            profileGUI_ = new ProfileGUI(parent_, platform, profileManager);
+            profileGUI_.show();
             profileGUI_.back.connect({profileGUIHide();});
         }
 
         ///Hide the profile management GUI.
         void profileGUIHide()
         {
-            profileGUI_.die();
-            profileGUI_ = null;
             menuShow();
         }
 
@@ -281,6 +284,7 @@ class IceGUI
         }
 }
 
+/// "Main" ICE class.
 class Ice
 {
     mixin WeakSingleton;
@@ -305,6 +309,8 @@ class Ice
         VFSDir gameDir_;
         ///Root element of the GUI.
         GUIRoot guiRoot_;
+        ///New GUI system (will replace guiRoot_)
+        GUISystem guiSystem_;
         ///Monitor subsystem, providing debugging and profiling info.
         MonitorManager monitor_;
         ///ICE GUI.
@@ -352,12 +358,12 @@ class Ice
             initMonitor();
             writeln("Initialized Monitor");
             scope(failure){destroyMonitor();}
-            initGUI();
-            writeln("Initialized GUI");
-            scope(failure){destroyGUI();}
             initPlayerProfiles();
             writeln("Initialized player profiles");
             scope(failure){destroyPlayerProfiles();}
+            initGUI();
+            writeln("Initialized GUI");
+            scope(failure){destroyGUI();}
 
             //Update FPS every second.
             fpsCounter_ = EventCounter(1.0);
@@ -430,6 +436,7 @@ class Ice
                     {
                         auto zone = Zone("GUI draw");
                         guiRoot_.draw(videoDriver_);
+                        guiSystem_.render(videoDriver_);
                     }
                     {
                         auto zone = Zone("VideoDriver endFrame");
@@ -512,9 +519,14 @@ class Ice
         ///Init GUI subsystem.
         void initGUI()
         {
+            guiSystem_ = new GUISystem(videoDriver_.screenWidth, 
+                                       videoDriver_.screenHeight);
+
+            // TODO this will be gradually removed and replaced by the new, 
+            //      YAML-loadable GUI.
             guiRoot_ = new GUIRoot(platform_);
 
-            gui_ = new IceGUI(guiRoot_.root, monitor_, platform_);
+            gui_ = new IceGUI(guiSystem_, profileManager_, guiRoot_.root, monitor_, platform_);
             gui_.creditsStart.connect(&creditsStart);
             gui_.creditsEnd.connect(&creditsEnd);
             gui_.levelMenuOpen.connect(&showLevelMenu);
@@ -632,7 +644,7 @@ class Ice
         ///Show the player profile management GUI.
         void showProfileGUI()
         {
-            gui_.profileGUIShow(profileManager_, platform_);
+            gui_.profileGUIShow();
         }
 
         ///Start game.
