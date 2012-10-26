@@ -87,7 +87,7 @@ public:
         // Builtin style manager constructors.
         StyleManager lineStyleManagerCtor(ref Tuple!(string, YAMLNode)[] namedStyles)
         {
-            bool foundDefault;
+            bool foundDefault = false;
             LineStyleManager.Style[] styles;
             foreach(ref named; namedStyles)
             {
