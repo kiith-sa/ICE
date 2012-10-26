@@ -54,6 +54,8 @@ public:
     /// Params: profileManager = ProfileManager this GUI is working with.
     ///         gui            = Reference to the GUI system to load widgets with.
     ///         parentSlot     = Parent slot widget to connect the profile GUI to.
+    ///
+    /// Throws: GUIInitException on failure.
     this(ProfileManager profileManager, GUISystem gui, SlotWidget parentSlot)
     {
         profileManager_ = profileManager;

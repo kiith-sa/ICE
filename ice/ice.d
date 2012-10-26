@@ -24,6 +24,7 @@ import ice.game;
 import ice.playerprofile;
 import gui.guielement;
 import gui.guimenu;
+import gui2.exceptions;
 import gui2.guisystem;
 import gui2.slotwidget;
 import video.videodriver;
@@ -121,6 +122,8 @@ class IceGUI
          *          parent         = GUI element to use as parent for all pong GUI elements.
          *          monitor        = Monitor subsystem, used to initialize monitor GUI view.
          *          platform       = Platform for keyboard I/O.
+         *
+         * Throws:  GUIInitException on failure.
          */
         this(GUISystem guiSystem, ProfileManager profileManager, GUIElement parent, MonitorManager monitor, Platform platform)
         {
@@ -516,7 +519,9 @@ class Ice
             monitor_.addMonitorable(videoDriver_, "Video");
         }
 
-        ///Init GUI subsystem.
+        /// Init GUI subsystem.
+        ///
+        /// Throws: GameStartupException on failure.
         void initGUI()
         {
             guiSystem_ = new GUISystem(videoDriver_.screenWidth, 
@@ -526,7 +531,14 @@ class Ice
             //      YAML-loadable GUI.
             guiRoot_ = new GUIRoot(platform_);
 
-            gui_ = new IceGUI(guiSystem_, profileManager_, guiRoot_.root, monitor_, platform_);
+            try
+            {
+                gui_ = new IceGUI(guiSystem_, profileManager_, guiRoot_.root, monitor_, platform_);
+            }
+            catch(GUIInitException e)
+            {
+                throw new GameStartupException("Failed to initialize ICE GUI: ", e.msg);
+            }
             gui_.creditsStart.connect(&creditsStart);
             gui_.creditsEnd.connect(&creditsEnd);
             gui_.levelMenuOpen.connect(&showLevelMenu);
