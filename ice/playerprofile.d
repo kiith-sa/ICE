@@ -21,182 +21,169 @@ import dgamevfs._;
 import gui.guibutton;
 import gui.guielement;
 import gui.guimenu;
+import gui2.guisystem;
+import gui2.buttonwidget;
+import gui2.rootwidget;
+import gui2.slotwidget;
 import platform.platform;
 import util.signal;
 import util.unittests;
 import util.yaml;
 
-
 /// GUI frontend for the profile manager.
 class ProfileGUI
 {
-    private:
-        // Parent the profile GUI is connected to. Outside of ProfileGUI.
-        GUIElement parent_;
-        // Contains all profile widgets.
-        GUIElement container_;
-        // Menu with actions related to profiles (new, delete, quit).
-        GUIMenu profileActionMenu_;
-        // Allows selecting profiles (previous, next, current profile button).
-        GUIElement profileSelector_;
-        // Button displaying the current profile, providing access to profile detais.
-        GUIButton profileButton_;
-        // Platform for keyboard input.
-        Platform platform_;
+private:
+    // Profile GUI root widget.
+    RootWidget profileGUI_;
 
-        // Reference to the profile manager (creating, deleting and accessing profiles).
-        ProfileManager profileManager_;
+    // Reference to the profile manager (creating, deleting and accessing profiles).
+    ProfileManager profileManager_;
 
-    public:
-        /// Emitted when the profile manager GUI should be exited.
-        mixin Signal!() back;
+    // Parent slot widget the profile GUI is connected to.
+    SlotWidget parentSlot_;
 
-        /// Construct the profile GUI,
-        ///
-        /// Params: parent         = Parent element of the profile GUI.
-        ///         platform       = Platform for keyboard input.
-        ///         profileManager = Profile manager to work on top of.
-        this(GUIElement parent, Platform platform, ProfileManager profileManager)
+public:
+    /// Emitted when the profile manager GUI should be exited.
+    mixin Signal!() back;
+
+    /// Construct a ProfileGUI.
+    ///
+    /// This loads the widget tree.
+    /// 
+    /// Params: profileManager = ProfileManager this GUI is working with.
+    ///         gui            = Reference to the GUI system to load widgets with.
+    ///         parentSlot     = Parent slot widget to connect the profile GUI to.
+    this(ProfileManager profileManager, GUISystem gui, SlotWidget parentSlot)
+    {
+        profileManager_ = profileManager;
+        parentSlot_     = parentSlot;
+
+        string guiString =
+            "!!pairs\n" ~
+            "- styleManager: line\n" ~
+            "- layoutManager: boxManual #parent/window width/height/top/left/etc\n" ~
+            "- layout: {x: 'pLeft', y: 'pTop', w: 'pWidth', h: 'pHeight'}\n" ~
+            "#Main container\n" ~
+            "- widget container:\n" ~
+            "    !!pairs\n" ~
+            "    - style:\n" ~
+            "        lineWidth: 2.0\n" ~
+            "        lineColor: rgbaC0C0FFB0\n" ~
+            "    - layout: {x: 'pRight - 176', y: 16, w: 160, h: 'pBottom - 32'}\n" ~
+            "    #Profile action menu\n" ~
+            "    - widget container:\n" ~
+            "        !!pairs\n" ~
+            "        - layout: {x: pLeft, y: 'pTop + 136', w: 'pWidth - 8', h: 'pHeight - 32'}\n" ~
+            "        - widget button newProfile:\n" ~
+            "            !!pairs\n" ~
+            "            - layout: {x: 'pLeft + 8', y: 'pTop + 8', w: pWidth - 16, h: 24}\n" ~
+            "            - text: NewProfile\n" ~
+            "        - widget button deleteProfile:\n" ~
+            "            !!pairs\n" ~
+            "            - layout: {x: 'pLeft + 8', y: 'pTop + 40', w: pWidth - 16, h: 24}\n" ~
+            "            - text: Delete Profile\n" ~
+            "        - widget button back:\n" ~
+            "            !!pairs\n" ~
+            "            - layout: {x: 'pLeft + 8', y: 'pTop + 72', w: pWidth - 16, h: 24}\n" ~
+            "            - text: Back\n" ~
+            "    #Profile selector container\n" ~
+            "    - widget container:\n" ~
+            "        !!pairs\n" ~
+            "        - layout: {x: pLeft, y: 'pTop + 272', w: 160, h: 'pBottom - 32'}\n" ~
+            "        - style: {drawBorder : false}\n" ~
+            "        - widget button previous:\n" ~
+            "            !!pairs\n" ~
+            "            - layout: {x: 'pLeft + 8', y: 'pTop + 8', w: 12, h: 24}\n" ~
+            "            - text: '<'\n" ~
+            "        - widget button profile:\n" ~
+            "            !!pairs\n" ~
+            "            - layout: {x: 'pLeft + 24', y: 'pTop + 8', w: 'pRight - pLeft - 48', h: 24}\n" ~
+            "            - text: DUMMY\n" ~
+            "        - widget button next:\n" ~
+            "            !!pairs\n" ~
+            "            - layout: {x: 'pRight - 8', y: 'pTop + 8', w: 12, h: 24}\n" ~
+            "            - text: '>'\n";
+        profileGUI_ = gui.loadWidgetTree(loadYAML(guiString));
+
+        profileGUI_.newProfile!ButtonWidget.pressed.connect(&showAddNewProfile);
+        profileGUI_.deleteProfile!ButtonWidget.pressed.connect(&showAddNewProfile);
+        profileGUI_.back!ButtonWidget.pressed.connect(&hide);
+
+        profileGUI_.previous!ButtonWidget.pressed.connect(&previousProfile);
+        profileGUI_.next!ButtonWidget.pressed.connect(&nextProfile);
+
+        profileGUI_.profile!ButtonWidget.pressed.connect(&showProfileDetails);
+        profileGUI_.profile!ButtonWidget.text = profileManager_.currentProfile.name;
+    }
+
+    /// Show the GUI on screen.
+    ///
+    /// The caller must first disconnect any RootWidget connected to the parent 
+    /// slot widget.
+    void show()
+    {
+        assert(parentSlot_.free, "Trying to show Profile GUI but previously connected RootWidget was not disconnected");
+        parentSlot_.connect(profileGUI_);
+    }
+
+private:
+    // Hide the profile GUI (when the "back" button is clicked).
+    void hide()
+    {
+        parentSlot_.disconnect(profileGUI_);
+        back.emit();
+    }
+
+    // Show the dialog to add new profile (enter name, etc.)
+    void showAddNewProfile()
+    {
+        //TODO (after other GUI tested) GUI to add a profile
+    }
+
+    // Show the profile details GUI screen.
+    void showProfileDetails()
+    {
+        //TODO (After campaign)
+        //     custom screen showing:
+        //     campaign progress,
+        //     ship modifications,
+        //     player ships killed,
+        //     total shots fired,
+        //     total hits,
+        //     score
+    }
+
+    // Delete the currently selected profile.
+    //
+    // This can fail silently (e.g. if this is the last profile).
+    void deleteCurrentProfile()
+    {
+        try
         {
-            parent_   = parent;
-            platform_ = platform;
-            profileManager_ = profileManager;
-
-            // Profile container
-            with(new GUIElementFactory)
-            {
-                x      = "p_right - 176";
-                y      = "16";
-                width  = "160";
-                height = "p_bottom - 32";
-                container_ = produce();
-            }
-            parent_.addChild(container_);
-
-            // Profile action menu
-            with(new GUIMenuVerticalFactory)
-            {
-                x           = "p_left";
-                y           = "p_top + 136";
-                itemWidth   = "144";
-                itemHeight  = "24";
-                itemSpacing = "8";
-                addItem("New Profile",    &showAddNewProfile);
-                addItem("Delete Profile", &deleteCurrentProfile);
-                addItem("Back",           &back.emit);
-                profileActionMenu_ = produce();
-            }
-            container_.addChild(profileActionMenu_);
-
-            // Profile selector
-            with(new GUIElementFactory)
-            {
-                x          = "p_left";
-                y          = "p_top + 272";
-                width      = "160";
-                height     = "p_bottom - 32";
-                drawBorder = false;
-                profileSelector_ = produce();
-            }
-            // Profile selector previous/next buttons
-            with(new GUIButtonFactory)
-            {
-                x      = "p_left + 8";
-                y      = "p_top + 8";
-                width  = "12";
-                height = "26";
-                text   = "<";
-                auto prevButton = produce();
-                prevButton.pressed.connect(&previousProfile);
-                profileSelector_.addChild(prevButton);
-
-                x      = "p_right - 20";
-                text   = ">";
-                auto nextButton = produce();
-                nextButton.pressed.connect(&nextProfile);
-                profileSelector_.addChild(nextButton);
-            }
-            updateProfileButton();
-            container_.addChild(profileSelector_);
+            profileManager_.deleteProfile(profileManager_.currentProfile);
+            profileGUI_.profile!ButtonWidget.text = profileManager_.currentProfile.name;
         }
-
-        /// Destroy the profile GUI (should be called on profile GUI exit).
-        void die()
+        catch(ProfileException e)
         {
-            container_.die();
+            writeln("Could not delete profile " ~ 
+                    profileManager_.currentProfile.name ~ ": " ~ e.msg);
         }
+    }
 
-    private:
-        // Update the profile button to show the currently selected profile.
-        void updateProfileButton()
-        {
-            if(null !is profileButton_)
-            {
-                profileSelector_.removeChild(profileButton_);
-                profileButton_.die();
-            }
-            with(new GUIButtonFactory)
-            {
-                x      = "p_left + 24";
-                y      = "p_top + 8";
-                width  = "p_right - p_left - 48";
-                height = "26";
-                text   = profileManager_.currentProfile.name;
-                profileButton_ = produce();
-                profileButton_.pressed.connect(&showProfileDetails);
-                profileSelector_.addChild(profileButton_);
-            }
-        }
+    // Change to the previous profile.
+    void previousProfile()
+    {
+        profileManager_.previousProfile();
+        profileGUI_.profile!ButtonWidget.text = profileManager_.currentProfile.name;
+    }
 
-        // Show the dialog to add new profile (enter name, etc.)
-        void showAddNewProfile()
-        {
-            //TODO (after other GUI tested) GUI to add a profile
-        }
-
-        // Show the profile details GUI screen.
-        void showProfileDetails()
-        {
-            //TODO (After campaign)
-            //     custom screen showing:
-            //     campaign progress,
-            //     ship modifications,
-            //     player ships killed,
-            //     total shots fired,
-            //     total hits,
-            //     score
-        }
-
-        // Delete the currently selected profile.
-        //
-        // This can fail silently (e.g. if this is the last profile).
-        void deleteCurrentProfile()
-        {
-            try
-            {
-                profileManager_.deleteProfile(profileManager_.currentProfile);
-                updateProfileButton();
-            }
-            catch(ProfileException e)
-            {
-                writeln("Could not delete profile " ~ 
-                        profileManager_.currentProfile.name ~ ": " ~ e.msg);
-            }
-        }
-
-        // Change to the previous profile.
-        void previousProfile()
-        {
-            profileManager_.previousProfile();
-            updateProfileButton();
-        }
-
-        // Change to the next profile.
-        void nextProfile()
-        {
-            profileManager_.nextProfile();
-            updateProfileButton();
-        }
+    // Change to the next profile.
+    void nextProfile()
+    {
+        profileManager_.nextProfile();
+        profileGUI_.profile!ButtonWidget.text = profileManager_.currentProfile.name;
+    }
 }
 
 ///Exception thrown at player profile related errors.
@@ -568,7 +555,8 @@ private:
         }
         catch(YAMLException e)
         {
-            assert(false, "YAML exception at profile writing - this shouldn't happen");
+            assert(false, 
+                   "YAML exception at profile writing - this shouldn't happen: " ~ e.msg);
         }
     }
 }

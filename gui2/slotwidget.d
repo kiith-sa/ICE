@@ -34,6 +34,9 @@ public:
         super(yaml);
     }
 
+    /// Is the SlotWidget free (i.e. no RootWidget is connected) ?
+    @property bool free() const pure nothrow {return connectedWidget_ is null;}
+
     /// Connect a RootWidget.
     void connect(RootWidget child)
     {
