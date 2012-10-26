@@ -36,6 +36,7 @@ public:
     this(ref YAMLNode yaml)
     {
         text_ = widgetInitProperty!string(yaml, "text");
+        focusable_ = true;
         super(yaml);
     }
 

@@ -38,6 +38,9 @@ private:
     // The root of the widget tree.
     SlotWidget rootSlot_;
 
+    // Widget currently focused for mouse/keyboard input (if any).
+    Widget focusedWidget_;
+
     // Widget construction functions indexed by widget type name in YAML.
     //
     // A widget constructor might throw a WidgetInitException on failure.
@@ -131,6 +134,12 @@ public:
     @property SlotWidget rootSlot()
     {
         return rootSlot_;
+    }
+
+    /// Get the currently focused widget, if any.
+    @property Widget focusedWidget() pure nothrow 
+    {
+        return focusedWidget_;
     }
 
     /// Render the GUI.
@@ -240,6 +249,17 @@ package:
         if(null is expandEvent)  {expandEvent   = new ExpandEvent();}
         rootSlot_.handleEvent(minimizeEvent);
         rootSlot_.handleEvent(expandEvent);
+    }
+
+    /// Set the currently focused widget. Can be called by Widget only.
+    @property void focusedWidget(Widget rhs)
+    {
+        if(focusedWidget_ !is null)
+        {
+            focusedWidget_.lostFocusPackage();
+        }
+        focusedWidget_ = rhs;
+        focusedWidget_.gotFocusPackage();
     }
 }
 

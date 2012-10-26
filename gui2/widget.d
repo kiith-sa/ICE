@@ -61,6 +61,9 @@ protected:
     // Style manager of the widget. Contains styles of this widget and draws it.
     StyleManager styleManager_;
 
+    // Can this widget be focused? (overridden by derived widgets).
+    bool focusable_ = false;
+
 public:
     /// Construct a Widget. Contains setup code shared between widget types.
     ///
@@ -116,6 +119,12 @@ protected:
     void postInit()
     {
     }
+
+    /// Called when the widget gets focus.
+    void gotFocus(){}
+
+    /// Called when the widget loses focus.
+    void lostFocus(){}
 
 package:
     // Get widget layout - used by other widgets' layouts.
@@ -187,6 +196,18 @@ package:
         postInit();
     }
 
+    // Package accessible gotFocus() wrapper (can be only used by GUISystem).
+    final void gotFocusPackage()
+    {
+        gotFocus();
+    }
+
+    // Package accessible gotFocus() wrapper (can be only used by GUISystem).
+    final void lostFocusPackage()
+    {
+        lostFocus();
+    }
+
 private:
     // Call event handlers for the specified event, if any.
     //
@@ -252,9 +273,9 @@ private:
     Flag!"DoneSinking" mouseMoveHandler(MouseMoveEvent event)
     {
         //For enter/leave, just detect if the move enters/leaves our bounds.
-        const previousPosition  = event.position - event.relative;
+        const previousPosition  = event.position.to!int - event.relative;
         const previousMouseOver = layout.bounds.intersect(previousPosition);
-        const currentMouseOver  = layout.bounds.intersect(event.position);
+        const currentMouseOver  = layout.bounds.intersect(event.position.to!int);
 
         if(previousMouseOver && !currentMouseOver)
         {
@@ -270,11 +291,21 @@ private:
     /// Called when the mouse enters the widget's bounds.
     void mouseEntered()
     {
+        if(focusable_)
+        {
+            //Calls focused (and unfocused on any previously focused widget)
+            guiSystem_.focusedWidget = this;
+        }
     }
 
     /// Called when the mouse leaves the widget's bounds.
     void mouseLeft()
     {
+        // Test this even if focusable_ is false (in case it was changed)
+        if(guiSystem_.focusedWidget is this)
+        {
+            //Calls unfocused
+            guiSystem_.focusedWidget = null;
+        }
     }
-
 }
