@@ -17,14 +17,16 @@ import gui2.exceptions;
 import gui2.guisystem;
 import gui2.layout;
 import gui2.stylemanager;
+import math.vector2;
+import platform.key;
 import util.yaml;
 import video.videodriver;
 
 // TODO:
-// - user input events
 // - Emit MouseKeyEvent, MouseMoveEvent (register slots with platform signals, emit from that)
 //   (reuse instances to avoid unneeded allocation)
-// - default/active(mouseOver)/clicked button styles (style, style_active, style_clicked)
+// - default/focused/active button styles (style, style_focused, style_active)
+// - clicked button logic
 // - GUI changing size when VideoDriver is reset.
 // - Input text box (for PlayerProfile)
 // - PlayerProfile TODO (as much as possible)
@@ -125,6 +127,12 @@ protected:
 
     /// Called when the widget loses focus.
     void lostFocus(){}
+
+    /// Called when the widget is focused and has been clicked.
+    ///
+    /// Params: position = Mouse position in screen coordinates.
+    ///         key      = Mouse key clicked.
+    void clicked(const Vector2u position, const MouseKey key) {}
 
 package:
     // Get widget layout - used by other widgets' layouts.
@@ -266,6 +274,13 @@ private:
     // Handle a mouse key event, emitting higher-level events (such as click, etc.).
     Flag!"DoneSinking" mouseKeyHandler(MouseKeyEvent event)
     {
+        if(guiSystem_.focusedWidget is this)
+        {
+            if(event.state == KeyState.Released)
+            {
+                clicked(event.position, event.key);
+            }
+        }
         return No.DoneSinking;
     }
 
