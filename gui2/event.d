@@ -10,6 +10,8 @@ module gui2.event;
 
 
 import gui2.widget;
+import math.vector2;
+import platform.key;
 import video.videodriver;
 
 
@@ -74,4 +76,24 @@ class RenderEvent: Event
 {
     /// VideoDriver to draw with.
     VideoDriver videoDriver;
+}
+
+/// Low level mouse key event. Usually not handled by widgets directly.
+class MouseKeyEvent: Event
+{
+    /// Key state (pressed, released).
+    KeyState state;
+    /// Mouse key concerned.
+    MouseKey key;
+    /// Mouse position during the press/release.
+    Vector2u position;
+}
+
+/// Mouse movement event.
+class MouseMoveEvent: Event
+{
+    /// Mouse position after the movement.
+    Vector2u position;
+    /// Relative movement of the mouse.
+    Vector2i relative;
 }
