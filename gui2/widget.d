@@ -23,8 +23,6 @@ import util.yaml;
 import video.videodriver;
 
 // TODO:
-// - Emit MouseKeyEvent, MouseMoveEvent (register slots with platform signals, emit from that)
-//   (reuse instances to avoid unneeded allocation)
 // - default/focused/active button styles (style, style_focused, style_active)
 // - clicked button logic
 // - GUI changing size when VideoDriver is reset.

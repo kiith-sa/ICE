@@ -278,7 +278,10 @@ package:
             focusedWidget_.lostFocusPackage();
         }
         focusedWidget_ = rhs;
-        focusedWidget_.gotFocusPackage();
+        if(focusedWidget_ !is null)
+        {
+            focusedWidget_.gotFocusPackage();
+        }
     }
 
 private:
@@ -298,6 +301,14 @@ private:
     ///          position = Position of the mouse.
     void inputMouseKey(KeyState state, MouseKey key, Vector2u position)
     {
+        static MouseKeyEvent keyEvent;
+        if(null is keyEvent){keyEvent = new MouseKeyEvent();}
+
+        keyEvent.state    = state;
+        keyEvent.key      = key;
+        keyEvent.position = position;
+
+        rootSlot_.handleEvent(keyEvent);
     }
 
     /// Process mouse movement.
@@ -306,6 +317,13 @@ private:
     ///          relative = Relative movement of the mouse.
     void inputMouseMove(Vector2u position, Vector2i relative)
     {
+        static MouseMoveEvent moveEvent;
+        if(null is moveEvent){moveEvent = new MouseMoveEvent();}
+
+        moveEvent.relative = relative;
+        moveEvent.position = position;
+
+        rootSlot_.handleEvent(moveEvent);
     }
 }
 
