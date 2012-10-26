@@ -21,12 +21,16 @@ import util.yaml;
 import video.videodriver;
 
 // TODO:
-// - PlayerProfile XXX/TODO (as much as possible)
+// - user input events
+// - Emit MouseKeyEvent, MouseMoveEvent (register slots with platform signals, emit from that)
+//   (reuse instances to avoid unneeded allocation)
 // - default/active(mouseOver)/clicked button styles (style, style_active, style_clicked)
-// - user input
 // - GUI changing size when VideoDriver is reset.
 // - Input text box (for PlayerProfile)
+// - PlayerProfile TODO (as much as possible)
 // - Main menu in the new GUI (not monitors yet).
+
+
 
 /// Base class for all widgets.
 abstract class Widget
@@ -62,7 +66,7 @@ public:
     ///
     /// Note: a constructed Widget is only fully initialized after a call to init().
     ///
-    /// Params: yaml      = YAML definition of the widget.
+    /// Params: yaml = YAML definition of the widget.
     ///
     /// Throws: WidgetInitException on failure.
     this(ref YAMLNode yaml)
@@ -70,6 +74,8 @@ public:
         addEventHandler!MinimizeEvent(&minimizeHandler);
         addEventHandler!ExpandEvent(&expandHandler);
         addEventHandler!RenderEvent(&renderHandler);
+        addEventHandler!MouseKeyEvent(&mouseKeyHandler);
+        addEventHandler!MouseMoveEvent(&mouseMoveHandler);
     }
 
 protected:
@@ -113,7 +119,7 @@ protected:
 
 package:
     // Get widget layout - used by other widgets' layouts.
-    @property Layout layout() pure nothrow 
+    final @property Layout layout() pure nothrow 
     {
         assert(initialized_, "Uninitialized widget: layout getter");
         return layout_;
@@ -235,4 +241,40 @@ private:
         }
         return No.DoneSinking;
     }
+
+    // Handle a mouse key event, emitting higher-level events (such as click, etc.).
+    Flag!"DoneSinking" mouseKeyHandler(MouseKeyEvent event)
+    {
+        return No.DoneSinking;
+    }
+
+    // Handle a mouse move event, emitting higher-level events (such as mouse enter, etc.).
+    Flag!"DoneSinking" mouseMoveHandler(MouseMoveEvent event)
+    {
+        //For enter/leave, just detect if the move enters/leaves our bounds.
+        const previousPosition  = event.position - event.relative;
+        const previousMouseOver = layout.bounds.intersect(previousPosition);
+        const currentMouseOver  = layout.bounds.intersect(event.position);
+
+        if(previousMouseOver && !currentMouseOver)
+        {
+            mouseEntered();
+        }
+        else if(!previousMouseOver && currentMouseOver)
+        {
+            mouseLeft();
+        }
+        return No.DoneSinking;
+    }
+
+    /// Called when the mouse enters the widget's bounds.
+    void mouseEntered()
+    {
+    }
+
+    /// Called when the mouse leaves the widget's bounds.
+    void mouseLeft()
+    {
+    }
+
 }
