@@ -526,7 +526,8 @@ class Ice
         /// Throws: GameStartupException on failure.
         void initGUI()
         {
-            guiSystem_ = new GUISystem(videoDriver_.screenWidth, 
+            guiSystem_ = new GUISystem(platform_,
+                                       videoDriver_.screenWidth, 
                                        videoDriver_.screenHeight);
 
             // TODO this will be gradually removed and replaced by the new, 
@@ -551,10 +552,11 @@ class Ice
             gameContainer_ = new GameContainer();
         }
 
-        ///Destroy GUI subsystem.
+        /// Destroy the GUI subsystem.
         void destroyGUI()
         {
             clear(gui_);
+            clear(guiSystem_);
             clear(guiRoot_);
         }
 

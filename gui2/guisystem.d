@@ -27,6 +27,8 @@ import gui2.linestylemanager;
 import gui2.stylemanager;
 import gui2.widget;
 import math.vector2;
+import platform.key;
+import platform.platform;
 import util.yaml;
 import video.videodriver;
 
@@ -35,6 +37,9 @@ import video.videodriver;
 class GUISystem
 {
 private:
+    // Platform to use for user input.
+    Platform platform_;
+
     // The root of the widget tree.
     SlotWidget rootSlot_;
 
@@ -59,10 +64,16 @@ private:
 public:
     /// Construct the GUISystem.
     ///
-    /// Params: width  = Window width.
-    ///         height = Window height.
-    this(uint width, uint height)
+    /// Params: platform = Platform to use for user input.
+    ///         width    = Window width.
+    ///         height   = Window height.
+    this(Platform platform, uint width, uint height)
     {
+        platform_ = platform;
+        platform.key.connect(&inputKey);
+        platform.mouseMotion.connect(&inputMouseMove);
+        platform.mouseKey.connect(&inputMouseKey);
+
         // Builtin widget constructors.
         addWidgetConstructor("root",      (ref YAMLNode yaml) => new RootWidget(yaml));
         addWidgetConstructor("slot",      (ref YAMLNode yaml) => new SlotWidget(yaml));
@@ -114,6 +125,14 @@ public:
                                         ",h: " ~ to!string(height) ~ "}"); 
         rootSlot_.init("", this, cast(Widget[])[], new FixedLayout(layoutSource),
                        new LineStyleManager(slotDummyStyles));
+    }
+
+    /// Destroy the GUISystem.
+    ~this()
+    {
+        platform_.key.disconnect(&inputKey);
+        platform_.mouseMotion.disconnect(&inputMouseMove);
+        platform_.mouseKey.disconnect(&inputMouseKey);
     }
 
     /// Load a widget tree connectable to a SlotWidget from YAML.
@@ -260,6 +279,33 @@ package:
         }
         focusedWidget_ = rhs;
         focusedWidget_.gotFocusPackage();
+    }
+
+private:
+    /// Process keyboard input.
+    /// 
+    /// Params:  state   = State of the key.
+    ///          key     = Keyboard key.
+    ///          unicode = Unicode value of the key.
+    void inputKey(KeyState state, Key key, dchar unicode)
+    {
+    }
+
+    /// Process mouse key input.
+    /// 
+    /// Params:  state    = State of the key.
+    ///          key      = Mouse key.
+    ///          position = Position of the mouse.
+    void inputMouseKey(KeyState state, MouseKey key, Vector2u position)
+    {
+    }
+
+    /// Process mouse movement.
+    /// 
+    /// Params:  position = Position of the mouse in screen coordinates.
+    ///          relative = Relative movement of the mouse.
+    void inputMouseMove(Vector2u position, Vector2i relative)
+    {
     }
 }
 
