@@ -21,8 +21,6 @@ import util.yaml;
 import video.videodriver;
 
 // TODO:
-// - Fix appeareance 
-// - Load gui from yaml
 // - PlayerProfile XXX/TODO (as much as possible)
 // - default/active(mouseOver)/clicked button styles (style, style_active, style_clicked)
 // - user input

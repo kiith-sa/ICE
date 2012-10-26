@@ -54,60 +54,16 @@ public:
     /// Params: profileManager = ProfileManager this GUI is working with.
     ///         gui            = Reference to the GUI system to load widgets with.
     ///         parentSlot     = Parent slot widget to connect the profile GUI to.
+    ///         gameDir        = Game data directory to load the GUI from.
     ///
-    /// Throws: GUIInitException on failure.
-    this(ProfileManager profileManager, GUISystem gui, SlotWidget parentSlot)
+    /// Throws: GUIInitException on GUI loading failure.
+    ///         VFSException if the GUI file/s could not be found.
+    this(ProfileManager profileManager, GUISystem gui, SlotWidget parentSlot, VFSDir gameDir)
     {
         profileManager_ = profileManager;
         parentSlot_     = parentSlot;
 
-        string guiString =
-            "!!pairs\n" ~
-            "- styleManager: line\n" ~
-            "- layoutManager: boxManual #parent/window width/height/top/left/etc\n" ~
-            "- layout: {x: 'pLeft', y: 'pTop', w: 'pWidth', h: 'pHeight'}\n" ~
-            "#Main container\n" ~
-            "- widget container:\n" ~
-            "    !!pairs\n" ~
-            "    - style:\n" ~
-            "        lineWidth: 2.0\n" ~
-            "        lineColor: rgbaC0C0FFB0\n" ~
-            "    - layout: {x: 'pRight - 176', y: 16, w: 160, h: 'pBottom - 32'}\n" ~
-            "    #Profile action menu\n" ~
-            "    - widget container:\n" ~
-            "        !!pairs\n" ~
-            "        - style: {drawBorder: false}\n" ~
-            "        - layout: {x: pLeft, y: 'pTop + 136', w: 'pWidth', h: '24 * 3 + 8 * 4'}\n" ~
-            "        - widget button newProfile:\n" ~
-            "            !!pairs\n" ~
-            "            - layout: {x: 'pLeft + 8', y: 'pTop + 8', w: pWidth - 16, h: 24}\n" ~
-            "            - text: NewProfile\n" ~
-            "        - widget button deleteProfile:\n" ~
-            "            !!pairs\n" ~
-            "            - layout: {x: 'pLeft + 8', y: 'pTop + 40', w: pWidth - 16, h: 24}\n" ~
-            "            - text: Delete Profile\n" ~
-            "        - widget button back:\n" ~
-            "            !!pairs\n" ~
-            "            - layout: {x: 'pLeft + 8', y: 'pTop + 72', w: pWidth - 16, h: 24}\n" ~
-            "            - text: Back\n" ~
-            "    #Profile selector container\n" ~
-            "    - widget container:\n" ~
-            "        !!pairs\n" ~
-            "        - layout: {x: pLeft, y: 'pTop + 272', w: pWidth, h: '24 + 8 * 2'}\n" ~
-            "        - style: {drawBorder : false}\n" ~
-            "        - widget button previous:\n" ~
-            "            !!pairs\n" ~
-            "            - layout: {x: 'pLeft + 8', y: 'pTop + 8', w: 12, h: 24}\n" ~
-            "            - text: '<'\n" ~
-            "        - widget button profile:\n" ~
-            "            !!pairs\n" ~
-            "            - layout: {x: 'pLeft + 24', y: 'pTop + 8', w: 'pRight - pLeft - 48', h: 24}\n" ~
-            "            - text: DUMMY\n" ~
-            "        - widget button next:\n" ~
-            "            !!pairs\n" ~
-            "            - layout: {x: 'pRight - 20', y: 'pTop + 8', w: 12, h: 24}\n" ~
-            "            - text: '>'\n";
-        profileGUI_ = gui.loadWidgetTree(loadYAML(guiString));
+        profileGUI_ = gui.loadWidgetTree(loadYAML(gameDir.dir("gui").file("profileGUI.yaml")));
 
         profileGUI_.newProfile!ButtonWidget.pressed.connect(&showAddNewProfile);
         profileGUI_.deleteProfile!ButtonWidget.pressed.connect(&showAddNewProfile);

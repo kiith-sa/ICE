@@ -118,6 +118,7 @@ class IceGUI
          * Construct IceGUI with specified parameters.
          *
          * Params:  guiSystem      = Reference to the GUI system.
+         *          gameDir        = Game data directory.
          *          profileManager = Reference to the player profile manager (for profile GUI).
          *          parent         = GUI element to use as parent for all pong GUI elements.
          *          monitor        = Monitor subsystem, used to initialize monitor GUI view.
@@ -125,9 +126,10 @@ class IceGUI
          *
          * Throws:  GUIInitException on failure.
          */
-        this(GUISystem guiSystem, ProfileManager profileManager, GUIElement parent, MonitorManager monitor, Platform platform)
+        this(GUISystem guiSystem, VFSDir gameDir, ProfileManager profileManager, 
+             GUIElement parent, MonitorManager monitor, Platform platform)
         {
-            profileGUI_ = new ProfileGUI(profileManager, guiSystem, guiSystem.rootSlot);
+            profileGUI_ = new ProfileGUI(profileManager, guiSystem, guiSystem.rootSlot, gameDir);
             parent_     = parent;
             platform_   = platform;
 
@@ -533,7 +535,7 @@ class Ice
 
             try
             {
-                gui_ = new IceGUI(guiSystem_, profileManager_, guiRoot_.root, monitor_, platform_);
+                gui_ = new IceGUI(guiSystem_, gameDir_, profileManager_, guiRoot_.root, monitor_, platform_);
             }
             catch(GUIInitException e)
             {
