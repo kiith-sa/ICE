@@ -74,7 +74,8 @@ public:
             "    #Profile action menu\n" ~
             "    - widget container:\n" ~
             "        !!pairs\n" ~
-            "        - layout: {x: pLeft, y: 'pTop + 136', w: 'pWidth - 8', h: 'pHeight - 32'}\n" ~
+            "        - style: {drawBorder: false}\n" ~
+            "        - layout: {x: pLeft, y: 'pTop + 136', w: 'pWidth', h: '24 * 3 + 8 * 4'}\n" ~
             "        - widget button newProfile:\n" ~
             "            !!pairs\n" ~
             "            - layout: {x: 'pLeft + 8', y: 'pTop + 8', w: pWidth - 16, h: 24}\n" ~
@@ -90,7 +91,7 @@ public:
             "    #Profile selector container\n" ~
             "    - widget container:\n" ~
             "        !!pairs\n" ~
-            "        - layout: {x: pLeft, y: 'pTop + 272', w: 160, h: 'pBottom - 32'}\n" ~
+            "        - layout: {x: pLeft, y: 'pTop + 272', w: pWidth, h: '24 + 8 * 2'}\n" ~
             "        - style: {drawBorder : false}\n" ~
             "        - widget button previous:\n" ~
             "            !!pairs\n" ~
@@ -102,7 +103,7 @@ public:
             "            - text: DUMMY\n" ~
             "        - widget button next:\n" ~
             "            !!pairs\n" ~
-            "            - layout: {x: 'pRight - 8', y: 'pTop + 8', w: 12, h: 24}\n" ~
+            "            - layout: {x: 'pRight - 20', y: 'pTop + 8', w: 12, h: 24}\n" ~
             "            - text: '>'\n";
         profileGUI_ = gui.loadWidgetTree(loadYAML(guiString));
 
