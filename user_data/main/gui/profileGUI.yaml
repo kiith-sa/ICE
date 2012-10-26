@@ -1,0 +1,45 @@
+!!pairs
+- styleManager: line
+- layoutManager: boxManual #parent/window width/height/top/left/etc
+- layout: {x: 'pLeft', y: 'pTop', w: 'pWidth', h: 'pHeight'}
+#Main container
+- widget container:
+    !!pairs
+    - style:
+        lineWidth: 2.0
+        lineColor: rgbaC0C0FFB0
+    - layout: {x: 'pRight - 176', y: 16, w: 160, h: 'pBottom - 32'}
+    #Profile action menu
+    - widget container:
+        !!pairs
+        - style: {drawBorder: false}
+        - layout: {x: pLeft, y: 'pTop + 136', w: 'pWidth', h: '24 * 3 + 8 * 4'}
+        - widget button newProfile:
+            !!pairs
+            - layout: {x: 'pLeft + 8', y: 'pTop + 8', w: pWidth - 16, h: 24}
+            - text: NewProfile
+        - widget button deleteProfile:
+            !!pairs
+            - layout: {x: 'pLeft + 8', y: 'pTop + 40', w: pWidth - 16, h: 24}
+            - text: Delete Profile
+        - widget button back:
+            !!pairs
+            - layout: {x: 'pLeft + 8', y: 'pTop + 72', w: pWidth - 16, h: 24}
+            - text: Back
+    #Profile selector container
+    - widget container:
+        !!pairs
+        - layout: {x: pLeft, y: 'pTop + 272', w: pWidth, h: '24 + 8 * 2'}
+        - style: {drawBorder : false}
+        - widget button previous:
+            !!pairs
+            - layout: {x: 'pLeft + 8', y: 'pTop + 8', w: 12, h: 24}
+            - text: '<'
+        - widget button profile:
+            !!pairs
+            - layout: {x: 'pLeft + 24', y: 'pTop + 8', w: 'pRight - pLeft - 48', h: 24}
+            - text: DUMMY
+        - widget button next:
+            !!pairs
+            - layout: {x: 'pRight - 20', y: 'pTop + 8', w: 12, h: 24}
+            - text: '>'
