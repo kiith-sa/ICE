@@ -46,7 +46,6 @@ public:
         addEventHandler!MouseKeyEvent(&detectActive);
     }
 
-    /// Render the widget with specified video driver.
     override void render(VideoDriver video)
     {
         super.render(video);
