@@ -1,4 +1,15 @@
 !!pairs
+
+- buttonDefault: &bDefault
+    borderColor: rgbaC0C0FF60
+    fontColor:   rgbaA0A0FFC0
+- buttonFocused: &bFocused
+    borderColor: rgbaC0C0FFA0
+    fontColor:   rgbaC0C0FFC0
+- buttonActive:  &bActive
+    borderColor: rgbaC0C0FFFF
+    fontColor:   rgbaE0E0FFFF
+
 - styleManager: line
 - layoutManager: boxManual #parent/window width/height/top/left/etc
 - layout: {x: 'pLeft', y: 'pTop', w: 'pWidth', h: 'pHeight'}
@@ -14,20 +25,23 @@
         - layout: {x: pLeft, y: 'pTop + 136', w: 'pWidth', h: '24 * 3 + 8 * 4'}
         - widget button newProfile:
             !!pairs
-            - style focused:
-                borderColor: rgbaC0C0FFA0
-                fontColor:   rgbaC0C0FFC0
-            - style active:
-                borderColor: rgbaC0C0FFFF
-                fontColor:   rgbaE0E0FFFF
+            - style:         *bDefault
+            - style focused: *bFocused
+            - style active:  *bActive
             - layout: {x: 'pLeft + 8', y: 'pTop + 8', w: pWidth - 16, h: 24}
-            - text: NewProfile
+            - text: New Profile
         - widget button deleteProfile:
             !!pairs
+            - style:         *bDefault
+            - style focused: *bFocused
+            - style active:  *bActive
             - layout: {x: 'pLeft + 8', y: 'pTop + 40', w: pWidth - 16, h: 24}
             - text: Delete Profile
         - widget button back:
             !!pairs
+            - style:         *bDefault
+            - style focused: *bFocused
+            - style active:  *bActive
             - layout: {x: 'pLeft + 8', y: 'pTop + 72', w: pWidth - 16, h: 24}
             - text: Back
     #Profile selector container
@@ -37,13 +51,22 @@
         - style: {drawBorder : false}
         - widget button previous:
             !!pairs
+            - style:         *bDefault
+            - style focused: *bFocused
+            - style active:  *bActive
             - layout: {x: 'pLeft + 8', y: 'pTop + 8', w: 12, h: 24}
             - text: '<'
         - widget button profile:
             !!pairs
+            - style:         *bDefault
+            - style focused: *bFocused
+            - style active:  *bActive
             - layout: {x: 'pLeft + 24', y: 'pTop + 8', w: 'pRight - pLeft - 48', h: 24}
             - text: DUMMY
         - widget button next:
             !!pairs
+            - style:         *bDefault
+            - style focused: *bFocused
+            - style active:  *bActive
             - layout: {x: 'pRight - 20', y: 'pTop + 8', w: 12, h: 24}
             - text: '>'
