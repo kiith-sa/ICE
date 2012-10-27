@@ -23,8 +23,6 @@ import util.yaml;
 import video.videodriver;
 
 // TODO:
-// - clicked button logic
-// - "CSS" files
 // - GUI changing size when VideoDriver is reset.
 // - Input text box (for PlayerProfile)
 // - PlayerProfile TODO (as much as possible)
@@ -272,7 +270,8 @@ private:
     // Handle a mouse key event, emitting higher-level events (such as click, etc.).
     Flag!"DoneSinking" mouseKeyHandler(MouseKeyEvent event)
     {
-        if(guiSystem_.focusedWidget is this)
+        if(event.status == Event.Status.Sinking && 
+           guiSystem_.focusedWidget is this)
         {
             if(event.state == KeyState.Released)
             {
@@ -285,18 +284,21 @@ private:
     // Handle a mouse move event, emitting higher-level events (such as mouse enter, etc.).
     Flag!"DoneSinking" mouseMoveHandler(MouseMoveEvent event)
     {
-        //For enter/leave, just detect if the move enters/leaves our bounds.
-        const previousPosition  = event.position.to!int - event.relative;
-        const previousMouseOver = layout.bounds.intersect(previousPosition);
-        const currentMouseOver  = layout.bounds.intersect(event.position.to!int);
+        if(event.status == Event.Status.Sinking)
+        {
+            //For enter/leave, just detect if the move enters/leaves our bounds.
+            const previousPosition  = event.position.to!int - event.relative;
+            const previousMouseOver = layout.bounds.intersect(previousPosition);
+            const currentMouseOver  = layout.bounds.intersect(event.position.to!int);
 
-        if(previousMouseOver && !currentMouseOver)
-        {
-            mouseLeft();
-        }
-        else if(!previousMouseOver && currentMouseOver)
-        {
-            mouseEntered();
+            if(previousMouseOver && !currentMouseOver)
+            {
+                mouseLeft();
+            }
+            else if(!previousMouseOver && currentMouseOver)
+            {
+                mouseEntered();
+            }
         }
         return No.DoneSinking;
     }
