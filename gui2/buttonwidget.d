@@ -17,6 +17,7 @@ import gui2.layout;
 import gui2.stylemanager;
 import gui2.widget;
 import gui2.widgetutils;
+import math.vector2;
 import platform.key;
 import util.signal;
 import util.yaml;
@@ -69,11 +70,20 @@ protected:
         styleManager_.setStyle("");
     }
 
+    override void clicked(const Vector2u position, const MouseKey key)
+    {
+        if(key == MouseKey.Left)
+        {
+            pressed.emit();
+        }
+    }
+
 private:
     /// Event handler that detects whether the button is active (mouse pressed above it).
     Flag!"DoneSinking" detectActive(MouseKeyEvent event)
     {
-        if(guiSystem_.focusedWidget is this)
+        if(event.status == Event.Status.Sinking && 
+           guiSystem_.focusedWidget is this)
         {
             if(event.state == KeyState.Pressed)
             {

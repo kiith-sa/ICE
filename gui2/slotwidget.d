@@ -50,8 +50,8 @@ public:
     void disconnect(RootWidget child)
     {
         assert(connectedWidget_ is child, "The widget to disconnect does not match");
+        removeChild(connectedWidget_);
         connectedWidget_ = null;
-        removeChild(child);
         guiSystem_.updateLayout();
     }
 }
