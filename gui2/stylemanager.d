@@ -43,6 +43,15 @@ enum AlignY
 abstract class StyleManager
 {
 public:
+    /// Set style with specified name.
+    ///
+    /// Params: name = Name of style to set. There must be a style with this name 
+    ///                present. "" (empty string) is the name of the default style.
+    void setStyle(string name);
+
+    /// Does the StyleManager contain a style with specified name.
+    bool hasStyle(string name) const pure;
+
     /// Draw the widget rectangle; both its background and border.
     ///
     /// Params: video = VideoDriver to draw with.

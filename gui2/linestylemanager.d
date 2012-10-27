@@ -73,6 +73,15 @@ public:
     ///
     /// Styles must contain the default style (with name "").
     this(ref Style[] styles)
+    in
+    {
+        foreach(i1, ref s1; styles) foreach(i2, ref s2; styles)
+        {
+            assert(i1 == i2 || s1.name != s2.name, 
+                   "Two styles with identical names");
+        }
+    }
+    body
     {
         bool defStyle(ref Style s){return s.name == "";}
         auto searchResult = styles.find!defStyle();
@@ -80,6 +89,20 @@ public:
                "Trying to construct a LineStyleManager without a default style");
         style_  = searchResult.front;
         styles_ = styles;
+    }
+
+    override void setStyle(string name)
+    {
+        assert(hasStyle(name),
+               "Trying to set a style not present in this style manager");
+        bool matchingStyle(ref Style s){return s.name == name;}
+        style_ = styles_.find!matchingStyle.front;
+    }
+
+    override bool hasStyle(string name) const pure
+    {
+        bool matchingStyle(ref const Style s){return s.name == name;}
+        return styles_.canFind!matchingStyle();
     }
 
     override void drawWidgetRectangle(VideoDriver video, ref const Recti area)
