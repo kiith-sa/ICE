@@ -67,7 +67,7 @@ class SDLPlatform : Platform
             SDL_Quit();
             DerelictSDL.unload();
         }
-        
+
         override bool run()
         {
             SDL_Event event;
@@ -116,7 +116,7 @@ class SDLPlatform : Platform
             }
             key.emit(state, cast(Key)event.keysym.sym, event.keysym.unicode);
         }
-        
+
         ///Process a mouse button event.
         void processMouseKey(const SDL_MouseButtonEvent event) 
         {
@@ -139,7 +139,7 @@ class SDLPlatform : Platform
 
             mouseKey.emit(state, key, position);
         }
-        
+
         ///Process a mouse motion event.
         void processMouseMotion(const SDL_MouseMotionEvent event) 
         {
