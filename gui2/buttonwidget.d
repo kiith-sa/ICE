@@ -9,11 +9,15 @@
 module gui2.buttonwidget;
 
 
+import std.typecons;
+
+import gui2.event;
 import gui2.guisystem;
 import gui2.layout;
 import gui2.stylemanager;
 import gui2.widget;
 import gui2.widgetutils;
+import platform.key;
 import util.signal;
 import util.yaml;
 import video.videodriver;
@@ -38,6 +42,7 @@ public:
         text_ = widgetInitProperty!string(yaml, "text");
         focusable_ = true;
         super(yaml);
+        addEventHandler!MouseKeyEvent(&detectActive);
     }
 
     /// Render the widget with specified video driver.
@@ -61,6 +66,27 @@ protected:
 
     override void lostFocus()
     {
-        styleManager_.setStyle("default");
+        styleManager_.setStyle("");
+    }
+
+private:
+    /// Event handler that detects whether the button is active (mouse pressed above it).
+    Flag!"DoneSinking" detectActive(MouseKeyEvent event)
+    {
+        if(guiSystem_.focusedWidget is this)
+        {
+            if(event.state == KeyState.Pressed)
+            {
+                styleManager_.setStyle("active");
+            }
+            else if(event.state == KeyState.Released)
+            {
+                // Widget is focused - we test that above 
+                // (if it wasn't focused, style would be 
+                // already changed back to default in lostFocus())
+                styleManager_.setStyle("focused");
+            }
+        }
+        return No.DoneSinking;
     }
 }
