@@ -15,6 +15,7 @@ import std.exception;
 import std.functional;
 import std.math;
 import std.regex;
+import std.stdio;
 import std.stream;
 import std.traits;
 
@@ -62,6 +63,10 @@ YAMLNode loadYAML(VFSFile file)
  */
 YAMLNode loadYAML(string source)
 {
+    scope(failure)
+    {
+        writeln("YAML loading failed: ", source);
+    }
     auto loader = Loader(new MemoryStream(source.dup));
     loader.constructor = iceConstructor();
     loader.resolver    = iceResolver();
