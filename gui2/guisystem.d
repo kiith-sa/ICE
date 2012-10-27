@@ -68,9 +68,7 @@ public:
     /// Construct the GUISystem.
     ///
     /// Params: platform = Platform to use for user input.
-    ///         width    = Window width.
-    ///         height   = Window height.
-    this(Platform platform, uint width, uint height)
+    this(Platform platform)
     {
         platform_ = platform;
         platform.key.connect(&inputKey);
@@ -124,8 +122,7 @@ public:
         rootSlot_            = new SlotWidget(dummyMapping);
         auto styleSource     = loadYAML("{drawBorder: false}");
         auto slotDummyStyles = [LineStyleManager.Style(styleSource, "")];
-        auto layoutSource    = loadYAML("{x: 0, y: 0, w: " ~ to!string(width) ~ 
-                                        ",h: " ~ to!string(height) ~ "}"); 
+        auto layoutSource    = loadYAML("{x: 0, y: 0, w: 640, h: 480}"); 
         rootSlot_.init("", this, cast(Widget[])[], new FixedLayout(layoutSource),
                        new LineStyleManager(slotDummyStyles));
     }
@@ -136,6 +133,18 @@ public:
         platform_.key.disconnect(&inputKey);
         platform_.mouseMotion.disconnect(&inputMouseMove);
         platform_.mouseKey.disconnect(&inputMouseKey);
+    }
+
+    /// Set size of the root widget.
+    ///
+    /// Params: width  = Window width.
+    ///         height = Window height.
+    void setGUISize(const uint width, const uint height)
+    {
+        auto rootLayout = cast(FixedLayout)rootSlot_.layout;
+        assert(rootLayout !is null, "Root widget layout must be a FixedLayout");
+        rootLayout.setSize(width, height);
+        updateLayout();
     }
 
     /// Load a widget tree connectable to a SlotWidget from YAML.

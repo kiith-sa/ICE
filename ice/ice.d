@@ -526,9 +526,9 @@ class Ice
         /// Throws: GameStartupException on failure.
         void initGUI()
         {
-            guiSystem_ = new GUISystem(platform_,
-                                       videoDriver_.screenWidth, 
-                                       videoDriver_.screenHeight);
+            guiSystem_ = new GUISystem(platform_);
+            guiSystem_.setGUISize(videoDriver_.screenWidth,
+                                  videoDriver_.screenHeight);
 
             // TODO this will be gradually removed and replaced by the new, 
             //      YAML-loadable GUI.
@@ -771,6 +771,9 @@ class Ice
                 exit();
                 return;
             }
+
+            guiSystem_.setGUISize(videoDriver_.screenWidth,
+                                  videoDriver_.screenHeight);
 
             rescaleViewport();
 

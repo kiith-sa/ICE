@@ -23,7 +23,6 @@ import util.yaml;
 import video.videodriver;
 
 // TODO:
-// - GUI changing size when VideoDriver is reset.
 // - Input text box (for PlayerProfile)
 // - PlayerProfile TODO (as much as possible)
 // - Main menu in the new GUI (not monitors yet).
@@ -131,7 +130,7 @@ protected:
     void clicked(const Vector2u position, const MouseKey key) {}
 
 package:
-    // Get widget layout - used by other widgets' layouts and by RootWidget.
+    // Get widget layout - used by other widgets' layouts, GUISystem and RootWidget.
     final @property Layout layout() pure nothrow 
     {
         assert(initialized_, "Uninitialized widget: layout getter");
