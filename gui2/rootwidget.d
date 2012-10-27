@@ -186,4 +186,23 @@ private:
                 ("Widget \"" ~ fullName ~ "\" has an unexpected type. Expected " ~ T.stringof));
         return typedResult;
     }
+
+package:
+    /// If any widget in our widget tree is focused, make it lose focus.
+    void ensureNoFocus()
+    {
+        void removeFocus(Widget widget)
+        {
+            if(widget is guiSystem_.focusedWidget)
+            {
+                guiSystem_.focusedWidget = null;
+                return;
+            }
+            foreach(child; widget.children_)
+            {
+                removeFocus(child);
+            }
+        }
+        removeFocus(this);
+    }
 }
