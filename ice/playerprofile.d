@@ -23,6 +23,7 @@ import gui.guielement;
 import gui.guimenu;
 import gui2.guisystem;
 import gui2.buttonwidget;
+import gui2.lineeditwidget;
 import gui2.rootwidget;
 import gui2.slotwidget;
 import platform.platform;
@@ -36,6 +37,9 @@ class ProfileGUI
 private:
     // Profile GUI root widget.
     RootWidget profileGUI_;
+
+    // Root widget of the "add profile" dialog.
+    RootWidget addProfileGUI_;
 
     // Reference to the profile manager (creating, deleting and accessing profiles).
     ProfileManager profileManager_;
@@ -60,20 +64,40 @@ public:
     ///         VFSException if the GUI file/s could not be found.
     this(ProfileManager profileManager, GUISystem gui, SlotWidget parentSlot, VFSDir gameDir)
     {
+        scope(failure)
+        {
+            writeln("ProfileManager.this() or a callee failed");
+        }
         profileManager_ = profileManager;
         parentSlot_     = parentSlot;
 
-        profileGUI_ = gui.loadWidgetTree(loadYAML(gameDir.dir("gui").file("profileGUI.yaml")));
+        {
+            scope(failure)
+            {
+                writeln("ProfileManager.this() GUI loading failed");
+            }
+            profileGUI_ = gui.loadWidgetTree(loadYAML(gameDir.dir("gui").file("profileGUI.yaml")));
 
-        profileGUI_.newProfile!ButtonWidget.pressed.connect(&showAddNewProfile);
-        profileGUI_.deleteProfile!ButtonWidget.pressed.connect(&showAddNewProfile);
-        profileGUI_.back!ButtonWidget.pressed.connect(&hide);
+            auto addProfileSource = gameDir.dir("gui").file("addProfileGUI.yaml");
+            auto addProfileYAML   = loadYAML(addProfileSource);
+            addProfileGUI_ = gui.loadWidgetTree(addProfileYAML);
+        }
+        {
+            scope(failure)
+            {
+                writeln("ProfileManager.this() signal connection failed");
+            }
+            addProfileGUI_.profileNameEdit!LineEditWidget.textEntered.connect(&processProfileName);
+            profileGUI_.newProfile!ButtonWidget.pressed.connect(&showAddNewProfile);
+            profileGUI_.deleteProfile!ButtonWidget.pressed.connect(&showAddNewProfile);
+            profileGUI_.back!ButtonWidget.pressed.connect(&hide);
 
-        profileGUI_.previous!ButtonWidget.pressed.connect(&previousProfile);
-        profileGUI_.next!ButtonWidget.pressed.connect(&nextProfile);
+            profileGUI_.previous!ButtonWidget.pressed.connect(&previousProfile);
+            profileGUI_.next!ButtonWidget.pressed.connect(&nextProfile);
 
-        profileGUI_.profile!ButtonWidget.pressed.connect(&showProfileDetails);
-        profileGUI_.profile!ButtonWidget.text = profileManager_.currentProfile.name;
+            profileGUI_.profile!ButtonWidget.pressed.connect(&showProfileDetails);
+            profileGUI_.profile!ButtonWidget.text = profileManager_.currentProfile.name;
+        }
     }
 
     /// Show the GUI on screen.
@@ -97,7 +121,15 @@ private:
     // Show the dialog to add new profile (enter name, etc.)
     void showAddNewProfile()
     {
-        //TODO (after other GUI tested) GUI to add a profile
+        parentSlot_.disconnect(profileGUI_);
+        parentSlot_.connect(addProfileGUI_);
+    }
+
+    // Process profile name input from the addProfileGUI dialog.
+    void processProfileName(string name)
+    {
+        parentSlot_.disconnect(addProfileGUI_);
+        parentSlot_.connect(profileGUI_);
     }
 
     // Show the profile details GUI screen.
@@ -212,8 +244,8 @@ class ProfileManager
             try
             {
                 auto profileCfgFile = profilesDir_.file("profiles.yaml");
-                saveYAML(profileCfgFile,
-                         YAMLNode(["currentProfileIndex"], [currentProfileIndex_]));
+                auto outMapping = YAMLNode(["currentProfileIndex"], [currentProfileIndex_]);
+                saveYAML(profileCfgFile, outMapping);
             }
             catch(VFSException e)
             {
@@ -322,6 +354,7 @@ class ProfileManager
         // Load existing player profiles (called at startup).
         void loadProfiles()
         {
+            writeln("Loading player profiles");
             auto profileCfgFile = profilesDir_.file("profiles.yaml");
             if(!profileCfgFile.exists)
             {
@@ -335,8 +368,15 @@ class ProfileManager
 
             foreach(dir; profilesDir_.dirs)
             {
+                writeln("Loading profile ", dir.name);
                 profiles_ ~= new PlayerProfile(dir.name, dir);
             }
+
+            if(currentProfileIndex_ >= profiles_.length)
+            {
+                currentProfileIndex_ = 0;
+            }
+
         }
 }
 void unittestProfileManager()
