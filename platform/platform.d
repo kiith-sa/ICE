@@ -47,7 +47,7 @@ abstract class Platform
     private:
         ///Continue to run?
         bool run_ = true;
-                 
+
     public:
         ///Emitted when a key is pressed. Passes the key, its state and unicode value.
         mixin Signal!(KeyState, Key, dchar) key;
@@ -74,7 +74,7 @@ abstract class Platform
 
             singletonDtor();
         }
-        
+
         ///Collect input and determine if the game should continue to run.
         bool run() {return run_;}
 
