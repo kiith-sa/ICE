@@ -87,7 +87,9 @@ public:
             {
                 writeln("ProfileManager.this() signal connection failed");
             }
+            bool validChar(dchar c){return isAlphaNum(c) || c == '_';}
             addProfileGUI_.profileNameEdit!LineEditWidget.textEntered.connect(&processProfileName);
+            addProfileGUI_.profileNameEdit!LineEditWidget.characterFilter = &validChar;
             profileGUI_.newProfile!ButtonWidget.pressed.connect(&showAddNewProfile);
             profileGUI_.deleteProfile!ButtonWidget.pressed.connect(&showAddNewProfile);
             profileGUI_.back!ButtonWidget.pressed.connect(&hide);
@@ -333,8 +335,8 @@ class ProfileManager
         bool createProfile(const string name)
         {
             // Profile names can only contain alphanumeric chars and '_'
-            bool validChar(dchar c){return !isAlphaNum(c) && c != '_';}
-            if(name.canFind!validChar())
+            bool inValidChar(dchar c){return !isAlphaNum(c) && c != '_';}
+            if(name.canFind!inValidChar())
             {
                 return false;
             }
@@ -376,7 +378,6 @@ class ProfileManager
             {
                 currentProfileIndex_ = 0;
             }
-
         }
 }
 void unittestProfileManager()
