@@ -131,7 +131,7 @@ protected:
     void clicked(const Vector2u position, const MouseKey key) {}
 
 package:
-    // Get widget layout - used by other widgets' layouts.
+    // Get widget layout - used by other widgets' layouts and by RootWidget.
     final @property Layout layout() pure nothrow 
     {
         assert(initialized_, "Uninitialized widget: layout getter");
@@ -210,6 +210,31 @@ package:
     final void lostFocusPackage()
     {
         lostFocus();
+    }
+
+    /// Called when the mouse enters the widget's bounds.
+    ///
+    /// Package for RootWidget access.
+    void mouseEntered()
+    {
+        if(focusable_)
+        {
+            //Calls focused (and unfocused on any previously focused widget)
+            guiSystem_.focusedWidget = this;
+        }
+    }
+
+    /// Called when the mouse leaves the widget's bounds.
+    ///
+    /// Package for RootWidget access.
+    void mouseLeft()
+    {
+        // Test this even if focusable_ is false (in case it was changed)
+        if(guiSystem_.focusedWidget is this)
+        {
+            //Calls unfocused
+            guiSystem_.focusedWidget = null;
+        }
     }
 
 private:
@@ -301,26 +326,5 @@ private:
             }
         }
         return No.DoneSinking;
-    }
-
-    /// Called when the mouse enters the widget's bounds.
-    void mouseEntered()
-    {
-        if(focusable_)
-        {
-            //Calls focused (and unfocused on any previously focused widget)
-            guiSystem_.focusedWidget = this;
-        }
-    }
-
-    /// Called when the mouse leaves the widget's bounds.
-    void mouseLeft()
-    {
-        // Test this even if focusable_ is false (in case it was changed)
-        if(guiSystem_.focusedWidget is this)
-        {
-            //Calls unfocused
-            guiSystem_.focusedWidget = null;
-        }
     }
 }
