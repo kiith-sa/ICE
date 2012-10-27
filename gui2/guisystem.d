@@ -46,6 +46,9 @@ private:
     // Widget currently focused for mouse/keyboard input (if any).
     Widget focusedWidget_;
 
+    // Current mouse position.
+    Vector2u mousePosition_;
+
     // Widget construction functions indexed by widget type name in YAML.
     //
     // A widget constructor might throw a WidgetInitException on failure.
@@ -284,6 +287,12 @@ package:
         }
     }
 
+    /// Get current mouse position.
+    @property Vector2u mousePosition() const pure nothrow
+    {
+        return mousePosition_;
+    }
+
 private:
     /// Process keyboard input.
     /// 
@@ -322,6 +331,7 @@ private:
 
         moveEvent.relative = relative;
         moveEvent.position = position;
+        mousePosition_     = position;
 
         rootSlot_.handleEvent(moveEvent);
     }
