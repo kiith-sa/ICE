@@ -93,16 +93,14 @@ public:
 
     override void setStyle(string name)
     {
-        assert(hasStyle(name),
-               "Trying to set a style not present in this style manager");
         bool matchingStyle(ref Style s){return s.name == name;}
-        style_ = styles_.find!matchingStyle.front;
-    }
-
-    override bool hasStyle(string name) const pure
-    {
-        bool matchingStyle(ref const Style s){return s.name == name;}
-        return styles_.canFind!matchingStyle();
+        auto findResult = styles_.find!matchingStyle;
+        if(findResult.empty)
+        {
+            bool defStyle(ref Style s){return s.name == "";}
+            style_ = styles_.find!defStyle().front;
+        }
+        style_ = findResult.front;
     }
 
     override void drawWidgetRectangle(VideoDriver video, ref const Recti area)
