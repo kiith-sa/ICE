@@ -83,7 +83,7 @@ class MouseKeyEvent: Event
 {
     /// Key state (pressed, released).
     KeyState state;
-    /// Mouse key concerned.
+    /// Mouse key affected.
     MouseKey key;
     /// Mouse position during the press/release.
     Vector2u position;
@@ -96,4 +96,15 @@ class MouseMoveEvent: Event
     Vector2u position;
     /// Relative movement of the mouse.
     Vector2i relative;
+}
+
+/// Low level keyboard key event. Usually not handled by widgets directly.
+class KeyboardEvent: Event
+{
+    /// Key state (pressed, released).
+    KeyState state;
+    /// Key affected.
+    Key key;
+    /// Unicode value of the key.
+    dchar unicode;
 }

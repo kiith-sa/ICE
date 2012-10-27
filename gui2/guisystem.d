@@ -176,8 +176,8 @@ public:
     /// Render the GUI.
     void render(VideoDriver video)
     {
-        static RenderEvent renderEvent;
-        if(null is renderEvent){renderEvent = new RenderEvent();}
+        static RenderEvent event;
+        if(null is event){event = new RenderEvent();}
 
         // Save view zoom and offset.
         const zoom   = video.zoom;
@@ -187,8 +187,8 @@ public:
         video.zoom       = 1.0;
         video.viewOffset = Vector2d(0.0, 0.0);
 
-        renderEvent.videoDriver = video;
-        rootSlot_.handleEvent(renderEvent);
+        event.videoDriver = video;
+        rootSlot_.handleEvent(event);
 
         // Restore zoom and offset.
         video.zoom       = zoom;
@@ -310,6 +310,14 @@ private:
     ///          unicode = Unicode value of the key.
     void inputKey(KeyState state, Key key, dchar unicode)
     {
+        static KeyboardEvent event;
+        if(null is event){event = new KeyboardEvent();}
+
+        event.state   = state;
+        event.key     = key;
+        event.unicode = unicode;
+
+        rootSlot_.handleEvent(event);
     }
 
     /// Process mouse key input.
@@ -319,14 +327,14 @@ private:
     ///          position = Position of the mouse.
     void inputMouseKey(KeyState state, MouseKey key, Vector2u position)
     {
-        static MouseKeyEvent keyEvent;
-        if(null is keyEvent){keyEvent = new MouseKeyEvent();}
+        static MouseKeyEvent event;
+        if(null is event){event = new MouseKeyEvent();}
 
-        keyEvent.state    = state;
-        keyEvent.key      = key;
-        keyEvent.position = position;
+        event.state    = state;
+        event.key      = key;
+        event.position = position;
 
-        rootSlot_.handleEvent(keyEvent);
+        rootSlot_.handleEvent(event);
     }
 
     /// Process mouse movement.
@@ -335,14 +343,14 @@ private:
     ///          relative = Relative movement of the mouse.
     void inputMouseMove(Vector2u position, Vector2i relative)
     {
-        static MouseMoveEvent moveEvent;
-        if(null is moveEvent){moveEvent = new MouseMoveEvent();}
+        static MouseMoveEvent event;
+        if(null is event){event = new MouseMoveEvent();}
 
-        moveEvent.relative = relative;
-        moveEvent.position = position;
-        mousePosition_     = position;
+        event.relative = relative;
+        event.position = position;
+        mousePosition_ = position;
 
-        rootSlot_.handleEvent(moveEvent);
+        rootSlot_.handleEvent(event);
     }
 }
 
