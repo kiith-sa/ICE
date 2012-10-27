@@ -43,9 +43,15 @@ T layoutInitProperty(T)(ref YAMLNode yaml, string name)
 }
 
 /// Parse an optional style initialization property, with a default if not specified.
-T styleInitPropertyOpt(T)(ref YAMLNode yaml, string name, ref T defValue)
+T styleInitPropertyOpt(T)(ref YAMLNode yaml, string name, auto ref T defValue)
 {
     return optionalProperty!(T, StyleInitException)(yaml, name, defValue);
+}
+
+/// Parse an optional widget initialization property, with a default if not specified.
+T widgetInitPropertyOpt(T)(ref YAMLNode yaml, string name, auto ref T defValue)
+{
+    return optionalProperty!(T, WidgetInitException)(yaml, name, defValue);
 }
 
 private:
