@@ -5,9 +5,7 @@
 #Main container
 - widget container:
     !!pairs
-    - style:
-        lineWidth: 2.0
-        lineColor: rgbaC0C0FFB0
+    - style: {borderColor: rgbaC0C0FFB0}
     - layout: {x: 'pRight - 176', y: 16, w: 160, h: 'pBottom - 32'}
     #Profile action menu
     - widget container:
@@ -16,6 +14,12 @@
         - layout: {x: pLeft, y: 'pTop + 136', w: 'pWidth', h: '24 * 3 + 8 * 4'}
         - widget button newProfile:
             !!pairs
+            - style focused:
+                borderColor: rgbaC0C0FFA0
+                fontColor:   rgbaC0C0FFC0
+            - style active:
+                borderColor: rgbaC0C0FFFF
+                fontColor:   rgbaE0E0FFFF
             - layout: {x: 'pLeft + 8', y: 'pTop + 8', w: pWidth - 16, h: 24}
             - text: NewProfile
         - widget button deleteProfile:
