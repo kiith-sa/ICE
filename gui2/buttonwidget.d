@@ -52,4 +52,15 @@ public:
 
     /// Set button text.
     @property void text(string rhs) pure nothrow {text_ = rhs;}
+
+protected:
+    override void gotFocus()
+    {
+        styleManager_.setStyle("focused");
+    }
+
+    override void lostFocus()
+    {
+        styleManager_.setStyle("default");
+    }
 }
