@@ -18,9 +18,6 @@ import std.typecons;
 
 import dgamevfs._;
 
-import gui.guibutton;
-import gui.guielement;
-import gui.guimenu;
 import gui2.guisystem;
 import gui2.buttonwidget;
 import gui2.lineeditwidget;
@@ -35,6 +32,9 @@ import util.yaml;
 class ProfileGUI
 {
 private:
+    // Reference to the GUI system.
+    GUISystem guiSystem_;
+
     // Profile GUI root widget.
     RootWidget profileGUI_;
 
@@ -68,6 +68,8 @@ public:
         {
             writeln("ProfileManager.this() or a callee failed");
         }
+
+        guiSystem_      = gui;
         profileManager_ = profileManager;
         parentSlot_     = parentSlot;
 
@@ -125,6 +127,7 @@ private:
     {
         parentSlot_.disconnect(profileGUI_);
         parentSlot_.connect(addProfileGUI_);
+        guiSystem_.focusedWidget = addProfileGUI_.profileNameEdit!LineEditWidget;
     }
 
     // Process profile name input from the addProfileGUI dialog.
