@@ -23,7 +23,6 @@ import util.yaml;
 import video.videodriver;
 
 // TODO:
-// - Input text box (for PlayerProfile)
 // - PlayerProfile TODO (as much as possible)
 // - Main menu in the new GUI (not monitors yet).
 

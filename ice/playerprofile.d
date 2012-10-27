@@ -135,6 +135,13 @@ private:
     {
         parentSlot_.disconnect(addProfileGUI_);
         parentSlot_.connect(profileGUI_);
+        if(profileManager_.createProfile(name))
+        {
+            while(profileManager_.currentProfile.name != name)
+            {
+                nextProfile();
+            }
+        }
     }
 
     // Show the profile details GUI screen.
