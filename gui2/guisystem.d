@@ -427,10 +427,10 @@ private:
             }
             // Parameters of a style ("style" is default style, "style xxx" is style xxx)..
             // Need to not try to read "styleManager"
-            else if(key == "style" || key.startsWith("style."))
+            else if(key == "style" || key.startsWith("style "))
             {
                 auto parts = key.split(" ");
-                stylesParameters ~= tuple(parts.length >= 2 ? parts[2] : "",
+                stylesParameters ~= tuple(parts.length >= 2 ? parts[1] : "",
                                           value);
             }
             // Layout parameters.
