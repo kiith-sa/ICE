@@ -18,12 +18,12 @@ enum KeyState
     Released
 }
 
-///Key codes. Map directly to SDL 1.2 key codes.
+///Key codes. These map directly to SDL 1.2 key codes.
 enum Key
 {
     Unknown         = 0,
     First           = 0,
-                     
+
     Backspace       = 8,
     Tab             = 9,
     Clear           = 12,
