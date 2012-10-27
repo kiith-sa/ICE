@@ -11,6 +11,9 @@ module gui2.rootwidget;
 
 import std.exception;
 
+import math.rect;
+import math.vector2;
+
 import gui2.exceptions;
 import gui2.guisystem;
 import gui2.widget;
@@ -188,21 +191,41 @@ private:
     }
 
 package:
-    /// If any widget in our widget tree is focused, make it lose focus.
-    void ensureNoFocus()
+    /// Force the widgets in the tree to react as if the mouse disappeared.
+    ///
+    /// Called when disconnected from a SlotWidget.
+    void mouseLeftTree()
     {
-        void removeFocus(Widget widget)
+        void checkMouseOver(Widget widget)
         {
-            if(widget is guiSystem_.focusedWidget)
+            if(widget.layout.bounds.intersect(guiSystem_.mousePosition.to!int))
             {
-                guiSystem_.focusedWidget = null;
-                return;
+                widget.mouseLeft();
             }
             foreach(child; widget.children_)
             {
-                removeFocus(child);
+                checkMouseOver(child);
             }
         }
-        removeFocus(this);
+        checkMouseOver(this);
+    }
+
+    /// Force the widgets in the tree to react as if the mouse just appeared.
+    ///
+    /// Called when connected to a SlotWidget.
+    void checkMouseEnteredTree()
+    {
+        void checkMouseEntered(Widget widget)
+        {
+            if(widget.layout.bounds.intersect(guiSystem_.mousePosition.to!int))
+            {
+                widget.mouseEntered();
+            }
+            foreach(child; widget.children_)
+            {
+                checkMouseEntered(child);
+            }
+        }
+        checkMouseEntered(this);
     }
 }

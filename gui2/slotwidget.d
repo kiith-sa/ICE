@@ -44,13 +44,15 @@ public:
         connectedWidget_ = child;
         addChild(child);
         guiSystem_.updateLayout();
+        // Must be done after updating the layout so we get correct widget bounds.
+        connectedWidget_.checkMouseEnteredTree();
     }
 
     /// Disconnect a RootWidget. The RootWidget passed must be the connected RootWidget.
     void disconnect(RootWidget child)
     {
         assert(connectedWidget_ is child, "The widget to disconnect does not match");
-        connectedWidget_.ensureNoFocus();
+        connectedWidget_.mouseLeftTree();
         removeChild(connectedWidget_);
         connectedWidget_ = null;
         guiSystem_.updateLayout();
