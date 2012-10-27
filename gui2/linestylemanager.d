@@ -99,6 +99,7 @@ public:
         {
             bool defStyle(ref Style s){return s.name == "";}
             style_ = styles_.find!defStyle().front;
+            return;
         }
         style_ = findResult.front;
     }
