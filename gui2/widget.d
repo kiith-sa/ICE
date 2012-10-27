@@ -23,8 +23,8 @@ import util.yaml;
 import video.videodriver;
 
 // TODO:
-// - default/focused/active button styles (style, style_focused, style_active)
 // - clicked button logic
+// - "CSS" files
 // - GUI changing size when VideoDriver is reset.
 // - Input text box (for PlayerProfile)
 // - PlayerProfile TODO (as much as possible)
@@ -292,11 +292,11 @@ private:
 
         if(previousMouseOver && !currentMouseOver)
         {
-            mouseEntered();
+            mouseLeft();
         }
         else if(!previousMouseOver && currentMouseOver)
         {
-            mouseLeft();
+            mouseEntered();
         }
         return No.DoneSinking;
     }
