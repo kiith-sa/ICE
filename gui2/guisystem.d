@@ -12,6 +12,7 @@ import std.algorithm;
 import std.array;
 import std.conv;
 import std.exception;
+import std.stdio;
 import std.typecons;
 
 import gui2.boxmanuallayout;
@@ -152,6 +153,10 @@ public:
     /// Load a widget tree connectable to a SlotWidget from YAML.
     RootWidget loadWidgetTree(YAMLNode source)
     {
+        scope(failure)
+        {
+            writeln("GUISystem.loadWidgetTree() or a callee failed");
+        }
         try
         {
             auto loader = WidgetLoader(this);
@@ -173,6 +178,23 @@ public:
     @property Widget focusedWidget() pure nothrow 
     {
         return focusedWidget_;
+    }
+
+    /// Set the currently focused widget.
+    @property void focusedWidget(Widget rhs)
+    {
+        /// If we're setting focus for already focused widget, don't make
+        /// it lose/regain focus
+        bool noChange = rhs is focusedWidget_;
+        if(!noChange && focusedWidget_ !is null)
+        {
+            focusedWidget_.lostFocusPackage();
+        }
+        focusedWidget_ = rhs;
+        if(!noChange && focusedWidget_ !is null)
+        {
+            focusedWidget_.gotFocusPackage();
+        }
     }
 
     /// Render the GUI.
@@ -282,20 +304,6 @@ package:
         if(null is expandEvent)  {expandEvent   = new ExpandEvent();}
         rootSlot_.handleEvent(minimizeEvent);
         rootSlot_.handleEvent(expandEvent);
-    }
-
-    /// Set the currently focused widget. Can be called by Widget only.
-    @property void focusedWidget(Widget rhs)
-    {
-        if(focusedWidget_ !is null)
-        {
-            focusedWidget_.lostFocusPackage();
-        }
-        focusedWidget_ = rhs;
-        if(focusedWidget_ !is null)
-        {
-            focusedWidget_.gotFocusPackage();
-        }
     }
 
     /// Get current mouse position.
@@ -413,6 +421,10 @@ private:
                        Widget delegate(ref YAMLNode) widgetCtor,
                        string name)
     {
+        scope(failure)
+        {
+            writeln("WidgetLoader.parseWidget() or a callee failed");
+        }
         // Parse layout, style manager types.
         bool popStyle  = false;
         bool popLayout = false;
@@ -421,12 +433,12 @@ private:
             if(popStyle) {styleManagerStack_.popBack();}
             if(popLayout){layoutManagerStack_.popBack();}
         }
-        if(source.contains("styleManager"))
+        if(source.containsKey("styleManager"))
         {
             styleManagerStack_ ~= source["styleManager"].as!string;
             popStyle = true;
         }
-        if(source.contains("layoutManager"))
+        if(source.containsKey("layoutManager"))
         {
             layoutManagerStack_ ~= source["layoutManager"].as!string;
             popLayout = true;
