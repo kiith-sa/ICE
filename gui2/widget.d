@@ -76,6 +76,7 @@ public:
         addEventHandler!RenderEvent(&renderHandler);
         addEventHandler!MouseKeyEvent(&mouseKeyHandler);
         addEventHandler!MouseMoveEvent(&mouseMoveHandler);
+        addEventHandler!KeyboardEvent(&keyboardHandler);
     }
 
 protected:
@@ -128,6 +129,9 @@ protected:
     /// Params: position = Mouse position in screen coordinates.
     ///         key      = Mouse key clicked.
     void clicked(const Vector2u position, const MouseKey key) {}
+
+    /// Called when the widget is focused and a keyboard key has been pressed.
+    void keyPressed(const Key key, const dchar unicode) {}
 
 package:
     // Get widget layout - used by other widgets' layouts, GUISystem and RootWidget.
@@ -305,7 +309,7 @@ private:
         return No.DoneSinking;
     }
 
-    // Handle a mouse move event, emitting higher-level events (such as mouse enter, etc.).
+    // Handle a mouse move event.
     Flag!"DoneSinking" mouseMoveHandler(MouseMoveEvent event)
     {
         if(event.status == Event.Status.Sinking)
@@ -322,6 +326,20 @@ private:
             else if(!previousMouseOver && currentMouseOver)
             {
                 mouseEntered();
+            }
+        }
+        return No.DoneSinking;
+    }
+
+    // Handle a keyboard event.
+    Flag!"DoneSinking" keyboardHandler(KeyboardEvent event)
+    {
+        if(event.status == Event.Status.Sinking &&
+           guiSystem_.focusedWidget is this)
+        {
+            if(event.state == KeyState.Pressed)
+            {
+                keyPressed(event.key, event.unicode);
             }
         }
         return No.DoneSinking;
