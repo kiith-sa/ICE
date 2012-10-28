@@ -1,0 +1,23 @@
+!!pairs
+
+- buttonDefault: &bDefault
+    borderColor: rgbaC0C0FF60
+    fontColor:   rgbaA0A0FFC0
+- buttonFocused: &bFocused
+    borderColor: rgbaC0C0FFA0
+    fontColor:   rgbaC0C0FFC0
+- buttonActive:  &bActive
+    borderColor: rgbaC0C0FFFF
+    fontColor:   rgbaE0E0FFFF
+
+- styleManager: line
+- layoutManager: boxManual 
+- layout: {x: 'pLeft + 96', y: 'pTop + 16', w: 'pWidth - 192', h: 'pHeight - 32'}
+#Main container
+- widget button close:
+    !!pairs
+    - style:         *bDefault
+    - style focused: *bFocused
+    - style active:  *bActive
+    - layout: {x: 'pLeft + pWidth / 2 - 72', y: 'pBottom - 32', w: 144, h: 24}
+    - text: Close
