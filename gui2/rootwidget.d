@@ -48,7 +48,7 @@ public:
             }
             else
             {
-                return root_.get!T(this, childName); 
+                return root_.get!T(this, _fullName(childName)); 
             }
         } 
     }
@@ -137,9 +137,28 @@ public:
             }
             else
             {
-                return widgetAccess_.root_.get!T(widgetAccess_, childName); 
+                return widgetAccess_.root_.get!T(widgetAccess_._fullName(childName)); 
             }
         } 
+    }
+
+    /// Get a subwidget with specified name.
+    ///
+    /// Throws: WidgetNotFoundException if the widget could not be found.
+    ///         WidgetTypeException if the widget is not of type T.
+    T get(T)(const string fullName)
+    {
+        assert(validComposedWidgetName(name),
+               "Trying to get a widget with invalid name: " ~ name);
+
+        Widget* result = fullName in addressToWidget_;
+        enforce(result !is null,
+                new WidgetNotFoundException("Widget \"" ~ fullName ~ "\" could not be found"));
+        T typedResult = cast(T)(*result);
+        enforce(typedResult !is null,
+                new WidgetTypeException
+                ("Widget \"" ~ fullName ~ "\" has an unexpected type. Expected " ~ T.stringof));
+        return typedResult;
     }
 
 protected:
@@ -166,28 +185,6 @@ protected:
             }
         }
         widgetAddresses(this, "");
-    }
-
-private:
-    /// Get a subwidget with specified name in a widget specified by a WidgetAccess.
-    ///
-    /// Throws: WidgetNotFoundException if the widget could not be found.
-    ///         WidgetTypeException if the widget is not of type T.
-    T get(T)(ref WidgetAccess access, const string name)
-    {
-        assert(validComposedWidgetName(name),
-               "Trying to get a widget with invalid name: " ~ name);
-
-        const fullName = access._fullName(name);
-
-        Widget* result = fullName in addressToWidget_;
-        enforce(result !is null,
-                new WidgetNotFoundException("Widget \"" ~ fullName ~ "\" could not be found"));
-        T typedResult = cast(T)(*result);
-        enforce(typedResult !is null,
-                new WidgetTypeException
-                ("Widget \"" ~ fullName ~ "\" has an unexpected type. Expected " ~ T.stringof));
-        return typedResult;
     }
 
 package:
