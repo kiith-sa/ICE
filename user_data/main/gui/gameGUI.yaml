@@ -1,0 +1,60 @@
+!!pairs
+
+- buttonDefault: &bDefault
+    borderColor: rgbaC0C0FF60
+    fontColor:   rgbaA0A0FFC0
+- buttonFocused: &bFocused
+    borderColor: rgbaC0C0FFA0
+    fontColor:   rgbaC0C0FFC0
+- buttonActive:  &bActive
+    borderColor: rgbaC0C0FFFF
+    fontColor:   rgbaE0E0FFFF
+
+- styleManager: line
+- style: {drawBorder: false}
+- layoutManager: boxManual #parent/window width/height/top/left/etc
+- layout: {x: 'pLeft', y: 'pTop', w: 'pWidth', h: 'pHeight'}
+#Main container
+- widget container:
+    !!pairs
+    - style:  {borderColor: rgbaC0C0FFB0}
+    - layout: {x: 'pRight - 176', y: 16, w: 160, h: 'pBottom - 32'}
+    - widget container:
+        !!pairs
+        - style:  {drawBorder: false}
+        - layout: {x: pLeft, y: 'pTop + 136', w: 'pWidth', h: ' 8 * 6 + 24 * 5'}
+        - widget button levels:
+            !!pairs
+            - style:         *bDefault
+            - style focused: *bFocused
+            - style active:  *bActive
+            - layout: {x: 'pLeft + 8', y: 'pTop + 8', w: pWidth - 16, h: 24}
+            - text: Levels
+        - widget button playerSetup:
+            !!pairs
+            - style:         *bDefault
+            - style focused: *bFocused
+            - style active:  *bActive
+            - layout: {x: 'pLeft + 8', y: 'pTop + 8 * 2 + 24 ', w: pWidth - 16, h: 24}
+            - text: Player setup
+        - widget button credits:
+            !!pairs
+            - style:         *bDefault
+            - style focused: *bFocused
+            - style active:  *bActive
+            - layout: {x: 'pLeft + 8', y: 'pTop + 8 * 3 + 24 * 2', w: pWidth - 16, h: 24}
+            - text: Credits
+        - widget button quit:
+            !!pairs
+            - style:         *bDefault
+            - style focused: *bFocused
+            - style active:  *bActive
+            - layout: {x: 'pLeft + 8', y: 'pTop + 8 * 4 + 24 * 3', w: pWidth - 16, h: 24}
+            - text: Quit
+        - widget button resetVideo:
+            !!pairs
+            - style:         *bDefault
+            - style focused: *bFocused
+            - style active:  *bActive
+            - layout: {x: 'pLeft + 8', y: 'pTop + 8 * 5 + 24 * 4', w: pWidth - 16, h: 24}
+            - text: (DEBUG) Reset video
