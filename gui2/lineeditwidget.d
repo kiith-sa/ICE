@@ -46,7 +46,7 @@ public:
     {
         bool defaultFilter(dchar c)
         {
-            return c.isGraphical();
+            return isGraphical(c);
         }
         characterFilter_ = &defaultFilter;
         maxCharacters_   = widgetInitPropertyOpt(yaml, "maxCharacters", 16);

@@ -94,7 +94,7 @@ public:
     override void setStyle(string name)
     {
         bool matchingStyle(ref Style s){return s.name == name;}
-        auto findResult = styles_.find!matchingStyle;
+        auto findResult = find!matchingStyle(styles_);
         if(findResult.empty)
         {
             bool defStyle(ref Style s){return s.name == "";}
