@@ -364,6 +364,184 @@ private:
     }
 }
 
+/// Builds widgets dynamically.
+struct WidgetBuilder
+{
+private:
+    // Reference to the GUI system (widget/layout/style constructors).
+    GUISystem guiSystem_;
+    // Parent widget builder (when building nested widgets).
+    WidgetBuilder* parent_;
+    // Widgets built so far by calls to buildWidget().
+    //
+    // When building nested widget, these are the children of the widget 
+    // built by the parent WidgetBuilder.
+    Widget[] builtWidgets_;
+
+    // The following data members are parameters of the widget currently being built.
+
+    // Widget type specific parameters, if any (i.e. not common ones like style, etc.).
+    string widgetParams_;
+    // Name of the layout type for the widget to use.
+    string layoutType_;
+    // Layout parameters, if any.
+    string layoutParams_;
+
+    // Name of the style manager type for the widget to use.
+    string styleManager_;
+    // An array of name-parameters tuples of the widget's styles.
+    Tuple!(string, string)[] stylesParameters_;
+    // Name of the widget, if any.
+    string name_;
+
+public:
+    /// Construct a WidgetBuilder building widgets with/for specified GUISystem.
+    this(GUISystem guiSystem)
+    {
+        guiSystem_ = guiSystem;
+        parent_    = null;
+    }
+
+    /// Build a widget.
+    ///
+    /// The widget is built by the passed delegate that recursively builds
+    /// subwidgets.
+    /// The topmost widget should always be a RootWidget ("root"), to 
+    /// get a result that can be connected to other widget (through a SlotWidget).
+    ///
+    /// Params: widgetTypeName = Name of the widget type (the same as used in YAML).
+    ///         buildDg        = Builds the widget by specifying parameters 
+    ///                          like layout and style to the passed WidgetBuilder 
+    ///                          and even building subWidgets through buildWidget 
+    ///                          calls.
+    ///
+    /// Throws: GUIInitException on failure.
+    void buildWidget(string widgetTypeName)
+                    (void delegate(ref WidgetBuilder b) buildDg)
+    {
+        try
+        {
+            // Default widget parameters.
+            widgetParams_     = "{}";
+            layoutType_       = "boxManual";
+            layoutParams_     = null;
+            styleManager_     = "line";
+            name_             = null;
+            stylesParameters_ = [];
+
+            // Builder for any nested widget.
+            auto subBuilder = WidgetBuilder(guiSystem_, &this);
+            // Call the build delegate, setting widget parameters and building subwidgets.
+            buildDg(subBuilder);
+
+            // Construct widget layout.
+            auto layoutCtor = layoutType_ in guiSystem_.layoutCtors_;
+            enforce(layoutCtor !is null,
+                    new GUIInitException("Unknown layout manager: " ~ layoutType_));
+            YAMLNode layoutYAML;
+            if(layoutParams_ !is null){layoutYAML = loadYAML(layoutParams_);}
+            auto layout = (*layoutCtor)(layoutParams_ is null ? null : &layoutYAML);
+
+            // Construct the style manager of the widget.
+            Tuple!(string, YAMLNode)[] yamlStylesParameters;
+            foreach(namedStyle; stylesParameters_)
+            {
+                yamlStylesParameters ~= tuple(namedStyle[0], loadYAML(namedStyle[1]));
+            }
+            auto styleCtor = styleManager_ in guiSystem_.styleCtors_;
+            enforce(styleCtor !is null,
+                    new GUIInitException("Unknown style manager: " ~ styleManager_));
+            auto styleManager = (*styleCtor)(yamlStylesParameters);
+
+            // Construct the widget.
+            auto widgetCtor = widgetTypeName in guiSystem_.widgetCtors_;
+            enforce(widgetCtor !is null,
+                    new GUIInitException("Unknown widget type: " ~ widgetTypeName));
+            auto widgetYAML = loadYAML(widgetParams_);
+            auto result = (*widgetCtor)(widgetYAML);
+            result.init(name_, guiSystem_, subBuilder.builtWidgets,
+                        layout, styleManager);
+
+            builtWidgets_ ~= result;
+        }
+        catch(YAMLException e)
+        {
+            throw new WidgetInitException(
+                "Could not build a widget (" ~ widgetTypeName ~ ") due to a "
+                "YAML error: " ~ e.msg);
+        }
+    }
+
+    /// Set widget type specific parameters, if any (i.e. not common ones like style, etc.).
+    ///
+    /// Can only be called by build delegates passed to buildWidget().
+    @property void widgetParams(const string params) pure nothrow
+    {
+        assert(parent_ !is null, "Trying to set widget parameters when not building a widget");
+        parent_.widgetParams_ = params;
+    }
+
+    /// Set widget name, if any.
+    ///
+    /// Can only be called by build delegates passed to buildWidget().
+    @property void name(const string name) pure nothrow
+    {
+        assert(parent_ !is null, "Trying to set widget name when not building a widget");
+        parent_.name_ = name;
+    }
+
+    /// Set layout type.
+    ///
+    /// Can only be called by build delegates passed to buildWidget().
+    @property void layoutManager(const string manager) pure nothrow
+    {
+        assert(parent_ !is null, "Trying to set layout manager when not building a widget");
+        parent_.layoutType_ = manager;
+    }
+
+    /// Set layout parameters.
+    ///
+    /// Can only be called by build delegates passed to buildWidget().
+    @property void layout(const string layoutParams) pure nothrow
+    {
+        assert(parent_ !is null, "Trying to set layout parameters when not building a widget");
+        parent_.layoutParams_ = layoutParams;
+    }
+
+    /// Set style manager type.
+    ///
+    /// Can only be called by build delegates passed to buildWidget().
+    @property void styleManager(const string styleManager) pure nothrow
+    {
+        assert(parent_ !is null, "Trying to set style manager when not building a widget");
+        parent_.styleManager_ = styleManager;
+    }
+
+    /// Set parameters of style with specified name.
+    ///
+    /// Can only be called by build delegates passed to buildWidget().
+    void style(string name, string styleParams) pure nothrow
+    {
+        assert(parent_ !is null, "Trying to set a style when not building a widget");
+        parent_.stylesParameters_ ~= tuple(name, styleParams);
+    }
+
+    /// Get all widgets built by this WidgetBuilder so far.
+    @property Widget[] builtWidgets() pure nothrow
+    {
+        return builtWidgets_;
+    }
+
+private:
+    /// Construct a nested WidgetBuilder building subwidgets of the widget
+    /// currently being built by parent WidgetBuilder.
+    this(GUISystem guiSystem, WidgetBuilder* parent)
+    {
+        guiSystem_ = guiSystem;
+        parent_    = parent;
+    }
+}
+
 
 private:
 
