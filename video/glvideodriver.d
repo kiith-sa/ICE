@@ -283,7 +283,7 @@ abstract class GLVideoDriver : VideoDriver
             renderer_.drawTexture(vmin, vmin + texture.size.to!float,
                                    glTexture.texCoords.min, glTexture.texCoords.max);
         }
-        
+
         final override void drawText(const Vector2i position, const string text, const Color color)
         {
             assert(frameInProgress_, "GLVideoDriver.drawText called outside a frame");
@@ -362,7 +362,7 @@ abstract class GLVideoDriver : VideoDriver
             }
             return mode;
         }
-        
+
         final override Vector2u textSize(const string text)
         {
             scope(failure){writeln("Error measuring text size: " ~ text);}
@@ -383,7 +383,7 @@ abstract class GLVideoDriver : VideoDriver
         }
 
         @property final override void lineAA(const bool aa){renderer_.lineAA = aa;}
-        
+
         @property final override void lineWidth(const float width)
         {
             assert(width >= 0.0, "Can't set negative line width");
@@ -399,12 +399,12 @@ abstract class GLVideoDriver : VideoDriver
         {
             fontManager_.fontSize = size;
         }
-        
+
         @property final override void zoom(const real zoom)
         {
             renderer_.viewZoom = cast(float)zoom;
         }
-        
+
         @property final override real zoom() const pure {return renderer_.viewZoom;}
 
         @property final override void viewOffset(const Vector2d offset) 
