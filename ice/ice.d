@@ -24,8 +24,10 @@ import ice.game;
 import ice.playerprofile;
 import gui.guielement;
 import gui.guimenu;
+import gui2.buttonwidget;
 import gui2.exceptions;
 import gui2.guisystem;
+import gui2.rootwidget;
 import gui2.slotwidget;
 import video.videodriver;
 import video.sdlglvideodriver;
@@ -83,16 +85,22 @@ class IceGUI
 {
     ///TODO replace old GUI with the new YAML loadable GUI.
     private:
+        /// Parent slot widget the GUI is connected to.
+        SlotWidget parentSlot_;
+        /// Root widget of the main ICE GUI (the main menu).
+        RootWidget iceGUI_;
+
         ///Parent of all Pong GUI elements.
         GUIElement parent_;
         ///Monitor view widget.
         MonitorView monitor_;
-        ///Container of the main menu.
-        GUIElement menuContainer_;
+        //TODO move LevelMenu to new GUI.
         ///Container of the level menu.
         GUIElement levelMenuContainer_;
-        ///Main menu.
-        GUIMenu menu_;
+
+        //TODO remove unneeded imports.
+
+        //TODO move Credits to new GUI.
         ///Credits screen (null unless shown).
         Credits credits_;
         ///Platform for keyboard I/O.
@@ -129,7 +137,8 @@ class IceGUI
         this(GUISystem guiSystem, VFSDir gameDir, ProfileManager profileManager, 
              GUIElement parent, MonitorManager monitor, Platform platform)
         {
-            profileGUI_ = new ProfileGUI(profileManager, guiSystem, guiSystem.rootSlot, gameDir);
+            parentSlot_ = guiSystem.rootSlot;
+            profileGUI_ = new ProfileGUI(profileManager, guiSystem, parentSlot_, gameDir);
             parent_     = parent;
             platform_   = platform;
 
@@ -144,31 +153,18 @@ class IceGUI
             parent_.addChild(monitor_);
             monitor_.hide();
 
-            with(new GUIElementFactory)
-            {
-                x      = "p_right - 176";
-                y      = "16";
-                width  = "160";
-                height = "p_bottom - 32";
-                menuContainer_ = produce();
-            }
-            parent_.addChild(menuContainer_);
+            iceGUI_ = guiSystem.loadWidgetTree(
+                          loadYAML(gameDir.dir("gui").file("gameGUI.yaml")));
 
-            with(new GUIMenuVerticalFactory)
-            {
-                x           = "p_left";
-                y           = "p_top + 136";
-                itemWidth   = "144";
-                itemHeight  = "24";
-                itemSpacing = "8";
-                addItem("Levels", &levelMenuOpen.emit);
-                addItem("Player setup", &profileGUIOpen.emit);
-                addItem("Credits", &creditsShow);
-                addItem("Quit", &quit.emit);
-                addItem("(DEBUG) Reset video", &resetVideo.emit);
-                menu_ = produce();
-            }
-            menuContainer_.addChild(menu_);
+            iceGUI_.levels!ButtonWidget.pressed.connect(&levelMenuOpen.emit);
+            iceGUI_.playerSetup!ButtonWidget.pressed.connect(&profileGUIOpen.emit);
+            iceGUI_.credits!ButtonWidget.pressed.connect(&creditsShow);
+            iceGUI_.quit!ButtonWidget.pressed.connect(&quit.emit);
+            iceGUI_.resetVideo!ButtonWidget.pressed.connect(&resetVideo.emit);
+
+            profileGUI_.back.connect(&profileGUIHide);
+
+            menuShow();
         }
 
         ///Destroy the IceGUI.
@@ -183,8 +179,6 @@ class IceGUI
                 levelMenuContainer_.die();
                 levelMenuContainer_ = null;
             }
-
-            menuContainer_.die();
 
             levelMenuOpen.disconnectAll();
             profileGUIOpen.disconnectAll();
@@ -205,10 +199,16 @@ class IceGUI
         }
 
         ///Show main menu.
-        void menuShow(){menuContainer_.show();};
+        void menuShow()
+        {
+            parentSlot_.connect(iceGUI_);
+        }
 
         ///Hide main menu.
-        void menuHide(){menuContainer_.hide();};
+        void menuHide()
+        {
+            parentSlot_.disconnect(iceGUI_);
+        }
 
         ///Show level selection menu.
         ///
@@ -252,7 +252,6 @@ class IceGUI
         {
             menuHide();
             profileGUI_.show();
-            profileGUI_.back.connect({profileGUIHide();});
         }
 
         ///Hide the profile management GUI.
