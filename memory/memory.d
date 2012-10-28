@@ -559,7 +559,9 @@ private:
     {
         scope(failure){writeln("Error logging memory usage");}
 
+        writeln("Collecting memory usage profile...");
         string stats = statistics();
+        writeln("Writing memory usage profile...");
 
         auto logs = gameDir.dir("main::logs");
         logs.create();
