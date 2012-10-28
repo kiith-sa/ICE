@@ -19,8 +19,9 @@ import util.unittests;
 ///Get epsilon value for a numeric type.
 template epsilon(T)
 {
-    static if(isFloatingPoint!T){const T epsilon = T.epsilon * 500;}
-    else static if(isIntegral!T){const T epsilon = 0;}
+    static if(is(T == real))         {const T epsilon = T.epsilon * cast(T)5000;}
+    else static if(isFloatingPoint!T){const T epsilon = T.epsilon * cast(T)500;}
+    else static if(isIntegral!T)     {const T epsilon = 0;}
     else{static assert(false, "Unsupported type for epsilon: " ~ typeid(T).toString);}
 }
 
