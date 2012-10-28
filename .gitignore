@@ -1,12 +1,13 @@
-/user_data/main/profiles/KiithSa/playerShipSpawner.yaml
-/user_data/main/profiles/profiles.yaml
-/user_data/main/profiles/Default/playerShipSpawner.yaml
+/user_data/main/profiles/*
 /ice-debug.obj
 *.exe
 *.dll
 /memprof-debug
 /memprof-no-contracts
 /memprof-release
+/frameprof-debug
+/frameprof-no-contracts
+/frameprof-release
 /cdc.obj
 *.sw*
 *.sv*
