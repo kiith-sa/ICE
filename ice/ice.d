@@ -24,7 +24,6 @@ import ice.exceptions;
 import ice.game;
 import ice.playerprofile;
 import gui.guielement;
-import gui.guimenu;
 import gui2.buttonwidget;
 import gui2.exceptions;
 import gui2.guisystem;
@@ -99,9 +98,7 @@ class IceGUI
         GUIElement parent_;
         ///Monitor view widget.
         MonitorView monitor_;
-        //TODO remove unneeded imports.
 
-        //TODO move Credits to new GUI.
         ///Credits screen (null unless shown).
         Credits credits_;
         ///Platform for keyboard I/O.
@@ -134,6 +131,8 @@ class IceGUI
          *          platform       = Platform for keyboard I/O.
          *
          * Throws:  GUIInitException on failure.
+         *          YAMLException on a YAML error.
+         *          VFSException on a filesystem error.
          */
         this(GUISystem guiSystem, VFSDir gameDir, ProfileManager profileManager, 
              GUIElement parent, MonitorManager monitor, Platform platform)
@@ -166,6 +165,8 @@ class IceGUI
 
             profileGUI_.back.connect({menuShow();});
 
+            credits_ = new Credits(guiSystem_, parentSlot_, gameDir);
+            credits_.closed.connect(&creditsHide);
             menuShow();
         }
 
@@ -173,8 +174,6 @@ class IceGUI
         ~this()
         {
             monitor_.die();
-
-            if(credits_ !is null){clear(credits_);}
 
             levelMenuOpen.disconnectAll();
             profileGUIOpen.disconnectAll();
@@ -315,18 +314,14 @@ class IceGUI
         void creditsShow()
         {
             menuHide();
-            credits_ = new Credits(parent_);
-            credits_.closed.connect(&creditsHide);
-            platform_.key.connect(&credits_.keyHandler);
+            credits_.show();
             creditsStart.emit();
         }
 
         ///Hide credits screen (and show main menu).
         void creditsHide()
         {
-            platform_.key.disconnect(&credits_.keyHandler);
-            clear(credits_);
-            credits_ = null;
+            credits_.hide();
             menuShow();
             creditsEnd.emit();
         }

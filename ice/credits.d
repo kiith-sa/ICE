@@ -4,97 +4,67 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
-///Credits screen.
+/// Credits dialog.
 module ice.credits;
 
 
-import gui.guielement;
-import gui.guibutton;
-import gui.guistatictext;
+import dgamevfs._;
+
+import gui2.buttonwidget;
+import gui2.guisystem;
+import gui2.rootwidget;
+import gui2.slotwidget;
 import platform.platform;
 import util.signal;
+import util.yaml;
 
 
-/**
- * Credits screen.
- *
- * Signal:
- *     public mixin Signal!() closed
- *
- *     Emitted when this credits dialog is closed.
- */
+/// Credits dialog.
+/// 
+/// Signal:
+///     public mixin Signal!() closed
+/// 
+///     Emitted when this credits dialog is closed.
+/// 
 class Credits
 {
     private:
-        ///Credits text.
+        // Credits text.
         static immutable credits_ = 
             "TODO\n";
 
-        ///Parent of the container.
-        GUIElement parent_;
+        // Parent slot widget the credits GUI is connected to.
+        SlotWidget parentSlot_;
 
-        ///GUI element containing all elements of the credits screen.
-        GUIElement container_;
-        ///Button used to close the screen.
-        GUIButton closeButton_;
-        ///Credits text.
-        GUIStaticText text_;
+        // Root widget of the credits GUI.
+        RootWidget creditsGUI_;
 
     public:
-        ///Emitted when this credits dialog is closed.
+        /// Emitted when this credits dialog is closed.
         mixin Signal!() closed;
 
-        /**
-         * Construct a Credits screen.
-         *
-         * Params:  parent = GUI element to attach the credits screen to.
-         */
-        this(GUIElement parent)
+        /// Construct a Credits dialog.
+        /// 
+        /// Params: guiSystem  = A reference to the GUI system (to load widgets with).
+        ///         parentSlot = Parent slot widget to connect the credits dialog to.
+        ///         gameDir    = Game data directoru.
+        this(GUISystem guiSystem, SlotWidget parentSlot, VFSDir gameDir)
         {
-            parent_ = parent;
-
-            with(new GUIElementFactory)
-            {
-                margin(16, 96, 16, 96);
-                container_ = produce();
-            }
-            parent_.addChild(container_);
-
-            with(new GUIStaticTextFactory)
-            {
-                margin(16, 16, 40, 16);
-                text = credits_;
-                this.text_ = produce();
-            }
-
-            with(new GUIButtonFactory)
-            {
-                x      = "p_left + p_width / 2 - 72";
-                y      = "p_bottom - 32";
-                width  = "144";
-                height = "24";
-                text   = "Close";
-                closeButton_ = produce();
-            }
-
-            container_.addChild(text_);
-            container_.addChild(closeButton_);
-            closeButton_.pressed.connect(&closed.emit);
+            parentSlot_ = parentSlot;
+            auto creditsGUIFile = gameDir.dir("gui").file("creditsGUI.yaml");
+            creditsGUI_ = guiSystem.loadWidgetTree(loadYAML(creditsGUIFile));
+            creditsGUI_.close!ButtonWidget.connect(&closed.emit);
         }
 
-        ///Destroy this credits screen.
-        ~this()
+        // Show the credits dialog. Any RootWidget connected to parent slot must be disconnected first.
+        void show()
         {
-            container_.die();
-            closed.disconnectAll();
+            parentSlot_.connect(creditsGUI_);
         }
 
-        ///Key handler for the credits screen (so we can exit with Esc).
-        void keyHandler(KeyState state, Key key, dchar unicode)
+        // Hide the credits dialog.
+        void hide()
         {
-            if(state == KeyState.Pressed && key == Key.Escape)
-            {
-                closed.emit();
-            }
+            parentSlot_.disconnect(creditsGUI_);
         }
 }
