@@ -10,6 +10,7 @@ module ice.ice;
 
 
 import std.algorithm;
+import std.array;
 import std.conv;
 import std.stdio;
 import std.string;
@@ -85,19 +86,19 @@ class IceGUI
 {
     ///TODO replace old GUI with the new YAML loadable GUI.
     private:
+        /// Reference to the GUI system (to load widgets).
+        GUISystem guiSystem_;
         /// Parent slot widget the GUI is connected to.
         SlotWidget parentSlot_;
         /// Root widget of the main ICE GUI (the main menu).
         RootWidget iceGUI_;
+        /// Level selection menu.
+        RootWidget levelMenu_;
 
         ///Parent of all Pong GUI elements.
         GUIElement parent_;
         ///Monitor view widget.
         MonitorView monitor_;
-        //TODO move LevelMenu to new GUI.
-        ///Container of the level menu.
-        GUIElement levelMenuContainer_;
-
         //TODO remove unneeded imports.
 
         //TODO move Credits to new GUI.
@@ -137,8 +138,9 @@ class IceGUI
         this(GUISystem guiSystem, VFSDir gameDir, ProfileManager profileManager, 
              GUIElement parent, MonitorManager monitor, Platform platform)
         {
-            parentSlot_ = guiSystem.rootSlot;
-            profileGUI_ = new ProfileGUI(profileManager, guiSystem, parentSlot_, gameDir);
+            guiSystem_  = guiSystem;
+            parentSlot_ = guiSystem_.rootSlot;
+            profileGUI_ = new ProfileGUI(profileManager, guiSystem_, parentSlot_, gameDir);
             parent_     = parent;
             platform_   = platform;
 
@@ -153,7 +155,7 @@ class IceGUI
             parent_.addChild(monitor_);
             monitor_.hide();
 
-            iceGUI_ = guiSystem.loadWidgetTree(
+            iceGUI_ = guiSystem_.loadWidgetTree(
                           loadYAML(gameDir.dir("gui").file("gameGUI.yaml")));
 
             iceGUI_.levels!ButtonWidget.pressed.connect(&levelMenuOpen.emit);
@@ -162,7 +164,7 @@ class IceGUI
             iceGUI_.quit!ButtonWidget.pressed.connect(&quit.emit);
             iceGUI_.resetVideo!ButtonWidget.pressed.connect(&resetVideo.emit);
 
-            profileGUI_.back.connect(&profileGUIHide);
+            profileGUI_.back.connect({menuShow();});
 
             menuShow();
         }
@@ -173,12 +175,6 @@ class IceGUI
             monitor_.die();
 
             if(credits_ !is null){clear(credits_);}
-
-            if(levelMenuContainer_ !is null)
-            {
-                levelMenuContainer_.die();
-                levelMenuContainer_ = null;
-            }
 
             levelMenuOpen.disconnectAll();
             profileGUIOpen.disconnectAll();
@@ -210,60 +206,108 @@ class IceGUI
             parentSlot_.disconnect(iceGUI_);
         }
 
-        ///Show level selection menu.
-        ///
-        ///Params:  levels   = YAML to load level filenames from.
-        ///         initGame = Function that takes level filename and starts a game.
-        void levelMenuShow(ref YAMLNode levels, void delegate(const string) initGame)
+        /// Initialize level selection menu.
+        /// 
+        /// Params:  levels   = YAML to load level filenames from.
+        ///          initGame = Function that takes level filename and starts a game.
+        /// 
+        /// Throws: GUIInitException on failure.
+        void levelMenuInit(ref YAMLNode levels, void delegate(const string) initGame)
         {
-            if(levelMenuContainer_ !is null)
-            {
-                levelMenuContainer_.die();
-                levelMenuContainer_ = null;
-            }
+            auto menuHeight = to!string((levels.length * 8 + 24) + 8);
+            // Styles.
+            auto buttonStyleDefault =  "{borderColor: rgbaC0C0FF60, fontColor: rgbaA0A0FFC0}";
+            auto buttonStyleFocused =  "{borderColor: rgbaC0C0FFA0, fontColor: rgbaC0C0FFC0}";
+            auto buttonStyleActive  =  "{borderColor: rgbaC0C0FFFF, fontColor: rgbaE0E0FFFF}";
 
-            with(new GUIElementFactory)
-            {
-                x      = "p_right - 176";
-                y      = "16";
-                width  = "160";
-                height = "p_bottom - 32";
-                levelMenuContainer_ = produce();
-            }
-            parent_.addChild(levelMenuContainer_);
+            auto builder = WidgetBuilder(guiSystem_);
 
-            with(new GUIMenuVerticalFactory)
+            // Root widget.
+            builder.buildWidget!"root"((ref WidgetBuilder b)
             {
-                x           = "p_left";
-                y           = "p_top + 136";
-                itemWidth   = "144";
-                itemHeight  = "24";
-                itemSpacing = "8";
-                foreach(string level; levels)
+                b.styleManager("line");
+                b.style("", "{drawBorder: false}");
+                b.layoutManager("boxManual");
+                b.layout("{x: 'pLeft', y: 'pTop', w: 'pWidth', h: 'pHeight'}");
+
+                // Sidebar.
+                b.buildWidget!"container"((ref WidgetBuilder b)
                 {
-                    addItem(level, {initGame(level);});
-                }
-                levelMenuContainer_.addChild(produce());
+                    b.style("", "{borderColor: rgbaC0C0FFB0}");
+                    b.layout("{x: 'pRight - 176', y: 16, w: 160, h: 'pBottom - 32'}");
+
+                    // Menu container.
+                    b.buildWidget!"container"((ref WidgetBuilder b)
+                    {
+                        b.style("", "{drawBorder: false}");
+                        b.layout("{x: pLeft, y: 'pTop + 136', w: 'pWidth', h: "
+                                   ~ menuHeight ~ "}");
+
+                        uint l = 0;
+                        // Level buttons.
+                        foreach(string level; levels)
+                        {
+                            auto offset = to!string(8 + (24 + 8) * l);
+
+                            b.buildWidget!"button"((ref WidgetBuilder b)
+                            {
+                                b.name = "l" ~ to!string(l);
+                                b.style("", buttonStyleDefault);
+                                b.style("focused", buttonStyleFocused);
+                                b.style("active", buttonStyleActive);
+                                b.layout("{x: 'pLeft + 8', y: 'pTop + " ~ offset ~ 
+                                         "', w: 'pWidth - 16', h: 24}");
+                                b.widgetParams("{text: " ~ level ~ "}");
+                            });
+                            ++l;
+                        }
+
+                        // Back button.
+                        b.buildWidget!"button"((ref WidgetBuilder b)
+                        {
+                            auto offset = to!string(8 + (24 + 8) * l);
+                            b.name = "back";
+                            b.style("", buttonStyleDefault);
+                            b.style("focused", buttonStyleFocused);
+                            b.style("active", buttonStyleActive);
+                            b.layout("{x: 'pLeft + 8', y: 'pTop + " ~ offset ~ 
+                                     "', w: 'pWidth - 16', h: 24}");
+                            b.widgetParams("{text: Back}");
+                        });
+                    });
+                });
+            });
+
+            // Button actions.
+            levelMenu_ = cast(RootWidget)builder.builtWidgets.back;
+            auto l = 0;
+            foreach(string level; levels)
+            {
+                levelMenu_.get!ButtonWidget("l" ~ to!string(l))
+                              .pressed.connect({initGame(level);});
+                ++l;
             }
+
+            levelMenu_.back!ButtonWidget.pressed.connect({levelMenuHide(); menuShow();});
+        }
+
+        ///Show level selection menu.
+        void levelMenuShow()
+        {
+            assert(levelMenu_ !is null, "Trying to show level menu before initializing it");
+            parentSlot_.connect(levelMenu_);
         }
 
         ///Show the profile management GUI.
         void profileGUIShow()
         {
-            menuHide();
             profileGUI_.show();
-        }
-
-        ///Hide the profile management GUI.
-        void profileGUIHide()
-        {
-            menuShow();
         }
 
         ///Hide the level menu.
         void levelMenuHide()
         {
-            levelMenuContainer_.hide();
+            parentSlot_.disconnect(levelMenu_);
         }
 
     private:
@@ -381,7 +425,7 @@ class Ice
         ~this()
         {
             writeln("Destroying ICE");
-         
+
             clear(fpsCounter_);
 
             destroyFrameProfiler();
@@ -536,11 +580,23 @@ class Ice
             try
             {
                 gui_ = new IceGUI(guiSystem_, gameDir_, profileManager_, guiRoot_.root, monitor_, platform_);
+                auto levelsFile = gameDir_.file("levels.yaml");
+                YAMLNode levels = loadYAML(levelsFile);
+                gui_.levelMenuInit(levels, &initGame);
             }
             catch(GUIInitException e)
             {
                 throw new GameStartupException("Failed to initialize ICE GUI: ", e.msg);
             }
+            catch(YAMLException e)
+            {
+                throw new GameStartupException("Failed to initialize ICE GUI: ", e.msg);
+            }
+            catch(VFSException e)
+            {
+                throw new GameStartupException("Failed to initialize ICE GUI: ", e.msg);
+            }
+
             gui_.creditsStart.connect(&creditsStart);
             gui_.creditsEnd.connect(&creditsEnd);
             gui_.levelMenuOpen.connect(&showLevelMenu);
@@ -585,7 +641,17 @@ class Ice
                 if(!logDir.exists) {logDir.create();}
                 VFSFile profilerDump = logDir.file("frameProfilerDump.yaml");
                 auto stream = VFSStream(profilerDump.output);
-                frameProfilerDump((string line){stream.writeLine(line);});
+                writeln("Writing frame profile...");
+                frameProfilerDump((string line)
+                {
+                    // Write dots to show we're still working.
+                    static counter = 0;
+                    if(counter % (64 * 1024) == 0){writeln(".");}
+                    ++counter;
+                    stream.writeLine(line);
+                });
+                // Newline after the dots.
+                writeln("");
                 free(frameProfilerData_);
             }
         }
@@ -651,14 +717,13 @@ class Ice
         void showLevelMenu()
         {
             gui_.menuHide();
-            auto levelsFile = gameDir_.file("levels.yaml");
-            YAMLNode levels = loadYAML(levelsFile);
-            gui_.levelMenuShow(levels, &initGame);
+            gui_.levelMenuShow();
         }
 
         ///Show the player profile management GUI.
         void showProfileGUI()
         {
+            gui_.menuHide();
             gui_.profileGUIShow();
         }
 
