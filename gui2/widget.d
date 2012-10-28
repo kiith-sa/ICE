@@ -22,10 +22,6 @@ import platform.key;
 import util.yaml;
 import video.videodriver;
 
-// TODO:
-// - Main menu in the new GUI (not monitors yet).
-
-
 
 /// Base class for all widgets.
 abstract class Widget
