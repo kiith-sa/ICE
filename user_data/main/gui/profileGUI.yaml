@@ -17,12 +17,12 @@
 #Main container
 - widget container:
     !!pairs
-    - style: {borderColor: rgbaC0C0FFB0}
+    - style:  {borderColor: rgbaC0C0FFB0}
     - layout: {x: 'pRight - 176', y: 16, w: 160, h: 'pBottom - 32'}
     #Profile action menu
     - widget container:
         !!pairs
-        - style: {drawBorder: false}
+        - style:  {drawBorder: false}
         - layout: {x: pLeft, y: 'pTop + 136', w: 'pWidth', h: '24 * 3 + 8 * 4'}
         - widget button newProfile:
             !!pairs
