@@ -12,7 +12,7 @@
 
 - styleManager: line
 - style: {drawBorder: false}
-- layoutManager: boxManual #parent/window width/height/top/left/etc
+- layoutManager: boxManual 
 - layout: {x: 'pLeft', y: 'pTop', w: 'pWidth', h: 'pHeight'}
 #Main container
 - widget container:
