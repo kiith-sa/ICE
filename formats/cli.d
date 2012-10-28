@@ -589,7 +589,15 @@ void unittestCLI()
     cli.addOption(CLIOption("uint").target(&u));
     cli.addOption(CLIOption("string").target(&s));
     cli.parse(["programName", "--real", "4.2", "--int=-42", "--uint", "42", "--string", "42"]);
-    assert(equals(r, 4.2L) && i == -42 && u == 42 && s == "42");
+    if(!math.math.equals(r, cast(real)4.2L) || i != -42 || u != 42 || s != "42")
+    {
+        writeln("CLI unittest failed: r: ", r, ", i: ", i, ", u: ", u, ", s: ", s);
+        writeln("math.math.equals(r, cast(real)4.2L): ", math.math.equals(r, cast(real)4.2L));
+        writeln("i == -42: ", i == -42);
+        writeln("u == 42: ", u == 42);
+        writeln("s == \"42\": ", s == "42");
+        assert(false);
+    }
 
     //setters
     void setter(uint u_) nothrow {u = u_;}
