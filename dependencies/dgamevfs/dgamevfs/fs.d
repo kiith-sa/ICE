@@ -128,6 +128,7 @@ class FSDir : VFSDir
                 auto relative = e.name;
                 relative.skipOver(physicalPath_);
                 relative.skipOver("/");
+                relative.skipOver("\\");
                 if(glob is null || globMatch(relative, glob)) 
                 {
                     files.insert(new FSFile(this, relative, e.name));
@@ -152,6 +153,7 @@ class FSDir : VFSDir
                 auto relative = e.name;
                 relative.skipOver(physicalPath_);
                 relative.skipOver("/");
+                relative.skipOver("\\");
                 if(glob is null || globMatch(relative, glob)) 
                 {
                     dirs.insert(new FSDir(this, relative, e.name, writable_));
@@ -260,12 +262,12 @@ class FSFile : VFSFile
         }
 
         override @property bool exists() const {return .exists(physicalPath_);}
-            
+
         override @property bool open() const {return mode_ != Mode.Closed;}
 
-    protected:    
+    protected:
         override void openRead()
-        {          
+        {
             assert(exists, "Trying to open a nonexistent file for reading: " ~ path);
             assert(mode_ == Mode.Closed, "Trying to open a file that is already open: " ~ path);
 
