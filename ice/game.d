@@ -55,6 +55,7 @@ import ice.graphicseffect;
 import ice.hud;
 import ice.level;
 import ice.player;
+import ice.playerprofile;
 
 
 /**
@@ -103,7 +104,7 @@ class GameGUI
                                    "PCHOOOOOOOO!",
                                    "where doing it man WHERE MAKING THIS HAPEN",
                                    "42"];
-    
+
     public:
         ///Show the HUD.
         void showHUD(){hud_.show();}
@@ -244,7 +245,6 @@ class GameGUI
             hud_.draw(driver);
         }
 
-
     private:
         /**
          * Construct a GameGUI with specified parameters.
@@ -370,6 +370,9 @@ class Game
 
         ///Game data directory.
         VFSDir gameDir_;
+
+        ///Profile of the player playing the game.
+        PlayerProfile profile_;
 
         ///Game time when the game started.
         real startTime_;
@@ -527,13 +530,15 @@ class Game
          *          gui       = Game GUI.
          *          video     = Video driver used to draw the game.
          *          gameDir   = Game data directory.
+         *          profile   = Profile of the current player.
          *          levelName = File name of the level to load.
          */
         this(Platform platform, GameGUI gui, VideoDriver video, VFSDir gameDir,
-             const string levelName)
+             PlayerProfile profile, const string levelName)
         {
             gui_             = gui;
             platform_        = platform;
+            profile_         = profile;
 
             initSystems();
 
@@ -874,17 +879,19 @@ class GameContainer
          *          guiParent   = Parent for all GUI elements used by the game.
          *          videoDriver = Video driver to draw graphics with.
          *          gameDir     = Game data directory.
+         *          profile     = Profile of the current player.
          *          levelName   = Name of the level to load.
          *
          * Returns: Produced Game.
          *
          * Throws:  GameStartException if the game fails to start.
          */
-        Game produce(Platform platform, 
-                     MonitorManager monitor, 
+        Game produce(Platform platform,
+                     MonitorManager monitor,
                      GUIElement guiParent,
                      VideoDriver videoDriver,
                      VFSDir gameDir,
+                     PlayerProfile profile,
                      const string levelName)
         in
         {
@@ -902,7 +909,7 @@ class GameContainer
                 gui_     = null;
                 monitor_ = null;
             }
-            game_ = new Game(platform, gui_, videoDriver, gameDir, levelName);
+            game_ = new Game(platform, gui_, videoDriver, gameDir, profile, levelName);
             monitor_.addMonitorable(game_.entitySystem_, "Entities");
             return game_;
         }

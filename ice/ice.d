@@ -730,11 +730,12 @@ class Ice
             gui_.levelMenuHide();
             try
             {
-                game_ = gameContainer_.produce(platform_, 
-                                               monitor_, 
+                game_ = gameContainer_.produce(platform_,
+                                               monitor_,
                                                guiRoot_.root,
                                                videoDriver_,
                                                gameDir_,
+                                               profileManager_.currentProfile,
                                                levelName);
             }
             catch(GameStartException e)
