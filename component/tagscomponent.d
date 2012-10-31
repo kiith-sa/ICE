@@ -9,6 +9,8 @@
 module component.tagscomponent;
 
 
+import std.typecons;
+
 import containers.vector;
 import util.yaml;
 
@@ -32,7 +34,12 @@ private:
         // Stores tag when there are at most 6 tags.
         Tag[6]     tagsFew_;
         // Stores tags when there are more than 6 tags.
-        Vector!Tag tagsMany_ = void;
+        Tag[] tagsMany_ = void;
+        // Temporarily disabled and using a dynamic array instead 
+        // because dtors/copyctors/etc of structs in a union get called,
+        // causing bugs. When that is fixed in DMD, use a Vector instead 
+        // and destroy it explicitly in dtor of this struct.
+        //Vector!Tag tagsMany_ = void;
     }
     // When tagsFew_ is used, this is the number of tags in tagsFew_.
     //
@@ -158,7 +165,7 @@ public:
 
 private:
     /// Return all tags. Abstracts away tagsFew_ and tagsMany_.
-    @property immutable(Tag)[] tags() const pure nothrow
+    @property immutable(Tag)[] tags() pure nothrow
     {
         return cast(immutable(Tag)[])
                ((fewCount_ <= tagsFew_.length) ? tagsFew_[0 .. fewCount_]
