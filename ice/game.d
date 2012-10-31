@@ -32,6 +32,8 @@ import component.physicssystem;
 import component.spatialsystem;
 import component.spawnersystem;
 import component.statisticscomponent;
+import component.tagscomponent;
+import component.tagssystem;
 import component.timeoutsystem;
 import component.warheadsystem;
 import component.weaponsystem;
@@ -352,13 +354,13 @@ class Game
 
         ///Game area in world space.
         static immutable Rectf gameArea_ = Rectf(0.0f, 0.0f, 800.0f, 600.0f);
-     
+
         ///Player 1.
         Player player1_;
 
         ///Player ship entity ID (temp, until we have levels).
         EntityID playerShipID_;
-     
+
         ///Was initGameState successful?
         bool gameStateInitialized_;
 
@@ -411,6 +413,8 @@ class Game
         MovementConstraintSystem movementConstraintSystem_;
         ///Handles spawning of entities.
         SpawnerSystem            spawnerSystem_;
+        ///Handle entity tagging.
+        TagsSystem               tagSystem_;
 
         ///Level the game is running.
         Level level_;
@@ -480,6 +484,7 @@ class Game
                     warheadSystem_.update();
                     collisionResponseSystem_.update();
                     healthSystem_.update();
+                    tagSystem_.update();
                     timeoutSystem_.update();
 
                     spawnerSystem_.update();
@@ -592,11 +597,16 @@ class Game
                                              levelName ~ " : " ~ e.msg);
             }
 
+            // Called every frame the player ship exists by the tagSystem_.
+            void getPlayerShipID(const EntityID id)
+            {
+                playerShipID_ = id;
+            }
+            tagSystem_.callOnTag("_PLY", &getPlayerShipID);
             //Initialize player ship.
             try
             {
-                playerShipID_ = constructPlayerShip("playerShip", 
-                                                    loadYAML(gameDir_.file("ships/playerShip.yaml")));
+                constructPlayerShip("playerShip", loadYAML(gameDir_.file("ships/playerShip.yaml")));
             }
             catch(YAMLException e)
             {
@@ -642,6 +652,7 @@ class Game
             onDeathSystem_            = new OnDeathSystem(entitySystem_);
             movementConstraintSystem_ = new MovementConstraintSystem(entitySystem_);
             spawnerSystem_            = new SpawnerSystem(entitySystem_, gameTime_);
+            tagSystem_                = new TagsSystem(entitySystem_);
 
             effectManager_            = new GraphicsEffectManager();
         }
@@ -729,13 +740,13 @@ class Game
         }
 
         /**
-         * Construct the player ship entity and return its ID.
+         * Construct the player ship entity.
          *
          * Params:  name      = Name, used for debugging.
          *          position  = Starting position of the ship.
          *          yaml      = YAML node to load the ship from.
          */
-        EntityID constructPlayerShip(string name, YAMLNode yaml)
+        void constructPlayerShip(string name, YAMLNode yaml)
         {
             import component.controllercomponent;
             import component.ondeathcomponent;
@@ -752,14 +763,15 @@ class Game
                     spawner = SpawnerComponent();
                 }
 
-                controller = ControllerComponent();
-                player     = PlayerComponent(player1_);
-
-                onDeath    = OnDeathComponent(&playerDied);
+                controller    = ControllerComponent();
+                player        = PlayerComponent(player1_);
+                onDeath       = OnDeathComponent(&playerDied);
+                auto tagsNode = loadYAML("[_PLR]");
+                tags          = TagsComponent(tagsNode);
 
                 statistics = StatisticsComponent();
             }
-            return entitySystem_.newEntity(prototype);
+            entitySystem_.newEntity(prototype);
         }
 
         ///Called when the player ship has died.
