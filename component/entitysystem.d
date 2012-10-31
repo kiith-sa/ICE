@@ -43,6 +43,7 @@ import component.physicscomponent;
 import component.playercomponent;
 import component.spawnercomponent;
 import component.statisticscomponent;
+import component.tagscomponent;
 import component.visualcomponent;
 import component.volumecomponent;
 import component.warheadcomponent;
@@ -78,7 +79,8 @@ tuple
     "OnDeathComponent",
     "StatisticsComponent",
     "MovementConstraintComponent",
-    "SpawnerComponent"
+    "SpawnerComponent",
+    "TagsComponent"
 );
 
 ///Last 8 bits are reserved for special uses.
