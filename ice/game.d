@@ -335,6 +335,17 @@ struct GameSubsystems
 class Game
 {
     private:
+        /// Possible states of the player ship.
+        enum PlayerState
+        {
+            /// THe player ship has not been spawned yet.
+            PreSpawn,
+            /// The player ship exists.
+            Alive, 
+            /// The player ship has died.
+            Dead
+        }
+
         ///Game phases.
         enum GamePhase
         {
@@ -348,6 +359,12 @@ class Game
 
         ///Game phase we're currently in.
         GamePhase gamePhase_ = GamePhase.Playing;
+
+        /// Current state of the player ship.
+        PlayerState playerState_;
+
+        /// Statistics (kills, etc.) of the player ship.
+        StatisticsComponent playerStatistics_;
 
         ///Platform used for input.
         Platform platform_;
@@ -455,6 +472,8 @@ class Game
 
                         if(playerShip !is null)
                         {
+                            playerState_ = PlayerState.Alive;
+                            playerStatistics_ = *(playerShip.statistics);
                             const health = playerShip.health;
                             if(health !is null)
                             {
@@ -462,13 +481,18 @@ class Game
                                                         cast(float)health.maxHealth);
                             }
                         }
+                        else
+                        {
+                            playerState_ = PlayerState.Dead;
+                            playerDied();
+                        }
 
                         if(!level_.update())
                         {
                             assert(playerShip !is null, 
                                    "Player ship doesn't exist even though the level was "
                                    "successfully completed");
-                            gameOver(*playerShip, Yes.success);
+                            gameOver(Yes.success);
 
                             return true;
                         }
@@ -603,6 +627,8 @@ class Game
                 playerShipID_ = id;
             }
             tagSystem_.callOnTag("_PLY", &getPlayerShipID);
+
+            playerState_ = PlayerState.PreSpawn;
             //Initialize player ship.
             try
             {
@@ -765,7 +791,6 @@ class Game
 
                 controller    = ControllerComponent();
                 player        = PlayerComponent(player1_);
-                onDeath       = OnDeathComponent(&playerDied);
                 auto tagsNode = loadYAML("[_PLR]");
                 tags          = TagsComponent(tagsNode);
 
@@ -775,23 +800,22 @@ class Game
         }
 
         ///Called when the player ship has died.
-        void playerDied(ref Entity playerShip)
+        void playerDied()
         {
             //Level is done already.
             if(gamePhase_ != GamePhase.Playing) {return;}
 
             gui_.updatePlayerHealth(0.0f);
-            gameOver(playerShip, No.success);
+            gameOver(No.success);
         }
 
 
         /**
          * Called when the player dies or succeeds in clearing the level.
          *
-         * playerShip = Player ship entity to get statistics from.
          * success    = Has the player succesfully cleared the level or died?
          */
-        void gameOver(ref Entity playerShip, Flag!"success" success)
+        void gameOver(Flag!"success" success)
         {
             gamePhase_ = GamePhase.PreOver;
             //Game over enlarging text effect.
@@ -826,7 +850,7 @@ class Game
             //Must copy here as the entity system, with the player ship,
             //will be destroyed by the time the effect expires and
             //statistics are passed to the GUI.
-            const statistics = *(playerShip.statistics);
+            const statistics = playerStatistics_;
             //After the first effect ends, destroy all entities and move to the game over phase.
             effect.onExpired.connect(
             { 
