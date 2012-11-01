@@ -498,6 +498,10 @@ private:
     // Directory storing the profile data.
     VFSDir profileDir_;
 
+public:
+    /// Get the entity that will spawn the player ship and modify it at spawn time.
+    @property YAMLNode playerShipSpawner() pure nothrow {return playerShipSpawner_;}
+
 private:
     // Construct a PlayerProfile.
     //
@@ -515,10 +519,19 @@ private:
         // Create a new player profile with a spawner that does not modify the player ship.
         void createNew()
         {
-            // spawner:
-            //   - entity: ships/playerShip.yaml
-            auto spawn  = YAMLNode([YAMLNode(["entity"], ["ships/playerShip.yaml"])]);
-            playerShipSpawner_ = YAMLNode(["spawner"], [spawn]);
+            playerShipSpawner_ = 
+                loadYAML("spawner:\n" ~
+                        "  - entity: ships/playerShip.yaml\n" ~
+                        "    condition: spawn\n" ~
+                        "    components:\n" ~
+                        "        physics:\n" ~
+                        "          position: [400, 536]\n" ~
+                        "          rotation: 3.141593\n" ~
+                        "        statistics:\n"  ~
+                        "        player: 1\n"    ~ 
+                        "        tags: [_PLR]\n" ~ 
+                        "        controller:\n"  ~
+                        "        spawner: []");
             save();
         }
 
