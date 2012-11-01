@@ -672,8 +672,8 @@ class EntitySystem : Monitorable
         }
         mixin(ctfeComponentArrays());
 
-        ///ID of the next entity to construct.
-        ulong nextEntityID_ = 0;
+        ///ID of the next entity to construct. (0 is the default ID value - invalid)
+        ulong nextEntityID_ = 1;
 
         ///Maps entity IDs to entity pointers.
         Entity*[EntityID] idToEntity_;
