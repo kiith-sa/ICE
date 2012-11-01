@@ -28,6 +28,7 @@ import component.entitysystem;
 import component.healthsystem;
 import component.movementconstraintsystem;
 import component.physicssystem;
+import component.playersystem;
 import component.spatialsystem;
 import component.spawnersystem;
 import component.statisticscomponent;
@@ -372,7 +373,7 @@ class Game
         static immutable Rectf gameArea_ = Rectf(0.0f, 0.0f, 800.0f, 600.0f);
 
         ///Player 1.
-        Player player1_;
+        Player player0_;
 
         ///Player ship entity ID (temp, until we have levels).
         EntityID playerShipID_;
@@ -390,7 +391,7 @@ class Game
         VFSDir gameDir_;
 
         ///Profile of the player playing the game.
-        PlayerProfile profile_;
+        PlayerProfile playerProfile_;
 
         ///Game time when the game started.
         real startTime_;
@@ -429,6 +430,8 @@ class Game
         SpawnerSystem            spawnerSystem_;
         ///Handle entity tagging.
         TagsSystem               tagSystem_;
+        ///Assigns game players to PlayerComponents.
+        PlayerSystem             playerSystem_;
 
         ///Level the game is running.
         Level level_;
@@ -457,7 +460,7 @@ class Game
                 //to keep constant game update tick.
                 gameTime_.doGameUpdates
                 ({
-                    player1_.update();
+                    player0_.update();
 
                     if(gamePhase_ == gamePhase_.Over) {return false;}
 
@@ -478,7 +481,7 @@ class Game
                                                         cast(float)health.maxHealth);
                             }
                         }
-                        else
+                        else if(playerState_ == PlayerState.Alive)
                         {
                             playerState_ = PlayerState.Dead;
                             playerDied();
@@ -495,6 +498,7 @@ class Game
                         }
                     }
 
+                    playerSystem_.update();
                     controllerSystem_.update();
                     engineSystem_.update();
                     weaponSystem_.update();
@@ -561,9 +565,12 @@ class Game
         this(Platform platform, GameGUI gui, VideoDriver video, VFSDir gameDir,
              PlayerProfile profile, const string levelName)
         {
-            gui_             = gui;
-            platform_        = platform;
-            profile_         = profile;
+            gui_           = gui;
+            platform_      = platform;
+            playerProfile_ = profile;
+
+            scope(failure){clear(player0_);}
+            player0_  = new HumanPlayer(platform_, "Human");
 
             initSystems();
 
@@ -580,7 +587,7 @@ class Game
         {
             if(gameStateInitialized_)
             {
-                clear(player1_);
+                clear(player0_);
                 clear(level_);
                 platform_.key.disconnect(&keyHandler);
             }
@@ -600,16 +607,13 @@ class Game
          */
         void initGameState(const string levelName)
         {
-            scope(failure){clear(player1_);}
-            player1_  = new HumanPlayer(platform_, "Human");
-
             scope(failure){clear(level_);}
 
             //Initialize the level.
             try
             {
                 level_ = new DumbLevel(levelName, loadYAML(gameDir_.file(levelName)),
-                                       GameSubsystems(this));
+                                       GameSubsystems(this), playerProfile_.playerShipSpawner);
             }
             catch(LevelInitializationFailureException e)
             {
@@ -622,24 +626,9 @@ class Game
             {
                 playerShipID_ = id;
             }
-            tagSystem_.callOnTag("_PLY", &getPlayerShipID);
+            tagSystem_.callOnTag("_PLR", &getPlayerShipID);
 
             playerState_ = PlayerState.PreSpawn;
-            //Initialize player ship.
-            try
-            {
-                constructPlayerShip("playerShip", loadYAML(gameDir_.file("ships/playerShip.yaml")));
-            }
-            catch(YAMLException e)
-            {
-                throw new GameStartException("Failed to start game: could not " ~
-                                             "initialize ships: " ~ e.msg);
-            }
-            catch(VFSException e)
-            {
-                throw new GameStartException("Failed to start game: could not " ~
-                                             "initialize ships: " ~ e.msg);
-            }
 
             gui_.showHUD();
 
@@ -674,6 +663,7 @@ class Game
             movementConstraintSystem_ = new MovementConstraintSystem(entitySystem_);
             spawnerSystem_            = new SpawnerSystem(entitySystem_, gameTime_);
             tagSystem_                = new TagsSystem(entitySystem_);
+            playerSystem_             = new PlayerSystem(entitySystem_, [player0_]);
 
             effectManager_            = new GraphicsEffectManager();
         }
@@ -759,39 +749,6 @@ class Game
             }
         }
 
-        /**
-         * Construct the player ship entity.
-         *
-         * Params:  name      = Name, used for debugging.
-         *          position  = Starting position of the ship.
-         *          yaml      = YAML node to load the ship from.
-         */
-        void constructPlayerShip(string name, YAMLNode yaml)
-        {
-            import component.controllercomponent;
-            import component.physicscomponent;
-            import component.playercomponent;
-            import component.spawnercomponent;
-            import component.statisticscomponent;
-
-            auto prototype = EntityPrototype(name, yaml);
-            with(prototype)
-            {
-                if(!prototype.weapon.isNull && prototype.spawner.isNull)
-                {
-                    spawner = SpawnerComponent();
-                }
-
-                controller    = ControllerComponent();
-                player        = PlayerComponent(player1_);
-                auto tagsNode = loadYAML("[_PLR]");
-                tags          = TagsComponent(tagsNode);
-
-                statistics = StatisticsComponent();
-            }
-            entitySystem_.newEntity(prototype);
-        }
-
         ///Called when the player ship has died.
         void playerDied()
         {
@@ -801,7 +758,6 @@ class Game
             gui_.updatePlayerHealth(0.0f);
             gameOver(No.success);
         }
-
 
         /**
          * Called when the player dies or succeeds in clearing the level.

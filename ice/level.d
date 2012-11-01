@@ -599,14 +599,17 @@ class DumbLevel : Level
         /**
          * Construct a DumbLevel.
          *
-         * Params:  levelName  = Name of the level (used for debugging).
-         *          yaml       = YAML source of the level.
-         *          subsystems = Provides access to game subsystems 
-         *                       (e.g. EntitySystem to spawn entities).
+         * Params:  levelName           = Name of the level (used for debugging).
+         *          yaml                = YAML source of the level.
+         *          subsystems          = Provides access to game subsystems 
+         *                                (e.g. EntitySystem to spawn entities).
+         *          playerSpawnerSource = YAML source of an entity to spawn the
+         *                                player ship.
          *
          * Throws:  LevelInitializationFailureException on failure.
          */
-        this(string levelName, YAMLNode yaml, GameSubsystems gameSybsystems)
+        this(string levelName, YAMLNode yaml, GameSubsystems gameSybsystems,
+             YAMLNode playerSpawnerSource)
         {
             alias LevelInitializationFailureException E;
             super(levelName, gameSybsystems);
@@ -621,6 +624,9 @@ class DumbLevel : Level
                                          name_ ~ "\": " ~ key);
                 }
             }
+            auto playerSpawnerPrototype =
+                EntityPrototype("playerShipSpawner", playerSpawnerSource);
+            subsystems_.entitySystem.newEntity(playerSpawnerPrototype);
             validateScript();
             enforce(levelLoaded_,
                     new E("Level \"" ~ name_ ~ "\" has no level definition"));
