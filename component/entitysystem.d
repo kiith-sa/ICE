@@ -37,7 +37,6 @@ import component.enginecomponent;
 import component.exceptions;
 import component.healthcomponent;
 import component.movementconstraintcomponent;
-import component.ondeathcomponent;
 import component.ownercomponent;
 import component.physicscomponent;
 import component.playercomponent;
@@ -76,7 +75,6 @@ tuple
     "OwnerComponent",
     "PlayerComponent",
     "DumbScriptComponent",
-    "OnDeathComponent",
     "StatisticsComponent",
     "MovementConstraintComponent",
     "SpawnerComponent",

@@ -27,7 +27,6 @@ import component.enginesystem;
 import component.entitysystem;
 import component.healthsystem;
 import component.movementconstraintsystem;
-import component.ondeathsystem;
 import component.physicssystem;
 import component.spatialsystem;
 import component.spawnersystem;
@@ -424,8 +423,6 @@ class Game
         WarheadSystem            warheadSystem_;
         ///Handles entity health and kills entities when they run out of health.
         HealthSystem             healthSystem_;
-        ///Handles callbacks on death of entities.
-        OnDeathSystem            onDeathSystem_;
         ///Handles movement constraints (such as player being limited to the screen).
         MovementConstraintSystem movementConstraintSystem_;
         ///Handles spawning of entities.
@@ -512,7 +509,6 @@ class Game
                     timeoutSystem_.update();
 
                     spawnerSystem_.update();
-                    onDeathSystem_.update();
 
                     return false;
                 });
@@ -675,7 +671,6 @@ class Game
             collisionResponseSystem_  = new CollisionResponseSystem(entitySystem_);
             warheadSystem_            = new WarheadSystem(entitySystem_);
             healthSystem_             = new HealthSystem(entitySystem_);
-            onDeathSystem_            = new OnDeathSystem(entitySystem_);
             movementConstraintSystem_ = new MovementConstraintSystem(entitySystem_);
             spawnerSystem_            = new SpawnerSystem(entitySystem_, gameTime_);
             tagSystem_                = new TagsSystem(entitySystem_);
@@ -697,7 +692,6 @@ class Game
             clear(spatialSystem_);
             clear(warheadSystem_);
             clear(healthSystem_);
-            clear(onDeathSystem_);
             clear(movementConstraintSystem_);
             clear(spawnerSystem_);
 
@@ -775,7 +769,6 @@ class Game
         void constructPlayerShip(string name, YAMLNode yaml)
         {
             import component.controllercomponent;
-            import component.ondeathcomponent;
             import component.physicscomponent;
             import component.playercomponent;
             import component.spawnercomponent;
