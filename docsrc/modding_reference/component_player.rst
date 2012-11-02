@@ -4,8 +4,15 @@
 Player component
 ================
 
-Currently, Player component can't be used from YAML, only by internal game
-logic. This might change in future. It specifies the player (if any) which
-controls the Controller component of the entity. Currently this is only used
-for the player ship.  Trying to use Player component in YAML is currently an
-error.
+A player component specifies which player controls an entity (if it also has
+a :ref:`modding_reference/component_controller`).  While it can be declared in
+YAML, there is currently only one hardcoded player (player ``0``), which
+controls the player ship. In future, this might be used for multiple players,
+and maybe AI players. The only parameter a player component takes is the player
+index.
+
+Example::
+
+   player: 0
+
+An entity with this PlayerComponent is controlled by player 0.

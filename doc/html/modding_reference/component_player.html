@@ -50,11 +50,16 @@
             
   <div class="section" id="player-component">
 <span id="modding-reference-component-player"></span><h1>Player component<a class="headerlink" href="#player-component" title="Permalink to this headline">¶</a></h1>
-<p>Currently, Player component can&#8217;t be used from YAML, only by internal game
-logic. This might change in future. It specifies the player (if any) which
-controls the Controller component of the entity. Currently this is only used
-for the player ship.  Trying to use Player component in YAML is currently an
-error.</p>
+<p>A player component specifies which player controls an entity (if it also has
+a <a class="reference internal" href="component_controller.html#modding-reference-component-controller"><em>Controller component</em></a>).  While it can be declared in
+YAML, there is currently only one hardcoded player (player <tt class="docutils literal"><span class="pre">0</span></tt>), which
+controls the player ship. In future, this might be used for multiple players,
+and maybe AI players. The only parameter a player component takes is the player
+index.</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>player: 0</pre>
+</div>
+<p>An entity with this PlayerComponent is controlled by player 0.</p>
 </div>
 
 
@@ -81,7 +86,7 @@ error.</p>
     </div>
     <div class="footer">
         &copy; Copyright 2010-2012, Dávid Horváth, Ferdinand Majerech, Libor Mališ..
-      Last updated on Nov 01, 2012.
+      Last updated on Nov 02, 2012.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>
