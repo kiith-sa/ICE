@@ -41,6 +41,7 @@ Modding reference:
    modding_reference/component_physics 
    modding_reference/component_spawner
    modding_reference/component_statistics
+   modding_reference/component_tags
    modding_reference/component_visual
    modding_reference/component_volume
    modding_reference/component_warhead
