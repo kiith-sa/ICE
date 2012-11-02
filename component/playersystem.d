@@ -38,9 +38,9 @@ public:
         // Assign Players to PlayerComponents based on their player indices.
         foreach(ref Entity e, ref PlayerComponent player; entitySystem_)
         {
-            if(player.player is null && players_.length > player.playerNumber)
+            if(player.player is null && players_.length > player.playerIndex)
             {
-                player.player = players_[player.playerNumber];
+                player.player = players_[player.playerIndex];
             }
         }
     }
