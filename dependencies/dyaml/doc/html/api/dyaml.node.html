@@ -97,9 +97,10 @@
 </dt>
 <dd><p>Construct a Node from a value.
 </p>
-<p>Any type except of Node can be stored in a Node, but default YAML
+<p>Any type except for Node can be stored in a Node, but default YAML
  types (integers, floats, strings, timestamps, etc.) will be stored
- more efficiently.
+ more efficiently. To create a node representing a <b>null</b> value,
+ construct it from YAMLNull.
 <br>
 
 <br>
@@ -254,12 +255,17 @@
 <dd><p>Is this node a user defined type?</p>
 
 </dd>
+<dt class="d_decl">const @property bool <a name="isNull"></a><span class="ddoc_psymbol">isNull</span>();
+</dt>
+<dd><p>Is this node <b>null</b>?</p>
+
+</dd>
 <dt class="d_decl">const @property string <a name="tag"></a><span class="ddoc_psymbol">tag</span>();
 </dt>
 <dd><p>Return <a name="tag"></a><span class="ddoc_psymbol">tag</span> of the node.</p>
 
 </dd>
-<dt class="d_decl">const bool <a name="opEquals"></a><span class="ddoc_psymbol">opEquals</span>(T)(ref const T <b>rhs</b>);
+<dt class="d_decl">const bool <a name="opEquals"></a><span class="ddoc_psymbol">opEquals</span>(T)(auto ref const T <b>rhs</b>);
 </dt>
 <dd><p>Equality test.
 </p>
@@ -267,13 +273,17 @@
  This might be quite expensive if testing entire documents.
 <br>
 
- If T is not Node, convert the node to T and test equality with that.
+ If T is not Node, get a value if type T from the node and test
+ equality with that.
+<br>
+
+ To test equality with a <b>null</b> YAML value, use YAMLNull.
 
 </p>
 <b>Examples:</b><div class="pbr"><pre class="d_code"> <span class="d_keyword">auto</span> node = Node(42);
 
  <span class="d_keyword">assert</span>(node == 42);
- <span class="d_keyword">assert</span>(node == <span class="d_string">"42"</span>);
+ <span class="d_keyword">assert</span>(node != <span class="d_string">"42"</span>);
  <span class="d_keyword">assert</span>(node != <span class="d_string">"43"</span>);
 </pre>
 
@@ -289,12 +299,14 @@
 <dd><p>Shortcut for get().</p>
 
 </dd>
-<dt class="d_decl">T <a name="get"></a><span class="ddoc_psymbol">get</span>(T)();
+<dt class="d_decl">T <a name="get"></a><span class="ddoc_psymbol">get</span>(T, Flag!("stringConversion") stringConversion = Yes.stringConversion)();
 </dt>
 <dd><p>Get the value of the node as specified type.
 </p>
 <p>If the specifed type does not match type in the node,
- conversion is attempted.
+ conversion is attempted. The stringConversion template
+ parameter can be used to disable conversion from non-string
+ types to strings.
 <br>
 
  Numeric values are range checked, throwing if out of range of
@@ -303,6 +315,10 @@
 
  Timestamps are stored as std.datetime.SysTime.
  Binary values are decoded and stored as ubyte[].
+<br>
+
+ To <a name="get"></a><span class="ddoc_psymbol">get</span> a <b>null</b> value, use <a name="get"></a><span class="ddoc_psymbol">get</span>!YAMLNull . This is to
+ prevent getting <b>null</b> values for types such as strings or classes.
 <br>
 
  <br><b>Mapping default values:</b>
@@ -333,6 +349,11 @@
           the value is out of range of requested type.</div>
 
 </dd>
+<dt class="d_decl">const T <a name="get"></a><span class="ddoc_psymbol">get</span>(T, Flag!("stringConversion") stringConversion = Yes.stringConversion)();
+</dt>
+<dd><p>Ditto.</p>
+
+</dd>
 <dt class="d_decl">const @property size_t <a name="length"></a><span class="ddoc_psymbol">length</span>();
 </dt>
 <dd><p>If this is a collection, return its length.
@@ -356,8 +377,10 @@
 <br>
 
  If the node is a mapping, return the value corresponding to the first
- key equal to index, even after conversion. I.e; node["12"] will
- return value of the first key that equals "12", even if it's an integer.
+ key equal to index.
+<br>
+
+ To get element at a <b>null</b> index, use YAMLNull for index.
 
 </p>
 <b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>index</td>
@@ -369,6 +392,46 @@
 <b>Throws:</b><div class="pbr">NodeException if the index could not be found,
           non-integral index is used with a sequence or the node is
           not a collection.</div>
+
+</dd>
+<dt class="d_decl">const bool <a name="contains"></a><span class="ddoc_psymbol">contains</span>(T)(T <b>rhs</b>);
+</dt>
+<dd><p>Determine if a collection <a name="contains"></a><span class="ddoc_psymbol">contains</span> specified value.
+</p>
+<p>If the node is a sequence, check if it <a name="contains"></a><span class="ddoc_psymbol">contains</span> the specified value.
+ If it's a mapping, check if it has a value that matches specified value.
+<br>
+
+ To check for a <b>null</b> value, use YAMLNull for rhs.
+
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>rhs</td>
+<td valign=top>Item to look for.</td></tr>
+</table></div>
+<b>Returns:</b><div class="pbr"><b>true</b> if rhs was found, <b>false</b> otherwise.
+
+</div>
+<b>Throws:</b><div class="pbr">NodeException if the node is not a collection.</div>
+
+</dd>
+<dt class="d_decl">const bool <a name="containsKey"></a><span class="ddoc_psymbol">containsKey</span>(T)(T <b>rhs</b>);
+</dt>
+<dd><p>Determine if a collection contains specified key.
+</p>
+<p>If the node is a mapping, check if it has a key
+ that matches specified key.
+<br>
+
+ To check for a <b>null</b> key, use YAMLNull for rhs.
+
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>rhs</td>
+<td valign=top>Item to look for.</td></tr>
+</table></div>
+<b>Returns:</b><div class="pbr"><b>true</b> if rhs was found, <b>false</b> otherwise.
+
+</div>
+<b>Throws:</b><div class="pbr">NodeException if the node is not a mapping.</div>
 
 </dd>
 <dt class="d_decl">void <a name="opIndexAssign"></a><span class="ddoc_psymbol">opIndexAssign</span>(K, V)(V <b>value</b>, K <b>index</b>);
@@ -389,6 +452,9 @@
  pair is added to the mapping. In sequences the index must be in
  range. This ensures behavior siilar to D arrays and associative
  arrays.
+<br>
+
+ To set element at a <b>null</b> index, use YAMLNull for index.
 
 </p>
 <b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>index</td>
@@ -468,20 +534,19 @@
 </table></div>
 
 </dd>
-<dt class="d_decl">void <a name="remove"></a><span class="ddoc_psymbol">remove</span>(T)(T <b>value</b>);
+<dt class="d_decl">void <a name="remove"></a><span class="ddoc_psymbol">remove</span>(T)(T <b>rhs</b>);
 </dt>
 <dd><p>Remove first (if any) occurence of a value in a collection.
 </p>
 <p>This method can only be called on collection nodes.
 <br>
 
- If the node is a sequence, the first node matching value (including
- conversion, so e.g. "42" matches 42) is removed.
+ If the node is a sequence, the first node matching value is removed.
  If the node is a mapping, the first key-value pair where value
  matches specified value is removed.
 
 </p>
-<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>value</td>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>rhs</td>
 <td valign=top>Value to remove.</td></tr>
 </table></div>
 <b>Throws:</b><div class="pbr">NodeException if the node is not a collection.</div>
@@ -498,7 +563,7 @@
 <br>
 
  If the node is a mapping, remove the first key-value pair where
- key matches index (including conversion, so e.g. "42" matches 42).
+ key matches index.
 <br>
 
  If the node is a mapping and no key matches index, nothing is removed

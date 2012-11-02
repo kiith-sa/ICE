@@ -67,7 +67,7 @@ YAMLNode loadYAML(string source)
     {
         writeln("YAML loading failed: ", source);
     }
-    auto loader = Loader(new MemoryStream(source.dup));
+    auto loader = Loader.fromString(source);
     loader.constructor = iceConstructor();
     loader.resolver    = iceResolver();
     return loader.load(); 

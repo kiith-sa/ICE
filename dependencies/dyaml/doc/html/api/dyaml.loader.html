@@ -77,7 +77,7 @@
                      <span class="d_string">"green: '#00ff00'\n"</span>
                      <span class="d_string">"blue:  '#0000ff'"</span>;
 
- <span class="d_keyword">auto</span> colors = <span class="d_psymbol">Loader</span>(<span class="d_keyword">new</span> MemoryStream(<span class="d_keyword">cast</span>(<span class="d_keyword">char</span>[])yaml_input)).load();
+ <span class="d_keyword">auto</span> colors = <span class="d_psymbol">Loader</span>.fromMemory(yaml_input).load();
 
  <span class="d_keyword">foreach</span>(string color, string value; colors)
  {
@@ -106,6 +106,16 @@
 <td valign=top>Name of the file to load from.</td></tr>
 </table></div>
 <b>Throws:</b><div class="pbr">YAMLException if the file could not be opened or read.</div>
+
+</dd>
+<dt class="d_decl">static Loader <a name="fromString"></a><span class="ddoc_psymbol">fromString</span>(string <b>data</b>);
+</dt>
+<dd><p>Construct a Loader to load YAML from a string.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>string <b>data</b></td>
+<td valign=top>String to load YAML from.</td></tr>
+</table></div>
+<b>Returns:</b><div class="pbr">Loader loading YAML from given string.</div>
 
 </dd>
 <dt class="d_decl">this(Stream <b>stream</b>);
