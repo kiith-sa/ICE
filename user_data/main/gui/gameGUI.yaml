@@ -22,14 +22,14 @@
     - widget container:
         !!pairs
         - style:  {drawBorder: false}
-        - layout: {x: pLeft, y: 'pTop + 136', w: 'pWidth', h: ' 8 * 6 + 24 * 5'}
-        - widget button levels:
+        - layout: {x: pLeft, y: 'pTop + 136', w: 'pWidth', h: ' 8 * 7 + 24 * 6'}
+        - widget button campaigns:
             !!pairs
             - style:         *bDefault
             - style focused: *bFocused
             - style active:  *bActive
             - layout: {x: 'pLeft + 8', y: 'pTop + 8', w: pWidth - 16, h: 24}
-            - text: Levels
+            - text: Campaigns
         - widget button playerSetup:
             !!pairs
             - style:         *bDefault
@@ -58,3 +58,10 @@
             - style active:  *bActive
             - layout: {x: 'pLeft + 8', y: 'pTop + 8 * 5 + 24 * 4', w: pWidth - 16, h: 24}
             - text: (DEBUG) Reset video
+        - widget button levels:
+            !!pairs
+            - style:         *bDefault
+            - style focused: *bFocused
+            - style active:  *bActive
+            - layout: {x: 'pLeft + 8', y: 'pTop + 8 * 6 + 24 * 5', w: pWidth - 16, h: 24}
+            - text: (Deprecated) Levels

@@ -23,13 +23,13 @@ import gui2.buttonwidget;
 import gui2.lineeditwidget;
 import gui2.rootwidget;
 import gui2.slotwidget;
-import platform.platform;
+import ice.guiswapper;
 import util.signal;
 import util.unittests;
 import util.yaml;
 
 /// GUI frontend for the profile manager.
-class ProfileGUI
+class ProfileGUI: SwappableGUI
 {
 private:
     // Reference to the GUI system.
@@ -48,16 +48,15 @@ private:
     SlotWidget parentSlot_;
 
 public:
-    /// Emitted when the profile manager GUI should be exited.
-    mixin Signal!() back;
-
     /// Construct a ProfileGUI.
     ///
     /// This loads the widget tree.
     /// 
     /// Params: profileManager = ProfileManager this GUI is working with.
     ///         gui            = Reference to the GUI system to load widgets with.
-    ///         parentSlot     = Parent slot widget to connect the profile GUI to.
+    ///         parentSlot     = Parent slot widget of the profile GUI 
+    ///                          (profile GUI internally swaps its main GUI 
+    ///                          for dialogs connected here).
     ///         gameDir        = Game data directory to load the GUI from.
     ///
     /// Throws: GUIInitException on GUI loading failure.
@@ -79,6 +78,7 @@ public:
                 writeln("ProfileManager.this() GUI loading failed");
             }
             profileGUI_ = gui.loadWidgetTree(loadYAML(gameDir.dir("gui").file("profileGUI.yaml")));
+            super(profileGUI_);
 
             auto addProfileSource = gameDir.dir("gui").file("addProfileGUI.yaml");
             auto addProfileYAML   = loadYAML(addProfileSource);
@@ -94,7 +94,7 @@ public:
             addProfileGUI_.profileNameEdit!LineEditWidget.characterFilter = &validChar;
             profileGUI_.newProfile!ButtonWidget.pressed.connect(&showAddNewProfile);
             profileGUI_.deleteProfile!ButtonWidget.pressed.connect(&showAddNewProfile);
-            profileGUI_.back!ButtonWidget.pressed.connect(&hide);
+            profileGUI_.back!ButtonWidget.pressed.connect({swapGUI_("ice");});
 
             profileGUI_.previous!ButtonWidget.pressed.connect(&previousProfile);
             profileGUI_.next!ButtonWidget.pressed.connect(&nextProfile);
@@ -104,24 +104,7 @@ public:
         }
     }
 
-    /// Show the GUI on screen.
-    ///
-    /// The caller must first disconnect any RootWidget connected to the parent 
-    /// slot widget.
-    void show()
-    {
-        assert(parentSlot_.free, "Trying to show Profile GUI but previously connected RootWidget was not disconnected");
-        parentSlot_.connect(profileGUI_);
-    }
-
 private:
-    // Hide the profile GUI (when the "back" button is clicked).
-    void hide()
-    {
-        parentSlot_.disconnect(profileGUI_);
-        back.emit();
-    }
-
     // Show the dialog to add new profile (enter name, etc.)
     void showAddNewProfile()
     {
