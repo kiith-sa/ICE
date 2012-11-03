@@ -615,7 +615,7 @@ class Game
                 level_ = new DumbLevel(levelName, loadYAML(gameDir_.file(levelName)),
                                        GameSubsystems(this), playerProfile_.playerShipSpawner);
             }
-            catch(LevelInitializationFailureException e)
+            catch(LevelInitException e)
             {
                 throw new GameStartException("Failed to initialize level " ~
                                              levelName ~ " : " ~ e.msg);
@@ -642,7 +642,7 @@ class Game
         void initSystems()
         {
             gameTime_  = new GameTime();
-            startTime_ = gameTime_.gameTime;      
+            startTime_ = gameTime_.gameTime;
 
             //Initialize entity system and game subsystems.
             entitySystem_             = new EntitySystem();
