@@ -101,8 +101,6 @@ class IceGUI
 
         ///Credits screen (null unless shown).
         Credits credits_;
-        ///Platform for keyboard I/O.
-        Platform platform_;
         ///Profile management GUI, non-null when shown.
         ProfileGUI profileGUI_;
 
@@ -128,20 +126,18 @@ class IceGUI
          *          profileManager = Reference to the player profile manager (for profile GUI).
          *          parent         = GUI element to use as parent for all pong GUI elements.
          *          monitor        = Monitor subsystem, used to initialize monitor GUI view.
-         *          platform       = Platform for keyboard I/O.
          *
          * Throws:  GUIInitException on failure.
          *          YAMLException on a YAML error.
          *          VFSException on a filesystem error.
          */
         this(GUISystem guiSystem, VFSDir gameDir, ProfileManager profileManager, 
-             GUIElement parent, MonitorManager monitor, Platform platform)
+             GUIElement parent, MonitorManager monitor)
         {
             guiSystem_  = guiSystem;
             parentSlot_ = guiSystem_.rootSlot;
             profileGUI_ = new ProfileGUI(profileManager, guiSystem_, parentSlot_, gameDir);
             parent_     = parent;
-            platform_   = platform;
 
             with(new MonitorViewFactory(monitor))
             {
@@ -574,7 +570,7 @@ class Ice
 
             try
             {
-                gui_ = new IceGUI(guiSystem_, gameDir_, profileManager_, guiRoot_.root, monitor_, platform_);
+                gui_ = new IceGUI(guiSystem_, gameDir_, profileManager_, guiRoot_.root, monitor_);
                 auto levelsFile = gameDir_.file("levels.yaml");
                 YAMLNode levels = loadYAML(levelsFile);
                 gui_.levelMenuInit(levels, &initGame);
