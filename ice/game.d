@@ -331,6 +331,13 @@ struct GameSubsystems
         @property EntitySystem entitySystem() pure nothrow {return game_.entitySystem_;}
 }
 
+///Stores various data about the end of a game.
+struct GameOverData
+{
+    ///Did the player win the game?
+    bool gameWon;
+}
+
 ///Class managing a single game between players.
 class Game
 {
@@ -443,6 +450,9 @@ class Game
         GraphicsEffectManager effectManager_;
 
     public:
+        /// Emitted when the game ends (regardless of who wins).
+        mixin Signal!(GameOverData) atGameOver;
+
         /**
          * Update the game.
          *
@@ -766,6 +776,9 @@ class Game
          */
         void gameOver(Flag!"success" success)
         {
+            GameOverData gameOverData;
+            gameOverData.gameWon = success;
+            atGameOver.emit(gameOverData);
             gamePhase_ = GamePhase.PreOver;
             //Game over enlarging text effect.
             GraphicsEffect effect = new TextEffect(gameTime_.gameTime,
