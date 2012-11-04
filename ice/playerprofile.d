@@ -559,6 +559,7 @@ private:
                 loadYAML("spawner:\n" ~
                         "  - entity: ships/playerShip.yaml\n" ~
                         "    condition: spawn\n" ~
+                        "    spawnerIsOwner: false\n" ~
                         "    components:\n" ~
                         "        physics:\n" ~
                         "          position: [400, 536]\n" ~
