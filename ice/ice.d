@@ -89,7 +89,7 @@ class LevelGUI: SwappableGUI
                 {
                     b.style("", "{drawBorder: false}");
                     b.layout("{x: pLeft, y: 'pTop + 136', w: 'pWidth', h: "
-                               ~ menuHeight ~ "}");
+                             ~ menuHeight ~ "}");
 
                     uint l = 0;
                     // Level buttons.
@@ -490,9 +490,14 @@ class Ice
                 YAMLNode levels = loadYAML(levelsFile);
 
                 guiSwapper_       = new GUISwapper(guiSystem_.rootSlot);
-                auto levelGUI     = new LevelGUI(guiSystem_, levels, &initGame);
+                auto levelGUI     = new LevelGUI(guiSystem_, levels, level => initGame(level, null));
                 auto credits      = new Credits(guiSystem_, gameDir);
                 auto campaignsGUI = new CampaignsGUI(guiSystem_, campaignManager_, gameDir_);
+                auto campaignGUI  =
+                    new CampaignGUI(guiSystem_, gameDir_, campaignManager_.currentCampaign,
+                                    profileManager_.currentProfile, &initGame);
+                profileManager_.changedProfile.connect(&campaignGUI.playerProfile);
+                campaignManager_.changedCampaign.connect(&campaignGUI.campaign);
                 auto profileGUI   = 
                     new ProfileGUI(profileManager_, guiSystem_, guiSystem_.rootSlot, gameDir_);
                 gui_ = new IceGUI(guiSystem_, gameDir_, guiRoot_.root, monitor_);
@@ -500,6 +505,7 @@ class Ice
                 guiSwapper_.addGUI(credits,      "credits");
                 guiSwapper_.addGUI(levelGUI,     "levels");
                 guiSwapper_.addGUI(campaignsGUI, "campaigns");
+                guiSwapper_.addGUI(campaignGUI,  "campaign");
                 guiSwapper_.addGUI(profileGUI,   "profiles");
                 guiSwapper_.setGUI("ice");
             }
@@ -596,7 +602,7 @@ class Ice
             }
             catch(ProfileException e)
             {
-                writeln("Failed to save player profiles");
+                writeln("Failed to save player profiles: " ~ e.msg);
             }
         }
 
@@ -617,6 +623,16 @@ class Ice
         /// Deinitialize any code related to campaigns.
         void destroyCampaigns()
         {
+            try
+            {
+                campaignManager_.save();
+                clear(campaignManager_);
+                campaignManager_ = null;
+            }
+            catch(CampaignSaveException e)
+            {
+                writeln("Failed to save campaign manager config: " ~ e.msg);
+            }
         }
 
         ///Destroy Monitor subsystem.
@@ -648,7 +664,8 @@ class Ice
         }
 
         ///Start game.
-        void initGame(const string levelName)
+        void initGame(const string levelName,
+                      void delegate(GameOverData) gameOverCallback = null)
         {
             platform_.key.disconnect(&keyHandler);
 
@@ -662,6 +679,10 @@ class Ice
                                                gameDir_,
                                                profileManager_.currentProfile,
                                                levelName);
+                if(null !is gameOverCallback)
+                {
+                    game_.atGameOver.connect(gameOverCallback);
+                }
             }
             catch(GameStartException e)
             {

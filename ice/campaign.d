@@ -9,6 +9,7 @@
 module ice.campaign;
 
 
+import std.algorithm;
 import std.array;
 import std.conv;
 import std.exception;
@@ -73,7 +74,7 @@ public:
 
         campaignsGUI_.campaign!ButtonWidget.pressed.connect(&showCampaign);
         campaignsGUI_.campaign!ButtonWidget.text =
-            campaignManager_.currentCampaign.name;
+            campaignManager_.currentCampaign.humanName;
 
         super(campaignsGUI_);
     }
@@ -82,7 +83,7 @@ private:
     // Show GUI for the selected campaign.
     void showCampaign()
     {
-        //TODO 
+        swapGUI_("campaign");
     }
 
     // Change to the previous campaign.
@@ -90,7 +91,7 @@ private:
     {
         campaignManager_.previousCampaign();
         campaignsGUI_.campaign!ButtonWidget.text =
-            campaignManager_.currentCampaign.name;
+            campaignManager_.currentCampaign.humanName;
     }
 
     // Change to the next campaign.
@@ -98,16 +99,129 @@ private:
     {
         campaignManager_.nextCampaign();
         campaignsGUI_.campaign!ButtonWidget.text =
-            campaignManager_.currentCampaign.name;
+            campaignManager_.currentCampaign.humanName;
     }
 }
 
 /// GUI for a particular campaign, allowing to select the level to play.
-class CampaignGUI
+class CampaignGUI: SwappableGUI
 {
-    // TODO by default, the next level is selected. 
-    // Further levels can't be selected. Previous levels can.
-    // Probably no wraparound to avoid confusing the player.
+private:
+    // Root widget of the campaign GUI.
+    RootWidget campaignGUI_;
+
+    // Profile of the player playing the game. Might change while this GUI is hidden.
+    PlayerProfile playerProfile_;
+
+    // Displayed campaign. Might change while this GUI is hidden.
+    Campaign campaign_;
+
+    // Called to initialize the game.
+    //
+    // The first parameter is the level to start, the second is the 
+    // delegate that will be called by the game when the level ends.
+    void delegate(const string, void delegate(GameOverData)) initGame_;
+
+public:
+    /// Initialize the campaign GUI.
+    ///
+    /// Params:  gui           = GUI system to load widgets.
+    ///          gameDir       = Game data directory.
+    ///          campaign      = The first selected campaign.
+    ///          playerProfile = Player currently playing the game.
+    ///          initGame      = Function called to initialize game, passing 
+    ///                          the name of level to play, and a delegate
+    ///                          for the game to call when the level ends.
+    ///
+    /// Throws:  VFSException on a filesystem error.
+    ///          GUIInitException if the GUI could not be loaded.
+    this(GUISystem gui, VFSDir gameDir, Campaign campaign, 
+         PlayerProfile playerProfile, 
+         void delegate(const string, void delegate(GameOverData)) initGame)
+    {
+        initGame_      = initGame;
+        campaign_      = campaign;
+        playerProfile_ = playerProfile;
+        campaignGUI_   = 
+            gui.loadWidgetTree(loadYAML(gameDir.dir("gui").file("campaignGUI.yaml")));
+        campaignGUI_.back!ButtonWidget.pressed.connect({swapGUI_("campaigns");});
+        campaignGUI_.previous!ButtonWidget.pressed.connect(&previousLevel);
+        campaignGUI_.next!ButtonWidget.pressed.connect(&nextLevel);
+        campaignGUI_.level!ButtonWidget.pressed.connect(&startLevel);
+        super(campaignGUI_);
+        resetLevel();
+    }
+
+private:
+    // Start playing the currently selected level.
+    void startLevel()
+    {
+        const name        = campaign_.name;
+        const humanName   = campaign_.humanName;
+        const oldProgress = playerProfile_.campaignProgress(name, humanName);
+        const lastAccessibleLevel = campaign_.currentLevel[0] == oldProgress;
+        // Called when the game ends. If the player has won, increase campaign progress.
+        void processGameOver(GameOverData data)
+        {
+            if(lastAccessibleLevel && data.gameWon)
+            {
+                playerProfile_.campaignProgress(name, humanName, oldProgress + 1);
+            }
+        }
+        initGame_(campaign_.currentLevel[1], &processGameOver);
+    }
+
+    // Change to the previous level.
+    void previousLevel()
+    {
+        // No wraparound.
+        if(campaign_.currentLevel[0] >= 1)
+        {
+            campaign_.previousLevel();
+            campaignGUI_.level!ButtonWidget.text = campaign_.currentLevel[1];
+        }
+    }
+
+    // Change to the next level.
+    void nextLevel()
+    {
+        const campaignProgress =
+            playerProfile_.campaignProgress(campaign_.name, campaign_.humanName);
+        // No wraparound, and don't allow the player to skip levels.
+        if(campaign_.currentLevel[0] < min(campaign_.length - 1, campaignProgress))
+        {
+            campaign_.nextLevel();
+            campaignGUI_.level!ButtonWidget.text = campaign_.currentLevel[1];
+        }
+    }
+
+    // Change the selected campaign (called by campaign manager).
+    @property void campaign(Campaign campaign)
+    {
+        campaign_ = campaign;
+        resetLevel();
+    }
+
+    // Change the player profile, i.e. the player playing the game (called by profile manager).
+    @property void playerProfile(PlayerProfile profile)
+    {
+        playerProfile_ = profile;
+        resetLevel();
+    }
+
+    // Reset the currently selected level.
+    //
+    // Called when the campaign or player profile changes.
+    void resetLevel()
+    {
+        auto level = min(campaign_.length - 1,
+                         playerProfile_.campaignProgress(campaign_.name, campaign_.humanName));
+        while(campaign_.currentLevel[0] != level)
+        {
+            campaign_.nextLevel();
+        }
+        campaignGUI_.level!ButtonWidget.text = campaign_.currentLevel[1];
+    }
 }
 
 /// Exception thrown at campaign initialization errors.
@@ -118,6 +232,16 @@ class CampaignInitException : Exception
         super(msg, file, line);
     }
 }
+
+/// Exception thrown when campaign related data saving fails.
+class CampaignSaveException : Exception 
+{
+    public this(string msg, string file = __FILE__, int line = __LINE__)
+    {
+        super(msg, file, line);
+    }
+}
+
 
 /// Loads and provides access to campaigns.
 class CampaignManager
@@ -136,6 +260,9 @@ private:
     uint currentCampaign_;
 
 public:
+    /// Emitted when the selected campaign changes, passing the newly selected campaign.
+    mixin Signal!(Campaign) changedCampaign;
+
     /// Construct a CampaignManager.
     ///
     /// Loads campaigns from the campaigns/ directory.
@@ -164,16 +291,41 @@ public:
         }
     }
 
+    /// Save campaigns configuration (e.g. currently selected campaign).
+    void save()
+    {
+        try
+        {
+            auto campaign = campaigns_[currentCampaign_];
+            auto campaignConfig = 
+                loadYAML("currentCampaign:\n" ~ 
+                         "    name: '" ~ campaign.name ~ "'\n" ~
+                         "    humanName: '" ~ campaign.humanName ~ "'\n");
+            saveYAML(gameDir_.file("campaigns.yaml"), campaignConfig);
+        }
+        catch(VFSException e)
+        {
+            throw new CampaignSaveException
+                ("Failed to save campaigns config due to a filesystem error: " ~ e.msg);
+        } 
+        catch(YAMLException)
+        {
+            assert(false, "YAMLException at campaigns config writing; this shouldn't happen");
+        }
+    }
+
     /// Select the next campaign..
     void nextCampaign()
     {
         currentCampaign_ = (currentCampaign_ + 1) % campaigns_.length;
+        changedCampaign.emit(currentCampaign);
     }
 
     /// Select the previous campaign.
     void previousCampaign()
     {
         currentCampaign_ = (currentCampaign_ - 1) % campaigns_.length;
+        changedCampaign.emit(currentCampaign);
     }
 
     /// Get the currently selected campaign.
@@ -193,7 +345,33 @@ private:
     {
         foreach(file; campaignsDir_.files)
         {
+            writeln("Loading campaign " ~ file.name);
             campaigns_ ~= new Campaign(file.name, loadYAML(file), gameDir_);
+        }
+        auto campaignsFile    = gameDir_.file("campaigns.yaml");
+        if(!campaignsFile.exists)
+        {
+            return;
+        }
+
+        auto campaignsConfig  = loadYAML(campaignsFile);
+        auto currentCampaign  = campaignsConfig["currentCampaign"];
+        auto currentName      = currentCampaign["name"].as!string;
+        auto currentHumanName = currentCampaign["humanName"].as!string;
+        foreach(i, campaign; campaigns_)
+        {
+            const nameMatches = currentName == campaign.name;
+            const humanNameMatches = currentHumanName == campaign.humanName;
+            // Determine the last selected campaign,
+            // handling campaign file renaming.
+            if(humanNameMatches)
+            {
+                // Human name matches, but if this happens with more 
+                // campaigns, wait for the one where file name matches as well.
+                currentCampaign_ = cast(uint)i;
+                // Full match
+                if(nameMatches) {break;}
+            }
         }
     }
 }
@@ -203,7 +381,10 @@ class Campaign
 {
 public:
     /// VFS file name of the campaign.
-    string name;
+    const string name;
+
+    /// Human readable name of the campaign.
+    const string humanName;
 
 private:
     /// Top level game data directory.
@@ -223,9 +404,10 @@ public:
     ///          gameDir = Game data directory.
     /// 
     /// Throws:  CampaignInitException on failure.
-    this(string name, YAMLNode yaml, VFSDir gameDir)
+    this(const string name, YAMLNode yaml, VFSDir gameDir)
     {
         this.name  = name;
+        this.humanName = yaml["name"].as!string;
         gameDir_ = gameDir;
         try foreach(string levelName; yaml["levels"])
         {
@@ -243,48 +425,21 @@ public:
     /// Select the next level.
     void nextLevel()
     {
-        currentLevel_ = (currentLevel_ + 1) % levelNames_.length;
+        currentLevel_ = (currentLevel_ + 1) % length;
     }
 
     /// Select the previous level.
     void previousLevel()
     {
-        currentLevel_ = (currentLevel_ - 1) % levelNames_.length;
+        currentLevel_ = (currentLevel_ - 1) % length;
     }
+
+    /// Get the number of levels in the campaign.
+    @property size_t length() const pure nothrow {return levelNames_.length;}
 
     /// Get the index and name of the currently selected level.
     Tuple!(uint, string) currentLevel()
     {
         return tuple(currentLevel_, levelNames_[currentLevel_]);
-    }
-
-    /// Construct the currently selected (by GUI) level from the campaign.
-    ///
-    /// Params:  subsystems = Provides access to game subsystems to the level.
-    ///          profile    = Profile of the player playing the level.
-    ///
-    /// Returns: Newly constructed level.
-    ///
-    /// Throws:  LevelInitException on failure.
-    Level constructLevel(GameSubsystems subsystems, PlayerProfile profile)
-    {
-        const levelName = levelNames_[currentLevel_];
-        try
-        {
-            return new DumbLevel(levelName, loadYAML(gameDir_.file(levelName)),
-                                 subsystems, profile.playerShipSpawner);
-        }
-        catch(YAMLException e)
-        {
-            const msg = "Campaign " ~ name ~ " failed to construct level " ~
-                        levelName ~ " due to a YAML error: " ~ e.msg;
-            throw new LevelInitException(msg);
-        }
-        catch(VFSException e)
-        {
-            const msg = "Campaign " ~ name ~ " failed to construct level " ~
-                        levelName ~ " due to a filesystem error: " ~ e.msg;
-            throw new LevelInitException(msg);
-        }
     }
 }
