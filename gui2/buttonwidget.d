@@ -13,6 +13,7 @@ import std.typecons;
 
 import gui2.event;
 import gui2.guisystem;
+import gui2.labelwidget;
 import gui2.layout;
 import gui2.stylemanager;
 import gui2.widget;
@@ -25,12 +26,8 @@ import video.videodriver;
 
 
 /// Simple clickable button widget.
-class ButtonWidget: Widget
+class ButtonWidget: LabelWidget
 {
-private:
-    /// Button text.
-    string text_;
-
 public:
     /// Emitted when this button is pressed.
     mixin Signal!() pressed;
@@ -40,23 +37,10 @@ public:
     /// Do not call directly.
     this(ref YAMLNode yaml)
     {
-        text_ = widgetInitProperty!string(yaml, "text");
-        focusable_ = true;
         super(yaml);
+        focusable_ = true;
         addEventHandler!MouseKeyEvent(&detectActive);
     }
-
-    override void render(VideoDriver video)
-    {
-        super.render(video);
-        styleManager_.drawTextCentered(video, text_, layout_.bounds);
-    }
-
-    /// Get button text.
-    @property string text() const pure nothrow {return text_;}
-
-    /// Set button text.
-    @property void text(string rhs) pure nothrow {text_ = rhs;}
 
 protected:
     override void gotFocus()
