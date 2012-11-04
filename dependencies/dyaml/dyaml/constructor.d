@@ -87,7 +87,7 @@ final class Constructor
          *
          * Params:  defaultConstructors = Use constructors for default YAML tags?
          */
-        this(in bool defaultConstructors = true)
+        this(const bool defaultConstructors = true)
         {
             if(!defaultConstructors){return;}
 
@@ -189,7 +189,7 @@ final class Constructor
          * }
          * --------------------
          */
-        void addConstructorScalar(T)(in string tag, T function(ref Node) ctor)
+        void addConstructorScalar(T)(const string tag, T function(ref Node) ctor)
         {
             const t = Tag(tag);
             auto deleg = addConstructor!T(t, ctor);
@@ -220,7 +220,7 @@ final class Constructor
          *         if(y != s.y){return y - s.y;}
          *         if(z != s.z){return z - s.z;}
          *         return 0;
-         *     }        
+         *     }
          * }
          *
          * MyStruct constructMyStructSequence(ref Node node)
@@ -240,7 +240,7 @@ final class Constructor
          * }
          * --------------------
          */
-        void addConstructorSequence(T)(in string tag, T function(ref Node) ctor)
+        void addConstructorSequence(T)(const string tag, T function(ref Node) ctor)
         {
             const t = Tag(tag);
             auto deleg = addConstructor!T(t, ctor);
@@ -291,7 +291,7 @@ final class Constructor
          * }
          * --------------------
          */
-        void addConstructorMapping(T)(in string tag, T function(ref Node) ctor)
+        void addConstructorMapping(T)(const string tag, T function(ref Node) ctor)
         {
             const t = Tag(tag);
             auto deleg = addConstructor!T(t, ctor);
@@ -310,7 +310,7 @@ final class Constructor
          *
          * Returns: Constructed node.
          */ 
-        Node node(T, U)(in Mark start, in Mark end, in Tag tag, T value, U style) 
+        Node node(T, U)(const Mark start, const Mark end, const Tag tag, T value, U style) 
             if((is(T : string) || is(T == Node[]) || is(T == Node.Pair[])) &&
                (is(U : CollectionStyle) || is(U : ScalarStyle)))
         {
@@ -350,7 +350,7 @@ final class Constructor
          * Params:  tag  = Tag for the function to handle.
          *          ctor = Constructor function.
          */
-        auto addConstructor(T)(in Tag tag, T function(ref Node) ctor)
+        auto addConstructor(T)(const Tag tag, T function(ref Node) ctor)
         {
             assert((tag in fromScalar_) is null && 
                    (tag in fromSequence_) is null &&
@@ -858,7 +858,7 @@ struct MyStruct
         if(y != s.y){return y - s.y;}
         if(z != s.z){return z - s.z;}
         return 0;
-    }        
+    }
 }
 
 MyStruct constructMyStructScalar(ref Node node)
