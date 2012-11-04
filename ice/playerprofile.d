@@ -93,7 +93,7 @@ public:
             addProfileGUI_.profileNameEdit!LineEditWidget.textEntered.connect(&processProfileName);
             addProfileGUI_.profileNameEdit!LineEditWidget.characterFilter = &validChar;
             profileGUI_.newProfile!ButtonWidget.pressed.connect(&showAddNewProfile);
-            profileGUI_.deleteProfile!ButtonWidget.pressed.connect(&showAddNewProfile);
+            profileGUI_.deleteProfile!ButtonWidget.pressed.connect(&deleteCurrentProfile);
             profileGUI_.back!ButtonWidget.pressed.connect({swapGUI_("ice");});
 
             profileGUI_.previous!ButtonWidget.pressed.connect(&previousProfile);
@@ -523,7 +523,7 @@ public:
     ///                      used to determine which one should be used.
     ///          humanName = Human readable name of the campaign.
     ///          progress  = Campaign progress (current level) to set.
-    void campaignProgress(const string vfsName, const string humanName, const uint progress) 
+    void campaignProgress(string vfsName, string humanName, uint progress) 
         @safe pure nothrow
     {
         foreach(triplet; campaignProgress_)
