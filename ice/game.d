@@ -595,6 +595,7 @@ class Game
         ///Destroy the Game.
         ~this()
         {
+            platform_.showCursor();
             if(gameStateInitialized_)
             {
                 clear(player0_);
@@ -619,6 +620,7 @@ class Game
         {
             scope(failure){clear(level_);}
 
+            platform_.hideCursor();
             //Initialize the level.
             try
             {
@@ -776,6 +778,7 @@ class Game
          */
         void gameOver(Flag!"success" success)
         {
+            platform_.showCursor();
             GameOverData gameOverData;
             gameOverData.gameWon = success;
             atGameOver.emit(gameOverData);
