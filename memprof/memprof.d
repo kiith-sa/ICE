@@ -566,7 +566,7 @@ public:
         catch(YAMLException e)      {writeln("YAML error: ", e.msg);}
         catch(MemProfCLIException e){writeln(e.msg);}
     }
-    
+
 
 private:
     /// Parses local options for the "distribution" command.
@@ -712,7 +712,7 @@ private:
             case "elements":
                 const percent = args[0].endsWith("%");
                 double value = to!double(args[0][0 .. $ - (percent ? 1 : 0)]);
-                enforce(value >= 0.0 && (!percent || value <= 0.0),
+                enforce(value >= 0.0 && (!percent || value <= 100.0),
                         new MemProfCLIException("--elements argument out of range"));
                 action_ = (ref YAMLNode allocations)
                 {
