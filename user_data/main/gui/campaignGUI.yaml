@@ -22,7 +22,7 @@
     #Campaign selector container
     - widget container:
         !!pairs
-        - layout: {x: pLeft, y: 'pTop + 272', w: pWidth, h: '24 + 8 * 2'}
+        - layout: {x: pLeft, y: 'pTop + 136', w: pWidth, h: '24 + 8 * 2'}
         - style: {drawBorder : false}
         - widget button previous:
             !!pairs

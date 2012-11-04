@@ -12,7 +12,7 @@
 
 - styleManager: line
 - style: {drawBorder: false}
-- layoutManager: boxManual #parent/window width/height/top/left/etc
+- layoutManager: boxManual
 - layout: {x: 'pLeft', y: 'pTop', w: 'pWidth', h: 'pHeight'}
 #Main container
 - widget container:
@@ -29,7 +29,7 @@
             - style focused: *bFocused
             - style active:  *bActive
             - layout: {x: 'pLeft + 8', y: 'pTop + 8', w: pWidth - 16, h: 24}
-            - text: Campaigns
+            - text: Start game
         - widget button playerSetup:
             !!pairs
             - style:         *bDefault
@@ -64,4 +64,4 @@
             - style focused: *bFocused
             - style active:  *bActive
             - layout: {x: 'pLeft + 8', y: 'pTop + 8 * 6 + 24 * 5', w: pWidth - 16, h: 24}
-            - text: (Deprecated) Levels
+            - text: (DEBUG) Levels
