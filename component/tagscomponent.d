@@ -29,10 +29,13 @@ public:
     alias char[TAG_LENGTH] Tag;
 
 private:
-    union
+    // TODO This is a struct for DMD 2.058/Windows compatibility.
+    //      This is needed to avoid a bogus compiler error.
+    //      Once we move to something newer, turn this back to a union.
+    struct
     {
         // Stores tag when there are at most 6 tags.
-        Tag[6]     tagsFew_;
+        Tag[6] tagsFew_;
         // Stores tags when there are more than 6 tags.
         Tag[] tagsMany_ = void;
         // Temporarily disabled and using a dynamic array instead 
