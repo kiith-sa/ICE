@@ -1,5 +1,10 @@
 !!pairs
 
+- labelDefault:  &lDefault
+    fontColor:   rgbaFFFFFF80
+    drawBorder:  false
+    fontSize:    14
+    font:        orbitron-bold.ttf
 - buttonDefault: &bDefault
     borderColor: rgbaC0C0FF60
     fontColor:   rgbaA0A0FFC0
@@ -19,6 +24,11 @@
     !!pairs
     - style:  {borderColor: rgbaC0C0FFB0}
     - layout: {x: 'pRight - 176', y: 16, w: 160, h: 'pBottom - 32'}
+    - widget label:
+        !!pairs
+        - layout: {x: 'pLeft + 8', y: 'pTop + 8', w: 'pWidth - 16', h: '24'}
+        - style:  *lDefault
+        - text:   Player setup
     #Profile action menu
     - widget container:
         !!pairs

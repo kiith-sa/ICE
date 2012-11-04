@@ -1,5 +1,10 @@
 !!pairs
 
+- labelDefault:  &lDefault
+    fontColor:   rgbaFFFFFF80
+    drawBorder:  false
+    fontSize:    14
+    font:        orbitron-bold.ttf
 - buttonDefault: &bDefault
     borderColor: rgbaC0C0FF60
     fontColor:   rgbaA0A0FFC0
@@ -10,10 +15,10 @@
     borderColor: rgbaC0C0FFFF
     fontColor:   rgbaE0E0FFFF
 
+#Main container
 - styleManager: line
 - layoutManager: boxManual 
 - layout: {x: 'pLeft + 96', y: 'pTop + 16', w: 'pWidth - 192', h: 'pHeight - 32'}
-#Main container
 - widget button close:
     !!pairs
     - style:         *bDefault
@@ -21,3 +26,8 @@
     - style active:  *bActive
     - layout: {x: 'pLeft + pWidth / 2 - 72', y: 'pBottom - 32', w: 144, h: 24}
     - text: Close
+- widget label:
+    !!pairs
+    - layout: {x: 'pLeft + pWidth / 2 - 64', y: 'pTop + 8', w: '128', h: '24'}
+    - style:  *lDefault
+    - text:   Credits

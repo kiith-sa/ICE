@@ -1,5 +1,10 @@
 !!pairs
 
+- labelDefault:  &lDefault
+    fontColor:   rgbaFFFFFF80
+    drawBorder:  false
+    fontSize:    14
+    font:        orbitron-bold.ttf
 - buttonDefault: &bDefault
     borderColor: rgbaC0C0FF60
     fontColor:   rgbaA0A0FFC0
@@ -19,6 +24,11 @@
     !!pairs
     - style:  {borderColor: rgbaC0C0FFB0}
     - layout: {x: 'pRight - 176', y: 16, w: 160, h: 'pBottom - 32'}
+    - widget label:
+        !!pairs
+        - layout: {x: 'pLeft + 8', y: 'pTop + 8', w: 'pWidth - 16', h: '24'}
+        - style:  *lDefault
+        - text:   Select level
     #Campaign selector container
     - widget container:
         !!pairs
@@ -36,7 +46,7 @@
             - style:         *bDefault
             - style focused: *bFocused
             - style active:  *bActive
-            - layout: {x: 'pLeft + 24', y: 'pTop + 8', w: 'pRight - pLeft - 48', h: 24}
+            - layout: {x: 'pLeft + 24', y: 'pTop + 8', w: 'pWidth - 48', h: 24}
             - text: DUMMY
         - widget button next:
             !!pairs
