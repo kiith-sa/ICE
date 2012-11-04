@@ -33,20 +33,8 @@ import util.intervals;
 
 /**
  * TODO:
- * AWESOME: FrameProfiler could output arguments for 
- *     memprof filter --time 
- *     based on zones. So we could get an exact list of allocations happening within 
- *     a frame. We could even use this to drill down to deeper zones
- *     once we get a general idea to find out precise causes of allocations.
- *     Maybe even in a Perf-style CLI app.
- *
- *     One (ASAP) good way to use this would be to filter the 
- *     worst frames, and get allocations for those.
- *
- *     This needs "top" command, 
- *     and then "memprof-filter --frames"
- *
  * Commands TODO:
+ * #. memprof-filter with a particular zone
  *
  * #. Filter frames:
  *    Filter frames by start/end time
@@ -174,10 +162,14 @@ private:
         {
             string value = node.as!string();
 
-            enforce(value.endsWith("ms") && value.length > 2,
-                    new Exception("Invalid time (MS) value: " ~ value));
-
-            return to!real(value[0 .. $ - 2]);
+            if(value.endsWith("ms") && value.length > 2)
+            {
+                return to!real(value[0 .. $ - 2]);
+            }
+            else
+            {
+                return to!real(value);
+            }
         }
         constructor.addConstructorScalar("!ms", &constructMSTime);
         return constructor;
@@ -277,6 +269,18 @@ void help()
         "    Local options:",
         "      --elements=<number>    How many top allocations to return. Can be",
         "                             given as a number or a percentage."
+        "",
+        "  memprof-filter             Get time intervals for the --time option of the",
+        "                             filter command of memprof. Together with top,",
+        "                             this can be used to determine memory allocations",
+        "                             in frames with longest durations.",
+        "                             Outputs time ranges (a-b,c-d,etc)",
+        "                             that can be passed as an argument to",
+        "                             memprof filter --time",
+        "    Local options:",
+        "      --frames               Get time intervals for each frame. This is the",
+        "                             default behavior (pipe output from frameprof top)",
+        "                             to get intervals for the worst frames)"
         ];
     foreach(line; help) {writeln(line);}
 }
@@ -308,6 +312,8 @@ private:
     void delegate(string) processArg_;
     // Action to execute (determined by command line arguments)
     YAMLNode delegate(ref YAMLNode allocations) action_;
+    // When not null, this action is used instead - outputs a plain string.
+    string delegate(ref YAMLNode allocations) actionNoYAML_;
     // Is the output of the program a sequence of frames?
     bool framesOutput_ = false;
     // Comparison function (a < b) used by the top command.
@@ -325,7 +331,7 @@ public:
     /// Execute the action specified by command line arguments.
     void execute()
     {
-        if(action_ is null)
+        if(actionNoYAML_ is null && action_ is null)
         {
             writeln("No command given");
             help();
@@ -336,6 +342,11 @@ public:
         try
         {
             auto frameprof = readFromStdin ? FrameProf(stdin) : FrameProf(logFileName);
+            if(actionNoYAML_ !is null)
+            {
+                writeln(actionNoYAML_(frameprof.frameProfile["frames"]));
+                return;
+            }
             auto rawResult = action_(frameprof.frameProfile["frames"]);
             auto result    = framesOutput_ ? YAMLNode(["frames"], [rawResult])
                                            : rawResult;
@@ -380,6 +391,23 @@ private:
         });
     }
 
+    /// Parses local options for the "memprof-filter" command.
+    void localMemprofFilter(string arg)
+    {
+        processOption(arg, (opt, args){
+        enforce(!args.empty, new FrameProfCLIException("--" ~ opt ~ " needs an argument"));
+
+        switch(opt)
+        {
+            case "frames":
+                // Default behavior
+                break;
+            default:
+                throw new FrameProfCLIException("Unrecognized top option: --" ~ opt);
+        }
+        });
+    }
+
     /// Parse a command. Sets up command state and switches to its option parser function.
     void command(string arg)
     {
@@ -392,6 +420,15 @@ private:
                         a["duration"].as!double < b["duration"].as!double;
                 action_ = (ref YAMLNode frames) =>
                           YAMLNode(FrameProf.topFrames(frames, less_, 16));
+                break;
+            case "memprof-filter":
+                framesOutput_ = false;
+                processArg_ = &localMemprofFilter;
+                actionNoYAML_ = 
+                    (ref YAMLNode frames) =>
+                    map!(node => tuple(node["start"].as!double, node["end"].as!double))(frames.as!(YAMLNode[]))
+                    .map!(pair => to!string(pair[0]) ~ "-" ~ to!string(pair[1]))()
+                    .reduce!((a, b) => a ~ "," ~ b)();
                 break;
             default: 
                 throw new FrameProfCLIException("Unknown command: " ~ arg);
