@@ -24,6 +24,7 @@ import gui2.fixedlayout;
 import gui2.layout;
 import gui2.rootwidget;
 import gui2.slotwidget;
+import gui2.labelwidget;
 import gui2.lineeditwidget;
 import gui2.linestylemanager;
 import gui2.stylemanager;
@@ -82,6 +83,7 @@ public:
         addWidgetConstructor("slot",      (ref YAMLNode yaml) => new SlotWidget(yaml));
         addWidgetConstructor("container", (ref YAMLNode yaml) => new ContainerWidget(yaml));
         addWidgetConstructor("button",    (ref YAMLNode yaml) => new ButtonWidget(yaml));
+        addWidgetConstructor("label",     (ref YAMLNode yaml) => new LabelWidget(yaml));
         addWidgetConstructor("lineEdit",  (ref YAMLNode yaml) => new LineEditWidget(yaml));
 
         // Builtin layout constructors.
