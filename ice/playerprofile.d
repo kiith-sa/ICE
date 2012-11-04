@@ -526,7 +526,7 @@ public:
     void campaignProgress(string vfsName, string humanName, uint progress) 
         @safe pure nothrow
     {
-        foreach(triplet; campaignProgress_)
+        foreach(ref triplet; campaignProgress_)
         {
             if(triplet[0] == vfsName && triplet[1] == humanName)
             {
