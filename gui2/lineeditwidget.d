@@ -39,7 +39,7 @@ public:
     /// Emitted when the user presses Enter.
     mixin Signal!(string) textEntered;
 
-    /// Load a ButtonWidget from YAML.
+    /// Load a LineEditWidget from YAML.
     ///
     /// Do not call directly.
     this(ref YAMLNode yaml)
