@@ -130,8 +130,7 @@ private:
     // Show the profile details GUI screen.
     void showProfileDetails()
     {
-        //TODO (After campaign)
-        //     custom screen showing:
+        //TODO custom screen showing:
         //     campaign progress,
         //     ship modifications,
         //     player ships killed,
@@ -193,6 +192,9 @@ class ProfileManager
         uint currentProfileIndex_;
 
     public:
+        /// Emitted when the selected player profile changes, passing the profile.
+        mixin Signal!(PlayerProfile) changedProfile;
+
         /// Construct a ProfileManager.
         ///
         /// Loads profiles from the profiles/ directory.
@@ -272,16 +274,18 @@ class ProfileManager
         }
 
         /// Switch to the next profile.
-        void nextProfile() pure nothrow
+        void nextProfile()
         {
             currentProfileIndex_ = (currentProfileIndex_ + 1) % profiles_.length;
+            changedProfile.emit(currentProfile);
         }
 
         /// Switch to the previous profile.
-        void previousProfile() pure nothrow
+        void previousProfile()
         {
             currentProfileIndex_ = 
                 (cast(uint)profiles_.length + currentProfileIndex_ - 1) % profiles_.length;
+            changedProfile.emit(currentProfile);
         }
 
         /// Delete specified profile.
@@ -460,6 +464,7 @@ void unittestProfileManager()
 }
 mixin registerTest!(unittestProfileManager, "std.playerprofile.ProfileManager");
 
+
 /// Player profile, handling things such as campaign progress and ship modifications.
 class PlayerProfile
 {
@@ -468,14 +473,14 @@ public:
     const string name;
 
 private:
-    //TODO use in level (note - level must still set the position)
-    //TODO (once campaigns work) progress in campaigns
+    // Progress for campaigns this player has played.
+    //
+    // Triplets of VFS campaign name, human-readable campaign name, level.
+    Tuple!(string, string, uint)[] campaignProgress_;
 
-    /*
-     * Spawner entity that will modify playership at spawn time.
-     *
-     * This makes an RPG system possible.
-     */
+    // Spawner entity that will modify playership at spawn time.
+    // 
+    // This makes an RPG system possible.
     YAMLNode playerShipSpawner_;
 
     // Directory storing the profile data.
@@ -484,6 +489,54 @@ private:
 public:
     /// Get the entity that will spawn the player ship and modify it at spawn time.
     @property YAMLNode playerShipSpawner() pure nothrow {return playerShipSpawner_;}
+
+    /// Get progress in a campaign.
+    ///
+    /// Params:   vfsName   = Virtual file system of the campaign. If multiple
+    ///                       campaigns have the same human readable name, this is
+    ///                       used to determine which one should be used.
+    ///           humanName = Human readable name of the campaign.
+    ///
+    /// Returns:  Current level in the campaign.
+    uint campaignProgress(string vfsName, string humanName) const pure nothrow 
+    {
+        uint result = uint.max;
+        // Handles even renamed files; but if both vfs and human names match,
+        // we have a definite match.
+        foreach(i, ref triplet; campaignProgress_) if(triplet[1] == humanName)
+        {
+            result = triplet[2];
+            if(triplet[0] == vfsName) {return result;}
+        }
+        if(result == uint.max)
+        {
+            // Default starting level in a campaign
+            return 0;
+        }
+        return result;
+    }
+
+    /// Set progress for a campaign.
+    ///
+    /// Params:  vfsName   = Virtual file system of the campaign. If multiple
+    ///                      campaigns have the same human readable name, this is
+    ///                      used to determine which one should be used.
+    ///          humanName = Human readable name of the campaign.
+    ///          progress  = Campaign progress (current level) to set.
+    void campaignProgress(const string vfsName, const string humanName, const uint progress) 
+        @safe pure nothrow
+    {
+        foreach(triplet; campaignProgress_)
+        {
+            if(triplet[0] == vfsName && triplet[1] == humanName)
+            {
+                triplet[2] = progress;
+                return;
+            }
+        }
+
+        campaignProgress_ ~= tuple(vfsName, humanName, progress);
+    }
 
 private:
     // Construct a PlayerProfile.
@@ -511,7 +564,7 @@ private:
                         "          position: [400, 536]\n" ~
                         "          rotation: 3.141593\n" ~
                         "        statistics:\n"  ~
-                        "        player: 1\n"    ~ 
+                        "        player: 0\n"    ~ 
                         "        tags: [_PLR]\n" ~ 
                         "        controller:\n"  ~
                         "        spawner: []");
@@ -522,8 +575,19 @@ private:
         profileDir_ = profileDir;
         try if(profileDir_.exists)
         {
+            // Load campaign progress
+            auto progressFile = profileDir_.file("playerProgress.yaml");
+            if(progressFile.exists)
+            {
+                foreach(YAMLNode campaign; loadYAML(progressFile)["campaignProgress"])
+                {
+                    campaignProgress_ ~= tuple(campaign["name"].as!string,
+                                               campaign["humanName"].as!string,
+                                               campaign["progress"].as!uint);
+                }
+            }
             auto spawnerFile = profileDir_.file("playerShipSpawner.yaml");
-            if(spawnerFile.exists())
+            if(spawnerFile.exists)
             {
                 playerShipSpawner_ = loadYAML(spawnerFile);
                 return;
@@ -550,8 +614,22 @@ private:
 
         try
         {
-            auto spawnerFile = profileDir_.file("playerShipSpawner.yaml");
+            auto spawnerFile  = profileDir_.file("playerShipSpawner.yaml");
+            auto progressFile = profileDir_.file("playerProgress.yaml");
+
             saveYAML(spawnerFile, playerShipSpawner_);
+            // Save player progress to YAML.
+            YAMLNode[] progressSequence;
+            foreach(ref triplet; campaignProgress_)
+            {
+                auto nameYAML      = YAMLNode(triplet[0]);
+                auto humanNameYAML = YAMLNode(triplet[1]);
+                auto progressYAML  = YAMLNode(triplet[2]);
+                progressSequence ~= YAMLNode(["name", "humanName", "progress"],
+                                             [nameYAML, humanNameYAML, progressYAML]);
+            }
+            auto progressYAML = YAMLNode(["campaignProgress"], [YAMLNode(progressSequence)]);
+            saveYAML(progressFile, progressYAML);
         }
         catch(VFSException e)
         {
