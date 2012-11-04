@@ -20,11 +20,13 @@ import std.stream;
 import std.traits;
 import std.typecons;
 
+import dyaml.constructor;
 import dyaml.dumper;
 import dyaml.exception;
 import dyaml.loader;
 import dyaml.node;
 import dyaml.representer;
+import dyaml.resolver;
 import dyaml.style;
 
 import util.intervals;
@@ -50,9 +52,6 @@ import util.intervals;
  *    Filter frames by start/end time
  *    (e.g. all frames between 1s and 5s)
  *    filter by frame duration (all frames about 16 ms)
- *
- * #. Top:
- *    Also getting e.g. 5 or 5% of most expensive frames.
  *
  * #, Filter zones:
  *    Zone name by regex. So we can get e.g. 
@@ -123,7 +122,10 @@ public:
     /// Construct FrameProf loading profile data from specified file.
     this(string fileName)
     {
-        frameProfile_ = Loader(fileName).load();
+        auto loader        = Loader(fileName);
+        loader.resolver    = yamlResolver();
+        loader.constructor = yamlConstructor();
+        frameProfile_      = loader.load();
     }
 
     /// Construct FrameProf loading profile data from specified file object (e.g. stdin).
@@ -135,11 +137,65 @@ public:
         {
             fileBuffer ~= line;
         }
-        frameProfile_ = Loader(new MemoryStream(fileBuffer)).load();
+        auto loader        = Loader(new MemoryStream(fileBuffer));
+        loader.resolver    = yamlResolver();
+        loader.constructor = yamlConstructor();
+        frameProfile_      = loader.load();
     }
 
     /// Get the memory log loaded from YAML.
     @property ref YAMLNode frameProfile() {return frameProfile_;}
+
+    /**
+     * Get the topCount greatest frames sorted by specified less function.
+     *
+     * Params:  frames   = Frames to process.
+     *          less     = Comparison function to sort the frames.
+     *          topCount = Number of frames to get.
+     *
+     * Returns: An array of topCount greatest frames.
+     */
+    static YAMLNode[] topFrames
+        (ref YAMLNode frames, bool delegate(ref YAMLNode, ref YAMLNode) less,
+         const ulong topCount)
+    {
+        auto frameArray = frames.as!(YAMLNode[]);
+        bool lessWrapper(ref YAMLNode a, ref YAMLNode b) {return less(a,b);}
+        sort!lessWrapper(frameArray);
+        return frameArray[std.algorithm.max(0, frameArray.length - topCount) .. $];
+    }
+
+private:
+    /// Return a YAML constructor customized for FrameProf.
+    Constructor yamlConstructor()
+    {
+        auto constructor = new Constructor;
+        static real constructMSTime(ref YAMLNode node)
+        {
+            string value = node.as!string();
+
+            enforce(value.endsWith("ms") && value.length > 2,
+                    new Exception("Invalid time (MS) value: " ~ value));
+
+            return to!real(value[0 .. $ - 2]);
+        }
+        constructor.addConstructorScalar("!ms", &constructMSTime);
+        return constructor;
+    }
+
+    /// Return a YAML resolver customized for FrameProf.
+    Resolver yamlResolver()
+    {
+        auto resolver = new Resolver;
+        // Regular expression used to determine that a YAML scalar is a time 
+        // value in milliseconds.
+        immutable timeMSRegex      = r"^\d+(\.\d+)?ms$";
+        // Possible starting characters of a milliseconds time YAML scalar.
+        immutable timeMSStartChars = "0123456789";
+        resolver.addImplicitResolver("!ms", std.regex.regex(timeMSRegex),
+                                     timeMSStartChars);
+        return resolver;
+    }
 }
 
 /**
@@ -216,6 +272,11 @@ void help()
         "",
         "",
         "Commands:",
+        "  top                        Get the top frames by duration.",
+        "                             Will get the top 16 allocations by default.",
+        "    Local options:",
+        "      --elements=<number>    How many top allocations to return. Can be",
+        "                             given as a number or a percentage."
         ];
     foreach(line; help) {writeln(line);}
 }
@@ -249,6 +310,8 @@ private:
     YAMLNode delegate(ref YAMLNode allocations) action_;
     // Is the output of the program a sequence of frames?
     bool framesOutput_ = false;
+    // Comparison function (a < b) used by the top command.
+    bool delegate(ref YAMLNode a, ref YAMLNode b) less_;
 
 public:
     /// Construct a FrameProfCLI with specified command-line arguments and parse them.
@@ -288,14 +351,48 @@ public:
         catch(YAMLException e)      {writeln("YAML error: ", e.msg);}
         catch(FrameProfCLIException e){writeln(e.msg);}
     }
-    
 
 private:
+
+    /// Parses local options for the "top" command.
+    void localTop(string arg)
+    {
+        processOption(arg, (opt, args){
+        enforce(!args.empty, new FrameProfCLIException("--" ~ opt ~ " needs an argument"));
+
+        switch(opt)
+        {
+            case "elements":
+                const percent = args[0].endsWith("%");
+                double value = to!double(args[0][0 .. $ - (percent ? 1 : 0)]);
+                enforce(value >= 0.0 && (!percent || value <= 100.0),
+                        new FrameProfCLIException("--elements argument out of range"));
+                action_ = (ref YAMLNode frames)
+                {
+                    auto elements = percent ? frames.length * value / 100.0 : value;
+                    return YAMLNode
+                        (FrameProf.topFrames(frames, less_, cast(ulong)elements));
+                };
+                break;
+            default:
+                throw new FrameProfCLIException("Unrecognized top option: --" ~ opt);
+        }
+        });
+    }
+
     /// Parse a command. Sets up command state and switches to its option parser function.
     void command(string arg)
     {
         switch (arg)
         {
+            case "top":
+                framesOutput_ = true;
+                processArg_ = &localTop;
+                less_ = (ref YAMLNode a, ref YAMLNode b) =>
+                        a["duration"].as!double < b["duration"].as!double;
+                action_ = (ref YAMLNode frames) =>
+                          YAMLNode(FrameProf.topFrames(frames, less_, 16));
+                break;
             default: 
                 throw new FrameProfCLIException("Unknown command: " ~ arg);
         }
