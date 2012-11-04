@@ -490,7 +490,27 @@ class Ice
                 YAMLNode levels = loadYAML(levelsFile);
 
                 guiSwapper_       = new GUISwapper(guiSystem_.rootSlot);
-                auto levelGUI     = new LevelGUI(guiSystem_, levels, level => initGame(level, null));
+
+                // Function to start a level outside a campaign.
+                //
+                // Used by the level selection menu.
+                void startLevelSeparate(const string levelName)
+                {
+                    try
+                    {
+                        auto source = loadYAML(gameDir_.file(levelName));
+                        initGame(source, null);
+                    }
+                    catch(YAMLException e)
+                    {
+                        writeln("Failed to separately load level ", levelName, ": ", e.msg);
+                    }
+                    catch(VFSException e)
+                    {
+                        writeln("Failed to separately load level ", levelName, ": ", e.msg);
+                    }
+                }
+                auto levelGUI     = new LevelGUI(guiSystem_, levels, &startLevelSeparate);
                 auto credits      = new Credits(guiSystem_, gameDir);
                 auto campaignsGUI = new CampaignsGUI(guiSystem_, campaignManager_, gameDir_);
                 auto campaignGUI  =
@@ -664,7 +684,7 @@ class Ice
         }
 
         ///Start game.
-        void initGame(const string levelName,
+        void initGame(ref YAMLNode levelSource,
                       void delegate(GameOverData) gameOverCallback = null)
         {
             platform_.key.disconnect(&keyHandler);
@@ -678,7 +698,7 @@ class Ice
                                                videoDriver_,
                                                gameDir_,
                                                profileManager_.currentProfile,
-                                               levelName);
+                                               levelSource);
                 if(null !is gameOverCallback)
                 {
                     game_.atGameOver.connect(gameOverCallback);

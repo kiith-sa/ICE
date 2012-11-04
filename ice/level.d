@@ -620,6 +620,8 @@ class DumbLevel : Level
                 {
                     case "wave":  loadWaveDefinition(parts[1], value); break;
                     case "level": loadLevelScript(value);              break;
+                    // Used by campaign, not here
+                    case "name":  break;
                     default: throw new E("Unknown top-level key in level \"" ~
                                          name_ ~ "\": " ~ key);
                 }

@@ -565,15 +565,15 @@ class Game
         /**
          * Construct a Game.
          *
-         * Params:  platform  = Platform used for input.
-         *          gui       = Game GUI.
-         *          video     = Video driver used to draw the game.
-         *          gameDir   = Game data directory.
-         *          profile   = Profile of the current player.
-         *          levelName = File name of the level to load.
+         * Params:  platform    = Platform used for input.
+         *          gui         = Game GUI.
+         *          video       = Video driver used to draw the game.
+         *          gameDir     = Game data directory.
+         *          profile     = Profile of the current player.
+         *          levelSource = YAML source of the level to load.
          */
         this(Platform platform, GameGUI gui, VideoDriver video, VFSDir gameDir,
-             PlayerProfile profile, const string levelName)
+             PlayerProfile profile, ref YAMLNode levelSource)
         {
             gui_           = gui;
             platform_      = platform;
@@ -589,7 +589,7 @@ class Game
 
             scope(failure){destroySystems();}
 
-            initGameState(levelName);
+            initGameState(levelSource);
         }
 
         ///Destroy the Game.
@@ -611,24 +611,24 @@ class Game
          * and player are initialized, or we've failed and they are not 
          * (they are cleaned up if they are already initialized but initGameState fails)
          *
-         * Params:  levelName = Name of the level to load.
+         * Params:  levelSource = YAML source of the level to load.
          * 
          * Throws:  GameStartException on failure.
          */
-        void initGameState(const string levelName)
+        void initGameState(ref YAMLNode levelSource)
         {
             scope(failure){clear(level_);}
 
             //Initialize the level.
             try
             {
-                level_ = new DumbLevel(levelName, loadYAML(gameDir_.file(levelName)),
+                level_ = new DumbLevel(levelSource["name"].as!string, levelSource,
                                        GameSubsystems(this), playerProfile_.playerShipSpawner);
             }
             catch(LevelInitException e)
             {
                 throw new GameStartException("Failed to initialize level " ~
-                                             levelName ~ " : " ~ e.msg);
+                                             levelSource["name"].as!string ~ " : " ~ e.msg);
             }
 
             // Called every frame the player ship exists by the tagSystem_.
@@ -878,7 +878,7 @@ class GameContainer
          *          videoDriver = Video driver to draw graphics with.
          *          gameDir     = Game data directory.
          *          profile     = Profile of the current player.
-         *          levelName   = Name of the level to load.
+         *          levelSource = YAML source of the level to load.
          *
          * Returns: Produced Game.
          *
@@ -890,7 +890,7 @@ class GameContainer
                      VideoDriver videoDriver,
                      VFSDir gameDir,
                      PlayerProfile profile,
-                     const string levelName)
+                     ref YAMLNode levelSource)
         in
         {
             assert(game_ is null,
@@ -907,7 +907,7 @@ class GameContainer
                 gui_     = null;
                 monitor_ = null;
             }
-            game_ = new Game(platform, gui_, videoDriver, gameDir, profile, levelName);
+            game_ = new Game(platform, gui_, videoDriver, gameDir, profile, levelSource);
             monitor_.addMonitorable(game_.entitySystem_, "Entities");
             return game_;
         }

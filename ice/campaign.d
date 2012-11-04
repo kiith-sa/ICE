@@ -120,7 +120,7 @@ private:
     //
     // The first parameter is the level to start, the second is the 
     // delegate that will be called by the game when the level ends.
-    void delegate(const string, void delegate(GameOverData)) initGame_;
+    void delegate(ref YAMLNode, void delegate(GameOverData)) initGame_;
 
 public:
     /// Initialize the campaign GUI.
@@ -130,14 +130,14 @@ public:
     ///          campaign      = The first selected campaign.
     ///          playerProfile = Player currently playing the game.
     ///          initGame      = Function called to initialize game, passing 
-    ///                          the name of level to play, and a delegate
+    ///                          the source of level to play, and a delegate
     ///                          for the game to call when the level ends.
     ///
     /// Throws:  VFSException on a filesystem error.
     ///          GUIInitException if the GUI could not be loaded.
     this(GUISystem gui, VFSDir gameDir, Campaign campaign, 
          PlayerProfile playerProfile, 
-         void delegate(const string, void delegate(GameOverData)) initGame)
+         void delegate(ref YAMLNode, void delegate(GameOverData)) initGame)
     {
         initGame_      = initGame;
         campaign_      = campaign;
@@ -166,9 +166,10 @@ private:
             if(lastAccessibleLevel && data.gameWon)
             {
                 playerProfile_.campaignProgress(name, humanName, oldProgress + 1);
+                resetLevel();
             }
         }
-        initGame_(campaign_.currentLevel[1], &processGameOver);
+        initGame_(campaign_.currentLevel[2], &processGameOver);
     }
 
     // Change to the previous level.
@@ -178,7 +179,8 @@ private:
         if(campaign_.currentLevel[0] >= 1)
         {
             campaign_.previousLevel();
-            campaignGUI_.level!ButtonWidget.text = campaign_.currentLevel[1];
+            campaignGUI_.level!ButtonWidget.text = 
+                campaign_.currentLevel[2]["name"].as!string;
         }
     }
 
@@ -191,7 +193,8 @@ private:
         if(campaign_.currentLevel[0] < min(campaign_.length - 1, campaignProgress))
         {
             campaign_.nextLevel();
-            campaignGUI_.level!ButtonWidget.text = campaign_.currentLevel[1];
+            campaignGUI_.level!ButtonWidget.text = 
+                campaign_.currentLevel[2]["name"].as!string;
         }
     }
 
@@ -220,7 +223,8 @@ private:
         {
             campaign_.nextLevel();
         }
-        campaignGUI_.level!ButtonWidget.text = campaign_.currentLevel[1];
+        campaignGUI_.level!ButtonWidget.text = 
+            campaign_.currentLevel[2]["name"].as!string;
     }
 }
 
@@ -241,7 +245,6 @@ class CampaignSaveException : Exception
         super(msg, file, line);
     }
 }
-
 
 /// Loads and provides access to campaigns.
 class CampaignManager
@@ -393,6 +396,9 @@ private:
     /// VFS file names of levels in the campaign.
     string[] levelNames_;
 
+    /// YAML sources of levels in the campaign.
+    YAMLNode[] levelSources_;
+
     /// Index of the currently selected level.
     uint currentLevel_ = 0;
 
@@ -411,12 +417,18 @@ public:
         gameDir_ = gameDir;
         try foreach(string levelName; yaml["levels"])
         {
-            levelNames_ ~= levelName;
+            levelNames_   ~= levelName;
+            levelSources_ ~= loadYAML(gameDir.file(levelName));
         }
         catch(YAMLException e)
         {
             throw new CampaignInitException("Failed to load campaign " ~ name ~
                                             " due to a YAML error: " ~ e.msg);
+        }
+        catch(VFSException e)
+        {
+            throw new CampaignInitException("Failed to load campaign " ~ name ~ 
+                                            " due to a filesystem error: " ~ e.msg);
         }
         enforce(!levelNames_.empty,
                 new CampaignInitException("No levels in campaign " ~ name));
@@ -437,9 +449,10 @@ public:
     /// Get the number of levels in the campaign.
     @property size_t length() const pure nothrow {return levelNames_.length;}
 
-    /// Get the index and name of the currently selected level.
-    Tuple!(uint, string) currentLevel()
+    /// Get the index, name and YAML source of the currently selected level.
+    Tuple!(uint, string, YAMLNode) currentLevel()
     {
-        return tuple(currentLevel_, levelNames_[currentLevel_]);
+        return tuple(currentLevel_, levelNames_[currentLevel_], 
+                     levelSources_[currentLevel_]);
     }
 }
