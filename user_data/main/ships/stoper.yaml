@@ -29,3 +29,9 @@ spawner:
       physics: 
         position: [0, 0]
         rotation: 0.0
+  - entity: explosions/miniBossMicroExposion.yaml
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 0.0
