@@ -193,6 +193,7 @@ class WeaponSystem : System
                    "Code that spawns the entity must ensure that if it has a "
                    "WeaponComponent, it has a SpawnerComponent as well.");
 
+            spawner.preallocateExtraSpawns(weapon.spawns.length);
             //Not by reference - we need a copy so we can modify spawn condition
             foreach(spawn; weapon.spawns)
             {
