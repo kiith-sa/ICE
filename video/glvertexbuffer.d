@@ -191,7 +191,7 @@ package struct GLVertexBuffer(Vertex)
             glEnableVertexAttribArray(position);
             glEnableVertexAttribArray(color);
             static if(textured){glEnableVertexAttribArray(texcoord);}                                 
-            
+
             if(mode_ == GLDrawMode.VertexBuffer)
             {
                 glBindBuffer(GL_ARRAY_BUFFER, vbo_);
@@ -210,10 +210,10 @@ package struct GLVertexBuffer(Vertex)
             {
                 glVertexAttribPointer(texcoord, 2, GL_FLOAT, GL_FALSE, Vertex.sizeof, 
                                       data + Vertex.texcoordOffset);
-            }                                 
+            }
             glVertexAttribPointer(color, 4, GL_UNSIGNED_BYTE, GL_TRUE, Vertex.sizeof, 
                                   data + Vertex.colorOffset);
-            
+
             //draw
             glDrawElements(GL_TRIANGLES, group.vertices, GL_UNSIGNED_INT, 
                            (mode_ == GLDrawMode.VertexArray ? indices_.ptr
