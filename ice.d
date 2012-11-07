@@ -31,6 +31,7 @@ import formats.cli;
 import ice.exceptions;
 import ice.ice;
 import util.unittests;
+import memory.allocator;
 import memory.memory;
 
 
@@ -39,7 +40,6 @@ void main(string[] args)
 {
     memory.memory.suspendMemoryDebugRecording = false;
 
-    
     writeln("Started main()...");
     //will add -h/--help and generate usage info by itself
     auto cli = new CLI();
@@ -98,4 +98,6 @@ void main(string[] args)
                 "(maybe data directory is missing?): ", e.msg);
         exit(-1);
     }
+
+    memory.allocator.freeUnusedBuffers.emit();
 }
