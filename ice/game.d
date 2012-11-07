@@ -474,7 +474,10 @@ class Game
 
                     if(gamePhase_ == gamePhase_.Over) {return false;}
 
-                    entitySystem_.update();
+                    {
+                        auto zone = Zone("Entity system update");
+                        entitySystem_.update();
+                    }
 
                     if(gamePhase_ == GamePhase.Playing)
                     {
@@ -508,21 +511,27 @@ class Game
                         }
                     }
 
-                    playerSystem_.update();
-                    controllerSystem_.update();
-                    engineSystem_.update();
-                    weaponSystem_.update();
-                    physicsSystem_.update();
-                    movementConstraintSystem_.update();
-                    spatialSystem_.update();
-                    collisionSystem_.update();
-                    warheadSystem_.update();
-                    collisionResponseSystem_.update();
-                    healthSystem_.update();
-                    tagSystem_.update();
-                    timeoutSystem_.update();
+                    void zonedUpdate(string systemName)(System system)
+                    {
+                        enum name = systemName ~ " system update";
+                        auto zone = Zone(name);
+                        system.update();
+                    }
 
-                    spawnerSystem_.update();
+                    zonedUpdate!"Player"(playerSystem_);
+                    zonedUpdate!"Controller"(controllerSystem_);
+                    zonedUpdate!"Engine"(engineSystem_);
+                    zonedUpdate!"Weapon"(weaponSystem_);
+                    zonedUpdate!"Physics"(physicsSystem_);
+                    zonedUpdate!"MovementConstraint"(movementConstraintSystem_);
+                    zonedUpdate!"Spatial"(spatialSystem_);
+                    zonedUpdate!"Collision"(collisionSystem_);
+                    zonedUpdate!"Warhead"(warheadSystem_);
+                    zonedUpdate!"Collision"(collisionResponseSystem_);
+                    zonedUpdate!"Health"(healthSystem_);
+                    zonedUpdate!"Tag"(tagSystem_);
+                    zonedUpdate!"Timeout"(timeoutSystem_);
+                    zonedUpdate!"Spawner"(spawnerSystem_);
 
                     return false;
                 });
@@ -533,10 +542,17 @@ class Game
             //so don't draw either.
             if(!continue_){return false;}
 
-            visualSystem_.update();
+
+            {
+                auto zone = Zone("Visual system update");
+                visualSystem_.update();
+            }
             gui_.draw(videoDriver_);
 
-            effectManager_.draw(videoDriver_, gameTime_);
+            {
+                auto zone = Zone("Effect manager draw");
+                effectManager_.draw(videoDriver_, gameTime_);
+            }
 
             return true;
         }
