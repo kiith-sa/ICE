@@ -77,6 +77,8 @@ struct LazyArrayIndex_(ID = string)
         }
 }
 
+pragma(msg, "LazyArrayIndex_!string size: ", LazyArrayIndex_!string.sizeof);
+
 ///Default LazyArrayIndex_ uses string as resource identifier.
 alias LazyArrayIndex_!string LazyArrayIndex;
 
