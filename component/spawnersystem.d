@@ -54,7 +54,7 @@ class SpawnerSystem : System
          * spawnStorage_[0 .. spawnsUsed_] are prototypes to be spawned. Other 
          * entries are preallocated and ready to be reused.
          *
-         * Possible optimizations:
+         * TODO Possible optimizations:
          *
          * 1) Binary heap, sorted array, or sorted array of indices to this array.
          *
@@ -65,7 +65,7 @@ class SpawnerSystem : System
 
         ///Number of used items in spawnStorage_.
         size_t spawnsUsed_;
-        
+
         ///Game data directory.
         VFSDir gameDir_;
 
@@ -78,6 +78,7 @@ class SpawnerSystem : System
          */
         this(EntitySystem entitySystem, const GameTime gameTime)
         {
+            spawnStorage_.reserve(1024);
             entitySystem_ = entitySystem;
             gameTime_     = gameTime;
             entityPrototypes_.loaderDelegate = &loadEntityFromFile;
