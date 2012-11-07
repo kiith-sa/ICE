@@ -18,6 +18,8 @@ import util.yaml;
 ///Component providing physics support to an entity.
 struct PhysicsComponent
 {
+    private static bool DO_NOT_DESTROY_AT_ENTITY_DEATH;
+
     ///Position in world space.
     Vector2f position;
 

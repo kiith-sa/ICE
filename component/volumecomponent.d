@@ -22,6 +22,8 @@ import util.yaml;
 ///Component that provides a spatial volume to an entity.
 struct VolumeComponent 
 {
+    private static bool DO_NOT_DESTROY_AT_ENTITY_DEATH;
+
     public:
         ///Volume types.
         enum Type : ubyte

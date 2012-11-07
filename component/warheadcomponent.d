@@ -15,6 +15,8 @@ import util.yaml;
 ///Allows an entity to damage other entities at collision.
 struct WarheadComponent
 {
+    private static bool DO_NOT_DESTROY_AT_ENTITY_DEATH;
+
     ///Damage caused (negative for a healing effect).
     int damage;
 
