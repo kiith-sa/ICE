@@ -9,12 +9,11 @@
 module containers.vector;
 
 
-import core.stdc.string;
 import std.algorithm;
 import std.range;
 import std.traits;
 
-import memory.memory;
+import memory.allocator;
 
 
 /**
@@ -27,7 +26,8 @@ import memory.memory;
  *
  * Only bare requirements are implemented. Can be improved if needed.
  */
-struct Vector(T)
+struct Vector(T, Allocator = DirectAllocator)
+    if(Allocator.canAllocate!T)
 {
     private:
         ///Manually allocated data storage. More storage than used can be allocated.
@@ -51,7 +51,7 @@ struct Vector(T)
         {
             if(data_ !is null)
             {
-                free(data_);
+                Allocator.free(data_);
                 data_ = null;
             }
             used_ = 0;
@@ -142,7 +142,7 @@ struct Vector(T)
         {
             if(data_ is null){return;}
             auto otherData = data_;
-            data_   = allocArray!T(otherData.length);
+            data_   = Allocator.allocArray!T(otherData.length);
             data_[] = otherData[];
         }
 
@@ -307,8 +307,8 @@ struct Vector(T)
             //We realloc if elements > data_.length .
             if(elements <= data_.length){return;}
 
-            data_ = (data_ !is null) ? realloc(data_, elements) 
-                                     : allocArray!T(elements);
+            data_ = (data_ !is null) ? Allocator.realloc(data_, elements) 
+                                     : Allocator.allocArray!T(elements);
         }
 
         ///Get currently allocated capacity.
