@@ -748,6 +748,8 @@ class EntitySystem : Monitorable
                                null !is *(entity.id in idToEntity_),
                                "Removing entity ID that doesn't exist");
 
+                        clearComponents(entity);
+
                         //TEMP:
                         //Due to a compiler bug, we're setting to null 
                         //instead of removing here.
@@ -909,6 +911,29 @@ class EntitySystem : Monitorable
                 ++idxIdx;
             }
             return -1;
+        }
+
+        ///Destroys all components of an entity (called at entity death).
+        ///
+        ///Components that have an "annotation" member 
+        ///DO_NOT_DESTROY_AT_ENTITY_DEATH will not be destroyed.
+        ///This is an optimization to avoid destroying components that 
+        ///don't need it (i.e. only contain plain data, no arrays, etc.).
+        final void clearComponents(ref Entity entity)
+        {
+            foreach(c; componentTypes)
+            {
+                mixin("alias " ~ c ~ " C;");
+                enum noNeedToClear = __traits(hasMember, C, "DO_NOT_DESTROY_AT_ENTITY_DEATH");
+                static if(!noNeedToClear)
+                {
+                    mixin("auto componentPtr = entity." ~ nameCamelCased(c) ~ ";");
+                    if(componentPtr !is null)
+                    {
+                        clear(*componentPtr);
+                    }
+                }
+            }
         }
 
         ///Get the component array of specified type.
