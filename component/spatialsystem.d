@@ -106,8 +106,9 @@ class SpatialSystem : System
             tempEntities_.reserve(256);
             foreach(ref cell; grid_)
             {
-                cell.reserve(64);
+                cell.reserve(512);
             }
+            outer_.reserve(1024);
         }
 
         ///Destroy the SpatialSystem, freeing all used memory.
@@ -336,7 +337,7 @@ class SpatialSystem : System
             }
 
             int opApply(int delegate(int x, int y, ref Cell) dg)
-            {    
+            {
                 int result;
                 if(outer_)
                 {
