@@ -298,9 +298,16 @@ class ProfileManager
         ///          deleted or if this was the last profile.
         void deleteProfile(PlayerProfile profile)
         {
-            bool matchingProfile(PlayerProfile p){return p is profile;}
-            assert(profiles_.canFind!matchingProfile(),
+            // Not using std.algorithm to avoid a DMD ICE in release builds.
+            size_t removeIdx = size_t.max;
+            foreach(i, p; profiles_) if(p is profile)
+            {
+                removeIdx = i;
+                break;
+            }
+            assert(removeIdx != size_t.max,
                    "Trying to delete a profile not present in ProfileManager");
+
             try
             {
                 profile.profileDir_.remove();
@@ -315,7 +322,8 @@ class ProfileManager
             enforce(profiles_.length > 1,
                     new ProfileException("Can't remove the last remaining profile'"));
 
-            profiles_ = remove!matchingProfile(profiles_);
+            profiles_[removeIdx + 1 .. $].moveAll(profiles_[removeIdx .. $ - 1]);
+            profiles_ = profiles_[0 .. $ - 1];
             currentProfileIndex_ = currentProfileIndex_ % profiles_.length;
         }
 
@@ -332,15 +340,15 @@ class ProfileManager
         bool createProfile(const string name)
         {
             // Profile names can only contain alphanumeric chars and '_'
-            bool inValidChar(dchar c){return !isAlphaNum(c) && c != '_';}
+            static bool inValidChar(dchar c){return !isAlphaNum(c) && c != '_';}
             if(name.canFind!inValidChar())
             {
                 return false;
             }
 
+            // Not using std.algorithm to avoid a DMD ICE in release builds.
             // Case insensitive for Windows compatibility
-            bool existing(ref PlayerProfile p){return p.name.toLower() == name.toLower();}
-            if(profiles_.canFind!existing())
+            foreach(p; profiles_) if(p.name.toLower() == name.toLower())
             {
                 // Already existing profile name.
                 return false;
