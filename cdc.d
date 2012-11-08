@@ -167,13 +167,15 @@ void main(string[] args)
     {
         auto dbgNoUnittest   = ["-debug"];
         auto no_contracts = ["-release"];
-        auto release      = ["-O", "-inline", "-release"];
+        /*auto release      = ["-O", "-inline", "-release"];*/
+        auto release      = ["-inline", "-release"];
     }
     else
     {
         auto dbgNoUnittest   = ["-gc", "-debug"];
         auto no_contracts = ["-release", "-gc"];
-        auto release      = ["-O", "-inline", "-release", "-gc"];
+        /*auto release      = ["-O", "-inline", "-release", "-gc"];*/
+        auto release      = ["-inline", "-release", "-gc"];
     }
     auto dbg = dbgNoUnittest ~ "-unittest";
     auto dependencies = ["dependencies/derelict/DerelictSDL",
