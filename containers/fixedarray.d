@@ -14,11 +14,13 @@ import std.algorithm;
 import std.range;
 import std.traits;
 
+import memory.allocator;
 import memory.memory;
 
 
 ///Simple fixed-size array with manually managed memory, with interface similar to D array.
-struct FixedArray(T)
+struct FixedArray(T, Allocator = DirectAllocator)
+    if(Allocator.canAllocate!T)
 {
     private:
         ///Manually allocated data storage.
@@ -33,7 +35,7 @@ struct FixedArray(T)
         }
         body
         {
-            data_ = allocArray!T(length);
+            data_ = Allocator.allocArray!T(length);
         }
 
         ///Destroy the array.
@@ -41,7 +43,7 @@ struct FixedArray(T)
         {
             if(data_ !is null)
             {
-                free(data_);
+                Allocator.free(data_);
                 data_ = null;
             }
         }
@@ -64,7 +66,7 @@ struct FixedArray(T)
         {
             if(data_ is null){return;}
             auto otherData = data_;
-            data_   = allocArray!T(otherData.length);
+            data_   = Allocator.allocArray!T(otherData.length);
             data_[] = otherData[];
         }
 
