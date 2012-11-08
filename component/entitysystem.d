@@ -685,6 +685,12 @@ class EntitySystem : Monitorable
         mixin Signal!Statistics sendStatistics;
 
     public:
+        this()
+        {
+            enum freeEntityIndicesPrealloc = 32768;
+            freeEntityIndices_.reserve(freeEntityIndicesPrealloc);
+        }
+
         ///Destroy all entities and components, returning to initial state.
         void destroy()
         {
