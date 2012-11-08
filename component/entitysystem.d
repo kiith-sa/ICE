@@ -37,12 +37,12 @@ import component.enginecomponent;
 import component.exceptions;
 import component.healthcomponent;
 import component.movementconstraintcomponent;
-import component.ondeathcomponent;
 import component.ownercomponent;
 import component.physicscomponent;
 import component.playercomponent;
 import component.spawnercomponent;
 import component.statisticscomponent;
+import component.tagscomponent;
 import component.visualcomponent;
 import component.volumecomponent;
 import component.warheadcomponent;
@@ -75,10 +75,10 @@ tuple
     "OwnerComponent",
     "PlayerComponent",
     "DumbScriptComponent",
-    "OnDeathComponent",
     "StatisticsComponent",
     "MovementConstraintComponent",
-    "SpawnerComponent"
+    "SpawnerComponent",
+    "TagsComponent"
 );
 
 ///Last 8 bits are reserved for special uses.
@@ -672,8 +672,8 @@ class EntitySystem : Monitorable
         }
         mixin(ctfeComponentArrays());
 
-        ///ID of the next entity to construct.
-        ulong nextEntityID_ = 0;
+        ///ID of the next entity to construct. (0 is the default ID value - invalid)
+        ulong nextEntityID_ = 1;
 
         ///Maps entity IDs to entity pointers.
         Entity*[EntityID] idToEntity_;

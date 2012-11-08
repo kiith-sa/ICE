@@ -23,13 +23,13 @@ import gui2.buttonwidget;
 import gui2.lineeditwidget;
 import gui2.rootwidget;
 import gui2.slotwidget;
-import platform.platform;
+import ice.guiswapper;
 import util.signal;
 import util.unittests;
 import util.yaml;
 
 /// GUI frontend for the profile manager.
-class ProfileGUI
+class ProfileGUI: SwappableGUI
 {
 private:
     // Reference to the GUI system.
@@ -48,16 +48,15 @@ private:
     SlotWidget parentSlot_;
 
 public:
-    /// Emitted when the profile manager GUI should be exited.
-    mixin Signal!() back;
-
     /// Construct a ProfileGUI.
     ///
     /// This loads the widget tree.
     /// 
     /// Params: profileManager = ProfileManager this GUI is working with.
     ///         gui            = Reference to the GUI system to load widgets with.
-    ///         parentSlot     = Parent slot widget to connect the profile GUI to.
+    ///         parentSlot     = Parent slot widget of the profile GUI 
+    ///                          (profile GUI internally swaps its main GUI 
+    ///                          for dialogs connected here).
     ///         gameDir        = Game data directory to load the GUI from.
     ///
     /// Throws: GUIInitException on GUI loading failure.
@@ -79,6 +78,7 @@ public:
                 writeln("ProfileManager.this() GUI loading failed");
             }
             profileGUI_ = gui.loadWidgetTree(loadYAML(gameDir.dir("gui").file("profileGUI.yaml")));
+            super(profileGUI_);
 
             auto addProfileSource = gameDir.dir("gui").file("addProfileGUI.yaml");
             auto addProfileYAML   = loadYAML(addProfileSource);
@@ -93,8 +93,8 @@ public:
             addProfileGUI_.profileNameEdit!LineEditWidget.textEntered.connect(&processProfileName);
             addProfileGUI_.profileNameEdit!LineEditWidget.characterFilter = &validChar;
             profileGUI_.newProfile!ButtonWidget.pressed.connect(&showAddNewProfile);
-            profileGUI_.deleteProfile!ButtonWidget.pressed.connect(&showAddNewProfile);
-            profileGUI_.back!ButtonWidget.pressed.connect(&hide);
+            profileGUI_.deleteProfile!ButtonWidget.pressed.connect(&deleteCurrentProfile);
+            profileGUI_.back!ButtonWidget.pressed.connect({swapGUI_("ice");});
 
             profileGUI_.previous!ButtonWidget.pressed.connect(&previousProfile);
             profileGUI_.next!ButtonWidget.pressed.connect(&nextProfile);
@@ -104,24 +104,7 @@ public:
         }
     }
 
-    /// Show the GUI on screen.
-    ///
-    /// The caller must first disconnect any RootWidget connected to the parent 
-    /// slot widget.
-    void show()
-    {
-        assert(parentSlot_.free, "Trying to show Profile GUI but previously connected RootWidget was not disconnected");
-        parentSlot_.connect(profileGUI_);
-    }
-
 private:
-    // Hide the profile GUI (when the "back" button is clicked).
-    void hide()
-    {
-        parentSlot_.disconnect(profileGUI_);
-        back.emit();
-    }
-
     // Show the dialog to add new profile (enter name, etc.)
     void showAddNewProfile()
     {
@@ -147,8 +130,7 @@ private:
     // Show the profile details GUI screen.
     void showProfileDetails()
     {
-        //TODO (After campaign)
-        //     custom screen showing:
+        //TODO custom screen showing:
         //     campaign progress,
         //     ship modifications,
         //     player ships killed,
@@ -210,6 +192,9 @@ class ProfileManager
         uint currentProfileIndex_;
 
     public:
+        /// Emitted when the selected player profile changes, passing the profile.
+        mixin Signal!(PlayerProfile) changedProfile;
+
         /// Construct a ProfileManager.
         ///
         /// Loads profiles from the profiles/ directory.
@@ -289,16 +274,18 @@ class ProfileManager
         }
 
         /// Switch to the next profile.
-        void nextProfile() pure nothrow
+        void nextProfile()
         {
             currentProfileIndex_ = (currentProfileIndex_ + 1) % profiles_.length;
+            changedProfile.emit(currentProfile);
         }
 
         /// Switch to the previous profile.
-        void previousProfile() pure nothrow
+        void previousProfile()
         {
             currentProfileIndex_ = 
                 (cast(uint)profiles_.length + currentProfileIndex_ - 1) % profiles_.length;
+            changedProfile.emit(currentProfile);
         }
 
         /// Delete specified profile.
@@ -477,6 +464,7 @@ void unittestProfileManager()
 }
 mixin registerTest!(unittestProfileManager, "std.playerprofile.ProfileManager");
 
+
 /// Player profile, handling things such as campaign progress and ship modifications.
 class PlayerProfile
 {
@@ -485,18 +473,70 @@ public:
     const string name;
 
 private:
-    //TODO use in level (note - level must still set the position)
-    //TODO (once campaigns work) progress in campaigns
+    // Progress for campaigns this player has played.
+    //
+    // Triplets of VFS campaign name, human-readable campaign name, level.
+    Tuple!(string, string, uint)[] campaignProgress_;
 
-    /*
-     * Spawner entity that will modify playership at spawn time.
-     *
-     * This makes an RPG system possible.
-     */
+    // Spawner entity that will modify playership at spawn time.
+    // 
+    // This makes an RPG system possible.
     YAMLNode playerShipSpawner_;
 
     // Directory storing the profile data.
     VFSDir profileDir_;
+
+public:
+    /// Get the entity that will spawn the player ship and modify it at spawn time.
+    @property YAMLNode playerShipSpawner() pure nothrow {return playerShipSpawner_;}
+
+    /// Get progress in a campaign.
+    ///
+    /// Params:   vfsName   = Virtual file system of the campaign. If multiple
+    ///                       campaigns have the same human readable name, this is
+    ///                       used to determine which one should be used.
+    ///           humanName = Human readable name of the campaign.
+    ///
+    /// Returns:  Current level in the campaign.
+    uint campaignProgress(string vfsName, string humanName) const pure nothrow 
+    {
+        uint result = uint.max;
+        // Handles even renamed files; but if both vfs and human names match,
+        // we have a definite match.
+        foreach(i, ref triplet; campaignProgress_) if(triplet[1] == humanName)
+        {
+            result = triplet[2];
+            if(triplet[0] == vfsName) {return result;}
+        }
+        if(result == uint.max)
+        {
+            // Default starting level in a campaign
+            return 0;
+        }
+        return result;
+    }
+
+    /// Set progress for a campaign.
+    ///
+    /// Params:  vfsName   = Virtual file system of the campaign. If multiple
+    ///                      campaigns have the same human readable name, this is
+    ///                      used to determine which one should be used.
+    ///          humanName = Human readable name of the campaign.
+    ///          progress  = Campaign progress (current level) to set.
+    void campaignProgress(string vfsName, string humanName, uint progress) 
+        @safe pure nothrow
+    {
+        foreach(ref triplet; campaignProgress_)
+        {
+            if(triplet[0] == vfsName && triplet[1] == humanName)
+            {
+                triplet[2] = progress;
+                return;
+            }
+        }
+
+        campaignProgress_ ~= tuple(vfsName, humanName, progress);
+    }
 
 private:
     // Construct a PlayerProfile.
@@ -515,10 +555,20 @@ private:
         // Create a new player profile with a spawner that does not modify the player ship.
         void createNew()
         {
-            // spawner:
-            //   - entity: ships/playerShip.yaml
-            auto spawn  = YAMLNode([YAMLNode(["entity"], ["ships/playerShip.yaml"])]);
-            playerShipSpawner_ = YAMLNode(["spawner"], [spawn]);
+            playerShipSpawner_ = 
+                loadYAML("spawner:\n" ~
+                        "  - entity: ships/playerShip.yaml\n" ~
+                        "    condition: spawn\n" ~
+                        "    spawnerIsOwner: false\n" ~
+                        "    components:\n" ~
+                        "        physics:\n" ~
+                        "          position: [400, 536]\n" ~
+                        "          rotation: 3.141593\n" ~
+                        "        statistics:\n"  ~
+                        "        player: 0\n"    ~ 
+                        "        tags: [_PLR]\n" ~ 
+                        "        controller:\n"  ~
+                        "        spawner: []");
             save();
         }
 
@@ -526,8 +576,19 @@ private:
         profileDir_ = profileDir;
         try if(profileDir_.exists)
         {
+            // Load campaign progress
+            auto progressFile = profileDir_.file("playerProgress.yaml");
+            if(progressFile.exists)
+            {
+                foreach(YAMLNode campaign; loadYAML(progressFile)["campaignProgress"])
+                {
+                    campaignProgress_ ~= tuple(campaign["name"].as!string,
+                                               campaign["humanName"].as!string,
+                                               campaign["progress"].as!uint);
+                }
+            }
             auto spawnerFile = profileDir_.file("playerShipSpawner.yaml");
-            if(spawnerFile.exists())
+            if(spawnerFile.exists)
             {
                 playerShipSpawner_ = loadYAML(spawnerFile);
                 return;
@@ -554,8 +615,22 @@ private:
 
         try
         {
-            auto spawnerFile = profileDir_.file("playerShipSpawner.yaml");
+            auto spawnerFile  = profileDir_.file("playerShipSpawner.yaml");
+            auto progressFile = profileDir_.file("playerProgress.yaml");
+
             saveYAML(spawnerFile, playerShipSpawner_);
+            // Save player progress to YAML.
+            YAMLNode[] progressSequence;
+            foreach(ref triplet; campaignProgress_)
+            {
+                auto nameYAML      = YAMLNode(triplet[0]);
+                auto humanNameYAML = YAMLNode(triplet[1]);
+                auto progressYAML  = YAMLNode(triplet[2]);
+                progressSequence ~= YAMLNode(["name", "humanName", "progress"],
+                                             [nameYAML, humanNameYAML, progressYAML]);
+            }
+            auto progressYAML = YAMLNode(["campaignProgress"], [YAMLNode(progressSequence)]);
+            saveYAML(progressFile, progressYAML);
         }
         catch(VFSException e)
         {

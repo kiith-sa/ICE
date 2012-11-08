@@ -1,3 +1,5 @@
+name: Level 2
+
 wave turtlePawn:
   spawner:
     - entity: ships/turtle.yaml 
@@ -192,6 +194,7 @@ level:
   - wait: 0.3
   - wave: turtlePawn
   - wait: 0.3
+
   - wave: turtlePawn
   - wait: 3
   - wave: turtlePawn

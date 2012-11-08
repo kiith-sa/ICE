@@ -59,7 +59,7 @@ starts by a &#8220;header&#8221; in format <tt class="docutils literal"><span cl
 wave. The wave then defines a spawner component, which works exactly the same
 as in an entity. As wave is an entity, other components could be defined
 as well if needed.</p>
-<p>The spawner component can spawn entities with delay and override their
+<p>The spawner component can spawn entities with a delay and override their
 components.  The most commonly overridden components are the physics component
 to set position of the spawned entity, and dumbscript component to set entity
 behavior.  However, any other components can be overridden as well, e.g.
@@ -81,7 +81,8 @@ weapons, health and so on.  For detauls, see
 </div>
 <p>This wave is called <tt class="docutils literal"><span class="pre">turtlePawn</span></tt>. It will spawn two <tt class="docutils literal"><span class="pre">ships/turtle.yaml</span></tt>
 entities at positions <tt class="docutils literal"><span class="pre">[380,</span> <span class="pre">0]</span></tt> and <tt class="docutils literal"><span class="pre">[420,</span> <span class="pre">0]</span></tt>. The first entity will use
-the <tt class="docutils literal"><span class="pre">dumbscripts/pawnLeft.yaml</span></tt>, the second <tt class="docutils literal"><span class="pre">dumbscripts/pawnRight.yaml</span></tt>.</p>
+the <tt class="docutils literal"><span class="pre">dumbscripts/pawnLeft.yaml</span></tt> dumbscript, the second
+<tt class="docutils literal"><span class="pre">dumbscripts/pawnRight.yaml</span></tt>.</p>
 </div>
 <div class="section" id="level-script">
 <h2>Level script<a class="headerlink" href="#level-script" title="Permalink to this headline">¶</a></h2>
@@ -312,7 +313,7 @@ infinite. <em>Float</em>. Default: <tt class="docutils literal"><span class="pre
     </div>
     <div class="footer">
         &copy; Copyright 2010-2012, Dávid Horváth, Ferdinand Majerech, Libor Mališ..
-      Last updated on Oct 14, 2012.
+      Last updated on Nov 01, 2012.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

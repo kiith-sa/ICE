@@ -22,7 +22,7 @@ wave. The wave then defines a spawner component, which works exactly the same
 as in an entity. As wave is an entity, other components could be defined
 as well if needed.
 
-The spawner component can spawn entities with delay and override their
+The spawner component can spawn entities with a delay and override their
 components.  The most commonly overridden components are the physics component
 to set position of the spawned entity, and dumbscript component to set entity
 behavior.  However, any other components can be overridden as well, e.g.
@@ -47,7 +47,8 @@ Example::
 
 This wave is called ``turtlePawn``. It will spawn two ``ships/turtle.yaml``
 entities at positions ``[380, 0]`` and ``[420, 0]``. The first entity will use
-the ``dumbscripts/pawnLeft.yaml``, the second ``dumbscripts/pawnRight.yaml``.
+the ``dumbscripts/pawnLeft.yaml`` dumbscript, the second
+``dumbscripts/pawnRight.yaml``.
 
 
 ------------

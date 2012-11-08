@@ -50,10 +50,14 @@
             
   <div class="section" id="statistics-component">
 <span id="modding-reference-component-statistics"></span><h1>Statistics component<a class="headerlink" href="#statistics-component" title="Permalink to this headline">¶</a></h1>
-<p>Currently, Statistics component can&#8217;t be used from YAML, only by internal game
-logic. This might change in future. It specifies which entity is the owner of
-an entity (for example, a ship is an owner of projectiles it fires).  Trying to
-use Statistics component in YAML is currently an error.</p>
+<p>A statistics component collects statistics for an entity, such as ships killed,
+shots fired, and so on. While it can be declared in YAML, it only makes sense
+(and is used) for the player ship, statistics of which are used for player
+scores. It might be used in future for RPG elements.</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>statistics:</pre>
+</div>
+<p>Currently, this component has no parameters.</p>
 </div>
 
 
@@ -80,7 +84,7 @@ use Statistics component in YAML is currently an error.</p>
     </div>
     <div class="footer">
         &copy; Copyright 2010-2012, Dávid Horváth, Ferdinand Majerech, Libor Mališ..
-      Last updated on Oct 14, 2012.
+      Last updated on Nov 02, 2012.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

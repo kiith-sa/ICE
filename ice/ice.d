@@ -19,9 +19,11 @@ import dgamevfs._;
 
 import util.yaml;
 
+import ice.campaign;
 import ice.credits;
 import ice.exceptions;
 import ice.game;
+import ice.guiswapper;
 import ice.playerprofile;
 import gui.guielement;
 import gui2.buttonwidget;
@@ -48,28 +50,99 @@ import color;
 import image;
 
 
-/** 
+/// Level selection GUI.
+class LevelGUI: SwappableGUI
+{
+    /// Initialize level selection menu.
+    /// 
+    /// Params: guiSystem = GUI system to build the menu widgets with.
+    ///         levels    = YAML to load level filenames from.
+    ///         initGame  = Function that takes level filename and starts a game.
+    /// 
+    /// Throws: GUIInitException on failure.
+    this(GUISystem guiSystem, ref YAMLNode levels, void delegate(const string) initGame)
+    {
+        auto menuHeight = to!string((levels.length * 8 + 24) + 8);
+        // Styles.
+        auto buttonStyleDefault =  "{borderColor: rgbaC0C0FF60, fontColor: rgbaA0A0FFC0}";
+        auto buttonStyleFocused =  "{borderColor: rgbaC0C0FFA0, fontColor: rgbaC0C0FFC0}";
+        auto buttonStyleActive  =  "{borderColor: rgbaC0C0FFFF, fontColor: rgbaE0E0FFFF}";
+
+        auto builder = WidgetBuilder(guiSystem);
+
+        // Root widget.
+        builder.buildWidget!"root"((ref WidgetBuilder b)
+        {
+            b.styleManager("line");
+            b.style("", "{drawBorder: false}");
+            b.layoutManager("boxManual");
+            b.layout("{x: 'pLeft', y: 'pTop', w: 'pWidth', h: 'pHeight'}");
+
+            // Sidebar.
+            b.buildWidget!"container"((ref WidgetBuilder b)
+            {
+                b.style("", "{borderColor: rgbaC0C0FFB0}");
+                b.layout("{x: 'pRight - 176', y: 16, w: 160, h: 'pBottom - 32'}");
+
+                // Menu container.
+                b.buildWidget!"container"((ref WidgetBuilder b)
+                {
+                    b.style("", "{drawBorder: false}");
+                    b.layout("{x: pLeft, y: 'pTop + 136', w: 'pWidth', h: "
+                             ~ menuHeight ~ "}");
+
+                    uint l = 0;
+                    // Level buttons.
+                    foreach(string level; levels)
+                    {
+                        auto offset = to!string(8 + (24 + 8) * l);
+
+                        b.buildWidget!"button"((ref WidgetBuilder b)
+                        {
+                            b.name = "l" ~ to!string(l);
+                            b.style("", buttonStyleDefault);
+                            b.style("focused", buttonStyleFocused);
+                            b.style("active", buttonStyleActive);
+                            b.layout("{x: 'pLeft + 8', y: 'pTop + " ~ offset ~ 
+                                     "', w: 'pWidth - 16', h: 24}");
+                            b.widgetParams("{text: " ~ level ~ "}");
+                        });
+                        ++l;
+                    }
+
+                    // Back button.
+                    b.buildWidget!"button"((ref WidgetBuilder b)
+                    {
+                        auto offset = to!string(8 + (24 + 8) * l);
+                        b.name = "back";
+                        b.style("", buttonStyleDefault);
+                        b.style("focused", buttonStyleFocused);
+                        b.style("active", buttonStyleActive);
+                        b.layout("{x: 'pLeft + 8', y: 'pTop + " ~ offset ~ 
+                                 "', w: 'pWidth - 16', h: 24}");
+                        b.widgetParams("{text: Back}");
+                    });
+                });
+            });
+        });
+
+        // Button actions.
+        auto levelMenu = cast(RootWidget)builder.builtWidgets.back;
+        auto l = 0;
+        foreach(string level; levels)
+        {
+            levelMenu.get!ButtonWidget("l" ~ to!string(l))
+                          .pressed.connect({initGame(level);});
+            ++l;
+        }
+
+        super(levelMenu);
+        levelMenu.back!ButtonWidget.pressed.connect({swapGUI_("ice");});
+    }
+}
+
+/**
  * Class holding all GUI used by ICE (main menu, etc.).
- *
- * Signal:
- *     public mixin Signal!() levelMenuOpen
- *
- *     Emitted when the player clicks the button to open level menu.
- *
- * Signal:
- *     public mixin Signal!() profileGUIOpen
- *
- *     Emitted when the player clicks the "Player setup" button.
- *
- * Signal:
- *     public mixin Signal!() creditsStart
- *
- *     Emitted when the credits screen is opened. 
- *
- * Signal:
- *     public mixin Signal!() creditsEnd
- *
- *     Emitted when the credits screen is closed. 
  *
  * Signal:
  *     public mixin Signal!() quit
@@ -81,40 +154,18 @@ import image;
  *
  *     Emitted when the player clicks the button to reset video mode. 
  */
-class IceGUI
+class IceGUI: SwappableGUI
 {
     ///TODO replace old GUI with the new YAML loadable GUI.
     private:
-        /// Reference to the GUI system (to load widgets).
-        GUISystem guiSystem_;
-        /// Parent slot widget the GUI is connected to.
-        SlotWidget parentSlot_;
         /// Root widget of the main ICE GUI (the main menu).
         RootWidget iceGUI_;
-        /// Level selection menu.
-        RootWidget levelMenu_;
-
         ///Parent of all Pong GUI elements.
         GUIElement parent_;
         ///Monitor view widget.
         MonitorView monitor_;
 
-        ///Credits screen (null unless shown).
-        Credits credits_;
-        ///Platform for keyboard I/O.
-        Platform platform_;
-        ///Profile management GUI, non-null when shown.
-        ProfileGUI profileGUI_;
-
     public:
-        ///Emitted when the player clicks the button to open the level menu.
-        mixin Signal!() levelMenuOpen;
-        ///Emitted when the player clicks the "Player setup" button
-        mixin Signal!() profileGUIOpen;
-        ///Emitted when the credits screen is opened.
-        mixin Signal!() creditsStart;
-        ///Emitted when the credits screen is closed.
-        mixin Signal!() creditsEnd;
         ///Emitted when the player clicks the button to quit.
         mixin Signal!() quit;
         ///Emitted when the player clicks the button to reset video mode.
@@ -123,25 +174,18 @@ class IceGUI
         /**
          * Construct IceGUI with specified parameters.
          *
-         * Params:  guiSystem      = Reference to the GUI system.
-         *          gameDir        = Game data directory.
-         *          profileManager = Reference to the player profile manager (for profile GUI).
-         *          parent         = GUI element to use as parent for all pong GUI elements.
-         *          monitor        = Monitor subsystem, used to initialize monitor GUI view.
-         *          platform       = Platform for keyboard I/O.
+         * Params:  guiSystem  = Reference to the GUI system.
+         *          gameDir    = Game data directory.
+         *          parent     = GUI element to use as parent for all pong GUI elements.
+         *          monitor    = Monitor subsystem, used to initialize monitor GUI view.
          *
          * Throws:  GUIInitException on failure.
          *          YAMLException on a YAML error.
          *          VFSException on a filesystem error.
          */
-        this(GUISystem guiSystem, VFSDir gameDir, ProfileManager profileManager, 
-             GUIElement parent, MonitorManager monitor, Platform platform)
+        this(GUISystem guiSystem, VFSDir gameDir, GUIElement parent, MonitorManager monitor)
         {
-            guiSystem_  = guiSystem;
-            parentSlot_ = guiSystem_.rootSlot;
-            profileGUI_ = new ProfileGUI(profileManager, guiSystem_, parentSlot_, gameDir);
             parent_     = parent;
-            platform_   = platform;
 
             with(new MonitorViewFactory(monitor))
             {
@@ -154,20 +198,17 @@ class IceGUI
             parent_.addChild(monitor_);
             monitor_.hide();
 
-            iceGUI_ = guiSystem_.loadWidgetTree(
+            iceGUI_ = guiSystem.loadWidgetTree(
                           loadYAML(gameDir.dir("gui").file("gameGUI.yaml")));
 
-            iceGUI_.levels!ButtonWidget.pressed.connect(&levelMenuOpen.emit);
-            iceGUI_.playerSetup!ButtonWidget.pressed.connect(&profileGUIOpen.emit);
-            iceGUI_.credits!ButtonWidget.pressed.connect(&creditsShow);
+            iceGUI_.playerSetup!ButtonWidget.pressed.connect({swapGUI_("profiles");});
+            iceGUI_.campaigns!ButtonWidget.pressed.connect({swapGUI_("campaigns");});
+            iceGUI_.levels!ButtonWidget.pressed.connect({swapGUI_("levels");});
+            iceGUI_.credits!ButtonWidget.pressed.connect({swapGUI_("credits");});
             iceGUI_.quit!ButtonWidget.pressed.connect(&quit.emit);
             iceGUI_.resetVideo!ButtonWidget.pressed.connect(&resetVideo.emit);
 
-            profileGUI_.back.connect({menuShow();});
-
-            credits_ = new Credits(guiSystem_, parentSlot_, gameDir);
-            credits_.closed.connect(&creditsHide);
-            menuShow();
+            super(iceGUI_);
         }
 
         ///Destroy the IceGUI.
@@ -175,10 +216,6 @@ class IceGUI
         {
             monitor_.die();
 
-            levelMenuOpen.disconnectAll();
-            profileGUIOpen.disconnectAll();
-            creditsStart.disconnectAll();
-            creditsEnd.disconnectAll();
             quit.disconnectAll();
             resetVideo.disconnectAll();
         }
@@ -191,139 +228,6 @@ class IceGUI
         {
             if(monitor_.visible){monitor_.hide();}
             else{monitor_.show();}
-        }
-
-        ///Show main menu.
-        void menuShow()
-        {
-            parentSlot_.connect(iceGUI_);
-        }
-
-        ///Hide main menu.
-        void menuHide()
-        {
-            parentSlot_.disconnect(iceGUI_);
-        }
-
-        /// Initialize level selection menu.
-        /// 
-        /// Params:  levels   = YAML to load level filenames from.
-        ///          initGame = Function that takes level filename and starts a game.
-        /// 
-        /// Throws: GUIInitException on failure.
-        void levelMenuInit(ref YAMLNode levels, void delegate(const string) initGame)
-        {
-            auto menuHeight = to!string((levels.length * 8 + 24) + 8);
-            // Styles.
-            auto buttonStyleDefault =  "{borderColor: rgbaC0C0FF60, fontColor: rgbaA0A0FFC0}";
-            auto buttonStyleFocused =  "{borderColor: rgbaC0C0FFA0, fontColor: rgbaC0C0FFC0}";
-            auto buttonStyleActive  =  "{borderColor: rgbaC0C0FFFF, fontColor: rgbaE0E0FFFF}";
-
-            auto builder = WidgetBuilder(guiSystem_);
-
-            // Root widget.
-            builder.buildWidget!"root"((ref WidgetBuilder b)
-            {
-                b.styleManager("line");
-                b.style("", "{drawBorder: false}");
-                b.layoutManager("boxManual");
-                b.layout("{x: 'pLeft', y: 'pTop', w: 'pWidth', h: 'pHeight'}");
-
-                // Sidebar.
-                b.buildWidget!"container"((ref WidgetBuilder b)
-                {
-                    b.style("", "{borderColor: rgbaC0C0FFB0}");
-                    b.layout("{x: 'pRight - 176', y: 16, w: 160, h: 'pBottom - 32'}");
-
-                    // Menu container.
-                    b.buildWidget!"container"((ref WidgetBuilder b)
-                    {
-                        b.style("", "{drawBorder: false}");
-                        b.layout("{x: pLeft, y: 'pTop + 136', w: 'pWidth', h: "
-                                   ~ menuHeight ~ "}");
-
-                        uint l = 0;
-                        // Level buttons.
-                        foreach(string level; levels)
-                        {
-                            auto offset = to!string(8 + (24 + 8) * l);
-
-                            b.buildWidget!"button"((ref WidgetBuilder b)
-                            {
-                                b.name = "l" ~ to!string(l);
-                                b.style("", buttonStyleDefault);
-                                b.style("focused", buttonStyleFocused);
-                                b.style("active", buttonStyleActive);
-                                b.layout("{x: 'pLeft + 8', y: 'pTop + " ~ offset ~ 
-                                         "', w: 'pWidth - 16', h: 24}");
-                                b.widgetParams("{text: " ~ level ~ "}");
-                            });
-                            ++l;
-                        }
-
-                        // Back button.
-                        b.buildWidget!"button"((ref WidgetBuilder b)
-                        {
-                            auto offset = to!string(8 + (24 + 8) * l);
-                            b.name = "back";
-                            b.style("", buttonStyleDefault);
-                            b.style("focused", buttonStyleFocused);
-                            b.style("active", buttonStyleActive);
-                            b.layout("{x: 'pLeft + 8', y: 'pTop + " ~ offset ~ 
-                                     "', w: 'pWidth - 16', h: 24}");
-                            b.widgetParams("{text: Back}");
-                        });
-                    });
-                });
-            });
-
-            // Button actions.
-            levelMenu_ = cast(RootWidget)builder.builtWidgets.back;
-            auto l = 0;
-            foreach(string level; levels)
-            {
-                levelMenu_.get!ButtonWidget("l" ~ to!string(l))
-                              .pressed.connect({initGame(level);});
-                ++l;
-            }
-
-            levelMenu_.back!ButtonWidget.pressed.connect({levelMenuHide(); menuShow();});
-        }
-
-        ///Show level selection menu.
-        void levelMenuShow()
-        {
-            assert(levelMenu_ !is null, "Trying to show level menu before initializing it");
-            parentSlot_.connect(levelMenu_);
-        }
-
-        ///Show the profile management GUI.
-        void profileGUIShow()
-        {
-            profileGUI_.show();
-        }
-
-        ///Hide the level menu.
-        void levelMenuHide()
-        {
-            parentSlot_.disconnect(levelMenu_);
-        }
-
-    private:
-        ///Show credits screen (and hide main menu).
-        void creditsShow()
-        {
-            menuHide();
-            credits_.show();
-            creditsStart.emit();
-        }
-
-        ///Hide credits screen (and show main menu).
-        void creditsHide()
-        {
-            credits_.hide();
-            menuShow();
-            creditsEnd.emit();
         }
 }
 
@@ -356,10 +260,14 @@ class Ice
         GUISystem guiSystem_;
         ///Monitor subsystem, providing debugging and profiling info.
         MonitorManager monitor_;
+        ///Swaps root widgets of various GUIs.
+        GUISwapper guiSwapper_;
         ///ICE GUI.
         IceGUI gui_;
         ///Player profile manager.
         ProfileManager profileManager_;
+        ///Manages campaigns.
+        CampaignManager campaignManager_;
 
         ///Main ICE config file (YAML).
         YAMLNode config_;
@@ -404,6 +312,9 @@ class Ice
             initPlayerProfiles();
             writeln("Initialized player profiles");
             scope(failure){destroyPlayerProfiles();}
+            initCampaigns();
+            writeln("Initialized campaigns");
+            scope(failure){destroyCampaigns();}
             initGUI();
             writeln("Initialized GUI");
             scope(failure){destroyGUI();}
@@ -426,6 +337,7 @@ class Ice
             destroyFrameProfiler();
             if(game_ !is null){destroyGame();}
             destroyPlayerProfiles();
+            destroyCampaigns();
             destroyGUI();
             destroyMonitor();
             destroyVideo();
@@ -485,12 +397,12 @@ class Ice
                         auto zone = Zone("VideoDriver endFrame");
                         videoDriver_.endFrame();
                     }
-                
+
                     {
                         auto zone = Zone("Memory update");
                         memory_.update();
                     }
-                
+
                     ++iterations;
                 }
                 if(game_ !is null) {frameProfilerPause();}
@@ -574,10 +486,48 @@ class Ice
 
             try
             {
-                gui_ = new IceGUI(guiSystem_, gameDir_, profileManager_, guiRoot_.root, monitor_, platform_);
                 auto levelsFile = gameDir_.file("levels.yaml");
                 YAMLNode levels = loadYAML(levelsFile);
-                gui_.levelMenuInit(levels, &initGame);
+
+                guiSwapper_       = new GUISwapper(guiSystem_.rootSlot);
+
+                // Function to start a level outside a campaign.
+                //
+                // Used by the level selection menu.
+                void startLevelSeparate(const string levelName)
+                {
+                    try
+                    {
+                        auto source = loadYAML(gameDir_.file(levelName));
+                        initGame(source, null);
+                    }
+                    catch(YAMLException e)
+                    {
+                        writeln("Failed to separately load level ", levelName, ": ", e.msg);
+                    }
+                    catch(VFSException e)
+                    {
+                        writeln("Failed to separately load level ", levelName, ": ", e.msg);
+                    }
+                }
+                auto levelGUI     = new LevelGUI(guiSystem_, levels, &startLevelSeparate);
+                auto credits      = new Credits(guiSystem_, gameDir);
+                auto campaignsGUI = new CampaignsGUI(guiSystem_, campaignManager_, gameDir_);
+                auto campaignGUI  =
+                    new CampaignGUI(guiSystem_, gameDir_, campaignManager_.currentCampaign,
+                                    profileManager_.currentProfile, &initGame);
+                profileManager_.changedProfile.connect(&campaignGUI.playerProfile);
+                campaignManager_.changedCampaign.connect(&campaignGUI.campaign);
+                auto profileGUI   = 
+                    new ProfileGUI(profileManager_, guiSystem_, guiSystem_.rootSlot, gameDir_);
+                gui_ = new IceGUI(guiSystem_, gameDir_, guiRoot_.root, monitor_);
+                guiSwapper_.addGUI(gui_,         "ice");
+                guiSwapper_.addGUI(credits,      "credits");
+                guiSwapper_.addGUI(levelGUI,     "levels");
+                guiSwapper_.addGUI(campaignsGUI, "campaigns");
+                guiSwapper_.addGUI(campaignGUI,  "campaign");
+                guiSwapper_.addGUI(profileGUI,   "profiles");
+                guiSwapper_.setGUI("ice");
             }
             catch(GUIInitException e)
             {
@@ -592,10 +542,6 @@ class Ice
                 throw new GameStartupException("Failed to initialize ICE GUI: ", e.msg);
             }
 
-            gui_.creditsStart.connect(&creditsStart);
-            gui_.creditsEnd.connect(&creditsEnd);
-            gui_.levelMenuOpen.connect(&showLevelMenu);
-            gui_.profileGUIOpen.connect(&showProfileGUI);
             gui_.quit.connect(&exit);
             gui_.resetVideo.connect(&resetVideoMode);
 
@@ -676,7 +622,36 @@ class Ice
             }
             catch(ProfileException e)
             {
-                writeln("Failed to save player profiles");
+                writeln("Failed to save player profiles: " ~ e.msg);
+            }
+        }
+
+        /// Initialize any code related to campaigns.
+        void initCampaigns()
+        {
+            try
+            {
+                campaignManager_ = new CampaignManager(gameDir_);
+            }
+            catch(CampaignInitException e)
+            {
+                throw new GameStartupException("Failed to initialize campaign manager: "
+                                               ~ e.msg);
+            }
+        }
+
+        /// Deinitialize any code related to campaigns.
+        void destroyCampaigns()
+        {
+            try
+            {
+                campaignManager_.save();
+                clear(campaignManager_);
+                campaignManager_ = null;
+            }
+            catch(CampaignSaveException e)
+            {
+                writeln("Failed to save campaign manager config: " ~ e.msg);
             }
         }
 
@@ -708,40 +683,32 @@ class Ice
             platform_ = null;
         }
 
-        ///Show the menu to select levels in the game.
-        void showLevelMenu()
-        {
-            gui_.menuHide();
-            gui_.levelMenuShow();
-        }
-
-        ///Show the player profile management GUI.
-        void showProfileGUI()
-        {
-            gui_.menuHide();
-            gui_.profileGUIShow();
-        }
-
         ///Start game.
-        void initGame(const string levelName)
+        void initGame(ref YAMLNode levelSource,
+                      void delegate(GameOverData) gameOverCallback = null)
         {
             platform_.key.disconnect(&keyHandler);
 
-            gui_.levelMenuHide();
+            guiSwapper_.setGUI(null);
             try
             {
-                game_ = gameContainer_.produce(platform_, 
-                                               monitor_, 
+                game_ = gameContainer_.produce(platform_,
+                                               monitor_,
                                                guiRoot_.root,
                                                videoDriver_,
                                                gameDir_,
-                                               levelName);
+                                               profileManager_.currentProfile,
+                                               levelSource);
+                if(null !is gameOverCallback)
+                {
+                    game_.atGameOver.connect(gameOverCallback);
+                }
             }
             catch(GameStartException e)
             {
                 writeln("Game failed to start: " ~ e.msg);
 
-                gui_.menuShow();
+                guiSwapper_.setGUI("ice");
                 platform_.key.connect(&keyHandler);
             }
         }
@@ -752,19 +719,7 @@ class Ice
             gameContainer_.destroy();
             game_ = null;
             platform_.key.connect(&keyHandler);
-            gui_.menuShow();
-        }
-
-        ///Show credits screen.
-        void creditsStart()
-        {
-            platform_.key.disconnect(&keyHandler);
-        }
-
-        ///Hide (destroy) credits screen.
-        void creditsEnd()
-        {
-            platform_.key.connect(&keyHandler);
+            guiSwapper_.setGUI("ice");
         }
 
         ///Exit ICE.

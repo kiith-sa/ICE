@@ -344,6 +344,7 @@ class ControllerSystem : System
                     ref PlayerComponent     playerComponent;
                     entitySystem_)
             {
+                if(playerComponent.player is null) {continue;}
                 playerComponent.player.control(e.id, control);
             }
 

@@ -23,6 +23,5 @@ struct StatisticsComponent
     ///Load from a YAML node. Throws YAMLException on error.
     this(ref YAMLNode yaml)
     {
-        throw new YAMLException("Can't specify StatisticsComponent in YAML - it's run-time only");
     }
 }

@@ -39,7 +39,7 @@ public:
     /// Emitted when the user presses Enter.
     mixin Signal!(string) textEntered;
 
-    /// Load a ButtonWidget from YAML.
+    /// Load a LineEditWidget from YAML.
     ///
     /// Do not call directly.
     this(ref YAMLNode yaml)
@@ -58,7 +58,7 @@ public:
     override void render(VideoDriver video)
     {
         super.render(video);
-        styleManager_.drawTextCentered(video, text_, layout_.bounds);
+        styleManager_.drawTextCentered(video, text_ ~ '_', layout_.bounds);
     }
 
     /// Get entered text.

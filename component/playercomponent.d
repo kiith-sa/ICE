@@ -5,34 +5,26 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
-///Gives an entity an owner player that can control it.
+/// Gives an entity an owner player that can control it.
 module component.playercomponent;
 
 
 import ice.player;
-
 import util.yaml;
 
 
-///Gives an entity an owner player that can control it.
+/// Gives an entity an owner player that can control it.
 struct PlayerComponent
 {
-    ///Player owning the entity.
+    /// Player owning the entity. null until the PlayerSystem sets it.
     Player player;
 
-    /**
-     * Load from a YAML node. 
-     *
-     * PlayerComponent is not loadable, so this always throws YAMLException.
-     */
+    /// Index of the player owning the entity. Used by PlayerSystem to set the player.
+    uint playerIndex;
+
+    /// Load from a YAML node. 
     this(ref YAMLNode yaml)
     {
-        throw new YAMLException("Can't specify PlayerComponent in YAML - it's run-time only");
-    }
-
-    ///Construct from a reference to the controlling player.
-    this(Player player) pure nothrow
-    {
-        this.player = player;
+        playerIndex = yaml.as!uint;
     }
 }

@@ -39,8 +39,6 @@
 <li><a href="component.healthsystem.html">component.healthsystem</a></li>
 <li><a href="component.movementconstraintcomponent.html">component.movementconstraintcomponent</a></li>
 <li><a href="component.movementconstraintsystem.html">component.movementconstraintsystem</a></li>
-<li><a href="component.ondeathcomponent.html">component.ondeathcomponent</a></li>
-<li><a href="component.ondeathsystem.html">component.ondeathsystem</a></li>
 <li><a href="component.ownercomponent.html">component.ownercomponent</a></li>
 <li><a href="component.physicscomponent.html">component.physicscomponent</a></li>
 <li><a href="component.physicssystem.html">component.physicssystem</a></li>
@@ -50,6 +48,8 @@
 <li><a href="component.spawnersystem.html">component.spawnersystem</a></li>
 <li><a href="component.statisticscomponent.html">component.statisticscomponent</a></li>
 <li><a href="component.system.html">component.system</a></li>
+<li><a href="component.tagscomponent.html">component.tagscomponent</a></li>
+<li><a href="component.tagssystem.html">component.tagssystem</a></li>
 <li><a href="component.timeoutsystem.html">component.timeoutsystem</a></li>
 <li><a href="component.visualcomponent.html">component.visualcomponent</a></li>
 <li><a href="component.visualsystem.html">component.visualsystem</a></li>
@@ -79,6 +79,21 @@
 <li><a href="gui.guimenu.html">gui.guimenu</a></li>
 <li><a href="gui.guimousecontrollable.html">gui.guimousecontrollable</a></li>
 <li><a href="gui.guistatictext.html">gui.guistatictext</a></li>
+<li><a href="gui2.boxmanuallayout.html">gui2.boxmanuallayout</a></li>
+<li><a href="gui2.buttonwidget.html">gui2.buttonwidget</a></li>
+<li><a href="gui2.containerwidget.html">gui2.containerwidget</a></li>
+<li><a href="gui2.event.html">gui2.event</a></li>
+<li><a href="gui2.exceptions.html">gui2.exceptions</a></li>
+<li><a href="gui2.fixedlayout.html">gui2.fixedlayout</a></li>
+<li><a href="gui2.guisystem.html">gui2.guisystem</a></li>
+<li><a href="gui2.layout.html">gui2.layout</a></li>
+<li><a href="gui2.lineeditwidget.html">gui2.lineeditwidget</a></li>
+<li><a href="gui2.linestylemanager.html">gui2.linestylemanager</a></li>
+<li><a href="gui2.rootwidget.html">gui2.rootwidget</a></li>
+<li><a href="gui2.slotwidget.html">gui2.slotwidget</a></li>
+<li><a href="gui2.stylemanager.html">gui2.stylemanager</a></li>
+<li><a href="gui2.widget.html">gui2.widget</a></li>
+<li><a href="gui2.widgetutils.html">gui2.widgetutils</a></li>
 <li><a href="ice.html">ice</a></li>
 <li><a href="ice.credits.html">ice.credits</a></li>
 <li><a href="ice.exceptions.html">ice.exceptions</a></li>
@@ -157,6 +172,42 @@
 </table></div>
 <b>Throws:</b><div class="pbr">YAMLException if the YAML could not be parsed or other YAML related
           errors. VFSException if the <b>file</b> could not be read from.</div>
+
+</dd>
+<dt class="d_decl">YAMLNode <a name="loadYAML"></a><span class="ddoc_psymbol">loadYAML</span>(string <b>source</b>);
+</dt>
+<dd><p>Load YAML from a string.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>string <b>source</b></td>
+<td valign=top>YAML <b>source</b> in string form.</td></tr>
+</table></div>
+<b>Throws:</b><div class="pbr">YAMLException on a parsing error.</div>
+
+</dd>
+<dt class="d_decl">void <a name="saveYAML"></a><span class="ddoc_psymbol">saveYAML</span>(VFSFile <b>file</b>, ref YAMLNode <b>yaml</b>);
+</dt>
+<dd><p>Save to a YAML <b>file</b> with support for ICE data types.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>VFSFile <b>file</b></td>
+<td valign=top>File to save to.</td></tr>
+<tr><td valign=top>YAMLNode <b>yaml</b></td>
+<td valign=top>YAML document to save.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">Constructor <a name="iceConstructor"></a><span class="ddoc_psymbol">iceConstructor</span>();
+</dt>
+<dd><p>Return a YAML constructor customized for ICE.</p>
+
+</dd>
+<dt class="d_decl">Resolver <a name="iceResolver"></a><span class="ddoc_psymbol">iceResolver</span>();
+</dt>
+<dd><p>Return a YAML resolver customized for ICE.</p>
+
+</dd>
+<dt class="d_decl">Representer <a name="iceRepresenter"></a><span class="ddoc_psymbol">iceRepresenter</span>();
+</dt>
+<dd><p>Return a YAML representer customized for ICE.</p>
 
 </dd>
 <dt class="d_decl">class <a name="InvalidYAMLValueException"></a><span class="ddoc_psymbol">InvalidYAMLValueException</span>: dyaml.exception.YAMLException;

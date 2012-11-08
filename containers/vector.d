@@ -43,11 +43,18 @@ struct Vector(T)
         ///Destroy the vector.
         ~this()
         {
+            destroy();
+        }
+
+        ///Destroy the vector, resetting it back to default-initialized state.
+        void destroy()
+        {
             if(data_ !is null)
             {
                 free(data_);
                 data_ = null;
             }
+            used_ = 0;
         }
 
         ///Compute a hash.

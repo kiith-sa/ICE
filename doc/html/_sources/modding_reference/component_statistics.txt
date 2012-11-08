@@ -4,7 +4,13 @@
 Statistics component
 ====================
 
-Currently, Statistics component can't be used from YAML, only by internal game
-logic. This might change in future. It specifies which entity is the owner of
-an entity (for example, a ship is an owner of projectiles it fires).  Trying to
-use Statistics component in YAML is currently an error.
+A statistics component collects statistics for an entity, such as ships killed,
+shots fired, and so on. While it can be declared in YAML, it only makes sense
+(and is used) for the player ship, statistics of which are used for player
+scores. It might be used in future for RPG elements.
+
+Example::
+
+   statistics:
+
+Currently, this component has no parameters.

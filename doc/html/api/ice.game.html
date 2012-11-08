@@ -39,8 +39,6 @@
 <li><a href="component.healthsystem.html">component.healthsystem</a></li>
 <li><a href="component.movementconstraintcomponent.html">component.movementconstraintcomponent</a></li>
 <li><a href="component.movementconstraintsystem.html">component.movementconstraintsystem</a></li>
-<li><a href="component.ondeathcomponent.html">component.ondeathcomponent</a></li>
-<li><a href="component.ondeathsystem.html">component.ondeathsystem</a></li>
 <li><a href="component.ownercomponent.html">component.ownercomponent</a></li>
 <li><a href="component.physicscomponent.html">component.physicscomponent</a></li>
 <li><a href="component.physicssystem.html">component.physicssystem</a></li>
@@ -50,6 +48,8 @@
 <li><a href="component.spawnersystem.html">component.spawnersystem</a></li>
 <li><a href="component.statisticscomponent.html">component.statisticscomponent</a></li>
 <li><a href="component.system.html">component.system</a></li>
+<li><a href="component.tagscomponent.html">component.tagscomponent</a></li>
+<li><a href="component.tagssystem.html">component.tagssystem</a></li>
 <li><a href="component.timeoutsystem.html">component.timeoutsystem</a></li>
 <li><a href="component.visualcomponent.html">component.visualcomponent</a></li>
 <li><a href="component.visualsystem.html">component.visualsystem</a></li>
@@ -79,6 +79,21 @@
 <li><a href="gui.guimenu.html">gui.guimenu</a></li>
 <li><a href="gui.guimousecontrollable.html">gui.guimousecontrollable</a></li>
 <li><a href="gui.guistatictext.html">gui.guistatictext</a></li>
+<li><a href="gui2.boxmanuallayout.html">gui2.boxmanuallayout</a></li>
+<li><a href="gui2.buttonwidget.html">gui2.buttonwidget</a></li>
+<li><a href="gui2.containerwidget.html">gui2.containerwidget</a></li>
+<li><a href="gui2.event.html">gui2.event</a></li>
+<li><a href="gui2.exceptions.html">gui2.exceptions</a></li>
+<li><a href="gui2.fixedlayout.html">gui2.fixedlayout</a></li>
+<li><a href="gui2.guisystem.html">gui2.guisystem</a></li>
+<li><a href="gui2.layout.html">gui2.layout</a></li>
+<li><a href="gui2.lineeditwidget.html">gui2.lineeditwidget</a></li>
+<li><a href="gui2.linestylemanager.html">gui2.linestylemanager</a></li>
+<li><a href="gui2.rootwidget.html">gui2.rootwidget</a></li>
+<li><a href="gui2.slotwidget.html">gui2.slotwidget</a></li>
+<li><a href="gui2.stylemanager.html">gui2.stylemanager</a></li>
+<li><a href="gui2.widget.html">gui2.widget</a></li>
+<li><a href="gui2.widgetutils.html">gui2.widgetutils</a></li>
 <li><a href="ice.html">ice</a></li>
 <li><a href="ice.credits.html">ice.credits</a></li>
 <li><a href="ice.exceptions.html">ice.exceptions</a></li>
@@ -258,7 +273,25 @@
 </dt>
 <dd><p>Class managing a single game between players.</p>
 
-<dl><dt class="d_decl">enum <a name="GamePhase"></a><span class="ddoc_psymbol">GamePhase</span>;
+<dl><dt class="d_decl">enum <a name="PlayerState"></a><span class="ddoc_psymbol">PlayerState</span>;
+</dt>
+<dd><p>Possible states of the player ship.</p>
+
+<dl><dt class="d_decl"><a name="PreSpawn"></a><span class="ddoc_psymbol">PreSpawn</span></dt>
+<dd><p>THe player ship has not been spawned yet.</p>
+
+</dd>
+<dt class="d_decl"><a name="Alive"></a><span class="ddoc_psymbol">Alive</span></dt>
+<dd><p>The player ship exists.</p>
+
+</dd>
+<dt class="d_decl"><a name="Dead"></a><span class="ddoc_psymbol">Dead</span></dt>
+<dd><p>The player ship has died.</p>
+
+</dd>
+</dl>
+</dd>
+<dt class="d_decl">enum <a name="GamePhase"></a><span class="ddoc_psymbol">GamePhase</span>;
 </dt>
 <dd><p>Game phases.</p>
 
@@ -304,7 +337,7 @@
 </dt>
 <dd><p>Container managing dependencies and construction of Game.</p>
 
-<dl><dt class="d_decl">Game <a name="produce"></a><span class="ddoc_psymbol">produce</span>(Platform <b>platform</b>, MonitorManager <b>monitor</b>, GUIElement <b>guiParent</b>, VideoDriver <b>videoDriver</b>, VFSDir <b>gameDir</b>, const string <b>levelName</b>);
+<dl><dt class="d_decl">Game <a name="produce"></a><span class="ddoc_psymbol">produce</span>(Platform <b>platform</b>, MonitorManager <b>monitor</b>, GUIElement <b>guiParent</b>, VideoDriver <b>videoDriver</b>, VFSDir <b>gameDir</b>, PlayerProfile <b>profile</b>, const string <b>levelName</b>);
 </dt>
 <dd><p>Produce a Game and return a reference to it.
 </p>
@@ -318,6 +351,8 @@
 <td valign=top>Video driver to draw graphics with.</td></tr>
 <tr><td valign=top>VFSDir <b>gameDir</b></td>
 <td valign=top>Game data directory.</td></tr>
+<tr><td valign=top>PlayerProfile <b>profile</b></td>
+<td valign=top>Profile of the current player.</td></tr>
 <tr><td valign=top>string <b>levelName</b></td>
 <td valign=top>Name of the level to load.</td></tr>
 </table></div>

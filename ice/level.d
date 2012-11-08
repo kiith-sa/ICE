@@ -39,7 +39,7 @@ import ice.game;
 
 
 ///Thrown when the level fails to initialize.
-class LevelInitializationFailureException : Exception 
+class LevelInitException : Exception 
 {
     public this(string msg, string file = __FILE__, int line = __LINE__)
     {
@@ -358,12 +358,12 @@ class DumbLevel : Level
                  *          instruction = Instruction key from YAML.
                  *          yaml        = Instruction parameters.
                  *
-                 * Throws:  YAMLException or LevelInitializationFailureException
+                 * Throws:  YAMLException or LevelInitException
                  *          on failure.
                  */
                 this(Level level, string instruction, ref YAMLNode yaml)
                 {
-                    alias LevelInitializationFailureException E;
+                    alias LevelInitException E;
                     auto parts = instruction.split();
                     //Instruction has format "effect xxx", where xxx is effect type.
                     auto type = parts[1];
@@ -386,7 +386,7 @@ class DumbLevel : Level
                 ///Load a Lines effect.
                 void loadLines(Level level, ref YAMLNode yaml)
                 {
-                    alias LevelInitializationFailureException E;
+                    alias LevelInitException E;
                     //YAML error context.
                     const ctx = "\"effect lines\" instruction in level \"" ~ level.name_ ~ "\"";
 
@@ -599,16 +599,19 @@ class DumbLevel : Level
         /**
          * Construct a DumbLevel.
          *
-         * Params:  levelName  = Name of the level (used for debugging).
-         *          yaml       = YAML source of the level.
-         *          subsystems = Provides access to game subsystems 
-         *                       (e.g. EntitySystem to spawn entities).
+         * Params:  levelName           = Name of the level (used for debugging).
+         *          yaml                = YAML source of the level.
+         *          subsystems          = Provides access to game subsystems 
+         *                                (e.g. EntitySystem to spawn entities).
+         *          playerSpawnerSource = YAML source of an entity to spawn the
+         *                                player ship.
          *
-         * Throws:  LevelInitializationFailureException on failure.
+         * Throws:  LevelInitException on failure.
          */
-        this(string levelName, YAMLNode yaml, GameSubsystems gameSybsystems)
+        this(string levelName, YAMLNode yaml, GameSubsystems gameSybsystems,
+             YAMLNode playerSpawnerSource)
         {
-            alias LevelInitializationFailureException E;
+            alias LevelInitException E;
             super(levelName, gameSybsystems);
             foreach(string key, ref YAMLNode value; yaml)
             {
@@ -617,10 +620,15 @@ class DumbLevel : Level
                 {
                     case "wave":  loadWaveDefinition(parts[1], value); break;
                     case "level": loadLevelScript(value);              break;
+                    // Used by campaign, not here
+                    case "name":  break;
                     default: throw new E("Unknown top-level key in level \"" ~
                                          name_ ~ "\": " ~ key);
                 }
             }
+            auto playerSpawnerPrototype =
+                EntityPrototype("playerShipSpawner", playerSpawnerSource);
+            subsystems_.entitySystem.newEntity(playerSpawnerPrototype);
             validateScript();
             enforce(levelLoaded_,
                     new E("Level \"" ~ name_ ~ "\" has no level definition"));
@@ -674,7 +682,7 @@ class DumbLevel : Level
             ref EntityPrototype waveSpawnerPrototype(string name)
             {
                 const idx = waveDefinitions_[].countUntil!((a,b) => a.name == b)(name);
-                alias LevelInitializationFailureException E;
+                alias LevelInitException E;
                 enforce(idx >= 0, 
                         new E("Trying to spawn undefined wave: \"" ~ name ~ "\""));
                 return *(waveDefinitions_[idx].wave.spawnerPrototype);
@@ -715,7 +723,7 @@ class DumbLevel : Level
                 writeln("Invalid wave \"" ~ name ~ "\" in a level script. "
                         "Ignoring, not spawning. Details: " ~ e.msg);
             }
-            catch(LevelInitializationFailureException e)
+            catch(LevelInitException e)
             {
                 writeln("Invalid wave \"" ~ name ~ "\" in a level script. "
                         "Ignoring, not spawning. Details: " ~ e.msg);
@@ -772,11 +780,11 @@ class DumbLevel : Level
         /**
          * Validate level script (called after loading the script).
          *
-         * Throws: LevelInitializationFailureException on failure.
+         * Throws: LevelInitException on failure.
          */
         void validateScript() 
         {
-            alias LevelInitializationFailureException E;
+            alias LevelInitException E;
             //Nothing here at the moment.
         }
 
@@ -800,7 +808,7 @@ class DumbLevel : Level
          */
         void loadWaveDefinition(string name, ref YAMLNode yaml)
         {
-            alias LevelInitializationFailureException E;
+            alias LevelInitException E;
 
             //Enforce we don't have duplicate wave definitions.
             if(waveDefinitions_[].canFind!((a,b) => a.name == b)(name))
@@ -827,7 +835,7 @@ class DumbLevel : Level
         /**
          * Load level script from YAML.
          * 
-         * Throws: LevelInitializationFailureException on failure.
+         * Throws: LevelInitException on failure.
          */
         void loadLevelScript(ref YAMLNode yaml)
         {
@@ -837,7 +845,7 @@ class DumbLevel : Level
                         "\" Ignoring any definition except the first.");
             }
 
-            alias LevelInitializationFailureException E;
+            alias LevelInitException E;
             alias Instruction I;
             foreach(string name, ref YAMLNode params; yaml) switch(name.split()[0])
             {

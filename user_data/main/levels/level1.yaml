@@ -1,3 +1,5 @@
+name: Level 1
+
 wave stoperLeft:
   spawner:
     - entity: ships/stoper.yaml 

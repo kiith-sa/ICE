@@ -39,8 +39,6 @@
 <li><a href="component.healthsystem.html">component.healthsystem</a></li>
 <li><a href="component.movementconstraintcomponent.html">component.movementconstraintcomponent</a></li>
 <li><a href="component.movementconstraintsystem.html">component.movementconstraintsystem</a></li>
-<li><a href="component.ondeathcomponent.html">component.ondeathcomponent</a></li>
-<li><a href="component.ondeathsystem.html">component.ondeathsystem</a></li>
 <li><a href="component.ownercomponent.html">component.ownercomponent</a></li>
 <li><a href="component.physicscomponent.html">component.physicscomponent</a></li>
 <li><a href="component.physicssystem.html">component.physicssystem</a></li>
@@ -50,6 +48,8 @@
 <li><a href="component.spawnersystem.html">component.spawnersystem</a></li>
 <li><a href="component.statisticscomponent.html">component.statisticscomponent</a></li>
 <li><a href="component.system.html">component.system</a></li>
+<li><a href="component.tagscomponent.html">component.tagscomponent</a></li>
+<li><a href="component.tagssystem.html">component.tagssystem</a></li>
 <li><a href="component.timeoutsystem.html">component.timeoutsystem</a></li>
 <li><a href="component.visualcomponent.html">component.visualcomponent</a></li>
 <li><a href="component.visualsystem.html">component.visualsystem</a></li>
@@ -79,6 +79,21 @@
 <li><a href="gui.guimenu.html">gui.guimenu</a></li>
 <li><a href="gui.guimousecontrollable.html">gui.guimousecontrollable</a></li>
 <li><a href="gui.guistatictext.html">gui.guistatictext</a></li>
+<li><a href="gui2.boxmanuallayout.html">gui2.boxmanuallayout</a></li>
+<li><a href="gui2.buttonwidget.html">gui2.buttonwidget</a></li>
+<li><a href="gui2.containerwidget.html">gui2.containerwidget</a></li>
+<li><a href="gui2.event.html">gui2.event</a></li>
+<li><a href="gui2.exceptions.html">gui2.exceptions</a></li>
+<li><a href="gui2.fixedlayout.html">gui2.fixedlayout</a></li>
+<li><a href="gui2.guisystem.html">gui2.guisystem</a></li>
+<li><a href="gui2.layout.html">gui2.layout</a></li>
+<li><a href="gui2.lineeditwidget.html">gui2.lineeditwidget</a></li>
+<li><a href="gui2.linestylemanager.html">gui2.linestylemanager</a></li>
+<li><a href="gui2.rootwidget.html">gui2.rootwidget</a></li>
+<li><a href="gui2.slotwidget.html">gui2.slotwidget</a></li>
+<li><a href="gui2.stylemanager.html">gui2.stylemanager</a></li>
+<li><a href="gui2.widget.html">gui2.widget</a></li>
+<li><a href="gui2.widgetutils.html">gui2.widgetutils</a></li>
 <li><a href="ice.html">ice</a></li>
 <li><a href="ice.credits.html">ice.credits</a></li>
 <li><a href="ice.exceptions.html">ice.exceptions</a></li>
@@ -160,6 +175,13 @@ public mixin Signal!() levelMenuOpen
 
 </p>
 <p><b>Signal:</b><br>
+public mixin Signal!() profileGUIOpen
+<br>
+
+     Emitted when the player clicks the "Player setup" button.
+
+</p>
+<p><b>Signal:</b><br>
 public mixin Signal!() creditsStart
 <br>
 
@@ -186,53 +208,107 @@ public mixin Signal!() resetVideo
 
      Emitted when the player clicks the button to reset video mode.</p>
 
-<dl><dt class="d_decl">this(GUIElement <b>parent</b>, MonitorManager <b>monitor</b>, Platform <b>platform</b>);
+<dl><dt class="d_decl">this(GUISystem <b>guiSystem</b>, VFSDir <b>gameDir</b>, ProfileManager <b>profileManager</b>, GUIElement <b>parent</b>, MonitorManager <b>monitor</b>, Platform <b>platform</b>);
 </dt>
 <dd><p>Construct IceGUI with specified parameters.
 </p>
-<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>GUIElement <b>parent</b></td>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>GUISystem <b>guiSystem</b></td>
+<td valign=top>Reference to the GUI system.</td></tr>
+<tr><td valign=top>VFSDir <b>gameDir</b></td>
+<td valign=top>Game data directory.</td></tr>
+<tr><td valign=top>ProfileManager <b>profileManager</b></td>
+<td valign=top>Reference to the player profile manager (for profile GUI).</td></tr>
+<tr><td valign=top>GUIElement <b>parent</b></td>
 <td valign=top>GUI element to use as <b>parent</b> for all pong GUI elements.</td></tr>
 <tr><td valign=top>MonitorManager <b>monitor</b></td>
 <td valign=top>Monitor subsystem, used to initialize <b>monitor</b> GUI view.</td></tr>
 <tr><td valign=top>Platform <b>platform</b></td>
 <td valign=top>Platform for keyboard I/O.</td></tr>
 </table></div>
+<b>Throws:</b><div class="pbr">GUIInitException on failure.
+          YAMLException on a YAML error.
+          VFSException on a filesystem error.
+         
+TODO replace old GUI with the new YAML loadable GUI.</div>
 
 </dd>
 <dt class="d_decl">const @property const(MonitorView) <a name="monitor"></a><span class="ddoc_psymbol">monitor</span>();
 </dt>
-<dd><p>Get the <a name="monitor"></a><span class="ddoc_psymbol">monitor</span> widget.</p>
+<dd><p>Get the <a name="monitor"></a><span class="ddoc_psymbol">monitor</span> widget.
+TODO replace old GUI with the new YAML loadable GUI.</p>
 
 </dd>
 <dt class="d_decl">void <a name="monitorToggle"></a><span class="ddoc_psymbol">monitorToggle</span>();
 </dt>
-<dd><p>Toggle monitor display.</p>
+<dd><p>Toggle monitor display.
+TODO replace old GUI with the new YAML loadable GUI.</p>
 
 </dd>
 <dt class="d_decl">void <a name="menuShow"></a><span class="ddoc_psymbol">menuShow</span>();
 </dt>
-<dd><p>Show main menu.</p>
+<dd><p>Show main menu.
+TODO replace old GUI with the new YAML loadable GUI.</p>
 
 </dd>
 <dt class="d_decl">void <a name="menuHide"></a><span class="ddoc_psymbol">menuHide</span>();
 </dt>
-<dd><p>Hide main menu.</p>
+<dd><p>Hide main menu.
+TODO replace old GUI with the new YAML loadable GUI.</p>
 
 </dd>
-<dt class="d_decl">void <a name="levelMenuShow"></a><span class="ddoc_psymbol">levelMenuShow</span>(ref YAMLNode <b>levels</b>, void delegate(const(immutable(char)[])) <b>initGame</b>);
+<dt class="d_decl">void <a name="levelMenuInit"></a><span class="ddoc_psymbol">levelMenuInit</span>(ref YAMLNode <b>levels</b>, void delegate(const(immutable(char)[])) <b>initGame</b>);
 </dt>
-<dd><p>Show level selection menu.
+<dd><p>Initialize level selection menu.
+ 
 </p>
 <b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>YAMLNode <b>levels</b></td>
 <td valign=top>YAML to load level filenames from.</td></tr>
 <tr><td valign=top>void delegate(const(immutable(char)[])) <b>initGame</b></td>
 <td valign=top>Function that takes level filename and starts a game.</td></tr>
 </table></div>
+<b>Throws:</b><div class="pbr">GUIInitException on failure.
+TODO replace old GUI with the new YAML loadable GUI.</div>
+
+</dd>
+<dt class="d_decl">void <a name="levelMenuShow"></a><span class="ddoc_psymbol">levelMenuShow</span>();
+</dt>
+<dd><p>Show level selection menu.
+TODO replace old GUI with the new YAML loadable GUI.</p>
+
+</dd>
+<dt class="d_decl">void <a name="profileGUIShow"></a><span class="ddoc_psymbol">profileGUIShow</span>();
+</dt>
+<dd><p>Show the profile management GUI.
+TODO replace old GUI with the new YAML loadable GUI.</p>
 
 </dd>
 <dt class="d_decl">void <a name="levelMenuHide"></a><span class="ddoc_psymbol">levelMenuHide</span>();
 </dt>
-<dd><p>Hide the level menu.</p>
+<dd><p>Hide the level menu.
+TODO replace old GUI with the new YAML loadable GUI.</p>
+
+</dd>
+</dl>
+</dd>
+<dt class="d_decl">class <a name="Ice"></a><span class="ddoc_psymbol">Ice</span>;
+</dt>
+<dd><p>"Main" ICE class.</p>
+
+<dl><dt class="d_decl">this(VFSDir <b>gameDir</b>);
+</dt>
+<dd><p>Initialize ICE.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>VFSDir <b>gameDir</b></td>
+<td valign=top>Root directory of the game's virtual file system.
+<br>
+
+ Throws GameStartupException on an expected, correctly handled failure.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">void <a name="run"></a><span class="ddoc_psymbol">run</span>();
+</dt>
+<dd><p>Main ICE event loop.</p>
 
 </dd>
 </dl>

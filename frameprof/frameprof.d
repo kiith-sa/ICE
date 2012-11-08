@@ -20,39 +20,26 @@ import std.stream;
 import std.traits;
 import std.typecons;
 
+import dyaml.constructor;
 import dyaml.dumper;
 import dyaml.exception;
 import dyaml.loader;
 import dyaml.node;
 import dyaml.representer;
+import dyaml.resolver;
 import dyaml.style;
 
 import util.intervals;
 
 /**
  * TODO:
- * AWESOME: FrameProfiler could output arguments for 
- *     memprof filter --time 
- *     based on zones. So we could get an exact list of allocations happening within 
- *     a frame. We could even use this to drill down to deeper zones
- *     once we get a general idea to find out precise causes of allocations.
- *     Maybe even in a Perf-style CLI app.
- *
- *     One (ASAP) good way to use this would be to filter the 
- *     worst frames, and get allocations for those.
- *
- *     This needs "top" command, 
- *     and then "memprof-filter --frames"
- *
  * Commands TODO:
+ * #. memprof-filter with a particular zone
  *
  * #. Filter frames:
  *    Filter frames by start/end time
  *    (e.g. all frames between 1s and 5s)
  *    filter by frame duration (all frames about 16 ms)
- *
- * #. Top:
- *    Also getting e.g. 5 or 5% of most expensive frames.
  *
  * #, Filter zones:
  *    Zone name by regex. So we can get e.g. 
@@ -123,7 +110,10 @@ public:
     /// Construct FrameProf loading profile data from specified file.
     this(string fileName)
     {
-        frameProfile_ = Loader(fileName).load();
+        auto loader        = Loader(fileName);
+        loader.resolver    = yamlResolver();
+        loader.constructor = yamlConstructor();
+        frameProfile_      = loader.load();
     }
 
     /// Construct FrameProf loading profile data from specified file object (e.g. stdin).
@@ -135,11 +125,69 @@ public:
         {
             fileBuffer ~= line;
         }
-        frameProfile_ = Loader(new MemoryStream(fileBuffer)).load();
+        auto loader        = Loader(new MemoryStream(fileBuffer));
+        loader.resolver    = yamlResolver();
+        loader.constructor = yamlConstructor();
+        frameProfile_      = loader.load();
     }
 
     /// Get the memory log loaded from YAML.
     @property ref YAMLNode frameProfile() {return frameProfile_;}
+
+    /**
+     * Get the topCount greatest frames sorted by specified less function.
+     *
+     * Params:  frames   = Frames to process.
+     *          less     = Comparison function to sort the frames.
+     *          topCount = Number of frames to get.
+     *
+     * Returns: An array of topCount greatest frames.
+     */
+    static YAMLNode[] topFrames
+        (ref YAMLNode frames, bool delegate(ref YAMLNode, ref YAMLNode) less,
+         const ulong topCount)
+    {
+        auto frameArray = frames.as!(YAMLNode[]);
+        bool lessWrapper(ref YAMLNode a, ref YAMLNode b) {return less(a,b);}
+        sort!lessWrapper(frameArray);
+        return frameArray[std.algorithm.max(0, frameArray.length - topCount) .. $];
+    }
+
+private:
+    /// Return a YAML constructor customized for FrameProf.
+    Constructor yamlConstructor()
+    {
+        auto constructor = new Constructor;
+        static real constructMSTime(ref YAMLNode node)
+        {
+            string value = node.as!string();
+
+            if(value.endsWith("ms") && value.length > 2)
+            {
+                return to!real(value[0 .. $ - 2]);
+            }
+            else
+            {
+                return to!real(value);
+            }
+        }
+        constructor.addConstructorScalar("!ms", &constructMSTime);
+        return constructor;
+    }
+
+    /// Return a YAML resolver customized for FrameProf.
+    Resolver yamlResolver()
+    {
+        auto resolver = new Resolver;
+        // Regular expression used to determine that a YAML scalar is a time 
+        // value in milliseconds.
+        immutable timeMSRegex      = r"^\d+(\.\d+)?ms$";
+        // Possible starting characters of a milliseconds time YAML scalar.
+        immutable timeMSStartChars = "0123456789";
+        resolver.addImplicitResolver("!ms", std.regex.regex(timeMSRegex),
+                                     timeMSStartChars);
+        return resolver;
+    }
 }
 
 /**
@@ -216,6 +264,23 @@ void help()
         "",
         "",
         "Commands:",
+        "  top                        Get the top frames by duration.",
+        "                             Will get the top 16 allocations by default.",
+        "    Local options:",
+        "      --elements=<number>    How many top allocations to return. Can be",
+        "                             given as a number or a percentage."
+        "",
+        "  memprof-filter             Get time intervals for the --time option of the",
+        "                             filter command of memprof. Together with top,",
+        "                             this can be used to determine memory allocations",
+        "                             in frames with longest durations.",
+        "                             Outputs time ranges (a-b,c-d,etc)",
+        "                             that can be passed as an argument to",
+        "                             memprof filter --time",
+        "    Local options:",
+        "      --frames               Get time intervals for each frame. This is the",
+        "                             default behavior (pipe output from frameprof top)",
+        "                             to get intervals for the worst frames)"
         ];
     foreach(line; help) {writeln(line);}
 }
@@ -247,8 +312,12 @@ private:
     void delegate(string) processArg_;
     // Action to execute (determined by command line arguments)
     YAMLNode delegate(ref YAMLNode allocations) action_;
+    // When not null, this action is used instead - outputs a plain string.
+    string delegate(ref YAMLNode allocations) actionNoYAML_;
     // Is the output of the program a sequence of frames?
     bool framesOutput_ = false;
+    // Comparison function (a < b) used by the top command.
+    bool delegate(ref YAMLNode a, ref YAMLNode b) less_;
 
 public:
     /// Construct a FrameProfCLI with specified command-line arguments and parse them.
@@ -262,7 +331,7 @@ public:
     /// Execute the action specified by command line arguments.
     void execute()
     {
-        if(action_ is null)
+        if(actionNoYAML_ is null && action_ is null)
         {
             writeln("No command given");
             help();
@@ -273,6 +342,11 @@ public:
         try
         {
             auto frameprof = readFromStdin ? FrameProf(stdin) : FrameProf(logFileName);
+            if(actionNoYAML_ !is null)
+            {
+                writeln(actionNoYAML_(frameprof.frameProfile["frames"]));
+                return;
+            }
             auto rawResult = action_(frameprof.frameProfile["frames"]);
             auto result    = framesOutput_ ? YAMLNode(["frames"], [rawResult])
                                            : rawResult;
@@ -288,14 +362,74 @@ public:
         catch(YAMLException e)      {writeln("YAML error: ", e.msg);}
         catch(FrameProfCLIException e){writeln(e.msg);}
     }
-    
 
 private:
+
+    /// Parses local options for the "top" command.
+    void localTop(string arg)
+    {
+        processOption(arg, (opt, args){
+        enforce(!args.empty, new FrameProfCLIException("--" ~ opt ~ " needs an argument"));
+
+        switch(opt)
+        {
+            case "elements":
+                const percent = args[0].endsWith("%");
+                double value = to!double(args[0][0 .. $ - (percent ? 1 : 0)]);
+                enforce(value >= 0.0 && (!percent || value <= 100.0),
+                        new FrameProfCLIException("--elements argument out of range"));
+                action_ = (ref YAMLNode frames)
+                {
+                    auto elements = percent ? frames.length * value / 100.0 : value;
+                    return YAMLNode
+                        (FrameProf.topFrames(frames, less_, cast(ulong)elements));
+                };
+                break;
+            default:
+                throw new FrameProfCLIException("Unrecognized top option: --" ~ opt);
+        }
+        });
+    }
+
+    /// Parses local options for the "memprof-filter" command.
+    void localMemprofFilter(string arg)
+    {
+        processOption(arg, (opt, args){
+        enforce(!args.empty, new FrameProfCLIException("--" ~ opt ~ " needs an argument"));
+
+        switch(opt)
+        {
+            case "frames":
+                // Default behavior
+                break;
+            default:
+                throw new FrameProfCLIException("Unrecognized top option: --" ~ opt);
+        }
+        });
+    }
+
     /// Parse a command. Sets up command state and switches to its option parser function.
     void command(string arg)
     {
         switch (arg)
         {
+            case "top":
+                framesOutput_ = true;
+                processArg_ = &localTop;
+                less_ = (ref YAMLNode a, ref YAMLNode b) =>
+                        a["duration"].as!double < b["duration"].as!double;
+                action_ = (ref YAMLNode frames) =>
+                          YAMLNode(FrameProf.topFrames(frames, less_, 16));
+                break;
+            case "memprof-filter":
+                framesOutput_ = false;
+                processArg_ = &localMemprofFilter;
+                actionNoYAML_ = 
+                    (ref YAMLNode frames) =>
+                    map!(node => tuple(node["start"].as!double, node["end"].as!double))(frames.as!(YAMLNode[]))
+                    .map!(pair => to!string(pair[0]) ~ "-" ~ to!string(pair[1]))()
+                    .reduce!((a, b) => a ~ "," ~ b)();
+                break;
             default: 
                 throw new FrameProfCLIException("Unknown command: " ~ arg);
         }

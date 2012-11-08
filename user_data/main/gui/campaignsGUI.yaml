@@ -1,0 +1,64 @@
+!!pairs
+
+- labelDefault:  &lDefault
+    fontColor:   rgbaFFFFFF80
+    drawBorder:  false
+    fontSize:    14
+    font:        orbitron-bold.ttf
+- buttonDefault: &bDefault
+    borderColor: rgbaC0C0FF60
+    fontColor:   rgbaA0A0FFC0
+- buttonFocused: &bFocused
+    borderColor: rgbaC0C0FFA0
+    fontColor:   rgbaC0C0FFC0
+- buttonActive:  &bActive
+    borderColor: rgbaC0C0FFFF
+    fontColor:   rgbaE0E0FFFF
+
+- styleManager: line
+- style: {drawBorder: false}
+- layoutManager: boxManual 
+- layout: {x: 'pLeft', y: 'pTop', w: 'pWidth', h: 'pHeight'}
+#Main container
+- widget container:
+    !!pairs
+    - style:  {borderColor: rgbaC0C0FFB0}
+    - layout: {x: 'pRight - 176', y: 16, w: 160, h: 'pBottom - 32'}
+    - widget label:
+        !!pairs
+        - layout: {x: 'pLeft + 8', y: 'pTop + 8', w: 'pWidth - 16', h: '24'}
+        - style:  *lDefault
+        - text:   Select campaign
+    #Campaign selector container
+    - widget container:
+        !!pairs
+        - layout: {x: pLeft, y: 'pTop + 136', w: pWidth, h: '24 + 8 * 2'}
+        - style: {drawBorder : false}
+        - widget button previous:
+            !!pairs
+            - style:         *bDefault
+            - style focused: *bFocused
+            - style active:  *bActive
+            - layout: {x: 'pLeft + 8', y: 'pTop + 8', w: 12, h: 24}
+            - text: '<'
+        - widget button campaign:
+            !!pairs
+            - style:         *bDefault
+            - style focused: *bFocused
+            - style active:  *bActive
+            - layout: {x: 'pLeft + 24', y: 'pTop + 8', w: 'pRight - pLeft - 48', h: 24}
+            - text: DUMMY
+        - widget button next:
+            !!pairs
+            - style:         *bDefault
+            - style focused: *bFocused
+            - style active:  *bActive
+            - layout: {x: 'pRight - 20', y: 'pTop + 8', w: 12, h: 24}
+            - text: '>'
+        - widget button back:
+            !!pairs
+            - style:         *bDefault
+            - style focused: *bFocused
+            - style active:  *bActive
+            - layout: {x: 'pLeft + 8', y: 'pTop + 40', w: pWidth - 16, h: 24}
+            - text: Back

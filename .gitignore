@@ -1,3 +1,5 @@
+/dependencies/dyaml/unittest
+/dependencies/dyaml/libdyaml.a
 /dependencies/dgamevfs/unittest
 /user_data/main/profiles/*
 /ice-debug.obj
