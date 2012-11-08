@@ -14,6 +14,7 @@ import std.traits;
 import std.typecons;
 
 import containers.vector;
+import memory.allocator;
 
 
 /**
@@ -114,7 +115,7 @@ struct LazyArray(T, ID = string)
         }
 
         ///Allocated storage.
-        Vector!Item storage_;
+        Vector!(Item, BufferSwappingAllocator!(Item, 8)) storage_;
 
         ///Delegate used to load data if it's requested and not loaded yet.
         bool delegate(ID, out T) loadData_ = null;
