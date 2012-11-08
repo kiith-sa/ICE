@@ -3,32 +3,32 @@ vertices:
   !!pairs
 
   #Main
-  - color:  rgba50FF9060
+  - color:  rgbaFFFF6A60
   - vertex: [-22.0, 0.0]
   - vertex: [22.0, 0.0]
 
   - vertex: [-22.0, 0.0]
-  - color:  rgba50FF90C0
+  - color:  rgbaFFFF6AC0
   - vertex: [0.0, 40.0]
 
   - vertex: [0.0, 40.0]
-  - color:  rgba50FF9060
+  - color:  rgbaFFFF6A60
   - vertex: [22.0, 0.0]
 
   - vertex: [0.0, -4.0]
-  - color:  rgba50FF90C0
+  - color:  rgbaFFFF6AC0
   - vertex: [30.0, 25.0]
 
   - vertex: [30.0, 25.0]
-  - color:  rgba50FF9060
+  - color:  rgbaFFFF6A60
   - vertex: [22.0, 0.0]
 
   - vertex: [0.0, -4.0]
-  - color:  rgba50FF90C0
+  - color:  rgbaFFFF6AC0
   - vertex: [-30.0, 25.0]
 
   - vertex: [-30.0, 25.0]
-  - color:  rgba50FF9060
+  - color:  rgbaFFFF6A60
   - vertex: [-22.0, 0.0]
 
 
