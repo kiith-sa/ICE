@@ -17,7 +17,7 @@ import dgamevfs._;
 
 import color;
 import containers.lazyarray;
-import containers.vector;
+import containers.fixedarray;
 import math.vector2;
 import memory.memory;
 import util.yaml;
@@ -42,18 +42,33 @@ class VisualSystem : System
                 Lines
             }
             Type type = Type.Lines;
-            
+
+            /// Vertex with a position and a color. 
+            /// 
+            /// Used for line start/end.
+            struct ColoredVertex
+            {
+                /// Position of the vertex.
+                Vector2f position;
+                /// Color of the vertex.
+                Color color;
+
+                /// Construct a ColoredVertex.
+                this(const Vector2f position, const Color color) @safe pure nothrow
+                {
+                    this.position = position;
+                    this.color = color;
+                }
+            }
             union
             {
                 ///Visual data stored for the Lines type.
                 struct
                 {
                     ///Vertices (in pairs).
-                    Vector!Vector2f vertices;
-                    ///Vertex colors (in pairs).
-                    Vector!Color    colors;
+                    FixedArray!ColoredVertex vertices;
                     ///Line widths (each for a pair of vertices)
-                    Vector!float    widths;
+                    FixedArray!float widths;
                 }
             }
         }
@@ -88,7 +103,7 @@ class VisualSystem : System
             {
                 case VisualData.Type.Lines:
                     clear(data.vertices);
-                    clear(data.colors);
+                    clear(data.widths);
                     break;
                 default:
                     assert(false, "Unknown visual component type: " ~ to!string(data.type));
@@ -162,7 +177,6 @@ class VisualSystem : System
                 if(data.type == VisualData.Type.Lines)
                 {
                     const vertices    = &data.vertices;
-                    const colors      = &data.colors;
                     const widths      = &data.widths;
                     const vertexCount = vertices.length;
 
@@ -170,8 +184,8 @@ class VisualSystem : System
 
                     assert(vertexCount % 2 == 0, 
                            "Uneven number of vertices in a lines visual component");
-                    assert(vertexCount == colors.length && widths.length == vertexCount / 2, 
-                           "Vertex, color and width counts don't match in a lines visual component");
+                    assert(widths.length == vertexCount / 2, 
+                           "Vertex and width counts don't match in a lines visual component");
 
                     //Draw lines pairing vertices together.
                     for(size_t line = 0, lineStart = 0; 
@@ -179,10 +193,11 @@ class VisualSystem : System
                         lineStart += 2, ++line)
                     {
                         videoDriver_.lineWidth = (*widths)[line];
-                        videoDriver_.drawLine(pos + (*vertices)[lineStart],
-                                              pos + (*vertices)[lineStart + 1],
-                                              (*colors)[lineStart],
-                                              (*colors)[lineStart + 1]);
+                        videoDriver_.drawLine
+                            (pos + (*vertices)[lineStart].position,
+                             pos + (*vertices)[lineStart + 1].position,
+                             (*vertices)[lineStart].color,
+                             (*vertices)[lineStart + 1].color);
                     }
                     videoDriver_.lineWidth = 1.0f;
                     videoDriver_.lineAA = false;
@@ -221,10 +236,28 @@ class VisualSystem : System
                     scope(failure)
                     {
                         clear(output.vertices);
-                        clear(output.colors);
                         clear(output.widths);
                     }
 
+                    // First determine the vertex count so we can allocate 
+                    // the arrays once without reallocating.
+                    size_t vertexCount = 0;
+                    foreach(string key, ref YAMLNode value; vertices) switch(key)
+                    {
+                        case "vertex": ++vertexCount; break;
+                        default:       continue;
+                    }
+
+                    if(vertexCount % 2 != 0)
+                    {
+                        writeln(fail() ~ "Lines must have an even number of vertices.");
+                        return false;
+                    }
+
+                    output.vertices = FixedArray!(VisualData.ColoredVertex)(vertexCount);
+                    output.widths   = FixedArray!float(vertexCount / 2);
+
+                    size_t vertex = 0;
                     foreach(string key, ref YAMLNode value; vertices) switch(key)
                     {
                         case "color":
@@ -236,12 +269,14 @@ class VisualSystem : System
                         case "vertex":
                             //Width is specified only once per line (vertex pair)
                             //not per vertex.
-                            if(output.vertices.length % 2 == 0)
+                            if(vertex % 2 == 0)
                             {
-                                output.widths ~= currentWidth;
+                                output.widths[vertex / 2] = currentWidth;
                             }
-                            output.vertices ~= fromYAML!Vector2f(value, "vertex");
-                            output.colors   ~= currentColor;
+                            output.vertices[vertex] = 
+                                VisualData.ColoredVertex(fromYAML!Vector2f(value, "vertex"),
+                                                         currentColor);
+                            ++vertex;
                             break;
                         default:
                             writeln(fail() ~ "Unrecognized key in a \"lines\" "
@@ -249,18 +284,11 @@ class VisualSystem : System
                             return false;
                     }
 
-                    if(output.vertices.length % 2 != 0)
-                    {
-                        writeln(fail() ~ "Lines must have an even number of verices.");
-                        return false;
-                    }
-
-                    assert(output.vertices.length == output.colors.length &&
-                           output.vertices.length == output.widths.length * 2,
-                           "Lines' vertex, color and weight counts don't match");
+                    assert(output.vertices.length == output.widths.length * 2,
+                           "Lines' vertex and weight counts don't match");
 
                     output.type = VisualData.Type.Lines;
-                }   
+                }
                 else
                 {
                     writeln(fail(), "Unknown visual component type: ", type);
