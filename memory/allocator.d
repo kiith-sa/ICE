@@ -157,11 +157,12 @@ private:
         import std.stdio;
         auto percent(uint allocs)
         {
-            return " (" ~ to!string(allocs * 100 / totalAllocations_) ~"%)";
+            return " (" ~ to!string(allocs * 100 / totalAllocations_) ~ "%)";
         }
-        writeln("RecyclingAllocator!(" ~ T.stringof ~ ", " ~
+        writeln("BufferSwappingAllocator!(" ~ T.stringof ~ ", " ~
                 to!string(BufferCount) ~ ") stats:");
         writeln("Total allocations: ", totalAllocations_);
+        if(totalAllocations_ == 0){return;}
         writeln("Recycled allocations: ", recycledAllocations_, percent(recycledAllocations_));
         writeln("Preallocations: ", preAllocations_, percent(preAllocations_));
     }
