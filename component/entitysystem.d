@@ -655,7 +655,7 @@ class EntitySystem : Monitorable
         }
 
         ///Game entities.
-        SegmentedVector!Entity entities_;
+        SegmentedVector!(Entity, 16384)  entities_;
 
         ///Indices of entities that are dead.
         Vector!uint freeEntityIndices_;
@@ -667,7 +667,7 @@ class EntitySystem : Monitorable
         static string ctfeComponentArrays() 
         {
             string result = "";
-            foreach(c; componentTypes){result ~= "SegmentedVector!" ~ c ~ " " ~ c.arrayName ~ ";\n";}
+            foreach(c; componentTypes){result ~= "SegmentedVector!(" ~ c ~ ", 4096) " ~ c.arrayName ~ ";\n";}
             return result;
         }
         mixin(ctfeComponentArrays());
@@ -880,7 +880,7 @@ class EntitySystem : Monitorable
                           "Unknown component type: " ~ C.stringof);
 
             entity.components_ |= componentType!(C.stringof);
-            SegmentedVector!C* components = &componentArray!C();
+            SegmentedVector!(C, 4096)* components = &componentArray!C();
 
             //If we're recycling, reuse an existing component.
             //Otherwise must add new one.
@@ -937,7 +937,7 @@ class EntitySystem : Monitorable
         }
 
         ///Get the component array of specified type.
-        ref inout(SegmentedVector!T) componentArray(T)() inout pure
+        ref inout(SegmentedVector!(T, 4096)) componentArray(T)() inout pure
             if(knownComponentType!T)
         {
             mixin("return " ~ T.stringof.arrayName ~ ";");
