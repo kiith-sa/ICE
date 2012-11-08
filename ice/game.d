@@ -13,6 +13,7 @@ import std.array;
 import std.conv;
 import std.exception;
 import std.random;
+import std.stdio;
 import std.string;
 import std.traits;
 import std.typecons;
@@ -48,6 +49,7 @@ import memory.memory;
 import monitor.monitormanager;
 import platform.platform;
 import time.gametime;
+import time.time;
 import util.frameprofiler;
 import util.signal;
 import util.yaml;
@@ -671,6 +673,7 @@ class Game
         {
             gameTime_  = new GameTime();
             startTime_ = gameTime_.gameTime;
+            writeln("Initializing Game subsystems at ", getTime());
 
             //Initialize entity system and game subsystems.
             entitySystem_             = new EntitySystem();
@@ -699,6 +702,7 @@ class Game
         ///Destroy game subsystems.
         void destroySystems()
         {
+            writeln("Denitializing Game subsystems at ", getTime());
             clear(visualSystem_);
             clear(controllerSystem_);
             clear(physicsSystem_);
