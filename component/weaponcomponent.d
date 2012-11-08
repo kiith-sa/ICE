@@ -14,6 +14,7 @@ import std.conv;
 
 import containers.lazyarray;
 import containers.fixedarray;
+import memory.allocator;
 import util.bits;
 import util.yaml;
 
@@ -59,8 +60,9 @@ private:
     ///Weapons owned by the entity.
     struct
     {
+        alias FixedArray!(Weapon, BufferSwappingAllocator!(Weapon, 32)) WeaponArray;
         // Used when there is more than one weapon.
-        FixedArray!Weapon weapons_;
+        WeaponArray weapons_;
         // Used when there is a single weapon (avoids allocation).
         Weapon singleWeapon_;
     }
@@ -83,7 +85,7 @@ public:
         else
         {
             multipleWeapons_ = true;
-            weapons_ = FixedArray!Weapon(yaml.length);
+            weapons_ = WeaponArray(yaml.length);
         }
         size_t i = 0;
         foreach(ubyte slot, string resourceName; yaml)
