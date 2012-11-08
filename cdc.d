@@ -161,7 +161,7 @@ void main(string[] args)
     }
 
     if(targets.length == 0){targets = ["debug"];}
-    
+
     //No debugging symbols to avoid an OPTLINK bug on Windows.
     version(Windows)
     {
