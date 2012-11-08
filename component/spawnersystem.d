@@ -79,6 +79,12 @@ class SpawnerSystem : System
         this(EntitySystem entitySystem, const GameTime gameTime)
         {
             spawnStorage_.reserve(1024);
+            const preallocLength = 384;
+            spawnStorage_.length = preallocLength;
+            foreach(s; 0 .. preallocLength)
+            {
+                spawnStorage_[s].spawn = alloc!EntityPrototype;
+            }
             entitySystem_ = entitySystem;
             gameTime_     = gameTime;
             entityPrototypes_.loaderDelegate = &loadEntityFromFile;
