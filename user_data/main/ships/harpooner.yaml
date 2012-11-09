@@ -9,9 +9,9 @@ volume:
 weapon:
   0: weapons/harpoonLauncher.yaml
 collidable:
-health: 70
+health: 45
 warhead:
-  damage: 70
+  damage: 45
   killsEntity: false
 dumbScript: dumbscripts/arrows.yaml
 

@@ -12,7 +12,7 @@ weapon:
 collidable:
 health: 500
 warhead:
-  damage: 65
+  damage: 200
   killsEntity: false
 dumbScript: dumbscripts/zigzag2.yaml
 

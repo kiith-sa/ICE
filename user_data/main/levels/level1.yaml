@@ -273,7 +273,4 @@ level:
   - wait: 4.0
   - wave: tritonMiddle
   - wave: tritonSides
-  - wait: 4.0
-  - wave: tritonMiddle
-  - wave: tritonSides
   - wait: 8.0
