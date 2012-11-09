@@ -1,21 +1,5 @@
 name: Level 1
 
-wave stoperLeft:
-  spawner:
-    - entity: ships/stoper.yaml 
-      components:
-        physics: 
-            position: [200, -40]
-        dumbScript: dumbscripts/zigzag3.yaml
-
-wave stoperRight:
-  spawner:
-    - entity: ships/stoper.yaml 
-      components:
-        physics: 
-            position: [600, -40]
-        dumbScript: dumbscripts/zigzag4.yaml
-
 wave harpoonerDown:
   spawner:
     - entity: ships/harpooner.yaml
@@ -204,10 +188,10 @@ level:
   - wave: waveShooterMiddle
   - wave: waveShooterSides
   - wait: 4.0
-  - wave: tritonMiddle
-  - wait: 3.0
+  - wave: harpoonerUpperSides
+  - wait: 4.0
   - wave: waveShooterSides
-  - wait: 2.0
+  - wait: 3.5
   - wave: peaShooterMiddle
   - wait: 3.5
   - wave: peaShooterRight
@@ -221,27 +205,23 @@ level:
   - wave: peaShooterLeft
   - wait: 1.5
   - wave: peaShooterUpperSides
-  - wait: 3.0
-  - wave: tritonSides
-  - wait: 2.5
-  - wave: waveShooterMiddle
-  - wait: 3.5
-  - wave: harpoonerDown
   - wait: 4.0
-  - wave: tritonMiddle
-  - wait: 3.0
+  - wave: waveShooterMiddle
+  - wait: 4.0
+  - wave: harpoonerDown
+  - wait: 4.5
   - wave: waveShooterRight
   - wait: 0.7
   - wave: waveShooterLeft
-  - wait: 2.0
-  - wave: waveShooterMiddle
-  - wave: waveShooterSides
-  - wait: 4.0
-  - wave: harpoonerUpperSides
   - wait: 3.0
   - wave: waveShooterMiddle
   - wave: waveShooterSides
+  - wait: 4.5
+  - wave: harpoonerUpperSides
   - wait: 3.5
+  - wave: waveShooterMiddle
+  - wave: waveShooterSides
+  - wait: 4.5
   - wave: harpoonerDown
   - wait: 3.5
   - wave: waveShooterSides
@@ -254,28 +234,20 @@ level:
   - wait: 3.5
   - wave: peaShooterUpperSides
   - wait: 3.5
-  - wave: tritonMiddle
-  - wait: 2.0
   - wave: waveShooterRight
   - wait: 0.7
   - wave: waveShooterLeft
-  - wait: 2.0
+  - wait: 2.5
   - wave: harpoonerUpperSides
-  - wait: 3.5
-  - wave: tritonSides
-  - wait: 1.5
+  - wait: 4.5
   - wave: peaShooterMiddle
-  - wait: 1.0
+  - wait: 2.5
   - wave: waveShooterSides
-  - wait: 4.0
+  - wait: 4.5
   - wave: peaShooterUpperSides
-  - wait: 3.0
-  - wave: tritonSides
-  - wait: 3.5
-  - wave: harpoonerDown
-  - wait: 3.0
-  - wave: tritonSides
-  - wait: 3.0
+  - wait: 4.5
+  - wave: harpoonerUpperSides
+  - wait: 4.5
   - wave: peaShooterRight
   - wait: 0.7
   - wave: peaShooterLeft
@@ -284,11 +256,11 @@ level:
   - wave: waveShooterSides
   - wait: 4.0
   - wave: harpoonerUpperSides
-  - wait: 2.0
-  - wave: peaShooterMiddle
   - wait: 2.5
-  - wave: waveShooterSides
+  - wave: peaShooterMiddle
   - wait: 3.0
+  - wave: waveShooterSides
+  - wait: 4.5
   - wave: harpoonerDown
   - wait: 4.0
   - wave: peaShooterRight
@@ -298,8 +270,10 @@ level:
   - wave: peaShooterRight
   - wait: 0.7
   - wave: peaShooterLeft
-  - wait: 5.0
-  - wave: stoperLeft
-  - wait: 10.0
-  - wave: stoperRight
-  - wait: 10.0
+  - wait: 4.0
+  - wave: tritonMiddle
+  - wave: tritonSides
+  - wait: 4.0
+  - wave: tritonMiddle
+  - wave: tritonSides
+  - wait: 8.0
