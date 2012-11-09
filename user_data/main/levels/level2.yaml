@@ -165,13 +165,30 @@ wave support1:
             position: [400, -30]
         dumbScript: dumbscripts/jets1.yaml
 
-wave boss:
+wave jetDown:
   spawner:
-    - entity: ships/stoper.yaml 
+    - entity: ships/jet.yaml
       components:
         physics: 
-            position: [400, -50]
-        dumbScript: dumbscripts/arrows.yaml
+          position: [550, -40]
+    - entity: ships/jet.yaml
+      components:
+        physics: 
+          position: [350, -40]
+
+wave jetUpperSides:
+  spawner:
+    - entity: ships/jet.yaml
+      components:
+        physics: 
+          position: [0, -20]
+        dumbScript: dumbscripts/upperLeftToLeft.yaml
+    - entity: ships/jet.yaml
+      components:
+        physics: 
+          position: [800, -20]
+        dumbScript: dumbscripts/upperRightToRight.yaml
+
 wave arrowMiddle:
   spawner:
     - entity: ships/arrow.yaml
@@ -262,10 +279,12 @@ level:
   - wait: 3
   - wave: [peaIntroduction, [-200.0,  -60]]
   - wait: 3
-  - wave: peaIntroduction
-  - wait: 3
-  - wave: [peaIntroduction, [200.0,  -60]]
-  - wait: 3
+  - wave: [peaIntroduction, [100.0,  -60]]
+  - wait: 4.5
+  - wave: [jetDown, [-200.0,  -40]]
+  - wait: 2.0
+  - wave: [jetDown, [100.0,  -40]]
+  - wait: 4.0
   - wave: turtlePawn2
   - wait: 0.3
   - wave: turtlePawn2
@@ -283,11 +302,11 @@ level:
   - wait: 3
   - wave: peaDeath
   - wait: 3
+  - wave: jetUpperSides
+  - wait: 4.5
   - wave: [cavalary, [-300.0,  -40]]
   - wait: 2
   - wave: [cavalary, [-100.0,  -40]]
-  - wait: 2
-  - wave: cavalary
   - wait: 4
   - wave: tritonMiddle
   - wait: 2.5
@@ -322,15 +341,15 @@ level:
   - wait: 2.5
   - wave: [cavalary, [-300.0,  -40]]
   - wait: 2
-  - wave: support1
+  - wave: jetUpperSides
   - wait: 3
   - wave: waveShooter
   - wave: cavalary2
   - wait: 1
   - wave: cavalary2
-  - wait: 0.5
-  - wave: waveShooter
-  - wait: 2.5
+  - wait: 3.5
+  - wave: jetDown
+  - wait: 3
   - wave: waveShooter
   - wave: cavalary2
   - wait: 3
@@ -342,8 +361,6 @@ level:
   - wave: turtlePawn
   - wait: 0.3
   - wave: turtlePawn
-  - wait: 3
-  - wave: support1
   - wait: 3
   - wave: [support1, [-100.0,  -40]]
   - wave: [support1, [100.0,  -40]]

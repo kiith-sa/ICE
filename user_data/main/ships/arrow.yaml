@@ -11,7 +11,7 @@ weapon:
 collidable:
 health: 120
 warhead:
-  damage: 80
+  damage: 95
   killsEntity: false
 dumbScript: dumbscripts/arrows.yaml
 spawner:

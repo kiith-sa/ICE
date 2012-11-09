@@ -10,7 +10,7 @@ weapon:
 collidable:
 health: 100
 warhead:
-  damage: 120
+  damage: 80
   killsEntity: false
 dumbScript: dumbscripts/jets1.yaml
 
