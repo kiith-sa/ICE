@@ -3,8 +3,8 @@ engine:
   maxSpeed: 1100
 volume:
   aabbox: 
-    min: [-15, 15]
-    max: [15, 20]
+    min: [-12.5, 15]
+    max: [12.5, 20]
 weapon:
   0: weapons/kamikazeTail.yaml
   1: weapons/thruster.yaml
