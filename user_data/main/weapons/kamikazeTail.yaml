@@ -1,0 +1,28 @@
+burstPeriod: 0.03
+ammo: 20
+reloadTime: 0.01
+burst:
+  - entity: projectiles/dust.yaml 
+    delay: 0.0
+    components:
+      physics:
+        position: [-12.5, 0.0]
+        rotation: 200deg
+  - entity: projectiles/dust.yaml 
+    delay: 0.0
+    components:
+      physics:
+        position: [-12.5, -15.0]
+        rotation: 200deg
+  - entity: projectiles/dust.yaml 
+    delay: 0.0
+    components:
+      physics:
+        position: [12.5, -15.0]
+        rotation: 160deg
+  - entity: projectiles/dust.yaml 
+    delay: 0.0
+    components:
+      physics:
+        position: [12.5, 0.0]
+        rotation: 160deg

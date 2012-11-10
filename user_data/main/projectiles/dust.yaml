@@ -1,0 +1,11 @@
+deathTimeout: 0.3
+engine :
+  maxSpeed       : 300
+  acceleration   : -1  
+volume:
+  aabbox:
+    min: [-1.5, 1.5]
+    max: [1.5,  1.5]
+visual:   visual/dust1.yaml
+warhead:
+  damage: 1
