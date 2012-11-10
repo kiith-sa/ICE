@@ -279,12 +279,16 @@ class SpawnerSystem : System
             {
                 assert(gameDir_ !is null, 
                        "Trying to load an entity but game directory has not been set");
-                auto yaml = loadYAML(gameDir_.file(name));
+                YAMLNode yamlSource;
+                {
+                    auto zone  = Zone("SpawnerSystem EntityPrototype file reading & YAML parsing");
+                    yamlSource = loadYAML(gameDir_.file(name));
+                }
 
                 {
                     auto zone = Zone("SpawnerSystem EntityPrototype allocation " ~ 
                                      "(after loading from file)");
-                    output = alloc!EntityPrototype(name, yaml);
+                    output = alloc!EntityPrototype(name, yamlSource);
                 }
             }
             catch(YAMLException e){return false;}

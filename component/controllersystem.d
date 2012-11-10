@@ -381,7 +381,15 @@ class ControllerSystem : System
         {
             import std.stdio;
             string fail(){return "Failed to load dumb script " ~ sourceName ~ ": ";}
-            try{output = DumbScript(loadYAML(gameDir_.file(sourceName)));}
+            try
+            {
+                YAMLNode yamlSource;
+                {
+                    auto zone = Zone("DumbScript file reading & YAML parsing");
+                    yamlSource = loadYAML(gameDir_.file(sourceName));
+                }
+                output = DumbScript(yamlSource);
+            }
             catch(YAMLException e){writeln(fail(), e.msg); return false;}
             catch(VFSException e) {writeln(fail(), e.msg); return false;}
             return true;
