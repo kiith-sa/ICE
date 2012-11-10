@@ -8,4 +8,4 @@ volume:
     max: [4,  15]
 visual:   visual/stoperWeapon.yaml
 warhead:
-  damage: 40
+  damage: 55
