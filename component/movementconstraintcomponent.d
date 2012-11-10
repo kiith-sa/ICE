@@ -23,6 +23,7 @@ import util.yaml;
  */
 struct MovementConstraintComponent
 {
+    private static bool DO_NOT_DESTROY_AT_ENTITY_DEATH;
     public:
         /**
          * If true, we're constrained to an owner determined by OwnerComponent.

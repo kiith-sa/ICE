@@ -359,7 +359,7 @@ class GraphicsEffectManager
         void draw(VideoDriver video, const GameTime gameTime)
         {
             //Must keep track of expired effects to destroy them.
-            Vector!GraphicsEffect expired;
+            Vector!(void*) expired;
 
             foreach(effect; effects_)
             {
@@ -368,7 +368,7 @@ class GraphicsEffectManager
                 if(effect.done)
                 {
                     effect.expire();
-                    expired ~= effect;
+                    expired ~= cast(void*)effect;
                 }
             }
 
@@ -377,7 +377,7 @@ class GraphicsEffectManager
 
             foreach(effect; expired)
             {
-                clear(effect);
+                clear(cast(GraphicsEffect)effect);
             }
         }
 

@@ -48,6 +48,8 @@ struct ControllerComponent
         bool die;
 
     private:
+        static bool DO_NOT_DESTROY_AT_ENTITY_DEATH;
+         
         ///Direction of movement.
         Vector2f movementDirection_;
 

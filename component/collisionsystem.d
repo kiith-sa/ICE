@@ -63,7 +63,7 @@ class CollisionSystem : System
          * allocated by collider lists does not get deallocated.
          */
         uint collidersUsed_;
-        
+
     public:
         /**
          * Construct a CollisionSystem.
@@ -75,6 +75,12 @@ class CollisionSystem : System
         {
             entitySystem_  = entitySystem;
             spatialSystem_ = spatialSystem;
+            enum collidersPrealloc = 16;
+            collidersOfEntities_.length = collidersPrealloc;
+            foreach(c; 0 .. collidersPrealloc)
+            {
+                collidersOfEntities_[c].reserve(32);
+            }
         }
 
         ///Destroy the collision system, freeing all memory used by collider lists.
@@ -104,7 +110,7 @@ class CollisionSystem : System
                 {
                     collidersOfEntities_.length = collidersOfEntities_.length + 1;
                 }
-             
+
                 Colliders* colliders = &collidersOfEntities_[collidersUsed_];
                 foreach(ref Entity colliderEntity,
                         ref PhysicsComponent colliderPhysics,

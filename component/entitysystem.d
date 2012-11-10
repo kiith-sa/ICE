@@ -655,7 +655,7 @@ class EntitySystem : Monitorable
         }
 
         ///Game entities.
-        SegmentedVector!Entity entities_;
+        SegmentedVector!(Entity, 16384)  entities_;
 
         ///Indices of entities that are dead.
         Vector!uint freeEntityIndices_;
@@ -667,7 +667,7 @@ class EntitySystem : Monitorable
         static string ctfeComponentArrays() 
         {
             string result = "";
-            foreach(c; componentTypes){result ~= "SegmentedVector!" ~ c ~ " " ~ c.arrayName ~ ";\n";}
+            foreach(c; componentTypes){result ~= "SegmentedVector!(" ~ c ~ ", 4096) " ~ c.arrayName ~ ";\n";}
             return result;
         }
         mixin(ctfeComponentArrays());
@@ -685,6 +685,12 @@ class EntitySystem : Monitorable
         mixin Signal!Statistics sendStatistics;
 
     public:
+        this()
+        {
+            enum freeEntityIndicesPrealloc = 32768;
+            freeEntityIndices_.reserve(freeEntityIndicesPrealloc);
+        }
+
         ///Destroy all entities and components, returning to initial state.
         void destroy()
         {
@@ -747,6 +753,8 @@ class EntitySystem : Monitorable
                         assert(null !is (entity.id in idToEntity_) &&
                                null !is *(entity.id in idToEntity_),
                                "Removing entity ID that doesn't exist");
+
+                        clearComponents(entity);
 
                         //TEMP:
                         //Due to a compiler bug, we're setting to null 
@@ -878,7 +886,7 @@ class EntitySystem : Monitorable
                           "Unknown component type: " ~ C.stringof);
 
             entity.components_ |= componentType!(C.stringof);
-            SegmentedVector!C* components = &componentArray!C();
+            SegmentedVector!(C, 4096)* components = &componentArray!C();
 
             //If we're recycling, reuse an existing component.
             //Otherwise must add new one.
@@ -911,8 +919,31 @@ class EntitySystem : Monitorable
             return -1;
         }
 
+        ///Destroys all components of an entity (called at entity death).
+        ///
+        ///Components that have an "annotation" member 
+        ///DO_NOT_DESTROY_AT_ENTITY_DEATH will not be destroyed.
+        ///This is an optimization to avoid destroying components that 
+        ///don't need it (i.e. only contain plain data, no arrays, etc.).
+        final void clearComponents(ref Entity entity)
+        {
+            foreach(c; componentTypes)
+            {
+                mixin("alias " ~ c ~ " C;");
+                enum noNeedToClear = __traits(hasMember, C, "DO_NOT_DESTROY_AT_ENTITY_DEATH");
+                static if(!noNeedToClear)
+                {
+                    mixin("auto componentPtr = entity." ~ nameCamelCased(c) ~ ";");
+                    if(componentPtr !is null)
+                    {
+                        clear(*componentPtr);
+                    }
+                }
+            }
+        }
+
         ///Get the component array of specified type.
-        ref inout(SegmentedVector!T) componentArray(T)() inout pure
+        ref inout(SegmentedVector!(T, 4096)) componentArray(T)() inout pure
             if(knownComponentType!T)
         {
             mixin("return " ~ T.stringof.arrayName ~ ";");

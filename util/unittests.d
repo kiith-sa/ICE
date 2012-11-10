@@ -33,22 +33,26 @@ mixin template registerTest(alias testFunction, string testName)
 {
     static this()
     {
-        import std.stdio;
-        writeln("Registering test ", testName);
-        if(UNITTEST_TESTCOUNT_ == UNITTEST_TESTS_.length)
+        // Do not unittest in release (asserts are disabled anyway)
+        debug 
         {
-            writeln("WARNING: too many tests, refusing to register any more. " ~
-                    "Increase test capacity.");
-            return;
+            import std.stdio;
+            writeln("Registering test ", testName);
+            if(UNITTEST_TESTCOUNT_ == UNITTEST_TESTS_.length)
+            {
+                writeln("WARNING: too many tests, refusing to register any more. " ~
+                        "Increase test capacity.");
+                return;
+            }
+            void delegate() test = 
+            {
+                writeln("starting test: ", testName);
+                scope(success){writeln("test succeeded");}
+                scope(failure){writeln("test FAILED");}
+                testFunction();
+            };
+            UNITTEST_TESTS_[UNITTEST_TESTCOUNT_++] = test;
         }
-        void delegate() test = 
-        {
-            writeln("starting test: ", testName);
-            scope(success){writeln("test succeeded");}
-            scope(failure){writeln("test FAILED");}
-            testFunction();
-        };
-        UNITTEST_TESTS_[UNITTEST_TESTCOUNT_++] = test;
     }
 }
 

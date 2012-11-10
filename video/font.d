@@ -317,8 +317,8 @@ package final class Font
             if(defaultGlyph_ is null)
             {
                 //empty image is transparent
-                auto image             = Image(height_ / 2, height_, ColorFormat.GRAY_8);
-                auto defaultGlyph    = alloc!Glyph();
+                auto image         = Image(height_ / 2, height_, ColorFormat.GRAY_8);
+                auto defaultGlyph  = alloc!Glyph();
                 scope(failure){free(defaultGlyph);}
                 defaultGlyph.texture = driver.createTexture(image);
                 defaultGlyph.offset  = Vector2s(0, cast(short)-height_);

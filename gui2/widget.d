@@ -95,10 +95,17 @@ protected:
     final void removeChild(Widget child)
     {
         assert(initialized_, "Uninitialized widget: removing a child");
-        bool sameWidget(Widget c){return c is child;}
-        assert(children_.canFind!sameWidget(), 
+        // Not using std.algorithm to avoid a DMD ICE in release builds.
+        size_t removeIdx = size_t.max;
+        foreach(i, c; children_) if(c is child)
+        {
+            removeIdx = i;
+            break;
+        }
+        assert(removeIdx != size_t.max,
                "Trying to remove a widget that is not a child of this widget");
-        children_ = children_.remove!sameWidget();
+        children_[removeIdx + 1 .. $].moveAll(children_[removeIdx .. $ - 1]);
+        children_ = children_[0 .. $ - 1];
     }
 
     /// Render the widget with specified video driver.

@@ -16,7 +16,7 @@ import util.yaml;
 ///Component that provides a simple script (in YAML) to control an entity.
 ///
 ///Used by ControllerSystem (there is no DumbScriptSystem)
-align(4) struct DumbScriptComponent
+struct DumbScriptComponent
 {
     ///Index to the script in ControllerSystem.
     LazyArrayIndex scriptIndex;

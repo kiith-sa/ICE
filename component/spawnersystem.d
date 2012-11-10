@@ -25,6 +25,7 @@ import containers.vector;
 import math.vector2;
 import memory.memory;
 import time.gametime;
+import util.frameprofiler;
 import util.yaml;
 
 
@@ -54,7 +55,7 @@ class SpawnerSystem : System
          * spawnStorage_[0 .. spawnsUsed_] are prototypes to be spawned. Other 
          * entries are preallocated and ready to be reused.
          *
-         * Possible optimizations:
+         * TODO Possible optimizations:
          *
          * 1) Binary heap, sorted array, or sorted array of indices to this array.
          *
@@ -65,7 +66,7 @@ class SpawnerSystem : System
 
         ///Number of used items in spawnStorage_.
         size_t spawnsUsed_;
-        
+
         ///Game data directory.
         VFSDir gameDir_;
 
@@ -78,6 +79,13 @@ class SpawnerSystem : System
          */
         this(EntitySystem entitySystem, const GameTime gameTime)
         {
+            spawnStorage_.reserve(1024);
+            const preallocLength = 384;
+            spawnStorage_.length = preallocLength;
+            foreach(s; 0 .. preallocLength)
+            {
+                spawnStorage_[s].spawn = alloc!EntityPrototype;
+            }
             entitySystem_ = entitySystem;
             gameTime_     = gameTime;
             entityPrototypes_.loaderDelegate = &loadEntityFromFile;
@@ -272,7 +280,12 @@ class SpawnerSystem : System
                 assert(gameDir_ !is null, 
                        "Trying to load an entity but game directory has not been set");
                 auto yaml = loadYAML(gameDir_.file(name));
-                output = alloc!EntityPrototype(name, yaml);
+
+                {
+                    auto zone = Zone("SpawnerSystem EntityPrototype allocation " ~ 
+                                     "(after loading from file)");
+                    output = alloc!EntityPrototype(name, yaml);
+                }
             }
             catch(YAMLException e){return false;}
             catch(VFSException e){return false;}

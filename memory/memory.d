@@ -584,6 +584,7 @@ private:
     {
         if(suspendMemoryDebugRecording){return;}
         auto allocation = Allocation.construct!(T, file, line)(ptr, objects);
+        allocations_.assumeSafeAppend();
         allocations_ ~= allocation;
 
         const bytes = objects * T.sizeof;
@@ -609,6 +610,7 @@ private:
         bool found = false;
         foreach(ref allocation; allocations_) if(allocation.ptr == oldPtr)
         {
+            pastAllocations_.assumeSafeAppend();
             pastAllocations_ ~= allocation;
             //replace allocation info
             allocation = Allocation.construct!(T, file, line)(newPtr, newObjects);
@@ -637,6 +639,7 @@ private:
         bool found = false;
         foreach(ref allocation; allocations_) if(allocation.ptr == ptr)
         {
+            pastAllocations_.assumeSafeAppend();
             pastAllocations_ ~= allocation;
             //remove by rewriting by the last allocation
             allocation = allocations_[$ - 1];

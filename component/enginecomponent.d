@@ -16,6 +16,7 @@ import util.yaml;
 ///Component that provides movement capability to an entity.
 struct EngineComponent
 {
+    private static bool DO_NOT_DESTROY_AT_ENTITY_DEATH;
     ///Maximum speed of the entity.
     float maxSpeed;
     ///Acceleration in units per second. Negative means instant acceleration,

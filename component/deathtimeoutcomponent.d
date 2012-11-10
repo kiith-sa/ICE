@@ -17,6 +17,8 @@ import util.yaml;
 ///Component that limits the lifetime of an entity.
 struct DeathTimeoutComponent
 {
+    private static bool DO_NOT_DESTROY_AT_ENTITY_DEATH;
+    
     ///Time left for the entity to live, in (game time) seconds.
     double timeLeft;
 

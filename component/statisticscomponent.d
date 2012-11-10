@@ -15,6 +15,8 @@ import util.yaml;
 ///Provides statistics to an entity, such as how many entities it has killed.
 struct StatisticsComponent
 {
+    private static bool DO_NOT_DESTROY_AT_ENTITY_DEATH;
+
     ///How many entities have we killed?
     uint entitiesKilled;
     ///How many bursts have we fired?

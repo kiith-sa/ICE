@@ -19,6 +19,7 @@ import std.typecons;
 import containers.lazyarray;
 import containers.vector;
 import math.vector2;
+import memory.allocator;
 import util.yaml;
 
 
@@ -183,7 +184,7 @@ struct SpawnerComponent
     }
 
     ///Spawns that might be spawned by this SpawnerComponent.
-    Vector!Spawn spawns;
+    Vector!(Spawn, BufferSwappingAllocator!(Spawn, 80)) spawns;
 
     ///Load a SpawnerComponent from YAML.
     this(ref YAMLNode yaml)
@@ -193,6 +194,12 @@ struct SpawnerComponent
         {
             spawns ~= Spawn(spawn);
         }
+    }
+
+    ///Preallocate space for extra more spawns.
+    void preallocateExtraSpawns(const size_t extra)
+    {
+        spawns.reserve(spawns.length + extra);
     }
 
     ///Add a spawn (used by WeaponSystem to add projectile spawns).

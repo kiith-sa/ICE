@@ -14,6 +14,7 @@ import std.traits;
 import std.typecons;
 
 import containers.vector;
+import memory.allocator;
 
 
 /**
@@ -77,6 +78,8 @@ struct LazyArrayIndex_(ID = string)
         }
 }
 
+pragma(msg, "LazyArrayIndex_!string size: ", LazyArrayIndex_!string.sizeof);
+
 ///Default LazyArrayIndex_ uses string as resource identifier.
 alias LazyArrayIndex_!string LazyArrayIndex;
 
@@ -112,7 +115,7 @@ struct LazyArray(T, ID = string)
         }
 
         ///Allocated storage.
-        Vector!Item storage_;
+        Vector!(Item, BufferSwappingAllocator!(Item, 8)) storage_;
 
         ///Delegate used to load data if it's requested and not loaded yet.
         bool delegate(ID, out T) loadData_ = null;

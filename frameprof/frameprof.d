@@ -36,6 +36,16 @@ import util.intervals;
  * Commands TODO:
  * #. memprof-filter with a particular zone
  *
+ * #. accumulate:
+ *    Different merge modes: if multiple instances of the same zone 
+ *    in a "zones" of a parent zone, sum all these instances,
+ *    (count them as a single "total" zone)
+ *    or process them separately (current mergeZones behavior)
+ *    (this changes averages/maximums between frames - 
+ *     i.e. is maximum calculated from a sum of all instances
+ *     of the subzone in a zone or from each of them separately?)
+ *    That is: --mergeZones=total vs --mergeZones=separate
+ *
  * #. Filter frames:
  *    Filter frames by start/end time
  *    (e.g. all frames between 1s and 5s)
@@ -151,6 +161,125 @@ public:
         bool lessWrapper(ref YAMLNode a, ref YAMLNode b) {return less(a,b);}
         sort!lessWrapper(frameArray);
         return frameArray[std.algorithm.max(0, frameArray.length - topCount) .. $];
+    }
+
+    /// Accumulate data from all frames into a single "total" frame.
+    ///
+    /// Params:  frames = Frames to accumulate
+    ///          mergeZones = If there are multiple identical child zones in a
+    ///                       parent zone, should they be merged into a single
+    ///                       "total" zone? (Otherwise, they will be numbered).
+    ///
+    /// Throws:  YAMLException if a frame or zone has unexpected format.
+    static YAMLNode accumulateFrames(ref YAMLNode frames, Flag!"mergeZones" mergeZones)
+    {
+        // Recursively accumulate data from a zone into a "total" zone.
+        //
+        // Params: zone            = Zone we're currently accumulating
+        //         accumulatedZone = Data accumulated for this zone so far.
+        void recursiveAccumulate(ref YAMLNode zone, ref YAMLNode accumulatedZone)
+        {
+            // Accumulate a YAML value by adding to it (e.g. durationTotal).
+            void accumulateAdd(T)(const string key, const T add)
+            {
+                accumulatedZone[key] = accumulatedZone.containsKey(key)
+                                     ? accumulatedZone[key].as!T + add : add;
+            }
+
+            // Process a subzone of the current zone.
+            void processSubZone(ref YAMLNode subZone, ref YAMLNode[] accumulatedSubZones, 
+                                uint[string] repetitions)
+            {
+                const baseName = subZone["zone"].as!string;
+                string name = baseName;
+
+                // We number identical subzones if merging is disabled.
+                if(!mergeZones)
+                {
+                    const repetition = (baseName in repetitions) is null
+                                       ? 1 : repetitions[baseName] + 1;
+                    repetitions[baseName] = repetition;
+                    // We index each repetition greater than the first.
+                    if(repetition > 1)
+                    {
+                        name = baseName ~ " (" ~ to!string(repetition) ~ ")";
+                    }
+                }
+
+                // Look if there is such a zone in the accumulated
+                // result already. If yes, accumulate into it.
+                // If no, create a new zone.
+                YAMLNode* accumulatedSubZone = null;
+                foreach(ref YAMLNode accZone; accumulatedSubZones)
+                {
+                    if(accZone["zone"].as!string == name)
+                    {
+                        accumulatedSubZone = &accZone;
+                    }
+                }
+                if(accumulatedSubZone is null)
+                {
+                    auto newZone = YAMLNode(cast(YAMLNode[])[], cast(YAMLNode[])[]);
+                    newZone["zone"] = name;
+                    accumulatedSubZones ~= newZone;
+                    accumulatedSubZone = &accumulatedSubZones[$ - 1];
+                }
+
+                // Process the subzone.
+                recursiveAccumulate(subZone, *accumulatedSubZone); 
+            }
+
+
+            accumulateAdd("instances", 1u);
+            // Determine if this is the maximum duration for this zone so far.
+            const duration = zone["duration"].as!real;
+            const firstDuration = !accumulatedZone.containsKey("durationMax");
+            if(firstDuration || (duration > accumulatedZone["durationMax"].as!real))
+            {
+                accumulatedZone["durationMax"] = duration;
+                accumulatedZone["startMax"]    = zone["start"];
+                accumulatedZone["endMax"]      = zone["end"];
+            }
+
+            accumulateAdd("durationTotal", duration);
+
+            // Process child zones.
+            if(zone.containsKey("zones"))
+            {
+                // No child zones in the accumulated zone yet.
+                if(!accumulatedZone.containsKey("zones"))
+                {
+                    accumulatedZone["zones"] = YAMLNode(cast(YAMLNode[]) []);
+                }
+
+                // Get accumulated sub zones as an array for easy processing.
+                auto accumulatedSubZones = accumulatedZone["zones"].as!(YAMLNode[]);
+
+                // Used when numbering repeating zones (when mergeZones is false).
+                uint[string] repetitions;
+                // Process subzones of the current zone.
+                foreach(ref YAMLNode subZone; zone["zones"])
+                {
+                    processSubZone(subZone, accumulatedSubZones, repetitions);
+                }
+                accumulatedZone["zones"] = accumulatedSubZones;
+            }
+        }
+
+
+        auto frameArray = frames.as!(YAMLNode[]);
+        auto result = YAMLNode(cast(YAMLNode[])[], cast(YAMLNode[])[]);
+        bool hasDuration = false;
+
+        foreach(ref YAMLNode frame; frameArray)
+        {
+            assert(!result.containsKey("frame") || result["frame"] == frame["frame"],
+                   "TODO support for different top level frames in a profile");
+            result["frame"] = frame["frame"];
+            // The frame is the "top level zone".
+            recursiveAccumulate(frame, result);
+        }
+        return YAMLNode([result]);
     }
 
 private:
@@ -280,7 +409,13 @@ void help()
         "    Local options:",
         "      --frames               Get time intervals for each frame. This is the",
         "                             default behavior (pipe output from frameprof top)",
-        "                             to get intervals for the worst frames)"
+        "                             to get intervals for the worst frames)",
+        "",
+        "  accumulate                 Accumulate data from all frames into a single",
+        "                             \"frame\".",
+        "    Local options:",
+        "      --mergeZones           If there are multiple instances of the same zone",
+        "                             in a nesting level of a frame, merge them."
         ];
     foreach(line; help) {writeln(line);}
 }
@@ -400,10 +535,27 @@ private:
         switch(opt)
         {
             case "frames":
-                // Default behavior
+                // Default behavior (at least for now)
                 break;
             default:
                 throw new FrameProfCLIException("Unrecognized top option: --" ~ opt);
+        }
+        });
+    }
+
+    /// Parses local options for the "accumulate" command.
+    void localAccumulate(string arg)
+    {
+        processOption(arg, (opt, args){
+
+        switch(opt)
+        {
+            case "mergeZones":
+                action_ = (ref YAMLNode frames) =>
+                          FrameProf.accumulateFrames(frames, Yes.mergeZones);
+                break;
+            default:
+                throw new FrameProfCLIException("Unrecognized accumulate option: --" ~ opt);
         }
         });
     }
@@ -430,7 +582,13 @@ private:
                     .map!(pair => to!string(pair[0]) ~ "-" ~ to!string(pair[1]))()
                     .reduce!((a, b) => a ~ "," ~ b)();
                 break;
-            default: 
+            case "accumulate":
+                framesOutput_ = true;
+                processArg_  = &localAccumulate;
+                action_ = (ref YAMLNode frames) =>
+                          FrameProf.accumulateFrames(frames, No.mergeZones);
+                break;
+            default:
                 throw new FrameProfCLIException("Unknown command: " ~ arg);
         }
     }

@@ -161,19 +161,21 @@ void main(string[] args)
     }
 
     if(targets.length == 0){targets = ["debug"];}
-    
+
     //No debugging symbols to avoid an OPTLINK bug on Windows.
     version(Windows)
     {
         auto dbgNoUnittest   = ["-debug"];
         auto no_contracts = ["-release"];
-        auto release      = ["-O", "-inline", "-release"];
+        /*auto release      = ["-O", "-inline", "-release"];*/
+        auto release      = ["-inline", "-release"];
     }
     else
     {
         auto dbgNoUnittest   = ["-gc", "-debug"];
         auto no_contracts = ["-release", "-gc"];
-        auto release      = ["-O", "-inline", "-release", "-gc"];
+        /*auto release      = ["-O", "-inline", "-release", "-gc"];*/
+        auto release      = ["-inline", "-release", "-gc"];
     }
     auto dbg = dbgNoUnittest ~ "-unittest";
     auto dependencies = ["dependencies/derelict/DerelictSDL",

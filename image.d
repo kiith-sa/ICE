@@ -13,13 +13,14 @@ import core.stdc.string;
 
 import math.vector2;
 import color;
-import memory.memory;
+import memory.allocator;
 
 
 //could be optimized by adding a pitch data member (bytes per row)    
 ///Image object capable of storing images in various color formats.
 struct Image
 {
+    alias BufferSwappingAllocator!(ubyte, 16) Allocator;
     //commented out due to a compiler bug
     //invariant(){assert(data_ !is null, "Image with NULL data");}
 
@@ -42,14 +43,14 @@ struct Image
         this(const uint width, const uint height, 
              const ColorFormat format = ColorFormat.RGBA_8)
         {
-            data_ = allocArray!ubyte(width * height * bytesPerPixel(format));
+            data_ = Allocator.allocArray!ubyte(width * height * bytesPerPixel(format));
             size_ = Vector2u(width, height);
             format_ = format;
         }
 
         ///Destroy the image and free its memory.
-        ~this(){if(data !is null){free(data_);}}
-        
+        ~this(){if(data !is null){Allocator.free(data_);}}
+
         ///Get color format of the image.
         @property ColorFormat format() const pure {return format_;}
 
@@ -134,7 +135,7 @@ struct Image
                          data_[offset + 2], 
                          data_[offset + 3]);
         }
-        
+
         //This is extremely ineffective/ugly, but not really a priority
         /**
          * Generate a black/transparent-white/opague checker pattern.
@@ -229,7 +230,7 @@ struct Image
         void flipVertical()
         {
             const uint pitch = pitch();
-            ubyte[] tempRow = allocArray!ubyte(pitch);
+            ubyte[] tempRow = Allocator.allocArray!ubyte(pitch);
             foreach(row; 0 .. size_.y / 2)
             {
                 //swap row and size_.y - row
@@ -239,7 +240,7 @@ struct Image
                 memcpy(rowA, rowB, pitch);
                 memcpy(rowB, tempRow.ptr, pitch);
             }
-            free(tempRow);
+            Allocator.free(tempRow);
         }
 
     private:

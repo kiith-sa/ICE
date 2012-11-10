@@ -19,6 +19,7 @@ import containers.lazyarray;
 import math.vector2;
 import memory.memory;
 import time.gametime;
+import util.frameprofiler;
 import util.yaml;
 
 import component.controllercomponent;
@@ -76,7 +77,10 @@ class WeaponSystem : System
 
                 auto burst = yaml["burst"];
 
-                spawns = FixedArray!Spawn(burst.length);
+                {
+                    auto zone = Zone("WeaponData spawns allocation");
+                    spawns = FixedArray!Spawn(burst.length);
+                }
                 uint i = 0;
                 foreach(ref YAMLNode shot; burst)
                 {
@@ -193,6 +197,7 @@ class WeaponSystem : System
                    "Code that spawns the entity must ensure that if it has a "
                    "WeaponComponent, it has a SpawnerComponent as well.");
 
+            spawner.preallocateExtraSpawns(weapon.spawns.length);
             //Not by reference - we need a copy so we can modify spawn condition
             foreach(spawn; weapon.spawns)
             {
