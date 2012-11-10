@@ -529,7 +529,7 @@ class Game
                     zonedUpdate!"Spatial"(spatialSystem_);
                     zonedUpdate!"Collision"(collisionSystem_);
                     zonedUpdate!"Warhead"(warheadSystem_);
-                    zonedUpdate!"Collision"(collisionResponseSystem_);
+                    zonedUpdate!"CollisionResponse"(collisionResponseSystem_);
                     zonedUpdate!"Health"(healthSystem_);
                     zonedUpdate!"Tag"(tagSystem_);
                     zonedUpdate!"Timeout"(timeoutSystem_);
