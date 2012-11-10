@@ -19,6 +19,7 @@ import containers.lazyarray;
 import math.vector2;
 import memory.memory;
 import time.gametime;
+import util.frameprofiler;
 import util.yaml;
 
 import component.controllercomponent;
@@ -76,7 +77,10 @@ class WeaponSystem : System
 
                 auto burst = yaml["burst"];
 
-                spawns = FixedArray!Spawn(burst.length);
+                {
+                    auto zone = Zone("WeaponData spawns allocation");
+                    spawns = FixedArray!Spawn(burst.length);
+                }
                 uint i = 0;
                 foreach(ref YAMLNode shot; burst)
                 {

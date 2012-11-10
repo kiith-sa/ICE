@@ -20,6 +20,7 @@ import containers.lazyarray;
 import containers.fixedarray;
 import math.vector2;
 import memory.memory;
+import util.frameprofiler;
 import util.yaml;
 import video.videodriver;
 
@@ -254,8 +255,11 @@ class VisualSystem : System
                         return false;
                     }
 
-                    output.vertices = FixedArray!(VisualData.ColoredVertex)(vertexCount);
-                    output.widths   = FixedArray!float(vertexCount / 2);
+                    {
+                        auto zone = Zone("VisualData vertices/widths allocation");
+                        output.vertices = FixedArray!(VisualData.ColoredVertex)(vertexCount);
+                        output.widths   = FixedArray!float(vertexCount / 2);
+                    }
 
                     size_t vertex = 0;
                     foreach(string key, ref YAMLNode value; vertices) switch(key)

@@ -20,6 +20,7 @@ import math.vector2;
 import containers.fixedarray;
 import containers.lazyarray;
 import time.gametime;
+import util.frameprofiler;
 import util.yaml;
 
 import component.controllercomponent;
@@ -182,7 +183,10 @@ class ControllerSystem : System
                 ///Load a DumbScript from specified file.
                 this(YAMLNode yaml)
                 {
-                    instructions_ = FixedArray!Instruction(yaml.length);
+                    {
+                        auto zone = Zone("DumbScript instructions allocation");
+                        instructions_ = FixedArray!Instruction(yaml.length);
+                    }
                     uint idx = 0;
                     foreach(string type, ref YAMLNode args; yaml)
                     {

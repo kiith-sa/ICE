@@ -25,6 +25,7 @@ import containers.vector;
 import math.vector2;
 import memory.memory;
 import time.gametime;
+import util.frameprofiler;
 import util.yaml;
 
 
@@ -279,7 +280,12 @@ class SpawnerSystem : System
                 assert(gameDir_ !is null, 
                        "Trying to load an entity but game directory has not been set");
                 auto yaml = loadYAML(gameDir_.file(name));
-                output = alloc!EntityPrototype(name, yaml);
+
+                {
+                    auto zone = Zone("SpawnerSystem EntityPrototype allocation " ~ 
+                                     "(after loading from file)");
+                    output = alloc!EntityPrototype(name, yaml);
+                }
             }
             catch(YAMLException e){return false;}
             catch(VFSException e){return false;}
