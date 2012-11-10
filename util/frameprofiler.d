@@ -125,7 +125,7 @@ struct Zone
         /**
          * Construct a zone, recording its start time.
          *
-         * If frameProfilerInit has not been called, this is a noop.
+         * If frameProfilerInit has not been called this is a noop.
          *
          * Params:  zoneInfo = String with information (e.g. name) about the zone.
          *                     This is useful when parsing profile dumps later.
@@ -133,6 +133,7 @@ struct Zone
         this(string zoneInfo)
         {
             if(unableToRecord()) {return;}
+            assert(currentZoneLevel_ >= 1, "Zone outside of a frame");
 
             ++currentZoneLevel_;
             zoneIndex_ = recordedZoneCount_;
@@ -275,6 +276,23 @@ void frameProfilerDump(void delegate(string) dumpLine)
 
         dumpZones(uint.max, 4);
     }
+}
+
+/// End frame profiler execution, returning it to state before frameProfilerInit().
+///
+/// The user is responsible for deleting any storage it passed 
+/// to the frame profiler.
+void frameProfilerEnd()
+{
+    frameSkip_          = 0;
+    currentZoneLevel_   = 0;
+    state_              = FrameProfilerState.Uninitialized;
+    zoneStack_[]        = uint.max;
+    frameID_            = 0;
+    recordedFrameCount_ = 0;
+    recordedZoneCount_  = 0;
+    frames_             = null;
+    zones_              = null;
 }
 
 private:
