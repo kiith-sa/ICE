@@ -1,6 +1,6 @@
 visual: visual/kamikaze.yaml
 engine:
-  maxSpeed: 1000
+  maxSpeed: 1100
 volume:
   aabbox: 
     min: [-15, 15]
