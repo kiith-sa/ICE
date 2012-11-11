@@ -9,7 +9,7 @@ Introduction
 ICE is a top-down scrolling shooter in tradition of Raptor and Tyrian with 
 vector style graphics written in the D programming language.
 
-ICE is in very early development and there is no release at this time.
+ICE is in early development and there is no release at this time.
 
 --------
 Gameplay
@@ -21,8 +21,22 @@ campaign, you get special weapons that can be used only once in a while,
 taking time to recharge. You get AP by destroying enemies, and can invest AP
 to upgrade the weapons.
 
-You can take screenshots using the Scroll Lock button. Screenshots
-can be found in ``.ice/main/screenshots`` in your home directory.
+^^^^^^^^
+Controls
+^^^^^^^^
+
+================ ==============================================================
+``W``, ``Up``    Move up
+``A``, ``Left``  Move left
+``S``, ``Down``  Move down
+``D``, ``Right`` Move right
+``Space``        Fire weapon 1.
+``J``            Fire weapon 2.
+``K``            Fire weapon 3.
+``Scroll Lock``  Take screenshot (in ``~/.ice/main/screenshots/`` if installed,
+                 or ``user_data/main/screenshots/`` in the game directory)
+================ ==============================================================
+
 
 --------------------
 Compiling/Installing
@@ -40,6 +54,7 @@ Directory          Description
 ``./user_data``    User game data directory, contains modifiable data such as screenshots, etc.
 ``./dependencies`` Source code of libraries ICE depends on.
 ``./doc``          Documentation.
+``./docsrc``       Documentation source code.
 ``./xxx``          Other directories: ICE source code.
 ================== ============================================================================
 
@@ -66,16 +81,16 @@ respectively::
    gdc cdc.d -o cdc 
 
 
-To compile ICE, use the following command, which will build the release target.
+To compile ICE, use the following command, which will build the debug target.
 This should take about a minute with dmd, or a few minutes with gdc::
     
-   ./cdc release
+   ./cdc
 
 Alternatively, you can consult ``cdc --help`` for specific build targets - 
 you need the release target if you want to install using the install.sh script.
 
 If you don't want to install, you can run ICE from the package's top
-level directory by launching ``./ice-release`` binary or binary of any
+level directory by launching ``./ice-debug`` binary or binary of any
 other build target.
 
 To install, run following command as root (e.g. by using ``sudo``)::
@@ -140,6 +155,6 @@ Contact/Credits
 ---------------
 
 ICE was created by Ferdinand Majerech aka Kiith-Sa kiithsacmp[AT]gmail.com,
-Libor Mališ and Dávid Horváth.
+Libor Mališ, Dávid Horváth and Tomáš Nguyen.
 
 Parts of code based on the D port of the LodePNG library.
