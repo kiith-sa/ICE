@@ -54,6 +54,8 @@ import util.intervals;
  * #, Filter zones:
  *    Zone name by regex. So we can get e.g. 
  *    all occurences of zone X in all frames, but no other zones.
+ *    Also filter by duration (e.g. ignore all zones below e.g. 1microsec)
+ *    And maybe by duration percentage? (ignore zones below e.g. 0.5% of parent zone)
  *
  * #. Distribution (frames):
  *    Distribute frames by duration. 

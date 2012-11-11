@@ -594,6 +594,7 @@ class Ice
                 // Newline after the dots.
                 writeln("");
                 free(frameProfilerData_);
+                frameProfilerEnd();
             }
         }
 

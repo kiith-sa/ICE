@@ -277,8 +277,13 @@ class WeaponSystem : System
             {
                 assert(gameDir_ !is null, 
                        "Trying to load a weapon but game directory has not been set");
-                auto yaml = loadYAML(gameDir_.file(name));
-                output.initialize(name, yaml);
+
+                YAMLNode yamlSource;
+                {
+                    auto zone  = Zone("Weapon data file reading & YAML parsing");
+                    yamlSource = loadYAML(gameDir_.file(name));
+                }
+                output.initialize(name, yamlSource);
             }
             catch(YAMLException e)
             {

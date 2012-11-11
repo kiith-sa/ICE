@@ -301,7 +301,7 @@ class FSFile : VFSFile
             return target[0 .. fread(target.ptr, 1, target.length, file_)];
         }
 
-        override void write(in void[] data)
+        override void write(const void[] data)
         {
             assert(mode_ == Mode.Write || mode_ == Mode.Append, 
                    "Trying to write to a file not opened for writing/appending: " ~ path);

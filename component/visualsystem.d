@@ -225,11 +225,15 @@ class VisualSystem : System
             string fail(){return "Failed to load visual data " ~ name ~ ": ";}
             try
             {
-                YAMLNode yaml = loadYAML(gameDir_.file(name));
-                const type = yaml["type"].as!string;
+                YAMLNode yamlSource;
+                {
+                    auto zone = Zone("Visual component file reading & YAML parsing");
+                    yamlSource = loadYAML(gameDir_.file(name));
+                }
+                const type = yamlSource["type"].as!string;
                 if(type == "lines")
                 {
-                    auto vertices = yaml["vertices"];
+                    auto vertices = yamlSource["vertices"];
 
                     Color currentColor = Color.white;
                     float currentWidth = 1.0f;
