@@ -1,6 +1,6 @@
 visual: visual/plasmaFighter.yaml
 engine:
-  maxSpeed: 450
+  maxSpeed: 400
   acceleration   : 250  
 volume:
   aabbox:
@@ -10,9 +10,9 @@ weapon:
   0: weapons/plasmaSphereWeapon.yaml
   1: weapons/plasmaWeapon.yaml
 collidable:
-health: 30
+health: 90
 warhead:
-  damage: 45
+  damage: 70
   killsEntity: false
   
 spawner:

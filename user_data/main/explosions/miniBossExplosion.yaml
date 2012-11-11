@@ -1,0 +1,201 @@
+spawner:
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 0.0, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 1.57, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 0.785, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 2.355, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.02
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 0.392, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.02
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 1.177, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.02
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 1.962, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.02
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 2.747, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 0.196, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 0.588, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 0.981, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 1.373, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 1.766, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 2.158, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 2.551, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 2.942, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 6.28, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 3.14, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 4.71, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 3.925, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 5.495, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.02
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 3.532, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.02
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 4.317, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.02
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 5.102, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.02
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 5.887, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 3.336, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 3.728, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 4.121, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 4.513, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 4.906, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 5.298, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 5.691, 400.0]
+ - entity: explosions/miniBossFragment.yaml 
+   condition: periodic 0.25
+   delay: 0.04
+   components:
+     physics:
+       PRS: [[0.0, 0.0], 6.082, 400.0]
+       
+deathTimeout: 0.8

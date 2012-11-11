@@ -10,9 +10,9 @@ weapon:
   0: weapons/turtleLauncher.yaml
   1: weapons/stoperWeapon.yaml
 collidable:
-health: 400
+health: 500
 warhead:
-  damage: 65
+  damage: 200
   killsEntity: false
 dumbScript: dumbscripts/zigzag2.yaml
 
@@ -23,31 +23,15 @@ spawner:
       visual: visual/stoper.yaml
       physics: 
         position: [0, 0]
-  - entity: explosions/spiralSmall.yaml
+  - entity: explosions/miniBossExplosion.yaml
     condition: death 
     components:
       physics: 
-        position: [16, 0]
+        position: [0, 0]
         rotation: 0.0
-        speed: 16
-  - entity: explosions/spiralSmall.yaml
+  - entity: explosions/miniBossMicroExposion.yaml
     condition: death 
     components:
       physics: 
-        position: [-16, 0]
-        rotation: 3.14
-        speed: -16
-  - entity: explosions/spiralSmall.yaml
-    condition: death 
-    components:
-      physics: 
-        position: [2, 24]
+        position: [0, 0]
         rotation: 0.0
-        speed: 32
-  - entity: explosions/spiralSmall.yaml
-    condition: death 
-    components:
-      physics: 
-        position: [-2, 24]
-        rotation: 3.14
-        speed: -32

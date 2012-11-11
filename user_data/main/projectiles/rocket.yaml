@@ -8,4 +8,4 @@ volume:
     max: [2.5,  22]
 visual:   visual/rocket.yaml
 warhead:
-  damage: 45
+  damage: 40

@@ -4,12 +4,12 @@ vertices:
 
   #Main
   - width: 0.5
-  - color:  rgbaD0C098B0
+  - color:  rgbaE5FF6CB0
   - vertex: [-35, 0]
-  - color:  rgbaD0C098F0
+  - color:  rgbaE5FF6CF0
   - vertex: [0, 0]
   - vertex: [0, 0]
-  - color:  rgbaD0C098B0
+  - color:  rgbaE5FF6CB0
   - vertex: [35, 0]
 
   - vertex: [35, 0]

@@ -1,7 +1,7 @@
 visual: visual/diamondShooter.yaml
 engine:
-  maxSpeed: 350
-  acceleration: 500  
+  maxSpeed: 270
+  acceleration: 1000  
 volume:
   aabbox: 
     min: [-12, -12]
@@ -10,9 +10,9 @@ weapon:
   0: weapons/diamondWeapon.yaml
   1: weapons/diamondWeapon.yaml
 collidable:
-health: 30
+health: 60
 warhead:
-  damage: 80
+  damage: 50
   killsEntity: false
 
 spawner:

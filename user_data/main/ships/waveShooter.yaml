@@ -9,9 +9,9 @@ volume:
 weapon:
   0: weapons/waveLauncher.yaml
 collidable:
-health: 65
+health: 55
 warhead:
-  damage: 70
+  damage: 50
   killsEntity: false
 dumbScript: dumbscripts/arrows.yaml
 

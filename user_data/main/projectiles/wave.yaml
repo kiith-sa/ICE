@@ -8,4 +8,4 @@ volume:
     max: [16,  3]
 visual:   visual/wave.yaml
 warhead:
-  damage: 45
+  damage: 30

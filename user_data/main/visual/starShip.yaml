@@ -2,7 +2,7 @@ type: lines
 vertices:
   !!pairs
   - width:  0.5
-  - color:  rgbaE8FFE0D0
+  - color:  rgbaFDB14DD0
 
   - vertex: [-15.0, -15.0]
   - vertex: [15.0, -15.0]
@@ -32,7 +32,7 @@ vertices:
   - width:  2.5
   - color:  rgbaFFFF5048
   - vertex: [-15.0, -15.0]
-  - color:  rgbaFFFFFF48
+  - color:  rgbaFDB14D48
   - vertex: [15.0, -15.0]
 
   - vertex: [15.0, -15.0]
@@ -40,20 +40,20 @@ vertices:
   - vertex: [15.0, 15.0]
 
   - vertex: [15.0, 15.0]
-  - color:  rgbaFFFFFF48
+  - color:  rgbaFDB14D48
   - vertex: [-15.0, 15.0]
 
   - vertex: [-15.0, 15.0]
   - color:  rgbaFFFF5048
   - vertex: [-15.0, -15.0]
 
-  - color:  rgbaFFFFFF48
+  - color:  rgbaFDB14D48
   - vertex: [-21.22, 0.0]
   - color:  rgbaFFFF5048
   - vertex: [0.0, -21.22]
 
   - vertex: [0.0, -21.22]
-  - color:  rgbaFFFFFF48
+  - color:  rgbaFDB14D48
   - vertex: [21.22, 0.0]
 
   - vertex: [21.22, 0.0]
@@ -61,5 +61,5 @@ vertices:
   - vertex: [0.0, 21.22]
 
   - vertex: [0.0, 21.22]
-  - color:  rgbaFFFFFF48
+  - color:  rgbaFDB14D48
   - vertex: [-21.22, 0.0]
