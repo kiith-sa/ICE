@@ -17,9 +17,8 @@ Gameplay
 
 You move your ship around the screen while shooting enemies that attack you.
 A basic weapon allows you to shoot forward while, over the course of the 
-campaign, you get special weapons that can be used only once in a while,
-taking time to recharge. You get AP by destroying enemies, and can invest AP
-to upgrade the weapons.
+campaign, you get more weapons that can be used only once in a while,
+taking time to recharge (currently, these are always enabled).
 
 ^^^^^^^^
 Controls
@@ -33,7 +32,7 @@ Controls
 ``Space``        Fire weapon 1.
 ``J``            Fire weapon 2.
 ``K``            Fire weapon 3.
-``Scroll Lock``  Take screenshot (in ``~/.ice/main/screenshots/`` if installed,
+``Scroll-Lock``  Take screenshot (in ``~/.ice/main/screenshots/`` if installed,
                  or ``user_data/main/screenshots/`` in the game directory)
 ================ ==============================================================
 
