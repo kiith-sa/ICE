@@ -9,9 +9,9 @@ volume:
 weapon:
   0: weapons/peaLauncher.yaml
 collidable:
-health: 65
+health: 50
 warhead:
-  damage: 70
+  damage: 50
   killsEntity: false
 dumbScript: dumbscripts/arrows.yaml
 

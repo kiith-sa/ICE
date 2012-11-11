@@ -1,5 +1,5 @@
-burstPeriod: 0.30
-ammo: 3
+burstPeriod: 0.2
+ammo: 4
 reloadTime: 0.5
 burst:
   - entity: projectiles/stoperWeapon.yaml

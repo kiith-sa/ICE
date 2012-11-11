@@ -3,22 +3,22 @@ vertices:
   !!pairs
   - width: 1.6
   #Main body
-  - color:  rgbA0A038
+  - color:  rgbFDB14D
   - vertex: [0, -30.0]
-  - color:  rgbaA0A038AA
+  - color:  rgbaFDB14DAA
   - vertex: [-5, 0]
 
   - vertex: [-5, 0]
-  - color:  rgbaA0A038BB
+  - color:  rgbaFDB14DBB
   - vertex: [-20, -10]
 
   - color:  rgbA0A038
   - vertex: [0, -30.0]
-  - color:  rgbaA0A038AA
+  - color:  rgbaFDB14DAA
   - vertex: [5, 0]
 
   - vertex: [5, 0]
-  - color:  rgbaA0A038BB
+  - color:  rgbaFDB14DBB
   - vertex: [20, -10]
 
   - width: 1
@@ -27,18 +27,18 @@ vertices:
   - color:  rgbaF0F0D0C0
   - vertex: [0, 15]
 
-  - color:  rgbaA0A038BB
+  - color:  rgbaFDB14DBB
   - vertex: [20, -10]
   - color:  rgbaF0F0D0C0
   - vertex: [0, 15]
 
   #Back "antennas"
   - width: 0.5
-  - color:  rgbaA0A038BB
+  - color:  rgbaFDB14DBB
   - vertex: [-20, -10]
-  - color:  rgbaA0A03860
+  - color:  rgbaFDB14D60
   - vertex: [-20, -25]
-  - color:  rgbaA0A038BB
+  - color:  rgbaFDB14DBB
   - vertex: [20, -10]
-  - color:  rgbaA0A03860
+  - color:  rgbaFDB14D60
   - vertex: [20, -25]

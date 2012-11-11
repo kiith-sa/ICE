@@ -9,7 +9,7 @@ weapon:
   0: weapons/laser.yaml
   1: weapons/mediumPlasma.yaml
 collidable:
-health: 120
+health: 75
 warhead:
   damage: 80
   killsEntity: false

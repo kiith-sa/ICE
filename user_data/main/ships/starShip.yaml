@@ -10,9 +10,9 @@ weapon:
   0: weapons/starShipW1.yaml
   1: weapons/plasmaSphereWeapon.yaml
 collidable:
-health: 40
+health: 95
 warhead:
-  damage: 40
+  damage: 80
   killsEntity: false
 
 spawner:

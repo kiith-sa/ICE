@@ -1,11 +1,11 @@
 deathTimeout: 4.0
 engine:
-  maxSpeed       : 400
-  acceleration   : 200  
+  maxSpeed       : 450
+  acceleration   : 1000  
 volume:
   aabbox:
     min: [-12, -4]
     max: [12, 4]
 visual: visual/diamondBullet.yaml
 warhead:
-  damage: 80
+  damage: 45

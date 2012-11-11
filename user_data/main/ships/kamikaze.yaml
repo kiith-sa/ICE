@@ -1,0 +1,26 @@
+visual: visual/kamikaze.yaml
+engine:
+  maxSpeed: 1100
+volume:
+  aabbox: 
+    min: [-12.5, 15]
+    max: [12.5, 20]
+weapon:
+  0: weapons/kamikazeTail.yaml
+  1: weapons/thruster.yaml
+collidable:
+health: 100
+warhead:
+  damage: 180
+  killsEntity: false
+dumbScript: dumbscripts/kamikaze.yaml
+
+spawner:
+  - entity: explosions/miniBossMicroExposion.yaml
+    condition: death 
+    components:
+      deathTimeout: 1.2
+      physics: 
+        position: [0, 0]
+        rotation: 0.0
+        speed: 200

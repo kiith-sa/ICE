@@ -1,0 +1,16 @@
+type: lines
+vertices:
+  !!pairs
+  - width: 1.0
+  - color:  rgbaE64C4C80
+  - vertex: [0.0, -5.0]
+  - vertex: [5.0, 0.0]
+
+  - vertex: [5.0, 0.0]
+  - vertex: [0.0, 5.0]
+
+  - vertex: [0.0, 5.0]
+  - vertex: [-5.0, 0.0]
+
+  - vertex: [-5.0, 0.0]
+  - vertex: [0.0, -5.0]
