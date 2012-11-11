@@ -8,7 +8,7 @@ volume:
 weapon:
   0: weapons/rocketLauncher.yaml
 collidable:
-health: 100
+health: 80
 warhead:
   damage: 80
   killsEntity: false

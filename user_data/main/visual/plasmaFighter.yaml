@@ -28,7 +28,7 @@ vertices:
   - vertex: [-3.5, -3.5]
 
 #Inner part halo
-  - width:  4.0
+  - width:  3.0
   - color:  rgbaFFFFFF48
   - vertex: [-7.0, 0.0]
   - vertex: [0.0, -7.0]
@@ -50,7 +50,7 @@ vertices:
 
 #Outer part
   - width:  0.7
-  - color:  rgbaFFFFD0B0
+  - color:  rgbaFDB14DB0
   - vertex: [5.0, 10.0]
   - vertex: [10.0, -16.0]
 
@@ -63,8 +63,8 @@ vertices:
   - vertex: [10.0, -16.0]
 
 #Outer part halo
-  - width:  3.0
-  - color:  rgbaFFFFD038
+  - width:  4.0
+  - color:  rgbaFDB14D38
   - vertex: [5.0, 10.0]
   - vertex: [10.0, -16.0]
 

@@ -12,7 +12,7 @@ weapon:
 collidable:
 health: 75
 warhead:
-  damage: 80
+  damage: 70
   killsEntity: false
 
 spawner:

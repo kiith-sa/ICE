@@ -325,10 +325,32 @@ level:
   - wait: 1
   - wave: [arrowMiddle, [0.0, 0.0]]
   - wait: 3
+  - wave: [turtleRight, [100.0,  64.0]]
+  - wave: [turtleLeft,  [-100.0, 64.0]]
+  - wait: 1.5
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleLeft
+  - wait: 0.2
+  - wave: turtleLeft
+  - wait: 1
+  - wave: turtleRight
+  - wait: 0.2
+  - wave: turtleRight
+  - wait: 0.2
+  - wave: turtleRight
+  - wait: 2
+  - wave: [diamond, [150.0, 0.0]]
+  - wave: [diamond, [650.0, 0.0]]
+  - wave: [diamond, [400.0, 0.0]]
+  - wait: 4.5
   - wave: tritonSides
   - wait: 0.4
   - wave: [diamond, [400.0, 0.0]]
-  - wait: 5
+  - wait: 4
+  - wave: [turtleRight, [100.0,  64.0]]
+  - wave: [turtleLeft,  [-100.0, 64.0]]
+  - wait: 3.5
   - wave: [kamikaze, [150.0, 0.0]]
   - wait: 1.0
   - wave: [kamikaze, [480.0, 0.0]]

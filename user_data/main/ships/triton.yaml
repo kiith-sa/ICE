@@ -9,9 +9,9 @@ volume:
 weapon:
   0: weapons/tritonWeapon.yaml
 collidable:
-health: 85
+health: 75
 warhead:
-  damage: 75
+  damage: 70
   killsEntity: false
 dumbScript: dumbscripts/zigzag.yaml
 
