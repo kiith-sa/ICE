@@ -1,6 +1,6 @@
 visual: visual/playerShip.yaml
 engine:
-  maxSpeed: 350
+  maxSpeed: 500
   acceleration: 3500
 volume:
   aabbox: 
