@@ -51,6 +51,7 @@ import platform.platform;
 import time.gametime;
 import time.time;
 import util.frameprofiler;
+import util.resourcemanager;
 import util.signal;
 import util.yaml;
 import video.videodriver;
@@ -340,7 +341,7 @@ struct GameOverData
     bool gameWon;
 }
 
-///Class managing a single game between players.
+///Class managing a single game in a level.
 class Game
 {
     private:
@@ -407,6 +408,9 @@ class Game
 
         ///Game time subsystem, schedules updates.
         GameTime gameTime_;
+
+        /// Manages YAML file loading.
+        ResourceManager!YAMLNode yamlResourceManager_;
 
         ///Game entity system.
         EntitySystem entitySystem_;
@@ -566,16 +570,6 @@ class Game
             visualSystem_.videoDriver = rhs;
         }
 
-        ///Set the game data directory.
-        @property void gameDir(VFSDir rhs) 
-        {
-            gameDir_                  = rhs;
-            controllerSystem_.gameDir = rhs;
-            visualSystem_.gameDir     = rhs;
-            weaponSystem_.gameDir     = rhs;
-            spawnerSystem_.gameDir    = rhs;
-        }
-
         ///Get game area.
         @property static Rectf gameArea() nothrow {return gameArea_;}
 
@@ -588,14 +582,17 @@ class Game
          *          video       = Video driver used to draw the game.
          *          gameDir     = Game data directory.
          *          profile     = Profile of the current player.
+         *          yamlManager = Resource manager managing YAML files.
          *          levelSource = YAML source of the level to load.
          */
         this(Platform platform, GameGUI gui, VideoDriver video, VFSDir gameDir,
-             PlayerProfile profile, ref YAMLNode levelSource)
+             PlayerProfile profile, ResourceManager!YAMLNode yamlManager,
+             ref YAMLNode levelSource)
         {
-            gui_           = gui;
-            platform_      = platform;
-            playerProfile_ = profile;
+            gui_                 = gui;
+            platform_            = platform;
+            playerProfile_       = profile;
+            yamlResourceManager_ = yamlManager;
 
             scope(failure){clear(player0_);}
             player0_  = new HumanPlayer(platform_, "Human");
@@ -603,7 +600,8 @@ class Game
             initSystems();
 
             this.videoDriver = video;
-            this.gameDir     = gameDir;
+            gameDir_         = gameDir;
+            initYAML();
 
             scope(failure){destroySystems();}
 
@@ -725,6 +723,15 @@ class Game
                 clear(entitySystem_);
                 entitySystem_ = null;
             }
+        }
+
+        /// Pass yamlResourceManager_ to subsystems.
+        void initYAML()
+        {
+            weaponSystem_.yamlManager         = yamlResourceManager_;
+            spawnerSystem_.yamlManager        = yamlResourceManager_;
+            controllerSystem_.yamlManager     = yamlResourceManager_;
+            visualSystem_.yamlManager         = yamlResourceManager_;
         }
 
         /**
@@ -900,6 +907,7 @@ class GameContainer
          *          guiParent   = Parent for all GUI elements used by the game.
          *          videoDriver = Video driver to draw graphics with.
          *          gameDir     = Game data directory.
+         *          yamlManager = YAML resource manager.
          *          profile     = Profile of the current player.
          *          levelSource = YAML source of the level to load.
          *
@@ -912,6 +920,7 @@ class GameContainer
                      GUIElement guiParent,
                      VideoDriver videoDriver,
                      VFSDir gameDir,
+                     ResourceManager!YAMLNode yamlManager,
                      PlayerProfile profile,
                      ref YAMLNode levelSource)
         in
@@ -930,7 +939,8 @@ class GameContainer
                 gui_     = null;
                 monitor_ = null;
             }
-            game_ = new Game(platform, gui_, videoDriver, gameDir, profile, levelSource);
+            game_ = new Game(platform, gui_, videoDriver, gameDir, profile, 
+                             yamlManager, levelSource);
             monitor_.addMonitorable(game_.entitySystem_, "Entities");
             return game_;
         }

@@ -13,14 +13,13 @@ import std.algorithm;
 import std.conv;
 import std.math;
 
-import dgamevfs._;
-
 import ice.player;
 import math.vector2;
 import containers.fixedarray;
 import containers.lazyarray;
 import time.gametime;
 import util.frameprofiler;
+import util.resourcemanager;
 import util.yaml;
 
 import component.controllercomponent;
@@ -39,11 +38,11 @@ class ControllerSystem : System
         ///Entity system whose data we're processing.
         EntitySystem entitySystem_;
 
-        ///Game directory to load scripts from.
-        VFSDir gameDir_;
-
         ///Game time subsystem.
         const GameTime gameTime_;
+
+        ///Reference to the resource manager handling YAML loading.
+        ResourceManager!YAMLNode yamlManager_;
 
         /**
          * Simple script in YAML.
@@ -305,10 +304,12 @@ class ControllerSystem : System
             dumbScripts_.loaderDelegate(&loadDumbScript);
         }
 
-        ///Set the game directory to load scripts from.
-        @property void gameDir(VFSDir rhs) 
+        ///Provide a reference to the YAML resource manager. 
+        ///
+        ///Must be called at least once after construction.
+        @property void yamlManager(ResourceManager!YAMLNode rhs) @safe pure nothrow
         {
-            gameDir_ = rhs;
+            yamlManager_ = rhs;
         }
 
         /**
@@ -383,15 +384,18 @@ class ControllerSystem : System
             string fail(){return "Failed to load dumb script " ~ sourceName ~ ": ";}
             try
             {
-                YAMLNode yamlSource;
+                assert(yamlManager_ !is null, 
+                       "Trying to load a dumb script but YAML resource manager has not been set");
+
+                YAMLNode* yamlSource = yamlManager_.getResource(sourceName);
+                if(yamlSource is null)
                 {
-                    auto zone = Zone("DumbScript file reading & YAML parsing");
-                    yamlSource = loadYAML(gameDir_.file(sourceName));
+                    writeln(fail() ~ "Couldn't load YAML file " ~ sourceName);
+                    return false;
                 }
-                output = DumbScript(yamlSource);
+                output = DumbScript(*yamlSource);
             }
             catch(YAMLException e){writeln(fail(), e.msg); return false;}
-            catch(VFSException e) {writeln(fail(), e.msg); return false;}
             return true;
         }
 }

@@ -12,14 +12,13 @@ module component.weaponsystem;
 import std.algorithm;
 import std.typecons;
 
-import dgamevfs._;
-
 import containers.fixedarray;
 import containers.lazyarray;
 import math.vector2;
 import memory.memory;
 import time.gametime;
 import util.frameprofiler;
+import util.resourcemanager;
 import util.yaml;
 
 import component.controllercomponent;
@@ -96,8 +95,8 @@ class WeaponSystem : System
         ///Game time subsystem.
         const GameTime gameTime_;
 
-        ///Game directory to load weapons and projectiles from.
-        VFSDir gameDir_;
+        ///Reference to the resource manager handling YAML loading.
+        ResourceManager!YAMLNode yamlManager_;
 
         ///Lazily loads and stores weapon data.
         LazyArray!WeaponData weaponData_;
@@ -114,11 +113,12 @@ class WeaponSystem : System
             weaponData_.loaderDelegate = &loadWeaponData;
         }
 
-
-        ///Set game directory to load weapons and projectiles from.
-        @property void gameDir(VFSDir rhs) pure nothrow
+        ///Provide a reference to the YAML resource manager. 
+        ///
+        ///Must be called at least once after construction.
+        @property void yamlManager(ResourceManager!YAMLNode rhs) @safe pure nothrow
         {
-            gameDir_ = rhs;
+            yamlManager_ = rhs;
         }
 
         ///Fire weapons based on entities' controller components.
@@ -275,21 +275,19 @@ class WeaponSystem : System
             string fail(){return "Failed to load weapon data " ~ name ~ ": ";}
             try
             {
-                assert(gameDir_ !is null, 
-                       "Trying to load a weapon but game directory has not been set");
+                assert(yamlManager_ !is null, 
+                       "Trying to load a weapon but YAML resource manager has not been set");
 
-                YAMLNode yamlSource;
+                YAMLNode* yamlSource = yamlManager_.getResource(name);
+                if(yamlSource is null)
                 {
-                    auto zone  = Zone("Weapon data file reading & YAML parsing");
-                    yamlSource = loadYAML(gameDir_.file(name));
+                    writeln(fail() ~ "Couldn't load YAML file " ~ name);
+                    return false;
                 }
-                output.initialize(name, yamlSource);
+
+                output.initialize(name, *yamlSource);
             }
             catch(YAMLException e)
-            {
-                writeln(fail() ~ e.msg); return false;
-            }
-            catch(VFSException e) 
             {
                 writeln(fail() ~ e.msg); return false;
             }

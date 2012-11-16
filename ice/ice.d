@@ -44,6 +44,7 @@ import time.eventcounter;
 import math.vector2;
 import math.rect;
 import util.frameprofiler;
+import util.resourcemanager;
 import util.signal;
 import util.weaksingleton;
 import color;
@@ -254,6 +255,8 @@ class Ice
         Game game_;
         ///Root directory of the game's virtual file system.
         VFSDir gameDir_;
+        ///Manages loading of YAML files.
+        ResourceManager!YAMLNode yamlManager_;
         ///Root element of the GUI.
         GUIRoot guiRoot_;
         ///New GUI system (will replace guiRoot_)
@@ -271,7 +274,7 @@ class Ice
 
         ///Main ICE config file (YAML).
         YAMLNode config_;
-       
+
         ///Used for memory monitoring.
         MemoryMonitorable memory_;
 
@@ -306,6 +309,9 @@ class Ice
             initVideo();
             writeln("Initialized Video");
             scope(failure){destroyVideo();}
+            initResources();
+            scope(failure){destroyResources();}
+            writeln("Initialized resource management");
             initMonitor();
             writeln("Initialized Monitor");
             scope(failure){destroyMonitor();}
@@ -340,6 +346,7 @@ class Ice
             destroyCampaigns();
             destroyGUI();
             destroyMonitor();
+            destroyResources();
             destroyVideo();
             destroyPlatform();
 
@@ -656,6 +663,43 @@ class Ice
             }
         }
 
+        /// Initialize any globally used resource managers (aka "Loading").
+        void initResources()
+        {
+            bool yamlLoader(VFSFile file, out YAMLNode result)
+            {
+                try                    {result = loadYAML(file);}
+                catch(YAMLException e) {return false;}
+                return true;
+            }
+            VFSFile[] yamlFilter(VFSFiles files)
+            {
+                VFSFile[] result;
+                foreach(file; files)
+                {
+                    auto path = file.path;
+                    if(path.endsWith(".yaml") && 
+                       !path.canFind("logs/") &&
+                       !path.canFind("levels/") &&
+                       !path.canFind("profiles/") &&
+                       !path.canFind("gui/"))
+                    {
+                        result ~= file;
+                    }
+                }
+                return result;
+            }
+            yamlManager_ = 
+                new ResourceManager!YAMLNode(gameDir_, &yamlLoader, &yamlFilter);
+            yamlManager_.loadStrategy = LoadStrategy.AggressivePreload;
+        }
+
+        /// Destroy globally used resource managers.
+        void destroyResources()
+        {
+            clear(yamlManager_);
+        }
+
         ///Destroy Monitor subsystem.
         void destroyMonitor()
         {
@@ -698,6 +742,7 @@ class Ice
                                                guiRoot_.root,
                                                videoDriver_,
                                                gameDir_,
+                                               yamlManager_,
                                                profileManager_.currentProfile,
                                                levelSource);
                 if(null !is gameOverCallback)

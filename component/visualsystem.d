@@ -13,14 +13,13 @@ import std.algorithm;
 import std.conv;
 import std.stdio;
 
-import dgamevfs._;
-
 import color;
 import containers.lazyarray;
 import containers.fixedarray;
 import math.vector2;
 import memory.memory;
 import util.frameprofiler;
+import util.resourcemanager;
 import util.yaml;
 import video.videodriver;
 
@@ -80,8 +79,8 @@ class VisualSystem : System
         ///VideoDriver to draw VisualComponents with.
         VideoDriver videoDriver_;
 
-        ///Game directory to load video data from.
-        VFSDir gameDir_;
+        ///Reference to the resource manager handling YAML loading.
+        ResourceManager!YAMLNode yamlManager_;
 
         ///Lazily loads and stores visual data.
         LazyArray!VisualData visualData_;
@@ -115,24 +114,27 @@ class VisualSystem : System
         ///Set VideoDriver to draw VisualComponents with.
         @property void videoDriver(VideoDriver rhs) pure nothrow {videoDriver_ = rhs;}
 
-        ///Set the game directory to load video data from.
-        @property void gameDir(VFSDir rhs) 
-        {
-            gameDir_ = rhs;
 
-            import std.stdio;
-            //Load configuration from the game directory.
+        ///Provide a reference to the YAML resource manager. 
+        ///
+        ///Must be called at least once after construction.
+        @property void yamlManager(ResourceManager!YAMLNode rhs)
+        {
+            yamlManager_ = rhs;
+            //Load visual system configuration.
             try
             {
-                YAMLNode yaml = loadYAML(gameDir_.file("visualsystem.yaml"));
-                if(yaml.containsKey("drawVolumeComponents"))
+                YAMLNode* yaml = yamlManager_.getResource("visualsystem.yaml");
+                if(yaml is null)
                 {
-                    drawVolumeComponents_ = yaml["drawVolumeComponents"].as!bool;
+                    writeln("WARNING: Could not load VisualSystem configuration " ~
+                            "(maybe missing the visualsystem.yaml file?) ");
                 }
-            }
-            catch(VFSException e)
-            {
-                writeln("WARNING: Could not load VisualSystem configuration: ", e.msg);
+
+                if((*yaml).containsKey("drawVolumeComponents"))
+                {
+                    drawVolumeComponents_ = (*yaml)["drawVolumeComponents"].as!bool;
+                }
             }
             catch(YAMLException e)
             {
@@ -225,11 +227,16 @@ class VisualSystem : System
             string fail(){return "Failed to load visual data " ~ name ~ ": ";}
             try
             {
-                YAMLNode yamlSource;
+                assert(yamlManager_ !is null, 
+                       "Trying to load a visual component but YAML resource manager has not been set");
+
+                YAMLNode* yamlSourcePtr = yamlManager_.getResource(name);
+                if(yamlSourcePtr is null)
                 {
-                    auto zone = Zone("Visual component file reading & YAML parsing");
-                    yamlSource = loadYAML(gameDir_.file(name));
+                    writeln(fail() ~ "Couldn't load YAML file " ~ name);
+                    return false;
                 }
+                auto yamlSource = *yamlSourcePtr;
                 const type = yamlSource["type"].as!string;
                 if(type == "lines")
                 {
@@ -304,7 +311,6 @@ class VisualSystem : System
                 }
             }
             catch(YAMLException e){writeln(fail(), e.msg); return false;}
-            catch(VFSException e) {writeln(fail(), e.msg); return false;}
             return true;
         }
 }

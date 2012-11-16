@@ -9,10 +9,8 @@ module component.spawnersystem;
 
 
 import std.algorithm;
+import std.stdio;
 import std.typecons;
-
-import dgamevfs.exceptions;
-import dgamevfs.vfs;
 
 import component.controllercomponent;
 import component.entitysystem;
@@ -26,6 +24,7 @@ import math.vector2;
 import memory.memory;
 import time.gametime;
 import util.frameprofiler;
+import util.resourcemanager;
 import util.yaml;
 
 
@@ -67,8 +66,8 @@ class SpawnerSystem : System
         ///Number of used items in spawnStorage_.
         size_t spawnsUsed_;
 
-        ///Game data directory.
-        VFSDir gameDir_;
+        ///Reference to the resource manager handling YAML loading.
+        ResourceManager!YAMLNode yamlManager_;
 
     public:
         /**
@@ -106,10 +105,12 @@ class SpawnerSystem : System
             }
         }
 
-        ///Set game directory to load entities from.
-        @property void gameDir(VFSDir rhs) pure nothrow
+        ///Provide a reference to the YAML resource manager. 
+        ///
+        ///Must be called at least once after construction.
+        @property void yamlManager(ResourceManager!YAMLNode rhs) pure nothrow
         {
-            gameDir_ = rhs;
+            yamlManager_ = rhs;
         }
 
         void update()
@@ -277,22 +278,22 @@ class SpawnerSystem : System
         {
             try 
             {
-                assert(gameDir_ !is null, 
-                       "Trying to load an entity but game directory has not been set");
-                YAMLNode yamlSource;
+                assert(yamlManager_ !is null, 
+                       "Trying to load an entity but YAML resource manager has not been set");
+
+                YAMLNode* yamlSource = yamlManager_.getResource(name);
+                if(yamlSource is null)
                 {
-                    auto zone  = Zone("SpawnerSystem EntityPrototype file reading & YAML parsing");
-                    yamlSource = loadYAML(gameDir_.file(name));
+                    writeln("Couldn't load an entity from YAML file " ~ name);
+                    return false;
                 }
 
                 {
-                    auto zone = Zone("SpawnerSystem EntityPrototype allocation " ~ 
-                                     "(after loading from file)");
-                    output = alloc!EntityPrototype(name, yamlSource);
+                    auto zone = Zone("SpawnerSystem EntityPrototype allocation");
+                    output = alloc!EntityPrototype(name, *yamlSource);
                 }
             }
             catch(YAMLException e){return false;}
-            catch(VFSException e){return false;}
 
             return true;
         }
