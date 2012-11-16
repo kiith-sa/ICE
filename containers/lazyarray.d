@@ -111,7 +111,7 @@ struct LazyArray(T, ID = string)
         struct Item
         {
             ID id;
-            T value;
+            T value = void;
         }
 
         ///Allocated storage.
