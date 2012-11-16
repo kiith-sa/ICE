@@ -32,7 +32,7 @@
     - widget container:
         !!pairs
         - style:  {drawBorder: false}
-        - layout: {x: pLeft, y: 'pTop + 136', w: 'pWidth', h: ' 8 * 7 + 24 * 6'}
+        - layout: {x: pLeft, y: 'pTop + 136', w: 'pWidth', h: ' 8 * 8 + 24 * 7'}
         - widget button campaigns:
             !!pairs
             - style:         *bDefault
@@ -75,3 +75,10 @@
             - style active:  *bActive
             - layout: {x: 'pLeft + 8', y: 'pTop + 8 * 6 + 24 * 5', w: pWidth - 16, h: 24}
             - text: (DEBUG) Levels
+        - widget button reloadResources:
+            !!pairs
+            - style:         *bDefault
+            - style focused: *bFocused
+            - style active:  *bActive
+            - layout: {x: 'pLeft + 8', y: 'pTop + 8 * 7 + 24 * 6', w: pWidth - 16, h: 24}
+            - text: (DEBUG) Reload data

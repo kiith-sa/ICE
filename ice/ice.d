@@ -171,6 +171,8 @@ class IceGUI: SwappableGUI
         mixin Signal!() quit;
         ///Emitted when the player clicks the button to reset video mode.
         mixin Signal!() resetVideo;
+        ///Emitted when the player clicks the button to reload resources.
+        mixin Signal!() reloadResources;
 
         /**
          * Construct IceGUI with specified parameters.
@@ -208,6 +210,7 @@ class IceGUI: SwappableGUI
             iceGUI_.credits!ButtonWidget.pressed.connect({swapGUI_("credits");});
             iceGUI_.quit!ButtonWidget.pressed.connect(&quit.emit);
             iceGUI_.resetVideo!ButtonWidget.pressed.connect(&resetVideo.emit);
+            iceGUI_.reloadResources!ButtonWidget.pressed.connect(&reloadResources.emit);
 
             super(iceGUI_);
         }
@@ -219,6 +222,7 @@ class IceGUI: SwappableGUI
 
             quit.disconnectAll();
             resetVideo.disconnectAll();
+            reloadResources.disconnectAll();
         }
 
         ///Get the monitor widget.
@@ -551,6 +555,7 @@ class Ice
 
             gui_.quit.connect(&exit);
             gui_.resetVideo.connect(&resetVideoMode);
+            gui_.reloadResources.connect(&reloadResources);
 
             gameContainer_ = new GameContainer();
         }
@@ -844,6 +849,15 @@ class Ice
         void fpsUpdate(real fps)
         {
             platform_.windowCaption = "FPS: " ~ to!string(fps);
+        }
+
+        /// Return resource managers to state they were in after initialization.
+        ///
+        /// This results in any managed resources being loaded again.
+        void reloadResources()
+        {
+            destroyResources();
+            initResources();
         }
 
         ///Reset the video driver.
