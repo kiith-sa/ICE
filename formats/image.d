@@ -86,7 +86,7 @@ void writeImage(const ref Image image, VFSFile file,
  * Params:  image      = Image to read to. Any existing contents will be cleared.
  *          fileName   = File to read from.
  *          fileFormat = Image file format. Autodetected by default.
- *                        If the format can't be autodetected, PNG format is used.
+ *                       If the format can't be autodetected, PNG format is used.
  *
  * PNG is the only supported format at the moment (more formats may or may not be
  * added in future). Also, only 8-bit grayscale, 24-bit RGB and 32-bit RGBA color 
@@ -116,6 +116,7 @@ void readImage(ref Image image, VFSFile file,
         if(fileFormat == ImageFileFormat.PNG)
         {
             auto rawData = allocArray!ubyte(cast(size_t)file.bytes);
+            scope(exit) {free(rawData);}
             file.input.read(cast(void[])rawData);
             imageData = decodePNG(rawData, width, height, format);
         }
