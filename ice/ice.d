@@ -666,6 +666,18 @@ class Ice
         /// Initialize any globally used resource managers (aka "Loading").
         void initResources()
         {
+            // Display the loading screen.
+            videoDriver_.startFrame();
+            Image loadingScreen = Image(512, 512);
+            loadingScreen.generateStripes(32);
+            auto loadingScreenTexture = videoDriver_.createTexture(loadingScreen, true);
+            const width               = videoDriver_.screenWidth;
+            const height              = videoDriver_.screenHeight;
+            videoDriver_.drawTexture(Vector2i((width  - loadingScreen.width)  / 2, 
+                                              (height - loadingScreen.height) / 2),
+                                     loadingScreenTexture);
+            videoDriver_.endFrame();
+
             bool yamlLoader(VFSFile file, out YAMLNode result)
             {
                 try                    {result = loadYAML(file);}
