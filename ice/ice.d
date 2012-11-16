@@ -668,8 +668,27 @@ class Ice
         {
             // Display the loading screen.
             videoDriver_.startFrame();
-            Image loadingScreen = Image(512, 512);
-            loadingScreen.generateStripes(32);
+            Image loadingScreen;
+            // Load the loading screen image.
+            try
+            {
+                scope(failure)
+                {
+                    // Placeholder loading screen.
+                    loadingScreen = Image(512, 512);
+                    loadingScreen.generateStripes(32);
+                }
+                auto imageFile = gameDir_.dir("images").file("loading512.png");
+                readImage(loadingScreen, imageFile);
+            }
+            catch(VFSException e)
+            {
+                writeln("Failed to load the loading screen: " ~ e.msg);
+            } 
+            catch(ImageFileException e)
+            {
+                writeln("Failed to load the loading screen: " ~ e.msg);
+            }
             auto loadingScreenTexture = videoDriver_.createTexture(loadingScreen, true);
             const width               = videoDriver_.screenWidth;
             const height              = videoDriver_.screenHeight;
