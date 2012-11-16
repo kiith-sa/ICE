@@ -728,10 +728,10 @@ class Game
         /// Pass yamlResourceManager_ to subsystems.
         void initYAML()
         {
-            weaponSystem_.yamlManager         = yamlResourceManager_;
-            spawnerSystem_.yamlManager        = yamlResourceManager_;
-            controllerSystem_.yamlManager     = yamlResourceManager_;
-            visualSystem_.yamlManager         = yamlResourceManager_;
+            weaponSystem_.yamlManager     = yamlResourceManager_;
+            spawnerSystem_.yamlManager    = yamlResourceManager_;
+            controllerSystem_.yamlManager = yamlResourceManager_;
+            visualSystem_.yamlManager     = yamlResourceManager_;
         }
 
         /**
