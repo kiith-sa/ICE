@@ -43,7 +43,6 @@ public:
     /// Params:  name   = VFS file name of the music track to play.
     ///          repeat = Should the music track repeat infinitely?
     ///         
-    ///
     /// Throws: MusicInitException if the music file was not found,
     ///         was corrupted, or in unsupported format.
     void playMusic(string name, Flag!"repeat" repeat = Yes.repeat);
