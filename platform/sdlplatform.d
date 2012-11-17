@@ -52,7 +52,7 @@ class SDLPlatform : Platform
                 throw new PlatformException("Unsupported SDL version: " ~ e.msg);
             }
 
-            if(SDL_Init(SDL_INIT_VIDEO) < 0)
+            if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0)
             {
                 DerelictSDL.unload();
                 throw new PlatformException("Could not initialize SDL: " 
