@@ -725,17 +725,11 @@ class Ice
                 {
                     auto path = file.path;
                     if(path.endsWith(".yaml") && 
-                       (
-                       !path.canFind("logs/") &&
-                       !path.canFind("levels/") &&
-                       !path.canFind("profiles/") &&
-                       !path.canFind("gui\\") &&
-                       !path.canFind("logs\\") &&
-                       !path.canFind("levels\\") &&
-                       !path.canFind("profiles\\") &&
-                       !path.canFind("gui\\")))
+                       (!path.canFind("logs/") &&
+                        !path.canFind("levels/") &&
+                        !path.canFind("profiles/") &&
+                        !path.canFind("gui/")))
                     {
-                        writeln("Preloading ", path);
                         result ~= file;
                     }
                 }

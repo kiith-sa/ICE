@@ -9,6 +9,7 @@ module dgamevfs.util;
 
 
 import std.algorithm;
+import std.array;
 import std.path;
 
 import dgamevfs.exceptions;
@@ -26,12 +27,12 @@ bool noPackageSeparators(string path)
     return !path.canFind("::");
 }
 
-//Clean any leading "./" and trailing "/" from a filesystem path.
-string cleanFSPath(string path) pure
+//Clean any leading "./" and trailing "/" from a filesystem path, and replace "\" by "/".
+string cleanFSPath(string path)
 {
     while(path.startsWith("./")){path = path[2 .. $];}
     while(path.endsWith("/")){path = path[0 .. $ - 1];}
-    return path;
+    return path.replace("\\", "/");
 }
 
 /*
