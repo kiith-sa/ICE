@@ -626,7 +626,15 @@ class DumbLevel : Level
         ///Execute a Music instruction. Returns true on interrupt, false otherwise.
         bool executeMusic(ref Music instruction) 
         {
-            subsystems_.sound.playMusic(instruction.music);
+            try
+            {
+                subsystems_.sound.playMusic(instruction.music);
+            }
+            catch(MusicInitException e)
+            {
+                writeln("Failed to play music ", instruction.music, " : ", e.msg);
+                subsystems_.sound.haltMusic();
+            }
             nextInstruction();
             return false;
         }

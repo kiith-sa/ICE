@@ -101,6 +101,7 @@ public:
             SDL_FreeRW(musicRW_);
             Mix_HaltMusic();
             Mix_FreeMusic(music_);
+            music_ = null;
         }
         try
         {
