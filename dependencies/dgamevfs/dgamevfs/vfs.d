@@ -585,7 +585,7 @@ struct VFSFileInput
          *
          * Params:  target = Buffer to _read to.
          *
-         * Returns: Number of bytes _read.
+         * Returns: Slice of _target containing the read data.
          */
         void[] read(void[] target)
         {
