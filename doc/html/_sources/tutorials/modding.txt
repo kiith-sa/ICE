@@ -275,9 +275,10 @@ Creating a level
 Levels are described in YAML files found in the ``levels`` subdirectory of a mod
 directory.
 
-Currently, levels are standalone - there are no campaigns. Each level file name
-must be named in the ``levels.yaml`` file, which specifies levels to use in an
-in-game level browser.
+To play a level, you must add it to a campaign. Campaign are YAML files in the 
+``campaigns`` subdirectory of a mod directory. They are simple, sequential lists 
+of levels in the campaign. A new campaign can be created by simply adding another 
+campaign YAML file.
 
 A level is composed of definitions of "waves" (groups of enemies
 spawned simultaneously) and of a level script, which specifies when to 
