@@ -138,6 +138,7 @@ wave kamikaze:
 level:
   !!pairs
 
+  - music: music/level/Thy Steel Consumed.ogg
   - effect text:
       text: 42
       font: default 

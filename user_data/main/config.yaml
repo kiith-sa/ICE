@@ -8,3 +8,7 @@ frameProfiler:
   enabled:   true
   frameSkip: 0
   memoryMiB: 64
+sound:
+  # Likely to change
+  menuMusic: music/menu/ville_seppanen-1_g.ogg
+  musicVolume: 0.08

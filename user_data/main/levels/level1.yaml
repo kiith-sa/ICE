@@ -119,6 +119,7 @@ wave peaShooterUpperSides:
 level:
   !!pairs
 
+  - music: music/level/FoxSynergy - White Onyx_0.ogg
   - effect text:
       text: 42
       font: default 

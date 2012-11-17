@@ -253,6 +253,7 @@ wave outOfHit:
 level:
   !!pairs
 
+  - music: music/level/Не высовывайтесь из иллюминатора во время гиперпространственного прыжка (космическая).ogg
   - effect text:
       text: 42
       font: default 

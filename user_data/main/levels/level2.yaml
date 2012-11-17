@@ -199,7 +199,7 @@ wave arrowMiddle:
 
 level:
   !!pairs
-
+  - music: music/level/Recall of the Shadows.ogg
   - effect text:
       text: 42
       font: default 

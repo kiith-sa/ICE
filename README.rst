@@ -156,4 +156,8 @@ Contact/Credits
 ICE was created by Ferdinand Majerech aka Kiith-Sa kiithsacmp[AT]gmail.com,
 Libor Mališ, Dávid Horváth and Tomáš Nguyen.
 
+Main menu music by `Osmic <http://opengameart.org/users/osmic>`_.
+Level music by `Alexandr Zhelanov <http://opengameart.org/users/alexandr-zhelanov>`_ 
+and `FoxSynergy <http://opengameart.org/users/foxsynergy>`_.
+
 Parts of code based on the D port of the LodePNG library.
