@@ -25,6 +25,8 @@ import ice.exceptions;
 import ice.game;
 import ice.guiswapper;
 import ice.playerprofile;
+import audio.soundsystem;
+import audio.sdlmixersoundsystem;
 import gui.guielement;
 import gui2.buttonwidget;
 import gui2.exceptions;
@@ -41,6 +43,7 @@ import memory.memory;
 import memory.memorymonitorable;
 import formats.image;
 import time.eventcounter;
+import math.math;
 import math.vector2;
 import math.rect;
 import util.frameprofiler;
@@ -255,6 +258,8 @@ class Ice
         Platform platform_;
         ///Video driver.
         VideoDriver videoDriver_;
+        ///Sound system.
+        SoundSystem soundSystem_;
         ///Game.
         Game game_;
         ///Root directory of the game's virtual file system.
@@ -313,6 +318,9 @@ class Ice
             initVideo();
             writeln("Initialized Video");
             scope(failure){destroyVideo();}
+            initSound();
+            writeln("Initialized Sound");
+            scope(failure){destroySound();}
             initResources();
             scope(failure){destroyResources();}
             writeln("Initialized resource management");
@@ -351,6 +359,7 @@ class Ice
             destroyGUI();
             destroyMonitor();
             destroyResources();
+            destroySound();
             destroyVideo();
             destroyPlatform();
 
@@ -368,6 +377,8 @@ class Ice
 
             platform_.key.connect(&keyHandlerGlobal);
             platform_.key.connect(&keyHandler);
+
+            startMenuMusic();
 
             while(platform_.run() && continue_)
             {
@@ -568,7 +579,6 @@ class Ice
             clear(guiRoot_);
         }
 
-
         ///Allocate memory for the frame profiler and initialize it (if enabled).
         void initFrameProfiler()
         {
@@ -736,6 +746,28 @@ class Ice
             clear(yamlManager_);
         }
 
+        /// Initialize the sound subsystem.
+        void initSound()
+        {
+            soundSystem_ = new SDLMixerSoundSystem(gameDir_);
+            float volume = 0.08;
+            try
+            {
+                volume = clamp(config_["sound"]["musicVolume"].as!float, 0.0f, 1.0f);
+            }
+            catch(YAMLException e)
+            {
+                writeln("Music volume not found in config - using default");
+            }
+            soundSystem_.setMusicVolume(volume);
+        }
+
+        /// Destroy the sound subsystem.
+        void destroySound()
+        {
+            clear(soundSystem_);
+        }
+
         ///Destroy Monitor subsystem.
         void destroyMonitor()
         {
@@ -769,7 +801,7 @@ class Ice
                       void delegate(GameOverData) gameOverCallback = null)
         {
             platform_.key.disconnect(&keyHandler);
-
+            soundSystem_.haltMusic();
             guiSwapper_.setGUI(null);
             try
             {
@@ -780,6 +812,7 @@ class Ice
                                                gameDir_,
                                                yamlManager_,
                                                profileManager_.currentProfile,
+                                               soundSystem_,
                                                levelSource);
                 if(null !is gameOverCallback)
                 {
@@ -800,6 +833,7 @@ class Ice
         {
             gameContainer_.destroy();
             game_ = null;
+            startMenuMusic();
             platform_.key.connect(&keyHandler);
             guiSwapper_.setGUI("ice");
         }
@@ -978,5 +1012,26 @@ class Ice
             }
             catch(VFSException e){writeln("Screenshot saving error: " ~ e.msg);}
             catch(ImageFileException e){writeln("Screenshot saving error: " ~ e.msg);}
+        }
+
+        ///Start playing menu music.
+        void startMenuMusic()
+        {
+            try
+            {
+                soundSystem_.playMusic(config_["sound"]["menuMusic"].as!string);
+            }
+            catch(YAMLException e)
+            {
+                writeln("No menu music set in config: " ~ e.msg);
+                writeln("Disabling menu music");
+                soundSystem_.haltMusic();
+            }
+            catch(MusicInitException e)
+            {
+                writeln("Could not play menu music: " ~ e.msg);
+                writeln("Disabling menu music");
+                soundSystem_.haltMusic();
+            }
         }
 }

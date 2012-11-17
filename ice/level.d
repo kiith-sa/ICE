@@ -19,6 +19,7 @@ import std.variant;
 
 import dgamevfs._;
 
+import audio.soundsystem;
 import color;
 import component.entitysystem;
 import component.controllercomponent;
@@ -90,173 +91,7 @@ abstract class Level
 /**
  * Level implementation based on a dumb YAML script.
  *
- * A level is composed of definitions of "waves" (groups of enemies
- * spawned simultaneously) and of a level script, which specifies when to 
- * spawn a wave.
- *
- * Example:
- * --------------------
- * wave wave1:
- *   spawner:
- *     - entity: ships/enemy1.yaml 
- *       components:
- *         physics: 
- *             position: [360, 32]
- *     - entity: ships/playerShip.yaml
- *       components:
- *         physics: 
- *             position: [440, 64]
- *         dumbScript: dumbscripts/enemy1.yaml
- * 
- * level:
- *   !!pairs
- *   - wait: 2.0
- *   - wave: wave1
- *   - wait: 5.0
- *   - text: Lorem Ipsum  #at top or bottom of screen 
- *   - wait: 5.0
- *   - text: Level done!
- * --------------------
- *
- * Wave definition:
- *
- * A wave definition starts with a mapping key named $(B wave xxx) where xxx is 
- * the name of the wave. Wave names $(B must not contain spaces) .
- *
- * There can be any number of wave definitions, but there must not be two 
- * wave definitions with identical name.
- *
- * Waves contain units to be spawned when the wave command is used in the 
- * level. In ICE, waves are actually entities and are defined as entities.
- *
- * Thus, the units to spawn are specified in a spawner component, just like 
- * with an entity. Other components can be specified as well if needed, but 
- * that's not common.
- *
- * In this case, we spawn 2 units. We specify physics components for both 
- * (this is needed for the units to show up), and for one unit, we also 
- * specify the dumbScript component. Components specified here override 
- * the components specified in units' YAML files, so we can for instance change 
- * what weapons a unit is spawned with.
- *
- * Level script:
- *
- * The level script starts with a mapping key named $(B level), and is composed of
- * pairs of instructions and their parameters.
- *
- * Current DumbLevel instructions:
- *
- * wait:
- *
- * Example:
- * --------------------
- * - wait: 2.0 #Wait 2 seconds
- * --------------------
- * Wait for specified time, in seconds. Must not be negative.
- *
- *
- * wave:
- *
- * Examples:
- * --------------------
- * #Launch wave "wave1"
- * - wave: wave1 
- * #Launch wave "wave1" at offset [50, 100]
- * - wave: [wave1, [50, 100]] 
- * #Launch wave "wave1" at offset [100, 300], rotating it by 0.8 radians
- * - wave: 
- *     wave: wave2
- *     components:
- *       physics:
- *         position: [100, 300]
- *         rotation: 0.8
- * --------------------
- *
- * Launch wave defined in wave definition with specified name. The wave must be
- * defined.
- *
- * There are three ways to launch a wave, shown above. The first example simply
- * spawns the wave. The second example spawns the wave with an offset added to 
- * positions of spawned units.
- * Finally the third example spawns the wave, overriding its physics component,
- * utilizing the fact that the wave is really an entity. This can be used to 
- * create more complex scenarios.
- *
- * text:
- *
- * Example:
- *
- * --------------------
- * - text: Lorem Ipsum #Display specified text
- * --------------------
- *
- * Display specified text on the HUD.
- *
- *
- * effect:
- *
- * Examples:
- * --------------------
- * #Draws a huge red transparent "42" at the center of the screen for one second.
- * - effect text:
- *     text: 42
- *     font: default 
- *     fontSize: 512
- *     color: rgbaFF000080
- *     time: 1.0
- *     
- * #Draws random vertical lines quickly moving vertically through the screen.
- * #As time is not specified, they are drawn until the end of game.
- * - effect lines:
- *     minWidth: 0.6
- *     maxWidth: 1.0
- *     minLength: 16.0
- *     maxLength: 32.0
- *     verticalScrollingSpeed: 1500.0
- *     linesPerPixel: 0.000003
- *     detailLevel: 8
- *     color: rgbaF8F8ECA0
- * --------------------
- * 
- * Draw a graphics effect with specified parameters.
- *
- * Effect to draw is specified after "effect" in the instruction name, 
- * separated by space. 
- *
- * There are two effects to draw: text and lines.
- *
- * "text" draws a text in the center of the screen.
- *
- * Params:
- *     text     = Text to draw. This must be specified - there is no default.
- *     font     = Font to use. "default" is the default font. Default: "default"
- *     fontSize = Size of the font. Default: 28
- *     color    = Text color. Default: rgbaFFFFFFFF.
- *     time     = Time to display the text in seconds. 0 (default) means infinite.
- *
- * "lines" draws random lines on the screen tham might optionally vertically scroll.
- * 
- * This is used, for example, for the background scrolling "starfield" effect.
- *
- * Params:
- *     lineDirection = Line direction in radians. Default: 0
- *                     Note that this is not scrolling direction - that is always vertical -
- *                     it is the direction along which the lines are drawn.
- *     minWidth      = Minimum line width. Default: 1.0. Must be > 0.
- *     maxWidth      = Maximum line width. Default: 2.0. Must be > minWidth.
- *     minLength     = Minimum line length. Default: 1.0. Must be > 0.
- *     maxLength     = Maximum line length. Default: 10.0. Must be > minLength.
- *     linesPerPixel = Average number of lines drawn per "pixel" (1x1 game units)
- *                     of the screen. Default: 0.001 . Must be >= 0 and <= 1.
- *     detailLevel   = "Level of detail" of the effect. Higher values are less 
- *                     random, less "detailed" and consume less CPU power.
- *                     0 is maximum detail. Going below 16 is not advisable 
- *                     (although it might work, if there are few lines).
- *     color         = Text color. Default: rgbaFFFFFFFF.
- *     time          = Time to display the text in seconds. 0 (default) means infinite.
- *     verticalScrollingSpeed = Vertical scrolling speed of the lines.
- *                              Default: 250.0 . Use negative for opposite direction.
- *
+ * Described in more detail in modding documentation.
  */
 class DumbLevel : Level 
 {
@@ -508,6 +343,12 @@ class DumbLevel : Level
                 }
         }
 
+        ///Music start script instruction.
+        struct Music
+        {
+            ///Name of the music file to play.
+            string music;
+        }
 
         ///Single level script instruction.
         struct Instruction
@@ -520,7 +361,8 @@ class DumbLevel : Level
                     Wave, 
                     Wait, 
                     Text,
-                    Effect
+                    Effect,
+                    Music
                 }
 
             private:
@@ -529,10 +371,11 @@ class DumbLevel : Level
                 ///Instruction storage.
                 union
                 {
-                    Wave wave_;
-                    Wait wait_;
-                    Text text_;
+                    Wave   wave_;
+                    Wait   wait_;
+                    Text   text_;
                     Effect effect_;
+                    Music  music_;
                 }
                 ///Type of this instruction.
                 Type type_ = Type.Uninitialized;
@@ -559,6 +402,7 @@ class DumbLevel : Level
                     else static if(is(T == Wave))  {return wave_;}
                     else static if(is(T == Text))  {return text_;}
                     else static if(is(T == Effect)){return effect_;}
+                    else static if(is(T == Music)) {return music_;}
                     else static assert(false, "Unknown instruction type: " ~ T.stringof);
                 }
 
@@ -573,6 +417,7 @@ class DumbLevel : Level
                     else static if(is(T == Wave))  {return Type.Wave;}
                     else static if(is(T == Text))  {return Type.Text;}
                     else static if(is(T == Effect)){return Type.Effect;}
+                    else static if(is(T == Music)) {return Type.Music;}
                     else static assert(false, "Unknown instruction type: " ~ T.stringof);
                 }
         }
@@ -670,6 +515,7 @@ class DumbLevel : Level
                 case Instruction.Type.Wait:   return executeWait(instruction.as!Wait);
                 case Instruction.Type.Text:   return executeText(instruction.as!Text);
                 case Instruction.Type.Effect: return executeEffect(instruction.as!Effect);
+                case Instruction.Type.Music:  return executeMusic(instruction.as!Music);
             }
         }
 
@@ -777,6 +623,15 @@ class DumbLevel : Level
             return false;
         }
 
+        ///Execute a Music instruction. Returns true on interrupt, false otherwise.
+        bool executeMusic(ref Music instruction) 
+        {
+            //XXX DOCUMENT IN MODDING DOC
+            subsystems_.sound.playMusic(instruction.music);
+            nextInstruction();
+            return false;
+        }
+
         /**
          * Validate level script (called after loading the script).
          *
@@ -855,6 +710,7 @@ class DumbLevel : Level
                 case "wave":   levelScript_ ~= I(Wave(params));               break;
                 case "text":   levelScript_ ~= I(Text(params.as!string));     break;
                 case "effect": levelScript_ ~= I(Effect(this, name, params)); break; 
+                case "music":  levelScript_ ~= I(Music(params.as!string));    break; 
                 default:
                     throw new E("Unknown level instruction in level \"" ~ 
                                 name_ ~ "\": " ~ name_);

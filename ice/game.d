@@ -20,6 +20,7 @@ import std.typecons;
 
 import dgamevfs._;
 
+import audio.soundsystem;
 import color;
 import component.collisionsystem;
 import component.collisionresponsesystem;
@@ -327,6 +328,9 @@ struct GameSubsystems
             return game_.effectManager_;
         }
 
+        ///Get a reference to the sound system.
+        @property SoundSystem sound() pure nothrow {return game_.sound_;}
+
         ///Get the game area.
         @property Rectf gameArea() const nothrow {return game_.gameArea;}
 
@@ -399,6 +403,9 @@ class Game
 
         ///Game data directory.
         VFSDir gameDir_;
+
+        ///Reference to the sound system.
+        SoundSystem sound_;
 
         ///Profile of the player playing the game.
         PlayerProfile playerProfile_;
@@ -583,16 +590,18 @@ class Game
          *          gameDir     = Game data directory.
          *          profile     = Profile of the current player.
          *          yamlManager = Resource manager managing YAML files.
+         *          sound       = Reference to the sound system.
          *          levelSource = YAML source of the level to load.
          */
         this(Platform platform, GameGUI gui, VideoDriver video, VFSDir gameDir,
              PlayerProfile profile, ResourceManager!YAMLNode yamlManager,
-             ref YAMLNode levelSource)
+             SoundSystem sound, ref YAMLNode levelSource)
         {
             gui_                 = gui;
             platform_            = platform;
             playerProfile_       = profile;
             yamlResourceManager_ = yamlManager;
+            sound_               = sound;
 
             scope(failure){clear(player0_);}
             player0_  = new HumanPlayer(platform_, "Human");
@@ -909,6 +918,7 @@ class GameContainer
          *          gameDir     = Game data directory.
          *          yamlManager = YAML resource manager.
          *          profile     = Profile of the current player.
+         *          sound       = Reference to the sound system.
          *          levelSource = YAML source of the level to load.
          *
          * Returns: Produced Game.
@@ -922,6 +932,7 @@ class GameContainer
                      VFSDir gameDir,
                      ResourceManager!YAMLNode yamlManager,
                      PlayerProfile profile,
+                     SoundSystem sound,
                      ref YAMLNode levelSource)
         in
         {
@@ -940,7 +951,7 @@ class GameContainer
                 monitor_ = null;
             }
             game_ = new Game(platform, gui_, videoDriver, gameDir, profile, 
-                             yamlManager, levelSource);
+                             yamlManager, sound, levelSource);
             monitor_.addMonitorable(game_.entitySystem_, "Entities");
             return game_;
         }
