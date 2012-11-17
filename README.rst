@@ -65,41 +65,14 @@ ICE is written in D2, so it requires a working D2 compiler such as DMD or GDC.
 It also depends on Derelict, D:GameVFS and D:YAML, which are included for 
 convenience. SDL 1.2, FreeType and OpenGL are required through Derelict.
 
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Compiling/Installing on Linux
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^
+Installing
+^^^^^^^^^^
 
-First, ensure you have all dependencies, as specified above, installed.
+`From source code on Linux <https://github.com/kiith-sa/ICE/blob/master/docsrc/tutorials/install_source_linux.rst>`_
+`From source code on Windows <https://github.com/kiith-sa/ICE/blob/master/docsrc/tutorials/install_source_windows.rst>`_
 
-ICE uses a D script, ``cdc.d`` for compilation. In order to compile, you first 
-have to compile ``cdc.d`` by typing following commands, for dmd an gdc 
-respectively::
-
-   dmd cdc.d 
-
-   gdc cdc.d -o cdc 
-
-
-To compile ICE, use the following command, which will build the debug target.
-This should take about a minute with dmd, or a few minutes with gdc::
-    
-   ./cdc
-
-Alternatively, you can consult ``cdc --help`` for specific build targets - 
-you need the release target if you want to install using the install.sh script.
-
-If you don't want to install, you can run ICE from the package's top
-level directory by launching ``./ice-debug`` binary or binary of any
-other build target.
-
-To install, run following command as root (e.g. by using ``sudo``)::
-
-   ./install.sh
-
-This will copy the release binary to ``/usr/bin/ice.bin`` , and a simple
-launcher script to ``/usr/bin/ice``. Main game data will be copied
-to ``/usr/local/share/ice`` and ICE will create a ``.ice/`` subdirectory in
-your home directory.
+Installing tutorials can also be found in the `doc/html/tutorials` directory.
 
 -------
 License

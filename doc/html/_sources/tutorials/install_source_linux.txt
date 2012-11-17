@@ -23,11 +23,11 @@ Using DMD (Digital Mars D Compiler)
    
 3. Install ICE dependencies
 
-   ICE needs SDL 1.2 and FreeType to run, so install them with your package 
-   manager. It's possible that you already have them, as many projects depend 
-   on them. On Debian/Ubuntu::
+   ICE needs SDL 1.2, SDL-Mixer, Vorbis and FreeType to run, so install them 
+   with your package manager. It's possible that you already have them, as many
+   projects depend on them. On Debian/Ubuntu::
    
-      sudo apt-get install libsdl1.2debian libfreetype6
+      sudo apt-get install libsdl1.2debian libfreetype6 libsdl-mixer1.2 libvorbis0a
 
 
 4. Get ICE 

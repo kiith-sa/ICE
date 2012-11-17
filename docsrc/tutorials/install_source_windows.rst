@@ -50,8 +50,8 @@ Using DMD (Digital Mars D Compiler)
 
 4. Get ICE dependencies
 
-   ICE requires SDL and FreeType DLLs to run on Windows. Download the zip archive
-   from 
+   ICE requires DLLs of SDL, FreeType, SDL-Mixer (and its dependencies) to run 
+   on Windows. Download the zip archive from 
    `here <https://github.com/downloads/kiith-sa/ICE/ice_win32_dependencies.zip>`_ 
    and extract it to the folder folder you downloaded ICE source into (this is the
    folder that contains the ``cdc.d`` file).
