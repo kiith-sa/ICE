@@ -118,19 +118,17 @@ wave mixmax:
         physics: 
             position: [467, -57]
         dumbScript: dumbscripts/justKillPlayer.yaml
-    - entity: ships/starShip.yaml
+    - entity: ships/kamikaze.yaml
       components:
         physics: 
-            position: [190, -13]
-        dumbScript: dumbscripts/moveFire.yaml
+            position: [200.0, -50.0]
 
 wave onlyKillP:
   spawner:
-    - entity: ships/plasmaFighter.yaml
+    - entity: ships/kamikaze.yaml
       components:
         physics: 
-            position: [558, -25]
-        dumbScript: dumbscripts/wtf-sewing.yaml
+            position: [640.0, -50.0]
     - entity: ships/diamondShooter.yaml
       components:
         physics: 

@@ -10,9 +10,9 @@ weapon:
   0: weapons/turtleLauncher.yaml
   1: weapons/stoperWeapon.yaml
 collidable:
-health: 500
+health: 700
 warhead:
-  damage: 200
+  damage: 250
   killsEntity: false
 dumbScript: dumbscripts/zigzag2.yaml
 
