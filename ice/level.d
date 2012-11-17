@@ -626,7 +626,6 @@ class DumbLevel : Level
         ///Execute a Music instruction. Returns true on interrupt, false otherwise.
         bool executeMusic(ref Music instruction) 
         {
-            //XXX DOCUMENT IN MODDING DOC
             subsystems_.sound.playMusic(instruction.music);
             nextInstruction();
             return false;

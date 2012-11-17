@@ -162,10 +162,11 @@ void main(string[] args)
 
     if(targets.length == 0){targets = ["debug"];}
 
-    //No debugging symbols to avoid an OPTLINK bug on Windows.
+    //No debugging symbols to OPTLINK bugs on Windows.
     version(Windows)
     {
-        auto dbgNoUnittest   = ["-debug"];
+        auto dbgNoUnittest   = ["-release"];
+        /*auto dbgNoUnittest   = ["-debug"];*/
         auto no_contracts = ["-release"];
         /*auto release      = ["-O", "-inline", "-release"];*/
         auto release      = ["-inline", "-release"];
