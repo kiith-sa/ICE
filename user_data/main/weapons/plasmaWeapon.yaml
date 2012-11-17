@@ -1,6 +1,6 @@
-burstPeriod: 0.025
-ammo: 6
-reloadTime: 0.1
+burstPeriod: 0.04
+ammo: 5
+reloadTime: 0.2
 burst:
   - entity: projectiles/plasmaBullet.yaml 
     delay: 0.05
