@@ -78,6 +78,7 @@ Example::
          linesPerPixel: 0.0015
          detailLevel: 6
          color: rgbaD0D0FF24
+     - music: music/level/SomeMusicTrack.ogg
      - wait: 1.0
      - wave: turtlePawn
      - wait: 0.3
@@ -106,7 +107,8 @@ Example::
 
 This level starts with a barely visible ``text`` effect showing a large "42" in
 the center of the screen for one second. It also uses a ``lines`` effect which
-generates small scrolling lines, giving the impression of a starfield.
+generates small scrolling lines, giving the impression of a starfield.  Also at
+start, a music track from ``music/level/SomeMusicTrack.ogg`` starts to play.
 
 1 second after the level starts, a ``turtlePawn`` wave (defined above) is
 spawned. More ``turtlePawn`` waves are spawned in 0.3 second intervals, with
@@ -133,6 +135,9 @@ wave     Launch a wave, spawning its units. This spawns the wave entity.
          This instruction can be in one of multiple formats. These are described
          further below.
 wait     Wait for specified time in seconds. *Float*.
+music    Start playing specified music track. File name of the track in the ICE
+         virtual file system is specified.  The track should be in the 
+         *Ogg Vorbis* format, no other format is guaranteed to work. *String*.
 text     Display specified text for 3 seconds. *String*.
          **This should not be used - it is deprecated and will be replaced.**
 ======== =======================================================================
