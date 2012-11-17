@@ -23,6 +23,8 @@
 </div>
 <div class="navblock">
 <ul><li><a href="index.html">Main page</a></li>
+<li><a href="audio.sdlmixersoundsystem.html">audio.sdlmixersoundsystem</a></li>
+<li><a href="audio.soundsystem.html">audio.soundsystem</a></li>
 <li><a href="color.html">color</a></li>
 <li><a href="component.collidablecomponent.html">component.collidablecomponent</a></li>
 <li><a href="component.collisionresponsesystem.html">component.collisionresponsesystem</a></li>
@@ -43,6 +45,7 @@
 <li><a href="component.physicscomponent.html">component.physicscomponent</a></li>
 <li><a href="component.physicssystem.html">component.physicssystem</a></li>
 <li><a href="component.playercomponent.html">component.playercomponent</a></li>
+<li><a href="component.playersystem.html">component.playersystem</a></li>
 <li><a href="component.spatialsystem.html">component.spatialsystem</a></li>
 <li><a href="component.spawnercomponent.html">component.spawnercomponent</a></li>
 <li><a href="component.spawnersystem.html">component.spawnersystem</a></li>
@@ -86,6 +89,7 @@
 <li><a href="gui2.exceptions.html">gui2.exceptions</a></li>
 <li><a href="gui2.fixedlayout.html">gui2.fixedlayout</a></li>
 <li><a href="gui2.guisystem.html">gui2.guisystem</a></li>
+<li><a href="gui2.labelwidget.html">gui2.labelwidget</a></li>
 <li><a href="gui2.layout.html">gui2.layout</a></li>
 <li><a href="gui2.lineeditwidget.html">gui2.lineeditwidget</a></li>
 <li><a href="gui2.linestylemanager.html">gui2.linestylemanager</a></li>
@@ -95,10 +99,12 @@
 <li><a href="gui2.widget.html">gui2.widget</a></li>
 <li><a href="gui2.widgetutils.html">gui2.widgetutils</a></li>
 <li><a href="ice.html">ice</a></li>
+<li><a href="ice.campaign.html">ice.campaign</a></li>
 <li><a href="ice.credits.html">ice.credits</a></li>
 <li><a href="ice.exceptions.html">ice.exceptions</a></li>
 <li><a href="ice.game.html">ice.game</a></li>
 <li><a href="ice.graphicseffect.html">ice.graphicseffect</a></li>
+<li><a href="ice.guiswapper.html">ice.guiswapper</a></li>
 <li><a href="ice.hud.html">ice.hud</a></li>
 <li><a href="ice.ice.html">ice.ice</a></li>
 <li><a href="ice.level.html">ice.level</a></li>
@@ -109,6 +115,7 @@
 <li><a href="math.matrix4.html">math.matrix4</a></li>
 <li><a href="math.rect.html">math.rect</a></li>
 <li><a href="math.vector2.html">math.vector2</a></li>
+<li><a href="memory.allocator.html">memory.allocator</a></li>
 <li><a href="memory.memory.html">memory.memory</a></li>
 <li><a href="memory.memorymonitorable.html">memory.memorymonitorable</a></li>
 <li><a href="memprof.memprof.html">memprof.memprof</a></li>
@@ -129,6 +136,7 @@
 <li><a href="util.frameprofiler.html">util.frameprofiler</a></li>
 <li><a href="util.intervals.html">util.intervals</a></li>
 <li><a href="util.iterable.html">util.iterable</a></li>
+<li><a href="util.resourcemanager.html">util.resourcemanager</a></li>
 <li><a href="util.signal.html">util.signal</a></li>
 <li><a href="util.stringctfe.html">util.stringctfe</a></li>
 <li><a href="util.traits.html">util.traits</a></li>
@@ -257,6 +265,11 @@
 <dd><p>Get a reference to the graphics effect manager.</p>
 
 </dd>
+<dt class="d_decl">pure nothrow @property SoundSystem <a name="sound"></a><span class="ddoc_psymbol">sound</span>();
+</dt>
+<dd><p>Get a reference to the <a name="sound"></a><span class="ddoc_psymbol">sound</span> system.</p>
+
+</dd>
 <dt class="d_decl">const nothrow @property Rectf <a name="gameArea"></a><span class="ddoc_psymbol">gameArea</span>();
 </dt>
 <dd><p>Get the game area.</p>
@@ -269,9 +282,20 @@
 </dd>
 </dl>
 </dd>
+<dt class="d_decl">struct <a name="GameOverData"></a><span class="ddoc_psymbol">GameOverData</span>;
+</dt>
+<dd><p>Stores various data about the end of a game.</p>
+
+<dl><dt class="d_decl">bool <a name="gameWon"></a><span class="ddoc_psymbol">gameWon</span>;
+</dt>
+<dd><p>Did the player win the game?</p>
+
+</dd>
+</dl>
+</dd>
 <dt class="d_decl">class <a name="Game"></a><span class="ddoc_psymbol">Game</span>;
 </dt>
-<dd><p>Class managing a single game between players.</p>
+<dd><p>Class managing a single game in a level.</p>
 
 <dl><dt class="d_decl">enum <a name="PlayerState"></a><span class="ddoc_psymbol">PlayerState</span>;
 </dt>
@@ -321,11 +345,6 @@
 <dd><p>Set the VideoDriver used to draw game.</p>
 
 </dd>
-<dt class="d_decl">@property void <a name="gameDir"></a><span class="ddoc_psymbol">gameDir</span>(VFSDir <b>rhs</b>);
-</dt>
-<dd><p>Set the game data directory.</p>
-
-</dd>
 <dt class="d_decl">static nothrow @property Rectf <a name="gameArea"></a><span class="ddoc_psymbol">gameArea</span>();
 </dt>
 <dd><p>Get game area.</p>
@@ -337,7 +356,7 @@
 </dt>
 <dd><p>Container managing dependencies and construction of Game.</p>
 
-<dl><dt class="d_decl">Game <a name="produce"></a><span class="ddoc_psymbol">produce</span>(Platform <b>platform</b>, MonitorManager <b>monitor</b>, GUIElement <b>guiParent</b>, VideoDriver <b>videoDriver</b>, VFSDir <b>gameDir</b>, PlayerProfile <b>profile</b>, const string <b>levelName</b>);
+<dl><dt class="d_decl">Game <a name="produce"></a><span class="ddoc_psymbol">produce</span>(Platform <b>platform</b>, MonitorManager <b>monitor</b>, GUIElement <b>guiParent</b>, VideoDriver <b>videoDriver</b>, VFSDir <b>gameDir</b>, ResourceManager!(Node) <b>yamlManager</b>, PlayerProfile <b>profile</b>, SoundSystem <b>sound</b>, ref YAMLNode <b>levelSource</b>);
 </dt>
 <dd><p>Produce a Game and return a reference to it.
 </p>
@@ -351,10 +370,14 @@
 <td valign=top>Video driver to draw graphics with.</td></tr>
 <tr><td valign=top>VFSDir <b>gameDir</b></td>
 <td valign=top>Game data directory.</td></tr>
+<tr><td valign=top>ResourceManager!(Node) <b>yamlManager</b></td>
+<td valign=top>YAML resource manager.</td></tr>
 <tr><td valign=top>PlayerProfile <b>profile</b></td>
 <td valign=top>Profile of the current player.</td></tr>
-<tr><td valign=top>string <b>levelName</b></td>
-<td valign=top>Name of the level to load.</td></tr>
+<tr><td valign=top>SoundSystem <b>sound</b></td>
+<td valign=top>Reference to the <b>sound</b> system.</td></tr>
+<tr><td valign=top>YAMLNode <b>levelSource</b></td>
+<td valign=top>YAML source of the level to load.</td></tr>
 </table></div>
 <b>Returns:</b><div class="pbr">Produced Game.
 

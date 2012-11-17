@@ -23,6 +23,8 @@
 </div>
 <div class="navblock">
 <ul><li><a href="index.html">Main page</a></li>
+<li><a href="audio.sdlmixersoundsystem.html">audio.sdlmixersoundsystem</a></li>
+<li><a href="audio.soundsystem.html">audio.soundsystem</a></li>
 <li><a href="color.html">color</a></li>
 <li><a href="component.collidablecomponent.html">component.collidablecomponent</a></li>
 <li><a href="component.collisionresponsesystem.html">component.collisionresponsesystem</a></li>
@@ -43,6 +45,7 @@
 <li><a href="component.physicscomponent.html">component.physicscomponent</a></li>
 <li><a href="component.physicssystem.html">component.physicssystem</a></li>
 <li><a href="component.playercomponent.html">component.playercomponent</a></li>
+<li><a href="component.playersystem.html">component.playersystem</a></li>
 <li><a href="component.spatialsystem.html">component.spatialsystem</a></li>
 <li><a href="component.spawnercomponent.html">component.spawnercomponent</a></li>
 <li><a href="component.spawnersystem.html">component.spawnersystem</a></li>
@@ -86,6 +89,7 @@
 <li><a href="gui2.exceptions.html">gui2.exceptions</a></li>
 <li><a href="gui2.fixedlayout.html">gui2.fixedlayout</a></li>
 <li><a href="gui2.guisystem.html">gui2.guisystem</a></li>
+<li><a href="gui2.labelwidget.html">gui2.labelwidget</a></li>
 <li><a href="gui2.layout.html">gui2.layout</a></li>
 <li><a href="gui2.lineeditwidget.html">gui2.lineeditwidget</a></li>
 <li><a href="gui2.linestylemanager.html">gui2.linestylemanager</a></li>
@@ -95,10 +99,12 @@
 <li><a href="gui2.widget.html">gui2.widget</a></li>
 <li><a href="gui2.widgetutils.html">gui2.widgetutils</a></li>
 <li><a href="ice.html">ice</a></li>
+<li><a href="ice.campaign.html">ice.campaign</a></li>
 <li><a href="ice.credits.html">ice.credits</a></li>
 <li><a href="ice.exceptions.html">ice.exceptions</a></li>
 <li><a href="ice.game.html">ice.game</a></li>
 <li><a href="ice.graphicseffect.html">ice.graphicseffect</a></li>
+<li><a href="ice.guiswapper.html">ice.guiswapper</a></li>
 <li><a href="ice.hud.html">ice.hud</a></li>
 <li><a href="ice.ice.html">ice.ice</a></li>
 <li><a href="ice.level.html">ice.level</a></li>
@@ -109,6 +115,7 @@
 <li><a href="math.matrix4.html">math.matrix4</a></li>
 <li><a href="math.rect.html">math.rect</a></li>
 <li><a href="math.vector2.html">math.vector2</a></li>
+<li><a href="memory.allocator.html">memory.allocator</a></li>
 <li><a href="memory.memory.html">memory.memory</a></li>
 <li><a href="memory.memorymonitorable.html">memory.memorymonitorable</a></li>
 <li><a href="memprof.memprof.html">memprof.memprof</a></li>
@@ -129,6 +136,7 @@
 <li><a href="util.frameprofiler.html">util.frameprofiler</a></li>
 <li><a href="util.intervals.html">util.intervals</a></li>
 <li><a href="util.iterable.html">util.iterable</a></li>
+<li><a href="util.resourcemanager.html">util.resourcemanager</a></li>
 <li><a href="util.signal.html">util.signal</a></li>
 <li><a href="util.stringctfe.html">util.stringctfe</a></li>
 <li><a href="util.traits.html">util.traits</a></li>
@@ -166,25 +174,19 @@
 <dl><dt class="d_decl">alias <a name="YAMLNode"></a><span class="ddoc_psymbol">YAMLNode</span>;
 </dt>
 <dd><p><b>TODO:</b><br>
-</p>
-<p><b>AWESOME:</b><br>
-FrameProfiler could output arguments for
-     memprof filter --time
-     based on zones. So we could get an exact list of allocations happening within
-     a frame. We could even use this to drill down to deeper zones
-     once we get a general idea to find out precise causes of allocations.
-     Maybe even in a Perf-style CLI app.
+Commands TODO:
+ #. memprof-filter with a particular zone
 <br>
 
-     One (ASAP) good way to use this would be to filter the
-     worst frames, and get allocations for those.
-<br>
-
-     This needs "top" command,
-     and then "memprof-filter --frames"
-<br>
-
- Commands TODO:
+ #. accumulate:
+    Different merge modes: if multiple instances of the same zone
+    in a "zones" of a parent zone, sum all these instances,
+    (count them as a single "total" zone)
+    or process them separately (current mergeZones behavior)
+    (this changes averages/maximums between frames -
+     i.e. is maximum calculated from a sum of all instances
+     of the subzone in a zone or from each of them separately?)
+    That is: --mergeZones=total vs --mergeZones=separate
 <br>
 
  #. Filter frames:
@@ -193,13 +195,11 @@ FrameProfiler could output arguments for
     filter by frame duration (all frames about 16 ms)
 <br>
 
- #. Top:
-    Also getting e.g. 5 or 5% of most expensive frames.
-<br>
-
  #, Filter zones:
     Zone name by regex. So we can get e.g.
     all occurences of zone X in all frames, but no other zones.
+    Also filter by duration (e.g. ignore all zones below e.g. 1microsec)
+    And maybe by duration percentage? (ignore zones below e.g. 0.5% of parent zone)
 <br>
 
  #. Distribution (frames):
@@ -279,6 +279,34 @@ FrameProfiler could output arguments for
 <dt class="d_decl">@property ref YAMLNode <a name="frameProfile"></a><span class="ddoc_psymbol">frameProfile</span>();
 </dt>
 <dd><p>Get the memory log loaded from YAML.</p>
+
+</dd>
+<dt class="d_decl">static Node[] <a name="topFrames"></a><span class="ddoc_psymbol">topFrames</span>(ref YAMLNode <b>frames</b>, bool delegate(ref Node, ref Node) <b>less</b>, const ulong <b>topCount</b>);
+</dt>
+<dd><p>Get the <b>topCount</b> greatest <b>frames</b> sorted by specified <b>less</b> function.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>YAMLNode <b>frames</b></td>
+<td valign=top>Frames to process.</td></tr>
+<tr><td valign=top>bool delegate(ref Node, ref Node) <b>less</b></td>
+<td valign=top>Comparison function to sort the <b>frames</b>.</td></tr>
+<tr><td valign=top>ulong <b>topCount</b></td>
+<td valign=top>Number of <b>frames</b> to get.</td></tr>
+</table></div>
+<b>Returns:</b><div class="pbr">An array of <b>topCount</b> greatest <b>frames</b>.</div>
+
+</dd>
+<dt class="d_decl">static YAMLNode <a name="accumulateFrames"></a><span class="ddoc_psymbol">accumulateFrames</span>(ref YAMLNode <b>frames</b>, Flag!("<b>mergeZones</b>") <b>mergeZones</b>);
+</dt>
+<dd><p>Accumulate data from all <b>frames</b> into a single "total" frame.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>YAMLNode <b>frames</b></td>
+<td valign=top>Frames to accumulate</td></tr>
+<tr><td valign=top>Flag!("<b>mergeZones</b>") <b>mergeZones</b></td>
+<td valign=top>If there are multiple identical child zones in a
+                       parent zone, should they be merged into a single
+                       "total" zone? (Otherwise, they will be numbered).</td></tr>
+</table></div>
+<b>Throws:</b><div class="pbr">YAMLException if a frame or zone has unexpected format.</div>
 
 </dd>
 </dl>
