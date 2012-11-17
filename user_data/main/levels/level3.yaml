@@ -280,8 +280,6 @@ level:
   - wave: jetLeft
   - wait: 5
   - wave: tritonMiddle
-  - wave: [diamond, [200.0, 0.0]]
-  - wave: [diamond, [650.0, 0.0]]
   - wait: 3.5
   - wave: [jetRight, [-50.0, 0.0]]
   - wait: 0.25
@@ -293,7 +291,6 @@ level:
   - wave: [turtleLeft,  [-100.0, 64.0]]
   - wait: 0.5
   - wave: [diamond, [150.0, 0.0]]
-  - wave: [diamond, [650.0, 0.0]]
   - wave: [diamond, [400.0, 0.0]]
   - wait: 3.5
   - wave: tritonMiddle
@@ -341,7 +338,6 @@ level:
   - wave: turtleRight
   - wait: 2
   - wave: [diamond, [150.0, 0.0]]
-  - wave: [diamond, [650.0, 0.0]]
   - wave: [diamond, [400.0, 0.0]]
   - wait: 4.5
   - wave: tritonSides
