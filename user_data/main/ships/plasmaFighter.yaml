@@ -10,7 +10,7 @@ weapon:
   0: weapons/plasmaSphereWeapon.yaml
   1: weapons/plasmaWeapon.yaml
 collidable:
-health: 90
+health: 75
 warhead:
   damage: 70
   killsEntity: false

@@ -5,12 +5,12 @@ burst:
   - entity: ships/turtle.yaml 
     components: 
       physics: 
-        position: [45.0, 12.5]
+        position: [47.0, 12.5]
         spawnAbsolute: [velocity]
       dumbScript: dumbscripts/turtleLaunchedLeft.yaml
   - entity: ships/turtle.yaml 
     components: 
       physics:
-        position: [-45.0, 12.5] 
+        position: [-47.0, 12.5] 
         spawnAbsolute: [velocity]
       dumbScript: dumbscripts/turtleLaunchedRight.yaml

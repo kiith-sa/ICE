@@ -1,29 +1,25 @@
 !!pairs
 - for 0.25:
     move-direction: 0.2
+    move-speed: 0.8
 - for 0.4:
     move-direction: -0.3
+    move-speed: 0.8
 - for 0.4:
     move-direction: 0.01
-- for 0.5:
-    move-direction: 0.5
-    move-speed: 0.7
-- for 0.3:
-    move-direction: -0.5
+    move-speed: 0.8
 - for 0.3:
     move-direction: 0.92
     fire: [1]
-- for 0.9:
+- for 0.5:
     move-direction: -0.75
     fire: [0]
-- for 0.25:
-    move-direction: 0.2
-- for 0.2:
-    move-direction: -0.2
 - for 0.2:
     move-direction: 0.4
+    move-speed: 0.7
 - for 0.2:
     move-direction: -0.4
+    move-speed: 0.7
 - for 0.4:
     fire: [0]
 - for 0.2:

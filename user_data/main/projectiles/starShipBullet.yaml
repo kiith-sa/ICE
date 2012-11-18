@@ -1,11 +1,11 @@
 deathTimeout: 4.0
 engine:
-  maxSpeed       : 1500
-  acceleration   : 1800  
+  maxSpeed       : 1000
+  acceleration   : 1100  
 volume:
   aabbox:
     min: [-10, -10]
     max: [10, 10]
 visual: visual/starShipBullet.yaml
 warhead:
-  damage: 40
+  damage: 35

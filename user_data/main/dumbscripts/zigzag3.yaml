@@ -18,17 +18,24 @@
     fire: [0]
 
 - for 2.0:
-    move-direction: 2.0
+    move-direction: 2.5
+    move-speed: 0.6
     fire: [1]
 - for 0.5:
     fire: [0]
 
-- for 1.5:
-    move-direction: 0.5
+- for 1.0:
+    move-direction: 1.0
     fire: [1]
 - for 0.5:
     fire: [0]
 
-- for 8.0:
-    move-direction: 0
+- for 1.0:
+    move-direction: -0.5
+    fire: [1]
+- for 0.5:
+    fire: [0]
+
+- for 5.0:
+    move-direction: 0.0
 - die:
