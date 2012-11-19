@@ -18,7 +18,6 @@ import containers.vector;
 import math.math;
 import math.rect;
 import math.vector2;
-import time.gametime;
 import video.videodriver;
 import util.signal;
 
@@ -49,9 +48,9 @@ abstract class GraphicsEffect
          * Draw the effect.
          *
          * Params:  video    = VideoDriver to draw the effect with.
-         *          gameTime = Game time subsystem to get current time.
+         *          gameTime = Current game time.
          */
-        void draw(VideoDriver video, const GameTime gameTime);
+        void draw(VideoDriver video, const real gameTime);
 
     private:
         ///Are we done drawing this effect?
@@ -78,10 +77,10 @@ abstract class GraphicsEffect
  * 
  * GraphicsEffect effect = new RandomLinesEffect(gameTime_.gameTime,
  * (const real startTime,
- *  const GameTime gameTime, 
+ *  const real currentTime, 
  *  ref RandomLinesEffect.Parameters params)
  * {
- *     const double timeRatio = (gameTime.gameTime - startTime) / 3.0;
+ *     const double timeRatio = (currentTime - startTime) / 3.0;
  *     if(timeRatio > 1.0){return true;}
  *     params.bounds   = Game.gameArea;
  *     params.minWidth = 0.3;
@@ -152,8 +151,8 @@ class RandomLinesEffect : GraphicsEffect
         ///Parameters of the effect.
         Parameters parameters_;
 
-        ///Delegate that controls effect parameters based on passed start time and game time.
-        const bool delegate(const real, const GameTime, ref Parameters) controlDelegate_;
+        ///Delegate that controls effect parameters based on passed start time and current time.
+        const bool delegate(const real, const real, ref Parameters) controlDelegate_;
 
         ///Game time when the effect was constructed.
         const real startTime_;
@@ -164,14 +163,14 @@ class RandomLinesEffect : GraphicsEffect
     public:
         ///Construct a RandomLinesEffect starting at startTime using controlDelegate to set its parameters.
         this(const real startTime, 
-             bool delegate(const real, const GameTime, ref Parameters) controlDelegate) 
+             bool delegate(const real, const real, ref Parameters) controlDelegate) 
         {
             startTime_ = startTime;
             controlDelegate_ = controlDelegate;
             randomGenerator_ = CheapRandomGenerator(32768);
         }
 
-        override void draw(VideoDriver video, const GameTime gameTime)
+        override void draw(VideoDriver video, const real gameTime)
         {
             //Get the parameters.
             done_ = controlDelegate_(startTime_, gameTime, parameters_);
@@ -189,7 +188,7 @@ class RandomLinesEffect : GraphicsEffect
             //incrementing seed for every row.
             //When the effect scrolls, the rows' seeds scroll accordingly.
 
-            uint seed  = -round!uint(gameTime.gameTime * parameters_.verticalScrollingSpeed / skip);
+            uint seed  = -round!uint(gameTime * parameters_.verticalScrollingSpeed / skip);
             //We're not necessarily iterating each "pixel", so update per-pixel probability
             //with skip in mind.
             const lineProbability = parameters_.linesPerPixel * skip ^^ 2;
@@ -262,10 +261,10 @@ class RandomLinesEffect : GraphicsEffect
  * 
  * GraphicsEffect effect = new TextEffect(gameTime_.gameTime,
  *    (const real startTime,
- *     const GameTime gameTime, 
+ *     const currentTime, 
  *     ref TextEffect.Parameters params)
  *    {
- *        const double timeRatio = (gameTime.gameTime - startTime) / 1.5;
+ *        const double timeRatio = (currentTime - startTime) / 1.5;
  *        if(timeRatio > 1.0){return true;}
  * 
  *        auto gameOver = "GAME OVER";
@@ -311,7 +310,7 @@ class TextEffect : GraphicsEffect
         Parameters parameters_;
 
         ///Delegate that controls effect parameters based on passed start time and game time.
-        const bool delegate(const real, const GameTime, ref Parameters) controlDelegate_;
+        const bool delegate(const real, const real, ref Parameters) controlDelegate_;
 
         ///Game time when the effect was constructed.
         const real startTime_;
@@ -319,13 +318,13 @@ class TextEffect : GraphicsEffect
     public:
         ///Construct a TextEffect starting at startTime using controlDelegate to set its parameters.
         this(const real startTime, 
-             bool delegate(const real, const GameTime, ref Parameters) controlDelegate) pure nothrow
+             bool delegate(const real, const real, ref Parameters) controlDelegate) pure nothrow
         {
             startTime_ = startTime;
             controlDelegate_ = controlDelegate;
         }
 
-        override void draw(VideoDriver video, const GameTime gameTime)
+        override void draw(VideoDriver video, const real gameTime)
         {
             done_ = controlDelegate_(startTime_, gameTime, parameters_);
             if(done_){return;}
@@ -355,15 +354,15 @@ class GraphicsEffectManager
             clear(effects_);
         }
 
-        ///Draw graphics effects with specified video driver and game time subsystem.
-        void draw(VideoDriver video, const GameTime gameTime)
+        ///Draw graphics effects with specified video driver and current time.
+        void draw(VideoDriver video, const real currentTime)
         {
             //Must keep track of expired effects to destroy them.
             Vector!(void*) expired;
 
             foreach(effect; effects_)
             {
-                effect.draw(video, gameTime);
+                effect.draw(video, currentTime);
 
                 if(effect.done)
                 {

@@ -178,10 +178,10 @@ class DumbLevel : Level
                 union
                 {
                     ///Control delegate for the Lines effect.
-                    bool delegate(const real, const GameTime, 
+                    bool delegate(const real, const real, 
                                   ref RandomLinesEffect.Parameters) linesDeleg;
                     ///Control delegate for the Text effect.
-                    bool delegate(const real, const GameTime, 
+                    bool delegate(const real, const real, 
                                   ref TextEffect.Parameters) textDeleg;
                 }
 
@@ -268,10 +268,10 @@ class DumbLevel : Level
                     //Create a control delegate for the effect.
                     linesDeleg = 
                     (const real startTime,
-                     const GameTime gameTime, 
+                     const real currentTime,
                      ref RandomLinesEffect.Parameters params)
                     {
-                        const timeRatio = (gameTime.gameTime - startTime) / time;
+                        const timeRatio = (currentTime - startTime) / time;
                         //0 is infinite time
                         if(time != 0.0f && timeRatio > 1.0){return true;}
 
@@ -318,10 +318,10 @@ class DumbLevel : Level
                     //Create a control delegate for the effect.
                     textDeleg =
                     (const real startTime,
-                     const GameTime gameTime, 
+                     const real currentTime, 
                      ref TextEffect.Parameters params)
                     {
-                        const timeRatio = (gameTime.gameTime - startTime) / time;
+                        const timeRatio = (currentTime - startTime) / time;
                         //0 is infinite time
                         if(time != 0.0f && timeRatio > 1.0){return true;}
 

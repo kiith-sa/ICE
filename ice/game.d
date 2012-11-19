@@ -564,7 +564,7 @@ class Game
 
             {
                 auto zone = Zone("Effect manager draw");
-                effectManager_.draw(videoDriver_, gameTime_);
+                effectManager_.draw(videoDriver_, gameTime_.gameTime);
             }
 
             return true;
@@ -822,10 +822,10 @@ class Game
             //Game over enlarging text effect.
             GraphicsEffect effect = new TextEffect(gameTime_.gameTime,
                (const real startTime,
-                const GameTime gameTime, 
+                const real currentTime,
                 ref TextEffect.Parameters params)
                {
-                   const double timeRatio = (gameTime.gameTime - startTime) / 1.0;
+                   const double timeRatio = (currentTime - startTime) / 1.0;
                    if(timeRatio > 1.0){return true;}
 
                    auto gameOver = success ? "LEVEL DONE" : "GAME OVER";
@@ -868,10 +868,10 @@ class Game
             //after that.
             effect = new RandomLinesEffect(gameTime_.gameTime,
             (const real startTime,
-             const GameTime gameTime, 
+             const real currentTime,
              ref RandomLinesEffect.Parameters params)
             {
-                const double timeRatio = (gameTime.gameTime - startTime) / 2.0;
+                const double timeRatio = (currentTime - startTime) / 2.0;
                 if(timeRatio > 1.0){return true;}
                 params.bounds   = Game.gameArea;
                 params.minWidth = 0.3;
