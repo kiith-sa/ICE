@@ -25,6 +25,7 @@ import time.time;
  */
 void frameProfilerPause()
 {
+    if(state_ == FrameProfilerState.Stopped){return;}
     assert(currentZoneLevel_ == 0, "Can't pause frame profiler while recording a frame");
     // Already stopped, or, not even profiling - don't bother pausing.
     if(state_ == FrameProfilerState.Stopped || 
@@ -42,6 +43,7 @@ void frameProfilerPause()
  */
 void frameProfilerResume()
 {
+    if(state_ == FrameProfilerState.Stopped){return;}
     assert(currentZoneLevel_ == 0, "Can't resume frame profiler while recording a frame");
     // Already stopped, or, not even profiling - don't bother resuming.
     if(state_ == FrameProfilerState.Stopped || 
