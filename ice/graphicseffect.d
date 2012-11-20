@@ -12,6 +12,7 @@ module ice.graphicseffect;
 import std.algorithm;
 import std.math : fmod;
 import std.random;
+import std.typecons;
 
 import color;
 import containers.vector;
@@ -20,7 +21,9 @@ import math.rect;
 import math.vector2;
 import video.videodriver;
 import util.signal;
+import util.frameprofiler;
 
+//XXX XXX INSERT ZONES HERE NOW!
 
 /**
  * Base class for procedural graphics effects.
@@ -37,27 +40,27 @@ import util.signal;
  */
 abstract class GraphicsEffect
 {
-    protected:
-        ///Are we done drawing this effect?
-        bool done_ = false;
+protected:
+    ///Are we done drawing this effect?
+    bool done_ = false;
 
-    public:
-        mixin Signal!() onExpired;
+public:
+    mixin Signal!() onExpired;
 
-        /**
-         * Draw the effect.
-         *
-         * Params:  video    = VideoDriver to draw the effect with.
-         *          gameTime = Current game time.
-         */
-        void draw(VideoDriver video, const real gameTime);
+    /**
+     * Draw the effect.
+     *
+     * Params:  video    = VideoDriver to draw the effect with.
+     *          gameTime = Current game time.
+     */
+    void draw(VideoDriver video, const real gameTime);
 
-    private:
-        ///Are we done drawing this effect?
-        final @property bool done() const pure nothrow {return done_;}
+private:
+    ///Are we done drawing this effect?
+    final @property bool done() const pure nothrow {return done_;}
 
-        ///Expire the effect, emitting the onExpired signal. Called before destruction.
-        final void expire() {onExpired.emit();}
+    ///Expire the effect, emitting the onExpired signal. Called before destruction.
+    final void expire() {onExpired.emit();}
 }
 
 /**
@@ -99,148 +102,173 @@ abstract class GraphicsEffect
  */
 class RandomLinesEffect : GraphicsEffect 
 {
-    public:
-        ///Parameters of a text effect.
-        struct Parameters 
+public:
+    ///Parameters of a text effect.
+    struct Parameters 
+    {
+        ///Bounds of the area where the lines are drawn.
+        Rectf bounds   = Rectf(0.0f, 0.0f, 100.0f, 100.0f);
+        ///Direction of the lines. Must be a unit (length == 1) vector.
+        Vector2f lineDirection = Vector2f(0.0f, 1.0f);
+        ///Minimum line width.
+        float minWidth = 0.1f;
+        ///Maximum line width. Must be > minWidth.
+        float maxWidth = 10.0f;
+        ///Minimum line length.
+        float minLength = 16.0f;
+        ///Maximum line length. Must be > minLength.
+        float maxLength = 64.0f;
+        /**
+         * Average number of lines per "pixel" of area specified by bounds. 
+         *
+         * "Pixel" is a square of distance of 1.0 unit.
+         * Must be <= 1.0;
+         */
+        float linesPerPixel = 0.001f;
+        ///Speed of vertical scrolling in units per second.
+        float verticalScrollingSpeed = 0.0f;
+
+        /**
+         * Higher values result in less random, less "detailed" effect but less overhead.
+         *
+         * 0 is "full" detail and rather CPU-intensive. 
+         * 1 is less detail but a lot cheaper performance-wise.
+         * Higher values are even cheaper.
+         */
+        uint detailLevel = 2;
+        ///Color of lines.
+        Color color    = rgb!"FFFFFF";
+
+        ///Determine if all of the parameters are valid.
+        bool valid() const pure nothrow
         {
-            ///Bounds of the area where the lines are drawn.
-            Rectf bounds   = Rectf(0.0f, 0.0f, 100.0f, 100.0f);
-            ///Direction of the lines. Must be a unit (length == 1) vector.
-            Vector2f lineDirection = Vector2f(0.0f, 1.0f);
-            ///Minimum line width.
-            float minWidth = 0.1f;
-            ///Maximum line width. Must be > minWidth.
-            float maxWidth = 10.0f;
-            ///Minimum line length.
-            float minLength = 16.0f;
-            ///Maximum line length. Must be > minLength.
-            float maxLength = 64.0f;
-            /**
-             * Average number of lines per "pixel" of area specified by bounds. 
-             *
-             * "Pixel" is a square of distance of 1.0 unit.
-             * Must be <= 1.0;
-             */
-            float linesPerPixel = 0.001f;
-            ///Speed of vertical scrolling in units per second.
-            float verticalScrollingSpeed = 0.0f;
+            return bounds.valid &&
+                   minWidth > 0.0f && minWidth <= maxWidth && maxWidth > 0.0f &&
+                   minLength > 0.0f && minLength <= maxLength && maxLength > 0.0f &&
+                   linesPerPixel >= 0.0f && linesPerPixel <= 1.0f  &&
+                   equals(lineDirection.length, 1.0f);
+        }
+    }
 
-            /**
-             * Higher values result in less random, less "detailed" effect but less overhead.
-             *
-             * 0 is "full" detail and rather CPU-intensive. 
-             * 1 is less detail but a lot cheaper performance-wise.
-             * Higher values are even cheaper.
-             */
-            uint detailLevel = 2;
-            ///Color of lines.
-            Color color    = rgb!"FFFFFF";
+private:
+    ///Parameters of the effect.
+    Parameters parameters_;
 
-            ///Determine if all of the parameters are valid.
-            bool valid() const pure nothrow
+    ///Delegate that controls effect parameters based on passed start time and current time.
+    const bool delegate(const real, const real, ref Parameters) controlDelegate_;
+
+    ///Game time when the effect was constructed.
+    const real startTime_;
+
+    ///Random number generator we're using. Must be cheap and fast, not perfect.
+    CheapRandomGenerator randomGenerator_;
+
+public:
+    ///Construct a RandomLinesEffect starting at startTime using controlDelegate to set its parameters.
+    this(const real startTime, 
+         bool delegate(const real, const real, ref Parameters) controlDelegate) 
+    {
+        startTime_ = startTime;
+        controlDelegate_ = controlDelegate;
+        randomGenerator_ = CheapRandomGenerator(32768);
+    }
+
+    override void draw(VideoDriver video, const real gameTime)
+    {
+        auto zone = Zone("RandomLinesEffect draw");
+        //Get the parameters.
+        done_ = controlDelegate_(startTime_, gameTime, parameters_);
+        if(done){return;}
+
+        assert(parameters_.valid, "Invalid RandomLinesEffect parameters");
+
+        video.lineAA = true;
+        const boundsInt = parameters_.bounds.to!int;
+
+        //Skip rows and columns based on detail level.
+        const skip = parameters_.detailLevel + 1;
+        //We're not storing any of the lines. Rather,
+        //we're computing RNG seed based on vertical scrolling speed and
+        //incrementing seed for every row.
+        //When the effect scrolls, the rows' seeds scroll accordingly.
+
+        uint seed  = -round!uint(gameTime * parameters_.verticalScrollingSpeed / skip);
+        //We're not necessarily iterating each "pixel", so update per-pixel probability
+        //with skip in mind.
+
+        const pixelProbability = parameters_.linesPerPixel * skip ^^ 2;
+        const rowProbability = pixelProbability * (boundsInt.width / skip);
+
+        // Precompute what we can here 
+        // (We should probably remove this once optimized or GDC build works)
+        const halfSkip            = 0.5 * skip;
+        const widthRange          = parameters_.maxWidth  - parameters_.minWidth;
+        const lengthRange         = parameters_.maxLength - parameters_.minLength;
+
+        auto loopZone = Zone("RandomLinesEffect draw geneartion loop");
+
+        const rowLength = (boundsInt.max.x - boundsInt.min.x) / skip;
+        //Processing "pixels" within boundsInt and generating lines' centers.
+        for(int y = boundsInt.min.y; y < boundsInt.max.y; y += skip, ++seed)
+        {
+            randomGenerator_.seed(seed);
+
+            auto random = randomGenerator_.random();
+            auto linesInRow = rowLength * pixelProbability - (rowProbability / (boundsInt.width / skip)) * 2.0 * random;
+            // Prevents low-probability lines from not appearing at all.
+            if(random <= rowProbability)
             {
-                return bounds.valid &&
-                       minWidth > 0.0f && minWidth <= maxWidth && maxWidth > 0.0f &&
-                       minLength > 0.0f && minLength <= maxLength && maxLength > 0.0f &&
-                       linesPerPixel >= 0.0f && linesPerPixel <= 1.0f  &&
-                       equals(lineDirection.length, 1.0f);
+                linesInRow += 1.0f;
+            }
+            const linesInRowInt = cast(uint) linesInRow;
+            for (size_t l = 0; l < linesInRowInt; ++l) with(parameters_)
+            {
+                random = randomGenerator_.random();
+                random *= 10.0f;
+                random -= cast(uint)random;
+
+                const column = cast(uint)(random * (rowLength - 1) + 0.5f);
+                linesInRow -= 1.0f;
+
+                const x = boundsInt.min.x + skip * column;
+
+                //Get line width.
+                //Optimization: Getting a random number by stripping the first digit of previous random.
+                random *= 10.0f;
+                random -= cast(uint)random;
+                const width = minWidth + widthRange * random;
+                video.lineWidth = width;
+
+                //Get line length.
+                //Optimization: Getting a random number by stripping the first digit of previous random.
+                random *= 10.0f;
+                random -= cast(uint)random;
+                const halfLength = 0.5f * (minLength + lengthRange * random);
+
+                //Randomly nudge x, y of each line by a 
+                //random value, at most skip / 2
+                //Optimization: Getting a random number by stripping the first digit of previous random.
+                random *= 10.0f;
+                random -= cast(uint)random;
+                const xNudge = skip * random - halfSkip;
+                //Optimization: Getting a random number by stripping the first digit of previous random.
+                random *= 10.0f;
+                random -= cast(uint)random;
+                const yNudge = skip * random - halfSkip;
+                const center = Vector2f(x + xNudge, y + yNudge);
+
+                //Finally, draw the line.
+                video.drawLine(center - halfLength * lineDirection,
+                               center + halfLength * lineDirection,
+                               color,
+                               color);
             }
         }
 
-    private:
-        ///Parameters of the effect.
-        Parameters parameters_;
-
-        ///Delegate that controls effect parameters based on passed start time and current time.
-        const bool delegate(const real, const real, ref Parameters) controlDelegate_;
-
-        ///Game time when the effect was constructed.
-        const real startTime_;
-
-        ///Random number generator we're using. Must be cheap and fast, not perfect.
-        CheapRandomGenerator randomGenerator_;
-
-    public:
-        ///Construct a RandomLinesEffect starting at startTime using controlDelegate to set its parameters.
-        this(const real startTime, 
-             bool delegate(const real, const real, ref Parameters) controlDelegate) 
-        {
-            startTime_ = startTime;
-            controlDelegate_ = controlDelegate;
-            randomGenerator_ = CheapRandomGenerator(32768);
-        }
-
-        override void draw(VideoDriver video, const real gameTime)
-        {
-            //Get the parameters.
-            done_ = controlDelegate_(startTime_, gameTime, parameters_);
-            if(done){return;}
-
-            assert(parameters_.valid, "Invalid RandomLinesEffect parameters");
-
-            video.lineAA = true;
-            const bounds = parameters_.bounds.to!int;
-
-            //Skip rows and columns based on detail level.
-            const skip = parameters_.detailLevel + 1;
-            //We're not storing any of the lines. Rather,
-            //we're computing RNG seed based on vertical scrolling speed and
-            //incrementing seed for every row.
-            //When the effect scrolls, the rows' seeds scroll accordingly.
-
-            uint seed  = -round!uint(gameTime * parameters_.verticalScrollingSpeed / skip);
-            //We're not necessarily iterating each "pixel", so update per-pixel probability
-            //with skip in mind.
-            const lineProbability = parameters_.linesPerPixel * skip ^^ 2;
-
-            //Processing "pixels" within bounds and generating lines' centers.
-            for(int y = bounds.min.y; y < bounds.max.y; y += skip, ++seed)
-            {
-                randomGenerator_.seed(seed);
-
-                for(int x = bounds.min.x; x < bounds.max.x; x += skip) 
-                {
-                    const random = randomGenerator_.random();
-                    if(random < lineProbability) with(parameters_)
-                    {
-                        //Get line width.
-                        //Optimization: Getting a random number by applying modulo to random.
-                        const widthRatio = (10.0f / lineProbability) * 
-                                           fmod(random, lineProbability * 0.1f);
-                        const width = minWidth + (maxWidth - minWidth) * widthRatio;
-                        video.lineWidth = width;
-
-                        //Get line length.
-                        //Optimization: Getting a random number by applying modulo to random.
-                        const lengthRatio = (100.0f / lineProbability) * 
-                                            fmod(random, lineProbability * 0.01f);
-                        const halfLength = 0.5f * (minLength + (maxLength - minLength) * lengthRatio);
-
-                        //Randomly nudge x, y of each line by a 
-                        //random value, at most skip / 2
-                        //Optimization: Getting a random number by applying modulo to random.
-                        const xNudge = skip * (1000.0f / lineProbability) * 
-                                       fmod(random, lineProbability * 0.001f)
-                                       - skip * 0.5f;
-                        //Optimization: Getting a random number by applying modulo to random.
-                        const yNudge = skip * (10000.0f / lineProbability) * 
-                                       fmod(random, lineProbability * 0.0001f)
-                                       - skip * 0.5f;
-                        const center = Vector2f(x + xNudge, y + yNudge);
-
-                        //Finally, draw the line.
-                        video.drawLine(center - halfLength * lineDirection,
-                                       center + halfLength * lineDirection,
-                                       color, 
-                                       color);
-                    }
-                }
-            }
-
-            //Restore video driver state.
-            video.lineWidth = 1.0f;
-            video.lineAA = false;
-        }
+        //Restore video driver state.
+        video.lineWidth = 1.0f;
+        video.lineAA = false;
+    }
 }
 
 
@@ -289,50 +317,51 @@ class RandomLinesEffect : GraphicsEffect
  */
 class TextEffect : GraphicsEffect
 {
-    public:
-        ///Parameters of a text effect.
-        struct Parameters 
-        {
-            ///Text to draw.
-            string text = "DUMMY";
-            ///Font to draw with.
-            string font = "default";
-            ///Left-upper corner of the text on screen.
-            Vector2i offset;
-            ///Font size.
-            uint fontSize;
-            ///Font color.
-            Color color;
-        }
+public:
+    ///Parameters of a text effect.
+    struct Parameters 
+    {
+        ///Text to draw.
+        string text = "DUMMY";
+        ///Font to draw with.
+        string font = "default";
+        ///Left-upper corner of the text on screen.
+        Vector2i offset;
+        ///Font size.
+        uint fontSize;
+        ///Font color.
+        Color color;
+    }
 
-    private:
-        ///Parameters of the effect.
-        Parameters parameters_;
+private:
+    ///Parameters of the effect.
+    Parameters parameters_;
 
-        ///Delegate that controls effect parameters based on passed start time and game time.
-        const bool delegate(const real, const real, ref Parameters) controlDelegate_;
+    ///Delegate that controls effect parameters based on passed start time and game time.
+    const bool delegate(const real, const real, ref Parameters) controlDelegate_;
 
-        ///Game time when the effect was constructed.
-        const real startTime_;
+    ///Game time when the effect was constructed.
+    const real startTime_;
 
-    public:
-        ///Construct a TextEffect starting at startTime using controlDelegate to set its parameters.
-        this(const real startTime, 
-             bool delegate(const real, const real, ref Parameters) controlDelegate) pure nothrow
-        {
-            startTime_ = startTime;
-            controlDelegate_ = controlDelegate;
-        }
+public:
+    ///Construct a TextEffect starting at startTime using controlDelegate to set its parameters.
+    this(const real startTime, 
+         bool delegate(const real, const real, ref Parameters) controlDelegate) pure nothrow
+    {
+        startTime_ = startTime;
+        controlDelegate_ = controlDelegate;
+    }
 
-        override void draw(VideoDriver video, const real gameTime)
-        {
-            done_ = controlDelegate_(startTime_, gameTime, parameters_);
-            if(done_){return;}
+    override void draw(VideoDriver video, const real gameTime)
+    {
+        auto zone = Zone("TextEffect draw");
+        done_ = controlDelegate_(startTime_, gameTime, parameters_);
+        if(done_){return;}
 
-            video.fontSize = parameters_.fontSize;
-            video.font     = parameters_.font;
-            video.drawText(parameters_.offset, parameters_.text, parameters_.color);
-        }
+        video.fontSize = parameters_.fontSize;
+        video.font     = parameters_.font;
+        video.drawText(parameters_.offset, parameters_.text, parameters_.color);
+    }
 }
 
 
