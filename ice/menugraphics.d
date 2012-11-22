@@ -6,6 +6,8 @@
 module ice.menugraphics;
 
 
+import std.typecons;
+
 import color;
 import ice.graphicseffect;
 import math.vector2;
@@ -29,7 +31,7 @@ public:
 
         // Small background lines.
         effectManager_ = new GraphicsEffectManager();
-        auto effect = new RandomLinesEffect(getTime(),
+        auto smallLines = new RandomLinesEffect(getTime(),
         (const real startTime, const real currentTime,
          ref RandomLinesEffect.Parameters params)
         {
@@ -47,7 +49,7 @@ public:
             return false;
         });
         // Larger, less frequent lines.
-        auto effect2 = new RandomLinesEffect(getTime(),
+        auto largeLines = new RandomLinesEffect(getTime(),
         (const real startTime, const real currentTime,
          ref RandomLinesEffect.Parameters params)
         {
@@ -64,8 +66,38 @@ public:
             params.color = rgba!"F8F8EC98";
             return false;
         });
-        effectManager_.addEffect(effect);
-        effectManager_.addEffect(effect2);
+
+        // Scrolling text in the background.
+        auto scrollingText = new ScrollingTextLinesEffect(getTime(),
+        (const real startTime, const real currentTime,
+         ref ScrollingTextLinesEffect.Parameters params)
+        {
+            params.lineStrings       = 
+            [
+              "1",
+              "2",
+              "3",
+              "4",
+              "5",
+              "6",
+              "7",
+              "8",
+              "9",
+              "10"
+            ];
+            params.randomOrder    = Yes.randomOrder;
+            params.position       = Vector2i(16, -16);
+            params.scrollingSpeed = -100.0f;
+            params.fontColor      = rgba!"E8E8FF90";
+            params.fontSize       = 12;
+            params.randomOrder    = No.randomOrder;
+            params.font           = "orbitron-bold.ttf";
+            params.lineCount      = 48;
+            return false;
+        });
+        effectManager_.addEffect(smallLines);
+        effectManager_.addEffect(largeLines);
+        effectManager_.addEffect(scrollingText);
     }
 
     /// Deinitialize menu graphics.
