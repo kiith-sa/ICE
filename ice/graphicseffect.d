@@ -9,6 +9,8 @@
 module ice.graphicseffect;
 
 
+import core.stdc.string;
+
 import std.algorithm;
 import std.math : fmod;
 import std.random;
@@ -23,7 +25,6 @@ import video.videodriver;
 import util.signal;
 import util.frameprofiler;
 
-//XXX XXX INSERT ZONES HERE NOW!
 
 /**
  * Base class for procedural graphics effects.
@@ -68,14 +69,14 @@ private:
  *
  * Effect parameters are specified each frame by a delegate.
  *
- * The delegate takes a real specifying game time when the effect started,
- * a reference to the game time subsystem and a reference to effect parameters.
+ * The delegate takes a real specifying time when the effect started,
+ * current time and a reference to effect parameters.
  * It returns a boolean that is true when the effect is done and should expire.
  *
  * Example:
  * --------------------
  * //This draws an an increasing number of slowly moving vertical lines in the game area.
- * //It is taken from the Game class, and uses its data member.
+ * //It is taken from the Game class, and uses its data members.
  * //Anyone is welcome to create a simpler example not depending on Game.
  * 
  * GraphicsEffect effect = new RandomLinesEffect(gameTime_.gameTime,
@@ -151,16 +152,19 @@ public:
     }
 
 private:
-    ///Parameters of the effect.
+    //Parameters of the effect.
     Parameters parameters_;
 
-    ///Delegate that controls effect parameters based on passed start time and current time.
+    //Improves code readability.
+    alias parameters_ this;
+
+    //Delegate that controls effect parameters based on passed start time and current time.
     const bool delegate(const real, const real, ref Parameters) controlDelegate_;
 
-    ///Game time when the effect was constructed.
+    //Game time when the effect was constructed.
     const real startTime_;
 
-    ///Random number generator we're using. Must be cheap and fast, not perfect.
+    //Random number generator we're using. Must be cheap and fast, not perfect.
     CheapRandomGenerator randomGenerator_;
 
 public:
@@ -183,27 +187,27 @@ public:
         assert(parameters_.valid, "Invalid RandomLinesEffect parameters");
 
         video.lineAA = true;
-        const boundsInt = parameters_.bounds.to!int;
+        const boundsInt = bounds.to!int;
 
         //Skip rows and columns based on detail level.
-        const skip = parameters_.detailLevel + 1;
+        const skip = detailLevel + 1;
         //We're not storing any of the lines. Rather,
         //we're computing RNG seed based on vertical scrolling speed and
         //incrementing seed for every row.
         //When the effect scrolls, the rows' seeds scroll accordingly.
 
-        uint seed  = -round!uint(gameTime * parameters_.verticalScrollingSpeed / skip);
+        uint seed  = -round!uint(gameTime * verticalScrollingSpeed / skip);
         //We're not necessarily iterating each "pixel", so update per-pixel probability
         //with skip in mind.
 
-        const pixelProbability = parameters_.linesPerPixel * skip ^^ 2;
+        const pixelProbability = linesPerPixel * skip ^^ 2;
         const rowProbability = pixelProbability * (boundsInt.width / skip);
 
         // Precompute what we can here 
         // (We should probably remove this once optimized or GDC build works)
         const halfSkip            = 0.5 * skip;
-        const widthRange          = parameters_.maxWidth  - parameters_.minWidth;
-        const lengthRange         = parameters_.maxLength - parameters_.minLength;
+        const widthRange          = maxWidth  - minWidth;
+        const lengthRange         = maxLength - minLength;
 
         auto loopZone = Zone("RandomLinesEffect draw geneartion loop");
 
@@ -221,7 +225,7 @@ public:
                 linesInRow += 1.0f;
             }
             const linesInRowInt = cast(uint) linesInRow;
-            for (size_t l = 0; l < linesInRowInt; ++l) with(parameters_)
+            for (size_t l = 0; l < linesInRowInt; ++l)
             {
                 random = randomGenerator_.random();
                 random *= 10.0f;
@@ -260,8 +264,8 @@ public:
                 //Finally, draw the line.
                 video.drawLine(center - halfLength * lineDirection,
                                center + halfLength * lineDirection,
-                               color,
-                               color);
+                               parameters_.color,
+                               parameters_.color);
             }
         }
 
@@ -273,18 +277,206 @@ public:
 
 
 /**
+ * Effect that draws vertically scrolling text lines.
+ *
+ * Effect parameters are specified each frame by a delegate.
+ *
+ * The delegate takes a real specifying time when the effect started,
+ * current time and a reference to effect parameters.
+ * It returns a boolean that is true when the effect is done and should expire.
+ *
+ * Example:
+ * --------------------
+ * //This draws a scrolling (upwards) column of text where each line 
+ * //is a randomly selected number from a list.
+ * 
+ * GraphicsEffect effect = new ScrollingTextLinesEffect(getTime(),
+ * (const real startTime,
+ *  const real currentTime, 
+ *  ref ScrollingTextLinesEffect.Parameters params)
+ * {
+ *     params.lineStrings =
+ *     [
+ *       "1536",
+ *       "7233",
+ *       "4287",
+ *       "8923",
+ *       "2342",
+ *       "32583",
+ *       "7896",
+ *       "2352",
+ *       "22358",
+ *       "2423"
+ *     ];
+ *     params.randomOrder    = Yes.randomOrder;
+ *     params.position       = Vector2i(16, -16);
+ *     params.scrollingSpeed = -100.0f;
+ *     params.fontColor      = rgba!"E8E8FF90";
+ *     params.fontSize       = 12;
+ *     params.randomOrder    = No.randomOrder;
+ *     params.font           = "orbitron-bold.ttf";
+ *     params.lineCount      = 48;
+ *     return false; });
+ * --------------------
+ */
+class ScrollingTextLinesEffect: GraphicsEffect
+{
+
+public:
+    ///Parameters of a text effect.
+    struct Parameters
+    {
+        /// Strings of the scrolled text. Each string is one line.
+        ///
+        /// At least 1 string is required.
+        string[] lineStrings = ["PLACEHOLDER"];
+        /// Scrolling speed of the text in units per second. Can be negative.
+        float scrollingSpeed = 100.0;
+        /// Should the lines be scrolled in random order?
+        Flag!"randomOrder" randomOrder;
+        /// Color of the scrolled text.
+        Color fontColor = rgba!"FFFFFFFF";
+        /// Font size of the scrolled text.
+        uint fontSize = 8;
+        /// Font of the scrolled text.
+        string font = "default";
+        /// Position of the upper-left corner of the scrolled text.
+        Vector2i position = Vector2i(0, 0);
+        /// Number of lines of scrolled text.
+        ///
+        /// If more than lineStrings.length, the same strings will be reused 
+        /// for multiple lines. Must be at least 1.
+        uint lineCount = 64;
+    }
+
+private:
+    //Parameters of the effect.
+    Parameters parameters_;
+
+    //Improves code readability.
+    alias parameters_ this;
+
+    //Delegate that controls effect parameters based on passed start time and current time.
+    const bool delegate(const real, const real, ref Parameters) controlDelegate_;
+
+    //Game time when the effect was constructed.
+    const real startTime_;
+
+    //Random number generator we're using. Must be cheap and fast, not perfect.
+    CheapRandomGenerator randomGenerator_;
+
+    //Offset of the uppermost text line relative to position of the scrolling text. 
+    float textOffset_;
+
+    //Time when draw() was called last time.
+    real lastDrawTime_;
+
+    //Indices of currently scrolled text lines 
+    //
+    //0 is the uppermost, $-1 lowermost, regardless of scrolling direction.
+    uint[] lineIndices_;
+
+public:
+    ///Construct a ScrollingTextLinesEffect starting at startTime using controlDelegate to set its parameters.
+    this(const real startTime, 
+         bool delegate(const real, const real, ref Parameters) controlDelegate)
+    {
+        startTime_       = startTime;
+        controlDelegate_ = controlDelegate;
+        randomGenerator_ = CheapRandomGenerator(4096);
+        textOffset_      = 0.0f;
+        lastDrawTime_    = startTime_;
+    }
+
+    override void draw(VideoDriver video, const real gameTime)
+    {
+        scope(exit) {lastDrawTime_ = gameTime;}
+
+        auto zone = Zone("TextEffect draw");
+
+        done_ = controlDelegate_(startTime_, gameTime, parameters_);
+        assert(lineStrings.length >= 1,
+               "ScrollingTextLinesEffect needs at least one text string.");
+        assert(lineCount >= 1,
+               "ScrollingTextLinesEffect needs to draw at least one line.");
+        if(done_){return;}
+
+        const timeSinceLastDraw = gameTime - lastDrawTime_;
+        textOffset_ += timeSinceLastDraw * scrollingSpeed;
+
+        // All lines use the same height.
+        const lineHeight = video.textSize("|j").y * 1.2;
+        const strings = lineStrings.length;
+
+        // If lineCount has changed, we need to add/remove indices 
+        // to/from lineIndices_.
+        const lineIndexCount = lineIndices_.length;
+        lineIndices_.length = lineCount;
+        lineIndices_.assumeSafeAppend();
+        if(lineIndexCount < lineCount) foreach(l; lineIndexCount .. lineCount)
+        {
+            lineIndices_[l] = randomOrder 
+                ? uniform(0, lineCount) 
+                : l == 0 ? 0 : lineIndices_[l - 1] + 1;
+        }
+
+        //Calculates the index of the next line to add to the scrolling text.
+        // 
+        //Params: sign (-1 for scolling up, 1 for down), previous line index, total lines.
+        auto nextLine = (int sign, uint prevLine, uint lines) =>
+            parameters_.randomOrder ? uniform(0, lines)
+                                    : (lines + prevLine - sign) % lines;
+
+        Vector2i position = position + Vector2i(0, cast(int)textOffset_);
+
+        // Using lineIndices_ like a double ended queue - 
+        // if scrolling down, add the previous line to the start,
+        // is scrolling up, add the next line to the end.
+        auto sign = textOffset_ >= 0 ? 1 : -1;
+        while(sign * textOffset_ > lineHeight)
+        {
+            // Update offset of the first line 
+            // (it's either replaced with a new item or pushed off the queue)
+            textOffset_ -= sign * lineHeight;
+            position.y  -= sign * lineHeight;
+            // We need to move all other lines in the array to act as a queue.
+            auto moveFrom   = lineIndices_.ptr + (sign == 1 ? 0 : 1);
+            auto moveTo     = lineIndices_.ptr + (sign == 1 ? 1 : 0);
+            const moveBytes = (lineIndices_.length - 1) * uint.sizeof;
+            memmove(moveTo, moveFrom, moveBytes);
+            // Add the new line (what line to add depends on the sign).
+            lineIndices_[sign == 1 ? 0 : $ - 1] = 
+                nextLine(sign, lineIndices_[sign == 1 ? 1 : $ - 2], cast(uint)strings);
+        }
+
+        // Draw the scrolling text.
+        video.font     = font;
+        video.fontSize = fontSize;
+        foreach(ref line; lineIndices_)
+        {
+            // Needed in case string count decreases.
+            line %= strings;
+            const stringIndex = line;
+            video.drawText(position, lineStrings[stringIndex], fontColor);
+            position.y += lineHeight;
+        }
+    }
+}
+
+
+/**
  * Text effect.
  *
  * Draws text with parameters specified each frame by a delegate.
  *
- * The delegate takes a real specifying game time when the effect started,
- * a reference to the game time subsystem and a reference to effect parameters.
+ * The delegate takes a real specifying time when the effect started,
+ * current time and a reference to effect parameters.
  * It returns a boolean that is true when the effect is done and should expire.
  *
  * Example:
  * --------------------
  * //This draws an enlarging, fading text in the middle of the game area.
- * //It is taken from the Game class, and uses its data member.
+ * //It is taken from the Game class, and uses its data members.
  * //Anyone is welcome to create a simpler example not depending on Game.
  * 
  * GraphicsEffect effect = new TextEffect(gameTime_.gameTime,
@@ -337,7 +529,10 @@ private:
     ///Parameters of the effect.
     Parameters parameters_;
 
-    ///Delegate that controls effect parameters based on passed start time and game time.
+    ///Improves code readability.
+    alias parameters_ this;
+
+    ///Delegate that controls effect parameters based on passed start time and current time.
     const bool delegate(const real, const real, ref Parameters) controlDelegate_;
 
     ///Game time when the effect was constructed.
@@ -358,9 +553,9 @@ public:
         done_ = controlDelegate_(startTime_, gameTime, parameters_);
         if(done_){return;}
 
-        video.fontSize = parameters_.fontSize;
-        video.font     = parameters_.font;
-        video.drawText(parameters_.offset, parameters_.text, parameters_.color);
+        video.fontSize = fontSize;
+        video.font     = font;
+        video.drawText(offset, text, parameters_.color);
     }
 }
 
@@ -461,5 +656,5 @@ struct CheapRandomGenerator
         float random() pure nothrow
         {
             return table_[(offset_++) % size_];
-        }
 }
+        }
