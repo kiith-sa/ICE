@@ -58,12 +58,12 @@ wave StarShip2times:
       components:
         physics: 
             position: [104, -50]
-        dumbScript: dumbscripts/moveFire.yaml
+        dumbScript: dumbscripts/starFire1.yaml
     - entity: ships/starShip.yaml
       components:
         physics: 
             position: [584, -93]
-        dumbScript: dumbscripts/wtf-sewing.yaml
+        dumbScript: dumbscripts/starFire2.yaml
 
 wave turtleAttacks:
   spawner:
@@ -156,25 +156,25 @@ wave mixMaF:
       components:
         physics: 
             position: [564, -100]
-        dumbScript: dumbscripts/moveFire.yaml
+        dumbScript: dumbscripts/starFire1.yaml
 
 wave StarShipCrazyness:
   spawner:
     - entity: ships/starShip.yaml
       components:
         physics: 
-            position: [318, -89]
-        dumbScript: dumbscripts/moveFire.yaml
+            position: [318, -55]
+        dumbScript: dumbscripts/starFire1.yaml
     - entity: ships/starShip.yaml
       components:
         physics: 
-            position: [667, -203]
-        dumbScript: dumbscripts/dontGetHit.yaml
+            position: [667, -20]
+        dumbScript: dumbscripts/starFire2.yaml
     - entity: ships/starShip.yaml
       components:
         physics: 
             position: [64, -15]
-        dumbScript: dumbscripts/moveFire.yaml
+        dumbScript: dumbscripts/starFire1.yaml
 
 wave turtleMaF:
   spawner:
@@ -190,7 +190,7 @@ wave starShipMaF:
       components:
         physics: 
             position: [367, -53]
-        dumbScript: dumbscripts/moveFire.yaml
+        dumbScript: dumbscripts/starFire1.yaml
 
 wave plasmaFighterMaF:
   spawner:
@@ -206,17 +206,17 @@ wave Star2plasma:
       components:
         physics: 
             position: [658, -22]
-        dumbScript: dumbscripts/wtf-sewing.yaml
+        dumbScript: dumbscripts/starFire2.yaml
     - entity: ships/plasmaFighter.yaml
       components:
         physics: 
-            position: [461, -60]
+            position: [461, -10]
         dumbScript: dumbscripts/dontGetHit.yaml
     - entity: ships/starShip.yaml
       components:
         physics: 
             position: [196, -48]
-        dumbScript: dumbscripts/moveFire.yaml
+        dumbScript: dumbscripts/starFire1.yaml
 
 wave outOfHit:
   spawner:
@@ -348,7 +348,7 @@ level:
   - wave: turtleMaF
   - wait: 0.2
   - wave: starShipMaF
-  - wait: 0.2
+  - wait: 0.5
   - wave: DiamondShooterSidesJKP
   - wait: 3.2
   - wave: plasmaFighterMaF
@@ -388,9 +388,9 @@ level:
   - wave: onlyKillP
   - wait: 4.0
   - wave: mixMaF
-  - wait: 3.5
+  - wait: 4.5
   - wave: StarShip2times
-  - wait: 4.0
+  - wait: 4.5
   - wave: plasmaFighterMaF
   - wait: 3.5
   - wave: onlyKillP

@@ -1,5 +1,5 @@
-burstPeriod: 0.35
-ammo: 15
+burstPeriod: 0.7
+ammo: 8
 reloadTime: 1.15
 burst:
  - entity: projectiles/starShipBullet.yaml 
@@ -9,43 +9,43 @@ burst:
       position: [-8.0, 0.0]
       rotation: 0.0
  - entity: projectiles/starShipBullet.yaml 
-   delay: 0.0
+   delay: 0.4
    components:
      physics:
       position: [8.0, 0.0]
       rotation: 3.141592654
  - entity: projectiles/starShipBullet.yaml 
-   delay: 0.0
+   delay: 0.2
    components:
      physics:
       position: [0.0, 8.0]
       rotation: 1.570796327
  - entity: projectiles/starShipBullet.yaml 
-   delay: 0.0
+   delay: 0.6
    components:
      physics:
       position: [0.0, -8.0]
       rotation: -1.570796327
  - entity: projectiles/starShipBullet.yaml 
-   delay: 0.2
+   delay: 0.5
    components:
      physics:
       position: [-4.0, 4.0]
       rotation: -2.35619449
  - entity: projectiles/starShipBullet.yaml 
-   delay: 0.2
+   delay: 0.3
    components:
      physics:
       position: [4.0, 4.0]
       rotation: 2.35619449
  - entity: projectiles/starShipBullet.yaml 
-   delay: 0.2
+   delay: 0.1
    components:
      physics:
       position: [4.0, -4.0]
       rotation: 0.785398163
  - entity: projectiles/starShipBullet.yaml 
-   delay: 0.2
+   delay: 0.7
    components:
      physics:
       position: [-4.0, -4.0]
