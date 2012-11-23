@@ -541,7 +541,9 @@ class Game
                     zonedUpdate!"Collision"(collisionSystem_);
                     zonedUpdate!"Warhead"(warheadSystem_);
                     zonedUpdate!"CollisionResponse"(collisionResponseSystem_);
+                    // Kills entities.
                     zonedUpdate!"Health"(healthSystem_);
+                    // Systems which react to killed entities must be updated here.
                     zonedUpdate!"Tag"(tagSystem_);
                     zonedUpdate!"Timeout"(timeoutSystem_);
                     zonedUpdate!"Spawner"(spawnerSystem_);
