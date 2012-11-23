@@ -3,7 +3,7 @@
 #Main container
 - widget lineEdit profileNameEdit:
     !!pairs
-    - style: {borderColor: rgbaE0E0FF80, fontSize: 16}
-    - style focused: {borderColor: rgbaE0E0FFB0, fontSize: 16}
+    - style: {borderColor: rgbaE0E0FF80, backgroundColor: rgba000000FF, fontSize: 16}
+    - style focused: {borderColor: rgbaE0E0FFB0, backgroundColor: rgba000000FF, fontSize: 16}
     - layout: {x: 'pWidth / 2 - 128', y: 'pHeight / 2 - 16', w: 256, h: 32}
     - maxCharacters: 16
