@@ -40,6 +40,7 @@ import component.movementconstraintcomponent;
 import component.ownercomponent;
 import component.physicscomponent;
 import component.playercomponent;
+import component.scorecomponent;
 import component.spawnercomponent;
 import component.statisticscomponent;
 import component.tagscomponent;
@@ -78,7 +79,8 @@ tuple
     "StatisticsComponent",
     "MovementConstraintComponent",
     "SpawnerComponent",
-    "TagsComponent"
+    "TagsComponent",
+    "ScoreComponent"
 );
 
 ///Last 8 bits are reserved for special uses.
