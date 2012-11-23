@@ -13,6 +13,7 @@ import std.algorithm;
 import std.array;
 import std.conv;
 import std.stdio;
+import std.stream;
 import std.string;
 
 import dgamevfs._;
@@ -24,6 +25,7 @@ import ice.credits;
 import ice.exceptions;
 import ice.game;
 import ice.guiswapper;
+import ice.menugraphics;
 import ice.playerprofile;
 import audio.soundsystem;
 import audio.sdlmixersoundsystem;
@@ -239,11 +241,14 @@ class IceGUI: SwappableGUI
         }
 }
 
+
 /// "Main" ICE class.
 class Ice
 {
     mixin WeakSingleton;
     private:
+        ///Various effects shown while in the main menu.
+        MenuGraphics menuGraphics_;
         ///FPS counter.
         EventCounter fpsCounter_;
         ///Continue running?
@@ -343,6 +348,9 @@ class Ice
 
             initFrameProfiler();
             scope(failure){destroyFrameProfiler();}
+
+
+            menuGraphics_ = new MenuGraphics();
         }
 
         ///Destroy Ice and all subsystems.
@@ -350,6 +358,7 @@ class Ice
         {
             writeln("Destroying ICE");
 
+            clear(menuGraphics_);
             clear(fpsCounter_);
 
             destroyFrameProfiler();
@@ -398,6 +407,10 @@ class Ice
                         auto zone = Zone("Game run");
                         //update game state
                         if(!game_.run()){destroyGame();}
+                    }
+                    else
+                    {
+                        menuGraphics_.draw(videoDriver_);
                     }
 
                     {
@@ -603,7 +616,7 @@ class Ice
                 auto logDir = gameDir_.dir("logs");
                 if(!logDir.exists) {logDir.create();}
                 VFSFile profilerDump = logDir.file("frameProfilerDump.yaml");
-                auto stream = VFSStream(profilerDump.output);
+                auto stream = new MemoryStream(cast(ubyte[])[]);
                 writeln("Writing frame profile...");
                 frameProfilerDump((string line)
                 {
@@ -613,6 +626,8 @@ class Ice
                     ++counter;
                     stream.writeLine(line);
                 });
+                // Write out to the file.
+                VFSStream(profilerDump.output).write(stream.data);
                 // Newline after the dots.
                 writeln("");
                 free(frameProfilerData_);

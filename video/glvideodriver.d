@@ -41,6 +41,7 @@ import math.rect;
 import platform.platform;
 import memory.memory;
 import time.timer;
+import util.frameprofiler;
 import util.signal;
 import color;
 import image;
@@ -176,22 +177,35 @@ abstract class GLVideoDriver : VideoDriver
 
         override void startFrame()
         {
+            auto topZone = Zone("GLVideoDriver startFrame");
             assert(!frameInProgress_, 
                    "GLVideoDriver.startFrame called, but a frame is already in progress");
-            renderer_.reset();
+            {
+                auto zone = Zone("Renderer reset");
+                renderer_.reset();
+            }
 
-            glClear(GL_COLOR_BUFFER_BIT);
-            setupViewport();
+            {
+                auto zone = Zone("glClear");
+                glClear(GL_COLOR_BUFFER_BIT);
+            }
+            {
+                auto zone = Zone("GLVideoDriver setupViewport");
+                setupViewport();
+            }
 
             //disable current page and shader
             currentPage_ = currentShader_ = uint.max;
 
-            const real age = fpsTimer_.age();
-            fpsTimer_.reset();
-            //avoid divide by zero
-            statistics_.fps = age == 0.0L ? 0.0 : 1.0 / age;
-            sendStatistics.emit(statistics_);
-            statistics_.zero();
+            {
+                auto zone = Zone("GLVideoDriver statistics");
+                const real age = fpsTimer_.age();
+                fpsTimer_.reset();
+                //avoid divide by zero
+                statistics_.fps = age == 0.0L ? 0.0 : 1.0 / age;
+                sendStatistics.emit(statistics_);
+                statistics_.zero();
+            }
 
             frameInProgress_ = true;
         }
