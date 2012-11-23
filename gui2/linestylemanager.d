@@ -23,8 +23,8 @@ import util.yaml;
 
 /// Style manager that draws widgets as line rectangles.
 ///
-/// Widgets with this style manager have no background, only a border;
-/// they are completely transparent. This is the most basic style manager - 
+/// Widgets with this style manager have a colored (usually transparent) background, 
+/// with a border made of lines. This is the most basic style manager - 
 /// it's a placeholder before something more elaborate is implemented.
 class LineStyleManager: StyleManager
 {
@@ -35,15 +35,17 @@ public:
         /// Name of the style. Empty for default style.
         string name;
         /// Font used to draw text.
-        string font       = "default";
+        string font           = "default";
         /// Color of widget border.
-        Color borderColor = rgba!"FFFFFF60";
+        Color borderColor     = rgba!"FFFFFF60";
+        /// Background color.
+        Color backgroundColor = rgba!"00000000";
         /// Color of font used to draw text.
-        Color fontColor   = rgba!"FFFFFF60";
+        Color fontColor       = rgba!"FFFFFF60";
         /// Font size in points.
-        uint fontSize     = 12;
+        uint fontSize         = 12;
         /// Draw border of the widget?
-        bool drawBorder   = true;
+        bool drawBorder       = true;
 
         /// Construct a LineStyleManager style.
         ///
@@ -53,12 +55,13 @@ public:
         /// Throws: StyleInitException on error.
         this(ref YAMLNode yaml, string name)
         {
-            this.name   = name;
-            drawBorder  = styleInitPropertyOpt(yaml, "drawBorder",  drawBorder);
-            borderColor = styleInitPropertyOpt(yaml, "borderColor", borderColor);
-            fontColor   = styleInitPropertyOpt(yaml, "fontColor",   fontColor);
-            font        = styleInitPropertyOpt(yaml, "font",        font);
-            fontSize    = styleInitPropertyOpt(yaml, "fontSize",    fontSize);
+            this.name       = name;
+            drawBorder      = styleInitPropertyOpt(yaml, "drawBorder",      drawBorder);
+            borderColor     = styleInitPropertyOpt(yaml, "borderColor",     borderColor);
+            backgroundColor = styleInitPropertyOpt(yaml, "backgroundColor", backgroundColor);
+            fontColor       = styleInitPropertyOpt(yaml, "fontColor",       fontColor);
+            font            = styleInitPropertyOpt(yaml, "font",            font);
+            fontSize        = styleInitPropertyOpt(yaml, "fontSize",        fontSize);
         }
     }
 
@@ -107,6 +110,9 @@ public:
     override void drawWidgetRectangle(VideoDriver video, ref const Recti area)
     {
         if(!style_.drawBorder){return;}
+        const min = area.min.to!float;
+        const max = area.max.to!float;
+        video.drawFilledRect(area.min.to!float, area.max.to!float, style_.backgroundColor);
         video.drawRect(area.min.to!float, area.max.to!float, style_.borderColor);
     }
 

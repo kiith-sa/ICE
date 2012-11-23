@@ -91,14 +91,14 @@ public:
         {
             static msg = "Missing layout parameters; boxManual layout manager "
                          "requires layout parameters to be specified for every widget";
-            enforce(yaml !is null, new LayoutInitException (msg));
+            enforce(yaml !is null, new LayoutInitException(msg));
             return new BoxManualLayout(*yaml);
         }
         Layout fixedCtor(YAMLNode* yaml)
         {
             static msg = "Missing layout parameters; fixed layout manager "
                          "requires layout parameters to be specified for every widget";
-            enforce(yaml !is null, new LayoutInitException (msg));
+            enforce(yaml !is null, new LayoutInitException(msg));
             return new FixedLayout(*yaml);
         }
         addLayoutConstructor("boxManual", &boxManualCtor);
@@ -166,7 +166,7 @@ public:
         }
         catch(YAMLException e)
         {
-            throw new GUIInitException("Could not load a widget tree: " ~ e.msg);
+            throw new GUIInitException("Could not load a widget tree: " ~ to!string(e));
         }
     }
 
