@@ -566,15 +566,17 @@ class Ice
             }
             catch(GUIInitException e)
             {
-                throw new GameStartupException("Failed to initialize ICE GUI: ", e.msg);
+                throw new GameStartupException("Failed to initialize ICE GUI: " ~ to!string(e));
             }
             catch(YAMLException e)
             {
-                throw new GameStartupException("Failed to initialize ICE GUI: ", e.msg);
+                throw new GameStartupException(
+                    "Failed to initialize ICE GUI due to a YAML error: " ~ to!string(e));
             }
             catch(VFSException e)
             {
-                throw new GameStartupException("Failed to initialize ICE GUI: ", e.msg);
+                throw new GameStartupException(
+                    "Failed to initialize ICE GUI due to a VFS error: " ~ e.msg);
             }
 
             gui_.quit.connect(&exit);
