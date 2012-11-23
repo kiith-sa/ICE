@@ -1,5 +1,4 @@
 
-
 //          Copyright Ferdinand Majerech 2012.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
@@ -23,7 +22,7 @@ class HealthSystem : System
         EntitySystem entitySystem_;
 
     public:
-        ///Construct a WeaponSystem working on entities from specified EntitySystem.
+        ///Construct a HealthSystem working on entities from specified EntitySystem.
         this(EntitySystem entitySystem)
         {
             entitySystem_  = entitySystem;
@@ -48,29 +47,28 @@ class HealthSystem : System
         ///Update statistics of the entity that killed the entity with specified HealthComponent.
         void updateStatisticsOfKiller(ref HealthComponent health)
         {
+            if(!health.damagedThisUpdate) {return;}
+
             //Update statistics of whoever killed us.
-            if(health.damagedThisUpdate)
+            EntityID id = health.mostRecentlyDamagedBy;
+            Entity* damagedBy;
+
+            //If damagedBy has an owner, get the owner, if the owner
+            //has an owner, get that, etc.
+            for(;;)
             {
-                EntityID id = health.mostRecentlyDamagedBy;
-                Entity* damagedBy;
+                damagedBy = entitySystem_.entityWithID(id);
+                //The entity was destroyed.
+                if(damagedBy is null){return;}
+                auto owner = damagedBy.owner;
+                if(owner is null){break;}
+                id = owner.ownerID;
+            }
 
-                //If damagedBy has an owner, get the owner, if the owner
-                //has an owner, get that, etc.
-                for(;;)
-                {
-                    damagedBy = entitySystem_.entityWithID(id);
-                    //The entity was destroyed.
-                    if(damagedBy is null){return;}
-                    auto owner = damagedBy.owner;
-                    if(owner is null){break;}
-                    id = owner.ownerID;
-                }
-
-                auto statistics = damagedBy.statistics;
-                if(statistics !is null)
-                {
-                    ++statistics.entitiesKilled;
-                }
+            auto statistics = damagedBy.statistics;
+            if(statistics !is null)
+            {
+                ++statistics.entitiesKilled;
             }
         }
 }
