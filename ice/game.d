@@ -156,11 +156,21 @@ class GameGUI
                 text     = randomSample(success ? successMessages_ : deathMessages_, 1).front;
                 gameOver_.addChild(produce());
 
-                //Time elapsed.
+                //Score.
                 y        = "p_top + 64";
                 alignX   = AlignX.Left;
                 font     = "orbitron-light.ttf";
                 fontSize = 16;
+                text     = "Score:";
+                gameOver_.addChild(produce());
+
+                alignX   = AlignX.Right;
+                text     = to!string(statistics.expGained);
+                gameOver_.addChild(produce());
+
+                //Time elapsed.
+                y        = "p_top + 88";
+                alignX   = AlignX.Left;
                 text     = "Time elapsed:";
                 gameOver_.addChild(produce());
 
@@ -169,7 +179,7 @@ class GameGUI
                 gameOver_.addChild(produce());
 
                 //Shots fired.
-                y        = "p_top + 88";
+                y        = "p_top + 112";
                 alignX   = AlignX.Left;
                 text     = "Shots fired:";
                 gameOver_.addChild(produce());
@@ -178,8 +188,9 @@ class GameGUI
                 text     = to!string(statistics.burstsFired);
                 gameOver_.addChild(produce());
 
+
                 //Ships killed.
-                y        = "p_top + 112";
+                y        = "p_top + 136";
                 alignX   = AlignX.Left;
                 text     = "Ships killed:";
                 gameOver_.addChild(produce());
