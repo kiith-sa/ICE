@@ -583,7 +583,7 @@ class Ice
             gui_.resetVideo.connect(&resetVideoMode);
             gui_.reloadResources.connect(&reloadResources);
 
-            gameContainer_ = new GameContainer();
+            gameContainer_ = new GameContainer(guiSystem_, soundSystem_);
         }
 
         /// Destroy the GUI subsystem.
@@ -825,11 +825,11 @@ class Ice
                 game_ = gameContainer_.produce(platform_,
                                                monitor_,
                                                guiRoot_.root,
+                                               guiSwapper_,
                                                videoDriver_,
                                                gameDir_,
                                                yamlManager_,
                                                profileManager_.currentProfile,
-                                               soundSystem_,
                                                levelSource);
                 if(null !is gameOverCallback)
                 {

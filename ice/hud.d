@@ -12,25 +12,25 @@ import std.algorithm;
 import std.array;
 import std.conv;
 
+import dgamevfs._;
+
 import color;
-import gui.guielement;
-import gui.guistatictext;
+import component.statisticscomponent;
+import gui2.guisystem;
+import gui2.labelwidget;
+import gui2.rootwidget;
+import ice.guiswapper;
 import math.math;
 import math.vector2;
 import time.gametime;
+import util.yaml;
 import video.videodriver;
 
 
 ///In game HUD.
-class HUD
+class HUD: SwappableGUI
 {
     private:
-        ///Parent of all HUD elements.
-        GUIElement parent_;
-
-        ///Message text at the bottom of the HUD.
-        GUIStaticText messageText_;
-
         ///Time left for the current message text to stay on the HUD.
         float messageTextTimeLeft_ = 0.0f;
 
@@ -40,35 +40,27 @@ class HUD
         ///Is the HUD visible?
         bool visible_ = false;
 
+        ///Root widget of the HUD.
+        RootWidget hudGUI_;
+
     public:
-        /**
-         * Constructs HUD.
-         *
-         * Params:  parent = Parent GUI element for all HUD elements.
-         */
-        this(GUIElement parent)
+        /// Constructs HUD.
+        /// 
+        /// Params: guiSystem  = A reference to the GUI system (to load widgets with).
+        ///         gameDir    = Game data directory.
+        ///
+        /// Throws: YAMLException on a YAML parsing error.
+        ///         VFSException on a filesystem error.
+        this(GUISystem guiSystem, VFSDir gameDir)
         {
-            parent_ = parent;
-
-            with(new GUIStaticTextFactory)
-            {
-                x           = "p_left + 8";
-                y           = "p_bottom - 24";
-                width       = "p_width - 16";
-                height      = "16";
-                fontSize    = 12;
-                font        = "orbitron-light.ttf";
-                alignX      = AlignX.Right;
-                messageText_ = produce();
-            }
-
-            parent_.addChild(messageText_);
+            auto hudGUIFile = gameDir.dir("gui").file("hudGUI.yaml");
+            hudGUI_ = guiSystem.loadWidgetTree(loadYAML(hudGUIFile));
+            super(hudGUI_);
         }
 
         ///Destroy the HUD.
         ~this()
         {
-            messageText_.die();
         }
 
         /**
@@ -76,12 +68,12 @@ class HUD
          */
         void update(const GameTime gameTime)
         {
-            if(!messageText_.text.empty)
+            if(!hudGUI_.infoText!LabelWidget.text.empty)
             {
                 messageTextTimeLeft_ -= gameTime.timeStep;
                 if(messageTextTimeLeft_ <= 0)
                 {
-                    messageText_.text = "";
+                    hudGUI_.infoText!LabelWidget.text = "";
                 }
             }
         }
@@ -89,21 +81,19 @@ class HUD
         ///Hide the HUD.
         void hide()
         {
-            messageText_.hide();
             visible_ = false;
         }
 
         ///Show the HUD.
         void show()
         {
-            messageText_.show();
             visible_ = true;
         }
-        
+
         ///Set the message text on the bottom of the HUD for specified (game) time.
         void messageText(string rhs, float time) 
         {
-            messageText_.text = rhs;
+            hudGUI_.infoText!LabelWidget.text = rhs;
             messageTextTimeLeft_ = time;
         }
 
@@ -118,6 +108,13 @@ class HUD
         {
             playerHealthRatio_ = health;
         }
+
+        ///Update any player statistics related displays in the HUD.
+        void updatePlayerStatistics(ref const StatisticsComponent statistics)
+        {
+            hudGUI_.score!LabelWidget.text = to!string(statistics.expGained);
+        }
+
 
         ///Draw any parts of the HUD that need to be drawn manually, not by the GUI subsystem.
         ///

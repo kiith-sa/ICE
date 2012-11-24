@@ -44,6 +44,7 @@ import component.system;
 import component.visualsystem;
 import gui.guielement;
 import gui.guistatictext;
+import gui2.guisystem;
 import math.math;
 import math.vector2;
 import math.rect;
@@ -59,6 +60,7 @@ import util.yaml;
 import video.videodriver;
 
 import ice.graphicseffect;
+import ice.guiswapper;
 import ice.hud;
 import ice.level;
 import ice.player;
@@ -77,6 +79,10 @@ class GameGUI
         GUIElement gameOver_;
         ///"Really quit?" message after pressing Escape.
         GUIStaticText reallyQuit_;
+        ///A reference to the GUI system.
+        GUISystem guiSystem_;
+        ///A reference to the GUI swapper.
+        GUISwapper guiSwapper_;
         ///HUD.
         HUD hud_;
 
@@ -114,7 +120,11 @@ class GameGUI
 
     public:
         ///Show the HUD.
-        void showHUD(){hud_.show();}
+        void showHUD()
+        {
+            hud_.show();
+            guiSwapper_.setGUI("hud");
+        }
 
         ///Set the message text on the bottom of the HUD for specified time in seconds.
         void messageText(string text, float time) 
@@ -255,6 +265,12 @@ class GameGUI
             hud_.updatePlayerHealth(health);
         }
 
+        ///Update any player statistics related displays in the HUD.
+        void updatePlayerStatistics(ref const StatisticsComponent statistics)
+        {
+            hud_.updatePlayerStatistics(statistics);
+        }
+
         ///Draw any parts of the GUI that need to be drawn manually, not by the GUI subsystem.
         ///
         ///This is a hack to be used until we have a decent GUI subsystem.
@@ -268,17 +284,23 @@ class GameGUI
          * Construct a GameGUI with specified parameters.
          *
          * Params:  parent     = GUI element to attach all game GUI elements to.
+         *          guiSystem  = A reference to the GUI system.
+         *          guiSwapper = A reference to the GUI swapper.
+         *          gameDir    = Game data directory to load GUI from.
          */
-        this(GUIElement parent)
+        this(GUIElement parent, GUISystem guiSystem, GUISwapper guiSwapper, VFSDir gameDir)
         {
-            parent_ = parent;
-            hud_ = new HUD(parent);
-            hud_.hide();
+            parent_     = parent;
+            guiSystem_  = guiSystem;
+            guiSwapper_ = guiSwapper;
+            hud_        = new HUD(guiSystem_, gameDir);
+            guiSwapper_.addGUI(hud_, "hud");
         }
 
         ///Destroy the game GUI.
         ~this()
         {
+            guiSwapper_.removeGUI("hud");
             clear(hud_);
             if(gameOver_ !is null)
             {
@@ -514,6 +536,7 @@ class Game
                         {
                             playerState_ = PlayerState.Alive;
                             playerStatistics_ = *(playerShip.statistics);
+                            gui_.updatePlayerStatistics(playerStatistics_);
                             const health = playerShip.health;
                             if(health !is null)
                             {
@@ -919,25 +942,41 @@ class Game
 class GameContainer
 {
     private:
-        ///GUI of the game.
+        //GUI of the game.
         GameGUI gui_;
-        ///Game itself.
+        //Game itself.
         Game game_;
-        ///MonitorManager to add game subsystem monitors to.
+        //MonitorManager to add game subsystem monitors to.
         MonitorManager monitor_;
 
+        // The following dependencies don't change between games.
+
+        // A reference to the GUI system.
+        GUISystem guiSystem_;
+        // A reference to the sound system
+        SoundSystem sound_;
+
     public:
+        /// Produce a GameContainer with dependencies that never change between game instances.
+        ///
+        /// Params: guiSystem = A reference to the GUI system.
+        ///         sound     = A reference to the sound system.
+        this(GUISystem guiSystem, SoundSystem sound)
+        {
+            guiSystem_ = guiSystem;
+            sound_     = sound;
+        }
+
         /**
          * Produce a Game and return a reference to it.
          *
          * Params:  platform    = Platform to use for user input.
          *          monitor     = MonitorManager to monitor game subsystems.
          *          guiParent   = Parent for all GUI elements used by the game.
+         *          guiSwapper  = A reference to the GUI swapper.
          *          videoDriver = Video driver to draw graphics with.
          *          gameDir     = Game data directory.
-         *          yamlManager = YAML resource manager.
          *          profile     = Profile of the current player.
-         *          sound       = Reference to the sound system.
          *          levelSource = YAML source of the level to load.
          *
          * Returns: Produced Game.
@@ -947,11 +986,11 @@ class GameContainer
         Game produce(Platform platform,
                      MonitorManager monitor,
                      GUIElement guiParent,
+                     GUISwapper guiSwapper,
                      VideoDriver videoDriver,
                      VFSDir gameDir,
                      ResourceManager!YAMLNode yamlManager,
                      PlayerProfile profile,
-                     SoundSystem sound,
                      ref YAMLNode levelSource)
         in
         {
@@ -961,7 +1000,20 @@ class GameContainer
         body
         {
             monitor_ = monitor;
-            gui_ = new GameGUI(guiParent);
+
+            try
+            {
+                gui_ = new GameGUI(guiParent, guiSystem_, guiSwapper, gameDir);
+            }
+            catch(YAMLException e)
+            {
+                throw new GameStartException("Failed to initialize game GUI: " ~ e.msg);
+            } 
+            catch(VFSException e)
+            {
+                throw new GameStartException("Failed to initialize game GUI: " ~ e.msg);
+            }
+
             scope(failure)
             {
                 clear(gui_);
@@ -970,7 +1022,7 @@ class GameContainer
                 monitor_ = null;
             }
             game_ = new Game(platform, gui_, videoDriver, gameDir, profile, 
-                             yamlManager, sound, levelSource);
+                             yamlManager, sound_, levelSource);
             monitor_.addMonitorable(game_.entitySystem_, "Entities");
             return game_;
         }
