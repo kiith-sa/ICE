@@ -31,6 +31,7 @@ import component.healthsystem;
 import component.movementconstraintsystem;
 import component.physicssystem;
 import component.playersystem;
+import component.scoresystem;
 import component.spatialsystem;
 import component.spawnersystem;
 import component.statisticscomponent;
@@ -452,6 +453,8 @@ class Game
         TagsSystem               tagSystem_;
         ///Assigns game players to PlayerComponents.
         PlayerSystem             playerSystem_;
+        ///Handles scoring.
+        ScoreSystem              scoreSystem_;
 
         ///Level the game is running.
         Level level_;
@@ -544,6 +547,7 @@ class Game
                     // Kills entities.
                     zonedUpdate!"Health"(healthSystem_);
                     // Systems which react to killed entities must be updated here.
+                    zonedUpdate!"Score"(scoreSystem_);
                     zonedUpdate!"Tag"(tagSystem_);
                     zonedUpdate!"Timeout"(timeoutSystem_);
                     zonedUpdate!"Spawner"(spawnerSystem_);
@@ -703,6 +707,7 @@ class Game
             movementConstraintSystem_ = new MovementConstraintSystem(entitySystem_);
             spawnerSystem_            = new SpawnerSystem(entitySystem_, gameTime_);
             tagSystem_                = new TagsSystem(entitySystem_);
+            scoreSystem_              = new ScoreSystem(entitySystem_);
             playerSystem_             = new PlayerSystem(entitySystem_, [player0_]);
 
             effectManager_            = new GraphicsEffectManager();
@@ -722,6 +727,7 @@ class Game
             clear(collisionResponseSystem_);
             clear(spatialSystem_);
             clear(warheadSystem_);
+            clear(scoreSystem_);
             clear(healthSystem_);
             clear(movementConstraintSystem_);
             clear(spawnerSystem_);
