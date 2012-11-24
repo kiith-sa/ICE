@@ -122,7 +122,6 @@ class GameGUI
         ///Show the HUD.
         void showHUD()
         {
-            hud_.show();
             guiSwapper_.setGUI("hud");
         }
 
@@ -269,14 +268,6 @@ class GameGUI
         void updatePlayerStatistics(ref const StatisticsComponent statistics)
         {
             hud_.updatePlayerStatistics(statistics);
-        }
-
-        ///Draw any parts of the GUI that need to be drawn manually, not by the GUI subsystem.
-        ///
-        ///This is a hack to be used until we have a decent GUI subsystem.
-        void draw(VideoDriver driver)
-        {
-            hud_.draw(driver);
         }
 
     private:
@@ -600,7 +591,6 @@ class Game
                 auto zone = Zone("Visual system update");
                 visualSystem_.update();
             }
-            gui_.draw(videoDriver_);
 
             {
                 auto zone = Zone("Effect manager draw");
