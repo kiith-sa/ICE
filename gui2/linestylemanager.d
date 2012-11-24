@@ -11,8 +11,10 @@ module gui2.linestylemanager;
 
 import std.algorithm;
 import std.array;
+import std.exception;
 
 import color;
+import gui2.exceptions;
 import gui2.stylemanager;
 import gui2.widgetutils;
 import math.rect;
@@ -32,6 +34,12 @@ public:
     /// LineStyleManager style.
     struct Style
     {
+        /// Style of the progress "bar".
+        enum ProgressStyle
+        {
+            Horizontal,
+            Vertical
+        }
         /// Name of the style. Empty for default style.
         string name;
         /// Font used to draw text.
@@ -42,10 +50,14 @@ public:
         Color backgroundColor = rgba!"00000000";
         /// Color of font used to draw text.
         Color fontColor       = rgba!"FFFFFF60";
+        /// Color of the filled part of the progress bar.
+        Color progressColor   = rgba!"8080FF80";
         /// Font size in points.
         uint fontSize         = 12;
         /// Draw border of the widget?
         bool drawBorder       = true;
+        /// Style of the progress "bar".
+        ProgressStyle progressStyle;
 
         /// Construct a LineStyleManager style.
         ///
@@ -60,8 +72,19 @@ public:
             borderColor     = styleInitPropertyOpt(yaml, "borderColor",     borderColor);
             backgroundColor = styleInitPropertyOpt(yaml, "backgroundColor", backgroundColor);
             fontColor       = styleInitPropertyOpt(yaml, "fontColor",       fontColor);
+            progressColor   = styleInitPropertyOpt(yaml, "progressColor",   progressColor);
             font            = styleInitPropertyOpt(yaml, "font",            font);
             fontSize        = styleInitPropertyOpt(yaml, "fontSize",        fontSize);
+            const progressStyleString = 
+                styleInitPropertyOpt(yaml, "progressStyle", "horizontal");
+            enforce(["horizontal", "vertical"].canFind(progressStyleString),
+                    new StyleInitException("Unknown progress style " ~ progressStyleString));
+            switch(progressStyleString)
+            {
+                case "horizontal": progressStyle = ProgressStyle.Horizontal; break;
+                case "vertical":   progressStyle = ProgressStyle.Vertical;   break;
+                default: assert(false);
+            }
         }
     }
 
@@ -114,6 +137,21 @@ public:
         const max = area.max.to!float;
         video.drawFilledRect(area.min.to!float, area.max.to!float, style_.backgroundColor);
         video.drawRect(area.min.to!float, area.max.to!float, style_.borderColor);
+    }
+
+    override void drawProgress
+        (VideoDriver video, const float progress, ref const Recti area)
+    {
+        assert(progress >= 0.0f && progress <= 1.0f, "Progress out of range");
+
+        auto min     = area.min.to!float + Vector2f(0.0f, 1.0f);
+        auto max     = area.max.to!float - Vector2f(1.0f, 1.0f);
+        final switch(style_.progressStyle) with(Style.ProgressStyle)
+        {
+            case Horizontal: max = Vector2f(min.x + progress * area.width, max.y);  break;
+            case Vertical:   min = Vector2f(min.x, max.y - progress * area.height); break;
+        }
+        video.drawFilledRect(min, max, style_.progressColor);
     }
 
     override void drawText

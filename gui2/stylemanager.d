@@ -56,6 +56,16 @@ public:
     ///         area  = Area taken by the widget in screen space.
     void drawWidgetRectangle(VideoDriver video, ref const Recti area);
 
+    /// Draw a progress "bar".
+    ///
+    /// Different styles might draw progress differently (horizontal or vertical
+    /// bar, circle, cake, etc).
+    ///
+    /// Params:  video    = VideoDriver to draw with.
+    ///          progress = Progress between 0 and 1.
+    ///          area     = Area taken by the progress "bar".
+    void drawProgress(VideoDriver video, const float progress, ref const Recti area);
+
     /// Draw text using the style.
     ///
     /// Params: video    = VideoDriver to draw with.
