@@ -45,8 +45,6 @@ class ScoreSystem : System
         /// Update statistics of the entity that killed the entity with specified components.
         void updateStatisticsOfKiller(ref HealthComponent health, ref ScoreComponent score)
         {
-            if(!health.damagedThisUpdate) {return;}
-
             // Update statistics of whoever killed us.
 
             EntityID id = health.mostRecentlyDamagedBy;
