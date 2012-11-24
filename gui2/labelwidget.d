@@ -11,15 +11,11 @@ module gui2.labelwidget;
 
 import std.typecons;
 
-import gui2.event;
 import gui2.guisystem;
 import gui2.layout;
 import gui2.stylemanager;
 import gui2.widget;
 import gui2.widgetutils;
-import math.vector2;
-import platform.key;
-import util.signal;
 import util.yaml;
 import video.videodriver;
 
@@ -28,7 +24,7 @@ import video.videodriver;
 class LabelWidget: Widget
 {
 private:
-    /// Label text.
+    // Label text.
     string text_;
 
 public:
