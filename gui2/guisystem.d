@@ -27,6 +27,7 @@ import gui2.slotwidget;
 import gui2.labelwidget;
 import gui2.lineeditwidget;
 import gui2.linestylemanager;
+import gui2.progressbarwidget;
 import gui2.stylemanager;
 import gui2.widget;
 import math.vector2;
@@ -79,12 +80,13 @@ public:
         platform.mouseKey.connect(&inputMouseKey);
 
         // Builtin widget constructors.
-        addWidgetConstructor("root",      (ref YAMLNode yaml) => new RootWidget(yaml));
-        addWidgetConstructor("slot",      (ref YAMLNode yaml) => new SlotWidget(yaml));
-        addWidgetConstructor("container", (ref YAMLNode yaml) => new ContainerWidget(yaml));
-        addWidgetConstructor("button",    (ref YAMLNode yaml) => new ButtonWidget(yaml));
-        addWidgetConstructor("label",     (ref YAMLNode yaml) => new LabelWidget(yaml));
-        addWidgetConstructor("lineEdit",  (ref YAMLNode yaml) => new LineEditWidget(yaml));
+        addWidgetConstructor("root",        (ref YAMLNode yaml) => new RootWidget(yaml));
+        addWidgetConstructor("slot",        (ref YAMLNode yaml) => new SlotWidget(yaml));
+        addWidgetConstructor("container",   (ref YAMLNode yaml) => new ContainerWidget(yaml));
+        addWidgetConstructor("button",      (ref YAMLNode yaml) => new ButtonWidget(yaml));
+        addWidgetConstructor("label",       (ref YAMLNode yaml) => new LabelWidget(yaml));
+        addWidgetConstructor("lineEdit",    (ref YAMLNode yaml) => new LineEditWidget(yaml));
+        addWidgetConstructor("progressBar", (ref YAMLNode yaml) => new ProgressBarWidget(yaml));
 
         // Builtin layout constructors.
         Layout boxManualCtor(YAMLNode* yaml)
