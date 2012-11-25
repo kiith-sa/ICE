@@ -160,45 +160,45 @@ level:
       maxWidth: 1.0
       minLength: 4.0
       maxLength: 16.0
-      verticalScrollingSpeed: 300.0
+      verticalScrollingSpeed: 350.0
       linesPerPixel: 0.001
       detailLevel: 6
-      color: rgbaC8C8FF30
+      color: rgbaC8CEA530
 
   - effect lines:
       minWidth: 0.225
-      maxWidth: 0.9
+      maxWidth: 0.7
       minLength: 3.0
       maxLength: 12.0
-      verticalScrollingSpeed: 225.0
+      verticalScrollingSpeed: 325.0
       linesPerPixel: 0.0015
       detailLevel: 5
-      color: rgbaD0D0FF24
+      color: rgbaE8DEB235
   - effect lines:
       minWidth: 0.15
       maxWidth: 0.6
       minLength: 2.0
       maxLength: 8.0
-      verticalScrollingSpeed: 150.0
+      verticalScrollingSpeed: 370.0
       linesPerPixel: 0.002
       detailLevel: 4
-      color: rgbaD8D8FF18
+      color: rgbaE8C18E25
 
   - effect lines:
       minWidth: 0.1
       maxWidth: 0.4
       minLength: 1.0
       maxLength: 4.0
-      verticalScrollingSpeed: 90.0
+      verticalScrollingSpeed: 300.0
       linesPerPixel: 0.003
       detailLevel: 3
-      color: rgbaFFFFFF0B
+      color: rgbaAF866F0B
   - effect lines:
       minWidth: 30.0
       maxWidth: 40.0
       minLength: 1000.0
       maxLength: 2000.0
-      verticalScrollingSpeed: 200.0
+      verticalScrollingSpeed: 285.0
       linesPerPixel: 0.0001
       detailLevel: 5
       color: rgba2008A001
