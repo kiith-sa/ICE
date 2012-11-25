@@ -3,7 +3,7 @@ vertices:
   !!pairs
 
   - width: 4
-  - color:  rgbaD0D0FF40
+  - color:  rgbaF2EDC440
   - vertex: [0.0, 0.0]
   - vertex: [0.0, 20.0]
 
@@ -20,7 +20,7 @@ vertices:
   - vertex: [-5.0, 8.0] 
 
   - width: 1.0
-  - color:  rgbaB0B0FFFF
+  - color:  rgbaF2ED95FF
   - vertex: [0.0, 0.0]
   - vertex: [0.0, 20.0]
 

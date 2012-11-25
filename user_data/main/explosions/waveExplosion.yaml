@@ -24,4 +24,4 @@ spawner:
      physics:
        PRS: [[4.0, 4.0], 45deg, 50.0]
        
-deathTimeout: 0.8
+deathTimeout: 0.5

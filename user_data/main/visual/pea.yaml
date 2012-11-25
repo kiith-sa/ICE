@@ -2,7 +2,7 @@ type: lines
 vertices:
   !!pairs
 
-  - color:  rgbaB0B0FFFF
+  - color:  rgbaF5DE95FF
   - width: 2.0
   - vertex: [-2.0, 0.0]
   - vertex: [2.0, 0.0]

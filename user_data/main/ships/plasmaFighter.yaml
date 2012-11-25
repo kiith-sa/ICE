@@ -22,7 +22,19 @@ spawner:
       visual: visual/plasmaFighter.yaml
       physics: 
         position: [0, 0]
-  - entity: explosions/plasmaFighterExplosion.yaml
+  - entity: explosions/spiralSmall.yaml
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 3.14
+  - entity: explosions/spiralSmall.yaml
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 0.0
+  - entity: explosions/waveExplosion.yaml
     condition: death 
     components:
       physics: 
