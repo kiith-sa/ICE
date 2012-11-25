@@ -366,7 +366,9 @@ struct GameSubsystems
 ///Stores various data about the end of a game.
 struct GameOverData
 {
-    ///Did the player win the game?
+    /// Statistics of the player.
+    StatisticsComponent playerStatistics;
+    /// Did the player win the game?
     bool gameWon;
 }
 
@@ -849,6 +851,7 @@ class Game
             platform_.showCursor();
             GameOverData gameOverData;
             gameOverData.gameWon = success;
+            gameOverData.playerStatistics = playerStatistics_;
             atGameOver.emit(gameOverData);
             gamePhase_ = GamePhase.PreOver;
             //Game over enlarging text effect.
