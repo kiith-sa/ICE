@@ -53,7 +53,7 @@ public:
         (const real startTime, const real currentTime,
          ref RandomLinesEffect.Parameters params)
         {
-            params.bounds   = Rectf(16, 16, 800 - 16, 600 - 16);
+            params.bounds   = Rectf(0, 0, 800, 600);
             params.minWidth = 0.6;
             params.maxWidth = 1.0;
             //This speed ensures we always see completely random lines.
