@@ -14,6 +14,8 @@ warhead:
   damage: 10
   killsEntity: true
 dumbScript: dumbscripts/zigzag.yaml
+score:
+  exp: 30
 
 spawner:
   - entity: explosions/deathBase.yaml 

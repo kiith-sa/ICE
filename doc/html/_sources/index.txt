@@ -39,6 +39,7 @@ Modding reference:
    modding_reference/component_owner
    modding_reference/component_player
    modding_reference/component_physics 
+   modding_reference/component_score
    modding_reference/component_spawner
    modding_reference/component_statistics
    modding_reference/component_tags

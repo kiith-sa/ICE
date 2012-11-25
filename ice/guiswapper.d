@@ -24,7 +24,7 @@ private:
     SwappableGUI[string] guiByName_;
 
     /// Root widget of the currently connected subtree (null if none).
-    RootWidget currentRoot;
+    RootWidget currentRoot_;
 
 public:
     /// Construct a GUISwapper connecting GUI subtrees to specified SlotWidget.
@@ -41,11 +41,25 @@ public:
         void swapGUI(string swapName)
         {
             parentSlot_.disconnect(gui.rootWidget_);
+            currentRoot_ = null;
             if(swapName is null){return;}
             setGUI(swapName);
         }
         gui.swapGUI_ = &swapGUI;
         guiByName_[name] = gui;
+    }
+
+    /// Add a swappable GUI with specified name. A GUI with this name must be in the swapper.
+    void removeGUI(const string name)
+    {
+        assert((name in guiByName_) !is null,
+               "There is no swappable GUI with name " ~ name);
+        auto removed = guiByName_[name];
+        if(currentRoot_ is removed)
+        {
+            setGUI(null);
+        }
+        guiByName_.remove(name);
     }
 
     /// Forcibly connect GUI with specified name.
@@ -56,17 +70,21 @@ public:
     {
         if(name is null)
         {
-            if(currentRoot !is null)
+            if(currentRoot_ !is null)
             {
-                parentSlot_.disconnect(currentRoot);
+                parentSlot_.disconnect(currentRoot_);
             }
-            currentRoot = null;
+            currentRoot_ = null;
             return;
+        }
+        if(currentRoot_ !is null)
+        {
+            parentSlot_.disconnect(currentRoot_);
         }
         auto replacement = name in guiByName_;
         assert(replacement !is null, "There is no swappable GUI with name " ~ name);
-        currentRoot = replacement.rootWidget_;
-        parentSlot_.connect(replacement.rootWidget_);
+        currentRoot_ = replacement.rootWidget_;
+        parentSlot_.connect(currentRoot_);
     }
 }
 

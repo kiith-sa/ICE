@@ -212,16 +212,23 @@ abstract class GLVideoDriver : VideoDriver
 
         override void endFrame()
         {
+            auto topZone = Zone("GLVideoDriver.endFrame");
             assert(frameInProgress_, 
                    "GLVideoDriver.endFrame called, but no frame has been started");
 
             frameInProgress_ = false;
 
-            renderer_.render(screenWidth_, screenHeight_);
+            {
+                auto zone = Zone("render");
+                renderer_.render(screenWidth_, screenHeight_);
+            }
             statistics_.vertices = renderer_.vertexCount();
             statistics_.indices  = renderer_.indexCount();
             statistics_.vgroups  = renderer_.vertexGroupCount();
-            glFlush();
+            {
+                auto zone = Zone("glFlush");
+                glFlush();
+            }
         }
 
         final override void scissor(const ref Recti scissorArea)

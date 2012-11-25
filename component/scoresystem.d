@@ -5,56 +5,53 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
-///Manages entity health and destroys entities that have run out of health.
-module component.healthsystem;
+/// Manages scoring, experience gain, and so on.
+module component.scoresystem;
 
 
 import component.entitysystem;
 import component.healthcomponent;
+import component.scorecomponent;
 import component.system;
 
 
-///Manages entity health and destroys entities that have run out of health.
-class HealthSystem : System 
+/// Manages scoring, experience gain, and so on.
+class ScoreSystem : System 
 {
     private:
-        ///Entity system whose data we're processing.
+        /// Entity system whose data we're processing.
         EntitySystem entitySystem_;
 
     public:
-        ///Construct a HealthSystem working on entities from specified EntitySystem.
+        /// Construct a ScoreSystem working on entities from specified EntitySystem.
         this(EntitySystem entitySystem)
         {
             entitySystem_  = entitySystem;
         }
 
-        ///Destroy entities that have run out of health.
+        /// Update scores of entities that destroyed other entities.
         void update()
         {
-            foreach(ref Entity e, ref HealthComponent health; entitySystem_)
+            foreach(ref Entity e, ref HealthComponent health, ref ScoreComponent score; entitySystem_)
             {
-                if(health.health == 0)
+                if(e.killed)
                 {
-                    updateStatisticsOfKiller(health);
-
-                    e.kill();
+                    updateStatisticsOfKiller(health, score);
                 }
-                health.damagedThisUpdate = false;
             }
         }
 
     private:
-        ///Update statistics of the entity that killed the entity with specified HealthComponent.
-        void updateStatisticsOfKiller(ref HealthComponent health)
+        /// Update statistics of the entity that killed the entity with specified components.
+        void updateStatisticsOfKiller(ref HealthComponent health, ref ScoreComponent score)
         {
-            if(!health.damagedThisUpdate) {return;}
+            // Update statistics of whoever killed us.
 
-            //Update statistics of whoever killed us.
             EntityID id = health.mostRecentlyDamagedBy;
             Entity* damagedBy;
 
-            //If damagedBy has an owner, get the owner, if the owner
-            //has an owner, get that, etc.
+            // If damagedBy has an owner, get the owner, if the owner
+            // has an owner, get that, etc.
             for(;;)
             {
                 damagedBy = entitySystem_.entityWithID(id);
@@ -68,7 +65,8 @@ class HealthSystem : System
             auto statistics = damagedBy.statistics;
             if(statistics !is null)
             {
-                ++statistics.entitiesKilled;
+                statistics.expGained += score.exp;
             }
         }
 }
+

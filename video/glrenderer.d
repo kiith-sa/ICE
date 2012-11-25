@@ -226,10 +226,10 @@ package struct GLRenderer
             //enlarge colored buffer to fit new vertices, indices
             coloredBuffer_.vertexCount = lineAA_ ? v + 8 : v + 4;
             coloredBuffer_.indexCount  = lineAA_ ? i + 18 : i + 6;
-            currentGroup_.vertices      += lineAA_ ? 18 : 6;
+            currentGroup_.vertices    += lineAA_ ? 18 : 6;
             //get access to arrays to add vertices, indices to
             auto vertices = coloredBuffer_.vertices;
-            auto indices = coloredBuffer_.indices;
+            auto indices  = coloredBuffer_.indices;
 
             if(lineAA_)
             {
@@ -244,12 +244,12 @@ package struct GLRenderer
                 //AA vertices
                 vertices[v]     = Vertex(v1 + offsetAA, c3);
                 vertices[v + 1] = Vertex(v2 + offsetAA, c4);
-                //line vertices         
+                //line vertices
                 vertices[v + 2] = Vertex(v1 + offset, c1);
                 vertices[v + 3] = Vertex(v2 + offset, c2);
                 vertices[v + 4] = Vertex(v1 - offset, c1);
                 vertices[v + 5] = Vertex(v2 - offset, c2);
-                //AA vertices           
+                //AA vertices
                 vertices[v + 6] = Vertex(v1 - offsetAA, c3);
                 vertices[v + 7] = Vertex(v2 - offsetAA, c4);
 
@@ -265,9 +265,10 @@ package struct GLRenderer
             }
             else
             {
-                //line vertices             
-                vertices[v]     = Vertex(v1 + offset, c1);
-                vertices[v + 1] = Vertex(v1 - offset, c1);
+                const stepBack = (v2 - v1).normalized * 0.5;
+                //line vertices
+                vertices[v]     = Vertex(v1 + offset - stepBack, c1);
+                vertices[v + 1] = Vertex(v1 - offset - stepBack, c1);
                 vertices[v + 2] = Vertex(v2 + offset, c2);
                 vertices[v + 3] = Vertex(v2 - offset, c2);
 

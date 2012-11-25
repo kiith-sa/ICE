@@ -21,6 +21,8 @@ struct StatisticsComponent
     uint entitiesKilled;
     ///How many bursts have we fired?
     uint burstsFired;
+    ///How much EXP have we gained?
+    uint expGained;
 
     ///Load from a YAML node. Throws YAMLException on error.
     this(ref YAMLNode yaml)

@@ -1,10 +1,19 @@
 !!pairs
-
-- labelDefault:  &lDefault
+- labelDefault:  &lLarge
     fontColor:   rgbaFFFFFF80
     drawBorder:  false
     fontSize:    14
     font:        orbitron-bold.ttf
+- labelMedium:   &lMedium
+    fontColor:   rgbaFFFFFF80
+    drawBorder:  false
+    fontSize:    12
+    font:        orbitron-medium.ttf
+- labelSmall:    &lSmall
+    fontColor:   rgbaFFFF8080
+    drawBorder:  false
+    fontSize:    10
+    font:        orbitron-light.ttf
 - buttonDefault: &bDefault
     borderColor: rgbaC0C0FF60
     fontColor:   rgbaA0A0FFC0
@@ -18,6 +27,8 @@
 #Main container
 - styleManager: line
 - layoutManager: boxManual 
+- style: 
+    backgroundColor: rgba000000FF
 - layout: {x: 'pLeft + 96', y: 'pTop + 16', w: 'pWidth - 192', h: 'pHeight - 32'}
 - widget button close:
     !!pairs
@@ -29,5 +40,106 @@
 - widget label:
     !!pairs
     - layout: {x: 'pLeft + pWidth / 2 - 64', y: 'pTop + 8', w: '128', h: '24'}
-    - style:  *lDefault
+    - style:  *lLarge
     - text:   Credits
+- widget container:
+    !!pairs
+    - style:  {drawBorder: false}
+    - layout: {x: 'pLeft + 16', y: 'pTop + 40', w: 'pWidth - 32', h: '128'}
+    - widget label:
+        !!pairs
+        - layout: {x: 'pLeft', y: 'pTop + 16', w: 'pWidth', h: '24'}
+        - style:  *lLarge
+        - text:   ICE team
+    - widget label:
+        !!pairs
+        - layout: {x: 'pLeft', y: 'pTop + 48', w: 'pWidth', h: '18'}
+        - style:  *lMedium
+        - text:   Ferdinand Majerech
+    - widget label:
+        !!pairs
+        - layout: {x: 'pLeft', y: 'pTop + 68', w: 'pWidth', h: '18'}
+        - style:  *lMedium
+        - text:   Dávid Horváth
+    - widget label:
+        !!pairs
+        - layout: {x: 'pLeft', y: 'pTop + 88', w: 'pWidth', h: '18'}
+        - style:  *lMedium
+        - text:   Libor Mališ
+    - widget label:
+        !!pairs
+        - layout: {x: 'pLeft', y: 'pTop + 108', w: 'pWidth', h: '18'}
+        - style:  *lMedium
+        - text:   Tomáš Nguyen
+
+- widget container:
+    !!pairs
+    - style:  {drawBorder: false}
+    - layout: {x: 'pLeft + 16', y: 'pTop + 178', w: 'pWidth - 32', h: '142'}
+    - widget label:
+        !!pairs
+        - layout: {x: 'pLeft', y: 'pTop + 16', w: 'pWidth', h: '24'}
+        - style:  *lLarge
+        - text:   Music
+    - widget label:
+        !!pairs
+        - layout: {x: 'pLeft', y: 'pTop + 48', w: 'pWidth', h: '18'}
+        - style:  *lMedium
+        - text:   Osmic
+    - widget label:
+        !!pairs
+        - layout: {x: 'pLeft', y: 'pTop + 64', w: 'pWidth', h: '16'}
+        - style:  *lSmall
+        - text:   http://opengameart.org/users/osmic
+
+    - widget label:
+        !!pairs
+        - layout: {x: 'pLeft', y: 'pTop + 80', w: 'pWidth', h: '18'}
+        - style:  *lMedium
+        - text:   Alexandr Zhelanov
+    - widget label:
+        !!pairs
+        - layout: {x: 'pLeft', y: 'pTop + 96', w: 'pWidth', h: '16'}
+        - style:  *lSmall
+        - text:   http://opengameart.org/users/alexandr-zhelanov
+
+    - widget label:
+        !!pairs
+        - layout: {x: 'pLeft', y: 'pTop + 112', w: 'pWidth', h: '18'}
+        - style:  *lMedium
+        - text:   FoxSynergy
+    - widget label:
+        !!pairs
+        - layout: {x: 'pLeft', y: 'pTop + 126', w: 'pWidth', h: '16'}
+        - style:  *lSmall
+        - text:   http://opengameart.org/users/foxsynergy
+
+- widget container:
+    !!pairs
+    - style:  {drawBorder: false}
+    - layout: {x: 'pLeft + 16', y: 'pTop + 322', w: 'pWidth - 32', h: '128'}
+    - widget label:
+        !!pairs
+        - layout: {x: 'pLeft', y: 'pTop + 16', w: 'pWidth', h: '24'}
+        - style:  *lLarge
+        - text:   Libraries used by ICE
+    - widget label:
+        !!pairs
+        - layout: {x: 'pLeft', y: 'pTop + 48', w: 'pWidth', h: '18'}
+        - style:  *lMedium
+        - text:   Derelict
+    - widget label:
+        !!pairs
+        - layout: {x: 'pLeft', y: 'pTop + 68', w: 'pWidth', h: '18'}
+        - style:  *lMedium
+        - text:   SDL
+    - widget label:
+        !!pairs
+        - layout: {x: 'pLeft', y: 'pTop + 88', w: 'pWidth', h: '18'}
+        - style:  *lMedium
+        - text:   SDL-Mixer
+    - widget label:
+        !!pairs
+        - layout: {x: 'pLeft', y: 'pTop + 108', w: 'pWidth', h: '18'}
+        - style:  *lMedium
+        - text:   FreeType

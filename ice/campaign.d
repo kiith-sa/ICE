@@ -24,6 +24,7 @@ import ice.playerprofile;
 import ice.guiswapper;
 import gui2.guisystem;
 import gui2.buttonwidget;
+import gui2.labelwidget;
 import gui2.rootwidget;
 import gui2.slotwidget;
 import util.signal;
@@ -163,11 +164,15 @@ private:
         // Called when the game ends. If the player has won, increase campaign progress.
         void processGameOver(GameOverData data)
         {
-            if(lastAccessibleLevel && data.gameWon)
+            if(!data.gameWon){return;}
+
+            if(lastAccessibleLevel)
             {
                 playerProfile_.campaignProgress(name, humanName, oldProgress + 1);
-                resetLevel();
             }
+            playerProfile_.processWinStatistics
+                (name, humanName, campaign_.currentLevel[0], data.playerStatistics);
+            resetLevel();
         }
         initGame_(campaign_.currentLevel[2], &processGameOver);
     }
@@ -179,8 +184,7 @@ private:
         if(campaign_.currentLevel[0] >= 1)
         {
             campaign_.previousLevel();
-            campaignGUI_.level!ButtonWidget.text = 
-                campaign_.currentLevel[2]["name"].as!string;
+            updateLevelGUI();
         }
     }
 
@@ -193,9 +197,19 @@ private:
         if(campaign_.currentLevel[0] < min(campaign_.length - 1, campaignProgress))
         {
             campaign_.nextLevel();
-            campaignGUI_.level!ButtonWidget.text = 
-                campaign_.currentLevel[2]["name"].as!string;
+            updateLevelGUI();
         }
+    }
+
+    // Update widgets dependent on the current level.
+    void updateLevelGUI()
+    {
+        campaignGUI_.level!ButtonWidget.text = 
+            campaign_.currentLevel[2]["name"].as!string;
+        const score = 
+            playerProfile_.bestExpGained(campaign_.name, campaign_.humanName, 
+                                         campaign_.currentLevel[0]);
+        campaignGUI_.score!LabelWidget.text = to!string(score);
     }
 
     // Change the selected campaign (called by campaign manager).

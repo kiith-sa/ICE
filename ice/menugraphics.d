@@ -35,7 +35,7 @@ public:
         (const real startTime, const real currentTime,
          ref RandomLinesEffect.Parameters params)
         {
-            params.bounds   = Rectf(16, 16, 608, 584);
+            params.bounds   = Rectf(16, 16, 800 - 16, 600 - 16);
             params.minWidth = 0.225;
             params.maxWidth = 0.9;
             //This speed ensures we always see completely random lines.
@@ -53,7 +53,7 @@ public:
         (const real startTime, const real currentTime,
          ref RandomLinesEffect.Parameters params)
         {
-            params.bounds   = Rectf(16, 16, 608, 584);
+            params.bounds   = Rectf(0, 0, 800, 600);
             params.minWidth = 0.6;
             params.maxWidth = 1.0;
             //This speed ensures we always see completely random lines.
@@ -88,9 +88,9 @@ public:
             params.randomOrder    = Yes.randomOrder;
             params.position       = Vector2i(16, -16);
             params.scrollingSpeed = -100.0f;
-            params.fontColor      = rgba!"E8E8FF90";
+            params.fontColor      = rgba!"E8E8FF48";
             params.fontSize       = 12;
-            params.randomOrder    = No.randomOrder;
+            params.randomOrder    = Yes.randomOrder;
             params.font           = "orbitron-bold.ttf";
             params.lineCount      = 48;
             return false;

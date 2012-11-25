@@ -18,6 +18,7 @@ import std.typecons;
 
 import dgamevfs._;
 
+import component.statisticscomponent;
 import gui2.guisystem;
 import gui2.buttonwidget;
 import gui2.lineeditwidget;
@@ -481,10 +482,57 @@ public:
     const string name;
 
 private:
-    // Progress for campaigns this player has played.
-    //
-    // Triplets of VFS campaign name, human-readable campaign name, level.
-    Tuple!(string, string, uint)[] campaignProgress_;
+    // Data specific to a campaign, e.g. which level the player is at and scores.
+    struct CampaignData
+    {
+        /// VFS file name of the campaign.
+        string vfsName;
+        /// Human-readable name of the campaign.
+        string humanName;
+        /// Index of the level the player is currently at in this campaign.
+        uint progress;
+        /// Best expGained for each level in the campaign.
+        uint[] levelExp;
+
+        /// Construct CampaignData with specified campaign name and progress.
+        this(string vfsName, string humanName, uint progress) @safe pure nothrow
+        {
+            this.vfsName   = vfsName;
+            this.humanName = humanName;
+            this.progress  = progress;
+            levelExp.length = progress;
+            levelExp[]      = 0;
+        }
+
+        /// Update the best experience gained for specified level.
+        ///
+        /// Params: level = Level to update best experience for.
+        ///         exp   = Experience value to update with. If lower 
+        ///                 than the current best experience value for this
+        ///                 level, the value is unchanged. Otherwise it is
+        ///                 updated to this value.
+        void updateLevelExp(uint level, uint exp)
+        {
+            auto levels = levelExp.length;
+            // Ensure the levelExp array is long enough to hold score for our level.
+            if(levels <= level)
+            {
+                levelExp.length = level + 1;
+                levelExp[levels .. $] = 0;
+                levels = levelExp.length;
+            }
+            levelExp[level] = max(levelExp[level], exp);
+        }
+
+        /// Return best experience gained for specified level.
+        uint bestExp(uint level) @safe const pure nothrow
+        {
+            return levelExp.length > level ? levelExp[level] : 0;
+        }
+    }
+
+    // Player-specific data about campaigns the player has played.
+    CampaignData[] campaignData_;
 
     // Spawner entity that will modify playership at spawn time.
     // 
@@ -500,7 +548,7 @@ public:
 
     /// Get progress in a campaign.
     ///
-    /// Params:   vfsName   = Virtual file system of the campaign. If multiple
+    /// Params:   vfsName   = Virtual file system name of the campaign. If multiple
     ///                       campaigns have the same human readable name, this is
     ///                       used to determine which one should be used.
     ///           humanName = Human readable name of the campaign.
@@ -508,45 +556,79 @@ public:
     /// Returns:  Current level in the campaign.
     uint campaignProgress(string vfsName, string humanName) const pure nothrow 
     {
-        uint result = uint.max;
-        // Handles even renamed files; but if both vfs and human names match,
-        // we have a definite match.
-        foreach(i, ref triplet; campaignProgress_) if(triplet[1] == humanName)
-        {
-            result = triplet[2];
-            if(triplet[0] == vfsName) {return result;}
-        }
-        if(result == uint.max)
-        {
-            // Default starting level in a campaign
-            return 0;
-        }
-        return result;
+        auto data = (cast(PlayerProfile)this).campaignData(vfsName, humanName);
+        return data is null ? 0 : data.progress;
     }
 
     /// Set progress for a campaign.
     ///
-    /// Params:  vfsName   = Virtual file system of the campaign. If multiple
+    /// Params:  vfsName   = Virtual file system name of the campaign. If multiple
     ///                      campaigns have the same human readable name, this is
     ///                      used to determine which one should be used.
     ///          humanName = Human readable name of the campaign.
     ///          progress  = Campaign progress (current level) to set.
     void campaignProgress(string vfsName, string humanName, uint progress) 
-        @safe pure nothrow
+        @trusted pure nothrow
     {
-        foreach(ref triplet; campaignProgress_)
+        auto data = campaignData(vfsName, humanName);
+        if(data is null)
         {
-            if(triplet[0] == vfsName && triplet[1] == humanName)
-            {
-                triplet[2] = progress;
-                return;
-            }
+            campaignData_ ~= CampaignData(vfsName, humanName, progress);
+            return;
         }
+        data.progress = progress;
+    }
 
-        campaignProgress_ ~= tuple(vfsName, humanName, progress);
+    /// Get the best experience gained for specified level in specified campaign.
+    ///
+    /// Params:  vfsName   = Virtual file system name of the campaign. If multiple
+    ///                      campaigns have the same human readable name, this is
+    ///                      used to determine which one should be used.
+    ///          humanName = Human readable name of the campaign.
+    ///          level     = Level to get experience for.
+    uint bestExpGained(string vfsName, string humanName, uint level) const pure nothrow
+    {
+        auto data = (cast(PlayerProfile)this).campaignData(vfsName, humanName);
+        return data is null ? 0 : data.bestExp(level);
+    }
+
+    /// Process statistics after the player wins a game.
+    ///
+    /// Params:  vfsName   = Virtual file system name of the campaign. If multiple
+    ///                      campaigns have the same human readable name, this is
+    ///                      used to determine which one should be used.
+    ///          humanName = Human readable name of the campaign.
+    ///          level     = Level the player has won.
+    void processWinStatistics(string vfsName, string humanName, uint level, 
+                              ref const StatisticsComponent statistics)
+    {
+        auto data = campaignData(vfsName, humanName);
+        assert(data !is null, "Processing win statistics in a nonexistent campaign");
+        data.updateLevelExp(level, statistics.expGained);
     }
 
 private:
+    // Get a pointer to campaign data with specified name.
+    //
+    // Params:  vfsName   = Virtual file system name of the campaign. If multiple
+    //                      campaigns have the same human readable name, this is
+    //                      used to determine which one should be used.
+    //          humanName = Human readable name of the campaign.
+    //
+    // Returns: Pointer to campaign data or null if not found.
+    CampaignData* campaignData(string vfsName, string humanName) pure nothrow
+    {
+        uint index = uint.max;
+        // Handles even renamed files; but if both vfs and human names match,
+        // we have a definite match.
+        foreach(uint i, ref data; campaignData_) if(data.humanName == humanName)
+        {
+            index = i;
+            if(data.vfsName == vfsName) {return &data;}
+        }
+        return index == uint.max ? null : &(campaignData_[index]);
+    }
+     
     // Construct a PlayerProfile.
     //
     // If profileDir exists, the profile is loaded from that directory.
@@ -588,12 +670,7 @@ private:
             auto progressFile = profileDir_.file("playerProgress.yaml");
             if(progressFile.exists)
             {
-                foreach(YAMLNode campaign; loadYAML(progressFile)["campaignProgress"])
-                {
-                    campaignProgress_ ~= tuple(campaign["name"].as!string,
-                                               campaign["humanName"].as!string,
-                                               campaign["progress"].as!uint);
-                }
+                loadProgress(progressFile);
             }
             auto spawnerFile = profileDir_.file("playerShipSpawner.yaml");
             if(spawnerFile.exists)
@@ -616,10 +693,41 @@ private:
         createNew();
     }
 
+    /// Load player progress from specified file.
+    ///
+    /// Should only be called from the constructor.
+    void loadProgress(VFSFile progressFile)
+    {
+        foreach(ref YAMLNode campaign; loadYAML(progressFile)["campaignProgress"])
+        {
+            campaignData_ ~= 
+                CampaignData(campaign["name"].as!string,
+                             campaign["humanName"].as!string,
+                             campaign["progress"].as!uint);
+            uint levelIndex = 0;
+            if(campaign.containsKey("levels")) foreach(ref YAMLNode level; campaign["levels"])
+            {
+                campaignData_[$ - 1].updateLevelExp(levelIndex, level["exp"].as!uint);
+                ++ levelIndex;
+            }
+        }
+    }
+
     // Save current state of the profile to its directory.
     void save()
     {
         if(!profileDir_.exists) {profileDir_.create();}
+
+        // Create a YAML sequence storing scoring for each level played.
+        auto levelsSequence(ref const CampaignData data)
+        {
+            YAMLNode[] result;
+            foreach(exp; data.levelExp)
+            {
+                result ~= YAMLNode(["exp"], [exp]);
+            }
+            return YAMLNode(result);
+        }
 
         try
         {
@@ -629,13 +737,14 @@ private:
             saveYAML(spawnerFile, playerShipSpawner_);
             // Save player progress to YAML.
             YAMLNode[] progressSequence;
-            foreach(ref triplet; campaignProgress_)
+            foreach(ref data; campaignData_)
             {
-                auto nameYAML      = YAMLNode(triplet[0]);
-                auto humanNameYAML = YAMLNode(triplet[1]);
-                auto progressYAML  = YAMLNode(triplet[2]);
-                progressSequence ~= YAMLNode(["name", "humanName", "progress"],
-                                             [nameYAML, humanNameYAML, progressYAML]);
+                auto nameYAML      = YAMLNode(data.vfsName);
+                auto humanNameYAML = YAMLNode(data.humanName);
+                auto progressYAML  = YAMLNode(data.progress);
+                progressSequence ~= 
+                    YAMLNode(["name", "humanName", "progress", "levels"],
+                             [nameYAML, humanNameYAML, progressYAML, levelsSequence(data)]);
             }
             auto progressYAML = YAMLNode(["campaignProgress"], [YAMLNode(progressSequence)]);
             saveYAML(progressFile, progressYAML);
