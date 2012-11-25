@@ -163,11 +163,15 @@ private:
         // Called when the game ends. If the player has won, increase campaign progress.
         void processGameOver(GameOverData data)
         {
-            if(lastAccessibleLevel && data.gameWon)
+            if(!data.gameWon){return;}
+
+            if(lastAccessibleLevel)
             {
                 playerProfile_.campaignProgress(name, humanName, oldProgress + 1);
-                resetLevel();
             }
+            playerProfile_.processWinStatistics
+                (name, humanName, campaign_.currentLevel[0], data.playerStatistics);
+            resetLevel();
         }
         initGame_(campaign_.currentLevel[2], &processGameOver);
     }
