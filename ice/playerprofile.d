@@ -523,6 +523,12 @@ private:
             }
             levelExp[level] = max(levelExp[level], exp);
         }
+
+        /// Return best experience gained for specified level.
+        uint bestExp(uint level) @safe const pure nothrow
+        {
+            return levelExp.length > level ? levelExp[level] : 0;
+        }
     }
 
     // Player-specific data about campaigns the player has played.
@@ -571,6 +577,19 @@ public:
             return;
         }
         data.progress = progress;
+    }
+
+    /// Get the best experience gained for specified level in specified campaign.
+    ///
+    /// Params:  vfsName   = Virtual file system name of the campaign. If multiple
+    ///                      campaigns have the same human readable name, this is
+    ///                      used to determine which one should be used.
+    ///          humanName = Human readable name of the campaign.
+    ///          level     = Level to get experience for.
+    uint bestExpGained(string vfsName, string humanName, uint level) const pure nothrow
+    {
+        auto data = (cast(PlayerProfile)this).campaignData(vfsName, humanName);
+        return data is null ? 0 : data.bestExp(level);
     }
 
     /// Process statistics after the player wins a game.
