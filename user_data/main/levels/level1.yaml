@@ -132,7 +132,7 @@ level:
       maxWidth: 1.0
       minLength: 4.0
       maxLength: 16.0
-      verticalScrollingSpeed: 275.0
+      verticalScrollingSpeed: 250.0
       linesPerPixel: 0.001
       detailLevel: 6
       color: rgbaC8C8FF30
