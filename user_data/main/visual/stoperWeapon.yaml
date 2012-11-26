@@ -2,8 +2,28 @@ type: lines
 vertices:
   !!pairs
 
+  #Halo
+  - width: 2.5
+  - color:  rgbaFFFFFF40
+  - vertex: [-4.0, 0.0]
+  - vertex: [-3.0, 7.0]
+  - vertex: [-3.0, 7.0]
+  - vertex: [-2.0, 5.0]
+   
+  - vertex: [-2.0, 5.0]
+  - vertex: [0.0, 15.0]
+  - vertex: [0.0, 15.0]
+  - vertex: [2.0, 5.0]
+
+  - vertex: [2.0, 5.0]
+  - vertex: [3.0, 7.0]
+  - vertex: [3.0, 7.0]
+  - vertex: [4.0, 0.0]
+  - vertex: [4.0, 0.0]
+  - vertex: [-4.0, 0.0]
+  
   #Main
-  - width: 1.0
+  - width: 0.5
   - color:  rgbaF2ED95C0
   - vertex: [-4.0, 0.0]
   - vertex: [-3.0, 7.0]
