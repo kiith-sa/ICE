@@ -3,10 +3,9 @@ vertices:
   !!pairs
 
   - width: 4
-  - color:  rgbaD0D0FF40
+  - color:  rgbaFFFFFF40
   - vertex: [0.0, 0.0]
   - vertex: [0.0, 20.0]
-
   - width: 3
   - vertex: [0.0, 20.0]
   - vertex: [8.0, 14.0]
@@ -19,8 +18,8 @@ vertices:
   - vertex: [-8.0, 14.0]
   - vertex: [-5.0, 8.0] 
 
-  - width: 1.0
-  - color:  rgbaB0B0FFFF
+  - width: 0.5
+  - color:  rgbaFAFA86D0
   - vertex: [0.0, 0.0]
   - vertex: [0.0, 20.0]
 

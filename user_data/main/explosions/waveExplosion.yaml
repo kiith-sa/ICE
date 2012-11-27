@@ -1,0 +1,27 @@
+spawner:
+ - entity: explosions/waveExFragmentUL.yaml 
+   condition: periodic 0.2
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[-4.0, -4.0], 225deg, 50.0]
+ - entity: explosions/waveExFragmentLL.yaml 
+   condition: periodic 0.2
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[-4.0, 4.0], 315deg, 50.0]
+ - entity: explosions/waveExFragmentUR.yaml 
+   condition: periodic 0.2
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[4.0, -4.0], 135deg, 50.0]
+ - entity: explosions/waveExFragmentLR.yaml 
+   condition: periodic 0.2
+   delay: 0.00
+   components:
+     physics:
+       PRS: [[4.0, 4.0], 45deg, 50.0]
+       
+deathTimeout: 0.5

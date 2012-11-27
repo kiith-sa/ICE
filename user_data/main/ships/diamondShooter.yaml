@@ -22,6 +22,18 @@ spawner:
       visual: visual/diamondShooter.yaml
       physics: 
         position: [0, 0]
+  - entity: explosions/spiralSmall.yaml
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 3.14
+  - entity: explosions/spiralSmall.yaml
+    condition: death 
+    components:
+      physics: 
+        position: [0, 0]
+        rotation: 0.0
   - entity: explosions/jetSmall.yaml
     condition: death 
     components:

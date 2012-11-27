@@ -212,16 +212,25 @@ level:
       maxWidth: 0.9
       minLength: 3.0
       maxLength: 12.0
-      verticalScrollingSpeed: 225.0
+      verticalScrollingSpeed: 250.0
       linesPerPixel: 0.0015
       detailLevel: 6
-      color: rgbaD0D0FF24
+      color: rgbaD0D0FF28
+  - effect lines:
+      minWidth: 0.225
+      maxWidth: 0.7
+      minLength: 3.0
+      maxLength: 12.0
+      verticalScrollingSpeed: 275.0
+      linesPerPixel: 0.0015
+      detailLevel: 4
+      color: rgbaE8DEB225
   - effect lines:
       minWidth: 0.15
       maxWidth: 0.6
       minLength: 2.0
       maxLength: 8.0
-      verticalScrollingSpeed: 150.0
+      verticalScrollingSpeed: 230.0
       linesPerPixel: 0.002
       detailLevel: 5
       color: rgbaD8D8FF18

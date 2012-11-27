@@ -22,17 +22,15 @@ spawner:
       visual: visual/peaShooter.yaml
       physics: 
         position: [0, 0]
-  - entity: explosions/spiralSmall.yaml
+  - entity: explosions/jetSmall.yaml
     condition: death 
     components:
       physics: 
-        position: [2, 24]
+        position: [0, 15]
         rotation: 0.0
-        speed: 32
-  - entity: explosions/spiralSmall.yaml
+  - entity: explosions/plasmaFighterExplosion.yaml
     condition: death 
     components:
       physics: 
-        position: [-2, 24]
-        rotation: 3.14
-        speed: -32
+        position: [0, 15]
+        rotation: 0.0

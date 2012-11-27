@@ -128,20 +128,11 @@ level:
       time: 1.0      
 
   - effect lines:
-      minWidth: 0.6
-      maxWidth: 1.0
-      minLength: 12.0
-      maxLength: 24.0
-      verticalScrollingSpeed: 1200.0
-      linesPerPixel: 0.000002
-      detailLevel: 7
-      color: rgbaF8F8EC98 
-  - effect lines:
       minWidth: 0.3
       maxWidth: 1.0
       minLength: 4.0
       maxLength: 16.0
-      verticalScrollingSpeed: 300.0
+      verticalScrollingSpeed: 250.0
       linesPerPixel: 0.001
       detailLevel: 6
       color: rgbaC8C8FF30

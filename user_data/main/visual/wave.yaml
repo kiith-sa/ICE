@@ -2,8 +2,31 @@ type: lines
 vertices:
   !!pairs
 
-  - color:  rgbaB0B0FFFF
-  - width: 4.0
+  - color:  rgbaFFFFFF40
+  - width: 3.5
+  - vertex: [-16.0, 0.0]
+  - vertex: [-12.0, 1.0]
+
+  - vertex: [-12.0, 1.0]
+  - vertex: [-8.0, 2.0]
+  
+  - vertex: [-8.0, 2.0]
+  - vertex: [-4.0, 3.0]
+
+  - vertex: [-4.0, 3.0]
+  - vertex: [4.0, 3.0] 
+  
+  - vertex: [4.0, 3.0]
+  - vertex: [8.0, 2.0] 
+  
+  - vertex: [8.0, 2.0]
+  - vertex: [12.0, 1.0] 
+  
+  - vertex: [12.0, 1.0]
+  - vertex: [16.0, 0.0]
+
+  - color:  rgbaFAFA86D0
+  - width: 1.0
   - vertex: [-16.0, 0.0]
   - vertex: [-12.0, 1.0]
 
