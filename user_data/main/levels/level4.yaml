@@ -254,51 +254,42 @@ level:
       
   - effect lines:
       minWidth: 0.6
-      maxWidth: 1.0
+      maxWidth: 1.5
       minLength: 16.0
       maxLength: 32.0
       verticalScrollingSpeed: 1500.0
       linesPerPixel: 0.000003
       detailLevel: 8
-      color: rgbaF8F8ECA0
+      color: rgbaDBD69850
   - effect lines:
       minWidth: 0.3
       maxWidth: 1.0
       minLength: 4.0
       maxLength: 16.0
-      verticalScrollingSpeed: 300.0
+      verticalScrollingSpeed: 275.0
       linesPerPixel: 0.001
       detailLevel: 7
-      color: rgbaC8C8FF30
+      color: rgbaFFAF6725
 
   - effect lines:
       minWidth: 0.225
       maxWidth: 0.9
       minLength: 3.0
       maxLength: 12.0
-      verticalScrollingSpeed: 225.0
+      verticalScrollingSpeed: 300.0
       linesPerPixel: 0.0015
       detailLevel: 6
-      color: rgbaD0D0FF24
-  - effect lines:
-      minWidth: 0.15
-      maxWidth: 0.6
-      minLength: 2.0
-      maxLength: 8.0
-      verticalScrollingSpeed: 150.0
-      linesPerPixel: 0.002
-      detailLevel: 5
-      color: rgbaD8D8FF18
+      color: rgbaD8D8FF27
 
   - effect lines:
       minWidth: 0.1
-      maxWidth: 0.4
+      maxWidth: 0.6
       minLength: 1.0
-      maxLength: 4.0
-      verticalScrollingSpeed: 90.0
+      maxLength: 9.0
+      verticalScrollingSpeed: 260.0
       linesPerPixel: 0.003
       detailLevel: 4
-      color: rgbaFFFFFF0B
+      color: rgbaDED3FF35
   - effect lines:
       minWidth: 20.0
       maxWidth: 30.0
@@ -307,7 +298,7 @@ level:
       verticalScrollingSpeed: 300.0
       linesPerPixel: 0.0001
       detailLevel: 6
-      color: rgba2008A001
+      color: rgba2008A004
 
   - effect lines:
       lineDirection: 0.7853
@@ -315,17 +306,17 @@ level:
       maxWidth: 80.0
       minLength: 1000.0
       maxLength: 2000.0
-      verticalScrollingSpeed: 80.0
+      verticalScrollingSpeed: 300.0
       linesPerPixel: 0.000005
       detailLevel: 8
-      color: rgba98989801
+      color: rgba98989804
   - effect lines:
       lineDirection: -0.7853
       minWidth: 50.0
       maxWidth: 80.0
       minLength: 1000.0
       maxLength: 2000.0
-      verticalScrollingSpeed: 80.0
+      verticalScrollingSpeed: 250.0
       linesPerPixel: 0.000005
       detailLevel: 8
       color: rgba98989801
