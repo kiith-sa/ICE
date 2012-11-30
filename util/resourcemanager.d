@@ -46,6 +46,25 @@ enum LoadStrategy
 }
 
 
+/// ID for fast repeated access to a resource.
+struct ResourceID(T)
+{
+private:
+    // Underlying lazy array index.
+    LazyArrayIndex!T index_;
+
+public:
+    /// Construct a ResourceIndex for a resource with specified virtual filesystem path.
+    this(string path)
+    {
+        if(path.startsWith("root/"))
+        {
+            path = path["root/".length .. $];
+        }
+        index_ = LazyArrayIndex!T(path);
+    }
+}
+
 /// Concrete resource manager managing resources of type T.
 class ResourceManager(T) : GenericResourceManager
 {
@@ -141,6 +160,24 @@ public:
         if(value is null)
         {
             writeln("WARNING: Failed to load or preload file ", path);
+            writeln("Ignoring...");
+        }
+        return value;
+    }
+
+    /// Get a resource with specified resource ID.
+    /// This is faster when accessing a resource more than once.
+    ///
+    /// Params:  id = ID to use.
+    ///
+    /// Returns: Pointer to the resource if found, null otherwise.
+    T* getResource(ref ResourceID!T id)
+    {
+        //Loads from file if not yet loaded.
+        T* value = storage_[id.index_];
+        if(value is null)
+        {
+            writeln("WARNING: Failed to load or preload file ", id);
             writeln("Ignoring...");
         }
         return value;
