@@ -618,7 +618,8 @@ class Ice
                 auto logDir = gameDir_.dir("logs");
                 if(!logDir.exists) {logDir.create();}
                 VFSFile profilerDump = logDir.file("frameProfilerDump.yaml");
-                auto stream = new MemoryStream(cast(ubyte[])[]);
+                ubyte[] initData;
+                auto stream = new MemoryStream(initData);
                 writeln("Writing frame profile...");
                 frameProfilerDump((string line)
                 {
