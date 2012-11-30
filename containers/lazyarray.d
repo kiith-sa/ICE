@@ -24,7 +24,7 @@ import memory.allocator;
  *       that garbage collects the id_ string even if it's
  *       still used.
  */
-struct LazyArrayIndex_(ID = string)
+struct LazyArrayIndex(T, ID = string)
 {
     private:
         ///Identifier of the resource. This is cleared after the resource is loaded.
@@ -34,26 +34,31 @@ struct LazyArrayIndex_(ID = string)
         uint index_ = uint.max;
 
     public:
-        ///Get the resource identitifer.
-        @property const(ID) id() const pure nothrow 
-        in
-        {
-            assert(!loaded, 
-                   "Accessing the ID of a LazyArrayIndex after its resource "
-                   "has been loaded - the ID is now cleared, replaced by index.");
-        }
-        body
-        {
-            return id_;
-        }
-
         ///Is the resource loaded?
-        @property bool loaded() const pure nothrow {return index_ != uint.max;}
+        bool loaded(ref const LazyArray!(T, ID) array) const pure nothrow 
+        {
+            return index_ < array.storage_.length;
+        }
 
         ///Construct a LazyArrayIndex_ pointing to resource with specified identifier.
         this(ID id) pure nothrow
         {
             id_ = id;
+        }
+
+        /// Get a string representation of the ID 
+        ///
+        /// (only works if the resource has not been loaded.)
+        string toString() @safe const pure nothrow
+        {
+            static if(is(ID == string))
+            {
+                return id_ is null ? "Unknown ID (loaded)" : id_;
+            }
+            else
+            {
+                return id_.toString();
+            }
         }
 
     private:
@@ -64,11 +69,24 @@ struct LazyArrayIndex_(ID = string)
             index_ = rhs;
         }
 
-        ///Get the resource identitifer (non-const version).
-        @property ID idNonConst() pure nothrow 
+        ///Get the resource identitifer.
+        const(ID) id(ref const LazyArray!(T, ID) array) const pure nothrow 
         in
         {
-            assert(!loaded, 
+            assert(!loaded(array), 
+                   "Accessing the ID of a LazyArrayIndex after its resource "
+                   "has been loaded - the ID is now cleared, replaced by index.");
+        }
+        body
+        {
+            return id_;
+        }
+
+        ///Get the resource identitifer (non-const version).
+        @property ID idNonConst(ref const LazyArray!(T, ID) array) pure nothrow 
+        in
+        {
+            assert(!loaded(array), 
                    "Accessing the ID of a LazyArrayIndex after its resource "
                    "has been loaded - the ID is now cleared, replaced by index.");
         }
@@ -78,10 +96,7 @@ struct LazyArrayIndex_(ID = string)
         }
 }
 
-pragma(msg, "LazyArrayIndex_!string size: ", LazyArrayIndex_!string.sizeof);
-
-///Default LazyArrayIndex_ uses string as resource identifier.
-alias LazyArrayIndex_!string LazyArrayIndex;
+pragma(msg, "LazyArrayIndex!(uint, string) size: ", LazyArrayIndex!(uint, string).sizeof);
 
 /**
  * Array that lazily loads items. Used for resource management. 
@@ -122,7 +137,7 @@ struct LazyArray(T, ID = string)
 
     public:
         ///Get the item at specified index, loading it if needed. Returns null on failure.
-        T* opIndex(ref LazyArrayIndex_!ID index)
+        T* opIndex(ref LazyArrayIndex!(T, ID) index)
         in
         {
             assert(loadData_ !is null, 
@@ -131,12 +146,12 @@ struct LazyArray(T, ID = string)
         }
         body
         {
-            if(!index.loaded)
+            if(!index.loaded(this))
             {
                 //Resource id must be valid.
                 static if(isArray!ID || is(ID == class))
                 {
-                    assert(index.idNonConst !is null, 
+                    assert(index.idNonConst(this) !is null, 
                            "Indexing a lazy array with an index that has a null "
                            "resource identifier");
                 }
@@ -145,7 +160,7 @@ struct LazyArray(T, ID = string)
                 long storageIdx = -1;
                 foreach(size_t idx, ref Item item; storage_)
                 {
-                    if(item.id == index.idNonConst) 
+                    if(item.id == index.idNonConst(this)) 
                     {
                         storageIdx = idx;
                         break;
@@ -159,9 +174,9 @@ struct LazyArray(T, ID = string)
                 else
                 {
                     storage_.length = storage_.length + 1;
-                    storage_.back.id = index.idNonConst;
+                    storage_.back.id = index.idNonConst(this);
                     //Add the new item, and clear it if we fail.
-                    if(!loadData_(index.idNonConst, storage_.back.value))
+                    if(!loadData_(index.idNonConst(this), storage_.back.value))
                     {
                         clear(storage_.back);
                         storage_.length = storage_.length - 1;

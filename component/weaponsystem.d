@@ -17,7 +17,6 @@ import containers.lazyarray;
 import math.vector2;
 import memory.memory;
 import time.gametime;
-import util.frameprofiler;
 import util.resourcemanager;
 import util.yaml;
 
@@ -39,56 +38,6 @@ import component.system;
 class WeaponSystem : System
 {
     private:
-        alias SpawnerComponent.Spawn Spawn;
-
-        ///Weapon "class", containing data shared by all instances of a weapon.
-        struct WeaponData
-        {
-            ///Time period between bursts.
-            double burstPeriod;
-            ///Number of bursts before we need to reload. 0 means no ammo limit.
-            uint ammo         = 0;
-            ///Time it takes to reload after running out of ammo.
-            double reloadTime = 1.0f;
-
-            ///Spawns to spawn weapon's projectiles, once added to a SpawnerComponent of an Entity.
-            FixedArray!Spawn spawns;
-
-            /**
-             * Initialize from YAML.
-             *
-             * Params:  name = Name of the weapon, for debugging.
-             *          yaml = YAML node to load from.
-             *
-             * Returns: true on success, false on failure.
-             *
-             * Throws:  YAMLException if the weapon could not be loaded (e.g. not enough data).
-             */
-            void initialize(string name, ref YAMLNode yaml)
-            {
-                burstPeriod = fromYAML!(double, "a > 0.0")(yaml["burstPeriod"], "burstPeriod");
-
-                //0 means unlimited ammo.
-                ammo = yaml.containsKey("ammo") ? yaml["ammo"].as!uint : 0;
-                reloadTime = yaml.containsKey("reloadTime")
-                           ? fromYAML!(double, "a > 0.0")(yaml["reloadTime"], "reloadTime") 
-                           : 0;
-
-                auto burst = yaml["burst"];
-
-                {
-                    auto zone = Zone("WeaponData spawns allocation");
-                    spawns = FixedArray!Spawn(burst.length);
-                }
-                uint i = 0;
-                foreach(ref YAMLNode shot; burst)
-                {
-                    spawns[i] = loadProjectileSpawn(shot);
-                    ++i;
-                }
-            }
-        }
-
         ///Entity system whose data we're processing.
         EntitySystem entitySystem_;
 
@@ -139,7 +88,7 @@ class WeaponSystem : System
                     WeaponData* weapon = weaponData_[weaponInstance.dataIndex];
                     if(weapon is null)
                     {
-                        writeln("WARNING: Could not load weapon data ", weaponInstance.dataIndex.id);
+                        writeln("WARNING: Could not load weapon data ", weaponInstance.dataIndex);
                         writeln("Falling back to placeholder weapon data...");
                         assert(false, "TODO - Placeholder weapon data not implemented");
                     }
@@ -293,26 +242,6 @@ class WeaponSystem : System
             }
             return true;
         }
-}
-
-/**
- * Specialized function to load a projectile spawn from YAML.
- *
- * The major difference is that accelerateForward is set to true.
- *
- * There is also code to support legacy projectile syntax. This will be removed.
- *
- * Params:  yaml = YAML node to load fromYAML
- */
-Spawn loadProjectileSpawn(ref YAMLNode yaml)
-{
-    auto result = Spawn(yaml);
-    with(result)
-    {
-        accelerateForward = true;
-    }
-
-    return result;
 }
 
 private:

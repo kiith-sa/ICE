@@ -12,10 +12,12 @@ module component.weaponcomponent;
 import std.array;
 import std.conv;
 
+import component.spawnercomponent;
 import containers.lazyarray;
 import containers.fixedarray;
 import memory.allocator;
 import util.bits;
+import util.frameprofiler;
 import util.yaml;
 
 
@@ -30,8 +32,10 @@ struct WeaponComponent
      */
     struct Weapon
     {
+        alias LazyArrayIndex!(WeaponData) WeaponDataIndex;
+
         ///Index to a lazy array in the weapon system storing weapon data.
-        LazyArrayIndex dataIndex;
+        WeaponDataIndex dataIndex;
 
         ///Time remaining before we're reloaded. Zero or negative means we're not reloading.
         double reloadTimeRemaining = 0.0f;
@@ -52,7 +56,7 @@ struct WeaponComponent
         this(const ubyte weaponSlot, string weaponFileName) pure nothrow
         {
             this.weaponSlot = weaponSlot;
-            dataIndex = LazyArrayIndex(weaponFileName);
+            dataIndex = WeaponDataIndex(weaponFileName);
         }
     }
 
@@ -113,3 +117,75 @@ public:
     pragma(msg, "Weapon size: ", Weapon.sizeof);
 }
 pragma(msg, "WeaponComponent size: ", WeaponComponent.sizeof);
+
+package:
+///Weapon "class", containing data shared by all instances of a weapon.
+struct WeaponData
+{
+    alias SpawnerComponent.Spawn Spawn;
+
+    ///Time period between bursts.
+    double burstPeriod;
+    ///Number of bursts before we need to reload. 0 means no ammo limit.
+    uint ammo         = 0;
+    ///Time it takes to reload after running out of ammo.
+    double reloadTime = 1.0f;
+
+    ///Spawns to spawn weapon's projectiles, once added to a SpawnerComponent of an Entity.
+    FixedArray!Spawn spawns;
+
+    /**
+     * Initialize from YAML.
+     *
+     * Params:  name = Name of the weapon, for debugging.
+     *          yaml = YAML node to load from.
+     *
+     * Returns: true on success, false on failure.
+     *
+     * Throws:  YAMLException if the weapon could not be loaded (e.g. not enough data).
+     */
+    void initialize(string name, ref YAMLNode yaml)
+    {
+        burstPeriod = fromYAML!(double, "a > 0.0")(yaml["burstPeriod"], "burstPeriod");
+
+        //0 means unlimited ammo.
+        ammo = yaml.containsKey("ammo") ? yaml["ammo"].as!uint : 0;
+        reloadTime = yaml.containsKey("reloadTime")
+                   ? fromYAML!(double, "a > 0.0")(yaml["reloadTime"], "reloadTime") 
+                   : 0;
+
+        auto burst = yaml["burst"];
+
+        {
+            auto zone = Zone("WeaponData spawns allocation");
+            spawns = FixedArray!(Spawn)(burst.length);
+        }
+        uint i = 0;
+        foreach(ref YAMLNode shot; burst)
+        {
+            spawns[i] = loadProjectileSpawn(shot);
+            ++i;
+        }
+    }
+
+    /**
+     * Specialized function to load a projectile spawn from YAML.
+     *
+     * The major difference is that accelerateForward is set to true.
+     *
+     * There is also code to support legacy projectile syntax. This will be removed.
+     *
+     * Params:  yaml = YAML node to load fromYAML
+     */
+    static Spawn loadProjectileSpawn(ref YAMLNode yaml)
+    {
+        auto result = Spawn(yaml);
+        with(result)
+        {
+            accelerateForward = true;
+        }
+
+        return result;
+    }
+}
+

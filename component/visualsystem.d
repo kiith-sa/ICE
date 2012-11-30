@@ -33,46 +33,6 @@ import component.system;
 class VisualSystem : System
 {
     private:
-        ///Visual data referenced by a VisualComponent.
-        struct VisualData
-        {
-            ///Type of visual data used.
-            enum Type 
-            {
-                Lines
-            }
-            Type type = Type.Lines;
-
-            /// Vertex with a position and a color. 
-            /// 
-            /// Used for line start/end.
-            struct ColoredVertex
-            {
-                /// Position of the vertex.
-                Vector2f position;
-                /// Color of the vertex.
-                Color color;
-
-                /// Construct a ColoredVertex.
-                this(const Vector2f position, const Color color) @safe pure nothrow
-                {
-                    this.position = position;
-                    this.color = color;
-                }
-            }
-            union
-            {
-                ///Visual data stored for the Lines type.
-                struct
-                {
-                    ///Vertices (in pairs).
-                    FixedArray!ColoredVertex vertices;
-                    ///Line widths (each for a pair of vertices)
-                    FixedArray!float widths;
-                }
-            }
-        }
-
         ///Entity system whose data we're processing.
         EntitySystem entitySystem_;
 
@@ -171,7 +131,7 @@ class VisualSystem : System
                 VisualData* data = visualData_[visual.dataIndex];
                 if(data is null)
                 {
-                    writeln("WARNING: Could not load visual data ", visual.dataIndex.id);
+                    writeln("WARNING: Could not load visual data ", visual.dataIndex);
                     writeln("Falling back to placeholder visual data...");
                     assert(false, "TODO - Placeholder visual data not implemented");
                 }

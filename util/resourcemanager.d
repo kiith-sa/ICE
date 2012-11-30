@@ -135,7 +135,7 @@ public:
         {
             path = path["root/".length .. $];
         }
-        auto index = LazyArrayIndex(path);
+        auto index = LazyArrayIndex!(T)(path);
         //Loads from file if not yet loaded.
         T* value = storage_[index];
         if(value is null)

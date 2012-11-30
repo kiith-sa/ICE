@@ -197,7 +197,7 @@ class SpawnerSystem : System
             if(prototypePtr is null)
             {
                 import std.stdio;
-                writeln("WARNING: Could not load entity data ", spawn.spawnee.id);
+                writeln("WARNING: Could not load entity data ", spawn.spawnee);
                 writeln("Falling back to placeholder entity data...");
                 assert(false, "TODO - Placeholder entity data not implemented");
             }

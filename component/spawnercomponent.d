@@ -16,6 +16,7 @@ import std.stdio;
 import std.string;
 import std.typecons;
 
+import component.entityprototype;
 import containers.lazyarray;
 import containers.vector;
 import math.vector2;
@@ -131,8 +132,11 @@ struct SpawnerComponent
         ///YAML node that overrides components of the spawnee.
         YAMLNode componentOverrides;
 
+        /// Alias for readability.
+        alias LazyArrayIndex!(EntityPrototype*) PrototypeIndex;
+
         ///Points to the EntityPrototype of the spawnee.
-        LazyArrayIndex spawnee;
+        PrototypeIndex spawnee;
 
         ///How many seconds to spawn after the condition is fired.
         float delay = 0.0f;
@@ -161,7 +165,7 @@ struct SpawnerComponent
          */
         this(ref YAMLNode yaml)
         {
-            spawnee = LazyArrayIndex(yaml["entity"].as!string);
+            spawnee = PrototypeIndex(yaml["entity"].as!string);
 
             //By default, spawn condition is "spawn" .
             if(yaml.containsKey("condition"))
