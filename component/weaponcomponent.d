@@ -37,8 +37,11 @@ struct WeaponComponent
         ///Index to a lazy array in the weapon system storing weapon data.
         WeaponDataIndex dataIndex;
 
-        ///Time remaining before we're reloaded. Zero or negative means we're not reloading.
-        double reloadTimeRemaining = 0.0f;
+        ///Ratio of the time remaining before we're reloaded.
+        ///
+        ///Zero or negative means we're not reloading. 1 means we've just 
+        ///started reloading.
+        double reloadTimeRemainingRatio = 0.0f;
 
         ///Time since last burst. If greater than the weapon's burstPeriod, we can fire.
         double timeSinceLastBurst  = double.infinity;

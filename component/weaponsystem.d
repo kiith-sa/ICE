@@ -104,12 +104,12 @@ class WeaponSystem : System
                     //At initialization, timeSinceLastBurst is infinite so assert that works.
                     static assert(double.infinity + 0.1 == double.infinity);
                     timeSinceLastBurst  += timeStep;
-                    //Negative reloadTimeRemaining is no problem - we can reload if <= 0;
-                    reloadTimeRemaining -= timeStep;
+                    //Negative reloadTimeRemainingRatio is no problem - we can reload if <= 0;
+                    reloadTimeRemainingRatio -= timeStep / weapon.reloadTime;
 
                     //Start a burst if the player is firing and the time is right.
                     if(firePressed &&
-                       reloadTimeRemaining <= 0.0f &&
+                       reloadTimeRemainingRatio <= 0.0f &&
                        timeSinceLastBurst >= weapon.burstPeriod)
                     {
                         initiateBurst(weaponInstance, *weapon, e.statistics);
@@ -183,8 +183,8 @@ class WeaponSystem : System
                 if(ammoConsumed < weapon.ammo){return;}
 
                 //We've used up all ammo, start reloading.
-                reloadTimeRemaining = weapon.reloadTime;
-                ammoConsumed        = 0;
+                reloadTimeRemainingRatio = 1.0f;//weapon.reloadTime;
+                ammoConsumed             = 0;
             }
         }
 
