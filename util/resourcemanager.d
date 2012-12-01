@@ -107,6 +107,9 @@ public:
     /// Params:  gameDir        = Game data directory to load resources from.
     ///          resourceLoader = Delegate that loads a resource from file,
     ///                           and returns true on success, false on failure.
+    ///                           The passed file might be NULL if the file was 
+    ///                           not found. This allows the delegate to load the 
+    ///                           backup resource (or just fail by returning false).
     ///          fileGlob       = Glob pattern determining which files to load.
     this(VFSDir gameDir, ResourceLoader resourceLoader, string fileGlob)
     {
@@ -122,6 +125,9 @@ public:
     /// Params:  gameDir        = Game data directory to load resources from.
     ///          resourceLoader = Delegate that loads a resource from file,
     ///                           and returns true on success, false on failure.
+    ///                           The passed file might be NULL if the file was 
+    ///                           not found. This allows the delegate to load the 
+    ///                           backup resource (or just fail by returning false).
     ///          fileGlob       = Delegate taking a VFSFiles range and returning
     ///                           an array of files to load.
     this(VFSDir gameDir, ResourceLoader resourceLoader, ResourceFilter resourceFilter)
@@ -183,6 +189,13 @@ public:
         return value;
     }
 
+    /// Delete all loaded resources.
+    void clear()
+    {
+        destroy(storage_);
+        storage_.loaderDelegate = &loaderWrapper;
+    }
+
 protected:
     override bool managesType_(TypeInfo typeInfo) @safe const pure nothrow
     {
@@ -210,7 +223,9 @@ private:
         VFSFile file;
         // Handle the case when the file does not exist.
         try                   {file = gameDir_.file(name);}
-        catch(VFSException e) {writeln("FAIL: ", e.msg);return false;}
+        catch(VFSException e) {file = null;}
+
+        // The loader can decide to load a placeholder on failure.
         return resourceLoader_(file, result);
     }
 }

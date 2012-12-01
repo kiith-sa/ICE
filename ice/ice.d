@@ -511,7 +511,7 @@ class Ice
         /// Throws: GameStartupException on failure.
         void initGUI()
         {
-            guiSystem_ = new GUISystem(platform_);
+            guiSystem_ = new GUISystem(platform_, gameDir_);
             guiSystem_.setGUISize(videoDriver_.screenWidth,
                                   videoDriver_.screenHeight);
 
@@ -728,10 +728,12 @@ class Ice
             videoDriver_.drawTexture(Vector2i((width  - loadingScreen.width)  / 2, 
                                               (height - loadingScreen.height) / 2),
                                      loadingScreenTexture);
+            // Puts the drawn loading screen on the screen.
             videoDriver_.endFrame();
 
             bool yamlLoader(VFSFile file, out YAMLNode result)
             {
+                if(file is null){return false;}
                 try                    {result = loadYAML(file);}
                 catch(YAMLException e) {return false;}
                 return true;
