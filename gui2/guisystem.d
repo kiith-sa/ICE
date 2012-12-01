@@ -15,6 +15,9 @@ import std.exception;
 import std.stdio;
 import std.typecons;
 
+import dgamevfs._;
+
+import formats.image;
 import gui2.boxmanuallayout;
 import gui2.buttonwidget;
 import gui2.containerwidget;
@@ -30,10 +33,13 @@ import gui2.linestylemanager;
 import gui2.progressbarwidget;
 import gui2.stylemanager;
 import gui2.widget;
+import image;
 import math.vector2;
 import platform.key;
 import platform.platform;
+import util.resourcemanager;
 import util.yaml;
+import video.texture;
 import video.videodriver;
 
 
@@ -68,11 +74,24 @@ private:
     // A style manager constructor might throw a StyleInitException on failure.
     StyleManager delegate(ref Tuple!(string, YAMLNode)[])[string] styleCtors_;
 
+    // Resource manager that manages loading of textures used by the GUI.
+    //
+    // Textures might be unloaded if the video driver is replaced,
+    // so they should always be accessed through this manager.
+    ResourceManager!Texture textureManager_;
+
+    // Video driver used for the last render() call.
+    //
+    // A reference is kept here for textureManager_. If
+    // the video driver changes, all textures are unloaded.
+    VideoDriver video_;
+
 public:
     /// Construct the GUISystem.
     ///
     /// Params: platform = Platform to use for user input.
-    this(Platform platform)
+    ///         gameDir  = Game data directory.
+    this(Platform platform, VFSDir gameDir)
     {
         platform_ = platform;
         platform.key.connect(&inputKey);
@@ -132,11 +151,51 @@ public:
         auto layoutSource    = loadYAML("{x: 0, y: 0, w: 640, h: 480}"); 
         rootSlot_.init("", this, cast(Widget[])[], new FixedLayout(layoutSource),
                        new LineStyleManager(slotDummyStyles));
+
+        // Initialize the texture resource manager.
+        bool textureLoader(VFSFile file, out Texture result)
+        {
+            assert(video_ !is null,
+                   "GUI loading a texture before the first render()"
+                   " call sets the video driver.");
+
+            Image textureImage;
+            if(file is null)
+            {
+                // Placeholder texture
+                textureImage = Image(64, 64);
+                textureImage.generateStripes(4);
+            }
+            // Load the texture.
+            else try
+            {
+                scope(failure)
+                {
+                    // Placeholder texture
+                    textureImage = Image(64, 64);
+                    textureImage.generateStripes(2);
+                }
+                readImage(textureImage, file);
+            }
+            catch(VFSException e)
+            {
+                writeln("Failed to load a texture: " ~ e.msg);
+            } 
+            catch(ImageFileException e)
+            {
+                writeln("Failed to load a texture: " ~ e.msg);
+            }
+            result = video_.createTexture(textureImage, false);
+            return true;
+        }
+
+        textureManager_ = new ResourceManager!Texture(gameDir, &textureLoader, "*.png");
     }
 
     /// Destroy the GUISystem.
     ~this()
     {
+        destroy(textureManager_);
         platform_.key.disconnect(&inputKey);
         platform_.mouseMotion.disconnect(&inputMouseMove);
         platform_.mouseKey.disconnect(&inputMouseKey);
@@ -204,6 +263,12 @@ public:
     /// Render the GUI.
     void render(VideoDriver video)
     {
+        if(video !is video_ && video_ !is null)
+        {
+            // Textures have been invalidated by the video driver change.
+            textureManager_.clear();
+        }
+        video_ = video;
         static RenderEvent event;
         if(null is event){event = new RenderEvent();}
 
@@ -456,6 +521,7 @@ public:
             enforce(styleCtor !is null,
                     new GUIInitException("Unknown style manager: " ~ styleManager_));
             auto styleManager = (*styleCtor)(yamlStylesParameters);
+            styleManager.textureManager = guiSystem_.textureManager_;
 
             // Construct the widget.
             auto widgetCtor = widgetTypeName in guiSystem_.widgetCtors_;
@@ -677,6 +743,7 @@ private:
         enforce(styleCtor !is null,
                 new GUIInitException("Unknown style manager in YAML: " ~ styleType));
         auto styleManager = (*styleCtor)(stylesParameters);
+        styleManager.textureManager = guiSystem_.textureManager_;
 
         // Construct the widget and return it.
         Widget result = widgetCtor(source);

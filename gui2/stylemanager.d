@@ -10,6 +10,8 @@ module gui2.stylemanager;
 
 import math.rect;
 import math.vector2;
+import util.resourcemanager;
+import video.texture;
 import video.videodriver;
 
 /// Horizontal alignments.
@@ -42,6 +44,13 @@ enum AlignY
 /// supports different kinds of styles.
 abstract class StyleManager
 {
+protected:
+    /// Reference to the texture manager.
+    ///
+    /// Textures might be unloaded if the video driver is replaced,
+    /// so they should always be accessed through this manager.
+    ResourceManager!Texture textureManager_;
+
 public:
     /// Set style with specified name.
     ///
@@ -125,4 +134,11 @@ public:
 protected:
     /// Get the size of specified text when drawn on the screen.
     Vector2u getTextSize(VideoDriver video, const string text);
+
+package:
+    // Set the texture manager to load textures with.
+    @property void textureManager(ResourceManager!Texture rhs)// pure nothrow 
+    {
+        textureManager_ = rhs;
+    }
 }
