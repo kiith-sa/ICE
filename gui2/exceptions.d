@@ -8,9 +8,17 @@
 /// GUI related exceptions.
 module gui2.exceptions;
 
+/// Base class for all GUI exceptions.
+class GUIException : Exception 
+{
+    public this(string msg, string file = __FILE__, int line = __LINE__)
+    {
+        super(msg, file, line);
+    }
+}
 
 /// Exception thrown at GUI initialization errors.
-class GUIInitException : Exception 
+class GUIInitException : GUIException 
 {
     public this(string msg, string file = __FILE__, int line = __LINE__)
     {
@@ -46,7 +54,7 @@ class StyleInitException : GUIInitException
 }
 
 /// Exception thrown when a widget with some address could not be found.
-class WidgetNotFoundException : Exception 
+class WidgetNotFoundException : GUIException 
 {
     public this(string msg, string file = __FILE__, int line = __LINE__)
     {
@@ -55,7 +63,7 @@ class WidgetNotFoundException : Exception
 }
 
 /// Exception thrown when a widget has an unexpected type.
-class WidgetTypeException : Exception 
+class WidgetTypeException : GUIException 
 {
     public this(string msg, string file = __FILE__, int line = __LINE__)
     {
