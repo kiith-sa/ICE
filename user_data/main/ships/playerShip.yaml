@@ -8,8 +8,8 @@ volume:
     max: [28,  14]
 weapon:
   0: weapons/playerDefaultWeapon.yaml
-  2: weapons/circleOfDeath.yaml
-  3: weapons/activeShield.yaml
+  1: weapons/circleOfDeath.yaml
+  2: weapons/activeShield.yaml
 collidable:
 health: 1000
 warhead:

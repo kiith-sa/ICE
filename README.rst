@@ -30,8 +30,8 @@ Controls
 ``S``, ``Down``  Move down
 ``D``, ``Right`` Move right
 ``Space``        Fire weapon 1.
-``J``            Fire weapon 2.
-``K``            Fire weapon 3.
+``H``            Fire weapon 2.
+``J``            Fire weapon 3.
 ``Scroll-Lock``  Take screenshot (in ``~/.ice/main/screenshots/`` if installed,
                  or ``user_data/main/screenshots/`` in the game directory)
 ================ ==============================================================
