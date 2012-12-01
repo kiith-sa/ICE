@@ -56,7 +56,7 @@ package struct GLTextureBackend
             GLenum type;
             GLint internalFormat;
             glColorFormat(format, glFormat, type, internalFormat);
-            
+
             glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, size.x, size.y, 
                          0, glFormat, type, image.dataUnsafe.ptr);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -99,8 +99,8 @@ package struct GLTextureBackend
             glTexSubImage2D(GL_TEXTURE_2D, 0, offset.x, offset.y, 
                             image.size.x, image.size.y, 
                             glFormat, type, image.data.ptr);
-        }          
-        
+        }
+
         ///Start using this texture for upcoming draws.
         void start(){glBindTexture(GL_TEXTURE_2D, texture_);}
 
@@ -127,7 +127,7 @@ package struct GLTextureBackend
                 case ColorFormat.RGBA_8:
                     internalFormat = GL_RGBA8;
                     glFormat = GL_RGBA;
-                    type = GL_UNSIGNED_INT_8_8_8_8;
+                    type = GL_UNSIGNED_BYTE;
                     break;
                 case ColorFormat.GRAY_8:
                     internalFormat = GL_RED;
