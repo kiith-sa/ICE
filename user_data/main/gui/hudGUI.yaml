@@ -47,7 +47,7 @@
     !!pairs
     - style:
         progressStyle: vertical 
-        progressColor: rgbaB0B0FF48
+        progressColor: rgbaB0B0FF60
         backgroundImage: gui/images/weapon1.png
     - layout: {x: 'pRight - 80', y: 'pBottom - 40', w: 32, h: 32}
     - progress: 0.5
@@ -55,7 +55,7 @@
     !!pairs
     - style:
         progressStyle: vertical 
-        progressColor: rgbaB0B0FF48
+        progressColor: rgbaB0B0FF60
         backgroundImage: gui/images/weapon2.png
     - layout: {x: 'pRight - 40', y: 'pBottom - 40', w: 32, h: 32}
     - progress: 0.5
