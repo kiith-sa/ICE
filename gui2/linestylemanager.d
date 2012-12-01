@@ -19,7 +19,9 @@ import gui2.stylemanager;
 import gui2.widgetutils;
 import math.rect;
 import math.vector2;
+import video.texture;
 import video.videodriver;
+import util.resourcemanager;
 import util.yaml;
 
 
@@ -58,6 +60,10 @@ public:
         bool drawBorder       = true;
         /// Style of the progress "bar".
         ProgressStyle progressStyle;
+        /// Does this style have a background image?
+        bool hasBackgroundTexture = false;
+        /// If hasBackgroundTexture is true, used to access the background texture.
+        ResourceID!Texture backgroundTexture;
 
         /// Construct a LineStyleManager style.
         ///
@@ -75,6 +81,13 @@ public:
             progressColor   = styleInitPropertyOpt(yaml, "progressColor",   progressColor);
             font            = styleInitPropertyOpt(yaml, "font",            font);
             fontSize        = styleInitPropertyOpt(yaml, "fontSize",        fontSize);
+
+            const backgroundImage = styleInitPropertyOpt(yaml, "backgroundImage", cast(string)null);
+            if(backgroundImage !is null)
+            {
+                hasBackgroundTexture = true;
+                backgroundTexture = ResourceID!Texture(backgroundImage);
+            }
             const progressStyleString = 
                 styleInitPropertyOpt(yaml, "progressStyle", "horizontal");
             enforce(["horizontal", "vertical"].canFind(progressStyleString),
@@ -132,10 +145,15 @@ public:
 
     override void drawWidgetRectangle(VideoDriver video, ref const Recti area)
     {
-        if(!style_.drawBorder){return;}
         const min = area.min.to!float;
         const max = area.max.to!float;
+        if(style_.hasBackgroundTexture)
+        {
+            video.drawTexture
+                (area.min, *(textureManager_.getResource(style_.backgroundTexture)));
+        }
         video.drawFilledRect(area.min.to!float, area.max.to!float, style_.backgroundColor);
+        if(!style_.drawBorder){return;}
         video.drawRect(area.min.to!float, area.max.to!float, style_.borderColor);
     }
 
