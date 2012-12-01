@@ -34,12 +34,28 @@
 - widget label score:
     !!pairs
     - style:         *lLarge
-    - layout: {x: 'pLeft + 8', y: 'pTop + 16', w: '80', h: 20}
+    - layout: {x: 'pLeft + 8', y: 'pTop + 16', w: 80, h: 20}
     - text: 0
 - widget progressBar health:
     !!pairs
     - style:
         progressStyle: vertical 
         progressColor: rgbaB0B0FF68
-    - layout: {x: 'pRight - 20', y: 'pTop + 64', w: '12', h: 600 - 128}
+    - layout: {x: 'pRight - 20', y: 'pTop + 64', w: 12, h: 600 - 128}
+    - progress: 0.5
+- widget progressBar weapon1:
+    !!pairs
+    - style:
+        progressStyle: vertical 
+        progressColor: rgbaB0B0FF48
+        backgroundImage: gui/images/weapon1.png
+    - layout: {x: 'pRight - 80', y: 'pBottom - 40', w: 32, h: 32}
+    - progress: 0.5
+- widget progressBar weapon2:
+    !!pairs
+    - style:
+        progressStyle: vertical 
+        progressColor: rgbaB0B0FF48
+        backgroundImage: gui/images/weapon2.png
+    - layout: {x: 'pRight - 40', y: 'pBottom - 40', w: 32, h: 32}
     - progress: 0.5
