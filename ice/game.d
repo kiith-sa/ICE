@@ -39,6 +39,7 @@ import component.tagscomponent;
 import component.tagssystem;
 import component.timeoutsystem;
 import component.warheadsystem;
+import component.weaponcomponent;
 import component.weaponsystem;
 import component.system;
 import component.visualsystem;
@@ -268,6 +269,12 @@ class GameGUI
         void updatePlayerStatistics(ref const StatisticsComponent statistics)
         {
             hud_.updatePlayerStatistics(statistics);
+        }
+
+        ///Update player weapon data (e.g. reloading) in the HUD.
+        void updatePlayerWeapon(ref const WeaponComponent weapon)
+        {
+            hud_.updatePlayerWeapon(weapon);
         }
 
     private:
@@ -528,8 +535,19 @@ class Game
                         if(playerShip !is null)
                         {
                             playerState_ = PlayerState.Alive;
-                            playerStatistics_ = *(playerShip.statistics);
-                            gui_.updatePlayerStatistics(playerStatistics_);
+
+                            const statistics   = playerShip.statistics;
+                            const weapon = playerShip.weapon;
+
+                            if(statistics !is null)
+                            {
+                                playerStatistics_ = *statistics;
+                                gui_.updatePlayerStatistics(playerStatistics_);
+                            }
+                            if(weapon !is null)
+                            {
+                                gui_.updatePlayerWeapon(*weapon);
+                            }
                             const health = playerShip.health;
                             if(health !is null)
                             {
@@ -537,6 +555,7 @@ class Game
                                                         cast(float)health.maxHealth);
                             }
                         }
+                        // Player ship doesn't exist anymore; player has died.
                         else if(playerState_ == PlayerState.Alive)
                         {
                             playerState_ = PlayerState.Dead;

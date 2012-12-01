@@ -16,6 +16,8 @@ import dgamevfs._;
 
 import color;
 import component.statisticscomponent;
+import component.weaponcomponent;
+import gui2.exceptions;
 import gui2.guisystem;
 import gui2.labelwidget;
 import gui2.progressbarwidget;
@@ -32,11 +34,35 @@ import video.videodriver;
 class HUD: SwappableGUI
 {
     private:
-        ///Time left for the current message text to stay on the HUD.
+        // Time left for the current message text to stay on the HUD.
         float messageTextTimeLeft_ = 0.0f;
 
-        ///Root widget of the HUD.
+        // Root widget of the HUD.
         RootWidget hudGUI_;
+
+
+        // Shows information text set by the level script.
+        //
+        // (will be removed unless we can make it more usable).
+        // Can be null (so modders can remove the widget).
+        LabelWidget infoTextLabel_;
+
+        // Shows current player health.
+        //
+        // Can be null (so modders can remove the widget).
+        ProgressBarWidget healthBar_;
+
+        // Shows player score.
+        //
+        // Can be null (so modders can remove the widget).
+        LabelWidget scoreLabel_;
+
+        // Progress bars showing reload status for player weapons.
+        //
+        // We automatically handle any number of weapon reload bars so 
+        // new weapons and their HUD items can be added without touching
+        // the source code.
+        ProgressBarWidget[] weaponReloadBars_;
 
     public:
         /// Constructs HUD.
@@ -50,6 +76,29 @@ class HUD: SwappableGUI
         {
             auto hudGUIFile = gameDir.dir("gui").file("hudGUI.yaml");
             hudGUI_ = guiSystem.loadWidgetTree(loadYAML(hudGUIFile));
+
+            auto getOptionalWidget(T)(T delegate() getWidget)
+            {
+                try                   {return getWidget();}
+                catch(GUIException e) {return cast(T)null;}
+            }
+
+            infoTextLabel_  = getOptionalWidget({return hudGUI_.infoText!LabelWidget;});
+            healthBar_      = getOptionalWidget({return hudGUI_.health!ProgressBarWidget;});
+            scoreLabel_     = getOptionalWidget({return hudGUI_.score!LabelWidget;});
+            try
+            {
+                uint w = 1;
+                for(;;++w)
+                {
+                    weaponReloadBars_ ~=
+                        hudGUI_.get!ProgressBarWidget("weapon" ~ to!string(w));
+                }
+            }
+            catch(GUIException e)
+            {
+                // Got all weapon reload progress bars.
+            }
             super(hudGUI_);
         }
 
@@ -61,20 +110,19 @@ class HUD: SwappableGUI
         /// Update the game GUI, using game time subsystem to measure time.
         void update(const GameTime gameTime)
         {
-            if(!hudGUI_.infoText!LabelWidget.text.empty)
+            if(infoTextLabel_ is null || infoTextLabel_.text.empty){return;}
+            messageTextTimeLeft_ -= gameTime.timeStep;
+            if(messageTextTimeLeft_ <= 0)
             {
-                messageTextTimeLeft_ -= gameTime.timeStep;
-                if(messageTextTimeLeft_ <= 0)
-                {
-                    hudGUI_.infoText!LabelWidget.text = "";
-                }
+                infoTextLabel_.text = "";
             }
         }
 
         ///Set the message text on the bottom of the HUD for specified (game) time.
         void messageText(string rhs, float time) 
         {
-            hudGUI_.infoText!LabelWidget.text = rhs;
+            if(infoTextLabel_ is null){return;}
+            infoTextLabel_.text  = rhs;
             messageTextTimeLeft_ = time;
         }
 
@@ -87,12 +135,27 @@ class HUD: SwappableGUI
         }
         body
         {
-            hudGUI_.health!ProgressBarWidget.progress = health;
+            if(healthBar_ is null){return;}
+            healthBar_.progress = health;
         }
 
         ///Update any player statistics related displays in the HUD.
         void updatePlayerStatistics(ref const StatisticsComponent statistics)
         {
-            hudGUI_.score!LabelWidget.text = to!string(statistics.expGained);
+            if(scoreLabel_ is null){return;}
+            scoreLabel_.text = to!string(statistics.expGained);
+        }
+
+        ///Update player weapon data (e.g. reloading) in the HUD.
+        void updatePlayerWeapon(ref const WeaponComponent weapon)
+        {
+            const weapons = weapon.weapons;
+            // The first reload bar handles the second weapon, second the
+            // third, and so on, hence weapons.length - 1.
+            for (size_t w = 0; w < min(weaponReloadBars_.length, weapons.length - 1); ++w)
+            {
+                const remaining = cast(float)weapons[w + 1].reloadTimeRemainingRatio;
+                weaponReloadBars_[w].progress = clamp(1.0f - remaining , 0.0f, 1.0f);
+            }
         }
 }
