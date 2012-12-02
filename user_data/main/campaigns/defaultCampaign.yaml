@@ -1,6 +1,11 @@
-name: ICE
-levels: 
+name: ICE demo
+levels:
   - levels/level1.yaml 
   - levels/level2.yaml
   - levels/level3.yaml
   - levels/level4.yaml
+credits:
+  ICE demo campaign:
+    - name: Dávid Horváth
+    - name: Libor Mališ
+    - name: Tomáš Nguyen
