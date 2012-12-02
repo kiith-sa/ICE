@@ -135,10 +135,10 @@ final class HumanPlayer : Player
 
             control.firing[0] = kp(Key.Space) || kp(Key.Lctrl);
 
-            control.firing[1] = kp(Key.K_H) || kp(Key.NP_4);
-            control.firing[2] = kp(Key.K_J) || kp(Key.NP_2);
-            control.firing[3] = kp(Key.K_K) || kp(Key.NP_6);
-            control.firing[4] = kp(Key.K_U) || kp(Key.NP_8);
+            control.firing[1] = kp(Key.K_J) || kp(Key.NP_4);
+            control.firing[2] = kp(Key.K_K) || kp(Key.NP_2);
+            control.firing[3] = kp(Key.K_L) || kp(Key.NP_6);
+            control.firing[4] = kp(Key.K_I) || kp(Key.NP_8);
         }
         
         ///Destroy this HumanPlayer.
