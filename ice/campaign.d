@@ -119,9 +119,10 @@ private:
 
     // Called to initialize the game.
     //
-    // The first parameter is the level to start, the second is the 
-    // delegate that will be called by the game when the level ends.
-    void delegate(ref YAMLNode, void delegate(GameOverData)) initGame_;
+    // The first parameter is the level to start, the second is
+    // name of GUI to swap to after the game ends, and the third 
+    // is delegate that will be called by the game when the level ends.
+    void delegate(ref YAMLNode, string, void delegate(GameOverData)) initGame_;
 
 public:
     /// Initialize the campaign GUI.
@@ -131,14 +132,15 @@ public:
     ///          campaign      = The first selected campaign.
     ///          playerProfile = Player currently playing the game.
     ///          initGame      = Function called to initialize game, passing 
-    ///                          the source of level to play, and a delegate
+    ///                          the source of level to play, GUI to swap to 
+    ///                          after the game ends and a delegate
     ///                          for the game to call when the level ends.
     ///
     /// Throws:  VFSException on a filesystem error.
     ///          GUIInitException if the GUI could not be loaded.
     this(GUISystem gui, VFSDir gameDir, Campaign campaign, 
          PlayerProfile playerProfile, 
-         void delegate(ref YAMLNode, void delegate(GameOverData)) initGame)
+         void delegate(ref YAMLNode, string, void delegate(GameOverData)) initGame)
     {
         initGame_      = initGame;
         campaign_      = campaign;
@@ -172,9 +174,10 @@ private:
             }
             playerProfile_.processWinStatistics
                 (name, humanName, campaign_.currentLevel[0], data.playerStatistics);
+
             resetLevel();
         }
-        initGame_(campaign_.currentLevel[2], &processGameOver);
+        initGame_(campaign_.currentLevel[2], "campaign", &processGameOver);
     }
 
     // Change to the previous level.

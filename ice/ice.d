@@ -296,6 +296,8 @@ class Ice
         ubyte[] frameProfilerData_;
         ///Is the frame profiler enabled?
         bool frameProfilerEnabled_;
+        ///When running a game, specifies the swappable GUI to return after the game ends.
+        string guiAfterGameEnd_ = "ice";
 
     public:
         /**
@@ -534,7 +536,7 @@ class Ice
                     try
                     {
                         auto source = loadYAML(gameDir_.file(levelName));
-                        initGame(source, null);
+                        initGame(source, "levels", null);
                     }
                     catch(YAMLException e)
                     {
@@ -817,12 +819,13 @@ class Ice
         }
 
         ///Start game.
-        void initGame(ref YAMLNode levelSource,
+        void initGame(ref YAMLNode levelSource, string guiAfterGameEnd,
                       void delegate(GameOverData) gameOverCallback = null)
         {
             platform_.key.disconnect(&keyHandler);
             soundSystem_.haltMusic();
             guiSwapper_.setGUI(null);
+            guiAfterGameEnd_ = guiAfterGameEnd;
             try
             {
                 game_ = gameContainer_.produce(platform_,
@@ -855,7 +858,7 @@ class Ice
             game_ = null;
             startMenuMusic();
             platform_.key.connect(&keyHandler);
-            guiSwapper_.setGUI("ice");
+            guiSwapper_.setGUI(guiAfterGameEnd_);
         }
 
         ///Exit ICE.
