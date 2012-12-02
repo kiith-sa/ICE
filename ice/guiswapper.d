@@ -99,12 +99,18 @@ protected:
     /// Swaps this GUI (connected at call) with GUI specified by a name string.
     void delegate(string) swapGUI_;
 
+    /// Set the root widget. Can be called more than once.
+    final @property void rootWidget(RootWidget rootWidget) @safe pure nothrow
+    {
+        rootWidget_ = rootWidget;
+    }
+
 public:
     /// Initialize a SwappableGUI with a root widget.
     this(RootWidget rootWidget)
     {
         void dummy(string){}
         swapGUI_ = &dummy;
-        rootWidget_ = rootWidget;
+        this.rootWidget = rootWidget;
     }
 }
