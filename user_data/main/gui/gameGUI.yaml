@@ -60,24 +60,26 @@
             - style active:  *bActive
             - layout: {x: 'pLeft + 8', y: 'pTop + 8 * 4 + 24 * 3', w: pWidth - 16, h: 24}
             - text: Quit
+        # These can be used for debugging,
+        # but are moved out of the screen by default.
         - widget button resetVideo:
             !!pairs
             - style:         *bDefault
             - style focused: *bFocused
             - style active:  *bActive
-            - layout: {x: 'pLeft + 8', y: 'pTop + 8 * 5 + 24 * 4', w: pWidth - 16, h: 24}
+            - layout: {x: 'pLeft + 8 - 16384', y: 'pTop + 8 * 5 + 24 * 4', w: pWidth - 16, h: 24}
             - text: (DEBUG) Reset video
         - widget button levels:
             !!pairs
             - style:         *bDefault
             - style focused: *bFocused
             - style active:  *bActive
-            - layout: {x: 'pLeft + 8', y: 'pTop + 8 * 6 + 24 * 5', w: pWidth - 16, h: 24}
+            - layout: {x: 'pLeft + 8 - 13684', y: 'pTop + 8 * 6 + 24 * 5', w: pWidth - 16, h: 24}
             - text: (DEBUG) Levels
         - widget button reloadResources:
             !!pairs
             - style:         *bDefault
             - style focused: *bFocused
             - style active:  *bActive
-            - layout: {x: 'pLeft + 8', y: 'pTop + 8 * 7 + 24 * 6', w: pWidth - 16, h: 24}
-            - text: (DEBUG) Reload data
+            - layout: {x: 'pLeft + 8 - 16384', y: 'pTop + 8 * 7 + 24 * 6', w: pWidth - 16, h: 24}
+            - text: (DEBUG) Reload YAML
