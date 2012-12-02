@@ -30,7 +30,6 @@ import gui2.slotwidget;
 import util.signal;
 import util.yaml;
 
-
 /// Campaign selection GUI.
 class CampaignsGUI: SwappableGUI
 {
@@ -104,6 +103,13 @@ private:
     }
 }
 
+/// Used to pass data about a campaign victoryy.
+struct CampaignWinData
+{
+    /// Credits information for the campaign.
+    YAMLNode campaignCredits;
+}
+
 /// GUI for a particular campaign, allowing to select the level to play.
 class CampaignGUI: SwappableGUI
 {
@@ -119,12 +125,15 @@ private:
 
     // Called to initialize the game.
     //
-    // The first parameter is the level to start, the second is
-    // name of GUI to swap to after the game ends, and the third 
+    // The first parameter is the level to start, the second is a delegate
+    // returning name of GUI to swap to after the game ends, and the third 
     // is delegate that will be called by the game when the level ends.
-    void delegate(ref YAMLNode, string, void delegate(GameOverData)) initGame_;
+    void delegate(ref YAMLNode, string delegate(), void delegate(GameOverData)) initGame_;
 
 public:
+    /// Emitted when the player wins the campaign.
+    mixin Signal!(CampaignWinData) wonCampaign;
+
     /// Initialize the campaign GUI.
     ///
     /// Params:  gui           = GUI system to load widgets.
@@ -132,7 +141,8 @@ public:
     ///          campaign      = The first selected campaign.
     ///          playerProfile = Player currently playing the game.
     ///          initGame      = Function called to initialize game, passing 
-    ///                          the source of level to play, GUI to swap to 
+    ///                          the source of level to play, a delegate 
+    ///                          returning name of the GUI to swap to 
     ///                          after the game ends and a delegate
     ///                          for the game to call when the level ends.
     ///
@@ -140,7 +150,7 @@ public:
     ///          GUIInitException if the GUI could not be loaded.
     this(GUISystem gui, VFSDir gameDir, Campaign campaign, 
          PlayerProfile playerProfile, 
-         void delegate(ref YAMLNode, string, void delegate(GameOverData)) initGame)
+         void delegate(ref YAMLNode, string delegate(), void delegate(GameOverData)) initGame)
     {
         initGame_      = initGame;
         campaign_      = campaign;
@@ -159,25 +169,45 @@ private:
     // Start playing the currently selected level.
     void startLevel()
     {
+        // Set by the processGameOver delegate in case of victory
+        // so swapGUIAfterGameEnd called later can determine which 
+        // GUI to swap to.
+        bool won;
         const name        = campaign_.name;
         const humanName   = campaign_.humanName;
         const oldProgress = playerProfile_.campaignProgress(name, humanName);
-        const lastAccessibleLevel = campaign_.currentLevel[0] == oldProgress;
+        auto currentLevel = campaign_.currentLevel;
+        const levelIndex  = currentLevel[0];
+        const lastAccessibleLevel = levelIndex == oldProgress;
         // Called when the game ends. If the player has won, increase campaign progress.
         void processGameOver(GameOverData data)
         {
+            won = data.gameWon;
             if(!data.gameWon){return;}
 
+            // We've finished the whole campaign.
+            if(levelIndex == campaign_.length - 1)
+            {
+                CampaignWinData winData;
+                winData.campaignCredits = campaign_.credits;
+                wonCampaign.emit(winData);
+            }
             if(lastAccessibleLevel)
             {
                 playerProfile_.campaignProgress(name, humanName, oldProgress + 1);
             }
             playerProfile_.processWinStatistics
-                (name, humanName, campaign_.currentLevel[0], data.playerStatistics);
+                (name, humanName, levelIndex, data.playerStatistics);
 
             resetLevel();
         }
-        initGame_(campaign_.currentLevel[2], "campaign", &processGameOver);
+        // Called after the game ends to determine GUI to swap to.
+        string swapGUIAfterGameEnd()
+        {
+            return levelIndex == campaign_.length - 1 && won 
+                   ? "credits" : "campaign";
+        }
+        initGame_(currentLevel[2], &swapGUIAfterGameEnd, &processGameOver);
     }
 
     // Change to the previous level.
@@ -419,6 +449,9 @@ private:
     /// Index of the currently selected level.
     uint currentLevel_ = 0;
 
+    /// Credits information for this campaign.
+    YAMLNode credits_;
+
 public:
     /// Construct a Campaign.
     ///
@@ -431,6 +464,7 @@ public:
     {
         this.name  = name;
         this.humanName = yaml["name"].as!string;
+        this.credits_  = yaml["credits"];
         gameDir_ = gameDir;
         try foreach(string levelName; yaml["levels"])
         {
@@ -471,5 +505,10 @@ public:
     {
         return tuple(currentLevel_, levelNames_[currentLevel_], 
                      levelSources_[currentLevel_]);
+    }
+    /// Get credits information of this campaign.
+    ref YAMLNode credits()
+    {
+        return credits_;
     }
 }

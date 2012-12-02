@@ -296,8 +296,8 @@ class Ice
         ubyte[] frameProfilerData_;
         ///Is the frame profiler enabled?
         bool frameProfilerEnabled_;
-        ///When running a game, specifies the swappable GUI to return after the game ends.
-        string guiAfterGameEnd_ = "ice";
+        ///Returns name of the swappable GUI to return after the game ends.
+        string delegate() guiAfterGameEnd_;
 
     public:
         /**
@@ -536,7 +536,7 @@ class Ice
                     try
                     {
                         auto source = loadYAML(gameDir_.file(levelName));
-                        initGame(source, "levels", null);
+                        initGame(source, {return "levels";}, null);
                     }
                     catch(YAMLException e)
                     {
@@ -553,6 +553,7 @@ class Ice
                 auto campaignGUI  =
                     new CampaignGUI(guiSystem_, gameDir_, campaignManager_.currentCampaign,
                                     profileManager_.currentProfile, &initGame);
+                campaignGUI.wonCampaign.connect(&(credits.wonCampaign));
                 profileManager_.changedProfile.connect(&campaignGUI.playerProfile);
                 campaignManager_.changedCampaign.connect(&campaignGUI.campaign);
                 auto profileGUI   = 
@@ -818,8 +819,14 @@ class Ice
             platform_ = null;
         }
 
-        ///Start game.
-        void initGame(ref YAMLNode levelSource, string guiAfterGameEnd,
+        /// Start game.
+        ///
+        /// Params: levelSource      = YAML source of the level
+        ///         guiAfterGameEnd  = Delegate that returns the name of the GUI 
+        ///                            to swap to after the game ends.
+        ///         gameOverCallback = Delegate for the game to call when the 
+        ///                            game is over (right before showing score screen).
+        void initGame(ref YAMLNode levelSource, string delegate() guiAfterGameEnd,
                       void delegate(GameOverData) gameOverCallback = null)
         {
             platform_.key.disconnect(&keyHandler);
@@ -858,7 +865,7 @@ class Ice
             game_ = null;
             startMenuMusic();
             platform_.key.connect(&keyHandler);
-            guiSwapper_.setGUI(guiAfterGameEnd_);
+            guiSwapper_.setGUI(guiAfterGameEnd_());
         }
 
         ///Exit ICE.
