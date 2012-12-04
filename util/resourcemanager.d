@@ -192,7 +192,7 @@ public:
     /// Delete all loaded resources.
     void clear()
     {
-        destroy(storage_);
+        .clear(storage_);
         storage_.loaderDelegate = &loaderWrapper;
     }
 

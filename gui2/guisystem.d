@@ -195,7 +195,7 @@ public:
     /// Destroy the GUISystem.
     ~this()
     {
-        destroy(textureManager_);
+        clear(textureManager_);
         platform_.key.disconnect(&inputKey);
         platform_.mouseMotion.disconnect(&inputMouseMove);
         platform_.mouseKey.disconnect(&inputMouseKey);
