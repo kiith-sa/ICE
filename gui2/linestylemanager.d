@@ -195,9 +195,9 @@ public:
         int y = area.center.y - textSize.y / 2;
         final switch(style_.textAlignX) with(AlignX)
         {
-            case Right:  x = area.min.x;                     break;
+            case Left:   x = area.min.x;                     break;
             case Center: x = area.center.x - textSize.x / 2; break;
-            case Left:   x = area.max.x - textSize.x;        break;
+            case Right:  x = area.max.x - textSize.x;        break;
         }
         video.drawText(Vector2i(x, y), text, style_.fontColor);
     }
