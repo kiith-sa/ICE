@@ -1,21 +1,21 @@
 !!pairs
 
-- labelDefault:  &lDefault
-    fontColor:   rgbaFFFFFF80
-    drawBorder:  false
-    fontSize:    14
-    font:        orbitron-bold.ttf
-- labelDefault:  &lVerySmall
-    drawBorder:  false
-- buttonDefault: &bDefault
-    borderColor: rgbaC0C0FF60
-    fontColor:   rgbaA0A0FFC0
-- buttonFocused: &bFocused
-    borderColor: rgbaC0C0FFA0
-    fontColor:   rgbaC0C0FFC0
-- buttonActive:  &bActive
-    borderColor: rgbaC0C0FFFF
-    fontColor:   rgbaE0E0FFFF
+- labelDefault:   &lDefault
+    fontColor:    rgbaFFFFFF80
+    drawBorder:   false
+    fontSize:     14
+    font:         orbitron-bold.ttf
+- labelVerySmall: &lVerySmall
+    drawBorder:   false
+- buttonDefault:  &bDefault
+    borderColor:  rgbaC0C0FF60
+    fontColor:    rgbaA0A0FFC0
+- buttonFocused:  &bFocused
+    borderColor:  rgbaC0C0FFA0
+    fontColor:    rgbaC0C0FFC0
+- buttonActive:   &bActive
+    borderColor:  rgbaC0C0FFFF
+    fontColor:    rgbaE0E0FFFF
 
 - styleManager: line
 - layoutManager: boxManual 
