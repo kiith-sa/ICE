@@ -11,6 +11,7 @@ module ice.hud;
 import std.algorithm;
 import std.array;
 import std.conv;
+import std.typecons;
 
 import dgamevfs._;
 
@@ -77,27 +78,16 @@ class HUD: SwappableGUI
             auto hudGUIFile = gameDir.dir("gui").file("hudGUI.yaml");
             hudGUI_ = guiSystem.loadWidgetTree(loadYAML(hudGUIFile));
 
-            auto getOptionalWidget(T)(T delegate() getWidget)
+            infoTextLabel_ = hudGUI_.infoText!(LabelWidget,     Yes.optional);
+            healthBar_     = hudGUI_.health!(ProgressBarWidget, Yes.optional);
+            scoreLabel_    = hudGUI_.score!(LabelWidget,        Yes.optional);
+            uint w = 1;
+            for(;;++w)
             {
-                try                   {return getWidget();}
-                catch(GUIException e) {return cast(T)null;}
-            }
-
-            infoTextLabel_  = getOptionalWidget({return hudGUI_.infoText!LabelWidget;});
-            healthBar_      = getOptionalWidget({return hudGUI_.health!ProgressBarWidget;});
-            scoreLabel_     = getOptionalWidget({return hudGUI_.score!LabelWidget;});
-            try
-            {
-                uint w = 1;
-                for(;;++w)
-                {
-                    weaponReloadBars_ ~=
-                        hudGUI_.get!ProgressBarWidget("weapon" ~ to!string(w));
-                }
-            }
-            catch(GUIException e)
-            {
-                // Got all weapon reload progress bars.
+                auto reloadBar = hudGUI_.get!(ProgressBarWidget, Yes.optional)
+                                             ("weapon" ~ to!string(w));
+                if(reloadBar is null) {break;}
+                weaponReloadBars_ ~= reloadBar;
             }
             super(hudGUI_);
         }
