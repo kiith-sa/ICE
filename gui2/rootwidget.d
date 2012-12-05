@@ -10,6 +10,7 @@ module gui2.rootwidget;
 
 
 import std.exception;
+import std.typecons;
 
 import math.rect;
 import math.vector2;
@@ -34,12 +35,19 @@ public:
     /// Access a subwidget.
     ///
     /// If a type is specified by the user, this is the last subwidget 
-    /// and we return that subwidget. Otherwise we return a WidgetAccess 
-    /// for that subwidget, allowing to access its subwidgets.
+    /// and we return that subwidget. In this case a Flag!"optional" can be 
+    /// use to specify that the subwidget is not required, and null might 
+    /// be returned instead of throwing an exception. If not optional,
+    /// and the subwidget does not exist, WidgetNotFoundException is thrown.
+    /// If the widget is of a different type than specified, 
+    /// WidgetTypeException is thrown.
+    ///
+    /// If a type is not specified we return a WidgetAccess 
+    /// for the subwidget, allowing to access its subwidgets.
     template opDispatch(string childName)
         if(validWidgetName(childName))
     {
-        T opDispatch(T = WidgetAccess)() 
+        T opDispatch(T = WidgetAccess, Flag!"optional" optional = No.optional)() 
             if(is(T:Widget) || is(T == WidgetAccess))
         {
             static if(is(T == WidgetAccess))
@@ -48,7 +56,7 @@ public:
             }
             else
             {
-                return root_.get!T(this, _fullName(childName)); 
+                return root_.get!(T, optional)(this, _fullName(childName)); 
             }
         } 
     }
@@ -121,14 +129,18 @@ public:
     ///
     /// This is copied from WidgetAccess as alias this doesn't work.
     ///
-    /// Throws: WidgetNotFoundException if the widget could not be found.
-    ///         WidgetTypeException if the widget is not of type T.
+    /// The "optional" flag can be used as a template parameter to return
+    /// null instead of throwing if the widget is not found.
     ///
-    /// SeeAlso: WidgetAccess.opDispatch
+    /// Throws: WidgetNotFoundException if the widget could not be found
+    ///         and optional is false (default).
+    ///         WidgetTypeException if the widget is not of type T.
+    //
+    /// SeeAlso: WidgetAccess.opDispatch, RootWidget.get
     template opDispatch(string childName)
         if(validWidgetName(childName))
     {
-        T opDispatch(T = WidgetAccess)() 
+        T opDispatch(T = WidgetAccess, Flag!"optional" optional = No.optional)() 
             if(is(T: Widget) || is(T == WidgetAccess))
         {
             static if(is(T == WidgetAccess))
@@ -137,23 +149,36 @@ public:
             }
             else
             {
-                return widgetAccess_.root_.get!T(widgetAccess_._fullName(childName)); 
+                return widgetAccess_.root_.get!(T, optional)
+                                               (widgetAccess_._fullName(childName)); 
             }
         } 
     }
 
     /// Get a subwidget with specified name.
     ///
-    /// Throws: WidgetNotFoundException if the widget could not be found.
+    /// The "optional" flag can be used as a template parameter to return
+    /// null instead of throwing if the widget is not found.
+    ///
+    /// Throws: WidgetNotFoundException if the widget could not be found
+    ///         and optional is false (default).
     ///         WidgetTypeException if the widget is not of type T.
-    T get(T)(const string fullName)
+    T get(T, Flag!"optional" optional = No.optional)(const string fullName)
     {
         assert(validComposedWidgetName(name),
                "Trying to get a widget with invalid name: " ~ name);
 
         Widget* result = fullName in addressToWidget_;
-        enforce(result !is null,
-                new WidgetNotFoundException("Widget \"" ~ fullName ~ "\" could not be found"));
+        static if(optional)
+        {
+            if(result is null){return cast(T)null;}
+        }
+        else
+        {
+            enforce(result !is null,
+                    new WidgetNotFoundException
+                        ("Widget \"" ~ fullName ~ "\" could not be found"));
+        }
         T typedResult = cast(T)(*result);
         enforce(typedResult !is null,
                 new WidgetTypeException
