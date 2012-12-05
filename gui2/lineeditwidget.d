@@ -58,7 +58,7 @@ public:
     override void render(VideoDriver video)
     {
         super.render(video);
-        styleManager_.drawTextCentered(video, text_ ~ '_', layout_.bounds);
+        styleManager_.drawText(video, text_ ~ '_', layout_.bounds);
     }
 
     /// Get entered text.

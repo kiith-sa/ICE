@@ -64,6 +64,8 @@ public:
         bool hasBackgroundTexture = false;
         /// If hasBackgroundTexture is true, used to access the background texture.
         ResourceID!Texture backgroundTexture;
+        /// X alignment of any text drawn in the widget.
+        AlignX textAlignX = AlignX.Center;
 
         /// Construct a LineStyleManager style.
         ///
@@ -81,6 +83,16 @@ public:
             progressColor   = styleInitPropertyOpt(yaml, "progressColor",   progressColor);
             font            = styleInitPropertyOpt(yaml, "font",            font);
             fontSize        = styleInitPropertyOpt(yaml, "fontSize",        fontSize);
+
+            auto textAlignXStr = styleInitPropertyOpt(yaml, "textAlignX", "center");
+            switch(textAlignXStr)
+            {
+                case "right":  textAlignX = AlignX.Right;  break;
+                case "left":   textAlignX = AlignX.Left;   break;
+                case "center": textAlignX = AlignX.Center; break;
+                default: 
+                    throw new StyleInitException("Unsupported X alignment: " ~ textAlignXStr);
+            }
 
             const backgroundImage = styleInitPropertyOpt(yaml, "backgroundImage", cast(string)null);
             if(backgroundImage !is null)
@@ -172,12 +184,22 @@ public:
         video.drawFilledRect(min, max, style_.progressColor);
     }
 
-    override void drawText
-        (VideoDriver video, const string text, const Vector2i position)
+    override void drawText(VideoDriver video, const string text, ref const Recti area)
     {
         video.font     = style_.font;
         video.fontSize = style_.fontSize;
-        video.drawText(position, text, style_.fontColor);
+
+        const textSize = getTextSize(video, text);
+        int x;
+        // At the moment, Y is always aligned to the center.
+        int y = area.center.y - textSize.y / 2;
+        final switch(style_.textAlignX) with(AlignX)
+        {
+            case Right:  x = area.min.x;                     break;
+            case Center: x = area.center.x - textSize.x / 2; break;
+            case Left:   x = area.max.x - textSize.x;        break;
+        }
+        video.drawText(Vector2i(x, y), text, style_.fontColor);
     }
 
 protected:
