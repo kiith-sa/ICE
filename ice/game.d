@@ -68,6 +68,91 @@ import ice.player;
 import ice.playerprofile;
 
 
+/// Score screen shown when the game ends.
+class ScoreScreen: SwappableGUI
+{
+    import gui2.exceptions;
+    import gui2.labelwidget;
+    import gui2.rootwidget;
+private:
+    // Root widget ofthe score screen GUI.
+    RootWidget scoreGUI_;
+
+    // Labels displaying death/success message, score, time elapsed, shots and kills.
+    //
+    // Every one of these is optional and might be null.
+    LabelWidget deathMessageLabel_, scoreLabel_, timeLabel_, shotsLabel_, killsLabel_;
+
+    /// Messages shown when the player dies.
+    static deathMessages_ = ["You have been murderized",
+                             "Fail",
+                             "LOL U MAD?",
+                             "All your base are belong to us",
+                             "The trifurcator is exceptionally green",
+                             "Cake is a lie",
+                             "Swim, swim, hungry!",
+                             "Snake? Snake?! SNAAAAAKE!!!!",
+                             "42",
+                             "You were killed",
+                             "Longcat is looooooooooooooooooooooooooooooong",
+                             "Delirious Biznasty",
+                             ":o) hOnK",
+                             "There's a cake in the toilet.",
+                             "DIE FISH HITLER DIE!"
+                                 "                                                                                "
+                                 "I WONT LET YOU KILL MY PEOPLE!",
+                             "I'm glasses.",
+                             "You are dead"];
+
+    /// Messages shown when the player successfully clears the level.
+    static successMessages_ = ["Level cleared",
+                               "You survived",
+                               "Nice~",
+                               "Still alive",
+                               "You aren't quite dead yet",
+                               "MoThErFuCkInG MiRaClEs",
+                               "PCHOOOOOOOO!",
+                               "where doing it man WHERE MAKING THIS HAPEN",
+                               "42"];
+
+public:
+    /// Constructs the score screen.
+    /// 
+    /// Params: guiSystem  = A reference to the GUI system (to load widgets with).
+    ///         gameDir    = Game data directory.
+    ///
+    /// Throws: YAMLException on a YAML parsing error.
+    ///         VFSException on a filesystem error.
+    this(GUISystem guiSystem, VFSDir gameDir)
+    {
+        auto scoreGUIFile = gameDir.dir("gui").file("scoreGUI.yaml");
+        scoreGUI_ = guiSystem.loadWidgetTree(loadYAML(scoreGUIFile));
+
+        scoreLabel_        = scoreGUI_.score!(LabelWidget,        Yes.optional);
+        timeLabel_         = scoreGUI_.time!(LabelWidget,         Yes.optional);
+        shotsLabel_        = scoreGUI_.shots!(LabelWidget,        Yes.optional);
+        killsLabel_        = scoreGUI_.kills!(LabelWidget,        Yes.optional);
+        deathMessageLabel_ = scoreGUI_.deathMessage!(LabelWidget, Yes.optional);
+
+        super(scoreGUI_);
+    }
+
+    /// Update the score screen data when the game ends.
+    void update(GameOverData data)
+    {
+        if(deathMessageLabel_ !is null)
+        {
+            deathMessageLabel_.text =
+                randomSample(data.gameWon ? successMessages_ : deathMessages_, 1).front;
+        }
+        const stats = data.playerStatistics;
+        if(scoreLabel_ !is null){scoreLabel_.text = to!string(stats.expGained);}
+        if(timeLabel_  !is null){timeLabel_.text  = format("%.1f s", data.totalTime);}
+        if(shotsLabel_ !is null){shotsLabel_.text = to!string(stats.burstsFired);}
+        if(killsLabel_ !is null){killsLabel_.text = to!string(stats.entitiesKilled);}
+    }
+}
+
 /**
  * Class holding all GUI used by Game (HUD, etc.).
  */
@@ -76,8 +161,6 @@ class GameGUI
     private:
         ///Parent of all game GUI elements.
         GUIElement parent_;
-        ///Game over screen (with stats, etc). Null if not shown.
-        GUIElement gameOver_;
         ///"Really quit?" message after pressing Escape.
         GUIStaticText reallyQuit_;
         ///A reference to the GUI system.
@@ -86,38 +169,8 @@ class GameGUI
         GUISwapper guiSwapper_;
         ///HUD.
         HUD hud_;
-
-        ///Messages shown when the player dies.
-        static deathMessages_ = ["You have been murderized",
-                                 "Fail",
-                                 "LOL U MAD?",
-                                 "All your base are belong to us",
-                                 "The trifurcator is exceptionally green",
-                                 "Cake is a lie",
-                                 "Swim, swim, hungry!",
-                                 "Snake? Snake?! SNAAAAAKE!!!!",
-                                 "42",
-                                 "You were killed",
-                                 "Longcat is looooooooooooooooooooooooooooooong",
-                                 "Delirious Biznasty",
-                                 ":o) hOnK",
-                                 "There's a cake in the toilet.",
-                                 "DIE FISH HITLER DIE!"
-                                     "                                                                                "
-                                     "I WONT LET YOU KILL MY PEOPLE!",
-                                 "I'm glasses.",
-                                 "You are dead"];
-
-        ///Messages shown when the player successfully clears the level.
-        static successMessages_ = ["Level cleared",
-                                   "You survived",
-                                   "Nice~",
-                                   "Still alive",
-                                   "You aren't quite dead yet",
-                                   "MoThErFuCkInG MiRaClEs",
-                                   "PCHOOOOOOOO!",
-                                   "where doing it man WHERE MAKING THIS HAPEN",
-                                   "42"];
+        ///Score screen shown when the game ends.
+        ScoreScreen scoreScreen_;
 
     public:
         ///Show the HUD.
@@ -135,82 +188,12 @@ class GameGUI
         /**
          * Show the game over screen, with statistics, etc.
          *
-         * Params:  success    = Did the player succeesfully finish the level?
-         *          statistics = Player statistics.
-         *          totalTime  = Total time taken by the game, in game time
-         *                       seconds (i.e. not measuring pauses).
+         * Params:  data = Data about how the game ended.
          */
-        void showGameOverScreen(const Flag!"success" success,
-                                const StatisticsComponent statistics,
-                                const real totalTime) 
+        void showGameOverScreen(ref const GameOverData data) 
         {
-            with(new GUIElementFactory)
-            {
-                x      = "p_left + p_width / 2 - 300";
-                y      = "p_top + p_height / 2 - 200";
-                width  = "600";
-                height = "400";
-                gameOver_ = produce();
-            }
-
-            with(new GUIStaticTextFactory)
-            {
-                //Death message.
-                x        = "p_left + 16";
-                y        = "p_top + 16";
-                width    = "p_width - 32";
-                height   = "24";
-                font     = "orbitron-bold.ttf";
-                fontSize = 20;
-                alignX   = AlignX.Center;
-                text     = randomSample(success ? successMessages_ : deathMessages_, 1).front;
-                gameOver_.addChild(produce());
-
-                //Score.
-                y        = "p_top + 64";
-                alignX   = AlignX.Left;
-                font     = "orbitron-light.ttf";
-                fontSize = 16;
-                text     = "Score:";
-                gameOver_.addChild(produce());
-
-                alignX   = AlignX.Right;
-                text     = to!string(statistics.expGained);
-                gameOver_.addChild(produce());
-
-                //Time elapsed.
-                y        = "p_top + 88";
-                alignX   = AlignX.Left;
-                text     = "Time elapsed:";
-                gameOver_.addChild(produce());
-
-                alignX   = AlignX.Right;
-                text     = format("%.2f", totalTime);
-                gameOver_.addChild(produce());
-
-                //Shots fired.
-                y        = "p_top + 112";
-                alignX   = AlignX.Left;
-                text     = "Shots fired:";
-                gameOver_.addChild(produce());
-
-                alignX   = AlignX.Right;
-                text     = to!string(statistics.burstsFired);
-                gameOver_.addChild(produce());
-
-
-                //Ships killed.
-                y        = "p_top + 136";
-                alignX   = AlignX.Left;
-                text     = "Ships killed:";
-                gameOver_.addChild(produce());
-
-                alignX   = AlignX.Right;
-                text     = to!string(statistics.entitiesKilled);
-                gameOver_.addChild(produce());
-            }
-
-            parent_.addChild(gameOver_);
+            scoreScreen_.update(data);
+            guiSwapper_.setGUI("scores");
         }
 
         ///Show the "Really quit?" message.
@@ -285,26 +268,40 @@ class GameGUI
          *          guiSystem  = A reference to the GUI system.
          *          guiSwapper = A reference to the GUI swapper.
          *          gameDir    = Game data directory to load GUI from.
+         *
+         * Throws:  GameStartException on failure.
          */
         this(GUIElement parent, GUISystem guiSystem, GUISwapper guiSwapper, VFSDir gameDir)
         {
-            parent_     = parent;
-            guiSystem_  = guiSystem;
-            guiSwapper_ = guiSwapper;
-            hud_        = new HUD(guiSystem_, gameDir);
+            parent_      = parent;
+            guiSystem_   = guiSystem;
+            guiSwapper_  = guiSwapper;
+            try
+            {
+                hud_         = new HUD(guiSystem_, gameDir);
+                scoreScreen_ = new ScoreScreen(guiSystem_, gameDir);
+            }
+            catch(VFSException e)
+            {
+                throw new GameStartException
+                    ("Failed to initialize HUD and/or score screen: " ~ e.msg);
+            }
+            catch(YAMLException e)
+            {
+                throw new GameStartException
+                    ("Failed to initialize HUD and/or score screen: " ~ e.msg);
+            }
             guiSwapper_.addGUI(hud_, "hud");
+            guiSwapper_.addGUI(scoreScreen_, "scores");
         }
 
         ///Destroy the game GUI.
         ~this()
         {
             guiSwapper_.removeGUI("hud");
+            guiSwapper_.removeGUI("scores");
             clear(hud_);
-            if(gameOver_ !is null)
-            {
-                gameOver_.die();
-                gameOver_ = null;
-            }
+            clear(scoreScreen_);
             if(reallyQuitVisible)
             {
                 hideReallyQuit();
@@ -377,6 +374,8 @@ struct GameOverData
     StatisticsComponent playerStatistics;
     /// Did the player win the game?
     bool gameWon;
+    /// Total time taken by the game, in game time seconds (i.e. not measuring pauses).
+    real totalTime;
 }
 
 ///Class managing a single game in a level.
@@ -871,6 +870,7 @@ class Game
             GameOverData gameOverData;
             gameOverData.gameWon = success;
             gameOverData.playerStatistics = playerStatistics_;
+            gameOverData.totalTime = gameTime_.gameTime - startTime_;
             atGameOver.emit(gameOverData);
             gamePhase_ = GamePhase.PreOver;
             //Game over enlarging text effect.
@@ -911,9 +911,7 @@ class Game
             { 
                 entitySystem_.destroy();
                 gamePhase_ = GamePhase.Over;
-                gui_.showGameOverScreen(success,
-                                        statistics, 
-                                        gameTime_.gameTime - startTime_);
+                gui_.showGameOverScreen(gameOverData);
             });
             effectManager_.addEffect(effect);
 
