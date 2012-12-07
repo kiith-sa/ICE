@@ -73,6 +73,7 @@ class HUD: SwappableGUI
         ///
         /// Throws: YAMLException on a YAML parsing error.
         ///         VFSException on a filesystem error.
+        ///         GUIInitException on a GUI loading error.
         this(GUISystem guiSystem, VFSDir gameDir)
         {
             auto hudGUIFile = gameDir.dir("gui").file("hudGUI.yaml");
