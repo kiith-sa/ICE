@@ -124,7 +124,7 @@ public:
     }
 }
 
-/// Wraps any RootWidget in a SwappableGUI, without any interactivity.
+/// Wraps any RootWidget in a SwappableGUI, without any extra logic.
 class PlainSwappableGUI: SwappableGUI
 {
     /// Constructs the PlainSwappableGUI.
