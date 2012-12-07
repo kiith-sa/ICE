@@ -213,6 +213,7 @@ class IceGUI: SwappableGUI
             iceGUI_.campaigns!ButtonWidget.pressed.connect({swapGUI_("campaigns");});
             iceGUI_.levels!ButtonWidget.pressed.connect({swapGUI_("levels");});
             iceGUI_.credits!ButtonWidget.pressed.connect({swapGUI_("credits");});
+            iceGUI_.controls!ButtonWidget.pressed.connect({swapGUI_("controls");});
             iceGUI_.quit!ButtonWidget.pressed.connect(&quit.emit);
             iceGUI_.resetVideo!ButtonWidget.pressed.connect(&resetVideo.emit);
             iceGUI_.reloadResources!ButtonWidget.pressed.connect(&reloadResources.emit);
@@ -556,11 +557,16 @@ class Ice
                 campaignGUI.wonCampaign.connect(&(credits.wonCampaign));
                 profileManager_.changedProfile.connect(&campaignGUI.playerProfile);
                 campaignManager_.changedCampaign.connect(&campaignGUI.campaign);
-                auto profileGUI   = 
+                auto profileGUI   =
                     new ProfileGUI(profileManager_, guiSystem_, guiSystem_.rootSlot, gameDir_);
+                auto controlsFile = gameDir.dir("gui").file("controlsGUI.yaml");
+                auto controlsRoot = guiSystem_.loadWidgetTree(loadYAML(controlsFile));
+                controlsRoot.close!ButtonWidget.pressed.connect({guiSwapper_.setGUI("ice");});
+                auto controlsGUI  =  new PlainSwappableGUI(controlsRoot);
                 gui_ = new IceGUI(guiSystem_, gameDir_, guiRoot_.root, monitor_);
                 guiSwapper_.addGUI(gui_,         "ice");
                 guiSwapper_.addGUI(credits,      "credits");
+                guiSwapper_.addGUI(controlsGUI,  "controls");
                 guiSwapper_.addGUI(levelGUI,     "levels");
                 guiSwapper_.addGUI(campaignsGUI, "campaigns");
                 guiSwapper_.addGUI(campaignGUI,  "campaign");
