@@ -111,24 +111,6 @@ public:
     }
 }
 
-/// Screen shown when the user presses ESC to quit (the "really quit?" screen).
-class QuitScreen: SwappableGUI
-{
-    /// Constructs the quit screen.
-    /// 
-    /// Params: guiSystem  = A reference to the GUI system (to load widgets with).
-    ///         gameDir    = Game data directory.
-    ///
-    /// Throws: YAMLException on a YAML parsing error.
-    ///         VFSException on a filesystem error.
-    ///         GUIInitException on a GUI loading error.
-    this(GUISystem guiSystem, VFSDir gameDir)
-    {
-        auto quitGUIFile = gameDir.dir("gui").file("quitGUI.yaml");
-        super(guiSystem.loadWidgetTree(loadYAML(quitGUIFile)));
-    }
-}
-
 /**
  * Class holding all GUI used by Game (HUD, etc.).
  */
@@ -144,7 +126,7 @@ private:
     ///Score screen shown when the game ends.
     ScoreScreen scoreScreen_;
     ///"Really quit?" screen shown when the player presses 'Esc'.
-    QuitScreen quitScreen_;
+    PlainSwappableGUI quitScreen_;
 
 public:
     /**
@@ -162,9 +144,11 @@ public:
         guiSwapper_  = guiSwapper;
         try
         {
-            hud_         = new HUD(guiSystem_, gameDir);
-            scoreScreen_ = new ScoreScreen(guiSystem_, gameDir);
-            quitScreen_  = new QuitScreen(guiSystem_, gameDir);
+            hud_             = new HUD(guiSystem_, gameDir);
+            scoreScreen_     = new ScoreScreen(guiSystem_, gameDir);
+            auto quitGUIFile = gameDir.dir("gui").file("quitGUI.yaml");
+            auto quitYAML    = loadYAML(quitGUIFile);
+            quitScreen_      = new PlainSwappableGUI(guiSystem.loadWidgetTree(quitYAML));
         }
         catch(VFSException e)
         {
