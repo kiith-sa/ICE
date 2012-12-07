@@ -123,3 +123,15 @@ public:
         this.rootWidget = rootWidget;
     }
 }
+
+/// Wraps any RootWidget in a SwappableGUI, without any interactivity.
+class PlainSwappableGUI: SwappableGUI
+{
+    /// Constructs the PlainSwappableGUI.
+    /// 
+    /// Params: root = RootWidget to wrap.
+    this(RootWidget root) 
+    {
+        super(root);
+    }
+}
