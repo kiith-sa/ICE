@@ -85,13 +85,9 @@ public:
     ///         area  = Area taken up by the widget.
     void drawText(VideoDriver video, const string text, ref const Recti area);
 
-protected:
-    /// Get the size of specified text when drawn on the screen.
-    Vector2u getTextSize(VideoDriver video, const string text);
-
 package:
     // Set the texture manager to load textures with.
-    @property void textureManager(ResourceManager!Texture rhs)// pure nothrow 
+    @property void textureManager(ResourceManager!Texture rhs) pure nothrow 
     {
         textureManager_ = rhs;
     }

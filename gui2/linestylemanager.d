@@ -11,11 +11,13 @@ module gui2.linestylemanager;
 
 import std.algorithm;
 import std.array;
+import std.conv;
 import std.exception;
 
 import color;
 import gui2.exceptions;
 import gui2.stylemanager;
+import gui2.textbreaker;
 import gui2.widgetutils;
 import math.rect;
 import math.vector2;
@@ -56,6 +58,8 @@ public:
         Color progressColor   = rgba!"8080FF80";
         /// Font size in points.
         uint fontSize         = 12;
+        /// Gap between text lines in pixels.
+        uint lineGap          = 2;
         /// Draw border of the widget?
         bool drawBorder       = true;
         /// Style of the progress "bar".
@@ -83,6 +87,7 @@ public:
             progressColor   = styleInitPropertyOpt(yaml, "progressColor",   progressColor);
             font            = styleInitPropertyOpt(yaml, "font",            font);
             fontSize        = styleInitPropertyOpt(yaml, "fontSize",        fontSize);
+            lineGap         = styleInitPropertyOpt(yaml, "lineGap",         lineGap);
 
             auto textAlignXStr = styleInitPropertyOpt(yaml, "textAlignX", "center");
             switch(textAlignXStr)
@@ -190,24 +195,111 @@ public:
         video.fontSize = style_.fontSize;
 
         const textSize = getTextSize(video, text);
-        int x;
+        if(textSize.x > area.width)
+        {
+            drawTextMultiLine(video, text, area);
+            return;
+        }
         // At the moment, Y is always aligned to the center.
         int y = area.center.y - textSize.y / 2;
-        final switch(style_.textAlignX) with(AlignX)
-        {
-            case Left:   x = area.min.x;                     break;
-            case Center: x = area.center.x - textSize.x / 2; break;
-            case Right:  x = area.max.x - textSize.x;        break;
-        }
+        int x = xTextPosition(area, textSize.x);
         video.drawText(Vector2i(x, y), text, style_.fontColor);
     }
 
-protected:
-    override Vector2u getTextSize(VideoDriver video, const string text)
+private:
+    // Draw text wider than the widget, breaking it into multiple lines.
+    // 
+    // VideoDriver font and font size are expected to be set already.
+    //
+    // Params:  video = VideoDriver to draw with.
+    //          text  = Text to draw.
+    //          area  = Area taken up by the text.
+    void drawTextMultiLine(VideoDriver video, const string text, ref const Recti area)
+    {
+        // Determines if passed text is plain ASCII.
+        bool asciiText(const string text)
+        {
+            foreach(dchar c; text) if(cast(uint) c > 127)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        // Draws passed text, breaking it into lines to fit into the widget area.
+        //
+        // One code unit is always one character in this function.
+        void drawBrokenText(S)(S text)
+        {
+            Vector2u textSizeWrap(S line)
+            {
+                return getTextSize(video, line);
+            }
+
+            // Break the text into lines.
+            static TextBreaker!S breaker;
+            breaker.parse(text, cast(uint)area.width, &textSizeWrap);
+            if(breaker.lines.empty){return;}
+
+            // Use the maximum line height of all lines in the text.
+            uint lineGap = style_.lineGap;
+            int lineHeight = 0;
+            foreach(size; breaker.lineSizes) {lineHeight = max(lineHeight, size.y);}
+            lineHeight += lineGap;
+
+            int textHeight = 
+                cast(int)((lineHeight + lineGap) * breaker.lines.length - lineGap);
+
+            // At the moment, Y is always aligned to the center.
+            int y = area.center.y - textHeight / 2;
+
+            // Draw the lines.
+            foreach(l, line; breaker.lines)
+            {
+                const width = breaker.lineSizes[l].x;
+                const pos   = Vector2i(xTextPosition(area, width), y);
+                const color = style_.fontColor;
+                static if(is(T == string)) {video.drawText(pos, line, color);}
+                else                       {video.drawText(pos, to!string(line), color);}
+                y += lineHeight + lineGap;
+            }
+        }
+
+        // Draw the text.
+        if(!asciiText(text))
+        {
+            // To use slicing, we need one code point to be one character,
+            // so convert to UTF-32 if we're not ASCII.
+            auto text32 = to!dstring(text);
+            drawBrokenText(text32);
+            return;
+        }
+        drawBrokenText(text);
+    }
+
+    // Get the size of specified text when drawn on the screen.
+    Vector2u getTextSize(S)(VideoDriver video, const S text)
     {
         // This could be cached based on text/font/fontSize combination
         video.font     = style_.font;
         video.fontSize = style_.fontSize;
-        return video.textSize(text);
+        static if(is(S == string)) {return video.textSize(text);}
+        else                       {return video.textSize(to!string(text));}
+    }
+
+    // Get X position of a text (using alignment).
+    //
+    // Params:  area = Area of the widget we're drawing text in.
+    //          textWidth = Width of the text in pixels
+    //
+    // Returns: X position of the text (i.e. its left edge).
+    int xTextPosition(ref const Recti area, const uint textWidth) @safe pure nothrow
+    {
+        final switch(style_.textAlignX) with(AlignX)
+        {
+            case Left:   return area.min.x;
+            case Center: return area.center.x - textWidth / 2;
+            case Right:  return area.max.x - textWidth;
+        }
     }
 }
