@@ -82,7 +82,7 @@ public:
         getTextSize_        = getTextSize;
 
         // Clean up state remaining from previous parse() calls.
-        lines_.length = lineSizes_.length = lineStart_ = wordCount_;
+        lines_.length = lineSizes_.length = lineStart_ = wordCount_ = 0;
 
         // Parse.
         for (candidateLineEnd_ = 0; candidateLineEnd_ < text.length;)
