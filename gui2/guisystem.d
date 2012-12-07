@@ -214,6 +214,8 @@ public:
     }
 
     /// Load a widget tree connectable to a SlotWidget from YAML.
+    ///
+    /// Throws:  GUIInitException on failure.
     RootWidget loadWidgetTree(YAMLNode source)
     {
         scope(failure)
