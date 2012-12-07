@@ -1,6 +1,5 @@
 !!pairs
 - layout: {x: 'pLeft', y: 'pTop', w: 'pWidth', h: 'pHeight'}
-#Main container
 - widget lineEdit profileNameEdit:
     !!pairs
     - style: {borderColor: rgbaE0E0FF80, backgroundColor: rgba000000FF, fontSize: 16}
