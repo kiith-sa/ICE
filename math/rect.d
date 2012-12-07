@@ -62,19 +62,19 @@ struct Rect(T)
     }
 
     ///Returns center of the rectangle.
-    @property Vector2!T center() const pure nothrow {return (min + max) / cast(T)2;}
+    @property Vector2!T center() @safe const pure nothrow {return (min + max) / cast(T)2;}
     
     ///Returns width of the rectangle.
-    @property T width() const pure nothrow {return max.x - min.x;}
+    @property T width() @safe const pure nothrow {return max.x - min.x;}
 
     ///Returns height of the rectangle.
-    @property T height() const pure nothrow {return max.y - min.y;}
+    @property T height() @safe const pure nothrow {return max.y - min.y;}
     
     ///Returns size of the rectangle.
-    @property Vector2!T size() const pure nothrow {return max - min;}
+    @property Vector2!T size() @safe const pure nothrow {return max - min;}
 
     ///Returns area of the rectangle.
-    @property T area() const pure nothrow {return size.x * size.y;}
+    @property T area() @safe const pure nothrow {return size.x * size.y;}
 
     ///Returns the lower-left corner of the rectangle.
     @property Vector2!T minMax() const pure nothrow {return Vector2!T(min.x, max.y);}
@@ -141,7 +141,7 @@ struct Rect(T)
      * //convert to Rectf
      * Rectf r_float = r_uint.to!float
      * --------------------
-     */                  
+     */
     @property Rect!T to(T)() const pure nothrow if(isNumeric!T)
     {
         return Rect!T(min.to!T, max.to!T);
