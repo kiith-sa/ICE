@@ -24,17 +24,19 @@ taking time to recharge (currently, these are always enabled).
 Controls
 ^^^^^^^^
 
-=================== ===========================================================
-``W``, ``Up``       Move up
-``A``, ``Left``     Move left
-``S``, ``Down``     Move down
-``D``, ``Right``    Move right
-``Space``           Fire weapon 1.
-``J``, ``NumPad 4`` Fire weapon 2.
-``K``, ``NumPad 2`` Fire weapon 3.
-``Scroll-Lock``     Take screenshot (in ``~/.ice/main/screenshots/`` if installed,
-                    or ``user_data/main/screenshots/`` in the game directory)
-=================== ===========================================================
+======================= =======================================================
+``W``,     ``Up``       Move up
+``A``,     ``Left``     Move left
+``S``,     ``Down``     Move down
+``D``,     ``Right``    Move right
+``Space``, ``NumPad 5`` Fire weapon 1.
+``J``,     ``NumPad 4`` Fire weapon 2.
+``K``,     ``NumPad 2`` Fire weapon 3.
+``Scroll Lock``         Take screenshot (in ``~/.ice/main/screenshots/`` if
+                        installed, or ``user_data/main/screenshots/`` in the
+                        game directory)
+``Escape``              Exit the game while playing.
+======================= =======================================================
 
 
 --------------------
