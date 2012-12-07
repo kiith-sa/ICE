@@ -45,6 +45,7 @@ import component.system;
 import component.visualsystem;
 import gui.guielement;
 import gui.guistatictext;
+import gui2.exceptions;
 import gui2.guisystem;
 import math.math;
 import math.vector2;
@@ -75,7 +76,7 @@ class ScoreScreen: SwappableGUI
     import gui2.labelwidget;
     import gui2.rootwidget;
 private:
-    // Root widget ofthe score screen GUI.
+    // Root widget of the score screen GUI.
     RootWidget scoreGUI_;
 
     // Labels displaying death/success message, score, time elapsed, shots and kills.
@@ -123,6 +124,7 @@ public:
     ///
     /// Throws: YAMLException on a YAML parsing error.
     ///         VFSException on a filesystem error.
+    ///         GUIInitException on a GUI loading error.
     this(GUISystem guiSystem, VFSDir gameDir)
     {
         auto scoreGUIFile = gameDir.dir("gui").file("scoreGUI.yaml");
@@ -153,6 +155,24 @@ public:
     }
 }
 
+/// Screen shown when the user presses ESC to quit (the "really quit?" screen).
+class QuitScreen: SwappableGUI
+{
+    /// Constructs the quit screen.
+    /// 
+    /// Params: guiSystem  = A reference to the GUI system (to load widgets with).
+    ///         gameDir    = Game data directory.
+    ///
+    /// Throws: YAMLException on a YAML parsing error.
+    ///         VFSException on a filesystem error.
+    ///         GUIInitException on a GUI loading error.
+    this(GUISystem guiSystem, VFSDir gameDir)
+    {
+        auto quitGUIFile = gameDir.dir("gui").file("quitGUI.yaml");
+        super(guiSystem.loadWidgetTree(loadYAML(quitGUIFile)));
+    }
+}
+
 /**
  * Class holding all GUI used by Game (HUD, etc.).
  */
@@ -161,8 +181,6 @@ class GameGUI
     private:
         ///Parent of all game GUI elements.
         GUIElement parent_;
-        ///"Really quit?" message after pressing Escape.
-        GUIStaticText reallyQuit_;
         ///A reference to the GUI system.
         GUISystem guiSystem_;
         ///A reference to the GUI swapper.
@@ -171,6 +189,8 @@ class GameGUI
         HUD hud_;
         ///Score screen shown when the game ends.
         ScoreScreen scoreScreen_;
+        ///"Really quit?" screen shown when the player presses 'Esc'.
+        QuitScreen quitScreen_;
 
     public:
         ///Show the HUD.
@@ -197,49 +217,35 @@ class GameGUI
         }
 
         ///Show the "Really quit?" message.
-        void showReallyQuit()
+        void showQuitScreen()
         in
         {
-            assert(!reallyQuitVisible, 
+            assert(!quitScreenVisible, 
                    "Trying to show the \"Really quit?\" message "
                    "but it's already shown");
         }
         body
         {
-            with(new GUIStaticTextFactory)
-            {
-                x        = "p_width / 2 - 192";
-                y        = "p_height / 2 - 32";
-                width    = "384";
-                height   = "64";
-                font     = "orbitron-bold.ttf";
-                fontSize = 32;
-                alignX   = AlignX.Center;
-                alignY   = AlignY.Center;
-                text     = "Really quit? (Y/N)";
-                reallyQuit_ = produce();
-            }
-            parent_.addChild(reallyQuit_);
+            guiSwapper_.setGUI("quit");
         }
 
         ///Hide the "Really quit?" message.
-        void hideReallyQuit()
+        void hideQuitScreen()
         in
         {
-            assert(reallyQuitVisible, 
+            assert(quitScreenVisible, 
                    "Trying to hide the \"Really quit?\" message "
                    "but it's not shown");
         }
         body
         {
-            reallyQuit_.die();
-            reallyQuit_ = null;
+            guiSwapper_.setGUI("hud");
         }
 
         ///Is the "Really quit?" message shown?
-        @property bool reallyQuitVisible() const pure nothrow 
+        @property bool quitScreenVisible() const pure nothrow 
         {
-            return reallyQuit_ !is null;
+            return guiSwapper_.currentGUIName == "quit";
         }
 
         ///Update player health display in the HUD. Must be at least 0 and at most 1.
@@ -280,32 +286,41 @@ class GameGUI
             {
                 hud_         = new HUD(guiSystem_, gameDir);
                 scoreScreen_ = new ScoreScreen(guiSystem_, gameDir);
+                quitScreen_  = new QuitScreen(guiSystem_, gameDir);
             }
             catch(VFSException e)
             {
                 throw new GameStartException
-                    ("Failed to initialize HUD and/or score screen: " ~ e.msg);
+                    ("Failed to initialize HUD, score or quit screen: " ~ e.msg);
             }
             catch(YAMLException e)
             {
                 throw new GameStartException
-                    ("Failed to initialize HUD and/or score screen: " ~ e.msg);
+                    ("Failed to initialize HUD, score or quit screen: " ~ e.msg);
             }
-            guiSwapper_.addGUI(hud_, "hud");
+            catch(GUIInitException e)
+            {
+                throw new GameStartException
+                    ("Failed to initialize HUD, score or quit screen: " ~ e.msg);
+            }
+            guiSwapper_.addGUI(hud_,         "hud");
             guiSwapper_.addGUI(scoreScreen_, "scores");
+            guiSwapper_.addGUI(quitScreen_,  "quit");
         }
 
         ///Destroy the game GUI.
         ~this()
         {
+            if(quitScreenVisible)
+            {
+                hideQuitScreen();
+            }
             guiSwapper_.removeGUI("hud");
             guiSwapper_.removeGUI("scores");
+            guiSwapper_.removeGUI("quit");
             clear(hud_);
             clear(scoreScreen_);
-            if(reallyQuitVisible)
-            {
-                hideReallyQuit();
-            }
+            clear(quitScreen_);
         }
 
         /**
@@ -815,9 +830,9 @@ class Game
                     }
 
                     //Show the "Really quit?" message, unless already shown.
-                    if(gui_.reallyQuitVisible){break;}
+                    if(gui_.quitScreenVisible){break;}
                     gameTime_.timeSpeed = 0.0;
-                    gui_.showReallyQuit();
+                    gui_.showQuitScreen();
                     break;
                 case Key.Return:
                     if(gamePhase_ == GamePhase.Over)
@@ -831,17 +846,17 @@ class Game
                     gameTime_.timeSpeed = paused ? 1.0 : 0.0;
                     break;
                 case Key.K_Y:
-                    if(gui_.reallyQuitVisible) 
+                    if(gui_.quitScreenVisible) 
                     {
                         continue_ = false;
-                        gui_.hideReallyQuit();
+                        gui_.hideQuitScreen();
                     }
                     break;
                 case Key.K_N:
-                    if(gui_.reallyQuitVisible) 
+                    if(gui_.quitScreenVisible) 
                     {
                         gameTime_.timeSpeed = 1.0;
-                        gui_.hideReallyQuit();
+                        gui_.hideQuitScreen();
                     }
                     break;
                 default:
