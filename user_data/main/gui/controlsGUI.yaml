@@ -36,7 +36,7 @@
 - widget label:
    !!pairs
    - style:  *lXLarge
-   - layout: {x: 'pLeft + 32', y: 'pTop + 16', w: 'pWidth - 32', h: 24}
+   - layout: {x: 'pLeft + 32', y: 'pTop + 16', w: 'pWidth - 64', h: 24}
    - text:   Controls
 
 
