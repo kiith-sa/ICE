@@ -837,7 +837,6 @@ class Ice
             {
                 game_ = gameContainer_.produce(platform_,
                                                monitor_,
-                                               guiRoot_.root,
                                                guiSwapper_,
                                                videoDriver_,
                                                gameDir_,

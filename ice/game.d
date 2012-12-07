@@ -43,8 +43,6 @@ import component.weaponcomponent;
 import component.weaponsystem;
 import component.system;
 import component.visualsystem;
-import gui.guielement;
-import gui.guistatictext;
 import gui2.exceptions;
 import gui2.guisystem;
 import math.math;
@@ -179,8 +177,6 @@ class QuitScreen: SwappableGUI
 class GameGUI
 {
     private:
-        ///Parent of all game GUI elements.
-        GUIElement parent_;
         ///A reference to the GUI system.
         GUISystem guiSystem_;
         ///A reference to the GUI swapper.
@@ -270,16 +266,14 @@ class GameGUI
         /**
          * Construct a GameGUI with specified parameters.
          *
-         * Params:  parent     = GUI element to attach all game GUI elements to.
-         *          guiSystem  = A reference to the GUI system.
+         * Params:  guiSystem  = A reference to the GUI system.
          *          guiSwapper = A reference to the GUI swapper.
          *          gameDir    = Game data directory to load GUI from.
          *
          * Throws:  GameStartException on failure.
          */
-        this(GUIElement parent, GUISystem guiSystem, GUISwapper guiSwapper, VFSDir gameDir)
+        this(GUISystem guiSystem, GUISwapper guiSwapper, VFSDir gameDir)
         {
-            parent_      = parent;
             guiSystem_   = guiSystem;
             guiSwapper_  = guiSwapper;
             try
@@ -997,7 +991,6 @@ class GameContainer
          *
          * Params:  platform    = Platform to use for user input.
          *          monitor     = MonitorManager to monitor game subsystems.
-         *          guiParent   = Parent for all GUI elements used by the game.
          *          guiSwapper  = A reference to the GUI swapper.
          *          videoDriver = Video driver to draw graphics with.
          *          gameDir     = Game data directory.
@@ -1010,7 +1003,6 @@ class GameContainer
          */
         Game produce(Platform platform,
                      MonitorManager monitor,
-                     GUIElement guiParent,
                      GUISwapper guiSwapper,
                      VideoDriver videoDriver,
                      VFSDir gameDir,
@@ -1028,7 +1020,7 @@ class GameContainer
 
             try
             {
-                gui_ = new GameGUI(guiParent, guiSystem_, guiSwapper, gameDir);
+                gui_ = new GameGUI(guiSystem_, guiSwapper, gameDir);
             }
             catch(YAMLException e)
             {
