@@ -63,7 +63,8 @@ public:
     ///
     /// Params:  text        = Text to break. The user must ensure that each
     ///                        code point in this string corresponds exactly to
-    ///                        1 character.
+    ///                        1 character. This is required to avoid allocations
+    ///                        using slicing.
     ///          width       = Maximum width of a line in pixels.
     ///                        Note that if a single word in text is wider
     ///                        than this, it will not be broken and result
