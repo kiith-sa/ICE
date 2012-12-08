@@ -16,6 +16,7 @@
     fontColor:   rgbaE0E0FFFF
 
 - styleManager: line
+- style: {drawBorder: false}
 - layoutManager: boxManual 
 - layout: {x: 'pLeft', y: 'pTop', w: 'pWidth', h: 'pHeight'}
 #Main container

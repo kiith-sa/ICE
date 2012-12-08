@@ -24,7 +24,7 @@
     borderColor: rgbaC0C0FFFF
     fontColor:   rgbaE0E0FFFF
 
-#Main container
+- style: {drawBorder: false}
 - layout: {x: 'pLeft', y: 'pTop', w: 'pWidth', h: 'pHeight'}
 - widget label infoText:
     !!pairs

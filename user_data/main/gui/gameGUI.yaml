@@ -17,6 +17,7 @@
 
 - styleManager: line
 - layoutManager: boxManual
+- style: {drawBorder: false}
 - layout: {x: 'pLeft', y: 'pTop', w: 'pWidth', h: 'pHeight'}
 #Main container
 - widget container:
