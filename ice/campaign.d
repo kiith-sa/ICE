@@ -270,8 +270,7 @@ private:
         {
             campaign_.nextLevel();
         }
-        campaignGUI_.level!ButtonWidget.text = 
-            campaign_.currentLevel[2]["name"].as!string;
+        updateLevelGUI();
     }
 }
 
