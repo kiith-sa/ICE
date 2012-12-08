@@ -151,7 +151,7 @@ private:
     void parseWord(const dchar c)
     {
         // If we reach a space or end of text, break a line.
-        if(!c.isWhite && candidateLineEnd_ != text_.length) {return;}
+        if(!isWhite(c) && candidateLineEnd_ != text_.length) {return;}
         state_ = &parseGap;
         ++ wordCount_;
         breakTextIfNeeded();
@@ -160,6 +160,6 @@ private:
     // Parses a character in a gap between words.
     void parseGap(const dchar c)
     {
-        if(!c.isWhite && candidateLineEnd_ != text_.length) {state_ = &parseWord;}
+        if(!isWhite(c) && candidateLineEnd_ != text_.length) {state_ = &parseWord;}
     }
 }
