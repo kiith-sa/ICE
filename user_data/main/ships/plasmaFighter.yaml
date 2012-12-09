@@ -14,6 +14,8 @@ health: 75
 warhead:
   damage: 70
   killsEntity: false
+score:
+  exp: 380
   
 spawner:
   - entity: explosions/deathBase.yaml 

@@ -14,6 +14,8 @@ warhead:
   damage: 50
   killsEntity: false
 dumbScript: dumbscripts/arrows.yaml
+score:
+  exp: 140
 
 spawner:
   - entity: explosions/deathBase.yaml 
