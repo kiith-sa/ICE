@@ -13,6 +13,8 @@ warhead:
   damage: 80
   killsEntity: false
 dumbScript: dumbscripts/jets1.yaml
+score:
+  exp: 200
 
 spawner:
   - entity: explosions/deathBase.yaml 
