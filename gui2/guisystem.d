@@ -281,13 +281,18 @@ public:
         // Set no zoom and zero offset for GUI drawing.
         video.zoom       = 1.0;
         video.viewOffset = Vector2d(0.0, 0.0);
+        video_.scissor(rootSlot_.layout.bounds);
+
+        scope(exit)
+        {
+            // Restore zoom and offset.
+            video.zoom       = zoom;
+            video.viewOffset = offset;
+            video.disableScissor();
+        }
 
         event.videoDriver = video;
         rootSlot_.handleEvent(event);
-
-        // Restore zoom and offset.
-        video.zoom       = zoom;
-        video.viewOffset = offset;
     }
 
     /// Add a widget constructor function.

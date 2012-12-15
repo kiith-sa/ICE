@@ -414,11 +414,15 @@ class Ice
                     if(game_ !is null)
                     {
                         auto zone = Zone("Game run");
+                        videoDriver_.scissor(screenArea_);
+                        scope(exit){videoDriver_.disableScissor();}
                         //update game state
                         if(!game_.run()){destroyGame();}
                     }
                     else
                     {
+                        videoDriver_.scissor(screenArea_);
+                        scope(exit){videoDriver_.disableScissor();}
                         menuGraphics_.draw(videoDriver_);
                     }
 
