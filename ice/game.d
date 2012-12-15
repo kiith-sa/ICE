@@ -402,11 +402,11 @@ private:
 
         scope(failure){clear(player0_);}
         player0_  = new HumanPlayer(platform_, "Human");
+        gameDir_         = gameDir;
 
         initSystems();
 
         this.videoDriver = video;
-        gameDir_         = gameDir;
         initYAML();
 
         scope(failure){destroySystems();}
@@ -481,7 +481,7 @@ private:
 
         //Initialize entity system and game subsystems.
         entitySystem_             = new EntitySystem();
-        visualSystem_             = new VisualSystem(entitySystem_);
+        visualSystem_             = new VisualSystem(entitySystem_, gameDir_);
         controllerSystem_         = new ControllerSystem(entitySystem_, gameTime_);
         physicsSystem_            = new PhysicsSystem   (entitySystem_, gameTime_);
         timeoutSystem_            = new TimeoutSystem   (entitySystem_, gameTime_);

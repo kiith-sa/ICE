@@ -13,6 +13,8 @@ import std.algorithm;
 import std.conv;
 import std.stdio;
 
+import dgamevfs._;
+
 import color;
 import containers.lazyarray;
 import containers.fixedarray;
@@ -36,6 +38,9 @@ class VisualSystem : System
         ///Entity system whose data we're processing.
         EntitySystem entitySystem_;
 
+        /// Game data directory.
+        VFSDir gameDir_;
+
         ///VideoDriver to draw VisualComponents with.
         VideoDriver videoDriver_;
 
@@ -49,10 +54,14 @@ class VisualSystem : System
         bool drawVolumeComponents_;
 
     public:
-        ///Construct a VisualSystem working on entities from specified EntitySystem.
-        this(EntitySystem entitySystem)
+        /// Construct a VisualSystem.
+        ///
+        /// Params:  entitySystem = Entity system whose entities we're processing.
+        ///          gameDir      = Game data directory.
+        this(EntitySystem entitySystem, VFSDir gameDir)
         {
             entitySystem_ = entitySystem;
+            gameDir_      = gameDir;
             visualData_.loaderDelegate(&loadVisualData);
         }
 
@@ -87,8 +96,9 @@ class VisualSystem : System
                 YAMLNode* yaml = yamlManager_.getResource("visualsystem.yaml");
                 if(yaml is null)
                 {
-                    writeln("WARNING: Could not load VisualSystem configuration " ~
-                            "(maybe missing the visualsystem.yaml file?) ");
+                    yaml = writeDefaultConfig();
+                    // Writing default VisualSystem config might fail, but is not fatal.
+                    if(yaml is null){return;}
                 }
 
                 if((*yaml).containsKey("drawVolumeComponents"))
@@ -174,6 +184,30 @@ class VisualSystem : System
         }
 
     private:
+        /// Write the default visualsystem.yaml config file.
+        ///
+        /// Returns: Pointer to the YAMLNode storing the default configuration.
+        YAMLNode* writeDefaultConfig()
+        {
+            auto configFile = gameDir_.file("visualsystem.yaml");
+            YAMLNode defaultConfig = loadYAML("drawVolumeComponents: false\n");
+            try
+            {
+                saveYAML(configFile, defaultConfig);
+            }
+            catch(YAMLException e)
+            {
+                assert(false, 
+                       "YAML error saving default VisualSystem config; this shouldn't happen");
+            }
+            catch(VFSException e)
+            {
+                writeln("WARNING: could not write default VisualSystem config file; ignoring.");
+            }
+
+            return yamlManager_.getResource("visualsystem.yaml");
+        }
+
         /**
          * Load visual data from a YAML file with specified name to output. 
          *
