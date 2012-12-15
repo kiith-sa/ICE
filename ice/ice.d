@@ -792,7 +792,7 @@ class Ice
             const zoom   = videoDriver_.zoom;
             const offset = videoDriver_.viewOffset; 
 
-            // Set no zoom and zero offset for GUI drawing.
+            // Set no zoom and zero offset to draw loading screen.
             videoDriver_.zoom       = 1.0;
             videoDriver_.viewOffset = Vector2d(0.0, 0.0);
             scope(exit)

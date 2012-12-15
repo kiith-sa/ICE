@@ -103,7 +103,7 @@ public:
             params.fontSize       = 7;
             params.randomOrder    = Yes.randomOrder;
             params.font           = "orbitron-bold.ttf";
-            params.lineCount      = 48;
+            params.lineCount      = 88;
             return false;
         });
         effectManager_.addEffect(smallLines);
@@ -121,13 +121,28 @@ public:
     void draw(VideoDriver video)
     {
         effectManager_.draw(video, getTime());
+        // Save view zoom and offset.
+        const zoom   = video.zoom;
+        const offset = video.viewOffset; 
+        // Set no zoom and zero offset to draw effects.
+        video.zoom       = 1.0;
+        video.viewOffset = Vector2d(0.0, 0.0);
+        scope(exit)
+        {
+            // Restore zoom and offset.
+            video.zoom       = zoom;
+            video.viewOffset = offset;
+        }
 
         // Draw the "ICE" background text and version info.
         video.font = "orbitron-bold.ttf";
         video.fontSize = 128;
         string text = "ICE";
         const size = video.textSize(text);
-        const position = Vector2i(312 - size.x / 2, 300 - size.y / 2 - 16);
+        const screenWidth  = video.screenWidth;
+        const screenHeight = video.screenHeight;
+        const position = Vector2i((screenWidth - 176 - size.x) / 2, 
+                                  (screenHeight - size.y) / 2 - 16);
         video.drawText(position, text, rgba!"FFFFFFA0");
         video.fontSize = 24;
         video.drawText(position + size.to!int, "v 0.1", rgba!"FFFFFFA0");

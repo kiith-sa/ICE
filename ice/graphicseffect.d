@@ -401,10 +401,21 @@ public:
                "ScrollingTextLinesEffect needs to draw at least one line.");
         if(done_){return;}
 
+        // Save view zoom and offset.
+        const zoom = video.zoom;
+        // Set no zoom and zero offset to draw this effect.
+        video.zoom = 1.0;
+        // Restore zoom.
+        scope(exit) {video.zoom = zoom;}
+
         const timeSinceLastDraw = gameTime - lastDrawTime_;
         textOffset_ += timeSinceLastDraw * scrollingSpeed;
 
         // All lines use the same height.
+        video.font     = font;
+        // If we're zoomed, change text size (we've disabled the zoom above)
+        // (otherwise we would have pixelated text).
+        video.fontSize = cast(uint)(fontSize * zoom + 0.5f);
         const lineHeight = video.textSize("|j").y * 1.2;
         const strings = lineStrings.length;
 
@@ -450,8 +461,6 @@ public:
         }
 
         // Draw the scrolling text.
-        video.font     = font;
-        video.fontSize = fontSize;
         foreach(ref line; lineIndices_)
         {
             // Needed in case string count decreases.
