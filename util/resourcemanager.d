@@ -165,7 +165,7 @@ public:
         T* value = storage_[index];
         if(value is null)
         {
-            writeln("WARNING: Failed to load or preload file ", path);
+            writeln("Failed to load or preload file ", path);
             writeln("Ignoring...");
         }
         return value;
@@ -183,7 +183,7 @@ public:
         T* value = storage_[id.index_];
         if(value is null)
         {
-            writeln("WARNING: Failed to load or preload file ", id);
+            writeln("Failed to load or preload file ", id);
             writeln("Ignoring...");
         }
         return value;
@@ -224,6 +224,7 @@ private:
         // Handle the case when the file does not exist.
         try                   {file = gameDir_.file(name);}
         catch(VFSException e) {file = null;}
+        if(!file.exists){file = null;}
 
         // The loader can decide to load a placeholder on failure.
         return resourceLoader_(file, result);
