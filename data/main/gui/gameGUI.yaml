@@ -23,7 +23,7 @@
 - widget container:
     !!pairs
     - style:  {backgroundColor: rgba000000FF, borderColor: rgbaC0C0FFB0}
-    - layout: {x: 'pRight - 176', y: 16, w: 160, h: 'pBottom - 32'}
+    - layout: {x: 'pRight - 176', y: 'pTop + 16', w: 160, h: 'pHeight - 32'}
     - widget label:
         !!pairs
         - layout: {x: 'pLeft + 8', y: 'pTop + 8', w: 'pWidth - 16', h: '24'}
