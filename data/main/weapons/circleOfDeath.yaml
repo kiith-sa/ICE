@@ -1,6 +1,6 @@
 burstPeriod: 0.004
 ammo: 2
-reloadTime: 30
+reloadTime: 25
 burst:
  - entity: projectiles/circleOfDeathShell.yaml 
    components:

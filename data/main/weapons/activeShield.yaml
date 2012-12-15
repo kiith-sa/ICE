@@ -1,6 +1,6 @@
-burstPeriod: 0.015
-ammo: 128
-reloadTime: 4.0
+burstPeriod: 0.012
+ammo: 160
+reloadTime: 5.0
 burst:
  - entity: projectiles/shieldBullet.yaml 
    components:

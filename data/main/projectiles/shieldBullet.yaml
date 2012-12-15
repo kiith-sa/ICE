@@ -8,7 +8,7 @@ volume:
     max: [2,  2]
 visual:   visual/shieldBullet.yaml
 warhead:
-  damage: 6
+  damage: 3
 movementConstraint:
   aabbox: [-1024, -80, 1024, 800]
   constrainedToOwner: true
