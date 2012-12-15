@@ -35,7 +35,9 @@
 <li><a href="component.dumbscriptcomponent.html">component.dumbscriptcomponent</a></li>
 <li><a href="component.enginecomponent.html">component.enginecomponent</a></li>
 <li><a href="component.enginesystem.html">component.enginesystem</a></li>
+<li><a href="component.entityprototype.html">component.entityprototype</a></li>
 <li><a href="component.entitysystem.html">component.entitysystem</a></li>
+<li><a href="component.entityutil.html">component.entityutil</a></li>
 <li><a href="component.exceptions.html">component.exceptions</a></li>
 <li><a href="component.healthcomponent.html">component.healthcomponent</a></li>
 <li><a href="component.healthsystem.html">component.healthsystem</a></li>
@@ -46,6 +48,8 @@
 <li><a href="component.physicssystem.html">component.physicssystem</a></li>
 <li><a href="component.playercomponent.html">component.playercomponent</a></li>
 <li><a href="component.playersystem.html">component.playersystem</a></li>
+<li><a href="component.scorecomponent.html">component.scorecomponent</a></li>
+<li><a href="component.scoresystem.html">component.scoresystem</a></li>
 <li><a href="component.spatialsystem.html">component.spatialsystem</a></li>
 <li><a href="component.spawnercomponent.html">component.spawnercomponent</a></li>
 <li><a href="component.spawnersystem.html">component.spawnersystem</a></li>
@@ -93,9 +97,11 @@
 <li><a href="gui2.layout.html">gui2.layout</a></li>
 <li><a href="gui2.lineeditwidget.html">gui2.lineeditwidget</a></li>
 <li><a href="gui2.linestylemanager.html">gui2.linestylemanager</a></li>
+<li><a href="gui2.progressbarwidget.html">gui2.progressbarwidget</a></li>
 <li><a href="gui2.rootwidget.html">gui2.rootwidget</a></li>
 <li><a href="gui2.slotwidget.html">gui2.slotwidget</a></li>
 <li><a href="gui2.stylemanager.html">gui2.stylemanager</a></li>
+<li><a href="gui2.textbreaker.html">gui2.textbreaker</a></li>
 <li><a href="gui2.widget.html">gui2.widget</a></li>
 <li><a href="gui2.widgetutils.html">gui2.widgetutils</a></li>
 <li><a href="ice.html">ice</a></li>
@@ -103,11 +109,13 @@
 <li><a href="ice.credits.html">ice.credits</a></li>
 <li><a href="ice.exceptions.html">ice.exceptions</a></li>
 <li><a href="ice.game.html">ice.game</a></li>
+<li><a href="ice.gamegui.html">ice.gamegui</a></li>
 <li><a href="ice.graphicseffect.html">ice.graphicseffect</a></li>
 <li><a href="ice.guiswapper.html">ice.guiswapper</a></li>
 <li><a href="ice.hud.html">ice.hud</a></li>
 <li><a href="ice.ice.html">ice.ice</a></li>
 <li><a href="ice.level.html">ice.level</a></li>
+<li><a href="ice.menugraphics.html">ice.menugraphics</a></li>
 <li><a href="ice.player.html">ice.player</a></li>
 <li><a href="ice.playerprofile.html">ice.playerprofile</a></li>
 <li><a href="image.html">image</a></li>
@@ -195,11 +203,22 @@
 </dd>
 </dl>
 </dd>
+<dt class="d_decl">struct <a name="CampaignWinData"></a><span class="ddoc_psymbol">CampaignWinData</span>;
+</dt>
+<dd><p>Used to pass data about a campaign victoryy.</p>
+
+<dl><dt class="d_decl">YAMLNode <a name="campaignCredits"></a><span class="ddoc_psymbol">campaignCredits</span>;
+</dt>
+<dd><p>Credits information for the campaign.</p>
+
+</dd>
+</dl>
+</dd>
 <dt class="d_decl">class <a name="CampaignGUI"></a><span class="ddoc_psymbol">CampaignGUI</span>: ice.guiswapper.SwappableGUI;
 </dt>
 <dd><p>GUI for a particular campaign, allowing to select the level to play.</p>
 
-<dl><dt class="d_decl">this(GUISystem <b>gui</b>, VFSDir <b>gameDir</b>, Campaign <b>campaign</b>, PlayerProfile <b>playerProfile</b>, void delegate(ref Node, void delegate(GameOverData)) <b>initGame</b>);
+<dl><dt class="d_decl">this(GUISystem <b>gui</b>, VFSDir <b>gameDir</b>, Campaign <b>campaign</b>, PlayerProfile <b>playerProfile</b>, void delegate(ref Node, string delegate(), void delegate(GameOverData)) <b>initGame</b>);
 </dt>
 <dd><p>Initialize the <b>campaign</b> GUI.
 </p>
@@ -211,9 +230,11 @@
 <td valign=top>The first selected <b>campaign</b>.</td></tr>
 <tr><td valign=top>PlayerProfile <b>playerProfile</b></td>
 <td valign=top>Player currently playing the game.</td></tr>
-<tr><td valign=top>void delegate(ref Node, void delegate(GameOverData)) <b>initGame</b></td>
+<tr><td valign=top>void delegate(ref Node, string delegate(), void delegate(GameOverData)) <b>initGame</b></td>
 <td valign=top>Function called to initialize game, passing 
-                          the source of level to play, and a delegate
+                          the source of level to play, a delegate 
+                          returning name of the GUI to swap to 
+                          after the game ends and a delegate
                           for the game to call when the level ends.</td></tr>
 </table></div>
 <b>Throws:</b><div class="pbr">VFSException on a filesystem error.
@@ -318,6 +339,11 @@
 <dt class="d_decl">Tuple!(uint,string,Node) <a name="currentLevel"></a><span class="ddoc_psymbol">currentLevel</span>();
 </dt>
 <dd><p>Get the index, name and YAML source of the currently selected level.</p>
+
+</dd>
+<dt class="d_decl">ref YAMLNode <a name="credits"></a><span class="ddoc_psymbol">credits</span>();
+</dt>
+<dd><p>Get <a name="credits"></a><span class="ddoc_psymbol">credits</span> information of this campaign.</p>
 
 </dd>
 </dl>

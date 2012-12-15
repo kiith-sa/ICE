@@ -35,7 +35,9 @@
 <li><a href="component.dumbscriptcomponent.html">component.dumbscriptcomponent</a></li>
 <li><a href="component.enginecomponent.html">component.enginecomponent</a></li>
 <li><a href="component.enginesystem.html">component.enginesystem</a></li>
+<li><a href="component.entityprototype.html">component.entityprototype</a></li>
 <li><a href="component.entitysystem.html">component.entitysystem</a></li>
+<li><a href="component.entityutil.html">component.entityutil</a></li>
 <li><a href="component.exceptions.html">component.exceptions</a></li>
 <li><a href="component.healthcomponent.html">component.healthcomponent</a></li>
 <li><a href="component.healthsystem.html">component.healthsystem</a></li>
@@ -46,6 +48,8 @@
 <li><a href="component.physicssystem.html">component.physicssystem</a></li>
 <li><a href="component.playercomponent.html">component.playercomponent</a></li>
 <li><a href="component.playersystem.html">component.playersystem</a></li>
+<li><a href="component.scorecomponent.html">component.scorecomponent</a></li>
+<li><a href="component.scoresystem.html">component.scoresystem</a></li>
 <li><a href="component.spatialsystem.html">component.spatialsystem</a></li>
 <li><a href="component.spawnercomponent.html">component.spawnercomponent</a></li>
 <li><a href="component.spawnersystem.html">component.spawnersystem</a></li>
@@ -93,9 +97,11 @@
 <li><a href="gui2.layout.html">gui2.layout</a></li>
 <li><a href="gui2.lineeditwidget.html">gui2.lineeditwidget</a></li>
 <li><a href="gui2.linestylemanager.html">gui2.linestylemanager</a></li>
+<li><a href="gui2.progressbarwidget.html">gui2.progressbarwidget</a></li>
 <li><a href="gui2.rootwidget.html">gui2.rootwidget</a></li>
 <li><a href="gui2.slotwidget.html">gui2.slotwidget</a></li>
 <li><a href="gui2.stylemanager.html">gui2.stylemanager</a></li>
+<li><a href="gui2.textbreaker.html">gui2.textbreaker</a></li>
 <li><a href="gui2.widget.html">gui2.widget</a></li>
 <li><a href="gui2.widgetutils.html">gui2.widgetutils</a></li>
 <li><a href="ice.html">ice</a></li>
@@ -103,11 +109,13 @@
 <li><a href="ice.credits.html">ice.credits</a></li>
 <li><a href="ice.exceptions.html">ice.exceptions</a></li>
 <li><a href="ice.game.html">ice.game</a></li>
+<li><a href="ice.gamegui.html">ice.gamegui</a></li>
 <li><a href="ice.graphicseffect.html">ice.graphicseffect</a></li>
 <li><a href="ice.guiswapper.html">ice.guiswapper</a></li>
 <li><a href="ice.hud.html">ice.hud</a></li>
 <li><a href="ice.ice.html">ice.ice</a></li>
 <li><a href="ice.level.html">ice.level</a></li>
+<li><a href="ice.menugraphics.html">ice.menugraphics</a></li>
 <li><a href="ice.player.html">ice.player</a></li>
 <li><a href="ice.playerprofile.html">ice.playerprofile</a></li>
 <li><a href="image.html">image</a></li>
@@ -175,15 +183,20 @@
 </dt>
 <dd><p>Style manager that draws widgets as line rectangles.
 </p>
-<p>Widgets with this style manager have no background, only a border;
- they are completely transparent. This is the most basic style manager - 
+<p>Widgets with this style manager have a colored (usually transparent) background, 
+ with a border made of lines. This is the most basic style manager - 
  it's a placeholder before something more elaborate is implemented.</p>
 
 <dl><dt class="d_decl">struct <a name="Style"></a><span class="ddoc_psymbol">Style</span>;
 </dt>
 <dd><p>LineStyleManager style.</p>
 
-<dl><dt class="d_decl">string <a name="name"></a><span class="ddoc_psymbol">name</span>;
+<dl><dt class="d_decl">enum <a name="ProgressStyle"></a><span class="ddoc_psymbol">ProgressStyle</span>;
+</dt>
+<dd><p>Style of the progress "bar".</p>
+
+</dd>
+<dt class="d_decl">string <a name="name"></a><span class="ddoc_psymbol">name</span>;
 </dt>
 <dd><p>Name of the style. Empty for default style.</p>
 
@@ -198,9 +211,19 @@
 <dd><p>Color of widget border.</p>
 
 </dd>
+<dt class="d_decl">Color <a name="backgroundColor"></a><span class="ddoc_psymbol">backgroundColor</span>;
+</dt>
+<dd><p>Background color.</p>
+
+</dd>
 <dt class="d_decl">Color <a name="fontColor"></a><span class="ddoc_psymbol">fontColor</span>;
 </dt>
 <dd><p>Color of font used to draw text.</p>
+
+</dd>
+<dt class="d_decl">Color <a name="progressColor"></a><span class="ddoc_psymbol">progressColor</span>;
+</dt>
+<dd><p>Color of the filled part of the progress bar.</p>
 
 </dd>
 <dt class="d_decl">uint <a name="fontSize"></a><span class="ddoc_psymbol">fontSize</span>;
@@ -208,9 +231,34 @@
 <dd><p>Font size in points.</p>
 
 </dd>
+<dt class="d_decl">uint <a name="lineGap"></a><span class="ddoc_psymbol">lineGap</span>;
+</dt>
+<dd><p>Gap between text lines in pixels.</p>
+
+</dd>
 <dt class="d_decl">bool <a name="drawBorder"></a><span class="ddoc_psymbol">drawBorder</span>;
 </dt>
 <dd><p>Draw border of the widget?</p>
+
+</dd>
+<dt class="d_decl">ProgressStyle <a name="progressStyle"></a><span class="ddoc_psymbol">progressStyle</span>;
+</dt>
+<dd><p>Style of the progress "bar".</p>
+
+</dd>
+<dt class="d_decl">bool <a name="hasBackgroundTexture"></a><span class="ddoc_psymbol">hasBackgroundTexture</span>;
+</dt>
+<dd><p>Does this style have a background image?</p>
+
+</dd>
+<dt class="d_decl">ResourceID!(Texture) <a name="backgroundTexture"></a><span class="ddoc_psymbol">backgroundTexture</span>;
+</dt>
+<dd><p>If hasBackgroundTexture is <b>true</b>, used to access the background texture.</p>
+
+</dd>
+<dt class="d_decl">AlignX <a name="textAlignX"></a><span class="ddoc_psymbol">textAlignX</span>;
+</dt>
+<dd><p>X alignment of any text drawn in the widget.</p>
 
 </dd>
 <dt class="d_decl">this(ref Node <b>yaml</b>, string <b>name</b>);

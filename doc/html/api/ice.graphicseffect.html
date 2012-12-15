@@ -35,7 +35,9 @@
 <li><a href="component.dumbscriptcomponent.html">component.dumbscriptcomponent</a></li>
 <li><a href="component.enginecomponent.html">component.enginecomponent</a></li>
 <li><a href="component.enginesystem.html">component.enginesystem</a></li>
+<li><a href="component.entityprototype.html">component.entityprototype</a></li>
 <li><a href="component.entitysystem.html">component.entitysystem</a></li>
+<li><a href="component.entityutil.html">component.entityutil</a></li>
 <li><a href="component.exceptions.html">component.exceptions</a></li>
 <li><a href="component.healthcomponent.html">component.healthcomponent</a></li>
 <li><a href="component.healthsystem.html">component.healthsystem</a></li>
@@ -46,6 +48,8 @@
 <li><a href="component.physicssystem.html">component.physicssystem</a></li>
 <li><a href="component.playercomponent.html">component.playercomponent</a></li>
 <li><a href="component.playersystem.html">component.playersystem</a></li>
+<li><a href="component.scorecomponent.html">component.scorecomponent</a></li>
+<li><a href="component.scoresystem.html">component.scoresystem</a></li>
 <li><a href="component.spatialsystem.html">component.spatialsystem</a></li>
 <li><a href="component.spawnercomponent.html">component.spawnercomponent</a></li>
 <li><a href="component.spawnersystem.html">component.spawnersystem</a></li>
@@ -93,9 +97,11 @@
 <li><a href="gui2.layout.html">gui2.layout</a></li>
 <li><a href="gui2.lineeditwidget.html">gui2.lineeditwidget</a></li>
 <li><a href="gui2.linestylemanager.html">gui2.linestylemanager</a></li>
+<li><a href="gui2.progressbarwidget.html">gui2.progressbarwidget</a></li>
 <li><a href="gui2.rootwidget.html">gui2.rootwidget</a></li>
 <li><a href="gui2.slotwidget.html">gui2.slotwidget</a></li>
 <li><a href="gui2.stylemanager.html">gui2.stylemanager</a></li>
+<li><a href="gui2.textbreaker.html">gui2.textbreaker</a></li>
 <li><a href="gui2.widget.html">gui2.widget</a></li>
 <li><a href="gui2.widgetutils.html">gui2.widgetutils</a></li>
 <li><a href="ice.html">ice</a></li>
@@ -103,11 +109,13 @@
 <li><a href="ice.credits.html">ice.credits</a></li>
 <li><a href="ice.exceptions.html">ice.exceptions</a></li>
 <li><a href="ice.game.html">ice.game</a></li>
+<li><a href="ice.gamegui.html">ice.gamegui</a></li>
 <li><a href="ice.graphicseffect.html">ice.graphicseffect</a></li>
 <li><a href="ice.guiswapper.html">ice.guiswapper</a></li>
 <li><a href="ice.hud.html">ice.hud</a></li>
 <li><a href="ice.ice.html">ice.ice</a></li>
 <li><a href="ice.level.html">ice.level</a></li>
+<li><a href="ice.menugraphics.html">ice.menugraphics</a></li>
 <li><a href="ice.player.html">ice.player</a></li>
 <li><a href="ice.playerprofile.html">ice.playerprofile</a></li>
 <li><a href="image.html">image</a></li>
@@ -193,14 +201,14 @@ public mixin Signal!() onExpired
 <dd><p>Are we done drawing this effect?</p>
 
 </dd>
-<dt class="d_decl">void <a name="draw"></a><span class="ddoc_psymbol">draw</span>(VideoDriver <b>video</b>, const GameTime <b>gameTime</b>);
+<dt class="d_decl">void <a name="draw"></a><span class="ddoc_psymbol">draw</span>(VideoDriver <b>video</b>, const real <b>gameTime</b>);
 </dt>
 <dd><p>Draw the effect.
 </p>
 <b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>VideoDriver <b>video</b></td>
 <td valign=top>VideoDriver to <a name="draw"></a><span class="ddoc_psymbol">draw</span> the effect with.</td></tr>
-<tr><td valign=top>GameTime <b>gameTime</b></td>
-<td valign=top>Game time subsystem to get current time.</td></tr>
+<tr><td valign=top>real <b>gameTime</b></td>
+<td valign=top>Current game time.</td></tr>
 </table></div>
 
 </dd>
@@ -213,22 +221,22 @@ public mixin Signal!() onExpired
 <p>Effect parameters are specified each frame by a delegate.
 <br>
 
- The delegate takes a real specifying game time when the effect started,
- a reference to the game time subsystem and a reference to effect parameters.
+ The delegate takes a real specifying time when the effect started,
+ current time and a reference to effect parameters.
  It returns a boolean that is <b>true</b> when the effect is done and should expire.
 
 </p>
 <p><b>Example:</b><br>
 <pre class="d_code"> <span class="d_comment">//This draws an an increasing number of slowly moving vertical lines in the game area.
-</span> <span class="d_comment">//It is taken from the Game class, and uses its data member.
+</span> <span class="d_comment">//It is taken from the Game class, and uses its data members.
 </span> <span class="d_comment">//Anyone is welcome to create a simpler example not depending on Game.
 </span>
  GraphicsEffect effect = <span class="d_keyword">new</span> <span class="d_psymbol">RandomLinesEffect</span>(gameTime_.gameTime,
  (<span class="d_keyword">const</span> <span class="d_keyword">real</span> startTime,
-  <span class="d_keyword">const</span> GameTime gameTime,
+  <span class="d_keyword">const</span> <span class="d_keyword">real</span> currentTime,
   <span class="d_keyword">ref</span> <span class="d_psymbol">RandomLinesEffect</span>.Parameters params)
  {
-     <span class="d_keyword">const</span> <span class="d_keyword">double</span> timeRatio = (gameTime.gameTime - startTime) / 3.0;
+     <span class="d_keyword">const</span> <span class="d_keyword">double</span> timeRatio = (currentTime - startTime) / 3.0;
      <span class="d_keyword">if</span>(timeRatio &gt; 1.0){<span class="d_keyword">return</span> <span class="d_keyword">true</span>;}
      params.bounds   = Game.gameArea;
      params.minWidth = 0.3;
@@ -314,9 +322,113 @@ public mixin Signal!() onExpired
 </dd>
 </dl>
 </dd>
-<dt class="d_decl">this(const(real) <b>startTime</b>, bool delegate(const(real), const(GameTime), ref Parameters) <b>controlDelegate</b>);
+<dt class="d_decl">this(const(real) <b>startTime</b>, bool delegate(const(real), const(real), ref Parameters) <b>controlDelegate</b>);
 </dt>
 <dd><p>Construct a RandomLinesEffect starting at <b>startTime</b> using <b>controlDelegate</b> to set its parameters.</p>
+
+</dd>
+</dl>
+</dd>
+<dt class="d_decl">class <a name="ScrollingTextLinesEffect"></a><span class="ddoc_psymbol">ScrollingTextLinesEffect</span>: ice.graphicseffect.GraphicsEffect;
+</dt>
+<dd><p>Effect that draws vertically scrolling text lines.
+</p>
+<p>Effect parameters are specified each frame by a delegate.
+<br>
+
+ The delegate takes a real specifying time when the effect started,
+ current time and a reference to effect parameters.
+ It returns a boolean that is <b>true</b> when the effect is done and should expire.
+
+</p>
+<p><b>Example:</b><br>
+<pre class="d_code"> <span class="d_comment">//This draws a scrolling (upwards) column of text where each line
+</span> <span class="d_comment">//is a randomly selected number from a list.
+</span>
+ GraphicsEffect effect = <span class="d_keyword">new</span> <span class="d_psymbol">ScrollingTextLinesEffect</span>(getTime(),
+ (<span class="d_keyword">const</span> <span class="d_keyword">real</span> startTime,
+  <span class="d_keyword">const</span> <span class="d_keyword">real</span> currentTime,
+  <span class="d_keyword">ref</span> <span class="d_psymbol">ScrollingTextLinesEffect</span>.Parameters params)
+ {
+     params.lineStrings =
+     [
+       <span class="d_string">"1536"</span>,
+       <span class="d_string">"7233"</span>,
+       <span class="d_string">"4287"</span>,
+       <span class="d_string">"8923"</span>,
+       <span class="d_string">"2342"</span>,
+       <span class="d_string">"32583"</span>,
+       <span class="d_string">"7896"</span>,
+       <span class="d_string">"2352"</span>,
+       <span class="d_string">"22358"</span>,
+       <span class="d_string">"2423"</span>
+     ];
+     params.randomOrder    = Yes.randomOrder;
+     params.position       = Vector2i(16, -16);
+     params.scrollingSpeed = -100.0f;
+     params.fontColor      = rgba!<span class="d_string">"E8E8FF90"</span>;
+     params.fontSize       = 12;
+     params.randomOrder    = No.randomOrder;
+     params.font           = <span class="d_string">"orbitron-bold.ttf"</span>;
+     params.lineCount      = 48;
+     <span class="d_keyword">return</span> <span class="d_keyword">false</span>; });
+</pre>
+</p>
+
+<dl><dt class="d_decl">struct <a name="Parameters"></a><span class="ddoc_psymbol">Parameters</span>;
+</dt>
+<dd><p><a name="Parameters"></a><span class="ddoc_psymbol">Parameters</span> of a text effect.</p>
+
+<dl><dt class="d_decl">string[] <a name="lineStrings"></a><span class="ddoc_psymbol">lineStrings</span>;
+</dt>
+<dd><p>Strings of the scrolled text. Each string is one line.
+</p>
+<p>At least 1 string is required.</p>
+
+</dd>
+<dt class="d_decl">float <a name="scrollingSpeed"></a><span class="ddoc_psymbol">scrollingSpeed</span>;
+</dt>
+<dd><p>Scrolling speed of the text in units per second. Can be negative.</p>
+
+</dd>
+<dt class="d_decl">Flag!("<a name="randomOrder"></a><span class="ddoc_psymbol">randomOrder</span>") <a name="randomOrder"></a><span class="ddoc_psymbol">randomOrder</span>;
+</dt>
+<dd><p>Should the lines be scrolled in random order?</p>
+
+</dd>
+<dt class="d_decl">Color <a name="fontColor"></a><span class="ddoc_psymbol">fontColor</span>;
+</dt>
+<dd><p>Color of the scrolled text.</p>
+
+</dd>
+<dt class="d_decl">uint <a name="fontSize"></a><span class="ddoc_psymbol">fontSize</span>;
+</dt>
+<dd><p>Font size of the scrolled text.</p>
+
+</dd>
+<dt class="d_decl">string <a name="font"></a><span class="ddoc_psymbol">font</span>;
+</dt>
+<dd><p>Font of the scrolled text.</p>
+
+</dd>
+<dt class="d_decl">Vector2i <a name="position"></a><span class="ddoc_psymbol">position</span>;
+</dt>
+<dd><p>Position of the upper-left corner of the scrolled text.</p>
+
+</dd>
+<dt class="d_decl">uint <a name="lineCount"></a><span class="ddoc_psymbol">lineCount</span>;
+</dt>
+<dd><p>Number of lines of scrolled text.
+</p>
+<p>If more than lineStrings.length, the same strings will be reused 
+ for multiple lines. Must be at least 1.</p>
+
+</dd>
+</dl>
+</dd>
+<dt class="d_decl">this(const(real) <b>startTime</b>, bool delegate(const(real), const(real), ref Parameters) <b>controlDelegate</b>);
+</dt>
+<dd><p>Construct a ScrollingTextLinesEffect starting at <b>startTime</b> using <b>controlDelegate</b> to set its parameters.</p>
 
 </dd>
 </dl>
@@ -328,22 +440,22 @@ public mixin Signal!() onExpired
 <p>Draws text with parameters specified each frame by a delegate.
 <br>
 
- The delegate takes a real specifying game time when the effect started,
- a reference to the game time subsystem and a reference to effect parameters.
+ The delegate takes a real specifying time when the effect started,
+ current time and a reference to effect parameters.
  It returns a boolean that is <b>true</b> when the effect is done and should expire.
 
 </p>
 <p><b>Example:</b><br>
 <pre class="d_code"> <span class="d_comment">//This draws an enlarging, fading text in the middle of the game area.
-</span> <span class="d_comment">//It is taken from the Game class, and uses its data member.
+</span> <span class="d_comment">//It is taken from the Game class, and uses its data members.
 </span> <span class="d_comment">//Anyone is welcome to create a simpler example not depending on Game.
 </span>
  GraphicsEffect effect = <span class="d_keyword">new</span> <span class="d_psymbol">TextEffect</span>(gameTime_.gameTime,
     (<span class="d_keyword">const</span> <span class="d_keyword">real</span> startTime,
-     <span class="d_keyword">const</span> GameTime gameTime,
+     <span class="d_keyword">const</span> currentTime,
      <span class="d_keyword">ref</span> <span class="d_psymbol">TextEffect</span>.Parameters params)
     {
-        <span class="d_keyword">const</span> <span class="d_keyword">double</span> timeRatio = (gameTime.gameTime - startTime) / 1.5;
+        <span class="d_keyword">const</span> <span class="d_keyword">double</span> timeRatio = (currentTime - startTime) / 1.5;
         <span class="d_keyword">if</span>(timeRatio &gt; 1.0){<span class="d_keyword">return</span> <span class="d_keyword">true</span>;}
 
         <span class="d_keyword">auto</span> gameOver = <span class="d_string">"GAME OVER"</span>;
@@ -398,7 +510,7 @@ public mixin Signal!() onExpired
 </dd>
 </dl>
 </dd>
-<dt class="d_decl">pure nothrow  this(const(real) <b>startTime</b>, bool delegate(const(real), const(GameTime), ref Parameters) <b>controlDelegate</b>);
+<dt class="d_decl">pure nothrow  this(const(real) <b>startTime</b>, bool delegate(const(real), const(real), ref Parameters) <b>controlDelegate</b>);
 </dt>
 <dd><p>Construct a TextEffect starting at <b>startTime</b> using <b>controlDelegate</b> to set its parameters.</p>
 
@@ -409,9 +521,9 @@ public mixin Signal!() onExpired
 </dt>
 <dd><p>Manages graphics effects.</p>
 
-<dl><dt class="d_decl">void <a name="draw"></a><span class="ddoc_psymbol">draw</span>(VideoDriver <b>video</b>, const GameTime <b>gameTime</b>);
+<dl><dt class="d_decl">void <a name="draw"></a><span class="ddoc_psymbol">draw</span>(VideoDriver <b>video</b>, const real <b>currentTime</b>);
 </dt>
-<dd><p>Draw graphics effects with specified <b>video</b> driver and game time subsystem.</p>
+<dd><p>Draw graphics effects with specified <b>video</b> driver and current time.</p>
 
 </dd>
 <dt class="d_decl">pure nothrow void <a name="addEffect"></a><span class="ddoc_psymbol">addEffect</span>(GraphicsEffect <b>effect</b>);

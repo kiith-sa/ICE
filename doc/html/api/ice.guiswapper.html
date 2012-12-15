@@ -35,7 +35,9 @@
 <li><a href="component.dumbscriptcomponent.html">component.dumbscriptcomponent</a></li>
 <li><a href="component.enginecomponent.html">component.enginecomponent</a></li>
 <li><a href="component.enginesystem.html">component.enginesystem</a></li>
+<li><a href="component.entityprototype.html">component.entityprototype</a></li>
 <li><a href="component.entitysystem.html">component.entitysystem</a></li>
+<li><a href="component.entityutil.html">component.entityutil</a></li>
 <li><a href="component.exceptions.html">component.exceptions</a></li>
 <li><a href="component.healthcomponent.html">component.healthcomponent</a></li>
 <li><a href="component.healthsystem.html">component.healthsystem</a></li>
@@ -46,6 +48,8 @@
 <li><a href="component.physicssystem.html">component.physicssystem</a></li>
 <li><a href="component.playercomponent.html">component.playercomponent</a></li>
 <li><a href="component.playersystem.html">component.playersystem</a></li>
+<li><a href="component.scorecomponent.html">component.scorecomponent</a></li>
+<li><a href="component.scoresystem.html">component.scoresystem</a></li>
 <li><a href="component.spatialsystem.html">component.spatialsystem</a></li>
 <li><a href="component.spawnercomponent.html">component.spawnercomponent</a></li>
 <li><a href="component.spawnersystem.html">component.spawnersystem</a></li>
@@ -93,9 +97,11 @@
 <li><a href="gui2.layout.html">gui2.layout</a></li>
 <li><a href="gui2.lineeditwidget.html">gui2.lineeditwidget</a></li>
 <li><a href="gui2.linestylemanager.html">gui2.linestylemanager</a></li>
+<li><a href="gui2.progressbarwidget.html">gui2.progressbarwidget</a></li>
 <li><a href="gui2.rootwidget.html">gui2.rootwidget</a></li>
 <li><a href="gui2.slotwidget.html">gui2.slotwidget</a></li>
 <li><a href="gui2.stylemanager.html">gui2.stylemanager</a></li>
+<li><a href="gui2.textbreaker.html">gui2.textbreaker</a></li>
 <li><a href="gui2.widget.html">gui2.widget</a></li>
 <li><a href="gui2.widgetutils.html">gui2.widgetutils</a></li>
 <li><a href="ice.html">ice</a></li>
@@ -103,11 +109,13 @@
 <li><a href="ice.credits.html">ice.credits</a></li>
 <li><a href="ice.exceptions.html">ice.exceptions</a></li>
 <li><a href="ice.game.html">ice.game</a></li>
+<li><a href="ice.gamegui.html">ice.gamegui</a></li>
 <li><a href="ice.graphicseffect.html">ice.graphicseffect</a></li>
 <li><a href="ice.guiswapper.html">ice.guiswapper</a></li>
 <li><a href="ice.hud.html">ice.hud</a></li>
 <li><a href="ice.ice.html">ice.ice</a></li>
 <li><a href="ice.level.html">ice.level</a></li>
+<li><a href="ice.menugraphics.html">ice.menugraphics</a></li>
 <li><a href="ice.player.html">ice.player</a></li>
 <li><a href="ice.playerprofile.html">ice.playerprofile</a></li>
 <li><a href="image.html">image</a></li>
@@ -187,12 +195,22 @@
 <dd><p>Add a swappable GUI with specified <b>name</b>.</p>
 
 </dd>
+<dt class="d_decl">void <a name="removeGUI"></a><span class="ddoc_psymbol">removeGUI</span>(const string <b>name</b>);
+</dt>
+<dd><p>Add a swappable GUI with specified <b>name</b>. A GUI with this <b>name</b> must be in the swapper.</p>
+
+</dd>
 <dt class="d_decl">void <a name="setGUI"></a><span class="ddoc_psymbol">setGUI</span>(string <b>name</b>);
 </dt>
 <dd><p>Forcibly connect GUI with specified <b>name</b>.
 </p>
 <p>Can only be used when no GUI is connected, or to disconnect(<b>null</b>) a
  connected GUI.</p>
+
+</dd>
+<dt class="d_decl">const pure nothrow @property string <a name="currentGUIName"></a><span class="ddoc_psymbol">currentGUIName</span>();
+</dt>
+<dd><p>Return name of the currently set GUI.</p>
 
 </dd>
 </dl>
@@ -206,9 +224,30 @@
 <dd><p>Swaps this GUI (connected at call) with GUI specified by a name string.</p>
 
 </dd>
+<dt class="d_decl">protected final pure nothrow @property @safe void <a name="rootWidget"></a><span class="ddoc_psymbol">rootWidget</span>(RootWidget <a name="rootWidget"></a><span class="ddoc_psymbol">rootWidget</span>);
+</dt>
+<dd><p>Set the root widget. Can be called more than once.</p>
+
+</dd>
 <dt class="d_decl">this(RootWidget <b>rootWidget</b>);
 </dt>
 <dd><p>Initialize a SwappableGUI with a root widget.</p>
+
+</dd>
+</dl>
+</dd>
+<dt class="d_decl">class <a name="PlainSwappableGUI"></a><span class="ddoc_psymbol">PlainSwappableGUI</span>: ice.guiswapper.SwappableGUI;
+</dt>
+<dd><p>Wraps any RootWidget in a SwappableGUI, without any extra logic.</p>
+
+<dl><dt class="d_decl">this(RootWidget <b>root</b>);
+</dt>
+<dd><p>Constructs the PlainSwappableGUI.
+ 
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>RootWidget <b>root</b></td>
+<td valign=top>RootWidget to wrap.</td></tr>
+</table></div>
 
 </dd>
 </dl>

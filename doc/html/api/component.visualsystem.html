@@ -35,7 +35,9 @@
 <li><a href="component.dumbscriptcomponent.html">component.dumbscriptcomponent</a></li>
 <li><a href="component.enginecomponent.html">component.enginecomponent</a></li>
 <li><a href="component.enginesystem.html">component.enginesystem</a></li>
+<li><a href="component.entityprototype.html">component.entityprototype</a></li>
 <li><a href="component.entitysystem.html">component.entitysystem</a></li>
+<li><a href="component.entityutil.html">component.entityutil</a></li>
 <li><a href="component.exceptions.html">component.exceptions</a></li>
 <li><a href="component.healthcomponent.html">component.healthcomponent</a></li>
 <li><a href="component.healthsystem.html">component.healthsystem</a></li>
@@ -46,6 +48,8 @@
 <li><a href="component.physicssystem.html">component.physicssystem</a></li>
 <li><a href="component.playercomponent.html">component.playercomponent</a></li>
 <li><a href="component.playersystem.html">component.playersystem</a></li>
+<li><a href="component.scorecomponent.html">component.scorecomponent</a></li>
+<li><a href="component.scoresystem.html">component.scoresystem</a></li>
 <li><a href="component.spatialsystem.html">component.spatialsystem</a></li>
 <li><a href="component.spawnercomponent.html">component.spawnercomponent</a></li>
 <li><a href="component.spawnersystem.html">component.spawnersystem</a></li>
@@ -93,9 +97,11 @@
 <li><a href="gui2.layout.html">gui2.layout</a></li>
 <li><a href="gui2.lineeditwidget.html">gui2.lineeditwidget</a></li>
 <li><a href="gui2.linestylemanager.html">gui2.linestylemanager</a></li>
+<li><a href="gui2.progressbarwidget.html">gui2.progressbarwidget</a></li>
 <li><a href="gui2.rootwidget.html">gui2.rootwidget</a></li>
 <li><a href="gui2.slotwidget.html">gui2.slotwidget</a></li>
 <li><a href="gui2.stylemanager.html">gui2.stylemanager</a></li>
+<li><a href="gui2.textbreaker.html">gui2.textbreaker</a></li>
 <li><a href="gui2.widget.html">gui2.widget</a></li>
 <li><a href="gui2.widgetutils.html">gui2.widgetutils</a></li>
 <li><a href="ice.html">ice</a></li>
@@ -103,11 +109,13 @@
 <li><a href="ice.credits.html">ice.credits</a></li>
 <li><a href="ice.exceptions.html">ice.exceptions</a></li>
 <li><a href="ice.game.html">ice.game</a></li>
+<li><a href="ice.gamegui.html">ice.gamegui</a></li>
 <li><a href="ice.graphicseffect.html">ice.graphicseffect</a></li>
 <li><a href="ice.guiswapper.html">ice.guiswapper</a></li>
 <li><a href="ice.hud.html">ice.hud</a></li>
 <li><a href="ice.ice.html">ice.ice</a></li>
 <li><a href="ice.level.html">ice.level</a></li>
+<li><a href="ice.menugraphics.html">ice.menugraphics</a></li>
 <li><a href="ice.player.html">ice.player</a></li>
 <li><a href="ice.playerprofile.html">ice.playerprofile</a></li>
 <li><a href="image.html">image</a></li>
@@ -175,9 +183,15 @@
 </dt>
 <dd><p>System that displays (with VideoDriver) visual representations of entities.</p>
 
-<dl><dt class="d_decl">this(EntitySystem <b>entitySystem</b>);
+<dl><dt class="d_decl">this(EntitySystem <b>entitySystem</b>, VFSDir <b>gameDir</b>);
 </dt>
-<dd><p>Construct a VisualSystem working on entities from specified EntitySystem.</p>
+<dd><p>Construct a VisualSystem.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>EntitySystem <b>entitySystem</b></td>
+<td valign=top>Entity system whose entities we're processing.</td></tr>
+<tr><td valign=top>VFSDir <b>gameDir</b></td>
+<td valign=top>Game data directory.</td></tr>
+</table></div>
 
 </dd>
 <dt class="d_decl">pure nothrow @property void <a name="videoDriver"></a><span class="ddoc_psymbol">videoDriver</span>(VideoDriver <b>rhs</b>);

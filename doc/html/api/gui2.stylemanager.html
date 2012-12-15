@@ -35,7 +35,9 @@
 <li><a href="component.dumbscriptcomponent.html">component.dumbscriptcomponent</a></li>
 <li><a href="component.enginecomponent.html">component.enginecomponent</a></li>
 <li><a href="component.enginesystem.html">component.enginesystem</a></li>
+<li><a href="component.entityprototype.html">component.entityprototype</a></li>
 <li><a href="component.entitysystem.html">component.entitysystem</a></li>
+<li><a href="component.entityutil.html">component.entityutil</a></li>
 <li><a href="component.exceptions.html">component.exceptions</a></li>
 <li><a href="component.healthcomponent.html">component.healthcomponent</a></li>
 <li><a href="component.healthsystem.html">component.healthsystem</a></li>
@@ -46,6 +48,8 @@
 <li><a href="component.physicssystem.html">component.physicssystem</a></li>
 <li><a href="component.playercomponent.html">component.playercomponent</a></li>
 <li><a href="component.playersystem.html">component.playersystem</a></li>
+<li><a href="component.scorecomponent.html">component.scorecomponent</a></li>
+<li><a href="component.scoresystem.html">component.scoresystem</a></li>
 <li><a href="component.spatialsystem.html">component.spatialsystem</a></li>
 <li><a href="component.spawnercomponent.html">component.spawnercomponent</a></li>
 <li><a href="component.spawnersystem.html">component.spawnersystem</a></li>
@@ -93,9 +97,11 @@
 <li><a href="gui2.layout.html">gui2.layout</a></li>
 <li><a href="gui2.lineeditwidget.html">gui2.lineeditwidget</a></li>
 <li><a href="gui2.linestylemanager.html">gui2.linestylemanager</a></li>
+<li><a href="gui2.progressbarwidget.html">gui2.progressbarwidget</a></li>
 <li><a href="gui2.rootwidget.html">gui2.rootwidget</a></li>
 <li><a href="gui2.slotwidget.html">gui2.slotwidget</a></li>
 <li><a href="gui2.stylemanager.html">gui2.stylemanager</a></li>
+<li><a href="gui2.textbreaker.html">gui2.textbreaker</a></li>
 <li><a href="gui2.widget.html">gui2.widget</a></li>
 <li><a href="gui2.widgetutils.html">gui2.widgetutils</a></li>
 <li><a href="ice.html">ice</a></li>
@@ -103,11 +109,13 @@
 <li><a href="ice.credits.html">ice.credits</a></li>
 <li><a href="ice.exceptions.html">ice.exceptions</a></li>
 <li><a href="ice.game.html">ice.game</a></li>
+<li><a href="ice.gamegui.html">ice.gamegui</a></li>
 <li><a href="ice.graphicseffect.html">ice.graphicseffect</a></li>
 <li><a href="ice.guiswapper.html">ice.guiswapper</a></li>
 <li><a href="ice.hud.html">ice.hud</a></li>
 <li><a href="ice.ice.html">ice.ice</a></li>
 <li><a href="ice.level.html">ice.level</a></li>
+<li><a href="ice.menugraphics.html">ice.menugraphics</a></li>
 <li><a href="ice.player.html">ice.player</a></li>
 <li><a href="ice.playerprofile.html">ice.playerprofile</a></li>
 <li><a href="image.html">image</a></li>
@@ -216,7 +224,15 @@
  Each <a name="StyleManager"></a><span class="ddoc_psymbol">StyleManager</span> implementation implements its own drawing logic and
  supports different kinds of styles.</p>
 
-<dl><dt class="d_decl">void <a name="setStyle"></a><span class="ddoc_psymbol">setStyle</span>(string <b>name</b>);
+<dl><dt class="d_decl">protected ResourceManager!(Texture) <a name="textureManager_"></a><span class="ddoc_psymbol">textureManager_</span>;
+</dt>
+<dd><p>Reference to the texture manager.
+</p>
+<p>Textures might be unloaded if the video driver is replaced,
+ so they should always be accessed through this manager.</p>
+
+</dd>
+<dt class="d_decl">void <a name="setStyle"></a><span class="ddoc_psymbol">setStyle</span>(string <b>name</b>);
 </dt>
 <dd><p>Set style with specified <b>name</b>.
 </p>
@@ -238,58 +254,38 @@
 </table></div>
 
 </dd>
-<dt class="d_decl">void <a name="drawText"></a><span class="ddoc_psymbol">drawText</span>(VideoDriver <b>video</b>, const string <b>text</b>, const Vector2i <b>position</b>);
+<dt class="d_decl">void <a name="drawProgress"></a><span class="ddoc_psymbol">drawProgress</span>(VideoDriver <b>video</b>, const float <b>progress</b>, ref const Recti <b>area</b>);
 </dt>
-<dd><p>Draw <b>text</b> using the style.
+<dd><p>Draw a <b>progress</b> "bar".
+</p>
+<p>Different styles might draw <b>progress</b> differently (horizontal or vertical
+ bar, circle, cake, etc).
+
 </p>
 <b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>VideoDriver <b>video</b></td>
 <td valign=top>VideoDriver to draw with.</td></tr>
-<tr><td valign=top>string <b>text</b></td>
-<td valign=top>Text to draw.</td></tr>
-<tr><td valign=top>Vector2i <b>position</b></td>
-<td valign=top>Position to draw the <b>text</b> at.</td></tr>
+<tr><td valign=top>float <b>progress</b></td>
+<td valign=top>Progress between 0 and 1.</td></tr>
+<tr><td valign=top>Recti <b>area</b></td>
+<td valign=top>Area taken by the <b>progress</b> "bar".</td></tr>
 </table></div>
 
 </dd>
-<dt class="d_decl">void <a name="drawTextAligned"></a><span class="ddoc_psymbol">drawTextAligned</span>(VideoDriver <b>video</b>, const string <b>text</b>, ref const Recti <b>area</b>, const AlignX <b>alignX</b>, const AlignY <b>alignY</b>);
+<dt class="d_decl">void <a name="drawText"></a><span class="ddoc_psymbol">drawText</span>(VideoDriver <b>video</b>, const string <b>text</b>, ref const Recti <b>area</b>);
 </dt>
-<dd><p>Draw <b>text</b> aligned within an <b>area</b>.
+<dd><p>Draw <b>text</b> using the style.
+</p>
+<p>Only bounds of the widget are specified; the style decides font, alignment,
+ and other parameters of the <b>text</b>.
+
 </p>
 <b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>VideoDriver <b>video</b></td>
 <td valign=top>VideoDriver to draw with.</td></tr>
 <tr><td valign=top>string <b>text</b></td>
 <td valign=top>Text to draw.</td></tr>
 <tr><td valign=top>Recti <b>area</b></td>
-<td valign=top>Area in which to align the <b>text</b>.</td></tr>
-<tr><td valign=top>AlignX <b>alignX</b></td>
-<td valign=top>X alignment of the <b>text</b>.</td></tr>
-<tr><td valign=top>AlignY <b>alignY</b></td>
-<td valign=top>Y alignment of the <b>text</b>.
-<br>
-
- This is just a convenience function for simple, single-line <b>text</b> drawing.
- More advanced <b>text</b> drawing (e.g. a page) should be implemented in a 
- separate TextRenderer class or struct, wrapping a StyleManager.
- That class should be in this module for direct access to protected 
- functions.</td></tr>
+<td valign=top>Area taken up by the widget.</td></tr>
 </table></div>
-
-</dd>
-<dt class="d_decl">final void <a name="drawTextCentered"></a><span class="ddoc_psymbol">drawTextCentered</span>(VideoDriver <b>video</b>, const string <b>text</b>, ref const Recti <b>area</b>);
-</dt>
-<dd><p>Draw <b>text</b> centered in an <b>area</b>.
-</p>
-<p>Convenience function callind drawTextAligned with both horizontal and
- vertical alignment set to center.
-
-</p>
-<p><b>SeeAlso:</b><br>
-drawTextAligned</p>
-
-</dd>
-<dt class="d_decl">protected Vector2u <a name="getTextSize"></a><span class="ddoc_psymbol">getTextSize</span>(VideoDriver <b>video</b>, const string <b>text</b>);
-</dt>
-<dd><p>Get the size of specified <b>text</b> when drawn on the screen.</p>
 
 </dd>
 </dl>

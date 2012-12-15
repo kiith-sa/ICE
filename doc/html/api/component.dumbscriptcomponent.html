@@ -35,7 +35,9 @@
 <li><a href="component.dumbscriptcomponent.html">component.dumbscriptcomponent</a></li>
 <li><a href="component.enginecomponent.html">component.enginecomponent</a></li>
 <li><a href="component.enginesystem.html">component.enginesystem</a></li>
+<li><a href="component.entityprototype.html">component.entityprototype</a></li>
 <li><a href="component.entitysystem.html">component.entitysystem</a></li>
+<li><a href="component.entityutil.html">component.entityutil</a></li>
 <li><a href="component.exceptions.html">component.exceptions</a></li>
 <li><a href="component.healthcomponent.html">component.healthcomponent</a></li>
 <li><a href="component.healthsystem.html">component.healthsystem</a></li>
@@ -46,6 +48,8 @@
 <li><a href="component.physicssystem.html">component.physicssystem</a></li>
 <li><a href="component.playercomponent.html">component.playercomponent</a></li>
 <li><a href="component.playersystem.html">component.playersystem</a></li>
+<li><a href="component.scorecomponent.html">component.scorecomponent</a></li>
+<li><a href="component.scoresystem.html">component.scoresystem</a></li>
 <li><a href="component.spatialsystem.html">component.spatialsystem</a></li>
 <li><a href="component.spawnercomponent.html">component.spawnercomponent</a></li>
 <li><a href="component.spawnersystem.html">component.spawnersystem</a></li>
@@ -93,9 +97,11 @@
 <li><a href="gui2.layout.html">gui2.layout</a></li>
 <li><a href="gui2.lineeditwidget.html">gui2.lineeditwidget</a></li>
 <li><a href="gui2.linestylemanager.html">gui2.linestylemanager</a></li>
+<li><a href="gui2.progressbarwidget.html">gui2.progressbarwidget</a></li>
 <li><a href="gui2.rootwidget.html">gui2.rootwidget</a></li>
 <li><a href="gui2.slotwidget.html">gui2.slotwidget</a></li>
 <li><a href="gui2.stylemanager.html">gui2.stylemanager</a></li>
+<li><a href="gui2.textbreaker.html">gui2.textbreaker</a></li>
 <li><a href="gui2.widget.html">gui2.widget</a></li>
 <li><a href="gui2.widgetutils.html">gui2.widgetutils</a></li>
 <li><a href="ice.html">ice</a></li>
@@ -103,11 +109,13 @@
 <li><a href="ice.credits.html">ice.credits</a></li>
 <li><a href="ice.exceptions.html">ice.exceptions</a></li>
 <li><a href="ice.game.html">ice.game</a></li>
+<li><a href="ice.gamegui.html">ice.gamegui</a></li>
 <li><a href="ice.graphicseffect.html">ice.graphicseffect</a></li>
 <li><a href="ice.guiswapper.html">ice.guiswapper</a></li>
 <li><a href="ice.hud.html">ice.hud</a></li>
 <li><a href="ice.ice.html">ice.ice</a></li>
 <li><a href="ice.level.html">ice.level</a></li>
+<li><a href="ice.menugraphics.html">ice.menugraphics</a></li>
 <li><a href="ice.player.html">ice.player</a></li>
 <li><a href="ice.playerprofile.html">ice.playerprofile</a></li>
 <li><a href="image.html">image</a></li>
@@ -177,7 +185,12 @@
 </p>
 <p>Used by ControllerSystem (there is no DumbScriptSystem)</p>
 
-<dl><dt class="d_decl">LazyArrayIndex <a name="scriptIndex"></a><span class="ddoc_psymbol">scriptIndex</span>;
+<dl><dt class="d_decl">alias <a name="DumbScriptIndex"></a><span class="ddoc_psymbol">DumbScriptIndex</span>;
+</dt>
+<dd><p>Alias for readability.</p>
+
+</dd>
+<dt class="d_decl">DumbScriptIndex <a name="scriptIndex"></a><span class="ddoc_psymbol">scriptIndex</span>;
 </dt>
 <dd><p>Index to the script in ControllerSystem.</p>
 
@@ -214,6 +227,80 @@
 <b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>size_t <b>instructionCount</b></td>
 <td valign=top>Instruction count. If we get to this
                              number of instructions, the script is done.</td></tr>
+</table></div>
+
+</dd>
+</dl>
+</dd>
+<dt class="d_decl">struct <a name="DumbScript"></a><span class="ddoc_psymbol">DumbScript</span>;
+</dt>
+<dd><p>Simple script in YAML.
+</p>
+<p>DumbScripts have no flow control and they are composed from a sequence
+ of simple instructions. They are started when the entity is created.
+<br>
+
+ The script is composed from pairs of instructions with their parameters.
+
+</p>
+<p><b>Example:</b><br>
+<pre class="d_code"> !!pairs
+ - <span class="d_keyword">for</span> 0.25:
+     move-direction: 0.5
+ - <span class="d_keyword">for</span> 0.5:
+     move-direction: -0.5
+     move-speed: 0.5
+ - <span class="d_keyword">for</span> 0.5:
+     fire: [0, 1]
+ - die:
+</pre>
+
+<br>
+
+ Current <a name="DumbScript"></a><span class="ddoc_psymbol">DumbScript</span> instructions:
+<br>
+
+ for time:
+
+</p>
+<p><b>Example:</b><br>
+<pre class="d_code"> - <span class="d_keyword">for</span> 1.0:   #For duration of one second
+     move-direction: 0.5 #move <span class="d_keyword">in</span> direction of 0.5 radians relative to current rotation
+     move-speed: 0.5     #move at 50% speed
+     fire [0, 2]         #fire weapons 0 and 2
+</pre>
+
+ Perform an action for specified time (in seconds):
+
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>fire</td>
+<td valign=top>Fire weapons specified in the sequence. As there are only
+                      256 weapon slots, the values must be between &gt;= 0 and  &lt;= 255 .</td></tr>
+</table></div>
+<p><b>die:</b><br>
+</p>
+<p><b>Example:</b><br>
+<pre class="d_code"> - die: #Kill the entity.
+</pre>
+
+ Kill the entity. Any instructions after this are not executed.</p>
+
+<dl><dt class="d_decl">this(Node <b>yaml</b>);
+</dt>
+<dd><p>Load a DumbScript from specified file.</p>
+
+</dd>
+<dt class="d_decl">void <a name="control"></a><span class="ddoc_psymbol">control</span>(ref ControllerComponent <a name="control"></a><span class="ddoc_psymbol">control</span>, ref DumbScriptComponent <b>script</b>, const real <b>timeStep</b>);
+</dt>
+<dd><p>Control a ControllerComponent by this DumbScript.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>ControllerComponent <a name="control"></a><span class="ddoc_psymbol">control</span></td>
+<td valign=top>ControllerComponent of the entity to <a name="control"></a><span class="ddoc_psymbol">control</span>.</td></tr>
+<tr><td valign=top>DumbScriptComponent <b>script</b></td>
+<td valign=top>DumbScriptComponent of the entity,
+                     containing current execution state of the <b>script</b>.</td></tr>
+<tr><td valign=top>real <b>timeStep</b></td>
+<td valign=top>Game time step.</td></tr>
 </table></div>
 
 </dd>
