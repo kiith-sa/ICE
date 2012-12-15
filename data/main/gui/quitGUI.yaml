@@ -1,7 +1,8 @@
 !!pairs
 - layout: {x: 'pLeft', y: 'pTop', w: 'pWidth', h: 'pHeight'}
+- style:  {drawBorder: false}
 - widget label:
     !!pairs
     - style: {font: orbitron-bold.ttf, fontSize: 20, drawBorder: false}
-    - layout: {x: 'pWidth / 2 - 224', y: 'pHeight / 2 - 32', w: 448, h: 64}
+    - layout: {x: 'pLeft + pWidth / 2 - 224', y: 'pTop + pHeight / 2 - 32', w: 448, h: 64}
     - text:   "Really quit? (Y: quit, N: return to game)"
