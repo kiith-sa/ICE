@@ -41,7 +41,7 @@
     - style:
         progressStyle: vertical 
         progressColor: rgbaB0B0FF68
-    - layout: {x: 'pRight - 20', y: 'pTop + 64', w: 12, h: 600 - 128}
+    - layout: {x: 'pRight - 20', y: 'pTop + 64', w: 12, h: 'pHeight - 128'}
     - progress: 0.5
 - widget progressBar weapon1:
     !!pairs
