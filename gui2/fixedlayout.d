@@ -37,14 +37,13 @@ public:
     override void expand(Widget parent){};
 
 package:
-    /// Manually set size of the layout.
+    /// Manually set bounds of the layout.
     ///
     /// This is used _only_ by GUISystem for layout of the root widget.
     ///
-    /// Params: width  = New layout width.
-    ///         height = New layout height.
-    void setSize(const uint width, const uint height)
+    /// Params: bounds = New bounds of the layout.
+    void setBounds(ref const Recti bounds)
     {
-        bounds_.max = bounds_.min + Vector2i(cast(int)width, cast(int)height);
+        bounds_ = bounds;
     }
 }

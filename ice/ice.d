@@ -286,6 +286,12 @@ class Ice
         ProfileManager profileManager_;
         ///Manages campaigns.
         CampaignManager campaignManager_;
+        /// Area of the screen used by the game.
+        ///
+        /// The game does not take up the entire screen if aspect ratio is not
+        /// 4:3; aspect ratio of the game is preserved and the game is centered
+        /// on the screen.
+        Recti screenArea_;
 
         ///Main ICE config file (YAML).
         YAMLNode config_;
@@ -563,8 +569,7 @@ class Ice
         void initGUI()
         {
             guiSystem_ = new GUISystem(platform_, gameDir_);
-            guiSystem_.setGUISize(videoDriver_.screenWidth,
-                                  videoDriver_.screenHeight);
+            guiSystem_.setGUIArea(screenArea_);
 
             // TODO this will be gradually removed and replaced by the new, 
             //      YAML-loadable GUI.
@@ -994,8 +999,7 @@ class Ice
                 return;
             }
 
-            guiSystem_.setGUISize(videoDriver_.screenWidth,
-                                  videoDriver_.screenHeight);
+            guiSystem_.setGUIArea(screenArea_);
 
             rescaleViewport();
 
@@ -1055,14 +1059,22 @@ class Ice
         void rescaleViewport()
         {
             //Zoom according to the new video mode.
+            const screenWidth  = videoDriver_.screenWidth;
+            const screenHeight = videoDriver_.screenHeight;
             const area  = game_.gameArea;
-            const wMult = videoDriver_.screenWidth  / area.width;
-            const hMult = videoDriver_.screenHeight / area.height;
+            const wMult = screenWidth  / area.width;
+            const hMult = screenHeight / area.height;
             const zoom  = min(wMult, hMult);
 
+            import std.stdio;
             //Center game area on screen.
-            const offset = Vector2d(area.min.x - (wMult / zoom - 1.0) * 0.5 * area.width,
-                                    area.min.y - (hMult / zoom - 1.0) * 0.5 * area.height);
+            const offset = 
+                Vector2d(screenWidth  / 2 - (area.width  * zoom) / 2,
+                         screenHeight / 2 - (area.height * zoom) / 2);
+            screenArea_ =
+                Recti(cast(int)offset.x, cast(int)offset.y,
+                      cast(int)(offset.x + area.width * zoom),
+                      cast(int)(offset.y + area.height * zoom));
 
             videoDriver_.zoom(zoom);
             videoDriver_.viewOffset(offset);

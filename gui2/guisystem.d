@@ -34,6 +34,7 @@ import gui2.progressbarwidget;
 import gui2.stylemanager;
 import gui2.widget;
 import image;
+import math.rect;
 import math.vector2;
 import platform.key;
 import platform.platform;
@@ -201,15 +202,14 @@ public:
         platform_.mouseKey.disconnect(&inputMouseKey);
     }
 
-    /// Set size of the root widget.
+    /// Set area taken up by the root widget.
     ///
-    /// Params: width  = Window width.
-    ///         height = Window height.
-    void setGUISize(const uint width, const uint height)
+    /// Params: area = Area used by the root widget.
+    void setGUIArea(ref const Recti area)
     {
         auto rootLayout = cast(FixedLayout)rootSlot_.layout;
         assert(rootLayout !is null, "Root widget layout must be a FixedLayout");
-        rootLayout.setSize(width, height);
+        rootLayout.setBounds(area);
         updateLayout();
     }
 
