@@ -4,28 +4,27 @@
 Spawner component
 =================
 
-A spawner component allows an entity to spawn (create) new entities when
-certain conditions are met. This is a very powerful mechanism that can be used
-to create various effects. One example is spawning explosion effects when
-a ship dies.  However, as any entity can be spawned, this can also be used to
-duplicate a projectile, create projectiles like cluster bombs that split into
-smaller projectiles, making a ship spawn other ships and so on. Under the hood,
-weapons also use a spawner component to fire projectiles.
+Entities with a spawner component can spawn (create) new entities when certain
+conditions are met. This is a very powerful mechanism that can be used to
+create various effects. An example is spawning explosion effects when a ship
+dies.  As any entity can be spawned, it can be used to duplicate a projectile,
+create projectiles like cluster bombs that split into smaller projectiles,
+making a ship spawn other ships and so on. Under the hood, weapons also use
+a spawner component to fire projectiles.
 
-One important feature of a spawner component is that it can override components
-of spawned entities. This allows for instance to give spawned entities
-different scripts, modify their health, and so on. Usually at least the physics
-component is overridden to set position and velocity of a spawned entity.
+A spawner component can override components of spawned entities.  This allows
+to give spawned entities different scripts, modify their health, and so on.
+Usually at least the physics component is overridden to set position and
+velocity of a spawned entity.
 
-Components can only be overridden whole. E.g. if you override a physics
-component, and specify only position, it won't override position only and keep
-other attributes at previous values; it will override the physics component
-with a new component with specified position and other attributes with their
-default values.
+Components can only be overridden whole. If you override a physics component,
+and only specify position, it won't override only the position and keep other
+attributes' values; it will override the physics component with a new component
+with specified position and other attributes with their default values.
 
-The spawner component is a sequence of entities to spawn. For each entity you 
-can specify file to load the entify from, condition to spawn at, components 
-to override and so on.
+The spawner component is a sequence of entities to spawn.  For each entity, its
+file can be specified, as well as the condition to spawn at, components to
+override and so on.
 
 Example::
 
@@ -52,12 +51,12 @@ Tags in an entity entry
 -----------------------
 
 ============== ================================================================
-entity         File name of the entity to spawn. *String*. This must be 
+entity         File name of the entity to spawn. *String*. This must be
                specified; there is no default.
-condition      When tje condition specified here is met, the entity is spawned. 
-               A condition might have further parameters, such as a period for
-               periodic. Supported conditions are described in a table below.
-               This must be specified; there is no default.
+condition      When this condition is met, the entity is spawned. A condition
+               might have parameters, such as a period for periodic. Supported
+               conditions are described in a table below. This must be
+               specified; there is no default.
 components     Components specified here will override components from
                specified entity. Components are specified in the same way as
                in an entity file. Even components that are not present in the

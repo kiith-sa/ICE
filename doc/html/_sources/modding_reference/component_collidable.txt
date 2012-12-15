@@ -4,13 +4,13 @@
 Collidable component
 ====================
 
-A collidable component tells the engine that the entity should be used in
-collision detection. This is used e.g. in ships, but not in projectiles (unless
-they should collide with other projectiles).  For example, if volumes of
-a collidable ship and non-collidable projectile intersect, collision is
-detected - the projectile hits the ship. Same for two collidable ships. But if
-volumes of two non-collidable projectiles intersect, there is no collision; the
-projectiles just continue moving as before.
+Entities with a collidable component are used in collision detection. This is
+used e.g. in ships, but not projectiles (unless they should collide with other
+projectiles).  For example, if volumes of a collidable ship and non-collidable
+projectile intersect, collision is detected - the projectile hits the ship.
+Same for two collidable ships. But if volumes of two non-collidable projectiles
+intersect, there is no collision; the projectiles just continue moving as
+before.
 
 Example::
 

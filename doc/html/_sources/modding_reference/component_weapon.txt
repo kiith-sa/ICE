@@ -1,14 +1,16 @@
+.. _modding_reference/component_weapon:
+
 ================
 Weapon component
 ================
 
-Weapon component allows an entity to have weapons which can be used by scripts
-or the player. An entity has 256 weapon *slots*, any of which can contain a
-weapon. Weapons are referenced through these slots by scripts or internal
-player logic.  Weapons themselves are specified in separate files, not directly
-in the component.  To spawn entities (projectiles), weapons use the
-:ref:`modding_reference/component_spawner`, which is added together with a
-weapon component if not already present in an entity.
+Entities with a weapon component can have weapons which can be used by scripts
+or the player. There are 256 weapon *slots*, any of which can contain a weapon.
+Weapons are referenced through these slots by scripts or internal player logic.
+Weapons themselves are defined in separate files.  To spawn entities
+(projectiles), weapons use the :ref:`modding_reference/component_spawner`,
+which is added together with a weapon component if not already present in an
+entity.
 
 Example::
 
@@ -31,12 +33,11 @@ Tags
 ============= ================================================================
 
 
-Weapons are in separate files to allow different entities to share weapons.  A
-weapon file specifies things like how long it takes to fire, how many shots
-(**bursts**) can be fired before reloading and how long reloading takes.  It
-also specifies all entities (projectiles) to spawn in one burst. Any entities
-can be spawned. For example, even ships or missiles with nontrivial behavior
-(through dumbscripts).
+Weapons are in separate files to allow entities to reuse weapons.  A weapon
+file specifies how long it takes to fire, how many shots (**bursts**) can be
+fired before reloading how long reloading takes, etc.  It also specifies
+entities (projectiles) to spawn in a burst. Any entity can be spawned, even
+ships or missiles with nontrivial behavior (through dumbscripts).
 
 Example weapon file::
 
@@ -73,8 +74,8 @@ ammo        Number of bursts that can be fired before the weapon needs to
             reload. 0 means infinite ammo. *Integer*. Default: ``0``.
 reloadTime  Time it takes to reload the weapon. *Float*. Default: ``0``.
 burst       Entities to spawn at weapon bursts.
-            This works exactly like :ref:`modding_reference/component_spawner`
-            entries, but without spawning conditions (burst of this weapon 
-            is the internally used spawning condition). *Sequence of entity 
-            entries*. Must be specified; there is no default.
+            This works like :ref:`modding_reference/component_spawner`
+            entries, but without spawning conditions (burst of the weapon 
+            is the spawn condition). *Sequence of entity entries*. Must be
+            specified; there is no default.
 =========== ==================================================================

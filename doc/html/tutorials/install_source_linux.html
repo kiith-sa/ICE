@@ -54,7 +54,9 @@
 <h2>Using DMD (Digital Mars D Compiler)<a class="headerlink" href="#using-dmd-digital-mars-d-compiler" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic">
 <li><p class="first">Install DMD dependencies</p>
-<p>DMD depends on <tt class="docutils literal"><span class="pre">gcc-multilib</span></tt>.
+<p>DMD depends on <tt class="docutils literal"><span class="pre">gcc-multilib</span></tt>. (This needs to be installed manually
+since the deb package doesn&#8217;t specify it as a dependency; this might
+be fixed with newer DMD releases)
 On Debian/Ubuntu, you can install it with:</p>
 <div class="highlight-python"><pre>sudo apt-get install gcc-multilib</pre>
 </div>
@@ -91,11 +93,11 @@ For more info about ICE build targets, type <tt class="docutils literal"><span c
 <p>Now you can install ICE:</p>
 <div class="highlight-python"><pre>sudo ./install.sh</pre>
 </div>
-<p>The release build will be copied to <tt class="docutils literal"><span class="pre">/usr/bin/ice.bin</span></tt> and a launcher
-script to <tt class="docutils literal"><span class="pre">/usr/bin/ice</span></tt> so you can now launch ICE by typing <tt class="docutils literal"><span class="pre">ice</span></tt>
-into the console. Game data files will be copied to <tt class="docutils literal"><span class="pre">usr/local/share/ice</span></tt>.
-ICE will store user settings and similar data in
-<tt class="docutils literal"><span class="pre">/home/YOUR_USER_NAME/.ice</span></tt>.</p>
+<p>The build will be copied to <tt class="docutils literal"><span class="pre">/usr/bin/ice-game.bin</span></tt> and a launcher script
+to <tt class="docutils literal"><span class="pre">/usr/bin/ice-game</span></tt> so you can now launch ICE by typing <tt class="docutils literal"><span class="pre">ice-game</span></tt>
+into the console. Game data files will be copied to
+<tt class="docutils literal"><span class="pre">usr/local/share/ice-game</span></tt>.  ICE will store user settings and similar data
+in <tt class="docutils literal"><span class="pre">/home/YOUR_USER_NAME/.ice-game</span></tt>.</p>
 </li>
 </ol>
 </div>
@@ -133,7 +135,7 @@ ICE will store user settings and similar data in
     </div>
     <div class="footer">
         &copy; Copyright 2010-2012, Dávid Horváth, Ferdinand Majerech, Libor Mališ..
-      Last updated on Nov 17, 2012.
+      Last updated on Dec 15, 2012.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

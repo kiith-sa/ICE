@@ -52,25 +52,25 @@
 <h1>Modding ICE<a class="headerlink" href="#modding-ice" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>To simplify its development and to make its engine reusable, ICE is designed to
-be as moddable as possible. All entities in the game are loaded from human
+<p>To simplify development and to make its engine reusable, ICE is designed to be
+as moddable as possible. All entities in the game are loaded from human
 readable YAML files. Graphics and &#8220;scripts&#8221; are also loaded from YAML, although
 different formats might be supported in future.</p>
 <div class="section" id="about-the-directory-structure">
 <h3>About the directory structure<a class="headerlink" href="#about-the-directory-structure" title="Permalink to this headline">¶</a></h3>
 <p>ICE has a modular directory system to allow for pluggable mods in future.</p>
 <p>Right now, there is only one &#8220;mod&#8221; - ICE itself. This mod can be found in the
-<tt class="docutils literal"><span class="pre">data/main</span></tt> and <tt class="docutils literal"><span class="pre">user_data/main</span></tt> directories.  Any file in <tt class="docutils literal"><span class="pre">data/main</span></tt>
-can be overridden by a file in <tt class="docutils literal"><span class="pre">user_data/main</span></tt> with the same filename.</p>
-<p>Note that <tt class="docutils literal"><span class="pre">user_data/main</span></tt> translates to <tt class="docutils literal"><span class="pre">~/.ice/main</span></tt> after installation on
-Linux and similar systems.</p>
+<tt class="docutils literal"><span class="pre">data/main</span></tt> and optional <tt class="docutils literal"><span class="pre">user_data/main</span></tt> directories.  Any file in
+<tt class="docutils literal"><span class="pre">data/main</span></tt> can be overridden by a file in <tt class="docutils literal"><span class="pre">user_data/main</span></tt> with the same
+filename.</p>
+<p>Note that <tt class="docutils literal"><span class="pre">user_data/main</span></tt> translates to <tt class="docutils literal"><span class="pre">~/.ice-game/main</span></tt> after
+installation on Linux and similar systems.</p>
 </div>
 </div>
 <div class="section" id="creating-a-ship">
 <h2>Creating a ship<a class="headerlink" href="#creating-a-ship" title="Permalink to this headline">¶</a></h2>
-<p>Ships are stored in the <tt class="docutils literal"><span class="pre">ships</span></tt> subdirectory of a mod directory. For the main
-game, that is <tt class="docutils literal"><span class="pre">user_data/main/ships</span></tt>. This is a convention - ships could be
-stored elsewhere if needed.</p>
+<p>By convention, ships are stored in the <tt class="docutils literal"><span class="pre">ships</span></tt> subdirectory of a mod
+directory.  For the main game, that is <tt class="docutils literal"><span class="pre">data/main/ships</span></tt>.</p>
 <p>Ships are <em>entities</em> - collections of <em>components</em> that specify properties of
 the ship. For example, a ship might have a <em>visual</em> component - which describes
 how it is drawn.</p>
@@ -112,10 +112,10 @@ collide with each other, only with the <em>collidable</em> ships.</li>
 <li>A <em>health</em> component with 500 maximum health. Entities with a health component
 die when they run out of health.</li>
 <li>A <em>warhead</em> component that causes 500 damage and doesn&#8217;t kill the ship itself.
-Warheads are fired at collision with another entity. This means our ship
-causes damage to other ships it collides with but doesn&#8217;t immediately get
-destroyed. Most projectiles, for example, are destroyed as soon as they
-collide with something.</li>
+Warheads are triggered at collision with another entity. This means our ship
+causes damage to ships it collides with but doesn&#8217;t immediately get destroyed.
+Most projectiles, for example, are destroyed as soon as they collide with
+something.</li>
 </ul>
 <p>There are other components a ship can have. You can see the modding reference
 pages (linked from <a class="reference internal" href="../index.html#index"><em>ICE documentation index</em></a>) more detailed information.</p>
@@ -225,19 +225,21 @@ the projectile) to accelerate to full speed.</p>
 <p>Each projectile in the burst specifies its own entity file. One burst can
 consist of projectiles of multiple types. Each projectile is an entity, just
 like a ship. In fact a weapon could fire ships.</p>
-<p>In the engine, there is no difference between projectiles and ships.  When
-we&#8217;re firing the projectiles, we&#8217;re setting their positions by overriding their
-physics components. Any component can be overridden by specifying it in
-<em>components</em>. You can use this, for example, to change projectiles&#8217; visual
-appeareance or give them specific behaviors by dumbScripts (described below).</p>
+<p>The engine makes no difference between projectiles and ships.  When we fire
+a projectile, we set its position by overriding its physics component. Any
+component can be overridden by specifying it in <em>components</em>.  You can use
+this, for example, to change projectiles&#8217; visual appeareance or give them
+specific behaviors by dumbScripts (described below).</p>
+<p><strong>See also:</strong></p>
+<p><a class="reference internal" href="../modding_reference/component_weapon.html#modding-reference-component-weapon"><em>Weapon component</em></a></p>
 </div>
 <div class="section" id="creating-a-projectile">
 <h2>Creating a projectile<a class="headerlink" href="#creating-a-projectile" title="Permalink to this headline">¶</a></h2>
 <p>Projectiles are found in the <tt class="docutils literal"><span class="pre">projectiles</span></tt> subdirectory of the mod directory.</p>
 <p>Both projectiles and ships are component based entities. Any component that can
 be used in a ship can be used in a projectile, and vice versa.</p>
-<p>To create a new projectile, create a file with the contents of the
-following example in the <tt class="docutils literal"><span class="pre">projectiles</span></tt> directory.</p>
+<p>To create a new projectile, create a file with the contents of the following
+example in the <tt class="docutils literal"><span class="pre">projectiles</span></tt> directory.</p>
 <p>Alternatively, you could copy and modify any projectile that already exists
 there.</p>
 <p>Example projectile:</p>
@@ -354,6 +356,8 @@ actually an entity, and can override any of its components.</p>
 <p>Finally, we display some text.  Once the script is done, the level ends (the
 player wins the level).  The player loses if their ship gets destroyed before
 the level is over.</p>
+<p><strong>See also:</strong></p>
+<p><a class="reference internal" href="../modding_reference/level.html#modding-reference-level"><em>Level</em></a></p>
 </div>
 </div>
 <div class="section" id="creating-a-dumbscript">
@@ -363,9 +367,9 @@ the level is over.</p>
 in the entity YAML file or anywhere the entity is spawned (e.g. a wave
 definition in a level).</p>
 <p>DumbScript is a simple YAML based &#8220;script&#8221; that specifies actions the unit
-should take. It&#8217;s called DumbScript because there is no flow control - it just
-dumbly executes instructions one after another. In future, there might be
-smarter scripts based on a real programming language, e.g. Lua.</p>
+should take. There is no control flow - it just executes instructions one after
+another. In future, there might be smarter scripts based on a real programming
+language, e.g. Lua.</p>
 <p>DumbScripts are located in the <tt class="docutils literal"><span class="pre">dumbScripts</span></tt> subdirectory of a mod directory.</p>
 <p>To create a new dumb script, you can create a file with the contents of the
 following example in the <tt class="docutils literal"><span class="pre">dumbScripts</span></tt> directory.</p>
@@ -454,7 +458,7 @@ a projectile that moves in a complex fashion and even fires its own weapon.</p>
     </div>
     <div class="footer">
         &copy; Copyright 2010-2012, Dávid Horváth, Ferdinand Majerech, Libor Mališ..
-      Last updated on Nov 17, 2012.
+      Last updated on Dec 15, 2012.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

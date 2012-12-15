@@ -4,8 +4,8 @@
 Warhead component
 =================
 
-Warhead component allows an entity to damage other entities on collision.  Note
-that in order for any collision to happen, the entity also must have
+Warhead component allows an entity to damage other entities on collision.
+In order for any collision to happen, the entity also must have
 a :ref:`modding_reference/component_collidable` and
 a :ref:`modding_reference/component_volume`.  This can be used for projectiles
 to damage ships and for damage in ship-ship collisions.

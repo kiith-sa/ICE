@@ -6,9 +6,9 @@ Modding ICE
 Introduction
 ------------
 
-To simplify its development and to make its engine reusable, ICE is designed to 
-be as moddable as possible. All entities in the game are loaded from human 
-readable YAML files. Graphics and "scripts" are also loaded from YAML, although 
+To simplify development and to make its engine reusable, ICE is designed to be
+as moddable as possible. All entities in the game are loaded from human
+readable YAML files. Graphics and "scripts" are also loaded from YAML, although
 different formats might be supported in future.
 
 
@@ -19,19 +19,19 @@ About the directory structure
 ICE has a modular directory system to allow for pluggable mods in future.
 
 Right now, there is only one "mod" - ICE itself. This mod can be found in the
-``data/main`` and ``user_data/main`` directories.  Any file in ``data/main``
-can be overridden by a file in ``user_data/main`` with the same filename.
+``data/main`` and optional ``user_data/main`` directories.  Any file in
+``data/main`` can be overridden by a file in ``user_data/main`` with the same
+filename.
 
-Note that ``user_data/main`` translates to ``~/.ice/main`` after installation on
-Linux and similar systems.
+Note that ``user_data/main`` translates to ``~/.ice-game/main`` after
+installation on Linux and similar systems.
 
 ---------------
 Creating a ship
 ---------------
 
-Ships are stored in the ``ships`` subdirectory of a mod directory. For the main
-game, that is ``user_data/main/ships``. This is a convention - ships could be
-stored elsewhere if needed.
+By convention, ships are stored in the ``ships`` subdirectory of a mod
+directory.  For the main game, that is ``data/main/ships``.
 
 Ships are *entities* - collections of *components* that specify properties of
 the ship. For example, a ship might have a *visual* component - which describes
@@ -78,10 +78,10 @@ components:
 * A *health* component with 500 maximum health. Entities with a health component 
   die when they run out of health.
 * A *warhead* component that causes 500 damage and doesn't kill the ship itself.
-  Warheads are fired at collision with another entity. This means our ship 
-  causes damage to other ships it collides with but doesn't immediately get 
-  destroyed. Most projectiles, for example, are destroyed as soon as they 
-  collide with something.
+  Warheads are triggered at collision with another entity. This means our ship 
+  causes damage to ships it collides with but doesn't immediately get destroyed.
+  Most projectiles, for example, are destroyed as soon as they collide with 
+  something.
 
 There are other components a ship can have. You can see the modding reference
 pages (linked from :ref:`index`) more detailed information.
@@ -116,16 +116,16 @@ Example visual component::
      - vertex: [-7.0, -4.0]
      - color:  rgbA0A0FF
      - vertex: [-1.0, 12.0]
-   
+
      - vertex: [1.0,  12.0]
      - color:  rgba40400000
      - vertex: [7.0,  -4.0]
-   
+
      - color:  rgbA0A0FF
      - vertex: [0.0,  8.0]
      - color:  rgba40400000
      - vertex: [0.0,  13.0]
-   
+
 This visual component is a group of *lines*, currently the only supported
 visual component *type*.
 
@@ -216,11 +216,15 @@ Each projectile in the burst specifies its own entity file. One burst can
 consist of projectiles of multiple types. Each projectile is an entity, just
 like a ship. In fact a weapon could fire ships.
 
-In the engine, there is no difference between projectiles and ships.  When
-we're firing the projectiles, we're setting their positions by overriding their
-physics components. Any component can be overridden by specifying it in
-*components*. You can use this, for example, to change projectiles' visual
-appeareance or give them specific behaviors by dumbScripts (described below).
+The engine makes no difference between projectiles and ships.  When we fire
+a projectile, we set its position by overriding its physics component. Any
+component can be overridden by specifying it in *components*.  You can use
+this, for example, to change projectiles' visual appeareance or give them
+specific behaviors by dumbScripts (described below).
+
+**See also:** 
+
+:ref:`modding_reference/component_weapon`
 
 ---------------------
 Creating a projectile
@@ -231,8 +235,8 @@ Projectiles are found in the ``projectiles`` subdirectory of the mod directory.
 Both projectiles and ships are component based entities. Any component that can
 be used in a ship can be used in a projectile, and vice versa.
 
-To create a new projectile, create a file with the contents of the 
-following example in the ``projectiles`` directory.
+To create a new projectile, create a file with the contents of the following
+example in the ``projectiles`` directory.
 
 Alternatively, you could copy and modify any projectile that already exists
 there.
@@ -371,6 +375,9 @@ Finally, we display some text.  Once the script is done, the level ends (the
 player wins the level).  The player loses if their ship gets destroyed before
 the level is over.
 
+**See also:** 
+
+:ref:`modding_reference/level`
 
 ---------------------
 Creating a DumbScript
@@ -383,9 +390,9 @@ in the entity YAML file or anywhere the entity is spawned (e.g. a wave
 definition in a level).
 
 DumbScript is a simple YAML based "script" that specifies actions the unit
-should take. It's called DumbScript because there is no flow control - it just
-dumbly executes instructions one after another. In future, there might be
-smarter scripts based on a real programming language, e.g. Lua.
+should take. There is no control flow - it just executes instructions one after
+another. In future, there might be smarter scripts based on a real programming
+language, e.g. Lua.
 
 DumbScripts are located in the ``dumbScripts`` subdirectory of a mod directory.
 

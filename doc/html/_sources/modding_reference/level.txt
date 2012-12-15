@@ -4,30 +4,29 @@
 Level
 =====
 
-ICE levels are YAML files specifying things like what entities are spawned
-when, background effects, and so on. Currently a level consists of any number
-of *wave definitions* and a *level script*. A wave definition describes a group
-of entities that are spawned together. The level script determines when these
-waves appear, and other things such as background effects.
+ICE levels are YAML files specifying what entities are spawned when, background
+effects, and so on. A level consists of any number of *wave definitions* and
+a *level script*. A wave definition describes a group of entities that are
+spawned together. The level script determines when these waves appear, and
+other things such as background effects.
 
 
 ---------------
 Wave definition
 ---------------
 
-A wave is really just an entity that uses its
+A wave is just an entity that uses its
 :ref:`modding_reference/component_spawner` to spawn entities. A wave definition
-starts by a "header" in format ``wave waveName:`` where waveName is name of the
-wave. The wave then defines a spawner component, which works exactly the same
-as in an entity. As wave is an entity, other components could be defined
-as well if needed.
+starts by a "header" in format ``wave waveName:`` where waveName is the name of
+the wave. The wave then defines a spawner component.  As a wave is an entity,
+other components could be defined as well if needed.
 
 The spawner component can spawn entities with a delay and override their
 components.  The most commonly overridden components are the physics component
 to set position of the spawned entity, and dumbscript component to set entity
-behavior.  However, any other components can be overridden as well, e.g.
-weapons, health and so on.  For detauls, see
-:ref:`modding_reference/component_spawner` documentation.
+behavior.  Other components can be overridden as well, e.g.  weapons, health
+and so on.  For detauls, see :ref:`modding_reference/component_spawner`
+documentation.
 
 
 Example::
@@ -107,7 +106,7 @@ Example::
 
 This level starts with a barely visible ``text`` effect showing a large "42" in
 the center of the screen for one second. It also uses a ``lines`` effect which
-generates small scrolling lines, giving the impression of a starfield.  Also at
+generates small scrolling lines, giving the impression of a starfield.  At
 start, a music track from ``music/level/SomeMusicTrack.ogg`` starts to play.
 
 1 second after the level starts, a ``turtlePawn`` wave (defined above) is
@@ -126,11 +125,11 @@ Level script instructions
 -------------------------
 
 ======== =======================================================================
-effect X Display specified type of effect. The effect itself is a mapping 
-         describing parameters of the effect. X can be either ``text`` (show 
-         text centered in the screen) or ``lines`` (generate random lines on 
-         the background, useful for e.g. a starfield effect). Effect parameters
-         are further described in tables below.
+effect X Display specified effect. The effect itself is a mapping describing
+         of parameters of the effect. X can be either ``text`` (show text
+         centered in the screen) or ``lines`` (generate random lines on the
+         background, useful for a starfield effect). Effect parameters are
+         further described in tables below.
 wave     Launch a wave, spawning its units. This spawns the wave entity.
          This instruction can be in one of multiple formats. These are described
          further below.
@@ -154,9 +153,9 @@ Launch the ``waveName`` wave at ``[X, Y]``::
 
   - wave: [waveName [X, Y]]
 
-Launch the ``waveName`` wave, overriding wave entity components. This allows e.g.
-to change components of the wave entity - for example giving it a visual 
-component or allowing it to move while spawning::
+Launch the ``waveName`` wave, overriding wave entity components. This allows to
+change components of the wave entity - for example giving it a visual component
+or allowing it to move while spawning::
 
   - wave:
       wave: waveName

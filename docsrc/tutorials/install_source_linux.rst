@@ -9,7 +9,9 @@ Using DMD (Digital Mars D Compiler)
 
 1. Install DMD dependencies
 
-   DMD depends on ``gcc-multilib``.
+   DMD depends on ``gcc-multilib``. (This needs to be installed manually
+   since the deb package doesn't specify it as a dependency; this might 
+   be fixed with newer DMD releases)
    On Debian/Ubuntu, you can install it with::
 
       sudo apt-get install gcc-multilib
@@ -60,9 +62,9 @@ Using DMD (Digital Mars D Compiler)
    
        sudo ./install.sh
    
-   The release build will be copied to ``/usr/bin/ice.bin`` and a launcher 
-   script to ``/usr/bin/ice`` so you can now launch ICE by typing ``ice``
-   into the console. Game data files will be copied to ``usr/local/share/ice``.
-   ICE will store user settings and similar data in 
-   ``/home/YOUR_USER_NAME/.ice``.
+   The build will be copied to ``/usr/bin/ice-game.bin`` and a launcher script
+   to ``/usr/bin/ice-game`` so you can now launch ICE by typing ``ice-game``
+   into the console. Game data files will be copied to
+   ``usr/local/share/ice-game``.  ICE will store user settings and similar data
+   in ``/home/YOUR_USER_NAME/.ice-game``.
 

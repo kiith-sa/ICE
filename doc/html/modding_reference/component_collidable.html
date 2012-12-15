@@ -50,13 +50,13 @@
             
   <div class="section" id="collidable-component">
 <span id="modding-reference-component-collidable"></span><h1>Collidable component<a class="headerlink" href="#collidable-component" title="Permalink to this headline">¶</a></h1>
-<p>A collidable component tells the engine that the entity should be used in
-collision detection. This is used e.g. in ships, but not in projectiles (unless
-they should collide with other projectiles).  For example, if volumes of
-a collidable ship and non-collidable projectile intersect, collision is
-detected - the projectile hits the ship. Same for two collidable ships. But if
-volumes of two non-collidable projectiles intersect, there is no collision; the
-projectiles just continue moving as before.</p>
+<p>Entities with a collidable component are used in collision detection. This is
+used e.g. in ships, but not projectiles (unless they should collide with other
+projectiles).  For example, if volumes of a collidable ship and non-collidable
+projectile intersect, collision is detected - the projectile hits the ship.
+Same for two collidable ships. But if volumes of two non-collidable projectiles
+intersect, there is no collision; the projectiles just continue moving as
+before.</p>
 <p>Example:</p>
 <div class="highlight-python"><pre>collidable:</pre>
 </div>
@@ -90,7 +90,7 @@ to detect collision with.</p>
     </div>
     <div class="footer">
         &copy; Copyright 2010-2012, Dávid Horváth, Ferdinand Majerech, Libor Mališ..
-      Last updated on Nov 01, 2012.
+      Last updated on Dec 15, 2012.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

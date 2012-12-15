@@ -52,15 +52,13 @@
 <span id="modding-reference-component-visual"></span><h1>Visual component<a class="headerlink" href="#visual-component" title="Permalink to this headline">¶</a></h1>
 <p>A visual component determines how an entity is displayed. Without a visual
 component, an entity is invisible.</p>
-<p>A visual component is specified by filename of a separate visual component
-file.  Visual data is quite complex so it would be unwieldy to specify it
-directly.</p>
+<p>A visual component is specified by the filename of a separate graphics file.
+Visual data is quite complex so it would be unwieldy to specify it directly.</p>
 <p>Example:</p>
 <div class="highlight-python"><pre>visual: visual/visualfile.yaml</pre>
 </div>
-<p>All graphics data is in this file. Currently, a visual component can only be
-drawn as a series of lines with varying widths (per-line) and colors
-(per-vertex).</p>
+<p>All graphics data is in this file. Currently, the only graphics format is
+a series of lines with varying widths (per-line) and colors (per-vertex).</p>
 <p>Example visual component file:</p>
 <div class="highlight-python"><pre>type: lines
 vertices:
@@ -105,7 +103,7 @@ a very transparent white to more opague white and back.</p>
 <td>Vertices specifying lines. Lines are drawn between pairs of vertices:
 first and second is one line, third and fourth is another, and so on.
 There <strong>must</strong> be an even number of vertices.
-Vertex color and line width can be chaged between vertices.
+Vertex color and line width can be changed between vertices.
 Value of this tag must be of the <tt class="docutils literal"><span class="pre">pairs</span></tt> type.</td>
 </tr>
 </tbody>
@@ -170,7 +168,7 @@ Default: <tt class="docutils literal"><span class="pre">rgbaFFFFFFFF</span></tt>
     </div>
     <div class="footer">
         &copy; Copyright 2010-2012, Dávid Horváth, Ferdinand Majerech, Libor Mališ..
-      Last updated on Nov 17, 2012.
+      Last updated on Dec 15, 2012.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

@@ -9,8 +9,8 @@ Using DMD (Digital Mars D Compiler)
 
 1. Download and install DMD
 
-   Get the newest DMD 2 zip archive from
-   `here <http://dlang.org/download.html>`_, and unpack it.
+   Get the DMD 2.058 zip archive from
+   `here <ftp://ftp.digitalmars.com/dmd.2.058.zip>`_, and unpack it.
 
 2. Set the ``PATH`` environment variable
 
@@ -74,5 +74,3 @@ Using DMD (Digital Mars D Compiler)
    ``cdc.exe --help``.
 
    You can now run ICE by clicking the compiled .exe .
-
-
