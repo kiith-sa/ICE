@@ -99,7 +99,7 @@ public:
             params.randomOrder    = Yes.randomOrder;
             params.position       = Vector2i(16, -16);
             params.scrollingSpeed = -100.0f;
-            params.fontColor      = rgba!"E8E8FFC8";
+            params.fontColor      = rgba!"E8E8FFA8";
             params.fontSize       = 7;
             params.randomOrder    = Yes.randomOrder;
             params.font           = "orbitron-bold.ttf";
