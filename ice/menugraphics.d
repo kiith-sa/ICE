@@ -74,22 +74,33 @@ public:
         {
             params.lineStrings       = 
             [
-              "1",
-              "2",
-              "3",
-              "4",
-              "5",
-              "6",
-              "7",
-              "8",
-              "9",
-              "10"
+               "Insolent communist engineer",
+               "I can eat",
+               "Immolated corpse echelon",
+               "Imaginary crop enhancement",
+               "Internal compiler error",
+               "International camaraderie effort",
+               "Icy cannibal edibles",
+               "Irradiated colonial effigy",
+               "Intercontinental combustion effect",
+               "Is Cisco entertaining?",
+               "Irene called Edward",
+               "Illegally confiscated euros",
+               "Insufferable crustacean Enhanced",
+               "Irregularly combusting engine",
+               "Internet collapse event",
+               "I can't even...",
+               "Illuminati consume eggs",
+               "Irrationally canned employees",
+               "Incendiary cereal explosives",
+               "Incidentally caught exception",
+               "Imhotep's coffee experiments"
             ];
             params.randomOrder    = Yes.randomOrder;
             params.position       = Vector2i(16, -16);
             params.scrollingSpeed = -100.0f;
-            params.fontColor      = rgba!"E8E8FF48";
-            params.fontSize       = 12;
+            params.fontColor      = rgba!"E8E8FFC8";
+            params.fontSize       = 7;
             params.randomOrder    = Yes.randomOrder;
             params.font           = "orbitron-bold.ttf";
             params.lineCount      = 48;
