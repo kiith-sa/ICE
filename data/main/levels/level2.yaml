@@ -5,12 +5,12 @@ wave turtlePawn:
     - entity: ships/turtle.yaml 
       components:
         physics: 
-            position: [380, 0]
+            position: [380, -20]
         dumbScript: dumbscripts/pawnLeft.yaml
     - entity: ships/turtle.yaml
       components:
         physics: 
-            position: [420, 0]
+            position: [420, -20]
         dumbScript: dumbscripts/pawnRight.yaml
 
 wave turtlePawn2:
@@ -18,12 +18,12 @@ wave turtlePawn2:
     - entity: ships/turtle.yaml 
       components:
         physics: 
-            position: [100, 40]
+            position: [100, -20]
         dumbScript: dumbscripts/pawnRight.yaml
     - entity: ships/turtle.yaml
       components:
         physics: 
-            position: [700, -40]
+            position: [700, -100]
         dumbScript: dumbscripts/pawnLeft.yaml
 
 wave tritonSides:

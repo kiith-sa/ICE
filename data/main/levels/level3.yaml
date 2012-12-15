@@ -5,15 +5,15 @@ wave turtleDown:
     - entity: ships/turtle.yaml 
       components:
         physics: 
-            position: [520, -20]
+            position: [520, -40]
     - entity: ships/turtle.yaml
       components:
         physics: 
-            position: [280, -20]
+            position: [280, -40]
     - entity: ships/turtle.yaml
       components:
         physics: 
-            position: [400, 0]
+            position: [400, -20]
 
 wave turtleRight:
   spawner:
@@ -36,15 +36,15 @@ wave jetDown:
     - entity: ships/jet.yaml
       components:
         physics: 
-          position: [450, -32]
+          position: [450, -48]
     - entity: ships/jet.yaml
       components:
         physics: 
-          position: [550, 0]
+          position: [550, -16]
     - entity: ships/jet.yaml
       components:
         physics: 
-          position: [350, 0]
+          position: [350, -16]
 
 wave jetRight:
   spawner:
@@ -112,7 +112,7 @@ wave diamond:
     - entity: ships/diamondShooter.yaml
       components:
         physics: 
-            position: [0, 0]
+            position: [0, -20]
         dumbScript: dumbscripts/moveFire.yaml
 
 wave diamondUpperSides:
