@@ -9,7 +9,7 @@ volume:
 weapon:
   0: weapons/peaLauncher.yaml
 collidable:
-health: 50
+health: 65
 warhead:
   damage: 50
   killsEntity: false

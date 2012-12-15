@@ -9,7 +9,7 @@ volume:
 weapon:
   0: weapons/tritonWeapon.yaml
 collidable:
-health: 75
+health: 90
 warhead:
   damage: 70
   killsEntity: false

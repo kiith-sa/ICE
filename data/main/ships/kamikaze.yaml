@@ -12,7 +12,6 @@ collidable:
 health: 100
 warhead:
   damage: 180
-  killsEntity: false
 dumbScript: dumbscripts/kamikaze.yaml
 score:
   exp: 450

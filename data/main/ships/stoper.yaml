@@ -10,7 +10,7 @@ weapon:
   0: weapons/turtleLauncher.yaml
   1: weapons/stoperWeapon.yaml
 collidable:
-health: 700
+health: 750
 warhead:
   damage: 250
   killsEntity: false

@@ -9,7 +9,7 @@ volume:
 weapon:
   0: weapons/harpoonLauncher.yaml
 collidable:
-health: 45
+health: 55
 warhead:
   damage: 45
   killsEntity: false

@@ -9,7 +9,7 @@ volume:
 weapon:
   0: weapons/waveLauncher.yaml
 collidable:
-health: 55
+health: 75
 warhead:
   damage: 50
   killsEntity: false
