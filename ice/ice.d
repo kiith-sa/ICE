@@ -452,19 +452,67 @@ class Ice
         ///Load ICE configuration from YAML.
         void initConfig()
         {
+            // Readability alias.
+            alias GameStartupException E;
+            VFSFile configFile = null;
             try
             {
-                auto configFile = gameDir_.file("config.yaml");
+                configFile = gameDir_.file("config.yaml");
                 config_ = loadYAML(configFile);
             }
             catch(YAMLException e)
             {
-                throw new GameStartupException("Failed to load main ICE config file: " ~ e.msg);
+                throw new E("Failed to load main ICE config file: " ~ e.msg);
             }
             catch(VFSException e)
             {
-                throw new GameStartupException("Failed to load main ICE config file: " ~ e.msg);
+                if(configFile is null)
+                {
+                    throw new E("Failed to load main ICE config file: " ~ e.msg);
+                }
+                config_ = writeDefaultConfig!E(configFile);
             }
+        }
+
+        /// Write the default config.yaml contents to specified file.
+        ///
+        /// Params:  configFile = File to write the config to.
+        ///
+        /// Returns: YAMLNode storing the default configuration.
+        ///
+        /// Throws:  An exception of type specified by the E template parameter.
+        ///          (Allows differentiating between writing default config 
+        ///          when config.yaml is missing, and potential use for
+        ///          configuration resets.
+        YAMLNode writeDefaultConfig(E)(VFSFile configFile)
+        {
+            YAMLNode defaultConfig = 
+                loadYAML("video:\n" ~
+                         "  width:      800\n" ~
+                         "  height:     600\n" ~
+                         "  depth:      32\n" ~
+                         "  drawMode:   VRAMBuffers\n" ~
+                         "  fullscreen: false\n" ~
+                         "frameProfiler:\n" ~
+                         "  enabled:   false\n" ~
+                         "  frameSkip: 0\n" ~
+                         "  memoryMiB: 64\n" ~
+                         "sound:\n" ~
+                         "  menuMusic: music/menu/ville_seppanen-1_g.ogg\n" ~
+                         "  musicVolume: 0.08\n");
+            try
+            {
+                saveYAML(configFile, defaultConfig);
+            }
+            catch(YAMLException e)
+            {
+                assert(false, "YAML error saving default config; this shouldn't happen");
+            }
+            catch(VFSException e)
+            {
+                throw new E("Failed to write default ICE config file: " ~ e.msg);
+            }
+            return defaultConfig;
         }
 
         ///Initialize the Platform subsystem.
