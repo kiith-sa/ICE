@@ -958,7 +958,6 @@ class Ice
         {
             if(state == KeyState.Pressed) switch(key)
             {
-                case Key.Escape: exit(); break;
                 default: break;
             }
         }
