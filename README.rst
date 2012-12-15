@@ -6,19 +6,23 @@ ICE
 Introduction
 ------------
 
-ICE is a top-down scrolling shooter in tradition of Raptor and Tyrian with 
-vector style graphics written in the D programming language.
+ICE is a vertical shoot-em-up in tradition of Raptor and Tyrian with vector
+style graphics written in the D programming language.
 
-ICE is in early development and there is no release at this time.
+ICE is still in very early development and might see large changes.
 
 --------
 Gameplay
 --------
 
-You move your ship around the screen while shooting enemies that attack you.
-A basic weapon allows you to shoot forward while, over the course of the 
-campaign, you get more weapons that can be used only once in a while,
-taking time to recharge (currently, these are always enabled).
+You move your ship around the screen, shooting attacking enemies.  A basic
+weapon allows you to shoot forward while, over the course of the campaign, you
+get more weapons that can be used only once in a while, taking time to recharge
+(currently, these are always enabled; the gradual ship improvements are not yet
+implemented).
+
+Each weapon is designed to require a bit of skill and timing as opposed to just
+being a bigger, more powerful gun.
 
 ^^^^^^^^
 Controls
@@ -60,12 +64,17 @@ Directory          Description
 ================== ============================================================================
 
 ^^^^^^^^^^^^
-Requirements
+Dependencies
 ^^^^^^^^^^^^
 
-ICE is written in D2, so it requires a working D2 compiler such as DMD or GDC.
-It also depends on Derelict, D:GameVFS and D:YAML, which are included for 
-convenience. SDL 1.2, FreeType and OpenGL are required through Derelict.
+ICE is written in D, so for compilation it requires a D compiler such as DMD.
+Currently, only DMD is supported; GDC will be supported once it becomes a part
+of GCC. Due to linker problems, only DMD 2.058 works on Windows; this should
+change in future.
+
+ICE depends on Derelict, D:GameVFS and D:YAML, which are included for
+convenience. SDL 1.2, SDL-Mixer, FreeType and OpenGL are required through
+Derelict.
 
 ^^^^^^^^^^
 Installing
