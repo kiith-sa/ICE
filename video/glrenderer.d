@@ -387,11 +387,16 @@ package struct GLRenderer
                 //enable shader of the group
                 group.shader.start();
 
-                auto modelview = translationMatrix(-group.viewOffset /
-                                                    Vector2f(screenWidth, screenHeight));
-                auto projection = orthoMatrix(0.0f, screenWidth / group.viewZoom,
-                                               screenHeight / group.viewZoom, 0.0f,
-                                               -1.0f, 1.0f);
+                auto modelview = translationMatrix(Vector2f(0.0f, 0.0f));
+                const xOffset = group.viewOffset.x;
+                const yOffset = group.viewOffset.y;
+                auto projection = 
+                    orthoMatrix((-xOffset / group.viewZoom),
+                                (-xOffset + screenWidth)  / group.viewZoom,
+                                (-yOffset + screenHeight) / group.viewZoom, 
+                                (-yOffset / group.viewZoom),
+                                -1.0f, 
+                                1.0f);
 
                 //model-view-projection
                 const mvp = group.shader.getUniform("mvp_matrix");
