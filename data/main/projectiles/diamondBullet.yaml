@@ -8,4 +8,4 @@ volume:
     max: [12, 4]
 visual: visual/diamondBullet.yaml
 warhead:
-  damage: 45
+  damage: 55
