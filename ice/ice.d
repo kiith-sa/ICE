@@ -788,6 +788,20 @@ class Ice
             {
                 writeln("Failed to load the loading screen: " ~ e.msg);
             }
+            // Save view zoom and offset.
+            const zoom   = videoDriver_.zoom;
+            const offset = videoDriver_.viewOffset; 
+
+            // Set no zoom and zero offset for GUI drawing.
+            videoDriver_.zoom       = 1.0;
+            videoDriver_.viewOffset = Vector2d(0.0, 0.0);
+            scope(exit)
+            {
+                // Restore zoom and offset.
+                videoDriver_.zoom       = zoom;
+                videoDriver_.viewOffset = offset;
+            }
+
             auto loadingScreenTexture = videoDriver_.createTexture(loadingScreen, true);
             const width               = videoDriver_.screenWidth;
             const height              = videoDriver_.screenHeight;
