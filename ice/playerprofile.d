@@ -93,6 +93,9 @@ public:
             bool validChar(dchar c){return isAlphaNum(c) || c == '_';}
             addProfileGUI_.profileNameEdit!LineEditWidget.textEntered.connect(&processProfileName);
             addProfileGUI_.profileNameEdit!LineEditWidget.characterFilter = &validChar;
+            addProfileGUI_.cancel!ButtonWidget.pressed.connect(
+                {parentSlot_.disconnect(addProfileGUI_);
+                 parentSlot_.connect(profileGUI_);});
             profileGUI_.newProfile!ButtonWidget.pressed.connect(&showAddNewProfile);
             profileGUI_.deleteProfile!ButtonWidget.pressed.connect(&deleteCurrentProfile);
             profileGUI_.back!ButtonWidget.pressed.connect({swapGUI_("ice");});
