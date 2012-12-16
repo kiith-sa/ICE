@@ -14,7 +14,7 @@ A dumbscript component is specified by filename of a separate dumbscript file.
 
 Example::
 
-   dumbscript: dumbscripts/script.yaml
+   dumbScript: dumbscripts/script.yaml
 
 The script itself is in this file. A dumbscript is a YAML sequence of
 instructions. It is just a simple series of tasks to carry out, there is no

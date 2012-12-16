@@ -26,7 +26,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="top" title="ICE 0.1 documentation" href="../index.html" />
-    <link rel="next" title="Collidable component" href="../modding_reference/component_collidable.html" />
+    <link rel="next" title="Entity" href="../modding_reference/entity.html" />
     <link rel="prev" title="Installing from source on Windows" href="install_source_windows.html" /> 
   </head>
   <body>
@@ -34,7 +34,7 @@
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="../modding_reference/component_collidable.html" title="Collidable component"
+          <a href="../modding_reference/entity.html" title="Entity"
              accesskey="N">next</a></li>
         <li class="right" >
           <a href="install_source_windows.html" title="Installing from source on Windows"
@@ -49,7 +49,7 @@
           <div class="body">
             
   <div class="section" id="modding-ice">
-<h1>Modding ICE<a class="headerlink" href="#modding-ice" title="Permalink to this headline">¶</a></h1>
+<span id="tutorials-modding"></span><h1>Modding ICE<a class="headerlink" href="#modding-ice" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>To simplify development and to make its engine reusable, ICE is designed to be
@@ -127,7 +127,7 @@ and any weapons it may use. Those are explained below.</p>
 <p>Currently the only graphics format supported by ICE is a simple YAML based
 vector format that stores straight lines with variable colors and line widths.</p>
 <p>Graphics are specified by <em>visual components</em>, defined in YAML files in the
-<tt class="docutils literal"><span class="pre">visual</span></tt> subdirectory of a mod directory.</p>
+<tt class="docutils literal"><span class="pre">visual</span></tt> (by convention) subdirectory of a mod directory.</p>
 <p>To create your own visual component, you can create a file with the contents of
 the following example in the <tt class="docutils literal"><span class="pre">visual</span></tt> directory.</p>
 <p>You could also try copying and modifying any visual component that already
@@ -167,11 +167,11 @@ from a red end to a blue end).</p>
 </div>
 <div class="section" id="creating-a-weapon">
 <h2>Creating a weapon<a class="headerlink" href="#creating-a-weapon" title="Permalink to this headline">¶</a></h2>
-<p>Weapons are stored in the <tt class="docutils literal"><span class="pre">weapons</span></tt> subdirectory of the mod directory. A
-weapon fires <em>projectiles</em> (entities) in <em>bursts</em> of one or more projectiles.
-Each burst takes time to be fired and consumes 1 unit of ammo (which may be
-finite or infinite). When a weapon runs out of ammo, it can&#8217;t fire for a
-specified <em>reload</em> period.</p>
+<p>Weapons are stored in the <tt class="docutils literal"><span class="pre">weapons</span></tt> (by convention) subdirectory of the mod
+directory. A weapon fires <em>projectiles</em> (entities) in <em>bursts</em> of one or more
+projectiles.  Each burst takes time to be fired and consumes 1 unit of ammo
+(which may be finite or infinite). When a weapon runs out of ammo, it can&#8217;t
+fire for a specified <em>reload</em> period.</p>
 <p>To create a new weapon, you can create a file with the contents of the
 following example in the <tt class="docutils literal"><span class="pre">weapons</span></tt> directory.</p>
 <p>Alternatively, you can copy and modify any weapon that already exists there.</p>
@@ -235,7 +235,8 @@ specific behaviors by dumbScripts (described below).</p>
 </div>
 <div class="section" id="creating-a-projectile">
 <h2>Creating a projectile<a class="headerlink" href="#creating-a-projectile" title="Permalink to this headline">¶</a></h2>
-<p>Projectiles are found in the <tt class="docutils literal"><span class="pre">projectiles</span></tt> subdirectory of the mod directory.</p>
+<p>Projectiles are found in the <tt class="docutils literal"><span class="pre">projectiles</span></tt> (by convention) subdirectory of
+the mod directory.</p>
 <p>Both projectiles and ships are component based entities. Any component that can
 be used in a ship can be used in a projectile, and vice versa.</p>
 <p>To create a new projectile, create a file with the contents of the following
@@ -273,12 +274,10 @@ projectile with limited health could be a missile that can be shot down).</p>
 </div>
 <div class="section" id="creating-a-level">
 <h2>Creating a level<a class="headerlink" href="#creating-a-level" title="Permalink to this headline">¶</a></h2>
-<p>Levels are described in YAML files found in the <tt class="docutils literal"><span class="pre">levels</span></tt> subdirectory of a mod
-directory.</p>
-<p>To play a level, you must add it to a campaign. Campaign are YAML files in the
-<tt class="docutils literal"><span class="pre">campaigns</span></tt> subdirectory of a mod directory. They are simple, sequential lists
-of levels in the campaign. A new campaign can be created by simply adding another
-campaign YAML file.</p>
+<p>Levels are described in YAML files found in the <tt class="docutils literal"><span class="pre">levels</span></tt> (by convention)
+subdirectory of a mod directory.</p>
+<p>To play a level, you must add it to a campaign. This is described in the
+<a class="reference internal" href="#tutorials-modding-campaign"><em>Creating a campaign</em></a> section.</p>
 <p>A level is composed of definitions of &#8220;waves&#8221; (groups of enemies
 spawned simultaneously) and of a level script, which specifies when to
 spawn a wave.</p>
@@ -319,11 +318,7 @@ level:
         physics:
           position: [10, 30]
           rotation: 0.8
-  - wait: 5.0
-  - text: Lorem Ipsum  #at top or bottom of screen
-  - wait: 5.0
-  - text: Level done!
-  - wait: 2.0</pre>
+  - wait: 5.0</pre>
 </div>
 <div class="section" id="wave-definition">
 <h3>Wave definition<a class="headerlink" href="#wave-definition" title="Permalink to this headline">¶</a></h3>
@@ -337,7 +332,7 @@ a sequence of entities(units) to be spawned.</p>
 <p>Each entity is a mapping with one required key, <em>entity</em>, which specifies filename
 of the entity to spawn. Optional <em>delay</em> specifies delay to spawn after the wave,
 in seconds.</p>
-<p>Components of the entity can be overridden by <em>components</em>. At least the
+<p>Components of an entity can be overridden by <em>components</em>. At least the
 physics component should be set here to position the entity. The second entity
 overrides the <em>dumbScript</em> component (explained below), specifying behavior of
 the spawned unit.</p>
@@ -348,17 +343,41 @@ the spawned unit.</p>
 instructions and their parameters.</p>
 <p>This level is very simple. First, we start a &#8220;lines&#8221; effect that draws
 a scrolling starfield background composed of randomly generated lines.  After
-2 seconds, we spawn a wave. We wait 2 more seconds, and spawn the same wave
+2 seconds, we spawn a wave. We wait 2 more seconds, and spawn another wave
 using a different format, changing positions of its entities by <tt class="docutils literal"><span class="pre">[50,</span> <span class="pre">150]</span></tt>.</p>
-<p>Then we wait another 2 seconds and spawn the same wave again, demonstrating the
-third wave instruction format. Here we make full use of the fact that a wave is
-actually an entity, and can override any of its components.</p>
-<p>Finally, we display some text.  Once the script is done, the level ends (the
-player wins the level).  The player loses if their ship gets destroyed before
-the level is over.</p>
+<p>Then we wait another 2 seconds and spawn the a wave again, using the third wave
+instruction format. Here we make full use of the fact that a wave is actually
+an entity, and can override any of its components.</p>
+<p>Once the script is done, the level ends (the player wins the level).  The
+player loses if their ship gets destroyed before the level is over.</p>
 <p><strong>See also:</strong></p>
 <p><a class="reference internal" href="../modding_reference/level.html#modding-reference-level"><em>Level</em></a></p>
 </div>
+</div>
+<div class="section" id="creating-a-campaign">
+<span id="tutorials-modding-campaign"></span><h2>Creating a campaign<a class="headerlink" href="#creating-a-campaign" title="Permalink to this headline">¶</a></h2>
+<p>Campaigns are YAML files in the <tt class="docutils literal"><span class="pre">campaigns</span></tt> subdirectory of a mod directory.
+Unlike other game data, this subdirectory is hardcoded, so the game knows where
+to look for campaign.  A campaign is a simple, sequential list of levels with
+some metadata. A new campaign can be created by adding another YAML file.</p>
+<p>Example:</p>
+<div class="highlight-python"><pre>name: ICE demo
+levels:
+  - levels/level1.yaml
+  - levels/level2.yaml
+  - levels/level3.yaml
+  - levels/level4.yaml
+credits:
+  ICE demo campaign:
+    - name: Dávid Horváth
+    - name: Libor Mališ
+    - name: Tomáš Nguyen</pre>
+</div>
+<p>This campaign is called <tt class="docutils literal"><span class="pre">ICE</span> <span class="pre">demo</span></tt> in game, and it is 4 levels long,
+specifying filename of each level. It also specifies one credits section,
+<tt class="docutils literal"><span class="pre">ICE</span> <span class="pre">demo</span> <span class="pre">campaign</span></tt>, with names of authors of the campaign. This credits
+section is displayed with game credits when the player clears the campaign.</p>
+<p><a class="reference internal" href="../modding_reference/campaign.html#modding-reference-campaign"><em>Campaign</em></a></p>
 </div>
 <div class="section" id="creating-a-dumbscript">
 <h2>Creating a DumbScript<a class="headerlink" href="#creating-a-dumbscript" title="Permalink to this headline">¶</a></h2>
@@ -370,9 +389,10 @@ definition in a level).</p>
 should take. There is no control flow - it just executes instructions one after
 another. In future, there might be smarter scripts based on a real programming
 language, e.g. Lua.</p>
-<p>DumbScripts are located in the <tt class="docutils literal"><span class="pre">dumbScripts</span></tt> subdirectory of a mod directory.</p>
+<p>DumbScripts are located in the <tt class="docutils literal"><span class="pre">dumbscripts</span></tt> (by convention) subdirectory of
+a mod directory.</p>
 <p>To create a new dumb script, you can create a file with the contents of the
-following example in the <tt class="docutils literal"><span class="pre">dumbScripts</span></tt> directory.</p>
+following example in the <tt class="docutils literal"><span class="pre">dumbscripts</span></tt> directory.</p>
 <p>Alternatively, you could copy and modify any dumb script that already exists
 there.</p>
 <p>Example DumbScript:</p>
@@ -401,9 +421,9 @@ for 0.5 seconds, then moves, at half-speed, in a direction of 0.5 radians
 while firing weapon 0, and then does the same moving in -0.5 radians.
 In the end, it moves straight (0 radians) for 5 seconds, and kills the entity.</p>
 <p>Note that DumbScripts can be used by any entity. If a dumbScript is in
-<tt class="docutils literal"><span class="pre">dumbScripts/script.yaml</span></tt>, it will be used by an entity if you add the
+<tt class="docutils literal"><span class="pre">dumbscripts/script.yaml</span></tt>, it will be used by an entity if you add the
 following code to it:</p>
-<div class="highlight-python"><pre>dumbScript: dumbScripts/script.yaml</pre>
+<div class="highlight-python"><pre>dumbScript: dumbscripts/script.yaml</pre>
 </div>
 <p>Similarly, it can be set in a wave definition in a level.  You can even use
 DumbScripts in projectiles. For example, you could use a DumbScript to create
@@ -435,6 +455,7 @@ a projectile that moves in a complex fashion and even fires its own weapon.</p>
 <li><a class="reference internal" href="#level-script">Level script</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#creating-a-campaign">Creating a campaign</a></li>
 <li><a class="reference internal" href="#creating-a-dumbscript">Creating a DumbScript</a></li>
 </ul>
 </li>
@@ -448,7 +469,7 @@ a projectile that moves in a complex fashion and even fires its own weapon.</p>
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="../modding_reference/component_collidable.html" title="Collidable component"
+          <a href="../modding_reference/entity.html" title="Entity"
              >next</a></li>
         <li class="right" >
           <a href="install_source_windows.html" title="Installing from source on Windows"
@@ -458,7 +479,7 @@ a projectile that moves in a complex fashion and even fires its own weapon.</p>
     </div>
     <div class="footer">
         &copy; Copyright 2010-2012, Dávid Horváth, Ferdinand Majerech, Libor Mališ..
-      Last updated on Dec 15, 2012.
+      Last updated on Dec 16, 2012.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

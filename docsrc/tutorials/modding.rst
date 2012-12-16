@@ -1,3 +1,5 @@
+.. _tutorials/modding:
+
 ===========
 Modding ICE
 ===========
@@ -98,7 +100,7 @@ Currently the only graphics format supported by ICE is a simple YAML based
 vector format that stores straight lines with variable colors and line widths.
 
 Graphics are specified by *visual components*, defined in YAML files in the
-``visual`` subdirectory of a mod directory.
+``visual`` (by convention) subdirectory of a mod directory.
 
 To create your own visual component, you can create a file with the contents of
 the following example in the ``visual`` directory.
@@ -150,11 +152,11 @@ from a red end to a blue end).
 Creating a weapon
 -----------------
 
-Weapons are stored in the ``weapons`` subdirectory of the mod directory. A 
-weapon fires *projectiles* (entities) in *bursts* of one or more projectiles. 
-Each burst takes time to be fired and consumes 1 unit of ammo (which may be
-finite or infinite). When a weapon runs out of ammo, it can't fire for a 
-specified *reload* period.
+Weapons are stored in the ``weapons`` (by convention) subdirectory of the mod
+directory. A weapon fires *projectiles* (entities) in *bursts* of one or more
+projectiles.  Each burst takes time to be fired and consumes 1 unit of ammo
+(which may be finite or infinite). When a weapon runs out of ammo, it can't
+fire for a specified *reload* period.
 
 To create a new weapon, you can create a file with the contents of the 
 following example in the ``weapons`` directory.
@@ -230,7 +232,8 @@ specific behaviors by dumbScripts (described below).
 Creating a projectile
 ---------------------
 
-Projectiles are found in the ``projectiles`` subdirectory of the mod directory.
+Projectiles are found in the ``projectiles`` (by convention) subdirectory of
+the mod directory.
 
 Both projectiles and ships are component based entities. Any component that can
 be used in a ship can be used in a projectile, and vice versa.
@@ -276,13 +279,11 @@ projectile with limited health could be a missile that can be shot down).
 Creating a level
 ----------------
 
-Levels are described in YAML files found in the ``levels`` subdirectory of a mod
-directory.
+Levels are described in YAML files found in the ``levels`` (by convention)
+subdirectory of a mod directory.
 
-To play a level, you must add it to a campaign. Campaign are YAML files in the 
-``campaigns`` subdirectory of a mod directory. They are simple, sequential lists 
-of levels in the campaign. A new campaign can be created by simply adding another 
-campaign YAML file.
+To play a level, you must add it to a campaign. This is described in the 
+:ref:`tutorials/modding_campaign` section.
 
 A level is composed of definitions of "waves" (groups of enemies
 spawned simultaneously) and of a level script, which specifies when to 
@@ -303,7 +304,7 @@ Example::
              position: [440, 64]
              rotation: 0
            dumbScript: dumbscripts/enemy1.yaml
-   
+
    level:
      !!pairs
      - effect lines:
@@ -327,10 +328,6 @@ Example::
              position: [10, 30]
              rotation: 0.8
      - wait: 5.0
-     - text: Lorem Ipsum  #at top or bottom of screen 
-     - wait: 5.0
-     - text: Level done!
-     - wait: 2.0
 
 ^^^^^^^^^^^^^^^
 Wave definition
@@ -350,7 +347,7 @@ Each entity is a mapping with one required key, *entity*, which specifies filena
 of the entity to spawn. Optional *delay* specifies delay to spawn after the wave, 
 in seconds. 
 
-Components of the entity can be overridden by *components*. At least the
+Components of an entity can be overridden by *components*. At least the
 physics component should be set here to position the entity. The second entity
 overrides the *dumbScript* component (explained below), specifying behavior of
 the spawned unit.
@@ -364,20 +361,51 @@ instructions and their parameters.
 
 This level is very simple. First, we start a "lines" effect that draws
 a scrolling starfield background composed of randomly generated lines.  After
-2 seconds, we spawn a wave. We wait 2 more seconds, and spawn the same wave
+2 seconds, we spawn a wave. We wait 2 more seconds, and spawn another wave
 using a different format, changing positions of its entities by ``[50, 150]``. 
 
-Then we wait another 2 seconds and spawn the same wave again, demonstrating the
-third wave instruction format. Here we make full use of the fact that a wave is
-actually an entity, and can override any of its components.
+Then we wait another 2 seconds and spawn the a wave again, using the third wave
+instruction format. Here we make full use of the fact that a wave is actually
+an entity, and can override any of its components.
 
-Finally, we display some text.  Once the script is done, the level ends (the
-player wins the level).  The player loses if their ship gets destroyed before
-the level is over.
+Once the script is done, the level ends (the player wins the level).  The
+player loses if their ship gets destroyed before the level is over.
 
 **See also:** 
 
 :ref:`modding_reference/level`
+
+.. _tutorials/modding_campaign:
+
+-------------------
+Creating a campaign
+-------------------
+
+Campaigns are YAML files in the ``campaigns`` subdirectory of a mod directory.
+Unlike other game data, this subdirectory is hardcoded, so the game knows where
+to look for campaign.  A campaign is a simple, sequential list of levels with
+some metadata. A new campaign can be created by adding another YAML file.
+
+Example::
+
+   name: ICE demo
+   levels:
+     - levels/level1.yaml 
+     - levels/level2.yaml
+     - levels/level3.yaml
+     - levels/level4.yaml
+   credits:
+     ICE demo campaign:
+       - name: Dávid Horváth
+       - name: Libor Mališ
+       - name: Tomáš Nguyen
+
+This campaign is called ``ICE demo`` in game, and it is 4 levels long,
+specifying filename of each level. It also specifies one credits section,
+``ICE demo campaign``, with names of authors of the campaign. This credits
+section is displayed with game credits when the player clears the campaign.
+
+:ref:`modding_reference/campaign`
 
 ---------------------
 Creating a DumbScript
@@ -394,10 +422,11 @@ should take. There is no control flow - it just executes instructions one after
 another. In future, there might be smarter scripts based on a real programming
 language, e.g. Lua.
 
-DumbScripts are located in the ``dumbScripts`` subdirectory of a mod directory.
+DumbScripts are located in the ``dumbscripts`` (by convention) subdirectory of
+a mod directory.
 
 To create a new dumb script, you can create a file with the contents of the 
-following example in the ``dumbScripts`` directory.
+following example in the ``dumbscripts`` directory.
 
 Alternatively, you could copy and modify any dumb script that already exists
 there.
@@ -430,10 +459,10 @@ while firing weapon 0, and then does the same moving in -0.5 radians.
 In the end, it moves straight (0 radians) for 5 seconds, and kills the entity.
 
 Note that DumbScripts can be used by any entity. If a dumbScript is in 
-``dumbScripts/script.yaml``, it will be used by an entity if you add the 
+``dumbscripts/script.yaml``, it will be used by an entity if you add the 
 following code to it::
 
-   dumbScript: dumbScripts/script.yaml 
+   dumbScript: dumbscripts/script.yaml 
 
 Similarly, it can be set in a wave definition in a level.  You can even use
 DumbScripts in projectiles. For example, you could use a DumbScript to create

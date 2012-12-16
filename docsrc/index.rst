@@ -29,6 +29,9 @@ Modding reference:
 .. toctree::
    :maxdepth: 1
 
+   modding_reference/entity
+   modding_reference/level
+   modding_reference/campaign
    modding_reference/component_collidable
    modding_reference/component_controller
    modding_reference/component_deathtimeout
@@ -47,6 +50,3 @@ Modding reference:
    modding_reference/component_volume
    modding_reference/component_warhead
    modding_reference/component_weapon
-   modding_reference/level
-.. TODO 
-.. modding_reference/entity
