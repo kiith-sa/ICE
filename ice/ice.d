@@ -850,16 +850,19 @@ class Ice
         void initSound()
         {
             soundSystem_ = new SDLMixerSoundSystem(gameDir_);
-            float volume = 0.08;
+            float musicVolume = 0.08;
+            float soundVolume = 0.16;
             try
             {
-                volume = clamp(config_["sound"]["musicVolume"].as!float, 0.0f, 1.0f);
+                musicVolume = clamp(config_["sound"]["musicVolume"].as!float, 0.0f, 1.0f);
+                soundVolume = clamp(config_["sound"]["soundVolume"].as!float, 0.0f, 1.0f);
             }
             catch(YAMLException e)
             {
-                writeln("Music volume not found in config - using default");
+                writeln("Music and/or sound volume not found in config - using default");
             }
-            soundSystem_.setMusicVolume(volume);
+            soundSystem_.setMusicVolume(musicVolume);
+            soundSystem_.setSoundVolume(soundVolume);
         }
 
         /// Destroy the sound subsystem.

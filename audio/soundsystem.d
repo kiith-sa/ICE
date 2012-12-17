@@ -35,12 +35,27 @@ class MusicInitException : SoundException
 abstract class SoundSystem
 {
 public:
-    /// Set music volume. Must be at from inverval <0.0, 1.0> .
+    /// Set sound effects volume. Must be from inverval <0.0, 1.0> .
+    void setSoundVolume(const float volume);
+
+    /// Start playing a sound effect.
+    ///
+    /// Params:  name   = VFS file name of the sound to play.
+    ///                   Only OGG vorbis and WAV files are guaranteed to be supported.
+    ///          volume = Relative volume of the sound effect. 
+    ///                   Must be from interval <0.0, 1.0>.
+    ///
+    /// If the sound could not be played (e.g. because it couldn't be loaded)
+    /// it will be silently ignored.
+    void playSound(string name, const float volume);
+
+    /// Set music volume. Must be from inverval <0.0, 1.0> .
     void setMusicVolume(const float volume);
 
     /// Start playing a music track.
     /// 
     /// Params:  name   = VFS file name of the music track to play.
+    ///                   Only OGG vorbis files are guaranteed to be supported.
     ///          repeat = Should the music track repeat infinitely?
     ///         
     /// Throws: MusicInitException if the music file was not found,

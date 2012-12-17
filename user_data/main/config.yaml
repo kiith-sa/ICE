@@ -11,3 +11,4 @@ frameProfiler:
 sound:
   menuMusic: music/menu/ville_seppanen-1_g.ogg
   musicVolume: 0.08
+  soundVolume: 0.16
