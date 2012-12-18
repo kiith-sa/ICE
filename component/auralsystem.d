@@ -11,6 +11,8 @@ import audio.soundsystem;
 import component.entitysystem;
 import component.system;
 import component.soundcomponent;
+import math.rect;
+import math.vector2;
 
 
 /// Plays sound effects of entities.
@@ -23,15 +25,23 @@ private:
     /// Sound system handling sound playback.
     SoundSystem soundSystem_;
 
+
+    /// We can't hear sounds of objects outside this area 
+    ///
+    /// (entities without a position play sounds anyway)
+    Rectf soundArea_;
+
 public:
     /// Construct an AuralSystem.
     ///
     /// Params:  entitySystem = Entity system whose data we're processing.
     ///          soundSystem  = Sound system used to play sounds.
-    this(EntitySystem entitySystem, SoundSystem soundSystem)
+    ///          soundArea    = Area in which we can hear sounds.
+    this(EntitySystem entitySystem, SoundSystem soundSystem, ref const Rectf soundArea)
     {
         entitySystem_ = entitySystem;
         soundSystem_  = soundSystem;
+        soundArea_    = soundArea;
     }
 
     /// Check entities' sound playback conditions and play sounds.
@@ -52,6 +62,12 @@ public:
     ///         condition = Play condition to process.
     void processCondition(ref Entity e, ref SoundComponent.PlayCondition condition)
     {
+        auto physics = e.physics;
+        // Can't hear a sound outside the game area.
+        if(physics !is null && !soundArea_.intersect(physics.position))
+        {
+            return;
+        }
         final switch(condition.type) with(SoundComponent.PlayCondition.Type)
         {
             // Play sound if the entity has just been spawned.
@@ -78,7 +94,15 @@ public:
                 if(collidable is null){return;}
                 if(collidable.hasColliders)
                 {
-                    soundSystem_.playSound(condition.sound, condition.volume);
+                    foreach(ref collider; collidable.colliders)
+                    {
+                        auto owner = collider.owner;
+                        if(owner is null || owner.ownerID != e.id)
+                        {
+                            soundSystem_.playSound(condition.sound, condition.volume);
+                            return;
+                        }
+                    }
                 }
                 return;
         }
