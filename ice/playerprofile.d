@@ -660,8 +660,7 @@ private:
                         "        statistics:\n"  ~
                         "        player: 0\n"    ~ 
                         "        tags: [_PLR]\n" ~ 
-                        "        controller:\n"  ~
-                        "        spawner: []");
+                        "        controller:");
             save();
         }
 
