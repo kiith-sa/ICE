@@ -26,6 +26,7 @@ public import component.ownercomponent;
 public import component.physicscomponent;
 public import component.playercomponent;
 public import component.scorecomponent;
+public import component.soundcomponent;
 public import component.spawnercomponent;
 public import component.statisticscomponent;
 public import component.tagscomponent;
@@ -62,7 +63,8 @@ tuple
     "MovementConstraintComponent",
     "SpawnerComponent",
     "TagsComponent",
-    "ScoreComponent"
+    "ScoreComponent",
+    "SoundComponent"
 );
 
 ///Last 8 bits are reserved for special uses.
