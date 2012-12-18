@@ -1,6 +1,6 @@
 video:
-  width:      800
-  height:     600
+  width:      1024
+  height:     768
   depth:      32
   drawMode:   VRAMBuffers
   fullscreen: false
@@ -11,4 +11,4 @@ frameProfiler:
 sound:
   menuMusic: music/menu/ville_seppanen-1_g.ogg
   musicVolume: 0.08
-  soundVolume: 0.16
+  soundVolume: 0.24
