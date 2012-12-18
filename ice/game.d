@@ -19,6 +19,7 @@ import dgamevfs._;
 
 import audio.soundsystem;
 import color;
+import component.auralsystem;
 import component.collisionsystem;
 import component.collisionresponsesystem;
 import component.controllersystem;
@@ -202,38 +203,40 @@ private:
     ///Game entity system.
     EntitySystem entitySystem_;
 
-    ///Visual subsystem, draws entities.
+    /// Visual subsystem, draws entities.
     VisualSystem             visualSystem_;
-    ///Controller subsystem, allows players to control ships.
+    /// Controller subsystem, allows players to control ships.
     ControllerSystem         controllerSystem_;
-    ///Physics subsystem. Handles movement and physics interaction.
+    /// Physics subsystem. Handles movement and physics interaction.
     PhysicsSystem            physicsSystem_;
-    ///Handles various delayed events.
+    /// Handles various delayed events.
     TimeoutSystem            timeoutSystem_;
-    ///Handles weapons and firing.
+    /// Handles weapons and firing.
     WeaponSystem             weaponSystem_;
-    ///Handles engine components of the entities, allowing them to move.
+    /// Handles engine components of the entities, allowing them to move.
     EngineSystem             engineSystem_;
-    ///Handles spatial relations between entities.
+    /// Handles spatial relations between entities.
     SpatialSystem            spatialSystem_;
-    ///Handles collision detection.
+    /// Handles collision detection.
     CollisionSystem          collisionSystem_;
-    ///Handles collision response.
+    /// Handles collision response.
     CollisionResponseSystem  collisionResponseSystem_;
-    ///Handles damage caused by warheads.
+    /// Handles damage caused by warheads.
     WarheadSystem            warheadSystem_;
-    ///Handles entity health and kills entities when they run out of health.
+    /// Handles entity health and kills entities when they run out of health.
     HealthSystem             healthSystem_;
-    ///Handles movement constraints (such as player being limited to the screen).
+    /// Handles movement constraints (such as player being limited to the screen).
     MovementConstraintSystem movementConstraintSystem_;
-    ///Handles spawning of entities.
+    /// Handles spawning of entities.
     SpawnerSystem            spawnerSystem_;
-    ///Handle entity tagging.
+    /// Handles entity tagging.
     TagsSystem               tagSystem_;
-    ///Assigns game players to PlayerComponents.
+    /// Assigns game players to PlayerComponents.
     PlayerSystem             playerSystem_;
-    ///Handles scoring.
+    /// Handles scoring.
     ScoreSystem              scoreSystem_;
+    /// Handles entity sounds;
+    AuralSystem              auralSystem_;
 
     ///Level the game is running.
     Level level_;
@@ -340,6 +343,7 @@ public:
                 zonedUpdate!"Health"(healthSystem_);
                 // Systems which react to killed entities must be updated here.
                 zonedUpdate!"Score"(scoreSystem_);
+                zonedUpdate!"Aural"(auralSystem_);
                 zonedUpdate!"Tag"(tagSystem_);
                 zonedUpdate!"Timeout"(timeoutSystem_);
                 zonedUpdate!"Spawner"(spawnerSystem_);
@@ -499,6 +503,7 @@ private:
         spawnerSystem_            = new SpawnerSystem(entitySystem_, gameTime_);
         tagSystem_                = new TagsSystem(entitySystem_);
         scoreSystem_              = new ScoreSystem(entitySystem_);
+        auralSystem_              = new AuralSystem(entitySystem_, sound_);
         playerSystem_             = new PlayerSystem(entitySystem_, [player0_]);
 
         effectManager_            = new GraphicsEffectManager();
@@ -518,6 +523,7 @@ private:
         clear(collisionResponseSystem_);
         clear(spatialSystem_);
         clear(warheadSystem_);
+        clear(auralSystem_);
         clear(scoreSystem_);
         clear(healthSystem_);
         clear(movementConstraintSystem_);
