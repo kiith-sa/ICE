@@ -293,7 +293,11 @@ class SpawnerSystem : System
                     output = alloc!EntityPrototype(name, *yamlSource);
                 }
             }
-            catch(YAMLException e){return false;}
+            catch(YAMLException e)
+            {
+                writeln("Failed to load entity prototype ", name, ": ", e.msg);
+                return false;
+            }
 
             return true;
         }
