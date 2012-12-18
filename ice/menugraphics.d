@@ -94,7 +94,15 @@ public:
                "Irrationally canned employees",
                "Incendiary cereal explosives",
                "Incidentally caught exception",
-               "Imhotep's coffee experiments"
+               "Imhotep's coffee experiments",
+               "Irish critter extermination",
+               "Incredibly capitalist elves",
+               "Irresistible chocobo eternal",
+               "Internet chefs exposed",
+               "Interactive cowboy extra",
+               "Inventive cookie eradicator",
+               "Incompprehensible chocolate elitists",
+               "Infinite crowbar of Egypt"
             ];
             params.randomOrder    = Yes.randomOrder;
             params.position       = Vector2i(16, -16);
