@@ -12,8 +12,9 @@ module component.controllersystem;
 import std.algorithm;
 import std.math;
 
-import ice.player;
+import component.exceptions;
 import containers.lazyarray;
+import ice.player;
 import math.vector2;
 import time.gametime;
 import util.resourcemanager;
@@ -44,6 +45,9 @@ class ControllerSystem : System
         ///Loaded dumb scripts.
         LazyArray!DumbScript dumbScripts_;
 
+        ///DumbScript used when a DumbScript of an entity fails to load.
+        DumbScript placeholderDumbScript_;
+
     public:
         /**
          * Construct a ControllerSystem working on entities from specified EntitySystem
@@ -56,12 +60,18 @@ class ControllerSystem : System
             dumbScripts_.loaderDelegate(&loadDumbScript);
         }
 
-        ///Provide a reference to the YAML resource manager. 
+        /// Provide a reference to the YAML resource manager. 
+        /// 
+        /// Must be called at least once after construction.
         ///
-        ///Must be called at least once after construction.
-        @property void yamlManager(ResourceManager!YAMLNode rhs) @safe pure nothrow
+        /// Throws:  SystemInitException on failure.
+        @property void yamlManager(ResourceManager!YAMLNode rhs)
         {
             yamlManager_ = rhs;
+            if(!loadDumbScript("placeholder/dumbscript.yaml", placeholderDumbScript_))
+            {
+                throw new SystemInitException("Failed to load placeholder dumbscript.");
+            }
         }
 
         /**
@@ -80,14 +90,17 @@ class ControllerSystem : System
                     ref DumbScriptComponent scriptComponent; 
                     entitySystem_)
             {
-                DumbScript* script = dumbScripts_[scriptComponent.scriptIndex];
+                DumbScript* script = scriptComponent.placeholder 
+                    ? &placeholderDumbScript_
+                    : dumbScripts_[scriptComponent.scriptIndex];
                 if(script is null)
                 {
                     import std.stdio;
                     writeln("WARNING: Could not load dumb scipt ", 
                             scriptComponent.scriptIndex);
                     writeln("Falling back to a placeholder (idle) dumb script");
-                    assert(false, "TODO - Placeholder dumb script not implemented");
+                    script = &placeholderDumbScript_;
+                    scriptComponent.placeholder = true;
                 }
 
                 script.control(control, scriptComponent, gameTime_.timeStep);

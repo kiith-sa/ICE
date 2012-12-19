@@ -28,6 +28,9 @@ struct DumbScriptComponent
     ///Index to the script in ControllerSystem.
     DumbScriptIndex scriptIndex;
 
+    ///Using a placeholder dumbScript?
+    bool placeholder;
+
     ///Which script instruction are we at?
     uint instruction = 0;
 

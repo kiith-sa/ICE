@@ -1,6 +1,16 @@
 !!pairs 
 #Leave screen
-- for 5.0:
-    move-direction: 0.0
+- for 1.0:
+    move-direction: 0deg
+- for 1.0:
+    move-direction: 180deg
+- for 1.5:
+    move-direction: 0deg
+- for 1.5:
+    move-direction: 180deg
+- for 2.0:
+    move-direction: 0deg
+- for 2.0:
+    move-direction: 180deg
 - die:
 
