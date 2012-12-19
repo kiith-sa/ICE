@@ -513,9 +513,10 @@ private:
         spawnerSystem_            = new SpawnerSystem(entitySystem_, gameTime_);
         tagSystem_                = new TagsSystem(entitySystem_);
         scoreSystem_              = new ScoreSystem(entitySystem_);
-        const soundArea = Rectf(gameArea.min - Vector2f(32.0f, 32.0f), 
-                                gameArea.max + Vector2f(32.0f, 32.0f));
-        auralSystem_              = new AuralSystem(entitySystem_, sound_, soundArea);
+        const soundArea = Rectf(gameArea.min - Vector2f(64.0f, 64.0f), 
+                                gameArea.max + Vector2f(64.0f, 64.0f));
+        auralSystem_              = new AuralSystem(entitySystem_, gameTime_, 
+                                                    sound_, soundArea);
         playerSystem_             = new PlayerSystem(entitySystem_, [player0_]);
 
         effectManager_            = new GraphicsEffectManager();

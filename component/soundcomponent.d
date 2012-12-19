@@ -55,6 +55,9 @@ public:
 
         /// Volume of the sound. Must be between 0 and 1.
         float volume = 1.0f;
+
+        /// Delay between condition being met and sound being played.
+        float delay = 0.0f;
     }
 
     /// Use an allocator to reduce reallocation.
@@ -92,6 +95,9 @@ public:
                 condition.weaponIndex = item["weapon"].as!ubyte;
             }
             condition.sound = item["sound"].as!string;
+            condition. delay = item.containsKey("delay")
+                  ? fromYAML!(float, "a >= 0.0f")(item["delay"], "sound component loading")
+                  : 0.0f;
             if(item.containsKey("volume"))
             {
                 condition.volume = item["volume"].as!float;
