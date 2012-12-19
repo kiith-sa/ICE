@@ -25,6 +25,7 @@ import component.collisionresponsesystem;
 import component.controllersystem;
 import component.enginesystem;
 import component.entitysystem;
+import component.exceptions;
 import component.healthsystem;
 import component.movementconstraintsystem;
 import component.physicssystem;
@@ -393,6 +394,8 @@ private:
      *          yamlManager = Resource manager managing YAML files.
      *          sound       = Reference to the sound system.
      *          levelSource = YAML source of the level to load.
+
+     * Throws:  GameInitException on failure.
      */
     this(Platform platform, GameGUI gui, VideoDriver video, VFSDir gameDir,
          PlayerProfile profile, ResourceManager!YAMLNode yamlManager,
@@ -408,7 +411,14 @@ private:
         player0_  = new HumanPlayer(platform_, "Human");
         gameDir_         = gameDir;
 
-        initSystems();
+        try
+        {
+            initSystems();
+        }
+        catch(SystemInitException e)
+        {
+            throw new GameStartException("Failed to initialize game subsystems: " ~ e.msg);
+        }
 
         this.videoDriver = video;
         initYAML();
@@ -542,6 +552,8 @@ private:
     }
 
     /// Pass yamlResourceManager_ to subsystems.
+    ///
+    /// Throws:  SystemInitException on failure.
     void initYAML()
     {
         weaponSystem_.yamlManager     = yamlResourceManager_;

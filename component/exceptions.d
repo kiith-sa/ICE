@@ -17,3 +17,12 @@ class UnknownComponentTypeException : Exception
         super(msg, file, line);
     }
 }
+
+/// Thrown when a System fails to initialize.
+class SystemInitException : Exception 
+{
+    public this(string msg, string file = __FILE__, int line = __LINE__)
+    {
+        super(msg, file, line);
+    }
+}

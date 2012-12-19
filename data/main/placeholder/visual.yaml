@@ -1,0 +1,8 @@
+type: lines
+vertices:
+  !!pairs
+  - width: 32
+  - color:  rgbFF00FF
+  - vertex: [16, 0]
+  - vertex: [16, 32]
+

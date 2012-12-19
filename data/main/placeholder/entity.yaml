@@ -1,0 +1,4 @@
+visual: placeholder/visual.yaml
+engine:
+  maxSpeed: 600
+dumbScript: placeholder/dumbscript.yaml

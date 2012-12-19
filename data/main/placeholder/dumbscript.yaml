@@ -1,0 +1,6 @@
+!!pairs 
+#Leave screen
+- for 5.0:
+    move-direction: 0.0
+- die:
+

@@ -14,6 +14,7 @@ import std.typecons;
 
 import component.controllercomponent;
 import component.entitysystem;
+import component.exceptions;
 import component.ownercomponent;
 import component.spawnercomponent;
 import component.system;
@@ -45,6 +46,9 @@ class SpawnerSystem : System
         ///Prototypes of entities loaded from files.
         LazyArray!(EntityPrototype*) entityPrototypes_;
 
+        ///Prototype of the placeholder entity used when an entity can't be loaded.
+        EntityPrototype* placeholderPrototype_;
+
         ///Prototype to be spawned associated with in-game time when it should be spawned.
         alias Tuple!(real, "time", EntityPrototype*, "spawn") Spawn;
 
@@ -70,12 +74,10 @@ class SpawnerSystem : System
         ResourceManager!YAMLNode yamlManager_;
 
     public:
-        /**
-         * Construct a SpawnerSystem.
-         *
-         * Params:  entitySystem = EntitySystem whose entities we're processing.
-         *          gameTime     = Game time subsystem.
-         */
+        /// Construct a SpawnerSystem.
+        /// 
+        /// Params:  entitySystem = EntitySystem whose entities we're processing.
+        ///          gameTime     = Game time subsystem.
         this(EntitySystem entitySystem, const GameTime gameTime)
         {
             spawnStorage_.reserve(1024);
@@ -103,14 +105,21 @@ class SpawnerSystem : System
             {
                 free(prototype);
             }
+            free(placeholderPrototype_);
         }
 
-        ///Provide a reference to the YAML resource manager. 
+        /// Provide a reference to the YAML resource manager. 
+        /// 
+        /// Must be called at least once after construction.
         ///
-        ///Must be called at least once after construction.
-        @property void yamlManager(ResourceManager!YAMLNode rhs) pure nothrow
+        /// Throws:  SystemInitException on failure.
+        @property void yamlManager(ResourceManager!YAMLNode rhs)
         {
             yamlManager_ = rhs;
+            if(placeholderPrototype_ is null)
+            {
+                initPlaceholderPrototype();
+            }
         }
 
         void update()
@@ -199,7 +208,7 @@ class SpawnerSystem : System
                 import std.stdio;
                 writeln("WARNING: Could not load entity data ", spawn.spawnee);
                 writeln("Falling back to placeholder entity data...");
-                assert(false, "TODO - Placeholder entity data not implemented");
+                prototypePtr = &placeholderPrototype_;
             }
 
             //Allocate a new spawn or return unused one.
@@ -271,6 +280,17 @@ class SpawnerSystem : System
             }
 
             return &spawnStorage_[spawnsUsed_++];
+        }
+
+        /// Initialize placeholder entity prototype.
+        ///
+        /// Throws:  SystemInitException on failure.
+        void initPlaceholderPrototype()
+        {
+            if(!loadEntityFromFile("placeholder/entity.yaml", placeholderPrototype_))
+            {
+                throw new SystemInitException("Failed to load placeholder entity prototype");
+            }
         }
 
         ///Load entity prototype from file with specified name to output.
