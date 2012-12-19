@@ -22,7 +22,7 @@ module main.ice;
 
 
 import core.stdc.stdlib: exit;     
-import std.stdio: writeln;
+import std.stdio: writeln, File, stdout;
 import std.typecons;
 
 import dgamevfs._;
@@ -39,6 +39,11 @@ import memory.memory;
 void main(string[] args)
 {
     memory.memory.suspendMemoryDebugRecording = false;
+    stdout = File("iceLog.txt", "wb");
+    scope(exit)
+    {
+        stdout.flush();
+    }
 
     writeln("Started main()...");
     //will add -h/--help and generate usage info by itself
