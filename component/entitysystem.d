@@ -223,7 +223,7 @@ struct Entity
         {
             components_ = components_ & (~ComponentType.JUST_SPAWNED);
         }
-        
+
         ///Get a reference to the index of specified component. Used during entity construction.
         @property ref uint componentIdx(C)() pure nothrow 
         {
@@ -439,7 +439,7 @@ class EntitySystem : Monitorable
                 //- we're alive at least for one update.
                 else if(entity.valid)
                 {
-                    //We've just been spawned at the previous update.
+                    //We've been spawned at the previous update.
                     if(entity.spawned)
                     {
                         entity.flipSpawned();
