@@ -27,16 +27,19 @@ struct VisualComponent
     /// Index pointing to visual data.
     alias LazyArrayIndex!(VisualData) VisualIndex;
 
-    ///Index to visual data in a lazy array in VisualSystem.
+    /// Index to visual data in a lazy array in VisualSystem.
     VisualIndex dataIndex;
 
-    ///Load from a YAML node. Throws YAMLException on error.
+    /// Is placeholder visual data being used? (Did loading fail?)
+    bool placeholder;
+
+    /// Load from a YAML node. Throws YAMLException on error.
     this(ref YAMLNode yaml)
     {
         dataIndex = VisualIndex(yaml.as!string);
     }
 
-    ///Construct manually.
+    /// Construct manually.
     this(string resourceName) pure nothrow
     {
         dataIndex = VisualIndex(resourceName);

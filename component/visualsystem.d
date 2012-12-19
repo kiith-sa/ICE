@@ -148,12 +148,15 @@ class VisualSystem : System
                 }
 
                 ///Loads visual data if not yet loaded.
-                VisualData* data = visualData_[visual.dataIndex];
+                VisualData* data = visual.placeholder 
+                    ? &placeholderVisualData_
+                    : visualData_[visual.dataIndex];
                 if(data is null)
                 {
                     writeln("WARNING: Could not load visual data ", visual.dataIndex);
                     writeln("Falling back to placeholder visual data...");
                     data = &placeholderVisualData_;
+                    visual.placeholder = true;
                 }
 
                 const pos = physics.position;
