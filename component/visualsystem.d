@@ -26,6 +26,7 @@ import util.yaml;
 import video.videodriver;
 
 import component.entitysystem;
+import component.exceptions;
 import component.physicscomponent;
 import component.visualcomponent;
 import component.system;
@@ -35,22 +36,25 @@ import component.system;
 class VisualSystem : System
 {
     private:
-        ///Entity system whose data we're processing.
+        /// Entity system whose data we're processing.
         EntitySystem entitySystem_;
 
         /// Game data directory.
         VFSDir gameDir_;
 
-        ///VideoDriver to draw VisualComponents with.
+        /// VideoDriver to draw VisualComponents with.
         VideoDriver videoDriver_;
 
-        ///Reference to the resource manager handling YAML loading.
+        /// Reference to the resource manager handling YAML loading.
         ResourceManager!YAMLNode yamlManager_;
 
-        ///Lazily loads and stores visual data.
+        /// Lazily loads and stores visual data.
         LazyArray!VisualData visualData_;
 
-        ///Draw volume components of objects? (debugging)
+        /// Visual data used when visual data of an entity fails to load.
+        VisualData placeholderVisualData_;
+
+        /// Draw volume components of objects? (debugging)
         bool drawVolumeComponents_;
 
     public:
@@ -84,9 +88,11 @@ class VisualSystem : System
         @property void videoDriver(VideoDriver rhs) pure nothrow {videoDriver_ = rhs;}
 
 
-        ///Provide a reference to the YAML resource manager. 
+        /// Provide a reference to the YAML resource manager. 
+        /// 
+        /// Must be called at least once after construction.
         ///
-        ///Must be called at least once after construction.
+        /// Throws:  SystemInitException on failure.
         @property void yamlManager(ResourceManager!YAMLNode rhs)
         {
             yamlManager_ = rhs;
@@ -109,6 +115,10 @@ class VisualSystem : System
             catch(YAMLException e)
             {
                 writeln("WARNING: Could not load VisualSystem configuration: ", e.msg);
+            }
+            if(!loadVisualData("placeholder/visual.yaml", placeholderVisualData_))
+            {
+                throw new SystemInitException("Failed to load placeholder visual data");
             }
         }
 
@@ -143,7 +153,7 @@ class VisualSystem : System
                 {
                     writeln("WARNING: Could not load visual data ", visual.dataIndex);
                     writeln("Falling back to placeholder visual data...");
-                    assert(false, "TODO - Placeholder visual data not implemented");
+                    data = &placeholderVisualData_;
                 }
 
                 const pos = physics.position;
