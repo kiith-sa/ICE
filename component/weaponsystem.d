@@ -22,6 +22,7 @@ import util.yaml;
 
 import component.controllercomponent;
 import component.entitysystem;
+import component.exceptions;
 import component.deathtimeoutcomponent;
 import component.enginecomponent;
 import component.ownercomponent;
@@ -38,23 +39,24 @@ import component.system;
 class WeaponSystem : System
 {
     private:
-        ///Entity system whose data we're processing.
+        /// Entity system whose data we're processing.
         EntitySystem entitySystem_;
 
-        ///Game time subsystem.
+        /// Game time subsystem.
         const GameTime gameTime_;
 
-        ///Reference to the resource manager handling YAML loading.
+        /// Reference to the resource manager handling YAML loading.
         ResourceManager!YAMLNode yamlManager_;
 
-        ///Lazily loads and stores weapon data.
+        /// Lazily loads and stores weapon data.
         LazyArray!WeaponData weaponData_;
 
+        /// WeaponData used when weapon data loading fails.
+        WeaponData placeholderWeaponData_;
+
     public:
-        /**
-         * Construct a WeaponSystem working on entities from specified EntitySystem
-         * and using specified game time subsystem to determine time.
-         */
+        /// Construct a WeaponSystem working on entities from specified EntitySystem
+        /// and using specified game time subsystem to determine time.
         this(EntitySystem entitySystem, const GameTime gameTime)
         {
             entitySystem_ = entitySystem;
@@ -62,15 +64,21 @@ class WeaponSystem : System
             weaponData_.loaderDelegate = &loadWeaponData;
         }
 
-        ///Provide a reference to the YAML resource manager. 
+        /// Provide a reference to the YAML resource manager. 
+        /// 
+        /// Must be called at least once after construction.
         ///
-        ///Must be called at least once after construction.
-        @property void yamlManager(ResourceManager!YAMLNode rhs) @safe pure nothrow
+        /// Throws:  SystemInitException on failure.
+        @property void yamlManager(ResourceManager!YAMLNode rhs)
         {
             yamlManager_ = rhs;
+            if(!loadWeaponData("placeholder/weapon.yaml", placeholderWeaponData_))
+            {
+                throw new SystemInitException("Failed to load placeholder weapon data");
+            }
         }
 
-        ///Fire weapons based on entities' controller components.
+        /// Fire weapons based on entities' controller components.
         void update()
         {
             const timeStep = gameTime_.timeStep;
@@ -85,12 +93,15 @@ class WeaponSystem : System
                 foreach(idx, ref weaponInstance; weapons.weapons) with(weaponInstance)
                 {
                     ///Loads weapon data if needed.
-                    WeaponData* weapon = weaponData_[weaponInstance.dataIndex];
+                    WeaponData* weapon = weaponInstance.placeholder
+                        ? &placeholderWeaponData_ 
+                        : weaponData_[weaponInstance.dataIndex];
                     if(weapon is null)
                     {
                         writeln("WARNING: Could not load weapon data ", weaponInstance.dataIndex);
                         writeln("Falling back to placeholder weapon data...");
-                        assert(false, "TODO - Placeholder weapon data not implemented");
+                        weapon = &placeholderWeaponData_;
+                        weaponInstance.placeholder = true;
                     }
 
                     if(!weaponInstance.spawnsAdded)

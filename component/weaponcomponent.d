@@ -55,6 +55,9 @@ struct WeaponComponent
         ///Have the weapon's projectile spawns been added to the SpawnerComponent of the Entity?
         bool spawnsAdded = false;
 
+        /// True if loading failed and we're using placeholder weapon data.
+        bool placeholder = false;
+
         ///Construct a Weapon in specified slot defined in specified file.
         this(const ubyte weaponSlot, string weaponFileName) pure nothrow
         {

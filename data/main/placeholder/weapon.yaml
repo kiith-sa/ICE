@@ -1,0 +1,33 @@
+burstPeriod: 0.04
+ammo: 5
+reloadTime: 0.2
+burst:
+  - entity: projectiles/plasmaBullet.yaml 
+    delay: 0.05
+    components:
+      visual: placeholder/visual.yaml
+      physics:
+        position: [8.0, 8.0]
+        rotation: -0.12
+  - entity: projectiles/plasmaBullet.yaml 
+    delay: 0.0
+    components:
+      visual: placeholder/visual.yaml
+      physics:
+        position: [0.0, -8.0]
+        rotation: -0.02
+  - entity: projectiles/plasmaBullet.yaml 
+    delay: 0.0
+    components:
+      visual: placeholder/visual.yaml
+      physics:
+        position: [0.0, -8.0]
+        rotation: 0.02
+  - entity: projectiles/plasmaBullet.yaml 
+    delay: 0.05
+    components:
+      visual: placeholder/visual.yaml
+      physics:
+        position: [-8.0, 8.0]
+        rotation: 0.12
+
