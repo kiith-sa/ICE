@@ -9,3 +9,7 @@ volume:
 visual:   visual/pea.yaml
 warhead:
   damage: 22
+sound: 
+  - condition: spawn
+    sound:     sound/firing/pea.ogg
+    volume:    0.25

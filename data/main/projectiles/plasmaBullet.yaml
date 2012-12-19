@@ -9,3 +9,7 @@ volume:
 visual:   visual/plasmaBullet.yaml
 warhead:
   damage: 3
+sound: 
+  - condition: spawn
+    sound:     sound/firing/plasmaBullet.ogg
+    volume:    0.07

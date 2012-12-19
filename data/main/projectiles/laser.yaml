@@ -8,3 +8,7 @@ warhead:
   damage: 5 
   #Laser doesn't cease to exist after it hits something
   killsEntity: false
+sound: 
+  - condition: spawn
+    sound:     sound/firing/laser.ogg
+    volume:    1.0

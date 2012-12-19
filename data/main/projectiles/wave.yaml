@@ -9,3 +9,7 @@ volume:
 visual:   visual/wave.yaml
 warhead:
   damage: 50
+sound: 
+  - condition: spawn
+    sound:     sound/firing/wave.ogg
+    volume:    0.2

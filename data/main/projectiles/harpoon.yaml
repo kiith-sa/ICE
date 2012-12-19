@@ -9,3 +9,7 @@ volume:
 visual:   visual/harpoon.yaml
 warhead:
   damage: 35
+sound: 
+  - condition: spawn
+    sound:     sound/firing/triton.ogg
+    volume:    0.14

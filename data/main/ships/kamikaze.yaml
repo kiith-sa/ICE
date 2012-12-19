@@ -25,3 +25,15 @@ spawner:
         position: [0, 0]
         rotation: 0.0
         speed: 200
+sound:
+  - condition: hit
+    sound:     sound/hit/enemyHit.ogg
+    volume:    0.3
+  - condition: spawn
+    sound: sound/move/kamikaze.ogg
+    volume:    0.3
+    delay:     0.45
+  - condition: spawn
+    sound: sound/move/kamikaze.ogg
+    volume:    0.3
+    delay:     0.05

@@ -9,3 +9,7 @@ volume:
 visual: visual/diamondBullet.yaml
 warhead:
   damage: 55
+sound: 
+  - condition: spawn
+    sound:     sound/firing/diamond.ogg
+    volume:    0.08

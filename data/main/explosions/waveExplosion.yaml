@@ -25,3 +25,7 @@ spawner:
        PRS: [[4.0, 4.0], 45deg, 50.0]
        
 deathTimeout: 0.5
+sound: 
+  - condition: spawn
+    sound:     sound/explosions/waveExplosion.ogg
+    volume:    0.5

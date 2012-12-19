@@ -197,5 +197,9 @@ spawner:
    components:
      physics:
        PRS: [[0.0, 0.0], 6.082, 40.0]
-       
+
 deathTimeout: 0.8
+sound: 
+  - condition: spawn
+    sound:     sound/explosions/starShipExplosion.ogg
+    volume:    0.5

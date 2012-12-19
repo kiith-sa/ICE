@@ -30,3 +30,19 @@ spawner:
       visual: visual/playerShip.yaml
       physics: 
         position: [0, 0]
+sound: 
+  - condition: burst
+    weapon:    0
+    sound:     sound/firing/playerLaser.ogg
+    volume:    0.45
+  - condition: burst
+    weapon:    1
+    sound:     sound/firing/circleOfDeath.ogg
+    volume:    0.5
+  - condition: burst
+    weapon:    2
+    sound:     sound/firing/activeShield.ogg
+    volume:    0.1
+  - condition: hit
+    sound:     sound/hit/playerHit.ogg
+    volume:    1.0

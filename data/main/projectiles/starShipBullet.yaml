@@ -9,3 +9,7 @@ volume:
 visual: visual/starShipBullet.yaml
 warhead:
   damage: 30
+sound: 
+  - condition: spawn
+    sound:     sound/firing/starShipBullet.ogg
+    volume:    0.9

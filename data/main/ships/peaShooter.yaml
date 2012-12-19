@@ -36,3 +36,7 @@ spawner:
       physics: 
         position: [0, 15]
         rotation: 0.0
+sound:
+  - condition: hit
+    sound:     sound/hit/enemyHit.ogg
+    volume:    0.3

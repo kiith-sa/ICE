@@ -111,3 +111,7 @@ spawner:
        PRS: [[0.0, 0.0], 2.64, 75.0]
 
 deathTimeout: 0.5
+sound: 
+  - condition: spawn
+    sound:     sound/explosions/jetSmall.ogg
+    volume:    0.4

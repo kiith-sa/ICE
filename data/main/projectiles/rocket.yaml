@@ -9,3 +9,7 @@ volume:
 visual:   visual/rocket.yaml
 warhead:
   damage: 40
+sound: 
+  - condition: spawn
+    sound:     sound/firing/rocket.ogg
+    volume:    0.14

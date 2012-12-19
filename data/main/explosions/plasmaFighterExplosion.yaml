@@ -85,3 +85,7 @@ spawner:
        PRS: [[0.0, 0.0], 5.298, 75.0]
        
 deathTimeout: 0.5
+sound: 
+  - condition: spawn
+    sound:     sound/explosions/plasmaFighterExplosion.ogg
+    volume:    0.5

@@ -9,3 +9,7 @@ volume:
 visual:   visual/stoperWeapon.yaml
 warhead:
   damage: 55
+sound: 
+  - condition: spawn
+    sound:     sound/firing/rocket.ogg
+    volume:    0.14

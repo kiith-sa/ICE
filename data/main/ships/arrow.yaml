@@ -43,3 +43,7 @@ spawner:
         position: [-16, 0]
         rotation: 3.14
         speed: -16
+sound:
+  - condition: hit
+    sound:     sound/hit/enemyHit.ogg
+    volume:    0.3

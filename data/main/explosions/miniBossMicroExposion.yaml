@@ -199,3 +199,7 @@ spawner:
        PRS: [[0.0, 0.0], 6.082, 100.0]
        
 deathTimeout: 0.6
+sound: 
+  - condition: spawn
+    sound:     sound/explosions/miniBossExplosion.ogg
+    volume:    0.9

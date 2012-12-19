@@ -9,3 +9,7 @@ volume:
 visual: visual/plasmaSphere.yaml
 warhead:
   damage: 25
+sound: 
+  - condition: spawn
+    sound:     sound/firing/plasmaSphere.ogg
+    volume:    0.2

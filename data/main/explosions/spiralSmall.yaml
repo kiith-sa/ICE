@@ -186,3 +186,7 @@ spawner:
      physics:
        PRS: [[0.0, 0.0], 6.0, 50.0]
 deathTimeout: 0.4
+sound: 
+  - condition: spawn
+    sound:     sound/explosions/spiralSmall.ogg
+    volume:    0.4
