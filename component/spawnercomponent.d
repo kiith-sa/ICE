@@ -147,6 +147,11 @@ struct SpawnerComponent
         ///Are any components of the spawnee overridden by componentOverrides?
         bool hasComponentOverrides;
 
+        ///Is there any spawnee entity? 
+        ///
+        ///(Otherwise the entire entity is defined by component overrides)
+        bool hasSpawnee = false;
+
         ///Is the spawner spawnee's owner?
         bool spawnerIsOwner;
 
@@ -165,7 +170,11 @@ struct SpawnerComponent
          */
         this(ref YAMLNode yaml)
         {
-            spawnee = PrototypeIndex(yaml["entity"].as!string);
+            if(yaml.containsKey("entity"))
+            {
+                spawnee = PrototypeIndex(yaml["entity"].as!string);
+                hasSpawnee = true;
+            }
 
             //By default, spawn condition is "spawn" .
             if(yaml.containsKey("condition"))

@@ -201,23 +201,33 @@ class SpawnerSystem : System
         ///Prepare a spawn, adding it to spawnStorage_ but not spawning (it might have a delay).
         void prepareSpawn(ref Entity spawner, ref SpawnerComponent.Spawn spawn)
         {
-            //Get the prototype of the entity to spawn.
-            EntityPrototype** prototypePtr = entityPrototypes_[spawn.spawnee];
-            if(prototypePtr is null)
-            {
-                import std.stdio;
-                writeln("WARNING: Could not load entity data ", spawn.spawnee);
-                writeln("Falling back to placeholder entity data...");
-                prototypePtr = &placeholderPrototype_;
-            }
-
             //Allocate a new spawn or return unused one.
             Spawn* timedSpawn = getFreeSpawn();
+
+            if(spawn.hasSpawnee)
+            {
+                //Get the prototype of the entity to spawn.
+                EntityPrototype** prototypePtr = entityPrototypes_[spawn.spawnee];
+                if(prototypePtr is null)
+                {
+                    import std.stdio;
+                    writeln("WARNING: Could not load entity data ", spawn.spawnee);
+                    writeln("Falling back to placeholder entity data...");
+                    prototypePtr = &placeholderPrototype_;
+                }
+
+                //Set the spawn to the prototype and optionally 
+                //override its components based on componentOverrides.
+                timedSpawn.spawn.clone(**prototypePtr);
+            }
+            else 
+            {
+                static EntityPrototype defaultPrototype;
+                timedSpawn.spawn.clone(defaultPrototype);
+            }
+
             timedSpawn.time = gameTime_.gameTime + spawn.delay;
 
-            //Set the spawn to the prototype and optionally 
-            //override its components based on componentOverrides.
-            timedSpawn.spawn.clone(**prototypePtr);
             try if(spawn.hasComponentOverrides) 
             {
                 timedSpawn.spawn.overrideComponents(spawn.componentOverrides);
@@ -315,7 +325,7 @@ class SpawnerSystem : System
             }
             catch(YAMLException e)
             {
-                writeln("Failed to load entity prototype ", name, ": ", e.msg);
+                writeln(e.msg);
                 return false;
             }
 
