@@ -295,9 +295,10 @@ public:
     /// (Use Mix_HaltChannel(-1) to halt all sound.)
     void destroy()
     {
+        // Don't destroy if the sound failed to load.
+        if(soundChunk_ is null){return;}
         free(soundBuffer_);
         SDL_FreeRW(soundRW_);
-        if(soundChunk_ is null){return;}
         Mix_FreeChunk(soundChunk_);
     }
 
