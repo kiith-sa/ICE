@@ -51,12 +51,12 @@
   <div class="section" id="spawner-component">
 <span id="modding-reference-component-spawner"></span><h1>Spawner component<a class="headerlink" href="#spawner-component" title="Permalink to this headline">¶</a></h1>
 <p>Entities with a spawner component can spawn (create) new entities when certain
-conditions are met. This is a very powerful mechanism that can be used to
-create various effects. An example is spawning explosion effects when a ship
-dies.  As any entity can be spawned, it can be used to duplicate a projectile,
-create projectiles like cluster bombs that split into smaller projectiles,
-making a ship spawn other ships and so on. Under the hood, weapons also use
-a spawner component to fire projectiles.</p>
+conditions are met. This is a very powerful way to create various effects. An
+example is spawning explosion effects when a ship dies.  As any entity can be
+spawned, it can be used to duplicate a projectile, create projectiles like
+cluster bombs that split into smaller projectiles, make a ship spawn other
+ships and so on. Under the hood, weapons also use a spawner component to fire
+projectiles.</p>
 <p>A spawner component can override components of spawned entities.  This allows
 to give spawned entities different scripts, modify their health, and so on.
 Usually at least the physics component is overridden to set position and
@@ -67,7 +67,8 @@ attributes&#8217; values; it will override the physics component with a new comp
 with specified position and other attributes with their default values.</p>
 <p>The spawner component is a sequence of entities to spawn.  For each entity, its
 file can be specified, as well as the condition to spawn at, components to
-override and so on.</p>
+override and so on. If no entity file is specified, the spawned entity is
+fully defined by the &#8220;overriding&#8221; components.</p>
 <p>Example:</p>
 <div class="highlight-python"><pre>spawner:
   - entity: explosions/player.yaml
@@ -75,10 +76,10 @@ override and so on.</p>
     components:
       physics:
         position: [0, 0]
-  - entity: explosions/deathbase.yaml
-    condition: death
+  - condition: death
     components:
       visual: visual/player.yaml
+      deathTimeout: 0.5
       physics:
         position: [0, 0]</pre>
 </div>
@@ -95,8 +96,9 @@ the same visual as the spawner for a while.</p>
 </colgroup>
 <tbody valign="top">
 <tr class="row-odd"><td>entity</td>
-<td>File name of the entity to spawn. <em>String</em>. This must be
-specified; there is no default.</td>
+<td>File name of the entity to spawn. If not specified,
+<tt class="docutils literal"><span class="pre">components</span></tt> will fully define the entity. <em>String</em>.
+Optional; there is no default.</td>
 </tr>
 <tr class="row-even"><td>condition</td>
 <td>When this condition is met, the entity is spawned. A condition
@@ -110,10 +112,11 @@ specified entity. Components are specified in the same way as
 in an entity file. Even components that are not present in the
 specified entity can be used. Usually, at least the physics
 component should be overridden to specify position, velocity
-and/or rotation.</td>
+and/or rotation. If no entity is specified, these components
+fully define the entity.</td>
 </tr>
 <tr class="row-even"><td>spawnerIsOwner</td>
-<td>When true, the spawner entity will own the spawned entity. This
+<td>If true, the spawner entity will own the spawned entity. This
 can be useful for movement constraints and weapons.
 <em>Bool</em>. Default: <tt class="docutils literal"><span class="pre">true</span></tt>.</td>
 </tr>
@@ -188,7 +191,7 @@ greater than zero.</td>
     </div>
     <div class="footer">
         &copy; Copyright 2010-2012, Dávid Horváth, Ferdinand Majerech, Libor Mališ..
-      Last updated on Dec 18, 2012.
+      Last updated on Dec 20, 2012.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

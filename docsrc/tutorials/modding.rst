@@ -28,6 +28,22 @@ filename.
 Note that ``user_data/main`` translates to ``~/.ice-game/main`` after
 installation on Linux and similar systems.
 
+^^^^^^^^^^^^^^^^^^^
+About bug detection
+^^^^^^^^^^^^^^^^^^^
+
+ICE won't accept modding data with errors; it's designed to detect errors and
+make the modder aware of them. If a mod uses a buggy entity, script, weapon,
+and so on, ICE will refuse to load it and replace it with an "obviously wrong"
+placeholder to show that there is a bug. For instance, a buggy entity will be
+replaced by a violet square with no useful components; a buggy script will be
+replaced by a script moving the entity up and down repeatedly.
+
+To find more detailed information about what went wrong, look at the ICE log
+output. On Windows, this is the ``iceLog.txt`` file in the directory ICE was
+launched from. On Linux/POSIX, you can see the log by running ICE from the
+terminal.
+
 ---------------
 Creating a ship
 ---------------

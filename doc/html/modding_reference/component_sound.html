@@ -62,11 +62,23 @@ are supported: WAV and Ogg Vorbis.</p>
     volume:    0.3
   - condition: burst
     weapon:    0
-    sound:     sound/firing/laser.ogg</pre>
+    sound:     sound/firing/laser.ogg
+  - condition: spawn
+    sound:     sound/spawn/created.ogg
+    delay:     0.5</pre>
 </div>
-<p>An entity with this sound component has two sounds it might play. The first is
-played when it&#8217;s being hit, with 30% volume. The other is played when the
-weapon in weapon slot 0 is fired, with full volume.</p>
+<p>An entity with this sound component has three sounds it might play. The first
+is played when it&#8217;s being hit, with 30% volume. The second is played when the
+weapon in weapon slot 0 is fired, with full volume, and the last is played 0.5
+seconds after the entity is spawned.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Sound effects will only play for entities inside or very close to game area,
+or entities without a position (no physics component). This is to prevent
+entities that are not dead yet but have left the screen from playing sounds.
+(As of time of this writing, the &#8220;sound area&#8221; is the game area with a margin
+of 64 units in all directions).</p>
+</div>
 <div class="section" id="tags">
 <h2>Tags<a class="headerlink" href="#tags" title="Permalink to this headline">¶</a></h2>
 <table border="1" class="docutils">
@@ -82,16 +94,20 @@ collides (e.g. with a projectile), and <em>burst</em>, when the entity fires
 a weapon (which must be specified by the <em>weapon</em> tag in that case).
 This must be specified; there is no default.</td>
 </tr>
-<tr class="row-even"><td>weapon</td>
+<tr class="row-even"><td>delay</td>
+<td>Delay between meeting the condition and playing the sound.
+<em>Float, at least 0.0</em>. Default: <tt class="docutils literal"><span class="pre">0.0</span></tt></td>
+</tr>
+<tr class="row-odd"><td>weapon</td>
 <td>When the <em>burst</em> condition is used, the sound is played if the weapon
 in this slot (if any) starts a burst (fires). <em>Integer</em>. This must be
 specified (when <em>burst</em> condition is used); there is no default.</td>
 </tr>
-<tr class="row-odd"><td>sound</td>
+<tr class="row-even"><td>sound</td>
 <td>File name of the sound to play when the condition is met. <em>String</em>.
 This must be specified; there is no default.</td>
 </tr>
-<tr class="row-even"><td>volume</td>
+<tr class="row-odd"><td>volume</td>
 <td>Volume of the sound (relative to the global sound volume).
 <em>Float, at least 0.0 and at most 1.0</em>. Default: <tt class="docutils literal"><span class="pre">1.0</span></tt>.</td>
 </tr>
@@ -132,7 +148,7 @@ This must be specified; there is no default.</td>
     </div>
     <div class="footer">
         &copy; Copyright 2010-2012, Dávid Horváth, Ferdinand Majerech, Libor Mališ..
-      Last updated on Dec 18, 2012.
+      Last updated on Dec 20, 2012.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

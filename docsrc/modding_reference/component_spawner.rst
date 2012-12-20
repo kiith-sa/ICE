@@ -5,12 +5,12 @@ Spawner component
 =================
 
 Entities with a spawner component can spawn (create) new entities when certain
-conditions are met. This is a very powerful mechanism that can be used to
-create various effects. An example is spawning explosion effects when a ship
-dies.  As any entity can be spawned, it can be used to duplicate a projectile,
-create projectiles like cluster bombs that split into smaller projectiles,
-making a ship spawn other ships and so on. Under the hood, weapons also use
-a spawner component to fire projectiles.
+conditions are met. This is a very powerful way to create various effects. An
+example is spawning explosion effects when a ship dies.  As any entity can be
+spawned, it can be used to duplicate a projectile, create projectiles like
+cluster bombs that split into smaller projectiles, make a ship spawn other
+ships and so on. Under the hood, weapons also use a spawner component to fire
+projectiles.
 
 A spawner component can override components of spawned entities.  This allows
 to give spawned entities different scripts, modify their health, and so on.
@@ -24,7 +24,8 @@ with specified position and other attributes with their default values.
 
 The spawner component is a sequence of entities to spawn.  For each entity, its
 file can be specified, as well as the condition to spawn at, components to
-override and so on.
+override and so on. If no entity file is specified, the spawned entity is 
+fully defined by the "overriding" components.
 
 Example::
 
@@ -34,10 +35,10 @@ Example::
        components:
          physics: 
            position: [0, 0]
-     - entity: explosions/deathbase.yaml 
-       condition: death 
+     - condition: death
        components:
          visual: visual/player.yaml
+         deathTimeout: 0.5
          physics: 
            position: [0, 0]
 
@@ -51,8 +52,9 @@ Tags in an entity entry
 -----------------------
 
 ============== ================================================================
-entity         File name of the entity to spawn. *String*. This must be
-               specified; there is no default.
+entity         File name of the entity to spawn. If not specified, 
+               ``components`` will fully define the entity. *String*.
+               Optional; there is no default.
 condition      When this condition is met, the entity is spawned. A condition
                might have parameters, such as a period for periodic. Supported
                conditions are described in a table below. This must be
@@ -62,8 +64,9 @@ components     Components specified here will override components from
                in an entity file. Even components that are not present in the
                specified entity can be used. Usually, at least the physics 
                component should be overridden to specify position, velocity 
-               and/or rotation.
-spawnerIsOwner When true, the spawner entity will own the spawned entity. This
+               and/or rotation. If no entity is specified, these components
+               fully define the entity.
+spawnerIsOwner If true, the spawner entity will own the spawned entity. This
                can be useful for movement constraints and weapons.
                *Bool*. Default: ``true``.
 delay          Delay between the condition is met and the entity is spawned in
