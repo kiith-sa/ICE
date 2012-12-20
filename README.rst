@@ -43,9 +43,17 @@ Controls
 ======================= =======================================================
 
 
---------------------
-Compiling/Installing
---------------------
+------------------------
+Download current version
+------------------------
+
+Downloads of the current version (Windows, Linux, source) can be found
+found `here <http://icegame.nfshost.com/pages/downloads.html>`_.
+
+
+---------------------------------
+Compiling, installing from source
+---------------------------------
 
 ^^^^^^^^^^^^^^^^^^^
 Directory structure
