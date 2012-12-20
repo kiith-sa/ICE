@@ -10,6 +10,8 @@ ICE is a vertical shoot-em-up in tradition of Raptor and Tyrian with vector
 style graphics written in the D programming language.
 
 ICE is still in very early development and might see large changes.
+Note that ICE requires OpenGL 2.1 to run; all modern PC graphics cards
+support this but some older netbook Intel integrated graphics do not.
 
 --------
 Gameplay
