@@ -26,6 +26,7 @@
 <li><a href="audio.sdlmixersoundsystem.html">audio.sdlmixersoundsystem</a></li>
 <li><a href="audio.soundsystem.html">audio.soundsystem</a></li>
 <li><a href="color.html">color</a></li>
+<li><a href="component.auralsystem.html">component.auralsystem</a></li>
 <li><a href="component.collidablecomponent.html">component.collidablecomponent</a></li>
 <li><a href="component.collisionresponsesystem.html">component.collisionresponsesystem</a></li>
 <li><a href="component.collisionsystem.html">component.collisionsystem</a></li>
@@ -50,6 +51,7 @@
 <li><a href="component.playersystem.html">component.playersystem</a></li>
 <li><a href="component.scorecomponent.html">component.scorecomponent</a></li>
 <li><a href="component.scoresystem.html">component.scoresystem</a></li>
+<li><a href="component.soundcomponent.html">component.soundcomponent</a></li>
 <li><a href="component.spatialsystem.html">component.spatialsystem</a></li>
 <li><a href="component.spawnercomponent.html">component.spawnercomponent</a></li>
 <li><a href="component.spawnersystem.html">component.spawnersystem</a></li>
@@ -187,6 +189,7 @@
 <dl><dt class="d_decl">this(EntitySystem <b>entitySystem</b>, const(GameTime) <b>gameTime</b>);
 </dt>
 <dd><p>Construct a SpawnerSystem.
+ 
 </p>
 <b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>EntitySystem <b>entitySystem</b></td>
 <td valign=top>EntitySystem whose entities we're processing.</td></tr>
@@ -195,11 +198,13 @@
 </table></div>
 
 </dd>
-<dt class="d_decl">pure nothrow @property void <a name="yamlManager"></a><span class="ddoc_psymbol">yamlManager</span>(ResourceManager!(Node) <b>rhs</b>);
+<dt class="d_decl">@property void <a name="yamlManager"></a><span class="ddoc_psymbol">yamlManager</span>(ResourceManager!(Node) <b>rhs</b>);
 </dt>
 <dd><p>Provide a reference to the YAML resource manager. 
+ 
+ Must be called at least once after construction.
 </p>
-<p>Must be called at least once after construction.</p>
+<b>Throws:</b><div class="pbr">SystemInitException on failure.</div>
 
 </dd>
 </dl>

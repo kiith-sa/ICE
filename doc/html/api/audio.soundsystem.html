@@ -26,6 +26,7 @@
 <li><a href="audio.sdlmixersoundsystem.html">audio.sdlmixersoundsystem</a></li>
 <li><a href="audio.soundsystem.html">audio.soundsystem</a></li>
 <li><a href="color.html">color</a></li>
+<li><a href="component.auralsystem.html">component.auralsystem</a></li>
 <li><a href="component.collidablecomponent.html">component.collidablecomponent</a></li>
 <li><a href="component.collisionresponsesystem.html">component.collisionresponsesystem</a></li>
 <li><a href="component.collisionsystem.html">component.collisionsystem</a></li>
@@ -50,6 +51,7 @@
 <li><a href="component.playersystem.html">component.playersystem</a></li>
 <li><a href="component.scorecomponent.html">component.scorecomponent</a></li>
 <li><a href="component.scoresystem.html">component.scoresystem</a></li>
+<li><a href="component.soundcomponent.html">component.soundcomponent</a></li>
 <li><a href="component.spatialsystem.html">component.spatialsystem</a></li>
 <li><a href="component.spawnercomponent.html">component.spawnercomponent</a></li>
 <li><a href="component.spawnersystem.html">component.spawnersystem</a></li>
@@ -195,9 +197,31 @@
 </p>
 <p>A sound system handles sound and music playback, volume control, etc.</p>
 
-<dl><dt class="d_decl">void <a name="setMusicVolume"></a><span class="ddoc_psymbol">setMusicVolume</span>(const float <b>volume</b>);
+<dl><dt class="d_decl">void <a name="setSoundVolume"></a><span class="ddoc_psymbol">setSoundVolume</span>(const float <b>volume</b>);
 </dt>
-<dd><p>Set music <b>volume</b>. Must be at from inverval &lt;0.0, 1.0&gt; .</p>
+<dd><p>Set sound effects <b>volume</b>. Must be from inverval &lt;0.0, 1.0&gt; .</p>
+
+</dd>
+<dt class="d_decl">void <a name="playSound"></a><span class="ddoc_psymbol">playSound</span>(string <b>name</b>, const float <b>volume</b>);
+</dt>
+<dd><p>Start playing a sound effect.
+</p>
+<b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>string <b>name</b></td>
+<td valign=top>VFS file <b>name</b> of the sound to play.
+                   Only OGG vorbis and WAV files are guaranteed to be supported.</td></tr>
+<tr><td valign=top>float <b>volume</b></td>
+<td valign=top>Relative <b>volume</b> of the sound effect. 
+                   Must be from interval &lt;0.0, 1.0&gt;.
+<br>
+
+ If the sound could not be played (e.g. because it couldn't be loaded)
+ it will be silently ignored.</td></tr>
+</table></div>
+
+</dd>
+<dt class="d_decl">void <a name="setMusicVolume"></a><span class="ddoc_psymbol">setMusicVolume</span>(const float <b>volume</b>);
+</dt>
+<dd><p>Set music <b>volume</b>. Must be from inverval &lt;0.0, 1.0&gt; .</p>
 
 </dd>
 <dt class="d_decl">void <a name="playMusic"></a><span class="ddoc_psymbol">playMusic</span>(string <b>name</b>, Flag!("<b>repeat</b>") <b>repeat</b> = (Yes).<b>repeat</b>);
@@ -206,7 +230,8 @@
  
 </p>
 <b>Parameters:</b><div class="pbr"><table class=parms><tr><td valign=top>string <b>name</b></td>
-<td valign=top>VFS file <b>name</b> of the music track to play.</td></tr>
+<td valign=top>VFS file <b>name</b> of the music track to play.
+                   Only OGG vorbis files are guaranteed to be supported.</td></tr>
 <tr><td valign=top>Flag!("<b>repeat</b>") <b>repeat</b></td>
 <td valign=top>Should the music track <b>repeat</b> infinitely?</td></tr>
 </table></div>
