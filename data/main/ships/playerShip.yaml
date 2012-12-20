@@ -1,11 +1,11 @@
 visual: visual/playerShip.yaml
 engine:
   maxSpeed: 500
-  acceleration: 3500
+  acceleration: 7000
 volume:
   aabbox: 
-    min: [-28, -14]
-    max: [28,  14]
+    min: [-24, -14]
+    max: [24,  10]
 weapon:
   0: weapons/playerDefaultWeapon.yaml
   1: weapons/circleOfDeath.yaml
