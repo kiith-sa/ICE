@@ -24,10 +24,10 @@ spawner:
     components:
       physics: 
         position: [0, 0]
-  - entity: explosions/deathBase.yaml 
-    condition: death 
+  - condition: death 
     components:
       visual: visual/playerShip.yaml
+      deathTimeout: 0.5
       physics: 
         position: [0, 0]
 sound: 
