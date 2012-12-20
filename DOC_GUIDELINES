@@ -2,7 +2,7 @@ General:
     Clear names for everything, as few words as needed but no fewer.
 
 Classes:
-    Document what an instance represents(or if it's a singleton), invariants.
+    Document what an instance represents, invariants.
     Document immutability of classes.
 
 Functions:
