@@ -39,7 +39,10 @@ import memory.memory;
 void main(string[] args)
 {
     memory.memory.suspendMemoryDebugRecording = false;
-    stdout = File("iceLog.txt", "wb");
+    version(Windows)
+    {
+        stdout = File("iceLog.txt", "wb");
+    }
     scope(exit)
     {
         stdout.flush();
