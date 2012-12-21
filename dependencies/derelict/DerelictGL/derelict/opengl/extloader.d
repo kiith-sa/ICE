@@ -142,11 +142,27 @@ package
     bool extIsSupported(string extName)
     {
         if(extStr is null) extStr = toDString(glGetString(GL_EXTENSIONS));
-        bool found = (extStr.findStr(extName) != -1);
+        auto index = extStr.findStr(extName);
+
+        bool verify(string s)
+        {
+            auto idx = index + extName.length;
+            if(idx >= s.length || s[idx] == ' ' || s[idx] == '\0')
+                return true;
+            return false;
+        }
+
+        bool found;
+        if(index != -1)
+            found = verify(extStr);
         version(Windows)
         {
             if(!found && winExtStr !is null)
-                return (winExtStr.findStr(extName) != -1);
+            {
+                index = winExtStr.findStr(extName);
+                if(index != -1)
+                    found = verify(winExtStr);
+            }
         }
         return found;
     }
@@ -211,9 +227,14 @@ private
             loaded["GL_ARB_texture_compression_rgtc"] = load_GL_ARB_texture_compression_rgtc();
             loaded["GL_ARB_texture_rg"] = load_GL_ARB_texture_rg();
             loaded["GL_ARB_vertex_array_object"] = load_GL_ARB_vertex_array_object();
+            loaded["GL_ARB_copy_buffer"] = load_GL_ARB_copy_buffer();
             loaded["GL_ARB_uniform_buffer_object"] = load_GL_ARB_uniform_buffer_object();
             loaded["GL_ARB_vertex_array_bgra"] = load_GL_ARB_vertex_array_bgra();
+            loaded["GL_ARB_draw_elements_base_vertex"] = load_GL_ARB_draw_elements_base_vertex();
             loaded["GL_ARB_vertex_attrib_64bit"] = load_GL_ARB_vertex_attrib_64bit();
+            loaded["GL_ARB_provoking_vertex"] = load_GL_ARB_provoking_vertex();
+            loaded["GL_ARB_sync"] = load_GL_ARB_sync();
+            loaded["GL_ARB_texture_multisample"] = load_GL_ARB_texture_multisample();
             loaded["GL_ARB_viewport_array"] = load_GL_ARB_viewport_array();
             loaded["GL_ARB_cl_event"] = load_GL_ARB_cl_event();
             loaded["GL_ARB_debug_output"] = load_GL_ARB_debug_output();
@@ -221,7 +242,9 @@ private
             loaded["GL_ARB_shader_stencil_export"] = load_GL_ARB_shader_stencil_export();
             loaded["GL_ARB_compatibility"] = load_GL_ARB_compatibility();
             loaded["GL_ARB_depth_clamp"] = load_GL_ARB_depth_clamp();
+            loaded["GL_ARB_blend_func_extended"] = load_GL_ARB_blend_func_extended();
             loaded["GL_ARB_sampler_objects"] = load_GL_ARB_sampler_objects();
+            loaded["GL_ARB_timer_query"] = load_GL_ARB_timer_query();
         }
 
         version(DerelictGL_EXT)
@@ -1599,6 +1622,15 @@ private
             return GLExtensionState.Loaded;
         }
 
+        GLExtensionState load_GL_ARB_copy_buffer()
+        {
+            if(!extIsSupported("GL_ARB_copy_bffer"))
+                return GLExtensionState.DriverUnsupported;
+            if(!bindExtFunc(cast(void**)&glCopyBufferSubData, "glCopyBufferSubData"))
+                return GLExtensionState.FailedToLoad;
+            return GLExtensionState.Loaded;
+        }
+
         GLExtensionState load_GL_ARB_uniform_buffer_object()
         {
             if(!extIsSupported("GL_ARB_uniform_buffer_object"))
@@ -1627,6 +1659,21 @@ private
             return GLExtensionState.Loaded;
         }
 
+        GLExtensionState load_GL_ARB_draw_elements_base_vertex()
+        {
+            if(!extIsSupported("GL_ARB_uniform_buffer_object"))
+                return GLExtensionState.DriverUnsupported;
+            if(!bindExtFunc(cast(void**)&glDrawElementsBaseVertex, "glDrawElementsBaseVertex"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glDrawRangeElementsBaseVertex, "glDrawRangeElementsBaseVertex"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glDrawElementsInstancedBaseVertex, "glDrawElementsInstancedBaseVertex"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glMultiDrawElementsBaseVertex, "glMultiDrawElementsBaseVertex"))
+                return GLExtensionState.FailedToLoad;
+            return GLExtensionState.Loaded;
+        }
+
         GLExtensionState load_GL_ARB_vertex_attrib_64bit()
         {
             if(!extIsSupported("GL_ARB_vertex_attrib_64bit"))
@@ -1650,6 +1697,51 @@ private
             if(!bindExtFunc(cast(void**)&glVertexAttribL4dv, "glVertexAttribL4dv"))
                 return GLExtensionState.FailedToLoad;
             if(!bindExtFunc(cast(void**)&glVertexAttribLPointer, "glVertexAttribLPointer"))
+                return GLExtensionState.FailedToLoad;
+            return GLExtensionState.Loaded;
+        }
+
+        GLExtensionState load_GL_ARB_provoking_vertex()
+        {
+            if(!extIsSupported("GL_ARB_provoking_vertex"))
+                return GLExtensionState.DriverUnsupported;
+            if(!bindExtFunc(cast(void**)&glProvokingVertex, "glProvokingVertex"))
+                return GLExtensionState.FailedToLoad;
+            return GLExtensionState.Loaded;
+        }
+
+        GLExtensionState load_GL_ARB_sync()
+        {
+            if(!extIsSupported("GL_ARB_sync"))
+                return GLExtensionState.DriverUnsupported;
+            if(!bindExtFunc(cast(void**)&glFenceSync, "glFenceSync"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glIsSync, "glIsSync"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glDeleteSync, "glDeleteSync"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glClientWaitSync, "glClientWaitSync"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glWaitSync, "glWaitSync"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glGetInteger64v, "glGetInteger64v"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glGetSynciv, "glGetSynciv"))
+                return GLExtensionState.FailedToLoad;
+            return GLExtensionState.Loaded;
+        }
+
+        GLExtensionState load_GL_ARB_texture_multisample()
+        {
+            if(!extIsSupported("GL_ARB_texture_multisample"))
+                return GLExtensionState.DriverUnsupported;
+            if(!bindExtFunc(cast(void**)&glTexImage2DMultisample, "glTexImage2DMultisample"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glTexImage3DMultisample, "glTexImage3DMultisample"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glGetMultisamplefv, "glGetMultisamplefv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glSampleMaski, "glSampleMaski"))
                 return GLExtensionState.FailedToLoad;
             return GLExtensionState.Loaded;
         }
@@ -1773,6 +1865,17 @@ private
             return GLExtensionState.Loaded;
         }
 
+        GLExtensionState load_GL_ARB_blend_func_extended()
+        {
+            if(!extIsSupported("GL_ARB_blend_func_extended"))
+                return GLExtensionState.DriverUnsupported;
+            if(!bindExtFunc(cast(void**)&glBindFragDataLocationIndexed, "glBindFragDataLocationIndexed"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glGetFragDataIndex, "glGetFragDataIndex"))
+                return GLExtensionState.FailedToLoad;
+            return GLExtensionState.Loaded;
+        }
+
         GLExtensionState load_GL_ARB_sampler_objects()
         {
             if(!extIsSupported("GL_ARB_sampler_objects"))
@@ -1804,6 +1907,103 @@ private
             if(!bindExtFunc(cast(void**)&glGetSamplerParameterfv, "glGetSamplerParameterfv"))
                 return GLExtensionState.FailedToLoad;
             if(!bindExtFunc(cast(void**)&glGetSamplerParameterIuiv, "glGetSamplerParameterIuiv"))
+                return GLExtensionState.FailedToLoad;
+
+            return GLExtensionState.Loaded;
+        }
+
+        GLExtensionState load_GL_ARB_timer_query()
+        {
+            if(!extIsSupported("GL_ARB_timer_query"))
+                return GLExtensionState.DriverUnsupported;
+            if(!bindExtFunc(cast(void**)&glQueryCounter, "glQueryCounter"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glGetQueryObjecti64v, "glGetQueryObjecti64v"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glGetQueryObjectui64v, "glGetQueryObjectui64v"))
+                return GLExtensionState.FailedToLoad;
+            return GLExtensionState.Loaded;
+        }
+
+        GLExtensionState load_GL_ARB_vertex_type_2_10_10_10_rev()
+        {
+            if(!extIsSupported("GL_ARB_vertex_type_2_10_10_10_rev"))
+                return GLExtensionState.DriverUnsupported;
+            if(!bindExtFunc(cast(void**)&glVertexP2ui, "glVertexP2ui"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glVertexP2uiv, "glVertexP2uiv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glVertexP3ui, "glVertexP3ui"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glVertexP3uiv, "glVertexP3uiv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glVertexP4ui, "glVertexP4ui"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glVertexP4uiv, "glVertexP4uiv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glTexCoordP1ui, "glTexCoordP1ui"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glTexCoordP1uiv, "glTexCoordP1uiv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glTexCoordP2ui, "glTexCoordP2ui"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glTexCoordP2uiv, "glTexCoordP2uiv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glTexCoordP3ui, "glTexCoordP3ui"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glTexCoordP3uiv, "glTexCoordP3uiv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glTexCoordP4ui, "glTexCoordP4ui"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glTexCoordP4uiv, "glTexCoordP4uiv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glMultiTexCoordP1ui, "glMultiTexCoordP1ui"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glMultiTexCoordP1uiv, "glMultiTexCoordP1uiv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glMultiTexCoordP2ui, "glMultiTexCoordP2ui"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glMultiTexCoordP2uiv, "glMultiTexCoordP2uiv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glMultiTexCoordP3ui, "glMultiTexCoordP3ui"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glMultiTexCoordP3uiv, "glMultiTexCoordP3uiv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glMultiTexCoordP4ui, "glMultiTexCoordP4ui"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glMultiTexCoordP4uiv, "glMultiTexCoordP4uiv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glNormalP3ui, "glNormalP3ui"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glNormalP3uiv, "glNormalP3uiv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glColorP3ui, "glColorP3ui"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glColorP3uiv, "glColorP3uiv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glColorP4ui, "glColorP4ui"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glColorP4uiv, "glColorP4uiv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glSecondaryColorP3ui, "glSecondaryColorP3ui"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glSecondaryColorP3uiv, "glSecondaryColorP3uiv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glVertexAttribP1ui, "glVertexAttribP1ui"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glVertexAttribP1uiv, "glVertexAttribP1uiv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glVertexAttribP2ui, "glVertexAttribP2ui"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glVertexAttribP2uiv, "glVertexAttribP2uiv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glVertexAttribP3ui, "glVertexAttribP3ui"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glVertexAttribP3uiv, "glVertexAttribP3uiv"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glVertexAttribP4ui, "glVertexAttribP4ui"))
+                return GLExtensionState.FailedToLoad;
+            if(!bindExtFunc(cast(void**)&glVertexAttribP4uiv, "glVertexAttribP4uiv"))
                 return GLExtensionState.FailedToLoad;
 
             return GLExtensionState.Loaded;

@@ -52,8 +52,8 @@ alias extern (C) id function(id, SEL, ...) IMP;
 
 struct objc_selector
 {
-	void* sel_id;
-	char* sel_types;
+    void* sel_id;
+    char* sel_types;
 }
 
 struct objc_object
@@ -153,31 +153,31 @@ extern (C)
     bool function (Class c13ls, SEL name, IMP imp, CCPTR types) class_addMethod;");
 }
 
-void load (void delegate(void**, string, bool doThrow = true) bindFunc)
+void load (void delegate(void**, string, bool doThrow) bindFunc)
 {
-    bindFunc(cast(void**)&c_objc_getClass, "objc_getClass");
-    bindFunc(cast(void**)&c_objc_msgSend, "objc_msgSend");
-    bindFunc(cast(void**)&c_sel_registerName, "sel_registerName");
-    
-    bindFunc(cast(void**)&NSApplicationLoad, "NSApplicationLoad");
-    
+    bindFunc(cast(void**)&c_objc_getClass, "objc_getClass", true);
+    bindFunc(cast(void**)&c_objc_msgSend, "objc_msgSend", true);
+    bindFunc(cast(void**)&c_sel_registerName, "sel_registerName", true);
+
+    bindFunc(cast(void**)&NSApplicationLoad, "NSApplicationLoad", true);
+
     try
     {
-        /* 
+        /*
          * These methods are expected to not be found in > Leopard, they have
          * been deprecated in favor of objc_{allocate|register}ClassPair and
          * class_addMethod.
          */
-        bindFunc(cast(void**)&objc_addClass, "objc_addClass");
-        bindFunc(cast(void**)&class_addMethods, "class_addMethods");
+        bindFunc(cast(void**)&objc_addClass, "objc_addClass", true);
+        bindFunc(cast(void**)&class_addMethods, "class_addMethods", true);
     }
-    
+
     catch (Exception e)
     {
-        bindFunc(cast(void**)&class_addMethod, "class_addMethod");
-        bindFunc(cast(void**)&c_objc_allocateClassPair, "objc_allocateClassPair");
-        bindFunc(cast(void**)&objc_registerClassPair, "objc_registerClassPair");
-    }    
+        bindFunc(cast(void**)&class_addMethod, "class_addMethod", true);
+        bindFunc(cast(void**)&c_objc_allocateClassPair, "objc_allocateClassPair", true);
+        bindFunc(cast(void**)&objc_registerClassPair, "objc_registerClassPair", true);
+    }
 }
 
 Class objc_allocateClassPair (string name) (Class superclass, size_t extraBytes)
@@ -199,7 +199,7 @@ id objc_msgSend (ARGS...)(id theReceiver, SEL theSelector, ARGS args)
 {
     // the dmd import generator can't handle this
     //alias extern (C) id function (id, SEL, ARGS) fp;
-	//return (cast(fp)&c_objc_msgSend)(theReceiver, theSelector, args);
-	 
-	return c_objc_msgSend(theReceiver, theSelector, args);
+    //return (cast(fp)&c_objc_msgSend)(theReceiver, theSelector, args);
+
+    return c_objc_msgSend(theReceiver, theSelector, args);
 }

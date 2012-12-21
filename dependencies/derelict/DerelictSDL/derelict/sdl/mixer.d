@@ -157,7 +157,7 @@ extern (C)
     alias int function() da_Mix_GetNumChunkDecoders;
     alias CCPTR function(int) da_Mix_GetChunkDecoder;
     alias int function() da_Mix_GetNumMusicDecoders;
-    alias CCPTR function() da_Mix_GetMusicDecoder;
+    alias CCPTR function(int) da_Mix_GetMusicDecoder;
     alias Mix_MusicType function(in Mix_Music*) da_Mix_GetMusicType;
     alias void function(void function(void*, Uint8*, int) da_Mix_func, void*) da_Mix_SetPostMix;
     alias void function(void function(void*, Uint8*, int) da_Mix_func, void*) da_Mix_HookMusic;

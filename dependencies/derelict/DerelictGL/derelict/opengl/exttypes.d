@@ -84,8 +84,14 @@ version(DerelictGL_ARB)
     alias _cl_context* cl_context;
     alias _cl_event* cl_event;
 
-    // from ARB_debug_output
+    // from GL_ARB_debug_output
     alias extern(System) void function(GLenum, GLenum, GLuint, GLenum, GLsizei, in GLchar*, GLvoid*) GLDEBUGPROCARB;
+
+    // from GL_ARB_sync
+    //alias long GLint64;
+    alias ulong GLuint64;
+    struct __GLsync {}
+    alias __GLsync* GLsync;
 
     enum : GLenum
     {
@@ -765,6 +771,10 @@ version(DerelictGL_ARB)
         // GL_ARB_vertex_array_object
         GL_VERTEX_ARRAY_BINDING = 0x85B5,
 
+        // GL_ARB_copy_buffer
+        GL_COPY_READ_BUFFER               = 0x8F36,
+        GL_COPY_WRITE_BUFFER              = 0x8F37,
+
         // GL_ARB_uniform_buffer_object
         GL_UNIFORM_BUFFER                 = 0x8A11,
         GL_UNIFORM_BUFFER_BINDING         = 0x8A28,
@@ -808,6 +818,51 @@ version(DerelictGL_ARB)
         GL_DOUBLE_VEC3          = 0x8FFD,
         GL_DOUBLE_VEC4          = 0x8FFE,
 
+        // GL_ARB_provoking_vertex
+        GL_QUADS_FOLLOW_PROVOKING_VERTEX_CONVENTION = 0x8E4C,
+        GL_FIRST_VERTEX_CONVENTION        = 0x8E4D,
+        GL_LAST_VERTEX_CONVENTION         = 0x8E4E,
+        GL_PROVOKING_VERTEX               = 0x8E4F,
+
+        // GL_ARB_sync
+        GL_MAX_SERVER_WAIT_TIMEOUT        = 0x9111,
+        GL_OBJECT_TYPE                    = 0x9112,
+        GL_SYNC_CONDITION                 = 0x9113,
+        GL_SYNC_STATUS                    = 0x9114,
+        GL_SYNC_FLAGS                     = 0x9115,
+        GL_SYNC_FENCE                     = 0x9116,
+        GL_SYNC_GPU_COMMANDS_COMPLETE     = 0x9117,
+        GL_UNSIGNALED                     = 0x9118,
+        GL_SIGNALED                       = 0x9119,
+        GL_ALREADY_SIGNALED               = 0x911A,
+        GL_TIMEOUT_EXPIRED                = 0x911B,
+        GL_CONDITION_SATISFIED            = 0x911C,
+        GL_WAIT_FAILED                    = 0x911D,
+        GL_SYNC_FLUSH_COMMANDS_BIT        = 0x00000001,
+
+        // GL_ARB_texture_multisample
+        GL_SAMPLE_POSITION                = 0x8E50,
+        GL_SAMPLE_MASK                    = 0x8E51,
+        GL_SAMPLE_MASK_VALUE              = 0x8E52,
+        GL_MAX_SAMPLE_MASK_WORDS          = 0x8E59,
+        GL_TEXTURE_2D_MULTISAMPLE         = 0x9100,
+        GL_PROXY_TEXTURE_2D_MULTISAMPLE   = 0x9101,
+        GL_TEXTURE_2D_MULTISAMPLE_ARRAY   = 0x9102,
+        GL_PROXY_TEXTURE_2D_MULTISAMPLE_ARRAY = 0x9103,
+        GL_TEXTURE_BINDING_2D_MULTISAMPLE = 0x9104,
+        GL_TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY = 0x9105,
+        GL_TEXTURE_SAMPLES                = 0x9106,
+        GL_TEXTURE_FIXED_SAMPLE_LOCATIONS = 0x9107,
+        GL_SAMPLER_2D_MULTISAMPLE         = 0x9108,
+        GL_INT_SAMPLER_2D_MULTISAMPLE     = 0x9109,
+        GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE = 0x910A,
+        GL_SAMPLER_2D_MULTISAMPLE_ARRAY   = 0x910B,
+        GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY = 0x910C,
+        GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY = 0x910D,
+        GL_MAX_COLOR_TEXTURE_SAMPLES      = 0x910E,
+        GL_MAX_DEPTH_TEXTURE_SAMPLES      = 0x910F,
+        GL_MAX_INTEGER_SAMPLES            = 0x9110,
+
         // GL_ARB_viewport_array
         GL_MAX_VIEWPORTS        = 0x825B,
         GL_VIEWPORT_SUBPIXEL_BITS = 0x825C,
@@ -815,9 +870,6 @@ version(DerelictGL_ARB)
         GL_LAYER_PROVOKING_VERTEX = 0x825E,
         GL_VIEWPORT_INDEX_PROVOKING_VERTEX = 0x825F,
         GL_UNDEFINED_VERTEX     = 0x8260,
-        GL_FIRST_VERTEX_CONVENTION = 0x8E4D,
-        GL_LAST_VERTEX_CONVENTION = 0x8E4E,
-        GL_PROVOKING_VERTEX     = 0x8E4F,
 
         // GL_ARB_cl_event
         GL_SYNC_CL_EVENT_ARB    = 0x8240,
@@ -859,8 +911,21 @@ version(DerelictGL_ARB)
         // GL_ARB_depth_clamp
         GL_DEPTH_CLAMP                          = 0x864F,
 
+        // GL_ARB_blend_func_extended
+        GL_SRC1_COLOR                     = 0x88F9,
+        GL_ONE_MINUS_SRC1_COLOR           = 0x88FA,
+        GL_ONE_MINUS_SRC1_ALPHA           = 0x88FB,
+        GL_MAX_DUAL_SOURCE_DRAW_BUFFERS   = 0x88FC,
+
         // GL_ARB_sampler_objects
         GL_SAMPLER_BINDING                      = 0x8919,
+
+        // GL_ARB_timer_query
+        GL_TIME_ELAPSED                   = 0x88BF,
+        GL_TIMESTAMP                      = 0x8E28,
+
+        // GL_ARB_vertex_type_2_10_10_10_rev
+        GL_INT_2_10_10_10_REV             = 0x8D9F,
     }
 }
 

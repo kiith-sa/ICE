@@ -336,30 +336,30 @@ version (CGL)
 
     package
     {
-        void loadPlatformGL(void delegate(void**, string, bool doThrow = true) bindFunc)
+        void loadPlatformGL(void delegate(void**, string, bool doThrow) bindFunc)
         {
-            bindFunc(cast(void**)&CGLSetCurrentContext, "CGLSetCurrentContext");
-            bindFunc(cast(void**)&CGLGetCurrentContext, "CGLGetCurrentContext");
+            bindFunc(cast(void**)&CGLSetCurrentContext, "CGLSetCurrentContext", true);
+            bindFunc(cast(void**)&CGLGetCurrentContext, "CGLGetCurrentContext", true);
             /*
             ** Pixel format functions
             */
-            bindFunc(cast(void**)&CGLChoosePixelFormat, "CGLChoosePixelFormat");
-            bindFunc(cast(void**)&CGLDestroyPixelFormat, "CGLDestroyPixelFormat");
-            bindFunc(cast(void**)&CGLDescribePixelFormat, "CGLDescribePixelFormat");
+            bindFunc(cast(void**)&CGLChoosePixelFormat, "CGLChoosePixelFormat", true);
+            bindFunc(cast(void**)&CGLDestroyPixelFormat, "CGLDestroyPixelFormat", true);
+            bindFunc(cast(void**)&CGLDescribePixelFormat, "CGLDescribePixelFormat", true);
 
             /*
             ** Renderer information functions
             */
-            bindFunc(cast(void**)&CGLQueryRendererInfo, "CGLQueryRendererInfo");
-            bindFunc(cast(void**)&CGLDestroyRendererInfo, "CGLDestroyRendererInfo");
-            bindFunc(cast(void**)&CGLDescribeRenderer, "CGLDescribeRenderer");
+            bindFunc(cast(void**)&CGLQueryRendererInfo, "CGLQueryRendererInfo", true);
+            bindFunc(cast(void**)&CGLDestroyRendererInfo, "CGLDestroyRendererInfo", true);
+            bindFunc(cast(void**)&CGLDescribeRenderer, "CGLDescribeRenderer", true);
 
             /*
             ** Context functions
             */
-            bindFunc(cast(void**)&CGLCreateContext, "CGLCreateContext");
-            bindFunc(cast(void**)&CGLDestroyContext, "CGLDestroyContext");
-            bindFunc(cast(void**)&CGLCopyContext, "CGLCopyContext");
+            bindFunc(cast(void**)&CGLCreateContext, "CGLCreateContext", true);
+            bindFunc(cast(void**)&CGLDestroyContext, "CGLDestroyContext", true);
+            bindFunc(cast(void**)&CGLCopyContext, "CGLCopyContext", true);
 
             /*
             ** PBuffer functions
@@ -369,78 +369,78 @@ version (CGL)
             // <AvailabilityMacros.h>.
             version (Mac_OS_X_10_3_and_later)
             {
-                bindFunc(cast(void**)&CGLCreatePBuffer, "CGLCreatePBuffer");
+                bindFunc(cast(void**)&CGLCreatePBuffer, "CGLCreatePBuffer", true);
 
-                bindFunc(cast(void**)&CGLDestroyPBuffer, "CGLDestroyPBuffer");
+                bindFunc(cast(void**)&CGLDestroyPBuffer, "CGLDestroyPBuffer", true);
 
-                bindFunc(cast(void**)&CGLDescribePBuffer, "CGLDescribePBuffer");
+                bindFunc(cast(void**)&CGLDescribePBuffer, "CGLDescribePBuffer", true);
 
-                bindFunc(cast(void**)&CGLTexImagePBuffer, "CGLTexImagePBuffer");
+                bindFunc(cast(void**)&CGLTexImagePBuffer, "CGLTexImagePBuffer", true);
             }
 
             /*
             ** Drawable Functions
             */
-            bindFunc(cast(void**)&CGLSetOffScreen, "CGLSetOffScreen");
-            bindFunc(cast(void**)&CGLGetOffScreen, "CGLGetOffScreen");
-            bindFunc(cast(void**)&CGLSetFullScreen, "CGLSetFullScreen");
+            bindFunc(cast(void**)&CGLSetOffScreen, "CGLSetOffScreen", true);
+            bindFunc(cast(void**)&CGLGetOffScreen, "CGLGetOffScreen", true);
+            bindFunc(cast(void**)&CGLSetFullScreen, "CGLSetFullScreen", true);
 
             version (Mac_OS_X_10_3_and_later)
             {
-                bindFunc(cast(void**)&CGLSetPBuffer, "CGLSetPBuffer");
+                bindFunc(cast(void**)&CGLSetPBuffer, "CGLSetPBuffer", true);
 
-                bindFunc(cast(void**)&CGLGetPBuffer, "CGLGetPBuffer");
+                bindFunc(cast(void**)&CGLGetPBuffer, "CGLGetPBuffer", true);
             }
 
-            bindFunc(cast(void**)&CGLClearDrawable, "CGLClearDrawable");
-            bindFunc(cast(void**)&CGLFlushDrawable, "CGLFlushDrawable");
+            bindFunc(cast(void**)&CGLClearDrawable, "CGLClearDrawable", true);
+            bindFunc(cast(void**)&CGLFlushDrawable, "CGLFlushDrawable", true);
 
             /*
             ** Per context enables and parameters
             */
-            bindFunc(cast(void**)&CGLEnable, "CGLEnable");
-            bindFunc(cast(void**)&CGLDisable, "CGLDisable");
-            bindFunc(cast(void**)&CGLIsEnabled, "CGLIsEnabled");
-            bindFunc(cast(void**)&CGLSetParameter, "CGLSetParameter");
-            bindFunc(cast(void**)&CGLGetParameter, "CGLGetParameter");
+            bindFunc(cast(void**)&CGLEnable, "CGLEnable", true);
+            bindFunc(cast(void**)&CGLDisable, "CGLDisable", true);
+            bindFunc(cast(void**)&CGLIsEnabled, "CGLIsEnabled", true);
+            bindFunc(cast(void**)&CGLSetParameter, "CGLSetParameter", true);
+            bindFunc(cast(void**)&CGLGetParameter, "CGLGetParameter", true);
 
             /*
             ** Virtual screen functions
             */
-            bindFunc(cast(void**)&CGLSetVirtualScreen, "CGLSetVirtualScreen");
-            bindFunc(cast(void**)&CGLGetVirtualScreen, "CGLGetVirtualScreen");
+            bindFunc(cast(void**)&CGLSetVirtualScreen, "CGLSetVirtualScreen", true);
+            bindFunc(cast(void**)&CGLGetVirtualScreen, "CGLGetVirtualScreen", true);
 
             /*
             ** Global library options
             */
-            bindFunc(cast(void**)&CGLSetOption, "CGLSetOption");
-            bindFunc(cast(void**)&CGLGetOption, "CGLGetOption");
+            bindFunc(cast(void**)&CGLSetOption, "CGLSetOption", true);
+            bindFunc(cast(void**)&CGLGetOption, "CGLGetOption", true);
 
             /*
             ** Locking functions
             */
             version (Mac_OS_X_10_4_and_later)
             {
-                bindFunc(cast(void**)&CGLLockContext, "CGLLockContext");
+                bindFunc(cast(void**)&CGLLockContext, "CGLLockContext", true);
 
-                bindFunc(cast(void**)&CGLUnlockContext, "CGLUnlockContext");
+                bindFunc(cast(void**)&CGLUnlockContext, "CGLUnlockContext", true);
             }
 
             /*
             ** Version numbers
             */
-            bindFunc(cast(void**)&CGLGetVersion, "CGLGetVersion");
+            bindFunc(cast(void**)&CGLGetVersion, "CGLGetVersion", true);
 
             /*
             ** Convert an error code to a string
             */
-            bindFunc(cast(void**)&CGLErrorString, "CGLErrorString");
+            bindFunc(cast(void**)&CGLErrorString, "CGLErrorString", true);
 
             /*
             ** Current context functions
             */
-            bindFunc(cast(void**)&CGLSetCurrentContext, "CGLSetCurrentContext");
-            bindFunc(cast(void**)&CGLGetCurrentContext, "CGLGetCurrentContext");
+            bindFunc(cast(void**)&CGLSetCurrentContext, "CGLSetCurrentContext", true);
+            bindFunc(cast(void**)&CGLGetCurrentContext, "CGLGetCurrentContext", true);
         }
     }
 }// version(CGL)

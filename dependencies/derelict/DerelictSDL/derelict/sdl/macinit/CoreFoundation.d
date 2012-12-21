@@ -84,12 +84,12 @@ extern (C)
     bool function(CFURLRef url, bool resolveAgainstBase, ubyte* buffer, CFIndex maxBufLen) CFURLGetFileSystemRepresentation;");
 }
 
-void load (void delegate(void**, string, bool doThrow = true) bindFunc)
+void load (void delegate(void**, string, bool doThrow) bindFunc)
 {
-    bindFunc(cast(void**)&CFRelease, "CFRelease");
-    bindFunc(cast(void**)&CFBundleGetInfoDictionary, "CFBundleGetInfoDictionary");
-    bindFunc(cast(void**)&CFBundleGetMainBundle, "CFBundleGetMainBundle");
-    bindFunc(cast(void**)&CFBundleCopyBundleURL, "CFBundleCopyBundleURL");
-    bindFunc(cast(void**)&CFURLCreateCopyDeletingLastPathComponent, "CFURLCreateCopyDeletingLastPathComponent");
-    bindFunc(cast(void**)&CFURLGetFileSystemRepresentation, "CFURLGetFileSystemRepresentation");
+    bindFunc(cast(void**)&CFRelease, "CFRelease", true);
+    bindFunc(cast(void**)&CFBundleGetInfoDictionary, "CFBundleGetInfoDictionary", true);
+    bindFunc(cast(void**)&CFBundleGetMainBundle, "CFBundleGetMainBundle", true);
+    bindFunc(cast(void**)&CFBundleCopyBundleURL, "CFBundleCopyBundleURL", true);
+    bindFunc(cast(void**)&CFURLCreateCopyDeletingLastPathComponent, "CFURLCreateCopyDeletingLastPathComponent", true);
+    bindFunc(cast(void**)&CFURLGetFileSystemRepresentation, "CFURLGetFileSystemRepresentation", true);
 }

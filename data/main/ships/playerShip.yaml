@@ -2,6 +2,7 @@ visual: visual/playerShip.yaml
 engine:
   maxSpeed: 500
   acceleration: 7000
+# Smaller than the ship's graphics
 volume:
   aabbox: 
     min: [-24, -14]

@@ -659,7 +659,7 @@ extern(System)
     alias void function(GLuint, in GLuint*) da_glVertexAttribI2uiv;
     alias void function(GLuint, GLint, GLint, GLint) da_glVertexAttribI3i;
     alias void function(GLuint, in GLint*) da_glVertexAttribI3iv;
-    alias void function(GLuint, GLuint, GLuint) da_glVertexAttribI3ui;
+    alias void function(GLuint, GLuint, GLuint, GLuint) da_glVertexAttribI3ui;
     alias void function(GLuint, in GLuint*) da_glVertexAttribI3uiv;
     alias void function(GLuint, in GLbyte*) da_glVertexAttribI4bv;
     alias void function(GLuint, GLint, GLint, GLint, GLint) da_glVertexAttribI4i;

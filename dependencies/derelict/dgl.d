@@ -40,19 +40,19 @@ else
 
 void println (A...)(A args)
 {
-	version (Tango)
-	{
-		static const string fmt = "{}{}{}{}{}{}{}{}"
-					        	  "{}{}{}{}{}{}{}{}"
-					        	  "{}{}{}{}{}{}{}{}";
+    version (Tango)
+    {
+        static const string fmt = "{}{}{}{}{}{}{}{}"
+                                  "{}{}{}{}{}{}{}{}"
+                                  "{}{}{}{}{}{}{}{}";
 
-		static assert (A.length <= fmt.length / 2, "too many arguments");
-		
-		Stdout.formatln(fmt[0 .. args.length * 2], args);
-	}
+        static assert (A.length <= fmt.length / 2, "too many arguments");
 
-	else
-		writeln(args);
+        Stdout.formatln(fmt[0 .. args.length * 2], args);
+    }
+
+    else
+        writeln(args);
 }
 
 void dumpver(string sdlLib, CSDLVERPTR ver)
@@ -125,6 +125,8 @@ void main()
     extlist = DerelictGL.notLoadedExtensionNames;
     foreach(s; extlist)
         println("\t", s);
+
+    println("GL Extension String: ", toDString(glGetString(GL_EXTENSIONS)), "]");
 
     glClearColor(0.0, 0.0, 1.0, 1.0);
 

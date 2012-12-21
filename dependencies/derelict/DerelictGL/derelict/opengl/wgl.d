@@ -86,28 +86,26 @@ version(Windows)
 
     package
     {
-        void loadPlatformGL(void delegate(void**, string, bool doThrow = true) bindFunc)
+        void loadPlatformGL(void delegate(void**, string, bool doThrow) bindFunc)
         {
-            auto bindFuncWrapper = delegate(void** a, string b) {bindFunc(a, b, true);};
-            bindFuncWrapper(cast(void**)&wglCopyContext, "wglCopyContext");
-            bindFuncWrapper(cast(void**)&wglCreateContext, "wglCreateContext");
-            bindFuncWrapper(cast(void**)&wglCreateLayerContext, "wglCreateLayerContext");
-            bindFuncWrapper(cast(void**)&wglDeleteContext, "wglDeleteContext");
-            bindFuncWrapper(cast(void**)&wglDescribeLayerPlane, "wglDescribeLayerPlane");
-            bindFuncWrapper(cast(void**)&wglGetCurrentContext, "wglGetCurrentContext");
-            bindFuncWrapper(cast(void**)&wglGetCurrentDC, "wglGetCurrentDC");
-            bindFuncWrapper(cast(void**)&wglGetLayerPaletteEntries, "wglGetLayerPaletteEntries");
-            bindFuncWrapper(cast(void**)&wglGetProcAddress, "wglGetProcAddress");
-            bindFuncWrapper(cast(void**)&wglMakeCurrent, "wglMakeCurrent");
-            bindFuncWrapper(cast(void**)&wglRealizeLayerPalette, "wglRealizeLayerPalette");
-            bindFuncWrapper(cast(void**)&wglSetLayerPaletteEntries, "wglSetLayerPaletteEntries");
-            bindFuncWrapper(cast(void**)&wglShareLists, "wglShareLists");
-            bindFuncWrapper(cast(void**)&wglSwapLayerBuffers, "wglSwapLayerBuffers");
-            bindFuncWrapper(cast(void**)&wglUseFontBitmapsA, "wglUseFontBitmapsA");
-            bindFuncWrapper(cast(void**)&wglUseFontOutlinesA, "wglUseFontOutlinesA");
-            bindFuncWrapper(cast(void**)&wglUseFontBitmapsW, "wglUseFontBitmapsW");
-            bindFuncWrapper(cast(void**)&wglUseFontOutlinesW, "wglUseFontOutlinesW");
-
+            bindFunc(cast(void**)&wglCopyContext, "wglCopyContext", true);
+            bindFunc(cast(void**)&wglCreateContext, "wglCreateContext", true);
+            bindFunc(cast(void**)&wglCreateLayerContext, "wglCreateLayerContext", true);
+            bindFunc(cast(void**)&wglDeleteContext, "wglDeleteContext", true);
+            bindFunc(cast(void**)&wglDescribeLayerPlane, "wglDescribeLayerPlane", true);
+            bindFunc(cast(void**)&wglGetCurrentContext, "wglGetCurrentContext", true);
+            bindFunc(cast(void**)&wglGetCurrentDC, "wglGetCurrentDC", true);
+            bindFunc(cast(void**)&wglGetLayerPaletteEntries, "wglGetLayerPaletteEntries", true);
+            bindFunc(cast(void**)&wglGetProcAddress, "wglGetProcAddress", true);
+            bindFunc(cast(void**)&wglMakeCurrent, "wglMakeCurrent", true);
+            bindFunc(cast(void**)&wglRealizeLayerPalette, "wglRealizeLayerPalette", true);
+            bindFunc(cast(void**)&wglSetLayerPaletteEntries, "wglSetLayerPaletteEntries", true);
+            bindFunc(cast(void**)&wglShareLists, "wglShareLists", true);
+            bindFunc(cast(void**)&wglSwapLayerBuffers, "wglSwapLayerBuffers", true);
+            bindFunc(cast(void**)&wglUseFontBitmapsA, "wglUseFontBitmapsA", true);
+            bindFunc(cast(void**)&wglUseFontOutlinesA, "wglUseFontOutlinesA", true);
+            bindFunc(cast(void**)&wglUseFontBitmapsW, "wglUseFontBitmapsW", true);
+            bindFunc(cast(void**)&wglUseFontOutlinesW, "wglUseFontOutlinesW", true);
         }
 
         void* loadGLSymbol(string symName)

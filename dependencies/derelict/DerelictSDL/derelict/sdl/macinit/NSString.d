@@ -130,9 +130,9 @@ class NSString : NSObject
 
     NSString stringByReplacingRange (NSRange aRange, NSString str)
     {
-        uint bufferSize;
-        uint selfLen = this.length;
-        uint aStringLen = str.length;
+        size_t bufferSize;
+        size_t selfLen = this.length;
+        size_t aStringLen = str.length;
         wchar* buffer;
         NSRange localRange;
         NSString result;

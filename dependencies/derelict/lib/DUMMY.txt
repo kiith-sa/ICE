@@ -1,0 +1,1 @@
+This file exists so that the zip file download script at DSource will include the lib directory in the auto-generated zip archive.

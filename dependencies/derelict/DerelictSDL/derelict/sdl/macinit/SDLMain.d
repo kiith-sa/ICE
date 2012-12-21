@@ -27,7 +27,7 @@ private
         import std.c.linux.linux;
         import std.c.stdlib;
         import std.c.string;
-        
+
         static import std.string;
     }
 
@@ -82,11 +82,11 @@ version (SDL_USE_CPS)
         OSErr function (CPSProcessSerNum *psn) CPSSetFrontProcess;");
     }
 
-    void load (void delegate(void**, string, bool doThrow = true) bindFunc)
+    void load (void delegate(void**, string, bool doThrow) bindFunc)
     {
-        bindFunc(cast(void**)&CPSGetCurrentProcess, "CPSGetCurrentProcess");
-        bindFunc(cast(void**)&CPSEnableForegroundOperation, "CPSEnableForegroundOperation");
-        bindFunc(cast(void**)&CPSSetFrontProcess, "CPSSetFrontProcess");
+        bindFunc(cast(void**)&CPSGetCurrentProcess, "CPSGetCurrentProcess", true);
+        bindFunc(cast(void**)&CPSEnableForegroundOperation, "CPSEnableForegroundOperation", true);
+        bindFunc(cast(void**)&CPSSetFrontProcess, "CPSSetFrontProcess", true);
     }
 }
 
@@ -185,7 +185,7 @@ private void registerClass (string className) (Class superClass, objc_method_lis
 
         foreach (m ; methodList)
         {
-            auto method = m.method_list[0];            
+            auto method = m.method_list[0];
             class_addMethod(newClass, method.method_name, method.method_imp, method.method_types);
         }
 

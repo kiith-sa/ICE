@@ -393,6 +393,9 @@ extern(System)
         void function(GLsizei, GLuint*) glGenVertexArrays;
         GLboolean function(GLuint) glIsVertexArray;
 
+        // GL_ARB_copy_buffer
+        void function(GLenum, GLenum, GLintptr, GLintptr, GLsizeiptr) glCopyBufferSubData;
+
         // GL_ARB_uniform_buffer_object
         void function(GLuint, GLsizei, in char**, GLuint*) glGetUniformIndices;
         void function(GLuint, GLsizei, in GLuint*, GLenum, GLint*) glGetActiveUniformsiv;
@@ -401,6 +404,12 @@ extern(System)
         void function(GLuint, GLuint, GLenum, int*) glGetActiveUniformBlockiv;
         void function(GLuint, GLuint, GLsizei, GLsizei*, char*) glGetActiveUniformBlockName;
         void function(GLuint, GLuint, GLuint) glUniformBlockBinding;
+
+        // GL_ARB_draw_elements_base_vertex
+        void function(GLenum, GLsizei, GLenum, const(GLvoid)*, GLint) glDrawElementsBaseVertex;
+        void function(GLenum, GLuint, GLuint, GLsizei, GLenum, const(GLvoid)*, GLint) glDrawRangeElementsBaseVertex;
+        void function(GLenum, GLsizei, GLenum, const(GLvoid)*, GLsizei, GLint) glDrawElementsInstancedBaseVertex;
+        void function(GLenum, const(GLsizei)*, GLenum, const(GLvoid*)*, GLsizei, const(GLint)*) glMultiDrawElementsBaseVertex;
 
         // GL_ARB_vertex_attrib_64bit
         void function(GLuint, GLenum, GLdouble*) glGetVertexAttribLdv;
@@ -413,6 +422,24 @@ extern(System)
         void function(GLuint, GLdouble, GLdouble, GLdouble, GLdouble) glVertexAttribL4d;
         void function(GLuint, in GLdouble*) glVertexAttribL4dv;
         void function(GLuint, GLint, GLenum, GLsizei, in void*) glVertexAttribLPointer;
+
+        // GL_ARB_provoking_vertex
+        void function(GLenum) glProvokingVertex;
+
+        // GL_ARB_sync
+        GLsync function(GLenum, GLbitfield) glFenceSync;
+        GLboolean function(GLsync) glIsSync;
+        void function(GLsync) glDeleteSync;
+        GLenum function(GLsync, GLbitfield, GLuint64) glClientWaitSync;
+        void function(GLsync, GLbitfield, GLuint64) glWaitSync;
+        void function(GLsync, GLint64*) glGetInteger64v;
+        void function(GLsync, GLenum, GLsizei, GLsizei*, GLint*) glGetSynciv;
+
+        // GL_ARB_texture_multisample
+        void function(GLenum, GLsizei, GLint, GLsizei, GLsizei, GLboolean) glTexImage2DMultisample;
+        void function(GLenum, GLsizei, GLint, GLsizei, GLsizei, GLsizei, GLboolean) glTexImage3DMultisample;
+        void function(GLenum, GLuint, GLfloat*) glGetMultisamplefv;
+        void function(GLuint, GLbitfield) glSampleMaski;
 
         // GL_ARB_viewport_array
         void function(GLuint, GLsizei, in GLclampd*) glDepthRangeArrayv;
@@ -456,6 +483,10 @@ extern(System)
         void function(GLuint, GLint, GLsizei, GLuint*) glGetUniformuivARB;
         void function(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void*) glReadnPixelsARB;
 
+        // GL_ARB_blend_func_extended
+        void function(GLuint, GLuint, GLuint, const(GLchar)*) glBindFragDataLocationIndexed;
+        GLint function(GLuint, const(GLchar)*) glGetFragDataIndex;
+
         // GL_ARB_sampler_objects
         void function(GLuint, GLuint*) glGenSamplers;
         void function(GLsizei, in GLuint*) glDeleteSamplers;
@@ -471,6 +502,51 @@ extern(System)
         void function(GLuint, GLenum, GLint*) glGetSamplerParameterIiv;
         void function(GLuint, GLenum, GLfloat*) glGetSamplerParameterfv;
         void function(GLuint, GLenum, GLuint*) glGetSamplerParameterIuiv;
+
+        // GL_ARB_timer_query
+        void function(GLuint, GLenum) glQueryCounter;
+        void function(GLuint, GLenum, GLint64*) glGetQueryObjecti64v;
+        void function(GLuint, GLenum, GLuint64*) glGetQueryObjectui64v;
+
+        // GL_ARB_vertex_type_2_10_10_10_rev
+        void function(GLenum, GLuint) glVertexP2ui;
+        void function(GLenum, const(GLuint)*) glVertexP2uiv;
+        void function(GLenum, GLuint) glVertexP3ui;
+        void function(GLenum, const(GLuint)*) glVertexP3uiv;
+        void function(GLenum, GLuint) glVertexP4ui;
+        void function(GLenum, const(GLuint)*) glVertexP4uiv;
+        void function(GLenum, GLuint) glTexCoordP1ui;
+        void function(GLenum, const(GLuint)*) glTexCoordP1uiv;
+        void function(GLenum, GLuint) glTexCoordP2ui;
+        void function(GLenum, const(GLuint)*) glTexCoordP2uiv;
+        void function(GLenum, GLuint) glTexCoordP3ui;
+        void function(GLenum, const(GLuint)*) glTexCoordP3uiv;
+        void function(GLenum, GLuint) glTexCoordP4ui;
+        void function(GLenum, const(GLuint)*) glTexCoordP4uiv;
+        void function(GLenum, GLenum, GLuint) glMultiTexCoordP1ui;
+        void function(GLenum, GLenum, const(GLuint)*) glMultiTexCoordP1uiv;
+        void function(GLenum, GLenum, GLuint) glMultiTexCoordP2ui;
+        void function(GLenum, GLenum, const(GLuint)*) glMultiTexCoordP2uiv;
+        void function(GLenum, GLenum, GLuint) glMultiTexCoordP3ui;
+        void function(GLenum, GLenum, const(GLuint)*) glMultiTexCoordP3uiv;
+        void function(GLenum, GLenum, GLuint) glMultiTexCoordP4ui;
+        void function(GLenum, GLenum, const(GLuint)*) glMultiTexCoordP4uiv;
+        void function(GLenum, GLuint) glNormalP3ui;
+        void function(GLenum, const(GLuint)*) glNormalP3uiv;
+        void function(GLenum, GLuint) glColorP3ui;
+        void function(GLenum, const(GLuint)*) glColorP3uiv;
+        void function(GLenum, GLuint) glColorP4ui;
+        void function(GLenum, const(GLuint)*) glColorP4uiv;
+        void function(GLenum, GLuint) glSecondaryColorP3ui;
+        void function(GLenum, const(GLuint)*) glSecondaryColorP3uiv;
+        void function(GLuint, GLenum, GLboolean, GLuint) glVertexAttribP1ui;
+        void function(GLuint, GLenum, GLboolean, const(GLuint)*) glVertexAttribP1uiv;
+        void function(GLuint, GLenum, GLboolean, GLuint) glVertexAttribP2ui;
+        void function(GLuint, GLenum, GLboolean, const(GLuint)*) glVertexAttribP2uiv;
+        void function(GLuint, GLenum, GLboolean, GLuint) glVertexAttribP3ui;
+        void function(GLuint, GLenum, GLboolean, const(GLuint)*) glVertexAttribP3uiv;
+        void function(GLuint, GLenum, GLboolean, GLuint) glVertexAttribP4ui;
+        void function(GLuint, GLenum, GLboolean, const(GLuint)*) glVertexAttribP4uiv;
     }
 
     version(DerelictGL_EXT)
