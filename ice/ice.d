@@ -5,7 +5,7 @@
 //          http://www.boost.org/LICENSE_1_0.txt)
 
 
-///Main pong program class.
+///Main ICE program class.
 module ice.ice;
 
 
@@ -184,7 +184,7 @@ class IceGUI: SwappableGUI
          *
          * Params:  guiSystem  = Reference to the GUI system.
          *          gameDir    = Game data directory.
-         *          parent     = GUI element to use as parent for all pong GUI elements.
+         *          parent     = GUI element to use as parent for all GUI elements.
          *          monitor    = Monitor subsystem, used to initialize monitor GUI view.
          *
          * Throws:  GUIInitException on failure.
