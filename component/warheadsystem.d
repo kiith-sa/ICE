@@ -52,7 +52,7 @@ class WarheadSystem : System
             {
                 if(!collidable.hasColliders){continue;}
 
-                //For each collider:
+                //For each collider colliding with the collidable:
                 foreach(collider; collidable.colliders)
                 {
                     //If our collidable is the owner of the collider, ignore it.
