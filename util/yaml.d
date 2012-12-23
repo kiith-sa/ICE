@@ -172,7 +172,7 @@ T fromYAML(T, string cond = "")(ref YAMLNode yaml, string context = "")
                 new E("Invalid rectangle (minimum x or y greater than" ~
                       "maximum). Context: " ~ context));
     }
-    else static assert(false, "Unsupported type for fromYAML" ~ T.stringof);
+    else static assert(false, "Unsupported type for fromYAML: " ~ T.stringof);
 
     static if(cond != "")
     {
