@@ -69,7 +69,7 @@ public:
             disabled_ = true;
         }
         // It might be useful to set this in a config file.
-        Mix_AllocateChannels(64);
+        Mix_AllocateChannels(80);
     }
 
     /// Destroy the SDLMixerSoundSystem, freeing resources.
