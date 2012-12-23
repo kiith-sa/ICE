@@ -12,7 +12,10 @@ weapon:
   1: weapons/circleOfDeath.yaml
   2: weapons/activeShield.yaml
 collidable:
-health: 1000
+health: 
+  health: 150
+  shield: 75
+  shieldReloadRate: 25
 warhead:
   damage: 500
   killsEntity: false
