@@ -36,11 +36,18 @@
     - style:         *lLarge
     - layout: {x: 'pLeft + 8', y: 'pTop + 16', w: 80, h: 20}
     - text: 0
-- widget progressBar health:
+- widget progressBar shield:
     !!pairs
     - style:
         progressStyle: vertical 
         progressColor: rgbaB0B0FF68
+    - layout: {x: 'pRight - 36', y: 'pTop + 64', w: 12, h: 'pHeight - 128'}
+    - progress: 0.5
+- widget progressBar health:
+    !!pairs
+    - style:
+        progressStyle: vertical 
+        progressColor: rgbaFFFFB068
     - layout: {x: 'pRight - 20', y: 'pTop + 64', w: 12, h: 'pHeight - 128'}
     - progress: 0.5
 - widget progressBar weapon1:

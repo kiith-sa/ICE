@@ -248,10 +248,10 @@ public:
         return guiSwapper_.currentGUIName == "quit";
     }
 
-    ///Update player health display in the HUD. Must be at least 0 and at most 1.
-    void updatePlayerHealth(float health)
+    ///Update player shield and health ratio. Both must be at least 0 and at most 1.
+    void updatePlayerHealth(float health, float shield)
     {
-        hud_.updatePlayerHealth(health);
+        hud_.updatePlayerHealth(health, shield);
     }
 
     ///Update any player statistics related displays in the HUD.

@@ -301,8 +301,9 @@ public:
                         const health = playerShip.health;
                         if(health !is null)
                         {
-                            gui_.updatePlayerHealth(cast(float)health.health / 
-                                                    cast(float)health.maxHealth);
+                            gui_.updatePlayerHealth
+                                (cast(float)health.health / health.maxHealth,
+                                 health.shield / health.maxShield);
                         }
                     }
                     // Player ship doesn't exist anymore; player has died.
@@ -508,7 +509,7 @@ private:
         collisionSystem_          = new CollisionSystem(entitySystem_, spatialSystem_);
         collisionResponseSystem_  = new CollisionResponseSystem(entitySystem_);
         warheadSystem_            = new WarheadSystem(entitySystem_);
-        healthSystem_             = new HealthSystem(entitySystem_);
+        healthSystem_             = new HealthSystem(entitySystem_, gameTime_);
         movementConstraintSystem_ = new MovementConstraintSystem(entitySystem_);
         spawnerSystem_            = new SpawnerSystem(entitySystem_, gameTime_);
         tagSystem_                = new TagsSystem(entitySystem_);
@@ -623,7 +624,7 @@ private:
         //Level is done already.
         if(gamePhase_ != GamePhase.Playing) {return;}
 
-        gui_.updatePlayerHealth(0.0f);
+        gui_.updatePlayerHealth(0.0f, 0.0f);
         gameOver(No.success);
     }
 

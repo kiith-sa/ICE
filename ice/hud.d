@@ -53,6 +53,11 @@ class HUD: SwappableGUI
         // Can be null (so modders can remove the widget).
         ProgressBarWidget healthBar_;
 
+        // Shows current player shield.
+        //
+        // Can be null (so modders can remove the widget).
+        ProgressBarWidget shieldBar_;
+
         // Shows player score.
         //
         // Can be null (so modders can remove the widget).
@@ -81,6 +86,7 @@ class HUD: SwappableGUI
 
             infoTextLabel_ = hudGUI_.infoText!(LabelWidget,     Yes.optional);
             healthBar_     = hudGUI_.health!(ProgressBarWidget, Yes.optional);
+            shieldBar_     = hudGUI_.shield!(ProgressBarWidget, Yes.optional);
             scoreLabel_    = hudGUI_.score!(LabelWidget,        Yes.optional);
             uint w = 1;
             for(;;++w)
@@ -117,17 +123,21 @@ class HUD: SwappableGUI
             messageTextTimeLeft_ = time;
         }
 
-        ///Update player health ratio. Must be at least 0 and at most 1.
-        void updatePlayerHealth(float health)
+        ///Update player shield and health ratio. Both must be at least 0 and at most 1.
+        void updatePlayerHealth(float health, float shield)
         in
         {
-            assert(health <= 1.0f && health >= 0.0f,
-                   "Player health ratio out of range");
+            assert(health <= 1.0f && health >= 0.0f, 
+                   "Player health ratio out of range: " ~ to!string(health));
+            assert(shield <= 1.0f && shield >= 0.0f, 
+                    "Player shield ratio out of range: " ~ to!string(shield));
         }
         body
         {
             if(healthBar_ is null){return;}
             healthBar_.progress = health;
+            if(shieldBar_ is null){return;}
+            shieldBar_.progress = shield;
         }
 
         ///Update any player statistics related displays in the HUD.
