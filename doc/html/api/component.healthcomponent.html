@@ -195,6 +195,21 @@
 <dd><p>Current <a name="health"></a><span class="ddoc_psymbol">health</span>.</p>
 
 </dd>
+<dt class="d_decl">uint <a name="maxShield"></a><span class="ddoc_psymbol">maxShield</span>;
+</dt>
+<dd><p>Maximum shield.</p>
+
+</dd>
+<dt class="d_decl">float <a name="shield"></a><span class="ddoc_psymbol">shield</span>;
+</dt>
+<dd><p>Current <a name="shield"></a><span class="ddoc_psymbol">shield</span>. Float for gradual reloading.</p>
+
+</dd>
+<dt class="d_decl">uint <a name="shieldReloadRate"></a><span class="ddoc_psymbol">shieldReloadRate</span>;
+</dt>
+<dd><p>How much the shield regenerates per second.</p>
+
+</dd>
 <dt class="d_decl">EntityID <a name="mostRecentlyDamagedBy"></a><span class="ddoc_psymbol">mostRecentlyDamagedBy</span>;
 </dt>
 <dd><p>ID of the last entity we've been damaged by.</p>
@@ -213,6 +228,11 @@
 <dt class="d_decl">void <a name="applyDamage"></a><span class="ddoc_psymbol">applyDamage</span>(const EntityID <b>damagedBy</b>, const int <b>damage</b>);
 </dt>
 <dd><p>Apply <b>damage</b> (or healing, if negative).</p>
+
+</dd>
+<dt class="d_decl">const pure nothrow @property bool <a name="hasShield"></a><span class="ddoc_psymbol">hasShield</span>();
+</dt>
+<dd><p>Does the entity with this component have a shield?</p>
 
 </dd>
 </dl>
