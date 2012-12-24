@@ -621,9 +621,19 @@ private:
 
 
 private:
-//XXX XXX XXX STYLESHEETS!
 struct Stylesheet
 {
+    static Stylesheet defaultStylesheet()
+    {
+        return Stylesheet.init;
+    }
+}
+
+struct WidgetMeta
+{
+    string type;
+    string name;
+    string styleClass;
 }
 
 /// Encapsulates widget loading code.
@@ -634,8 +644,6 @@ struct WidgetLoader
 private:
     /// GUI system that constructed this WidgetLoader.
     GUISystem guiSystem_;
-
-    //TODO once tested, use Vector
 
     /// Stack keeping track of the style manager used in the current widget.
     ///
@@ -648,12 +656,15 @@ private:
     /// in their children. 
     string[] layoutManagerStack_ = ["boxManual"];
 
+    Stylesheet[] styleSheetStack_;
+
     @disable this();
     @disable this(this);
 package:
     /// Construct a WidgetLoader loading widgets for specified GUI system.
     this(GUISystem guiSystem)
     {
+        styleSheetStack_ = [Stylesheet.defaultStylesheet()];
         guiSystem_ = guiSystem;
     }
 
@@ -665,7 +676,7 @@ package:
     RootWidget parseRootWidget(ref YAMLNode source)
     {
         return cast(RootWidget)
-            parseWidget(source, guiSystem_.widgetCtors_["root"], "root", null, null);
+            parseWidget(source, guiSystem_.widgetCtors_["root"], WidgetMeta("root", null, null));
     }
 
 private:
@@ -679,9 +690,7 @@ private:
     /// Throws: GUIInitException on failure.
     Widget parseWidget(ref YAMLNode source, 
                        Widget delegate(ref YAMLNode) widgetCtor,
-                       string widgetTypeName,
-                       string widgetClassName,
-                       string name)
+                       ref const WidgetMeta meta)
     {
         scope(failure)
         {
@@ -708,6 +717,8 @@ private:
 
         Widget[] children;
         Tuple!(string, YAMLNode)[] stylesParameters;
+        //styleSheetStack_.back.getStyleParameters
+        //    (stylesParameters, widgetTypeName, widgetClassName, name);
         bool layoutParametersSpecified = false;
         YAMLNode layoutParameters;
 
@@ -720,28 +731,27 @@ private:
                 auto parts = key.split(" ");
                 enforce(parts.length >= 2,
                         new GUIInitException("Can't parse a widget without widget type"));
-                string type = parts[1];
-                string subWidgetName;
-                string subWidgetClass;
+                WidgetMeta subMeta;
+                subMeta.type = parts[1];
                 // Parse extra info in the widget declaration, like widget name, style class.
                 foreach(part; parts[2 .. $])
                 {
                     // e.g. button class=someStyleClass
                     if(part.canFind("=") && part.startsWith("class"))
                     {
-                        subWidgetClass = part.split("=")[1];
+                        subMeta.styleClass = part.split("=")[1];
                     }
                     // e.g. button widgetName
-                    else if(subWidgetName is null)
+                    else if(subMeta.name is null)
                     {
-                        subWidgetName = part;
+                        subMeta.name = part;
                     }
                 }
 
-                auto ctor = type in guiSystem_.widgetCtors_;
+                auto ctor = subMeta.type in guiSystem_.widgetCtors_;
                 enforce(ctor !is null,
-                        new GUIInitException("Unknown widget type in YAML: " ~ type));
-                children ~= parseWidget(value, *ctor, type, subWidgetClass, subWidgetName);
+                        new GUIInitException("Unknown widget type in YAML: " ~ subMeta.type));
+                children ~= parseWidget(value, *ctor, subMeta);
             }
             // Parameters of a style ("style" is default style, "style xxx" is style xxx)..
             // Need to not try to read "styleManager"
@@ -776,7 +786,7 @@ private:
 
         // Construct the widget and return it.
         Widget result = widgetCtor(source);
-        result.init(name, guiSystem_, children, layout, styleManager);
+        result.init(meta.name, guiSystem_, children, layout, styleManager);
         return result;
     }
 }
