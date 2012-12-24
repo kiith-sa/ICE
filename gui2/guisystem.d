@@ -645,6 +645,7 @@ private:
     /// GUI system that constructed this WidgetLoader.
     GUISystem guiSystem_;
 
+
     /// Stack keeping track of the style manager used in the current widget.
     ///
     /// Layout managers specified in parent widgets are recursively used 
@@ -656,7 +657,10 @@ private:
     /// in their children. 
     string[] layoutManagerStack_ = ["boxManual"];
 
+
     Stylesheet[] styleSheetStack_;
+
+    WidgetMeta[] widgetMetaStack_ = [WidgetMeta("root", null, null)];
 
     @disable this();
     @disable this(this);
@@ -675,8 +679,7 @@ package:
     /// Throws: GUIInitException on failure.
     RootWidget parseRootWidget(ref YAMLNode source)
     {
-        return cast(RootWidget)
-            parseWidget(source, guiSystem_.widgetCtors_["root"], WidgetMeta("root", null, null));
+        return cast(RootWidget)parseWidget(source, guiSystem_.widgetCtors_["root"]);
     }
 
 private:
@@ -685,12 +688,9 @@ private:
     /// Params: source     = Root node of the YAML tree to parse.
     ///         widgetCtor = Function that construct the widget of correct type
     ///                      (determined by the caller).
-    ///         name       = Name of the widget. null if no name.
     ///
     /// Throws: GUIInitException on failure.
-    Widget parseWidget(ref YAMLNode source, 
-                       Widget delegate(ref YAMLNode) widgetCtor,
-                       ref const WidgetMeta meta)
+    Widget parseWidget(ref YAMLNode source, Widget delegate(ref YAMLNode) widgetCtor)
     {
         scope(failure)
         {
@@ -751,7 +751,10 @@ private:
                 auto ctor = subMeta.type in guiSystem_.widgetCtors_;
                 enforce(ctor !is null,
                         new GUIInitException("Unknown widget type in YAML: " ~ subMeta.type));
-                children ~= parseWidget(value, *ctor, subMeta);
+                widgetMetaStack_ ~= subMeta;
+                widgetMetaStack_.assumeSafeAppend();
+                scope(exit){widgetMetaStack_.popBack();}
+                children ~= parseWidget(value, *ctor);
             }
             // Parameters of a style ("style" is default style, "style xxx" is style xxx)..
             // Need to not try to read "styleManager"
@@ -786,7 +789,7 @@ private:
 
         // Construct the widget and return it.
         Widget result = widgetCtor(source);
-        result.init(meta.name, guiSystem_, children, layout, styleManager);
+        result.init(widgetMetaStack_.back.name, guiSystem_, children, layout, styleManager);
         return result;
     }
 }
