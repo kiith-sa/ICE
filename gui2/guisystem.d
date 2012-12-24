@@ -665,7 +665,7 @@ package:
     RootWidget parseRootWidget(ref YAMLNode source)
     {
         return cast(RootWidget)
-            parseWidget(source, guiSystem_.widgetCtors_["root"], "root", null);
+            parseWidget(source, guiSystem_.widgetCtors_["root"], "root", null, null);
     }
 
 private:
@@ -680,6 +680,7 @@ private:
     Widget parseWidget(ref YAMLNode source, 
                        Widget delegate(ref YAMLNode) widgetCtor,
                        string widgetTypeName,
+                       string widgetClassName,
                        string name)
     {
         scope(failure)
@@ -720,12 +721,27 @@ private:
                 enforce(parts.length >= 2,
                         new GUIInitException("Can't parse a widget without widget type"));
                 string type = parts[1];
-                string subWidgetName = parts.length == 2 ? null : parts[2];
+                string subWidgetName;
+                string subWidgetClass;
+                // Parse extra info in the widget declaration, like widget name, style class.
+                foreach(part; parts[2 .. $])
+                {
+                    // e.g. button class=someStyleClass
+                    if(part.canFind("=") && part.startsWith("class"))
+                    {
+                        subWidgetClass = part.split("=")[1];
+                    }
+                    // e.g. button widgetName
+                    else if(subWidgetName is null)
+                    {
+                        subWidgetName = part;
+                    }
+                }
 
                 auto ctor = type in guiSystem_.widgetCtors_;
                 enforce(ctor !is null,
                         new GUIInitException("Unknown widget type in YAML: " ~ type));
-                children ~= parseWidget(value, *ctor, type, subWidgetName);
+                children ~= parseWidget(value, *ctor, type, subWidgetClass, subWidgetName);
             }
             // Parameters of a style ("style" is default style, "style xxx" is style xxx)..
             // Need to not try to read "styleManager"
