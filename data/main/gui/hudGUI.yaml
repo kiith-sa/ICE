@@ -23,6 +23,8 @@
 - buttonActive:  &bActive
     borderColor: rgbaC0C0FFFF
     fontColor:   rgbaE0E0FFFF
+#XXX IMPLEMENT
+#- stylesheet: hudStyle.yaml
 
 - style: {drawBorder: false}
 - layout: {x: 'pLeft', y: 'pTop', w: 'pWidth', h: 'pHeight'}

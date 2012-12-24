@@ -621,6 +621,10 @@ private:
 
 
 private:
+//XXX XXX XXX STYLESHEETS!
+struct Stylesheet
+{
+}
 
 /// Encapsulates widget loading code.
 ///
@@ -631,7 +635,7 @@ private:
     /// GUI system that constructed this WidgetLoader.
     GUISystem guiSystem_;
 
-    //TODO once tested, use vectors
+    //TODO once tested, use Vector
 
     /// Stack keeping track of the style manager used in the current widget.
     ///
@@ -660,7 +664,8 @@ package:
     /// Throws: GUIInitException on failure.
     RootWidget parseRootWidget(ref YAMLNode source)
     {
-        return cast(RootWidget)parseWidget(source, guiSystem_.widgetCtors_["root"], null);
+        return cast(RootWidget)
+            parseWidget(source, guiSystem_.widgetCtors_["root"], "root", null);
     }
 
 private:
@@ -674,6 +679,7 @@ private:
     /// Throws: GUIInitException on failure.
     Widget parseWidget(ref YAMLNode source, 
                        Widget delegate(ref YAMLNode) widgetCtor,
+                       string widgetTypeName,
                        string name)
     {
         scope(failure)
@@ -719,7 +725,7 @@ private:
                 auto ctor = type in guiSystem_.widgetCtors_;
                 enforce(ctor !is null,
                         new GUIInitException("Unknown widget type in YAML: " ~ type));
-                children ~= parseWidget(value, *ctor, subWidgetName);
+                children ~= parseWidget(value, *ctor, type, subWidgetName);
             }
             // Parameters of a style ("style" is default style, "style xxx" is style xxx)..
             // Need to not try to read "styleManager"
