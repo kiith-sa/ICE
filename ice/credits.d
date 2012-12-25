@@ -60,6 +60,9 @@ private:
     // Reference to the GUI system; to build widgets.
     GUISystem guiSystem_;
 
+    // Game data directory.
+    VFSDir gameDir_;
+
 public:
     /// Construct a Credits dialog.
     /// 
@@ -68,10 +71,12 @@ public:
     ///
     /// Throws: YAMLException on a YAML parsing error.
     ///         VFSException on a filesystem error.
+    ///         GUIInitException on a GUI style loading error.
     this(GUISystem guiSystem, VFSDir gameDir)
     {
         creditsData_ ~= loadYAML(credits_);
         guiSystem_ = guiSystem;
+        gameDir_   = gameDir;
         generateCredits();
         super(creditsGUI_);
     }
@@ -96,26 +101,18 @@ private:
     }
 
     /// Generate credits widgets.
+    ///
+    /// Throws: GUIInitException on failure.
+    ///         YAMLException on a YAML parsing error.
+    ///         VFSException on a filesystem error.
     void generateCredits()
     {
-        auto builder = WidgetBuilder(guiSystem_);
+        auto styleFile = gameDir_.file("gui/infoStyle.yaml");
+        auto styleYAML = loadYAML(styleFile);
+        auto stylesheet = Stylesheet(styleYAML, "gui/infoStyle.yaml");
+        auto builder = WidgetBuilder(guiSystem_, &stylesheet);
 
         // Credits generation parameters.
-
-        // Widget styles.
-        const buttonStyleDefault  = "{borderColor: rgbaC0C0FF60, fontColor:  rgbaA0A0FFC0}";
-        const buttonStyleFocused  = "{borderColor: rgbaC0C0FFA0, fontColor:  rgbaC0C0FFC0}";
-        const buttonStyleActive   = "{borderColor: rgbaC0C0FFFF, fontColor:  rgbaE0E0FFFF}";
-        const labelStyleXLarge    = "{fontColor:   rgbaFFFFFF80, drawBorder: false, " ~
-                                    " fontSize: 14, font: orbitron-bold.ttf}";
-        const labelStyleLarge     = "{fontColor:   rgbaEFEFFFCF, drawBorder: false, " ~
-                                    " fontSize: 12, font: orbitron-medium.ttf}";
-        const labelStyleTheEnd    = "{fontColor:   rgbaEFEFFFCF, drawBorder: false, " ~
-                                    " fontSize: 14, font: orbitron-medium.ttf}";
-        const labelStyleMedium    = "{fontColor:   rgbaFFFFFF80, drawBorder: false, " ~
-                                    " fontSize: 12, font: orbitron-medium.ttf}";
-        const labelStyleLink      = "{fontColor:   rgbaFFFF8080, drawBorder: false, " ~
-                                    " fontSize: 10, font: orbitron-light.ttf}";
 
         // Heights of widgets and gaps between them.
         const subSectionGap       = 6;
@@ -165,7 +162,6 @@ private:
                 const name = credit["name"].as!string;
                 b.buildWidget!"label"((ref WidgetBuilder b)
                 {
-                    b.style("default", labelStyleMedium);
                     b.layout("{x: pLeft, y: 'pTop + " ~ subYOffsetStr ~ "'," ~ 
                              " w: pWidth, h: " ~ nameHeightStr ~ "}");
                     b.widgetParams("{text: '" ~ name ~ "'}");
@@ -180,7 +176,7 @@ private:
                 const link = credit["link"].as!string;
                 b.buildWidget!"label"((ref WidgetBuilder b)
                 {
-                    b.style("default", labelStyleLink);
+                    b.styleClass = "link";
                     b.layout("{x: pLeft, y: 'pTop + " ~ subYOffsetStr ~ "'," ~ 
                              " w: pWidth, h: " ~ linkHeightStr ~ "}");
                     b.widgetParams("{text: '" ~ link ~ "'}");
@@ -201,14 +197,14 @@ private:
             // (Invisible) container of the subsection.
             b.buildWidget!"container"((ref WidgetBuilder b)
             {
+                b.styleClass = "creditsSubSection";
                 auto subYOffsetStr = to!string(subYOffset);
-                b.style("default", labelStyleLarge);
                 b.layout("{x: 'pLeft + 16', y: 'pTop + " ~ yOffsetStr ~ "'," ~
                          " w: 'pWidth - 32', h: " ~ heightStr ~ "}");
                 // Subsection header.
                 b.buildWidget!"label"((ref WidgetBuilder b)
                 {
-                    b.style("default", labelStyleLarge);
+                    b.styleClass = "sectionHeader";
                     b.layout("{x: pLeft, y: 'pTop + " ~ subYOffsetStr ~ "'," ~ 
                              " w: pWidth, h: " ~ headerHeightStr ~ "}");
                     b.widgetParams("{text: '" ~ subSectionName ~ "'}");
@@ -228,9 +224,7 @@ private:
         // Root credits widget (main container).
         builder.buildWidget!"root"((ref WidgetBuilder b)
         {
-            b.styleManager("line");
             b.layoutManager("boxManual");
-            b.style("default", "{backgroundColor: rgba000000FF}");
             b.layout("{x: 'pLeft + 96', y: 'pTop + 16'," ~ 
                      " w: 'pWidth - 192', h: 'pHeight - 32'}");
 
@@ -238,9 +232,6 @@ private:
             b.buildWidget!"button"((ref WidgetBuilder b)
             {
                 b.name = "close";
-                b.style("default", buttonStyleDefault);
-                b.style("focused", buttonStyleFocused);
-                b.style("active",  buttonStyleActive);
                 b.layout("{x: 'pLeft + pWidth / 2 - 72', y: 'pBottom - 32'," ~
                         " w: 144, h: 24}");
                 b.widgetParams("{text: Close}");
@@ -249,7 +240,7 @@ private:
             // "Credits"/"The End" (after winning a campaign) label.
             b.buildWidget!"label"((ref WidgetBuilder b)
             {
-                b.style("default", labelStyleXLarge);
+                b.styleClass = "header";
                 b.layout("{x: 'pLeft + pWidth / 2 - 64', y: 'pTop + 8'," ~ 
                          " w: 128, h: 24}");
                 b.widgetParams(wonCampaign_ ? "{text: The End.}" : "{text: Credits}");

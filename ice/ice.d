@@ -63,37 +63,35 @@ class LevelGUI: SwappableGUI
     /// 
     /// Params: guiSystem = GUI system to build the menu widgets with.
     ///         levels    = YAML to load level filenames from.
+    ///         gameDir   = Game data directory.
     ///         initGame  = Function that takes level filename and starts a game.
     /// 
     /// Throws: GUIInitException on failure.
-    this(GUISystem guiSystem, ref YAMLNode levels, void delegate(const string) initGame)
+    ///         VFSException if stylesheet file could not be read.
+    ///         YAMLException if stylesheet YAML could not be parsed.
+    this(GUISystem guiSystem, ref YAMLNode levels, VFSDir gameDir, void delegate(const string) initGame)
     {
         auto menuHeight = to!string((levels.length * 8 + 24) + 8);
-        // Styles.
-        auto buttonStyleDefault =  "{borderColor: rgbaC0C0FF60, fontColor: rgbaA0A0FFC0}";
-        auto buttonStyleFocused =  "{borderColor: rgbaC0C0FFA0, fontColor: rgbaC0C0FFC0}";
-        auto buttonStyleActive  =  "{borderColor: rgbaC0C0FFFF, fontColor: rgbaE0E0FFFF}";
-
-        auto builder = WidgetBuilder(guiSystem);
+        auto styleFile = gameDir.file("gui/mainStyle.yaml");
+        auto styleYAML = loadYAML(styleFile);
+        auto stylesheet = Stylesheet(styleYAML, "gui/mainStyle.yaml");
+        auto builder = WidgetBuilder(guiSystem, &stylesheet);
 
         // Root widget.
         builder.buildWidget!"root"((ref WidgetBuilder b)
         {
-            b.styleManager("line");
-            b.style("default", "{drawBorder: false}");
             b.layoutManager("boxManual");
             b.layout("{x: 'pLeft', y: 'pTop', w: 'pWidth', h: 'pHeight'}");
 
             // Sidebar.
             b.buildWidget!"container"((ref WidgetBuilder b)
             {
-                b.style("default", "{borderColor: rgbaC0C0FFB0}");
+                b.styleClass = "sidebar";
                 b.layout("{x: 'pRight - 176', y: 16, w: 160, h: 'pBottom - 32'}");
 
                 // Menu container.
                 b.buildWidget!"container"((ref WidgetBuilder b)
                 {
-                    b.style("default", "{drawBorder: false}");
                     b.layout("{x: pLeft, y: 'pTop + 136', w: 'pWidth', h: "
                              ~ menuHeight ~ "}");
 
@@ -106,9 +104,6 @@ class LevelGUI: SwappableGUI
                         b.buildWidget!"button"((ref WidgetBuilder b)
                         {
                             b.name = "l" ~ to!string(l);
-                            b.style("default", buttonStyleDefault);
-                            b.style("focused", buttonStyleFocused);
-                            b.style("active", buttonStyleActive);
                             b.layout("{x: 'pLeft + 8', y: 'pTop + " ~ offset ~ 
                                      "', w: 'pWidth - 16', h: 24}");
                             b.widgetParams("{text: " ~ level ~ "}");
@@ -121,9 +116,6 @@ class LevelGUI: SwappableGUI
                     {
                         auto offset = to!string(8 + (24 + 8) * l);
                         b.name = "back";
-                        b.style("default", buttonStyleDefault);
-                        b.style("focused", buttonStyleFocused);
-                        b.style("active", buttonStyleActive);
                         b.layout("{x: 'pLeft + 8', y: 'pTop + " ~ offset ~ 
                                  "', w: 'pWidth - 16', h: 24}");
                         b.widgetParams("{text: Back}");
@@ -605,7 +597,7 @@ class Ice
                         writeln("Failed to separately load level ", levelName, ": ", e.msg);
                     }
                 }
-                auto levelGUI     = new LevelGUI(guiSystem_, levels, &startLevelSeparate);
+                auto levelGUI     = new LevelGUI(guiSystem_, levels, gameDir_, &startLevelSeparate);
                 auto credits      = new Credits(guiSystem_, gameDir);
                 auto campaignsGUI = new CampaignsGUI(guiSystem_, campaignManager_, gameDir_);
                 auto campaignGUI  =

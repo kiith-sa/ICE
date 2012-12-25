@@ -9,6 +9,7 @@
 module gui2.rootwidget;
 
 
+import std.conv;
 import std.exception;
 import std.typecons;
 
@@ -182,7 +183,8 @@ public:
         T typedResult = cast(T)(*result);
         enforce(typedResult !is null,
                 new WidgetTypeException
-                ("Widget \"" ~ fullName ~ "\" has an unexpected type. Expected " ~ T.stringof));
+                ("Widget \"" ~ fullName ~ "\" has unexpected type: " 
+                 ~ to!string(typeid(*result)) ~ ". Expected " ~ T.stringof));
         return typedResult;
     }
 

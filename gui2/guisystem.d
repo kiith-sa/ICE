@@ -469,17 +469,22 @@ private:
     // Layout parameters, if any.
     string layoutParams_;
 
-    // Name of the style manager type for the widget to use.
-    string styleManager_;
-    // An array of name-parameters tuples of the widget's styles.
-    Tuple!(string, string)[] stylesParameters_;
-    // Name of the widget, if any.
-    string name_;
+    // Pointer to the stylesheet used to style the generated widgets.
+    Stylesheet* styleSheet_;
+
+    // Metadata of all parents of the widget constructed by this builder, and of this widget.
+    Vector!WidgetMeta widgetMetaStack_;
 
 public:
-    /// Construct a WidgetBuilder building widgets with/for specified GUISystem.
-    this(GUISystem guiSystem)
+    /// Construct a WidgetBuilder.
+    ///
+    /// Params:  guiSystem  = GUISystem to manage built widgets.
+    ///          stylesheet = Stylesheet to style the widgets. Must not be null.
+    ///                       May be safely destroyed after the widgets are built.
+    this(GUISystem guiSystem, Stylesheet* stylesheet)
     {
+        widgetMetaStack_ ~= WidgetMeta.init;
+        styleSheet_ = stylesheet;
         guiSystem_ = guiSystem;
         parent_    = null;
     }
@@ -507,9 +512,7 @@ public:
             widgetParams_     = "{}";
             layoutType_       = "boxManual";
             layoutParams_     = null;
-            styleManager_     = "line";
-            name_             = null;
-            stylesParameters_ = [];
+            widgetMetaStack_.back.type = widgetTypeName;
 
             // Builder for any nested widget.
             auto subBuilder = WidgetBuilder(guiSystem_, &this);
@@ -525,14 +528,11 @@ public:
             auto layout = (*layoutCtor)(layoutParams_ is null ? null : &layoutYAML);
 
             // Construct the style manager of the widget.
-            Tuple!(string, YAMLNode)[] yamlStylesParameters;
-            foreach(namedStyle; stylesParameters_)
-            {
-                yamlStylesParameters ~= tuple(namedStyle[0], loadYAML(namedStyle[1]));
-            }
-            auto styleCtor = styleManager_ in guiSystem_.styleCtors_;
+            auto yamlStylesParameters = styleSheet_.getStyleParameters(widgetMetaStack_[]);
+            auto styleManagerName = styleSheet_.styleManagerName;
+            auto styleCtor = styleManagerName in guiSystem_.styleCtors_;
             enforce(styleCtor !is null,
-                    new GUIInitException("Unknown style manager: " ~ styleManager_));
+                    new GUIInitException("Unknown style manager: " ~ styleManagerName));
             auto styleManager = (*styleCtor)(yamlStylesParameters);
             styleManager.textureManager = guiSystem_.textureManager_;
 
@@ -542,8 +542,9 @@ public:
                     new GUIInitException("Unknown widget type: " ~ widgetTypeName));
             auto widgetYAML = loadYAML(widgetParams_);
             auto result = (*widgetCtor)(widgetYAML);
-            result.init(name_, guiSystem_, subBuilder.builtWidgets,
+            result.init(widgetMetaStack_.back.name, guiSystem_, subBuilder.builtWidgets,
                         layout, styleManager);
+            widgetMetaStack_.back = WidgetMeta.init;
 
             builtWidgets_ ~= result;
         }
@@ -567,10 +568,25 @@ public:
     /// Set widget name, if any.
     ///
     /// Can only be called by build delegates passed to buildWidget().
-    @property void name(const string name) pure nothrow
+    ///
+    /// Must be called before building any subwidgets.
+    @property void name(const string name)
     {
         assert(parent_ !is null, "Trying to set widget name when not building a widget");
-        parent_.name_ = name;
+        parent_.widgetMetaStack_.back.name = name;
+        widgetMetaStack_[widgetMetaStack_.length - 2].name = name;
+    }
+
+    /// Set widget style class, if any.
+    ///
+    /// Can only be called by build delegates passed to buildWidget().
+    ///
+    /// Must be called before building any subwidgets.
+    @property void styleClass(const string styleClass)
+    {
+        assert(parent_ !is null, "Trying to set widget style class when not building a widget");
+        parent_.widgetMetaStack_.back.styleClass = styleClass;
+        widgetMetaStack_[widgetMetaStack_.length - 2].styleClass = styleClass;
     }
 
     /// Set layout type.
@@ -591,24 +607,6 @@ public:
         parent_.layoutParams_ = layoutParams;
     }
 
-    /// Set style manager type.
-    ///
-    /// Can only be called by build delegates passed to buildWidget().
-    @property void styleManager(const string styleManager) pure nothrow
-    {
-        assert(parent_ !is null, "Trying to set style manager when not building a widget");
-        parent_.styleManager_ = styleManager;
-    }
-
-    /// Set parameters of style with specified name.
-    ///
-    /// Can only be called by build delegates passed to buildWidget().
-    void style(string name, string styleParams) pure nothrow
-    {
-        assert(parent_ !is null, "Trying to set a style when not building a widget");
-        parent_.stylesParameters_ ~= tuple(name, styleParams);
-    }
-
     /// Get all widgets built by this WidgetBuilder so far.
     @property Widget[] builtWidgets() pure nothrow
     {
@@ -617,16 +615,19 @@ public:
 
 private:
     /// Construct a nested WidgetBuilder building subwidgets of the widget
-    /// currently being built by parent WidgetBuilder.
+    /// being built by parent WidgetBuilder.
+    ///
+    /// Params:  guiSystem  = GUISystem to manage built widgets.
+    ///          parent     = WidgetBuilder building the parent widget.
     this(GUISystem guiSystem, WidgetBuilder* parent)
     {
-        guiSystem_ = guiSystem;
-        parent_    = parent;
+        widgetMetaStack_ = parent.widgetMetaStack_;
+        widgetMetaStack_ ~= WidgetMeta.init;
+        guiSystem_       = guiSystem;
+        parent_          = parent;
+        styleSheet_      = parent.styleSheet_;
     }
 }
-
-
-private:
 
 /// A stylesheet similar in concept to CSS, but without the "cascading" part.
 ///
@@ -760,6 +761,7 @@ public:
         }
     }
 
+package:
     /// Get style parameters for a widget.
     ///
     /// Params:  widgetMetaStack = Metadata describing the full stack of parents
@@ -925,6 +927,8 @@ struct WidgetMeta
     /// Style class (like CSS class) of the widget, if any.
     string styleClass;
 }
+
+private:
 
 /// Encapsulates widget loading code.
 ///
