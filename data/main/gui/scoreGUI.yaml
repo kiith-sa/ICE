@@ -1,85 +1,50 @@
 !!pairs
-
-- labelDefault:   &lHeader
-    fontColor:    rgbaF0F0FFC0
-    drawBorder:   false
-    fontSize:     20
-    font:         orbitron-bold.ttf
-- labelDefault:   &lPressEsc
-    fontColor:    rgbaFFE8E8C8
-    drawBorder:   false
-    fontSize:     18
-    font:         orbitron-bold.ttf
-- labelDefault:   &lScoreName
-    fontColor:    rgbaF0F0FFD0
-    drawBorder:   false
-    fontSize:     16
-    font:         orbitron-light.ttf
-    textAlignX:   left
-- labelDefault:   &lScoreValue
-    fontColor:    rgbaF0F0FFD0
-    drawBorder:   false
-    fontSize:     16
-    font:         orbitron-light.ttf
-    textAlignX:   right
-
-- styleManager:  line
+- stylesheet:    gui/scoreStyle.yaml
 - layoutManager: boxManual 
 - layout: {x: 'pLeft + pWidth / 2 - 300', y: 'pTop + pHeight / 2 - 200', w: 600, h: 400}
-
 # Death message.
-- widget label deathMessage:
+- widget label deathMessage class=message:
     !!pairs
-    - style:  *lHeader
     - layout: {x: 'pLeft + 16', y: 'pTop + 16', w: 'pWidth - 32', h: 24}
     - text:   DEATH MESSAGE TEXT HERE
 # Score:
-- widget label:
+- widget label class=scoreName:
     !!pairs
-    - style:  *lScoreName
     - layout: {x: 'pLeft + 16', y: 'pTop + 64', w: 'pWidth - 32', h: 24}
     - text:   'Score:'
-- widget label score:
+- widget label score class=scoreValue:
     !!pairs
-    - style:  *lScoreValue
     - layout: {x: 'pLeft + 16', y: 'pTop + 64', w: 'pWidth - 32', h: 24}
     - text:   SCORE VALUE HERE
 # Time elapsed:
-- widget label:
+- widget label class=scoreName:
     !!pairs
-    - style:  *lScoreName
     - layout: {x: 'pLeft + 16', y: 'pTop + 88', w: 'pWidth - 32', h: 24}
     - text:   'Time elapsed:'
-- widget label time:
+- widget label time class=scoreValue:
     !!pairs
-    - style:  *lScoreValue
     - layout: {x: 'pLeft + 16', y: 'pTop + 88', w: 'pWidth - 32', h: 24}
     - text:   TIME ELAPSED HERE
 # Shots fired:
-- widget label:
+- widget label class=scoreName:
     !!pairs
-    - style:  *lScoreName
     - layout: {x: 'pLeft + 16', y: 'pTop + 112', w: 'pWidth - 32', h: 24}
     - text:   'Shots fired:'
-- widget label shots:
+- widget label shots class=scoreValue:
     !!pairs
-    - style:  *lScoreValue
     - layout: {x: 'pLeft + 16', y: 'pTop + 112', w: 'pWidth - 32', h: 24}
     - text:   SHOTS FIRED HERE
 # Ships killed:
-- widget label:
+- widget label class=scoreName:
     !!pairs
-    - style:  *lScoreName
     - layout: {x: 'pLeft + 16', y: 'pTop + 136', w: 'pWidth - 32', h: 24}
     - text:   'Ships killed:'
-- widget label kills:
+- widget label kills class=scoreValue:
     !!pairs
-    - style:  *lScoreValue
     - layout: {x: 'pLeft + 16', y: 'pTop + 136', w: 'pWidth - 32', h: 24}
     - text:   SHIPS KILLED HERE
 # Message on how to exit the level
-- widget label:
+- widget label class=info:
     !!pairs
-    - style:  *lPressEsc
     - layout: {x: 'pLeft + 16', y: 'pTop + 200', w: 'pWidth - 32', h: 24}
     - text:   "Press 'Esc' to continue"

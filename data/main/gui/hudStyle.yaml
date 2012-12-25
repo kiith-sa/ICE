@@ -1,0 +1,37 @@
+meta:
+  styleManager: line
+styles:
+  !!pairs
+  - root:
+      default: 
+        drawBorder: false
+  - progressBar;shield:
+      default:
+        progressStyle: vertical
+        progressColor: rgbaB0B0FF68
+  - progressBar;health:
+      default:
+        progressStyle: vertical
+        progressColor: rgbaFFFFB068
+  - progressBar;weapon1:
+      default:
+        progressStyle:   vertical
+        progressColor:   rgbaB0B0FF60
+        backgroundImage: gui/images/weapon1.png
+  - progressBar;weapon2:
+      default:
+        progressStyle:   vertical
+        progressColor:   rgbaB0B0FF60
+        backgroundImage: gui/images/weapon2.png
+  - label:
+      default:
+        fontColor:  rgbaFFFFFF80
+        drawBorder: false
+        fontSize:   14
+        font:       orbitron-medium.ttf
+  - label;score:
+      default:
+        fontColor:  rgbaFFFFFF80
+        drawBorder: false
+        fontSize:   14
+        font:       orbitron-bold.ttf

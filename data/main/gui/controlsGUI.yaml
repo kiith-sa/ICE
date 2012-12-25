@@ -1,168 +1,110 @@
 !!pairs
-
-- labelDefault:  &lXLarge
-    fontColor:   rgbaFFFFFF80
-    drawBorder:  false
-    fontSize:    14
-    font:        orbitron-bold.ttf
-- labelDefault:  &lLarge
-    fontColor:   rgbaEFEFFFCF
-    drawBorder:  false
-    fontSize:    12
-    font:        orbitron-medium.ttf
-    textAlignX:  left
-- labelDefault:  &lMedium
-    fontColor:   rgbaFFFFFF80
-    drawBorder:  false
-    fontSize:    12
-    font:        orbitron-medium.ttf
-    textAlignX:  left
-- buttonDefault: &bDefault
-    borderColor: rgbaC0C0FF60
-    fontColor:   rgbaA0A0FFC0
-- buttonFocused: &bFocused
-    borderColor: rgbaC0C0FFA0
-    fontColor:   rgbaC0C0FFC0
-- buttonActive:  &bActive
-    borderColor: rgbaC0C0FFFF
-    fontColor:   rgbaE0E0FFFF
-
-- styleManager:  line
-- layoutManager: boxManual 
+- stylesheet: gui/infoStyle.yaml
 - layout: {x: 'pLeft + pWidth / 2 - 300', y: 'pTop + pHeight / 2 - 200', w: 600, h: 400}
-- style: {backgroundColor: rgb000000}
 
 
-- widget label:
+- widget label class=header:
    !!pairs
-   - style:  *lXLarge
    - layout: {x: 'pLeft + 32', y: 'pTop + 16', w: 'pWidth - 64', h: 24}
    - text:   Controls
 
 
 
-
-- widget label:
+- widget label class=sectionHeader:
    !!pairs
-   - style:  *lLarge
    - layout: {x: 'pLeft + 32', y: 'pTop + 64', w: 'pWidth - 32', h: 24}
    - text:   Ship
 
-
 - widget label:
     !!pairs
-    - style:  *lMedium
     - layout: {x: 'pLeft + 32', y: 'pTop + 88', w: 'pWidth - 32', h: 24}
     - text:   'Move up:'
 - widget label:
     !!pairs
-    - style:  *lMedium
     - layout: {x: 'pRight - 160', y: 'pTop + 88', w: 128, h: 24}
     - text:   W, Up Arrow
 
 - widget label:
     !!pairs
-    - style:  *lMedium
     - layout: {x: 'pLeft + 32', y: 'pTop + 106', w: 'pWidth - 32', h: 24}
     - text:   'Move left:'
 - widget label:
     !!pairs
-    - style:  *lMedium
     - layout: {x: 'pRight - 160', y: 'pTop + 106', w: 128, h: 24}
     - text:   A, Left Arrow
 
 - widget label:
     !!pairs
-    - style:  *lMedium
     - layout: {x: 'pLeft + 32', y: 'pTop + 124', w: 'pWidth - 32', h: 24}
     - text:   'Move down:'
 - widget label:
     !!pairs
-    - style:  *lMedium
     - layout: {x: 'pRight - 160', y: 'pTop + 124', w: 128, h: 24}
     - text:   S, Down Arrow'
 
 - widget label:
     !!pairs
-    - style:  *lMedium
     - layout: {x: 'pLeft + 32', y: 'pTop + 142', w: 'pWidth - 32', h: 24}
     - text:   'Move right:'
 - widget label:
     !!pairs
-    - style:  *lMedium
     - layout: {x: 'pRight - 160', y: 'pTop + 142', w: 128, h: 24}
     - text:   D, Right Arrow
 
-
 - widget label:
     !!pairs
-    - style:  *lMedium
     - layout: {x: 'pLeft + 32', y: 'pTop + 160', w: 'pWidth - 32', h: 24}
     - text:   'Fire primary weapon:'
 - widget label:
     !!pairs
-    - style:  *lMedium
     - layout: {x: 'pRight - 160', y: 'pTop + 160', w: 128, h: 24}
     - text:   Space, NumPad 5
 
 - widget label:
     !!pairs
-    - style:  *lMedium
     - layout: {x: 'pLeft + 32', y: 'pTop + 178', w: 'pWidth - 32', h: 24}
     - text:   'Fire secondary weapon 1:'
 - widget label:
     !!pairs
-    - style:  *lMedium
     - layout: {x: 'pRight - 160', y: 'pTop + 178', w: 128, h: 24}
     - text:   J, NumPad 4
 
 - widget label:
     !!pairs
-    - style:  *lMedium
     - layout: {x: 'pLeft + 32', y: 'pTop + 196', w: 'pWidth - 32', h: 24}
     - text:   'Fire main weapon:'
 - widget label:
     !!pairs
-    - style:  *lMedium
     - layout: {x: 'pRight - 160', y: 'pTop + 196', w: 128, h: 24}
     - text:   K, NumPad 2
 
 
 
-- widget label:
+- widget label class=sectionHeader:
    !!pairs
-   - style:  *lLarge
    - layout: {x: 'pLeft + 32', y: 'pTop + 228', w: 'pWidth - 32', h: 24}
    - text:   Other
 
-
 - widget label:
     !!pairs
-    - style:  *lMedium
     - layout: {x: 'pLeft + 32', y: 'pTop + 252', w: 'pWidth - 32', h: 24}
     - text:   'Take screenshot:'
 - widget label:
     !!pairs
-    - style:  *lMedium
     - layout: {x: 'pRight - 160', y: 'pTop + 252', w: 128, h: 24}
     - text:   Scroll Lock
 
 - widget label:
     !!pairs
-    - style:  *lMedium
     - layout: {x: 'pLeft + 32', y: 'pTop + 270', w: 'pWidth - 32', h: 24}
     - text:   'Exit current game:'
 - widget label:
     !!pairs
-    - style:  *lMedium
     - layout: {x: 'pRight - 160', y: 'pTop + 270', w: 128, h: 24}
     - text:   Escape
 
 
 - widget button close:
     !!pairs
-    - style:         *bDefault
-    - style focused: *bFocused
-    - style active:  *bActive
     - layout:        {x: 'pLeft + pWidth / 2 - 72', y: 'pBottom - 32', w: 144, h: 24}
     - text:          Close

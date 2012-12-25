@@ -1,65 +1,28 @@
 !!pairs
-- labelDefault:  &lLarge
-    fontColor:   rgbaFFFFFF80
-    drawBorder:  false
-    fontSize:    14
-    font:        orbitron-bold.ttf
-- labelMedium:   &lMedium
-    fontColor:   rgbaFFFFFF80
-    drawBorder:  false
-    fontSize:    12
-    font:        orbitron-medium.ttf
-- buttonDefault: &bDefault
-    borderColor: rgbaC0C0FF60
-    fontColor:   rgbaA0A0FFC0
-- buttonFocused: &bFocused
-    borderColor: rgbaC0C0FFA0
-    fontColor:   rgbaC0C0FFC0
-- buttonActive:  &bActive
-    borderColor: rgbaC0C0FFFF
-    fontColor:   rgbaE0E0FFFF
-#XXX IMPLEMENT
-#- stylesheet: hudStyle.yaml
+- stylesheet: gui/hudStyle.yaml
 
-- style: {drawBorder: false}
 - layout: {x: 'pLeft', y: 'pTop', w: 'pWidth', h: 'pHeight'}
 - widget label infoText:
     !!pairs
-    - style:         *lMedium
     - layout: {x: 'pLeft + 8', y: 'pBottom - 24', w: 'pWidth - 16', h: 16}
     - text: ""
 - widget label score:
     !!pairs
-    - style:         *lLarge
     - layout: {x: 'pLeft + 8', y: 'pTop + 16', w: 80, h: 20}
     - text: 0
 - widget progressBar shield:
     !!pairs
-    - style:
-        progressStyle: vertical 
-        progressColor: rgbaB0B0FF68
     - layout: {x: 'pRight - 36', y: 'pTop + 64', w: 12, h: 'pHeight - 128'}
     - progress: 0.5
 - widget progressBar health:
     !!pairs
-    - style:
-        progressStyle: vertical 
-        progressColor: rgbaFFFFB068
     - layout: {x: 'pRight - 20', y: 'pTop + 64', w: 12, h: 'pHeight - 128'}
     - progress: 0.5
 - widget progressBar weapon1:
     !!pairs
-    - style:
-        progressStyle: vertical 
-        progressColor: rgbaB0B0FF60
-        backgroundImage: gui/images/weapon1.png
     - layout: {x: 'pRight - 80', y: 'pBottom - 40', w: 32, h: 32}
     - progress: 0.5
 - widget progressBar weapon2:
     !!pairs
-    - style:
-        progressStyle: vertical 
-        progressColor: rgbaB0B0FF60
-        backgroundImage: gui/images/weapon2.png
     - layout: {x: 'pRight - 40', y: 'pBottom - 40', w: 32, h: 32}
     - progress: 0.5

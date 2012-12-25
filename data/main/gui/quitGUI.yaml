@@ -1,8 +1,7 @@
 !!pairs
-- layout: {x: 'pLeft', y: 'pTop', w: 'pWidth', h: 'pHeight'}
-- style:  {drawBorder: false}
-- widget label:
+- stylesheet: gui/scoreStyle.yaml
+- layout:     {x: 'pLeft', y: 'pTop', w: 'pWidth', h: 'pHeight'}
+- widget label class=message:
     !!pairs
-    - style: {font: orbitron-bold.ttf, fontSize: 20, drawBorder: false}
     - layout: {x: 'pLeft + pWidth / 2 - 224', y: 'pTop + pHeight / 2 - 32', w: 448, h: 64}
     - text:   "Really quit? (Y: quit, N: return to game)"

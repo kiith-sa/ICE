@@ -1,0 +1,30 @@
+meta:
+  styleManager: line
+styles:
+  !!pairs
+  - label.message:
+      default:
+        fontColor:    rgbaF0F0FFC0
+        drawBorder:   false
+        fontSize:     20
+        font:         orbitron-bold.ttf
+  - label.scoreName:
+      default:
+        fontColor:    rgbaF0F0FFD0
+        drawBorder:   false
+        fontSize:     16
+        font:         orbitron-light.ttf
+        textAlignX:   left
+  - label.scoreValue:
+      default:
+        fontColor:    rgbaF0F0FFD0
+        drawBorder:   false
+        fontSize:     16
+        font:         orbitron-light.ttf
+        textAlignX:   right
+  - label.info:
+      default:
+        fontColor:    rgbaFFE8E8C8
+        drawBorder:   false
+        fontSize:     18
+        font:         orbitron-bold.ttf

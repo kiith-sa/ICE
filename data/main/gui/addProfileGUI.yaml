@@ -1,26 +1,11 @@
 !!pairs
-- buttonDefault: &bDefault
-    borderColor: rgbaC0C0FF60
-    fontColor:   rgbaA0A0FFC0
-- buttonFocused: &bFocused
-    borderColor: rgbaC0C0FFA0
-    fontColor:   rgbaC0C0FFC0
-- buttonActive:  &bActive
-    borderColor: rgbaC0C0FFFF
-    fontColor:   rgbaE0E0FFFF
-
 - layout: {x: 'pLeft', y: 'pTop', w: 'pWidth', h: 'pHeight'}
-- style: {drawBorder: false}
+- stylesheet: gui/mainStyle.yaml
 - widget lineEdit profileNameEdit:
     !!pairs
-    - style: {borderColor: rgbaE0E0FF80, backgroundColor: rgba000000FF, fontSize: 16}
-    - style focused: {borderColor: rgbaE0E0FFB0, backgroundColor: rgba000000FF, fontSize: 16}
     - layout: {x: 'pLeft + pWidth / 2 - 160', y: 'pTop + pHeight / 2 - 16', w: 256, h: 32}
     - maxCharacters: 16
 - widget button cancel:
     !!pairs
-    - style:         *bDefault
-    - style focused: *bFocused
-    - style active:  *bActive
     - layout:        {x: 'pLeft + pWidth / 2 + 96 + 8', y: 'pTop + pHeight / 2 - 16', w: 88, h: 32}
     - text:          Cancel

@@ -1,0 +1,43 @@
+meta:
+  styleManager: line
+styles:
+  !!pairs
+  - root:
+      default:
+        drawBorder: false
+  - lineEdit:
+      default:
+        borderColor:     rgbaE0E0FF80
+        backgroundColor: rgba000000FF
+        fontSize:        16
+      focused:
+        borderColor:     rgbaE0E0FFB0
+        backgroundColor: rgba000000FF
+        fontSize:        16
+  - container:
+      default:
+        drawBorder: false
+  - container.sidebar:
+      default:
+        backgroundColor: rgba000000FF
+        borderColor:     rgbaC0C0FFB0
+  - button:
+      default:
+        borderColor: rgbaC0C0FF60
+        fontColor:   rgbaA0A0FFC0
+      focused:
+        borderColor: rgbaC0C0FFA0
+        fontColor:   rgbaC0C0FFC0
+      active:
+        borderColor: rgbaC0C0FFFF
+        fontColor:   rgbaE0E0FFFF
+  - .selector label:
+      default:
+        drawBorder:   false
+  - label.header:
+      default:
+        fontColor:  rgbaFFFFFF80
+        drawBorder: false
+        fontSize:   14
+        font:       orbitron-bold.ttf
+
