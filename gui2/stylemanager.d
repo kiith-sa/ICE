@@ -56,7 +56,7 @@ public:
     ///
     /// Params: name = Name of style to set. If there is no style with specified 
     ///                name, the default style is set.
-    ///                "" (empty string) is the name of the default style.
+    ///                "default" is the name of the default style.
     void setStyle(string name);
 
     /// Draw the widget rectangle; both its background and border.

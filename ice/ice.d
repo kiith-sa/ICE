@@ -80,20 +80,20 @@ class LevelGUI: SwappableGUI
         builder.buildWidget!"root"((ref WidgetBuilder b)
         {
             b.styleManager("line");
-            b.style("", "{drawBorder: false}");
+            b.style("default", "{drawBorder: false}");
             b.layoutManager("boxManual");
             b.layout("{x: 'pLeft', y: 'pTop', w: 'pWidth', h: 'pHeight'}");
 
             // Sidebar.
             b.buildWidget!"container"((ref WidgetBuilder b)
             {
-                b.style("", "{borderColor: rgbaC0C0FFB0}");
+                b.style("default", "{borderColor: rgbaC0C0FFB0}");
                 b.layout("{x: 'pRight - 176', y: 16, w: 160, h: 'pBottom - 32'}");
 
                 // Menu container.
                 b.buildWidget!"container"((ref WidgetBuilder b)
                 {
-                    b.style("", "{drawBorder: false}");
+                    b.style("default", "{drawBorder: false}");
                     b.layout("{x: pLeft, y: 'pTop + 136', w: 'pWidth', h: "
                              ~ menuHeight ~ "}");
 
@@ -106,7 +106,7 @@ class LevelGUI: SwappableGUI
                         b.buildWidget!"button"((ref WidgetBuilder b)
                         {
                             b.name = "l" ~ to!string(l);
-                            b.style("", buttonStyleDefault);
+                            b.style("default", buttonStyleDefault);
                             b.style("focused", buttonStyleFocused);
                             b.style("active", buttonStyleActive);
                             b.layout("{x: 'pLeft + 8', y: 'pTop + " ~ offset ~ 
@@ -121,7 +121,7 @@ class LevelGUI: SwappableGUI
                     {
                         auto offset = to!string(8 + (24 + 8) * l);
                         b.name = "back";
-                        b.style("", buttonStyleDefault);
+                        b.style("default", buttonStyleDefault);
                         b.style("focused", buttonStyleFocused);
                         b.style("active", buttonStyleActive);
                         b.layout("{x: 'pLeft + 8', y: 'pTop + " ~ offset ~ 

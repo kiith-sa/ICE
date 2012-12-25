@@ -17,6 +17,7 @@ import std.typecons;
 
 import dgamevfs._;
 
+import containers.vector;
 import formats.image;
 import gui2.boxmanuallayout;
 import gui2.buttonwidget;
@@ -87,6 +88,9 @@ private:
     // the video driver changes, all textures are unloaded.
     VideoDriver video_;
 
+    // Game data directory (used to load style sheets referenced by GUI sources).
+    VFSDir gameDir_;
+
 public:
     /// Construct the GUISystem.
     ///
@@ -95,6 +99,7 @@ public:
     this(Platform platform, VFSDir gameDir)
     {
         platform_ = platform;
+        gameDir_  = gameDir;
         platform.key.connect(&inputKey);
         platform.mouseMotion.connect(&inputMouseMove);
         platform.mouseKey.connect(&inputMouseKey);
@@ -133,7 +138,7 @@ public:
             LineStyleManager.Style[] styles;
             foreach(ref named; namedStyles)
             {
-                foundDefault = foundDefault || named[0] == "";
+                foundDefault = foundDefault || named[0] == "default";
                 styles ~= LineStyleManager.Style(named[1], named[0]);
             }
             if(!foundDefault)
@@ -148,7 +153,7 @@ public:
         auto dummyMapping    = loadYAML("{}");
         rootSlot_            = new SlotWidget(dummyMapping);
         auto styleSource     = loadYAML("{drawBorder: false}");
-        auto slotDummyStyles = [LineStyleManager.Style(styleSource, "")];
+        auto slotDummyStyles = [LineStyleManager.Style(styleSource, "default")];
         auto layoutSource    = loadYAML("{x: 0, y: 0, w: 640, h: 480}"); 
         rootSlot_.init("", this, cast(Widget[])[], new FixedLayout(layoutSource),
                        new LineStyleManager(slotDummyStyles));
@@ -213,7 +218,7 @@ public:
         updateLayout();
     }
 
-    /// Load a widget tree connectable to a SlotWidget from YAML.
+    /// Load a widget tree connectible to a SlotWidget from YAML.
     ///
     /// Throws:  GUIInitException on failure.
     RootWidget loadWidgetTree(YAMLNode source)
@@ -224,7 +229,7 @@ public:
         }
         try
         {
-            auto loader = WidgetLoader(this);
+            auto loader = WidgetLoader(this, gameDir_);
             return loader.parseRootWidget(source);
         }
         catch(YAMLException e)
@@ -354,6 +359,7 @@ public:
     /// The style manager constructor is passed an array of named YAML nodes,
     /// each of which represents a style. If there is no default style 
     /// (unnamed, just "style"), it must be added in the constructor function.
+    /// It must _not_ modify the array.
     /// 
     /// Params: styleYAMLName = YAML style managers with this "styleManager"
     ///                         name will be constructed with given constructor function.
@@ -621,18 +627,302 @@ private:
 
 
 private:
+
+/// A stylesheet similar in concept to CSS, but without the "cascading" part.
+///
+/// There are style classes similar to the ones used with CSS, and widget names 
+/// are used as CSS IDs. A style declaration (style section) in a style sheet
+/// can, like in CSS, nest widget type, style class and name specifiers to 
+/// flexibly define which widgets should a style be applied to. E.g; a
+/// style section can specify that it only applies to labels in a widget with 
+/// name "sidebar" : ";sidebar label". The semicolon specifies the start of an
+/// ID. A dot specifies the start of a class. Widget specifiers are separated 
+/// by spaces, and each may contain a widget type, name and style class.
+/// Each specifier matches a nesting level in widget hierarchy, but a widget 
+/// will match the style section even if it has more nesting levels between the 
+/// specifiers.
+///
+/// Each style section defines one or more styles of the widget. For example,
+/// buttons can use an "active" and "focused" style. The default style, 
+/// "default", must always be specified.
+///
+/// Unlike CSS, we support multiple ways of styling widgets; multiple style 
+/// managers. Each stylesheet must have a meta section specifying which 
+/// style manager is used (Currently, the only supported value is "line" for
+/// LineStyleManager).
+///
+/// Also unlike CSS, there is no "cascading". Only one style section can match
+/// a widget (if more than one match, the most specififc is used, and if there 
+/// is more than one that's the most used, last one of those is used). This 
+/// also means the section must specify all style attributes (that shouldn't use 
+/// defaults of their style manager). This is not as much of a problem as it is
+/// in CSS as we have far less style attributes.
+/// 
+///
+/// Example:
+/// --------------------
+/// meta:
+///   styleManager: line
+/// styles:
+///   !!pairs
+///   - root:
+///       default:
+///         backgroundColor: rgb000000
+///   - ;sidebar button:
+///       default:
+///         borderColor: rgbaC0C0FF60
+///         fontColor:   rgbaA0A0FFC0
+///       focused:
+///         borderColor: rgbaC0C0FFA0
+///         fontColor:   rgbaC0C0FFC0
+///       active:
+///         borderColor: rgbaC0C0FFFF
+///         fontColor:   rgbaE0E0FFFF
+///   - label:
+///       default:
+///         fontColor:   rgbaFFFFFF80
+///         drawBorder:  false
+///         fontSize:    12
+///         font:        orbitron-medium.ttf
+///         textAlignX:  left
+///   - label.header:
+///       default:
+///         fontColor:  rgbaFFFFFF80
+///         drawBorder: false
+///         fontSize:   14
+///         font:       orbitron-bold.ttf
+///   - label.sectionHeader:
+///       default:
+///         fontColor:   rgbaEFEFFFCF
+///         drawBorder:  false
+///         fontSize:    12
+///         font:        orbitron-medium.ttf
+///         textAlignX:  left
+/// --------------------
 struct Stylesheet
 {
+private:
+    // Name of the stylesheet used for debugging.
+    string name_;
+
+    // Name of the style manager (e.g. line for LineStyleManager) to use with
+    // this stylesheet.
+    string styleManagerName_;
+
+    // Represents a style section in the stylesheet.
+    //
+    // Describing which widgets the section applies to and styles those widgets
+    // should use.
+    struct StyleSection
+    {
+        /// Specifiers describing widgets this style section should apply to.
+        Vector!WidgetMeta widgetSpecifiers;
+        /// Styles declared in the section, with their names.
+        ///
+        /// As of DMD 2.060, this can't be a Vector because of a compiler error.
+        Tuple!(string, YAMLNode)[] styles;
+    }
+
+    // All style sections declared in the stylesheet file.
+    Vector!StyleSection styleSections_;
+
+public:
+    /// Construct a Stylesheet.
+    ///
+    /// Params:  yaml = YAML source of the stylesheet.
+    ///          name = Name of the stylesheet used for debugging.
+    ///
+    /// Throws:  YAMLException if the YAML source is in unexpected format.
+    ///          GUIInitException on failure (e.g. malformed widget specifier).
+    this(ref YAMLNode yaml, string name)
+    {
+        name_ = name;
+        loadMeta(yaml["meta"]);
+        loadStyles(yaml["styles"]);
+    }
+
+    /// Construct and return a default style sheet, used if no style sheet is specified.
     static Stylesheet defaultStylesheet()
     {
-        return Stylesheet.init;
+        // We don't really set anything here, just use the style manager's defaults.
+        string styleString = 
+            "meta:\n"                ~
+            "  styleManager: line\n" ~
+            "styles: !!pairs []\n";
+        auto styleYAML = loadYAML(styleString);
+        try
+        {
+            return Stylesheet(styleYAML, "_default_stylesheet_");
+        }
+        catch(YAMLException e)
+        {
+            assert(false, "Error in default style sheet: " ~ e.msg);
+        }
+    }
+
+    /// Get style parameters for a widget.
+    ///
+    /// Params:  widgetMetaStack = Metadata describing the full stack of parents
+    ///                            above the widget. The last element describes
+    ///                            the widget itself.
+    ///
+    /// Returns: Styles for the widget to use (null if none).
+    ///          The returned array must not be modified.
+    Tuple!(string, YAMLNode)[] getStyleParameters(const(WidgetMeta[]) widgetMetaStack)
+    {
+        Tuple!(string, YAMLNode)[] outStyles = null;
+        ulong maxScore = 0;
+        foreach(ref section; styleSections_)
+        {
+            ulong score = 0;
+            // Part of widgetSpecifiers we did not yet match.
+            const(WidgetMeta)[] widgetSpecifiersLeft = section.widgetSpecifiers[];
+            enum metaCount = 3;
+            foreach_reverse(index, ref meta; widgetMetaStack)
+            {
+                // Needs to be updated if metaCount changes.
+                enforce(index <= 31, new GUIInitException("Widget nesting too deep; " ~ 
+                                                          "only 31 levels are supported"));
+                // section's widgetSpecifiers are "crawling" up
+                // from the widget along the tree 
+                // (of which we only have the stack above the widget).
+                //
+                // So we search up the stack for the next widget specifier. 
+                // If we don't find all specifiers in order, we don't match.
+                // Otherwise, the "score" of the match depends on how specific
+                // the specifiers are, and matches deeper in the tree override 
+                // those above them. We do this by calculating score in base N+1,
+                // where N is the "most specific match". The matchScore variable 
+                // takes track of how specific a match is.
+                //
+                // If more than one style sections have the best score,
+                // we simply use the last one (unlike CSS, which would merge them)
+                const spec = widgetSpecifiersLeft.back;
+                ulong matchScore = 0;
+                bool match(string delegate(ref const WidgetMeta) prop)
+                {
+                    if(prop(spec) is null){return true;}
+                    if(prop(spec) == prop(meta)){++ matchScore; return true;}
+                    return false;
+                }
+                if(!match((ref const WidgetMeta a) => a.type) || 
+                   !match((ref const WidgetMeta a) => a.name) ||
+                   !match((ref const WidgetMeta a) => a.styleClass))
+                {
+                    continue;
+                }
+
+                score += matchScore * (metaCount + 1) ^^ index;
+                widgetSpecifiersLeft.popBack;
+                if(widgetSpecifiersLeft.empty)
+                {
+                    break;
+                }
+            }
+
+            // If we've not matched all widgetSpecifiers.
+            if(!widgetSpecifiersLeft.empty)
+            {
+                continue;
+            }
+
+            // If multiple style sections have the best score, we use the last one.
+            if(score >= maxScore)
+            {
+                maxScore = score;
+                outStyles = section.styles[];
+            }
+        }
+        return outStyles;
+    }
+
+    /// Get the name of the style manager used by this stylesheet.
+    @property string styleManagerName() const pure nothrow {return styleManagerName_;}
+
+private:
+    // Load stylesheet metadata (the "meta" section).
+    void loadMeta(ref YAMLNode meta)
+    {
+        styleManagerName_ = meta["styleManager"].as!string;
+    }
+
+    // Load style sections (the "style" section).
+    //
+    // Throws:  GUIInitException on failure.
+    void loadStyles(ref YAMLNode styles)
+    {
+        // Process each style section in the stylesheet, with header describing
+        // widgets to apply the styling to.
+        foreach(string header, ref YAMLNode styleData; styles)
+        {
+            StyleSection section;
+            parseHeader(header, section);
+
+            // Load styles from the section.
+            foreach(string styleName, ref YAMLNode style; styleData)
+            {
+                section.styles ~= tuple(styleName, style);
+            }
+
+            styleSections_ ~= section;
+        }
+    }
+
+    // Parse style section header to get widget specifiers.
+    //
+    // Params:  header  = Style section header.
+    //          section = StyleSection we're loading.
+    void parseHeader(string header, ref StyleSection section)
+    {
+        // Specifiers are separated by space.
+        // Each specifier can contain widget type, name and style class.
+        auto headerParts = header.split(" ");
+        section.widgetSpecifiers.reserve(headerParts.length);
+        foreach(part; headerParts)
+        {
+            WidgetMeta meta;
+            // Adds the current character to whichever string we're reading into.
+            auto state_ = (dchar c) => meta.type ~= c;
+            uint colonCount = 0;
+            uint semicolonCount = 0;
+            // This is very GC-inefficient. But it might not matter as
+            // this only runs when a GUI is being loaded.
+            foreach(dchar c; part)
+            {
+                // Style class, if any, starts with a semicolon.
+                if(c == '.')
+                {
+                    ++colonCount;
+                    state_ = (dchar c) => meta.styleClass ~= c;
+                }
+                // Widget name, if any, starts with a semicolon.
+                else if(c == ';')
+                {
+                    ++semicolonCount;
+                    state_ = (dchar c) => meta.name ~= c;
+                }
+                else
+                {
+                    // Process the character.
+                    state_(c);
+                }
+            }
+            enforce(colonCount <= 1 && semicolonCount <= 1,
+                    new GUIInitException("More than 1 colon or semicolon in style "
+                                         "section \"" ~ part ~ "\" in style \"" ~ name_ ~ "\""));
+            section.widgetSpecifiers ~= meta;
+        }
     }
 }
 
+/// Metadata describing a widget.
 struct WidgetMeta
 {
+    /// Data type of the widget ('root' for RootWidget, 'label' for LabelWidget and so on.).
     string type;
+    /// Name of the widget, if any.
     string name;
+    /// Style class (like CSS class) of the widget, if any.
     string styleClass;
 }
 
@@ -645,31 +935,41 @@ private:
     /// GUI system that constructed this WidgetLoader.
     GUISystem guiSystem_;
 
+    /// Game data directory.
+    VFSDir gameDir_;
 
-    /// Stack keeping track of the style manager used in the current widget.
-    ///
-    /// Layout managers specified in parent widgets are recursively used 
-    /// in their children. 
-    string[] styleManagerStack_  = ["line"];
     /// Stack keeping track of the layout type used in the current widget.
     ///
     /// Layout types specified in parent widgets are recursively used 
     /// in their children. 
-    string[] layoutManagerStack_ = ["boxManual"];
+    Vector!string layoutManagerStack_;
 
+    /// Stack keeping track of the stylesheet used by the current widget.
+    ///
+    /// Stylesheets specified in parent widgets are recursively used in their children.
+    Vector!Stylesheet styleSheetStack_;
 
-    Stylesheet[] styleSheetStack_;
-
-    WidgetMeta[] widgetMetaStack_ = [WidgetMeta("root", null, null)];
+    /// Stack storing the metadata of the current widget and all its parents.
+    ///
+    /// Used in styling.
+    Vector!WidgetMeta widgetMetaStack_;
 
     @disable this();
     @disable this(this);
+
 package:
-    /// Construct a WidgetLoader loading widgets for specified GUI system.
-    this(GUISystem guiSystem)
+    /// Construct a WidgetLoader.
+    ///
+    /// Params:  guiSystem = GUI system that will manage the widgets.
+    ///          gameDir   = Game data directory to load any style sheets from.
+    this(GUISystem guiSystem, VFSDir gameDir)
     {
+        layoutManagerStack_ ~= "boxManual";
+        widgetMetaStack_    ~= WidgetMeta("root", null, null);
+        widgetMetaStack_.reserve(8);
         styleSheetStack_ = [Stylesheet.defaultStylesheet()];
-        guiSystem_ = guiSystem;
+        guiSystem_       = guiSystem;
+        gameDir_         = gameDir;
     }
 
     /// Parse a root widget, and recursively, its widget tree.
@@ -683,113 +983,171 @@ package:
     }
 
 private:
-    /// Parse a widget (and recursively, its subwidgets) from YAML.
-    ///
-    /// Params: source     = Root node of the YAML tree to parse.
-    ///         widgetCtor = Function that construct the widget of correct type
-    ///                      (determined by the caller).
-    ///
-    /// Throws: GUIInitException on failure.
+    // Parse a widget (and recursively, its subwidgets) from YAML.
+    //
+    // Params: source     = Root node of the YAML tree to parse.
+    //         widgetCtor = Function that construct the widget of correct type
+    //                      (determined by the caller).
+    //
+    // Throws: GUIInitException on failure.
     Widget parseWidget(ref YAMLNode source, Widget delegate(ref YAMLNode) widgetCtor)
     {
         scope(failure)
         {
             writeln("WidgetLoader.parseWidget() or a callee failed");
         }
-        // Parse layout, style manager types.
-        bool popStyle  = false;
-        bool popLayout = false;
+        // Parse layout type, stylesheet.
+        bool popStyleSheet = false;
+        bool popLayout     = false;
         scope(exit)
         {
-            if(popStyle) {styleManagerStack_.popBack();}
-            if(popLayout){layoutManagerStack_.popBack();}
-        }
-        if(source.containsKey("styleManager"))
-        {
-            styleManagerStack_ ~= source["styleManager"].as!string;
-            popStyle = true;
-        }
-        if(source.containsKey("layoutManager"))
-        {
-            layoutManagerStack_ ~= source["layoutManager"].as!string;
-            popLayout = true;
+            if(popStyleSheet) {styleSheetStack_.popBack();}
+            if(popLayout)     {layoutManagerStack_.popBack();}
         }
 
-        Widget[] children;
-        Tuple!(string, YAMLNode)[] stylesParameters;
-        //styleSheetStack_.back.getStyleParameters
-        //    (stylesParameters, widgetTypeName, widgetClassName, name);
+        // We only throw GUIInitException here so make it shorter.
+        alias GUIInitException E;
+
         bool layoutParametersSpecified = false;
         YAMLNode layoutParameters;
+        Widget[] children;
 
-        /// Parse the widget's attributes and subwidgets.
-        foreach(string key, ref YAMLNode value; source)
+        try
         {
-            // A subwidget.
-            if(key.startsWith("widget"))
+            if(source.containsKey("stylesheet"))
             {
-                auto parts = key.split(" ");
-                enforce(parts.length >= 2,
-                        new GUIInitException("Can't parse a widget without widget type"));
-                WidgetMeta subMeta;
-                subMeta.type = parts[1];
-                // Parse extra info in the widget declaration, like widget name, style class.
-                foreach(part; parts[2 .. $])
-                {
-                    // e.g. button class=someStyleClass
-                    if(part.canFind("=") && part.startsWith("class"))
-                    {
-                        subMeta.styleClass = part.split("=")[1];
-                    }
-                    // e.g. button widgetName
-                    else if(subMeta.name is null)
-                    {
-                        subMeta.name = part;
-                    }
-                }
+                loadStyleSheet(source["stylesheet"].as!string);
+                popStyleSheet = true;
+            }
+            if(source.containsKey("layoutManager"))
+            {
+                layoutManagerStack_ ~= source["layoutManager"].as!string;
+                popLayout = true;
+            }
 
-                auto ctor = subMeta.type in guiSystem_.widgetCtors_;
-                enforce(ctor !is null,
-                        new GUIInitException("Unknown widget type in YAML: " ~ subMeta.type));
-                widgetMetaStack_ ~= subMeta;
-                widgetMetaStack_.assumeSafeAppend();
-                scope(exit){widgetMetaStack_.popBack();}
-                children ~= parseWidget(value, *ctor);
-            }
-            // Parameters of a style ("style" is default style, "style xxx" is style xxx)..
-            // Need to not try to read "styleManager"
-            else if(key == "style" || key.startsWith("style "))
+            /// Parse the widget's attributes and subwidgets.
+            foreach(string key, ref YAMLNode value; source)
             {
-                auto parts = key.split(" ");
-                stylesParameters ~= tuple(parts.length >= 2 ? parts[1] : "",
-                                          value);
-            }
-            // Layout parameters.
-            else if(key == "layout")
-            {
-                layoutParameters = value;
-                layoutParametersSpecified = true;
+                // A subwidget.
+                if(key.startsWith("widget"))
+                {
+                    auto parts = key.split(" ");
+                    enforce(parts.length >= 2,
+                            new E("Can't parse a widget without type"));
+                    // Metadata of the subwidget.
+                    WidgetMeta subMeta = parseWidgetMeta(parts[1 .. $]);
+
+                    auto ctor = subMeta.type in guiSystem_.widgetCtors_;
+                    enforce(ctor !is null,
+                            new E("Unknown widget type in YAML: " ~ subMeta.type));
+                    widgetMetaStack_ ~= subMeta;
+                    scope(exit){widgetMetaStack_.popBack();}
+                    children ~= parseWidget(value, *ctor);
+                }
+                // Layout parameters.
+                else if(key == "layout")
+                {
+                    layoutParameters = value;
+                    layoutParametersSpecified = true;
+                }
             }
         }
+        catch(YAMLException e)
+        {
+            throw new E("Error while loading a " ~ widgetMetaStack_.back.type ~
+                        " widget: " ~ e.msg);
+        }
 
-        // Construct the layout.
-        auto layoutType = layoutManagerStack_.back;
-        auto layoutCtor = layoutType in guiSystem_.layoutCtors_;
-        enforce(layoutCtor !is null,
-                new GUIInitException("Unknown layout manager in YAML: " ~ layoutType));
-        auto layout = (*layoutCtor)(layoutParametersSpecified ? &layoutParameters : null);
-
-        // Construct the style manager.
-        auto styleType = styleManagerStack_.back;
-        auto styleCtor = styleType in guiSystem_.styleCtors_;
-        enforce(styleCtor !is null,
-                new GUIInitException("Unknown style manager in YAML: " ~ styleType));
-        auto styleManager = (*styleCtor)(stylesParameters);
-        styleManager.textureManager = guiSystem_.textureManager_;
+        auto layout = constructLayout(layoutParametersSpecified ? &layoutParameters : null);
+        auto styleManager = constructStyleManager();
 
         // Construct the widget and return it.
         Widget result = widgetCtor(source);
         result.init(widgetMetaStack_.back.name, guiSystem_, children, layout, styleManager);
         return result;
+    }
+
+
+    // parseWidget utility functions //
+
+
+    // Parse widget metadata from a widget declaration.
+    //
+    // Params:  parts = Parts of the widget declaration (separated by spaces)
+    //                  except for the "widget" word at start.
+    WidgetMeta parseWidgetMeta(string[] parts)
+    {
+        WidgetMeta meta;
+        meta.type = parts[0];
+        // Parse extra info in the widget declaration, like widget name, style class.
+        foreach(part; parts[1 .. $])
+        {
+            // e.g. button class=someStyleClass
+            if(part.canFind("=") && part.startsWith("class"))
+            {
+                meta.styleClass = part.split("=")[1];
+            }
+            // e.g. button widgetName
+            else if(meta.name is null)
+            {
+                meta.name = part;
+            }
+        }
+        return meta;
+    }
+
+    // Load a stylesheet from a file with specified name and push it to styleSheetStack_.
+    void loadStyleSheet(const string styleSheetName)
+    {
+        try
+        {
+            auto styleFile = gameDir_.file(styleSheetName);
+            auto styleYAML = loadYAML(styleFile);
+            styleSheetStack_ ~= Stylesheet(styleYAML, styleSheetName);
+        }
+        catch(VFSException e)
+        {
+            throw new GUIInitException
+                ("Failed to load GUI: stylesheet " ~ styleSheetName ~
+                 " could not be read: " ~ e.msg);
+        }
+        catch(YAMLException e)
+        {
+            throw new GUIInitException
+                ("Failed to load GUI: YAML error in stylesheet " ~
+                 styleSheetName ~ " : " ~ e.msg);
+        }
+    }
+
+    // Construct a layout with specified parameters (if any).
+    //
+    // Layout type is determined by the layout manager stack.
+    //
+    // Throws:  GUIInitException on failure.
+    Layout constructLayout(YAMLNode* layoutParameters)
+    {
+        auto layoutType = layoutManagerStack_.back;
+        auto layoutCtor = layoutType in guiSystem_.layoutCtors_;
+        enforce(layoutCtor !is null,
+                new GUIInitException("Unknown layout manager in YAML: " ~ layoutType));
+        return (*layoutCtor)(layoutParameters);
+    }
+
+    // Construct a style manager with specified parameters.
+    //
+    // Style manager type is determined by the style sheet stack.
+    //
+    // Throws:  GUIInitException on failure.
+    StyleManager constructStyleManager()
+    {
+        auto stylesParameters =
+            styleSheetStack_.back.getStyleParameters(widgetMetaStack_[]);
+        auto styleType = styleSheetStack_.back.styleManagerName;
+        auto styleCtor = styleType in guiSystem_.styleCtors_;
+        enforce(styleCtor !is null,
+                new GUIInitException("Unknown style manager in YAML: " ~ styleType));
+        auto styleManager = (*styleCtor)(stylesParameters);
+        styleManager.textureManager = guiSystem_.textureManager_;
+        return styleManager;
     }
 }

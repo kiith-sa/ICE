@@ -44,8 +44,8 @@ public:
             Horizontal,
             Vertical
         }
-        /// Name of the style. Empty for default style.
-        string name;
+        /// Name of the style. "default" for default style.
+        string name           = "default";
         /// Font used to draw text.
         string font           = "default";
         /// Color of widget border.
@@ -74,7 +74,7 @@ public:
         /// Construct a LineStyleManager style.
         ///
         /// Params: yaml = YAML to load the style from.
-        ///         name = Name of the style (empty string for default).
+        ///         name = Name of the style.
         ///
         /// Throws: StyleInitException on error.
         this(ref YAMLNode yaml, string name)
@@ -127,19 +127,19 @@ private:
 public:
     /// Construct a LineStyleManager with specified styles.
     ///
-    /// Styles must contain the default style (with name "").
+    /// Styles must contain the default style (with name "default").
     this(ref Style[] styles)
     in
     {
         foreach(i1, ref s1; styles) foreach(i2, ref s2; styles)
         {
             assert(i1 == i2 || s1.name != s2.name, 
-                   "Two styles with identical names");
+                   "Two styles with identical names: \"" ~ s1.name ~ "\"");
         }
     }
     body
     {
-        bool defStyle(ref Style s){return s.name == "";}
+        bool defStyle(ref Style s){return s.name == "default";}
         auto searchResult = styles.find!defStyle();
         assert(!searchResult.empty,
                "Trying to construct a LineStyleManager without a default style");
@@ -153,7 +153,7 @@ public:
         auto findResult = find!matchingStyle(styles_);
         if(findResult.empty)
         {
-            bool defStyle(ref Style s){return s.name == "";}
+            bool defStyle(ref Style s){return s.name == "default";}
             style_ = styles_.find!defStyle().front;
             return;
         }

@@ -165,7 +165,7 @@ private:
                 const name = credit["name"].as!string;
                 b.buildWidget!"label"((ref WidgetBuilder b)
                 {
-                    b.style("", labelStyleMedium);
+                    b.style("default", labelStyleMedium);
                     b.layout("{x: pLeft, y: 'pTop + " ~ subYOffsetStr ~ "'," ~ 
                              " w: pWidth, h: " ~ nameHeightStr ~ "}");
                     b.widgetParams("{text: '" ~ name ~ "'}");
@@ -180,7 +180,7 @@ private:
                 const link = credit["link"].as!string;
                 b.buildWidget!"label"((ref WidgetBuilder b)
                 {
-                    b.style("", labelStyleLink);
+                    b.style("default", labelStyleLink);
                     b.layout("{x: pLeft, y: 'pTop + " ~ subYOffsetStr ~ "'," ~ 
                              " w: pWidth, h: " ~ linkHeightStr ~ "}");
                     b.widgetParams("{text: '" ~ link ~ "'}");
@@ -202,13 +202,13 @@ private:
             b.buildWidget!"container"((ref WidgetBuilder b)
             {
                 auto subYOffsetStr = to!string(subYOffset);
-                b.style("", labelStyleLarge);
+                b.style("default", labelStyleLarge);
                 b.layout("{x: 'pLeft + 16', y: 'pTop + " ~ yOffsetStr ~ "'," ~
                          " w: 'pWidth - 32', h: " ~ heightStr ~ "}");
                 // Subsection header.
                 b.buildWidget!"label"((ref WidgetBuilder b)
                 {
-                    b.style("", labelStyleLarge);
+                    b.style("default", labelStyleLarge);
                     b.layout("{x: pLeft, y: 'pTop + " ~ subYOffsetStr ~ "'," ~ 
                              " w: pWidth, h: " ~ headerHeightStr ~ "}");
                     b.widgetParams("{text: '" ~ subSectionName ~ "'}");
@@ -230,7 +230,7 @@ private:
         {
             b.styleManager("line");
             b.layoutManager("boxManual");
-            b.style("", "{backgroundColor: rgba000000FF}");
+            b.style("default", "{backgroundColor: rgba000000FF}");
             b.layout("{x: 'pLeft + 96', y: 'pTop + 16'," ~ 
                      " w: 'pWidth - 192', h: 'pHeight - 32'}");
 
@@ -238,7 +238,7 @@ private:
             b.buildWidget!"button"((ref WidgetBuilder b)
             {
                 b.name = "close";
-                b.style("",        buttonStyleDefault);
+                b.style("default", buttonStyleDefault);
                 b.style("focused", buttonStyleFocused);
                 b.style("active",  buttonStyleActive);
                 b.layout("{x: 'pLeft + pWidth / 2 - 72', y: 'pBottom - 32'," ~
@@ -249,7 +249,7 @@ private:
             // "Credits"/"The End" (after winning a campaign) label.
             b.buildWidget!"label"((ref WidgetBuilder b)
             {
-                b.style("", labelStyleXLarge);
+                b.style("default", labelStyleXLarge);
                 b.layout("{x: 'pLeft + pWidth / 2 - 64', y: 'pTop + 8'," ~ 
                          " w: 128, h: 24}");
                 b.widgetParams(wonCampaign_ ? "{text: The End.}" : "{text: Credits}");
