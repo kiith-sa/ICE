@@ -162,8 +162,8 @@ class VisualSystem : System
                 const pos = physics.position;
                 if(data.type == VisualData.Type.Lines)
                 {
-                    const vertices    = &data.vertices;
-                    const widths      = &data.widths;
+                    auto vertices     = &data.vertices;
+                    auto widths       = &data.widths;
                     const vertexCount = vertices.length;
 
                     videoDriver_.lineAA = true;
@@ -275,8 +275,8 @@ class VisualSystem : System
 
                     {
                         auto zone = Zone("VisualData vertices/widths allocation");
-                        output.vertices = FixedArray!(VisualData.ColoredVertex)(vertexCount);
-                        output.widths   = FixedArray!float(vertexCount / 2);
+                        output.vertices.length = vertexCount;
+                        output.widths.length   = vertexCount / 2;
                     }
 
                     size_t vertex = 0;

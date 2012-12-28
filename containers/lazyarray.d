@@ -10,6 +10,7 @@ module containers.lazyarray;
 
 
 import std.algorithm;
+import std.range;
 import std.traits;
 import std.typecons;
 
@@ -122,20 +123,25 @@ struct LazyArray(T, ID = string)
     @disable void opAssign(LazyArray);
 
     private:
-        ///Item with a resource ID.
-        struct Item
-        {
-            ID id;
-            T value = void;
-        }
-
-        ///Allocated storage.
-        Vector!(Item, BufferSwappingAllocator!(Item, 8)) storage_;
+        ///IDs of items in storage_. ids_[i] is the ID if storage_[i].
+        Vector!(ID, BufferSwappingAllocator!(ID, 8)) ids_;
+        ///Allocated storage. Not using Vector due to a DMD 2.061 error.
+        T[] storage_;
 
         ///Delegate used to load data if it's requested and not loaded yet.
         bool delegate(ID, out T) loadData_ = null;
 
     public:
+        ///Destroy the LazyArray.
+        ~this()
+        {
+            foreach(ref elem; storage_)
+            {
+                destroy(elem);
+            }
+            destroy(storage_);
+        }
+
         ///Get the item at specified index, loading it if needed. Returns null on failure.
         T* opIndex(ref LazyArrayIndex!(T, ID) index)
         in
@@ -158,9 +164,9 @@ struct LazyArray(T, ID = string)
 
                 //Check if we've already loaded this resource.
                 long storageIdx = -1;
-                foreach(size_t idx, ref Item item; storage_)
+                foreach(size_t idx, ref T item; storage_)
                 {
-                    if(item.id == index.idNonConst(this)) 
+                    if(ids_[idx] == index.idNonConst(this)) 
                     {
                         storageIdx = idx;
                         break;
@@ -174,19 +180,23 @@ struct LazyArray(T, ID = string)
                 else
                 {
                     storage_.length = storage_.length + 1;
-                    storage_.back.id = index.idNonConst(this);
+                    storage_.assumeSafeAppend();
+                    ids_.length     = ids_.length + 1;
+                    ids_.back       = index.idNonConst(this);
                     //Add the new item, and clear it if we fail.
-                    if(!loadData_(index.idNonConst(this), storage_.back.value))
+                    if(!loadData_(index.idNonConst(this), storage_.back))
                     {
                         clear(storage_.back);
+                        clear(ids_.back);
                         storage_.length = storage_.length - 1;
+                        ids_.length     = ids_.length - 1;
                         return null;
                     }
                     index.index = cast(uint)storage_.length - 1;
                 }
             }
 
-            return &(storage_[index.index_].value);
+            return &(storage_[index.index_]);
         }
 
         /**
@@ -200,7 +210,7 @@ struct LazyArray(T, ID = string)
             int result = 0;
             foreach(ref item; storage_)
             {
-                result = dg(item.value);
+                result = dg(item);
                 if(result){break;}
             }
             return result;

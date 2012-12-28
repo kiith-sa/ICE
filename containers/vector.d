@@ -226,7 +226,7 @@ struct Vector(T, Allocator = DirectAllocator)
         }
 
         ///Set all elements in the vector to specified value.
-        void opSliceAssign(T value) nothrow
+        void opSliceAssign(T value)
         {
             data_[0 .. used_] = value;
         }

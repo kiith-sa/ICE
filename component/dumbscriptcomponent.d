@@ -200,16 +200,22 @@ struct DumbScript
             }
         }
 
+        import std.container;
         ///Instructions of the script.
-        FixedArray!Instruction instructions_;
+        ///
+        ///TODO As soon as custom allocators are supported, we should use one 
+        ///here to track memory usage. It's not certain that RAII works in
+        ///all cases and there might be leaks.
+        Array!Instruction instructions_;
 
     public:
+        import memory.memory;
         ///Load a DumbScript from specified file.
         this(YAMLNode yaml)
         {
             {
                 auto zone = Zone("DumbScript instructions allocation");
-                instructions_ = FixedArray!Instruction(yaml.length);
+                instructions_.length = yaml.length;
             }
             uint idx = 0;
             foreach(string type, ref YAMLNode args; yaml)

@@ -10,6 +10,7 @@ module component.weaponcomponent;
 
 
 import std.array;
+import std.container;
 import std.conv;
 
 import component.spawnercomponent;
@@ -137,8 +138,12 @@ struct WeaponData
     ///Time it takes to reload after running out of ammo.
     double reloadTime = 1.0f;
 
+    ///TODO As soon as custom allocators are supported, we should use one 
+    ///here to track memory usage. It's not certain that RAII works in
+    ///all cases and there might be leaks.
+
     ///Spawns to spawn weapon's projectiles, once added to a SpawnerComponent of an Entity.
-    FixedArray!Spawn spawns;
+    Array!Spawn spawns;
 
     /**
      * Initialize from YAML.
@@ -164,7 +169,7 @@ struct WeaponData
 
         {
             auto zone = Zone("WeaponData spawns allocation");
-            spawns = FixedArray!(Spawn)(burst.length);
+            spawns.length = burst.length;
         }
         uint i = 0;
         foreach(ref YAMLNode shot; burst)

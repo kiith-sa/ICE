@@ -9,6 +9,8 @@
 module component.visualcomponent;
 
 
+import std.container;
+
 import color;
 import containers.fixedarray;
 import containers.lazyarray;
@@ -80,10 +82,14 @@ struct VisualData
         ///Visual data stored for the Lines type.
         struct
         {
+            ///TODO As soon as custom allocators are supported, we should use one 
+            ///here to track memory usage. It's not certain that RAII works in
+            ///all cases and there might be leaks.
+
             ///Vertices (in pairs).
-            FixedArray!ColoredVertex vertices;
+            Array!ColoredVertex vertices;
             ///Line widths (each for a pair of vertices)
-            FixedArray!float widths;
+            Array!float widths;
         }
     }
 }

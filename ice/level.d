@@ -366,8 +366,6 @@ class DumbLevel : Level
                 }
 
             private:
-                ///Zero-initialize when manually allocating.
-                static bool CAN_INITIALIZE_WITH_ZEROES;
                 ///Instruction storage.
                 union
                 {
@@ -382,7 +380,7 @@ class DumbLevel : Level
 
             public:
                 ///Construct an instruction. rhs must be a level instruction struct.
-                this(T)(T rhs) pure nothrow
+                this(T)(T rhs)
                 {
                     alias Unqual!T U;
                     type_ = instructionType!U();
@@ -428,8 +426,8 @@ class DumbLevel : Level
         ///Loaded wave definitions.
         Vector!NamedWaveDefinition waveDefinitions_;
 
-        ///Instructions of the level script.
-        Vector!Instruction levelScript_;
+        ///Instructions of the level script. Not using Vector because of a DMD 2.061 error.
+        Instruction[] levelScript_;
 
         ///Has the level been successfully loaded?
         bool levelLoaded_ = false;
@@ -722,6 +720,7 @@ class DumbLevel : Level
                     throw new E("Unknown level instruction in level \"" ~ 
                                 name_ ~ "\": " ~ name_);
             }
+            levelScript_.assumeSafeAppend();
             levelLoaded_ = true;
         }
 }
