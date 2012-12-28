@@ -35,10 +35,15 @@ package struct BinaryTexturePacker
             SegmentedVector!(Node, 64) storage;
 
             ///Allocate a new node and return a pointer to it.
-            Node* newNode(ref Rectu area)
+            Node* newNode(ref const Rectu area)
             {
                 storage ~= Node(area, this);
                 return &storage[storage.length - 1];
+            }
+            ///Ditto.
+            Node* newNode(const Rectu area)
+            {
+                return newNode(area);
             }
         }
 
@@ -178,7 +183,6 @@ package struct BinaryTexturePacker
         {
             size_ = size;
             nodeStorage_ = alloc!NodeStorage;
-            /* root_ = alloc!Node(Rectu(Vector2u(0, 0), size)); */
             root_ = nodeStorage_.newNode(Rectu(Vector2u(0, 0), size));
         }
 

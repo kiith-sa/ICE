@@ -35,6 +35,11 @@ struct Vector2(T)
     {
         return equals(x, v.x) && equals(y, v.y);
     }
+    ///Ditto.
+    bool opEquals(const Vector2 v) const pure
+    {
+        return equals(x, v.x) && equals(y, v.y);
+    }
 
     ///Addition/subtraction with a vector.
     Vector2 opBinary(string op)(const Vector2 v) const pure 

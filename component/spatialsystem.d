@@ -247,7 +247,7 @@ class SpatialSystem : System
                         return result;
                     }
             }
-            static assert(Foreach.sizeof <= 16);
+            static assert(Foreach.sizeof <= 24);
 
             //So, even for any entity with volume that is in one cell only, we do this:
             //* Return a 16-byte struct.
@@ -367,6 +367,11 @@ class SpatialSystem : System
             //Translate relative to the grid.
             const translated = aabbox + (position - origin_);
             return CellsAABBox(this, translated);
+        }
+        /// Ditto.
+        auto cells(const Vector2f position, const Rectf aabbox)
+        {
+            return cells(position, aabbox);
         }
         private static void unittestCells()
         {

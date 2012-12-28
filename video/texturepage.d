@@ -81,6 +81,8 @@ struct TexturePage(TexturePacker, TextureBackend)
 
         ///Remove texture with specified bounds from this page.
         void removeTexture(const ref Rectu bounds) {packer_.freeSpace(bounds);}
+        ///Ditto.
+        void removeTexture(const Rectu bounds) {packer_.freeSpace(bounds);}
 
         ///Determine if this page is empty (i.e. there are no textures on it).
         @property bool empty() const pure {return packer_.empty();}
