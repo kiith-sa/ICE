@@ -482,7 +482,6 @@ public:
     /// Construct a MemProfCLI with specified command-line arguments and parse them.
     this(string[] cliArgs)
     {
-        // We start parsing global options/commands.
         processArg_ = &globalOrCommand;
         translateAliases(cliArgs);
         foreach(arg; cliArgs[1 .. $]) {processArg_(arg);}
@@ -569,7 +568,7 @@ public:
 
 
 private:
-    /// Parses local options for the "distribution" command.
+    // Parses local options for the "distribution" command.
     void localDistribution(string arg)
     {
         processOption(arg, (opt, args){
@@ -645,7 +644,7 @@ private:
         });
     }
 
-    /// Parses local options for the "filter" command.
+    // Parses local options for the "filter" command.
     void localFilter(string arg)
     {
         processOption(arg, (opt, args){
@@ -689,7 +688,7 @@ private:
         });
     }
 
-    /// Parses local options for the "top" command.
+    // Parses local options for the "top" command.
     void localTop(string arg)
     {
         processOption(arg, (opt, args){
@@ -728,7 +727,7 @@ private:
         });
     }
 
-    /// Parses local options for the "list" command.
+    // Parses local options for the "list" command.
     void localList(string arg)
     {
         auto listAction(T)(string property)
@@ -752,7 +751,7 @@ private:
         });
     }
 
-    /// Parse a command. Sets up command state and switches to its option parser function.
+    // Parse a command. Sets up command state and switches to its option parser function.
     void command(string arg)
     {
         switch (arg)
@@ -828,7 +827,7 @@ private:
         }
     }
 
-    /// Parse a global option or command.
+    // Parse a global option or command.
     void globalOrCommand(string arg)
     {
         // Command
@@ -845,7 +844,7 @@ private:
             case "help":  help(); return;
             case "stdin": readFromStdin = true; return;
             case "log":
-                enforce(!arg.empty,
+                enforce(!args.empty,
                         new MemProfCLIException("Option --log needs an argument (filename)"));
                 logFileName = args[0];
                 return;
