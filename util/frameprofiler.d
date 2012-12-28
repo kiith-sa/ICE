@@ -121,6 +121,8 @@ struct Zone
         /// Index of the stored zone in the zones_ array.
         ///
         /// That is where recorded data is stored.
+        ///
+        /// If set to uint.max, the zone is ignored (e.g. outside of a frame).
         uint zoneIndex_;
 
     public:
@@ -135,7 +137,12 @@ struct Zone
         this(string zoneInfo)
         {
             if(unableToRecord()) {return;}
-            assert(currentZoneLevel_ >= 1, "Zone outside of a frame");
+            if(currentZoneLevel_ < 1)
+            {
+                writeln("Zone " ~ zoneInfo ~ " outside of a frame; ignoring");
+                zoneIndex_ = uint.max;
+                return;
+            }
 
             ++currentZoneLevel_;
             zoneIndex_ = recordedZoneCount_;
@@ -160,7 +167,7 @@ struct Zone
         /// Destroy a zone, recording its end time and exiting it.
         ~this()
         {
-            if(unableToRecord()) {return;}
+            if(unableToRecord() || zoneIndex_ == uint.max) {return;}
             zones_[zoneIndex_].end = getTime();
             assert(zones_[zoneIndex_].parent == zoneStack_[currentZoneLevel_ - 1],
                    "A child zone (" ~ zones_[zoneIndex_].info ~ 
@@ -411,7 +418,6 @@ bool unableToRecord()
     // Ran out of space.
     if(recordedFrameCount_ >= frames_.length || recordedZoneCount_ >= zones_.length)
     {
-        writeln("FrameProfiler stopped; out of allocated memory");
         state_ = FrameProfilerState.Stopped;
         return true;
     }
