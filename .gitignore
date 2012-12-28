@@ -1,3 +1,6 @@
+/dependencies/dgamevfs/.gitignore
+/dependencies/dgamevfs/cdc.obj
+/dependencies/dgamevfs/unittest.obj
 /iceLog.txt
 /README.txt
 /libvorbis1.3.3.zip
