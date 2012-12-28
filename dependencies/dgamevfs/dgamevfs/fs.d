@@ -262,12 +262,12 @@ class FSFile : VFSFile
         }
 
         override @property bool exists() const {return .exists(physicalPath_);}
-
+            
         override @property bool open() const {return mode_ != Mode.Closed;}
 
-    protected:
+    protected:    
         override void openRead()
-        {
+        {          
             assert(exists, "Trying to open a nonexistent file for reading: " ~ path);
             assert(mode_ == Mode.Closed, "Trying to open a file that is already open: " ~ path);
 

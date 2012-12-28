@@ -123,7 +123,7 @@ bool testVFSFileSeek(VFSDir parent, string name)
         if(buffer != "42."){return false;}
 
         input.seek(0, Seek.Set);
-        buffer = new char[file.bytes];
+        buffer = new char[cast(uint)file.bytes];
         input.read(cast(void[])buffer);
         if(buffer != "The answer is 42."){return false;}
     }

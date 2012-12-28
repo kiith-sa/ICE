@@ -9,13 +9,13 @@
 module dgamevfs.exceptions;
 
 
-import std.string;
+import std.conv;
 
 
 ///Parent class of all exceptions thrown at VFS errors.
 abstract class VFSException : Exception
 {
-    public this(string msg, string file = __FILE__, int line = __LINE__)
+    public this(string msg, string file = __FILE__, int line = __LINE__) @trusted nothrow
     {
         super(msg, file, line);
     }
@@ -24,7 +24,7 @@ abstract class VFSException : Exception
 ///Exception thrown when a file/directory was not found.
 class VFSNotFoundException : VFSException 
 {
-    public this(string msg, string file = __FILE__, int line = __LINE__)
+    public this(string msg, string file = __FILE__, int line = __LINE__) @safe nothrow
     {
         super(msg, file, line);
     }
@@ -33,7 +33,7 @@ class VFSNotFoundException : VFSException
 ///Exception thrown when an invalid path or file/directory name is detected.
 class VFSInvalidPathException : VFSException 
 {
-    public this(string msg, string file = __FILE__, int line = __LINE__)
+    public this(string msg, string file = __FILE__, int line = __LINE__) @safe nothrow
     {
         super(msg, file, line);
     }
@@ -42,7 +42,7 @@ class VFSInvalidPathException : VFSException
 ///Exception thrown at input/output errors.
 class VFSIOException : VFSException 
 {
-    public this(string msg, string file = __FILE__, int line = __LINE__)
+    public this(string msg, string file = __FILE__, int line = __LINE__) @safe nothrow
     {
         super(msg, file, line);
     }
@@ -51,7 +51,7 @@ class VFSIOException : VFSException
 ///Exception thrown at mounting errors.
 class VFSMountException : VFSException 
 {
-    public this(string msg, string file = __FILE__, int line = __LINE__)
+    public this(string msg, string file = __FILE__, int line = __LINE__) @safe nothrow
     {
         super(msg, file, line);
     }
@@ -63,9 +63,11 @@ package:
 //Template for shortcut functions to throw VFS exceptions.
 template error(E) if(is(E : VFSException))
 {
-    E error(string file = __FILE__, int line = __LINE__, A ...)(A args)
+    E error(string file = __FILE__, int line = __LINE__, A ...)(A args) @trusted
     {
-        return new E(std.string.format(args), file, line);
+        string message;
+        foreach(arg; args) {message ~= to!string(arg);}
+        return new E(message, file, line);
     }
 }
 

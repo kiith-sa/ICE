@@ -63,7 +63,7 @@ class MemoryDir : VFSDir
             writable_ = rhs ? Yes.writable : No.writable;
             foreach(dir; subdirs_) {dir.writable = rhs;}
         }
-        
+
         override @property bool exists() const {return exists_;}
 
         override VFSFile file(string path)
@@ -261,13 +261,13 @@ class MemoryFile : VFSFile
         }
 
         override @property bool exists() const {return buffer_ !is null;}
-            
+
         override @property bool open() const
         {
             return mode_ != Mode.Closed;
         }
 
-    protected:    
+    protected:
         override void openRead()
         {
             assert(exists, "Trying to open a nonexistent file for reading: " ~ path);
