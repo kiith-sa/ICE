@@ -22,6 +22,7 @@ import std.exception;
 import std.stdio; 
 import std.regex;
 import std.string;
+import std.typecons;
 import std.utf;
 
 import dyaml.node;
@@ -45,6 +46,7 @@ package class ConstructorException : YAMLException
      *          end   = End position of the error context.
      */
     this(string msg, Mark start, Mark end, string file = __FILE__, int line = __LINE__)
+        @safe
     {
         super(msg ~ "\nstart: " ~ start.toString() ~ "\nend: " ~ end.toString(),
               file, line);
@@ -87,7 +89,8 @@ final class Constructor
          *
          * Params:  defaultConstructors = Use constructors for default YAML tags?
          */
-        this(const bool defaultConstructors = true)
+        this(const Flag!"useDefaultConstructors" defaultConstructors = Yes.useDefaultConstructors)
+            @safe nothrow
         {
             if(!defaultConstructors){return;}
 
@@ -111,7 +114,7 @@ final class Constructor
         }
 
         ///Destroy the constructor.
-        ~this()
+        pure @safe nothrow ~this()
         {
             clear(fromScalar_);
             fromScalar_ = null;
@@ -190,6 +193,7 @@ final class Constructor
          * --------------------
          */
         void addConstructorScalar(T)(const string tag, T function(ref Node) ctor)
+            @safe nothrow
         {
             const t = Tag(tag);
             auto deleg = addConstructor!T(t, ctor);
@@ -220,7 +224,7 @@ final class Constructor
          *         if(y != s.y){return y - s.y;}
          *         if(z != s.z){return z - s.z;}
          *         return 0;
-         *     }
+         *     }        
          * }
          *
          * MyStruct constructMyStructSequence(ref Node node)
@@ -241,6 +245,7 @@ final class Constructor
          * --------------------
          */
         void addConstructorSequence(T)(const string tag, T function(ref Node) ctor)
+            @safe nothrow
         {
             const t = Tag(tag);
             auto deleg = addConstructor!T(t, ctor);
@@ -292,6 +297,7 @@ final class Constructor
          * --------------------
          */
         void addConstructorMapping(T)(const string tag, T function(ref Node) ctor)
+            @safe nothrow
         {
             const t = Tag(tag);
             auto deleg = addConstructor!T(t, ctor);
@@ -310,7 +316,8 @@ final class Constructor
          *
          * Returns: Constructed node.
          */ 
-        Node node(T, U)(const Mark start, const Mark end, const Tag tag, T value, U style) 
+        Node node(T, U)(const Mark start, const Mark end, const Tag tag, 
+                        T value, U style) @trusted
             if((is(T : string) || is(T == Node[]) || is(T == Node.Pair[])) &&
                (is(U : CollectionStyle) || is(U : ScalarStyle)))
         {
@@ -321,6 +328,7 @@ final class Constructor
             enforce((tag in *delegates!T) !is null,
                     new Error("No constructor function from " ~ type ~
                               " for tag " ~ tag.get(), start, end));
+
             Node node = Node(value);
             try
             {
@@ -350,13 +358,15 @@ final class Constructor
          * Params:  tag  = Tag for the function to handle.
          *          ctor = Constructor function.
          */
-        auto addConstructor(T)(const Tag tag, T function(ref Node) ctor)
+        auto addConstructor(T)(const Tag tag, T function(ref Node) ctor) 
+            @trusted nothrow
         {
             assert((tag in fromScalar_) is null && 
                    (tag in fromSequence_) is null &&
                    (tag in fromMapping_) is null,
                    "Constructor function for tag " ~ tag.get ~ " is already "
                    "specified. Can't specify another one.");
+
 
             return (ref Node n)
             {
@@ -366,7 +376,7 @@ final class Constructor
         }
 
         //Get the array of constructor functions for scalar, sequence or mapping.
-        auto delegates(T)() 
+        auto delegates(T)() pure @safe nothrow
         {
             static if(is(T : string))          {return &fromScalar_;}
             else static if(is(T : Node[]))     {return &fromSequence_;}
@@ -449,7 +459,8 @@ unittest
 {
     long getLong(string str)
     {
-        return constructLong(Node(str));
+        auto node = Node(str);
+        return constructLong(node);
     }
 
     string canonical   = "685230";
@@ -505,7 +516,7 @@ real constructReal(ref Node node)
     }
     catch(ConvException e)
     {
-        throw new Exception("Unable to parse float value: " ~ value);
+        throw new Exception("Unable to parse float value: \"" ~ value ~ "\"");
     }
 
     return result;
@@ -519,7 +530,8 @@ unittest
 
     real getReal(string str)
     {
-        return constructReal(Node(str));
+        auto node = Node(str);
+        return constructReal(node);
     }
 
     string canonical   = "6.8523015e+5";
@@ -561,7 +573,8 @@ unittest
     char[] buffer;
     buffer.length = 256;
     string input = cast(string)Base64.encode(test, buffer);
-    auto value = constructBinary(Node(input));
+    auto node = Node(input);
+    auto value = constructBinary(node);
     assert(value == test);
 }
 
@@ -642,7 +655,8 @@ unittest
 
     string timestamp(string value)
     {
-        return constructTimestamp(Node(value)).toISOString();
+        auto node = Node(value);
+        return constructTimestamp(node).toISOString();
     }
 
     string canonical      = "2001-12-15T02:59:43.1Z";
@@ -736,7 +750,8 @@ unittest
 
     bool hasDuplicates(Node[] nodes)
     {
-        return null !is collectException(constructOrderedMap(Node(nodes)));
+        auto node = Node(nodes);
+        return null !is collectException(constructOrderedMap(node));
     }
 
     assert(hasDuplicates(alternateTypes(8) ~ alternateTypes(2)));
@@ -807,14 +822,15 @@ unittest
         return true;
     }
 
-    assert(null !is collectException
-           (constructSet(Node(DuplicatesShort.dup))));
-    assert(null is collectException
-           (constructSet(Node(noDuplicatesShort.dup))));
-    assert(null !is collectException
-           (constructSet(Node(DuplicatesLong.dup))));
-    assert(null is collectException
-           (constructSet(Node(noDuplicatesLong.dup))));
+    auto nodeDuplicatesShort   = Node(DuplicatesShort.dup);
+    auto nodeNoDuplicatesShort = Node(noDuplicatesShort.dup);
+    auto nodeDuplicatesLong    = Node(DuplicatesLong.dup);
+    auto nodeNoDuplicatesLong  = Node(noDuplicatesLong.dup);
+
+    assert(null !is collectException(constructSet(nodeDuplicatesShort)));
+    assert(null is  collectException(constructSet(nodeNoDuplicatesShort)));
+    assert(null !is collectException(constructSet(nodeDuplicatesLong)));
+    assert(null is  collectException(constructSet(nodeNoDuplicatesLong)));
 }
 
 ///Construct a sequence (array) _node.
@@ -852,7 +868,7 @@ struct MyStruct
 {
     int x, y, z;
 
-    const int opCmp(ref const MyStruct s)
+    const int opCmp(ref const MyStruct s) const pure @safe nothrow
     {
         if(x != s.x){return x - s.x;}
         if(y != s.y){return y - s.y;}
