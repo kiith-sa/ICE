@@ -163,7 +163,7 @@ public:
     mixin registerTest!(unittestArray, "Array allocation");
 
     ///VFSDir to output memory log to.
-    VFSDir gameDir;
+    VFSDir outputDir;
 
     ///Debug info is only recorded after main() is entered.
     ///
@@ -558,12 +558,15 @@ private:
     static ~this()
     {
         scope(failure){writeln("Error logging memory usage");}
+        // Game dir not specified (e.g. due to aborted initialization),
+        // don't write out anything.
+        if(outputDir is null){return;}
 
         writeln("Collecting memory usage profile...");
         string stats = statistics();
         writeln("Writing memory usage profile...");
 
-        auto logs = gameDir.dir("main::logs");
+        auto logs = outputDir.dir("main::logs");
         logs.create();
         logs.file("memoryLog.yaml").output.write(cast(void[]) stats);
 

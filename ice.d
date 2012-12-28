@@ -85,7 +85,7 @@ void main(string[] args)
         gameDir.mount(userStack);
 
         writeln("Initialized VFS...");
-        memory.memory.gameDir = gameDir;
+        memory.memory.outputDir = gameDir;
         auto ice = new Ice(gameDir);
         // This is here due to an unknown std.regex 32bit bug.
         // It should be moved back to the start later.
