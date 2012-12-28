@@ -598,7 +598,7 @@ class Ice
                     }
                 }
                 auto levelGUI     = new LevelGUI(guiSystem_, levels, gameDir_, &startLevelSeparate);
-                auto credits      = new Credits(guiSystem_, gameDir);
+                auto credits      = new Credits(guiSystem_, gameDir_);
                 auto campaignsGUI = new CampaignsGUI(guiSystem_, campaignManager_, gameDir_);
                 auto campaignGUI  =
                     new CampaignGUI(guiSystem_, gameDir_, campaignManager_.currentCampaign,
@@ -608,7 +608,7 @@ class Ice
                 campaignManager_.changedCampaign.connect(&campaignGUI.campaign);
                 auto profileGUI   =
                     new ProfileGUI(profileManager_, guiSystem_, guiSystem_.rootSlot, gameDir_);
-                auto controlsFile = gameDir.dir("gui").file("controlsGUI.yaml");
+                auto controlsFile = gameDir_.dir("gui").file("controlsGUI.yaml");
                 auto controlsRoot = guiSystem_.loadWidgetTree(loadYAML(controlsFile));
                 controlsRoot.close!ButtonWidget.pressed.connect({guiSwapper_.setGUI("ice");});
                 auto controlsGUI  =  new PlainSwappableGUI(controlsRoot);
