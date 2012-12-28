@@ -396,9 +396,9 @@ void help()
         "",
         "Commands:",
         "  top                        Get the top frames by duration.",
-        "                             Will get the top 16 allocations by default.",
+        "                             Will get the top 16 frames by default.",
         "    Local options:",
-        "      --elements=<number>    How many top allocations to return. Can be",
+        "      --elements=<number>    How many top frames to return. Can be",
         "                             given as a number or a percentage."
         "",
         "  memprof-filter             Get time intervals for the --time option of the",
