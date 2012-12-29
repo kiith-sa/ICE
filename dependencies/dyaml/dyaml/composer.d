@@ -10,7 +10,9 @@
  */
 module dyaml.composer;
 
+import core.memory;
 
+import std.array;
 import std.conv;
 import std.exception;
 import std.typecons;
@@ -47,7 +49,12 @@ final class Composer
         Constructor constructor_;
         ///Nodes associated with anchors. Used by YAML aliases.
         Node[Anchor] anchors_;
-                              
+
+        ///Used to reduce allocations when creating pair arrays.
+        Appender!(Node.Pair[], Node.Pair) pairAppender_;
+        ///Used to reduce allocations when creating node arrays.
+        Appender!(Node[], Node) nodeAppender_;
+
     public:
         /**
          * Construct a composer.
@@ -56,11 +63,14 @@ final class Composer
          *          resolver    = Resolver to resolve tags (data types).
          *          constructor = Constructor to construct nodes.
          */
-        this(Parser parser, Resolver resolver, Constructor constructor) @safe nothrow pure
+        this(Parser parser, Resolver resolver, Constructor constructor) @trusted nothrow
         {
             parser_ = parser;
             resolver_ = resolver;
             constructor_ = constructor;
+
+            pairAppender_ = appender!(Node.Pair[])();
+            nodeAppender_ = appender!(Node[])();
         }
 
         ///Destroy the composer.
@@ -185,7 +195,7 @@ final class Composer
                 result = composeSequenceNode();
             }
             else if(parser_.checkEvent(EventID.MappingStart))
-            {            
+            {
                 result = composeMappingNode();
             }
             else{assert(false, "This code should never be reached");}
@@ -217,14 +227,16 @@ final class Composer
             const tag = resolver_.resolve(NodeID.Sequence, startEvent.tag, null, 
                                           startEvent.implicit);
 
-            Node[] children;
             while(!parser_.checkEvent(EventID.SequenceEnd))
             {
-                children ~= composeNode();
+                nodeAppender_.put(composeNode());
             }
 
+            core.memory.GC.disable();
+            scope(exit){core.memory.GC.enable();}
             Node node = constructor_.node(startEvent.startMark, parser_.getEvent().endMark, 
-                                          tag, children, startEvent.collectionStyle);
+                                          tag, nodeAppender_.data.dup, startEvent.collectionStyle);
+            nodeAppender_.clear();
 
             return node;
         }
@@ -237,13 +249,11 @@ final class Composer
          * Params:  root      = Node to flatten.
          *          startMark = Start position of the node.
          *          endMark   = End position of the node.
-         *          
+         *
          * Returns: Flattened mapping as pairs.
          */
-        Node.Pair[] flatten(ref Node root, in Mark startMark, in Mark endMark) @system
+        Node.Pair[] flatten(ref Node root, const Mark startMark, const Mark endMark) @system
         {
-            Node.Pair[] result;
-
             void error(Node node)
             {
                 //this is Composer, but the code is related to Constructor.
@@ -256,6 +266,7 @@ final class Composer
                                                startMark, endMark);
             }
 
+
             if(root.isMapping)
             {
                 Node[] toMerge;
@@ -265,26 +276,31 @@ final class Composer
                     else
                     {
                         auto temp = Node.Pair(key, value);
-                        merge(result, temp);
+                        merge(pairAppender_, temp);
                     }
                 }
                 foreach(node; toMerge)
                 {
-                    merge(result, flatten(node, startMark, endMark));
+                    merge(pairAppender_, flatten(node, startMark, endMark));
                 }
             }
             //Must be a sequence of mappings.
             else if(root.isSequence) foreach(ref Node node; root)
             {
                 if(!node.isType!(Node.Pair[])){error(node);}
-                merge(result, flatten(node, startMark, endMark));
+                merge(pairAppender_, flatten(node, startMark, endMark));
             }
             else
             {
                 error(root);
             }
 
-            return result;
+            core.memory.GC.disable();
+            scope(exit){core.memory.GC.enable();}
+            auto flattened = pairAppender_.data.dup;
+            pairAppender_.clear();
+
+            return flattened;
         }
 
         ///Compose a mapping node.
@@ -294,7 +310,6 @@ final class Composer
             const tag = resolver_.resolve(NodeID.Mapping, startEvent.tag, null, 
                                           startEvent.implicit);
 
-            Node.Pair[] children;
             Tuple!(Node, Mark)[] toMerge;
             while(!parser_.checkEvent(EventID.MappingEnd))
             {
@@ -308,17 +323,20 @@ final class Composer
                 //Not YAMLMerge, just add the pair.
                 else
                 {
-                    merge(children, pair);
+                    merge(pairAppender_, pair);
                 }
             }
             foreach(node; toMerge)
             {
-                merge(children, flatten(node[0], startEvent.startMark, node[1]));
+                merge(pairAppender_, flatten(node[0], startEvent.startMark, node[1]));
             }
 
+            core.memory.GC.disable();
+            scope(exit){core.memory.GC.enable();}
             Node node = constructor_.node(startEvent.startMark, parser_.getEvent().endMark, 
-                                          tag, children, startEvent.collectionStyle);
+                                          tag, pairAppender_.data.dup, startEvent.collectionStyle);
 
+            pairAppender_.clear();
             return node;
         }
 }
