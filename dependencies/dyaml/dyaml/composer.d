@@ -51,9 +51,17 @@ final class Composer
         Node[Anchor] anchors_;
 
         ///Used to reduce allocations when creating pair arrays.
-        Appender!(Node.Pair[], Node.Pair) pairAppender_;
+        ///
+        ///We need one appender for each nesting level that involves
+        ///a pair array, as the inner levels are processed as a
+        ///part of the outer levels. Used as a stack.
+        Appender!(Node.Pair[], Node.Pair)[] pairAppenders_;
         ///Used to reduce allocations when creating node arrays.
-        Appender!(Node[], Node) nodeAppender_;
+        ///
+        ///We need one appender for each nesting level that involves
+        ///a node array, as the inner levels are processed as a
+        ///part of the outer levels. Used as a stack.
+        Appender!(Node[], Node)[] nodeAppenders_;
 
     public:
         /**
@@ -63,14 +71,11 @@ final class Composer
          *          resolver    = Resolver to resolve tags (data types).
          *          constructor = Constructor to construct nodes.
          */
-        this(Parser parser, Resolver resolver, Constructor constructor) @trusted nothrow
+        this(Parser parser, Resolver resolver, Constructor constructor) @safe
         {
             parser_ = parser;
             resolver_ = resolver;
             constructor_ = constructor;
-
-            pairAppender_ = appender!(Node.Pair[])();
-            nodeAppender_ = appender!(Node[])();
         }
 
         ///Destroy the composer.
@@ -119,7 +124,7 @@ final class Composer
                    "get. use checkNode() to determine if there is a node.");
 
             Node document = composeDocument();
-            
+
             //Ensure that the stream contains no more documents.
             enforce(parser_.checkEvent(EventID.StreamEnd),
                     new ComposerException("Expected single document in the stream, "
@@ -133,6 +138,23 @@ final class Composer
         }
 
     private:
+        ///Ensure that appenders for specified nesting levels exist.
+        ///
+        ///Params:  pairAppenderLevel = Current level in the pair appender stack.
+        ///         nodeAppenderLevel = Current level the node appender stack.
+        void ensureAppendersExist(const uint pairAppenderLevel, const uint nodeAppenderLevel) 
+            @trusted
+        {
+            while(pairAppenders_.length <= pairAppenderLevel)
+            {
+                pairAppenders_ ~= appender!(Node.Pair[])();
+            }
+            while(nodeAppenders_.length <= nodeAppenderLevel)
+            {
+                nodeAppenders_ ~= appender!(Node[])();
+            }
+        }
+
         ///Compose a YAML document and return its root node.
         Node composeDocument() @trusted
         {
@@ -140,7 +162,7 @@ final class Composer
             parser_.getEvent();
 
             //Compose the root node.
-            Node node = composeNode();
+            Node node = composeNode(0, 0);
 
             //Drop the DOCUMENT-END event.
             parser_.getEvent();
@@ -149,8 +171,11 @@ final class Composer
             return node;
         }
 
-        ///Compose a node.
-        Node composeNode() @system
+        /// Compose a node.
+        ///
+        /// Params: pairAppenderLevel = Current level of the pair appender stack.
+        ///         nodeAppenderLevel = Current level of the node appender stack.
+        Node composeNode(const uint pairAppenderLevel, const uint nodeAppenderLevel) @system
         {
             if(parser_.checkEvent(EventID.Alias))
             {
@@ -192,11 +217,11 @@ final class Composer
             }
             else if(parser_.checkEvent(EventID.SequenceStart))
             {
-                result = composeSequenceNode();
+                result = composeSequenceNode(pairAppenderLevel, nodeAppenderLevel);
             }
             else if(parser_.checkEvent(EventID.MappingStart))
             {
-                result = composeMappingNode();
+                result = composeMappingNode(pairAppenderLevel, nodeAppenderLevel);
             }
             else{assert(false, "This code should never be reached");}
 
@@ -220,23 +245,30 @@ final class Composer
             return node;
         }
 
-        ///Compose a sequence node.
-        Node composeSequenceNode() @system
+        /// Compose a sequence node.
+        ///
+        /// Params: pairAppenderLevel = Current level of the pair appender stack.
+        ///         nodeAppenderLevel = Current level of the node appender stack.
+        Node composeSequenceNode(const uint pairAppenderLevel, const uint nodeAppenderLevel) 
+            @system
         {
+            ensureAppendersExist(pairAppenderLevel, nodeAppenderLevel);
+            auto nodeAppender = &(nodeAppenders_[nodeAppenderLevel]);
+
             immutable startEvent = parser_.getEvent();
             const tag = resolver_.resolve(NodeID.Sequence, startEvent.tag, null, 
                                           startEvent.implicit);
 
             while(!parser_.checkEvent(EventID.SequenceEnd))
             {
-                nodeAppender_.put(composeNode());
+                nodeAppender.put(composeNode(pairAppenderLevel, nodeAppenderLevel + 1));
             }
 
             core.memory.GC.disable();
             scope(exit){core.memory.GC.enable();}
             Node node = constructor_.node(startEvent.startMark, parser_.getEvent().endMark, 
-                                          tag, nodeAppender_.data.dup, startEvent.collectionStyle);
-            nodeAppender_.clear();
+                                          tag, nodeAppender.data.dup, startEvent.collectionStyle);
+            nodeAppender.clear();
 
             return node;
         }
@@ -246,13 +278,16 @@ final class Composer
          *
          * Node must be a mapping or a sequence of mappings.
          *
-         * Params:  root      = Node to flatten.
-         *          startMark = Start position of the node.
-         *          endMark   = End position of the node.
+         * Params:  root              = Node to flatten.
+         *          startMark         = Start position of the node.
+         *          endMark           = End position of the node.
+         *          pairAppenderLevel = Current level of the pair appender stack.
+         *          nodeAppenderLevel = Current level of the node appender stack.
          *
          * Returns: Flattened mapping as pairs.
          */
-        Node.Pair[] flatten(ref Node root, const Mark startMark, const Mark endMark) @system
+        Node.Pair[] flatten(ref Node root, const Mark startMark, const Mark endMark,
+                            const uint pairAppenderLevel, const uint nodeAppenderLevel) @system
         {
             void error(Node node)
             {
@@ -266,6 +301,8 @@ final class Composer
                                                startMark, endMark);
             }
 
+            ensureAppendersExist(pairAppenderLevel, nodeAppenderLevel);
+            auto pairAppender = &(pairAppenders_[pairAppenderLevel]);
 
             if(root.isMapping)
             {
@@ -276,19 +313,21 @@ final class Composer
                     else
                     {
                         auto temp = Node.Pair(key, value);
-                        merge(pairAppender_, temp);
+                        merge(*pairAppender, temp);
                     }
                 }
                 foreach(node; toMerge)
                 {
-                    merge(pairAppender_, flatten(node, startMark, endMark));
+                    merge(*pairAppender, flatten(node, startMark, endMark, 
+                                                 pairAppenderLevel + 1, nodeAppenderLevel));
                 }
             }
             //Must be a sequence of mappings.
             else if(root.isSequence) foreach(ref Node node; root)
             {
                 if(!node.isType!(Node.Pair[])){error(node);}
-                merge(pairAppender_, flatten(node, startMark, endMark));
+                merge(*pairAppender, flatten(node, startMark, endMark, 
+                                             pairAppenderLevel + 1, nodeAppenderLevel));
             }
             else
             {
@@ -297,23 +336,30 @@ final class Composer
 
             core.memory.GC.disable();
             scope(exit){core.memory.GC.enable();}
-            auto flattened = pairAppender_.data.dup;
-            pairAppender_.clear();
+            auto flattened = pairAppender.data.dup;
+            pairAppender.clear();
 
             return flattened;
         }
 
-        ///Compose a mapping node.
-        Node composeMappingNode() @system
+        /// Compose a mapping node.
+        ///
+        /// Params: pairAppenderLevel = Current level of the pair appender stack.
+        ///         nodeAppenderLevel = Current level of the node appender stack.
+        Node composeMappingNode(const uint pairAppenderLevel, const uint nodeAppenderLevel)
+            @system
         {
+            ensureAppendersExist(pairAppenderLevel, nodeAppenderLevel);
             immutable startEvent = parser_.getEvent();
             const tag = resolver_.resolve(NodeID.Mapping, startEvent.tag, null, 
                                           startEvent.implicit);
+            auto pairAppender = &(pairAppenders_[pairAppenderLevel]);
 
             Tuple!(Node, Mark)[] toMerge;
             while(!parser_.checkEvent(EventID.MappingEnd))
             {
-                auto pair = Node.Pair(composeNode(), composeNode());
+                auto pair = Node.Pair(composeNode(pairAppenderLevel + 1, nodeAppenderLevel), 
+                                      composeNode(pairAppenderLevel + 1, nodeAppenderLevel));
 
                 //Need to flatten and merge the node referred by YAMLMerge.
                 if(pair.key.isType!YAMLMerge)
@@ -323,20 +369,21 @@ final class Composer
                 //Not YAMLMerge, just add the pair.
                 else
                 {
-                    merge(pairAppender_, pair);
+                    merge(*pairAppender, pair);
                 }
             }
             foreach(node; toMerge)
             {
-                merge(pairAppender_, flatten(node[0], startEvent.startMark, node[1]));
+                merge(*pairAppender, flatten(node[0], startEvent.startMark, node[1], 
+                                             pairAppenderLevel + 1, nodeAppenderLevel));
             }
 
             core.memory.GC.disable();
             scope(exit){core.memory.GC.enable();}
             Node node = constructor_.node(startEvent.startMark, parser_.getEvent().endMark, 
-                                          tag, pairAppender_.data.dup, startEvent.collectionStyle);
+                                          tag, pairAppender.data.dup, startEvent.collectionStyle);
 
-            pairAppender_.clear();
+            pairAppender.clear();
             return node;
         }
 }
