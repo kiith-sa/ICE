@@ -1,5 +1,5 @@
 
-//          Copyright Ferdinand Majerech 2012.
+//          Copyright Ferdinand Majerech 2012-2013.
 // Distributed under the Boost Software License, Version 1.0.
 //    (See accompanying file LICENSE_1_0.txt or copy at
 //          http://www.boost.org/LICENSE_1_0.txt)
@@ -85,14 +85,14 @@ class GameTime
         }
 
         ///Get current game time.
-        @property real gameTime() const pure nothrow {return gameTime_;}
+        @property real gameTime() @safe const pure nothrow {return gameTime_;}
 
         ///Get current time step (always constant, but kept non-static just in case).
-        @property real timeStep() const pure nothrow {return timeStep_;}
+        @property real timeStep() @safe const pure nothrow {return timeStep_;}
 
         ///Get time speed.
-        @property real timeSpeed() const pure nothrow {return timeSpeed_;}
+        @property real timeSpeed() @safe const pure nothrow {return timeSpeed_;}
 
         ///Set time speed.
-        @property void timeSpeed(const real rhs) pure nothrow {timeSpeed_ = rhs;}
+        @property void timeSpeed(const real rhs) @safe pure nothrow {timeSpeed_ = rhs;}
 }
