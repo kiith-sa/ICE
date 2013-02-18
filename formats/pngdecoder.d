@@ -22,7 +22,9 @@ module formats.pngdecoder;
 import core.bitop;
 
 import std.algorithm;
+import std.conv;
 import std.exception;
+import std.stdio;
 import std.string;
 
 import formats.pngcommon;
@@ -62,7 +64,6 @@ struct PNGDecoder
             const expectedLength = info.interlace 
                                    ? bufferSize(info.image) + info.image.height * 2
                                    : bufferSize(info.image) + info.image.height;
-
 
             Vector!ubyte buffer;
             buffer.reserve(expectedLength);
@@ -180,8 +181,8 @@ struct PNGDecoder
                         break;
                     default:
                         size_t type = chunk.type;
-                        enforceEx!PNGException((bt(&type, cast(size_t)6) < 0), 
-                                  "Unrecognized critical chunk");
+                        enforceEx!PNGException((bt(&type, cast(size_t)6) != 0), 
+                                  "Unrecognized critical chunk: " ~ to!string(type));
                         break;
                 }
             }
@@ -397,7 +398,7 @@ void deinterlace(ref Vector!(ubyte) buffer, const PNGImage image)
                     const uint pxEnd = image.bpp * (offset + 1);
                     //offset of this pixel in bits, not bytes, in line
                     uint pxStartLine = image.bpp * px;
-                    
+
                     //bits in the pixel - r in result, b in line
                     for(uint r = pxStart, l = pxStartLine; r < pxEnd; r++, l++)
                     {
