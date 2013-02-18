@@ -85,19 +85,7 @@ struct EntityPrototype
                 }
                 else
                 {
-                    //This should be the following code:
-                    //
-                    //component!c = rhs.component!c;
-                    //
-                    //It's written in this way to avoid a compiler bug
-                    //that prevents postblit constructor from being called.
-
-                    //Move rhs to proxy. rhs is destroyed, postblit not called.
-                    auto proxy = move(rhs.component!c);
-                    //Copy proxy to rhs. Postblit is called on rhs.
-                    rhs.component!c = proxy;
-                    //Copy proxy to this. Postblit is called on this.
-                    component!c = proxy;
+                    component!c = rhs.component!c.get();
                 }
             }
         }
