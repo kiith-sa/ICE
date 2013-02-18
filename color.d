@@ -308,10 +308,10 @@ template rgb(string c) if(c.length == 6)
 }
 
 ///RGBA color from a hexadecimal string (CSS style), e.g. FFFFFF80 for half-transparent white.
-template rgba(string c) if(c.length == 8) 
+Color rgba(string c)() if(c.length == 8) 
 {
-    enum auto rgba = Color(hexColor(c[0 .. 2]), hexColor(c[2 .. 4]), 
-                           hexColor(c[4 .. 6]), hexColor(c[6 .. 8]));
+    return Color(hexColor(c[0 .. 2]), hexColor(c[2 .. 4]), 
+                 hexColor(c[4 .. 6]), hexColor(c[6 .. 8]));
 }
 
 ///RGB color from a short hexadecimal string (CSS style), e.g. FFF for white.
